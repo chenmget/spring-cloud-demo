@@ -95,6 +95,9 @@ public class AfterSaleManager {
         return orderApplyMapper.selectAllSubmit(orderApply);
     }
 
+    public List<OrderApply> selectOrderApply(OrderApply apply){
+        return orderApplyMapper.selectOrderApply(apply);
+    }
     /**
      * 查询关闭订单申请的信息
      *

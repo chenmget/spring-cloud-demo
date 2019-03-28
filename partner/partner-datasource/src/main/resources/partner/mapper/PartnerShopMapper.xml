@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.PartnerShopMapper">
+
+<sql id="allFields">
+    t.CODE
+    ,t.NAME
+    ,t.ADDRESS
+    ,t.NET_TYPE
+    ,t.AREA_CODE
+    ,t.CHANNEL_TYPE
+    ,t.STATE
+    ,t.SHOP_DEFAULT_IMAGE
+    ,t.LAT
+    ,t.LNG
+    ,t.PARTNER_SHOP_ID
+    ,t.SHOP_ACREAGE
+    ,t.PROVINCE
+    ,t.CITY
+    ,t.COUNTRY
+    ,t.COMMON_REGION_ID
+    ,t.COMMON_REGION_NAME
+    ,t.OPERATORS_NBR
+    ,t.OPERATORS_NAME
+    ,t.BUSI_STORE
+    ,t.PROV_SUP_CHANNEL_TYPE
+    ,t.LAN_ID
+    ,t.REGION_ID
+    ,t.ORG_NAME
+    ,t.UNION_ORG_CODE
+    ,t.ORG_TYPE_ID
+    ,t.CHANNEL_UNIT_ADDR
+    ,t.BUSINESS_SCOPE
+</sql>
+    <select id="pagePartnerNearby" parameterType="com.iwhalecloud.retail.partner.dto.req.PartnerShopListReq"
+            resultType="com.iwhalecloud.retail.partner.dto.PartnerRelShopDTO">
+        select p.partner_id,p.org_type,p.PARTNER_NAME,p.region_id,s.name,s.lat,s.lng,s.partner_shop_id,s.address,s.area_code,
+        GetDistance(s.lat,s.lng,#{req.lat},#{req.lng}) as distance
+        from par_partner_shop s INNER JOIN par_partner p ON s.PARTNER_SHOP_ID = p.PARTNER_SHOP_ID
+        where p.state='1' and s.state = '1'
+            <if test="req.shopName != null and req.shopName != ''">
+                and s.name like CONCAT(CONCAT('%', #{req.shopName}), '%')
+            </if>
+            <if test="req.areaCode != null and req.areaCode != ''">
+                and s.area_code = #{req.areaCode}
+            </if>
+            <if test="req.partnerId != null and req.partnerId != ''">
+            and p.partner_id = #{req.partnerId}
+           </if>
+            <if test="(req.shopName == null or req.shopName == '') and (req.areaCode == null or req.areaCode == '') and (req.partnerId == null and req.partnerId == '')">
+                and s.lat between #{req.latMin} and #{req.latMax} and s.lng between #{req.lngMin} and #{req.lngMax}
+            </if>
+         order by distance
+    </select>
+
+    
+    
+    
+    <select id="queryPartnerShopPage" parameterType="com.iwhalecloud.retail.partner.dto.req.PartnerShopQueryPageReq"
+            resultType="com.iwhalecloud.retail.partner.dto.PartnerShopDTO">
+        SELECT <include refid="allFields" /> FROM par_partner_shop t
+        <where>
+            <if test="req.name != null and req.name != ''">
+                and t.name like  CONCAT(CONCAT('%', #{req.name}), '%')
+            </if>
+            <if test="req.address != null and req.address != ''" >
+                and t.address like CONCAT(CONCAT('%', #{req.address}), '%')
+            </if>
+            <if test="req.netType != null and req.netType != ''" >
+                and t.net_type = #{req.netType}
+            </if>
+            <if test="req.state != null and req.state != ''" >
+                and t.state=#{req.state}
+            </if>
+            <!--<if test="req.partnerId != null and req.partnerId != ''" >-->
+                <!--and t.partner_id=#{req.partnerId}-->
+            <!--</if>-->
+            <if test="req.partnerShopId != null and req.partnerShopId != ''" >
+                and t.partner_shop_id=#{req.partnerShopId}
+            </if>
+            <if test="req.areaCode != null and req.areaCode != ''">
+                and t.area_code = #{req.areaCode}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryPartnerShopList" parameterType="com.iwhalecloud.retail.partner.dto.req.PartnerShopQueryListReq"
+            resultType="com.iwhalecloud.retail.partner.dto.PartnerShopDTO">
+        SELECT <include refid="allFields" /> FROM par_partner_shop t
+        <where>
+            <if test="req.name != null and req.name != ''">
+                and t.name like  CONCAT(CONCAT('%', #{req.name}), '%')
+            </if>
+            <if test="req.address != null and req.address != ''" >
+                and t.address like CONCAT(CONCAT('%', #{req.address}), '%')
+            </if>
+            <if test="req.netType != null and req.netType != ''" >
+                and t.net_type = #{req.netType}
+            </if>
+            <if test="req.state != null and req.state != ''" >
+                and t.state=#{req.state}
+            </if>
+            <!--<if test="req.partnerId != null and req.partnerId != ''" >-->
+            <!--and t.partner_id=#{req.partnerId}-->
+            <!--</if>-->
+            <if test="req.partnerShopId != null and req.partnerShopId != ''" >
+                and t.partner_shop_id=#{req.partnerShopId}
+            </if>
+            <if test="req.areaCode != null and req.areaCode != ''">
+                and t.area_code = #{req.areaCode}
+            </if>
+        </where>
+    </select>
+
+
+</mapper>

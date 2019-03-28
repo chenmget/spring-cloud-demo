@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.TrightsPartnerMapper">
+
+<sql id="allFields">
+    t.PARTNER_ID 
+    ,t.PARTNER_NAME 
+    ,t.PARTNER_CODE 
+    ,t.PARTNER_TYPE 
+    ,t.PARTNER_SALE 
+    ,t.PARTNER_COMPANY 
+    ,t.PARTNER_COMPANY_TYPE 
+    ,t.BUSINESS_LICENSE 
+    ,t.TAX_NO 
+    ,t.REGISTERED_FUNDS 
+    ,t.REGISTERED_DATE 
+    ,t.REGISTERED_ADDRESS 
+    ,t.BUSINESS_NO 
+    ,t.CONTRACT_NO 
+    ,t.JURIDICAL_PERSON 
+    ,t.CERTIFICATE_TYPE 
+    ,t.CERTIFICATE_NO 
+    ,t.BANK_NO 
+    ,t.BANK_NAME 
+    ,t.ACCOUNT_NO 
+    ,t.CONTACT_NAME 
+    ,t.CONTACT_DUTY 
+    ,t.TELEPHONE_NO 
+    ,t.MOBILE_NO 
+    ,t.E_MAIL 
+    ,t.CONTACT_ADDRESS 
+    ,t.POST_CODE 
+    ,t.EMERGENCY_CONTACT 
+    ,t.EMERGENCY_CONTACT_TELEPHONE 
+    ,t.CUST_SERVICE 
+    ,t.CUST_SERVICE_TELEPHONE 
+    ,t.IT_CONTACT 
+    ,t.IT_CONTACT_TELEPHONE 
+    ,t.GMT_CREATE 
+    ,t.CREATE_STAFF 
+    ,t.MODIFIED_STAFF 
+    ,t.GMT_MODIFY 
+    ,t.PARTNER_STATE 
+</sql>
+
+</mapper>

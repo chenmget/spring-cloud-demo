@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.ProductExtMapper">
+
+<sql id="allFields">
+    t.PRODUCT_BASE_ID 
+    ,t.PARAM21 
+    ,t.PARAM22 
+    ,t.PARAM23 
+    ,t.PARAM24 
+    ,t.PARAM25 
+    ,t.PARAM26 
+    ,t.PARAM27 
+    ,t.PARAM28 
+    ,t.PARAM29 
+    ,t.PARAM30 
+    ,t.PARAM31 
+    ,t.PARAM32 
+    ,t.PARAM33 
+    ,t.PARAM34 
+    ,t.PARAM35 
+    ,t.PARAM36 
+    ,t.PARAM37 
+    ,t.PARAM38 
+    ,t.PARAM39 
+    ,t.PARAM40 
+    ,t.PARAM41 
+    ,t.PARAM42 
+    ,t.PARAM43 
+    ,t.PARAM44 
+    ,t.PARAM45 
+    ,t.PARAM46 
+    ,t.PARAM47 
+    ,t.PARAM48 
+    ,t.PARAM49 
+    ,t.PARAM50 
+    ,t.PARAM51 
+    ,t.PARAM52 
+    ,t.PARAM53 
+    ,t.PARAM54 
+    ,t.PARAM55 
+    ,t.PARAM56 
+    ,t.PARAM57 
+    ,t.PARAM58 
+    ,t.PARAM59 
+    ,t.PARAM60 
+    ,t.PARAM61 
+    ,t.PARAM62 
+    ,t.PARAM63 
+    ,t.PARAM64 
+    ,t.PARAM65 
+    ,t.PARAM66 
+    ,t.PARAM67 
+    ,t.PARAM68 
+    ,t.PARAM69 
+    ,t.PARAM70 
+</sql>
+
+    <select id="listAll" resultType="com.iwhalecloud.retail.goods2b.entity.ProductExt">
+        select <include refid="allFields" />
+        from prod_product_ext t
+        where 1 = 1
+    </select>
+</mapper>

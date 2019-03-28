@@ -1,0 +1,29 @@
+project:
+  name: 本机环境
+
+server:
+  port: 8093
+
+spring:
+  dubbo:
+    application:
+      name: report-provider
+    registry:
+#      address: zookeeper://10.45.47.87:2285
+      address: zookeeper://localhost:2181
+    protocol:
+      name: dubbo
+      port: 20183
+    scan: com.iwhalecloud.retail
+
+jmx:
+  enabled: false
+
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://134.176.110.182:8903/CLOUDS?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: yhj
+  password: Yhj_20190118
+  #url: jdbc:mysql://10.45.46.67:8866/nretail_b2b?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  #username: szxtest
+  #password: szxtest.2019

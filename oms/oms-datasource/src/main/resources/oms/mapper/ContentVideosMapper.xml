@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentVideosMapper">
+
+<sql id="allFields">
+    t.MATID
+    ,t.CONTENTID 
+    ,t.OBJTYPE 
+    ,t.OBJID 
+    ,t.HAVELV2MAT 
+    ,t.OPRID 
+    ,t.UPDDATE
+    ,t.OBJURL
+</sql>
+
+    <resultMap id="ContentVideosDefaultContentResult" type="com.iwhalecloud.retail.oms.entity.ContentVideos">
+        <result property="matid" column="MATID"></result>
+        <result property="tccontentid" column="T_C_CONTENTID"></result>
+        <result property="contentid" column="CONTENTID"></result>
+        <result property="objid" column="OBJID"></result>
+        <result property="objurl" column="OBJURL"></result>
+        <result property="havelv2mat" column="HAVELV2MAT"></result>
+        <result property="upddate" column="UPDDATE"></result>
+        <result property="objtype" column="OBJTYPE"></result>
+        <result property="oprid" column="OPRID"></result>
+    </resultMap>
+
+    <select id="queryContentVideoDefalutList" resultMap="ContentVideosDefaultContentResult">
+        select <include refid="allFields" />
+        from T_CONTENT_VIDEO t
+        where t.CONTENTID in
+        <foreach collection="contentIds" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryVideoContentIdsByProductIds" resultType="String">
+        select distinct t.CONTENTID
+        from
+        T_CONTENT_VIDEO t
+        where
+        t.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+        and
+        t.OBJID in
+        <foreach item="item" index="index" collection="productIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

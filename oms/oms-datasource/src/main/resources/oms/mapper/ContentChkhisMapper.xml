@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentChkhisMapper">
+
+<sql id="allFields">
+    t.LOGID 
+    ,t.CONTENTID 
+    ,t.COMMITOPRID 
+    ,t.COMMITDATE 
+    ,t.OPRID 
+    ,t.CHKDATE 
+    ,t.RESULT 
+    ,t.DESP 
+</sql>
+
+    <update id="updateContentChkhis" parameterType="com.iwhalecloud.retail.oms.entity.ContentChkhis">
+        UPDATE t_content_chkhis
+        <set>
+            <if test="result != null">
+                RESULT = #{result},
+            </if>
+            <if test="commitoprid != null">
+                COMMITOPRID = #{commitoprid},
+            </if>
+            <if test="commitdate != null">
+                COMMITDATE = #{commitdate},
+            </if>
+            <if test="oprid != null">
+                OPRID = #{oprid},
+            </if>
+            <if test="chkdate != null">
+                CHKDATE = #{chkdate},
+            </if>
+            <if test="desp != null">
+                DESP = #{desp},
+            </if>
+        </set>
+        WHERE CONTENTID = #{contentid}
+    </update>
+
+</mapper>

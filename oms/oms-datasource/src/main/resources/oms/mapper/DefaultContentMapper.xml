@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.DefaultContentMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.GMT_CREATE 
+    ,t.GMT_MODIFIED 
+    ,t.CREATOR 
+    ,t.MODIFIER 
+    ,t.IS_DELETED 
+    ,t.CONTENT_TITTLE 
+    ,t.CONTENT_TIPS 
+    ,t.CONTENT_KEYWORD 
+    ,t.CONTENT_BRIEF 
+    ,t.CONTENT_DETAIL 
+    ,t.CONTENT_PICTURES 
+    ,t.CONTENT_EXTENSION_INFO 
+</sql>
+
+</mapper>

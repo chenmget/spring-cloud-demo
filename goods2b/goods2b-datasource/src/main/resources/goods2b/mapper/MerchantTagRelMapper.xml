@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.MerchantTagRelMapper">
+
+<sql id="allFields">
+    t.REL_ID 
+    ,t.TAG_ID 
+    ,t.MERCHANT_ID
+</sql>
+
+    <select id="listMerchantTagRel" resultType="com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO"
+            parameterType="com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq">
+        select t.REL_ID, t.TAG_ID, t.MERCHANT_ID, pt.TAG_NAME
+        from prod_merchant_tag_rel t, prod_tags pt
+        where
+        1=1 and t.TAG_ID = pt.TAG_ID
+        <if test="req.merchantId != null and req.merchantId != ''">
+            and t.MERCHANT_ID = #{req.merchantId}
+        </if>
+        <if test="req.tagId != null and req.tagId != ''">
+            and t.TAG_ID = #{req.tagId}
+        </if>
+    </select>
+
+</mapper>

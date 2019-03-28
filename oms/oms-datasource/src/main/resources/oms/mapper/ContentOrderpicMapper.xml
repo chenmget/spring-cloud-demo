@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentOrderpicMapper">
+
+<sql id="allFields">
+    t.MATID 
+    ,t.CONTENTID 
+    ,t.PLAYORDER 
+    ,t.OBJTYPE 
+    ,t.OBJID 
+    ,t.OBJURL 
+    ,t.OPRID 
+    ,t.UPDDATE 
+</sql>
+
+    <resultMap id="ContentOrderpicResult" type="com.iwhalecloud.retail.oms.entity.ContentOrderpic">
+        <result property="matid" column="MATID"></result>
+        <result property="contentid" column="CONTENTID"></result>
+        <result property="playorder" column="PLAYORDER"></result>
+        <result property="objtype" column="OBJTYPE"></result>
+        <result property="objid" column="OBJID"></result>
+        <result property="objurl" column="OBJURL"></result>
+        <result property="oprid" column="OPRID"></result>
+        <result property="upddate" column="UPDDATE"></result>
+    </resultMap>
+
+    <select id="queryContentOrderPicList" resultMap="ContentOrderpicResult">
+        select <include refid="allFields" />
+        from t_content_orderpic t
+        where t.CONTENTID=#{contentId}
+    </select>
+
+
+</mapper>

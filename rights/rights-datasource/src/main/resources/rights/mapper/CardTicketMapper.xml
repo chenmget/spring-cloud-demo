@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.CardTicketMapper">
+
+    <select id="queryAllBusinessCouponNotUsed"
+            parameterType="com.iwhalecloud.retail.rights.dto.request.CouponNotUsedReq"
+            resultType="com.iwhalecloud.retail.rights.dto.response.CouponNotUsedResp">
+        SELECT
+        ci.coupon_inst_id,
+        ci.COUPON_INST_NBR AS couponNo,
+        mrc.MKT_RES_NAME AS couponName,
+        mrt.MKT_RES_TYPE_NAME AS couponType,
+        mrc.partner_id AS partnerId,
+        mrc.SHOW_AMOUNT AS amount,
+        CASE
+        WHEN ci.STATUS_CD = '1200' THEN '未使用'
+        WHEN mrc.STATUS_CD = '1100' THEN '已过期'
+        WHEN mrc.STATUS_CD = '1400' THEN '未生效'
+        ELSE ''
+        END AS couponStatus,
+        ci.EFF_DATE AS startTime,
+        ci.EXP_DATE AS expiryDate
+        FROM
+        COUPON_INST ci,
+        MKT_RESOURCE mr,
+        MKT_RES_COUPON mrc,
+        MKT_RES_TYPE mrt
+        WHERE
+        ci.MKT_RES_ID = mr.MKT_RES_ID
+        AND ci.MKT_RES_ID = mrc.mkt_res_id
+        AND mrt.MKT_RES_TYPE_ID = mr.MKT_RES_TYPE_ID
+        <choose>
+            <when test="req.couponStatus != null and req.couponStatus !=''">
+                and ci.STATUS_CD = #{req.couponStatus}
+            </when>
+            <otherwise>
+                and ci.STATUS_CD in (1100,1200,1400)
+            </otherwise>
+        </choose>
+        <if test="req.couponNo != null and req.couponNo !=''">
+            and ci.COUPON_INST_NBR = #{req.couponNo}
+        </if>
+        <if test="req.couponName != null and req.couponName !=''">
+            and mrc.MKT_RES_NAME = #{req.couponName}
+        </if>
+        <if test="req.businessId != null and req.businessId !=''">
+            and ci.CUST_ACCT_ID = #{req.businessId}
+        </if>
+        <if test="req.couponType != null and req.couponType !=''">
+            and mrt.MKT_RES_TYPE_ID = #{req.couponType}
+        </if>
+        <if test="req.startDate != null and req.startDate !=''">
+            and ci.EXP_DATE &gt;= #{req.startDate}
+        </if>
+        <if test="req.endDate != null and req.endDate !=''">
+            and ci.EXP_DATE &lt;= #{req.endDate}
+        </if>
+        order by ci.STATUS_CD desc,ci.EXP_DATE desc
+    </select>
+
+    <select id="queryAllBusinessCouponUsed"
+            parameterType="com.iwhalecloud.retail.rights.dto.request.CouponUsedReq"
+            resultType="com.iwhalecloud.retail.rights.dto.response.CouponUsedResp">
+        SELECT
+        ci.coupon_inst_id,
+        ci.COUPON_INST_NBR as couponNo,
+        mrc.MKT_RES_NAME AS couponName,
+        mrt.MKT_RES_TYPE_NAME AS couponType,
+        mrc.partner_id as partnerId,
+        mrc.SHOW_AMOUNT AS amount,
+        ci.EFF_DATE,
+        ci.EXP_DATE as expiryDate,
+        ciur.USE_DATE,
+        ciur.USE_ORDER_ID as orderNo
+        FROM
+        COUPON_INST ci,
+        MKT_RESOURCE mr,
+        MKT_RES_COUPON mrc,
+        MKT_RES_TYPE mrt,
+        COUPON_INST_USE_REC ciur
+        WHERE
+        ci.MKT_RES_ID = mr.MKT_RES_ID
+        AND ci.MKT_RES_ID = mrc.mkt_res_id
+        AND mrt.MKT_RES_TYPE_ID = mr.MKT_RES_TYPE_ID
+        AND ciur.COUPON_INST_ID = ci.coupon_inst_id and ci.STATUS_CD = '1300'
+        <if test="req.businessId != null and req.businessId !=''">
+            and ci.CUST_ACCT_ID = #{req.businessId}
+        </if>
+        <if test="req.couponName != null and req.couponName !=''">
+            and mrc.MKT_RES_NAME = #{req.couponName}
+        </if>
+        <if test="req.orderNo != null and req.orderNo !=''">
+            and ciur.USE_ORDER_ID = #{req.orderNo}
+        </if>
+        <if test="req.couponNo != null and req.couponNo !=''">
+            and ci.COUPON_INST_NBR = #{req.couponNo}
+        </if>
+        <if test="req.couponType != null and req.couponType !=''">
+            and mrt.MKT_RES_TYPE_ID = #{req.couponType}
+        </if>
+    </select>
+
+    <select id="queryAllBusinessCouponUsedNotPage"
+            parameterType="com.iwhalecloud.retail.rights.dto.request.CouponUsedReq"
+            resultType="com.iwhalecloud.retail.rights.dto.response.CouponUsedResp">
+        SELECT
+        ci.coupon_inst_id,
+        ci.COUPON_INST_NBR as couponNo,
+        mrc.MKT_RES_NAME AS couponName,
+        mrt.MKT_RES_TYPE_NAME AS couponType,
+        mrc.partner_id as partnerId,
+        mrc.SHOW_AMOUNT AS amount,
+        ci.EFF_DATE,
+        ci.EXP_DATE as expiryDate,
+        ciur.USE_DATE,
+        ciur.USE_ORDER_ID as orderNo
+        FROM
+        COUPON_INST ci,
+        MKT_RESOURCE mr,
+        MKT_RES_COUPON mrc,
+        MKT_RES_TYPE mrt,
+        COUPON_INST_USE_REC ciur
+        WHERE
+        ci.MKT_RES_ID = mr.MKT_RES_ID
+        AND ci.MKT_RES_ID = mrc.mkt_res_id
+        AND mrt.MKT_RES_TYPE_ID = mr.MKT_RES_TYPE_ID
+        AND ciur.COUPON_INST_ID = ci.coupon_inst_id and ci.STATUS_CD = '1300'
+        <if test="req.businessId != null and req.businessId !=''">
+            and ci.CUST_ACCT_ID = #{req.businessId}
+        </if>
+        <if test="req.couponName != null and req.couponName !=''">
+            and mrc.MKT_RES_NAME = #{req.couponName}
+        </if>
+        <if test="req.orderNo != null and req.orderNo !=''">
+            and ciur.USE_ORDER_ID = #{req.orderNo}
+        </if>
+        <if test="req.couponNo != null and req.couponNo !=''">
+            and ci.COUPON_INST_NBR = #{req.couponNo}
+        </if>
+        <if test="req.couponType != null and req.couponType !=''">
+            and mrt.MKT_RES_TYPE_ID = #{req.couponType}
+        </if>
+    </select>
+
+</mapper>

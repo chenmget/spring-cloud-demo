@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iwhalecloud.retail.order.mapper.OrderOperationDeskMapper">
+
+    <!-- 获取订单量 -->
+    <select id="getOrderCountByArea" parameterType="com.iwhalecloud.retail.order.dto.resquest.ReportOrderOpeDeskReq" resultType="int">
+        SELECT count(1) FROM ord_order o,par_partner p,par_partner_shop s
+        where o.USERID = p.PARTNER_ID
+        and p.PARTNER_SHOP_ID = s.PARTNER_SHOP_ID
+        <!-- 待付款2、待发货4、 确认收货5、 待评价7、 已完成6 -->
+        and o.STATUS in
+        <foreach item="item" index="index" collection="orderCountStatuses" open="("  separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="null != beginTime">
+            and o.create_time >= #{beginTime}
+        </if>
+        <if test="null != endTime">
+            and #{endTime} >= o.create_time
+        </if>
+        /*DATE_FORMAT(o.create_time,'%m-%d-%Y') = DATE_FORMAT(NOW(),'%m-%d-%Y')*/
+        <if test="null != areaCode and '' != areaCode">
+            AND s.AREA_CODE = #{areaCode}
+        </if>
+    </select>
+
+    <!-- 获取销售额-->
+    <select id="getOrderAmountByArea" parameterType="com.iwhalecloud.retail.order.dto.resquest.ReportOrderOpeDeskReq" resultType="double">
+        SELECT IFNULL(SUM(o.ORDER_AMOUNT),0) FROM ord_order o,par_partner p,par_partner_shop s
+        where o.USERID = p.PARTNER_ID
+        and p.PARTNER_SHOP_ID = s.PARTNER_SHOP_ID
+        <!-- 待发货4、 确认收货5、 待评价7、 已完成6 -->
+        and o.STATUS in
+        <foreach item="item" index="index" collection="orderAmountStatuses" open="("  separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="null != beginTime">
+            and o.create_time >= #{beginTime}
+        </if>
+        <if test="null != endTime">
+            and #{endTime} >= o.create_time
+        </if>
+        <if test="null != areaCode and '' != areaCode">
+            AND s.AREA_CODE = #{areaCode}
+        </if>
+    </select>
+
+    <!-- 获取商品销售量 -->
+    <select id="getSaleCountByArea" parameterType="com.iwhalecloud.retail.order.dto.resquest.ReportOrderOpeDeskReq" resultType="int">
+        SELECT count(1) FROM ord_order_items
+        where order_id in
+        (SELECT DISTINCT o.order_id FROM ord_order o,par_partner p,par_partner_shop s
+        where o.USERID = p.PARTNER_ID and p.PARTNER_SHOP_ID = s.PARTNER_SHOP_ID
+        and o.STATUS in
+        <foreach item="item" index="index" collection="saleCountStatuses" open="("  separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="null != beginTime">
+            and o.create_time >= #{beginTime}
+        </if>
+        <if test="null != endTime">
+            and #{endTime} >= o.create_time
+        </if>
+        <if test="null != areaCode and '' != areaCode">
+            and s.AREA_CODE = #{areaCode}
+        </if> )
+    </select>
+
+    <!-- 获取厅店销售额排名 -->
+    <select id="getShopSaleAmountRankByArea" parameterType="com.iwhalecloud.retail.order.dto.resquest.ReportOrderOpeDeskReq"
+            resultType="com.iwhalecloud.retail.order.dto.ReportOrderShopRankDTO">
+        select o.USERID AS SHOP_ID,s.NAME AS SHOP_NAME,IFNULL(SUM(o.ORDER_AMOUNT),0) AS REPORT_AMOUNT
+        from ord_order o,par_partner p,par_partner_shop s
+        where o.USERID = p.PARTNER_ID
+        and p.PARTNER_SHOP_ID = s.PARTNER_SHOP_ID
+        and o.STATUS in
+        <foreach item="item" index="index" collection="orderAmountStatuses" open="("  separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="null != beginTime">
+            and o.create_time >= #{beginTime}
+        </if>
+        <if test="null != endTime">
+            and #{endTime} >= o.create_time
+        </if>
+        <if test="null != areaCode and '' != areaCode">
+            AND s.AREA_CODE = #{areaCode}
+        </if>
+        GROUP BY o.USERID,s.NAME
+        ORDER BY REPORT_AMOUNT DESC
+        <choose>
+            <when test="null != rankNum and rankNum > 0">
+                limit #{rankNum}
+            </when>
+            <otherwise>
+                limit 10
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 按日期获取按天排布统计销售额数据 --><!-- 在程序进行计算 -->
+    <select id="getTimeIntervalAmountByArea" parameterType="com.iwhalecloud.retail.order.dto.resquest.ReportOrderOpeDeskReq"
+            resultType="com.iwhalecloud.retail.order.dto.ReportOrderTimeIntervalDTO">
+        select o.ORDER_AMOUNT AS REPORT_AMOUNT,UNIX_TIMESTAMP(o.CREATE_TIME)*1000 AS TIME_STAMP from ord_order o,par_partner p,par_partner_shop s
+        where o.USERID = p.PARTNER_ID
+        and p.PARTNER_SHOP_ID = s.PARTNER_SHOP_ID
+        and o.STATUS in
+        <foreach item="item" index="index" collection="orderAmountStatuses" open="("  separator="," close=")">
+            #{item}
+        </foreach>
+        <if test="null != beginTime">
+            and o.create_time >= #{beginTime}
+        </if>
+        <if test="null != endTime">
+            and #{endTime} >= o.create_time
+        </if>
+        <if test="null != areaCode and '' != areaCode">
+            and s.AREA_CODE = #{areaCode}
+        </if>
+    </select>
+
+</mapper>

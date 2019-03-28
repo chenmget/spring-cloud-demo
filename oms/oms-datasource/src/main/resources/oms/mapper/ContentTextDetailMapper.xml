@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentTextDetailMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.TEXT_ID 
+    ,t.TXT_CONTENT_ID 
+    ,t.TXT_CONTENT_TYPE 
+    ,t.TXT_CONTENT_SEQ 
+    ,t.TXT_CONTENT_DATA 
+    ,t.GMT_CREAT 
+    ,t.GMT_MODIFY 
+</sql>
+
+    <select id="queryContentTextDetail" resultType="com.iwhalecloud.retail.oms.dto.ContentTextDetailDTO">
+        select  <include refid="allFields" />
+        from
+        T_CONTENT_TEXT_DETAIL t
+        where t.TEXT_ID = #{textid}
+        order by t.TXT_CONTENT_SEQ asc
+    </select>
+
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.GoodsRightMapper">
+        <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.goods2b.entity.GoodsRight" >
+                <constructor >
+                        <idArg column="GOODS_RIGHTS_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+                        <arg column="GOODS_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+                        <arg column="RIGHTS_ID" jdbcType="DECIMAL" javaType="java.lang.String" />
+                        <arg column="RIGHTS_NAME" jdbcType="DECIMAL" javaType="java.lang.String" />
+                        <arg column="STATUS" jdbcType="DECIMAL" javaType="java.lang.String" />
+                </constructor>
+        </resultMap>
+        <sql id="Base_Column_List" >
+    GOODS_RIGHTS_ID, GOODS_ID, RIGHTS_ID, RIGHTS_NAME, STATUS
+  </sql>
+
+        <insert id="batchAddGoodsRight" parameterType="java.util.List" useGeneratedKeys="true">
+                insert into prod_right (GOODS_RIGHTS_ID, GOODS_ID, RIGHTS_ID,RIGHTS_NAME,STATUS)
+                values
+                <foreach collection="list" index="index" item="item" separator=",">
+                        (#{item.goodsRightsId},#{item.goodsId},#{item.rightsId},#{item.rightsName},#{item.status})
+                </foreach>
+        </insert>
+</mapper>

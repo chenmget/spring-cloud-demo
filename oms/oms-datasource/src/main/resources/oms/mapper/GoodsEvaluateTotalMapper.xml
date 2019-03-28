@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.GoodsEvaluateTotalMapper">
+
+
+    <update id="updateCountsByGoods" parameterType="com.iwhalecloud.retail.oms.dto.resquest.TGoodsEvaluateTotalDTO">
+		UPDATE t_goods_evaluate_total set counts =counts+1
+		WHERE goods_id=#{goodsId} and instr(#{evaluateText},tags_name)>0
+	</update>
+
+    <select id="selectCountsByGoods" parameterType="com.iwhalecloud.retail.oms.dto.resquest.TGoodsEvaluateTotalDTO"
+            resultType="com.iwhalecloud.retail.oms.dto.resquest.TGoodsEvaluateTotalDTO">
+		SELECT  goods_id,tags_name,tags_id,SUM(t.counts) counts
+		FROM t_goods_evaluate_total t
+		WHERE goods_id=#{goodsId} GROUP BY tags_id
+	</select>
+
+</mapper>

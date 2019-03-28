@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.CatComplexMapper">
+
+    <sql id="allFields">
+        t.ID
+        ,t.CAT_ID
+        ,t.TARGET_TYPE
+        ,t.TARGET_ID
+        ,t.TARGET_NAME
+        ,t.TARGET_ORDER
+        ,t.CREATE_DATE
+    </sql>
+
+    <select id="queryCatComplexForPage" resultType="com.iwhalecloud.retail.goods2b.dto.resp.CatComplexQueryResp" parameterType="com.iwhalecloud.retail.goods2b.dto.req.CatComplexQueryReq">
+        select
+        <include refid="allFields"></include>
+        from prod_cat_complex t
+        where 1=1
+        <if test="req.catId != null" >
+            and t.CAT_ID = #{req.catId }
+        </if>
+        <if test="req.targetType != null">
+            and t.TARGET_TYPE = #{req.targetType }
+        </if>
+        order by t.TARGET_ORDER
+    </select>
+
+</mapper>

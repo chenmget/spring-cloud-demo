@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.system.mapper.RoleMapper">
+  <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.system.entity.Role">
+    <result column="ROLE_ID" jdbcType="VARCHAR" property="roleId" />
+    <result column="ROLE_NAME" jdbcType="VARCHAR" property="roleName" />
+    <result column="ROLE_DESC" jdbcType="VARCHAR" property="roleDesc" />
+    <result column="CREATE_STAFF" jdbcType="VARCHAR" property="createStaff" />
+    <result column="CREATE_DATE" jdbcType="TIMESTAMP" property="createDate" />
+    <result column="UPDATE_STAFF" jdbcType="VARCHAR" property="updateStaff" />
+    <result column="UPDATE_DATE" jdbcType="TIMESTAMP" property="updateDate" />
+  </resultMap>
+  <!--<insert id="insert" parameterType="com.iwhalecloud.retail.system.entity.Role">-->
+    <!--insert into sys_role (ROLE_ID, ROLE_NAME, ROLE_DESC, -->
+      <!--CREATE_STAFF, CREATE_DATE, UPDATE_STAFF, -->
+      <!--UPDATE_DATE)-->
+    <!--values (#{roleId,jdbcType=VARCHAR}, #{roleName,jdbcType=VARCHAR}, #{roleDesc,jdbcType=VARCHAR}, -->
+      <!--#{createStaff,jdbcType=VARCHAR}, #{createDate,jdbcType=TIMESTAMP}, #{updateStaff,jdbcType=VARCHAR}, -->
+      <!--#{updateDate,jdbcType=TIMESTAMP})-->
+  <!--</insert>-->
+  <insert id="insertSelective" parameterType="com.iwhalecloud.retail.system.entity.Role">
+    insert into sys_role
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="roleId != null">
+        ROLE_ID,
+      </if>
+      <if test="roleName != null">
+        ROLE_NAME,
+      </if>
+      <if test="roleDesc != null">
+        ROLE_DESC,
+      </if>
+      <if test="createStaff != null">
+        CREATE_STAFF,
+      </if>
+      <if test="createDate != null">
+        CREATE_DATE,
+      </if>
+      <if test="updateStaff != null">
+        UPDATE_STAFF,
+      </if>
+      <if test="updateDate != null">
+        UPDATE_DATE,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="roleId != null">
+        #{roleId,jdbcType=VARCHAR},
+      </if>
+      <if test="roleName != null">
+        #{roleName,jdbcType=VARCHAR},
+      </if>
+      <if test="roleDesc != null">
+        #{roleDesc,jdbcType=VARCHAR},
+      </if>
+      <if test="createStaff != null">
+        #{createStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="createDate != null">
+        #{createDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateStaff != null">
+        #{updateStaff,jdbcType=VARCHAR},
+      </if>
+      <if test="updateDate != null">
+        #{updateDate,jdbcType=TIMESTAMP},
+      </if>
+    </trim>
+  </insert>
+
+
+  <select id="queryRolePage" resultType="com.iwhalecloud.retail.system.dto.RoleDTO"
+          parameterType="com.iwhalecloud.retail.system.dto.request.RolePageReq">
+    select t.*
+    from sys_role t where 1=1
+    <if test="req.roleId != null and req.roleId != ''">
+      and t.ROLE_ID like CONCAT(CONCAT('%', #{req.roleId }), '%')
+    </if>
+    <if test="req.roleName != null and req.roleName != ''">
+      and lower(t.ROLE_NAME) like lower(CONCAT(CONCAT('%', #{req.roleName }), '%'))
+    </if>
+    order by t.ROLE_ID desc
+  </select>
+</mapper>

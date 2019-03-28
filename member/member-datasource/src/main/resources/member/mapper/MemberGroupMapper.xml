@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.member.mapper.MemberGroupMapper">
+
+<sql id="allFields">
+    t.GROUP_ID 
+    ,t.MEM_ID 
+    ,t.STATUS 
+    ,t.CREATE_DATE 
+    ,t.CREATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.UPDATE_STAFF 
+</sql>
+    <select id="queryGroupByMemberForPage"
+            resultType="com.iwhalecloud.retail.member.dto.response.MemberGroupQueryResp">
+        select t.GROUP_ID
+            ,t.GROUP_NAME
+            ,t.GROUP_TYPE
+            ,t.TRADE_NAME
+            ,t.STATUS
+            ,t.MENO
+            ,t.SOURCE_FROM
+            ,t.CREATE_DATE
+            ,t.CREATE_STAFF
+            ,t.UPDATE_DATE
+            ,t.UPDATE_STAFF
+        from mem_member_group a, mem_group t
+        where a.GROUP_ID = t.GROUP_ID
+        and a.MEM_ID = #{req.memId }
+        and a.STATUS = ${@com.iwhalecloud.retail.member.common.MemberConst$CommonState@VALID.getCode()}
+    </select>
+    <select id="queryMemberByGroupForPage"
+            resultType="com.iwhalecloud.retail.member.dto.response.GroupQueryResp">
+        select <include refid="allFields"/>,a.name
+        from mem_member_group t,mem_member a
+        where t.MEM_ID = a.MEMBER_ID
+        and t.STATUS = ${@com.iwhalecloud.retail.member.common.MemberConst$CommonState@VALID.getCode()}
+        and t.GROUP_ID = #{req.groupId }
+    </select>
+
+</mapper>

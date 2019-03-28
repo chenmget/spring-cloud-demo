@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResourceRequestMapper">
+
+<sql id="allFields">
+    t.MKT_RES_REQ_ID 
+    ,t.REQ_CODE 
+    ,t.REQ_NAME 
+    ,t.REQ_TYPE 
+    ,t.CONTENT 
+    ,t.MKT_RES_STORE_ID 
+    ,t.DEST_STORE_ID 
+    ,t.COMPLETE_DATE 
+    ,t.LAN_ID 
+    ,t.REGION_ID 
+    ,t.STATUS_CD 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.STATUS_DATE 
+    ,t.REMARK 
+</sql>
+
+    <select id="listResourceRequest" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestQueryReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestQueryResp">
+        SELECT b.REQ_CODE, b.MKT_RES_REQ_ID, b.REQ_TYPE, b.CREATE_DATE, a.MKT_RES_ID, a.QUANTITY, b.MKT_RES_STORE_ID, b.DEST_STORE_ID, b.STATUS_CD
+        from mkt_res_req_item a, mkt_res_request b
+        where 1=1 and a.MKT_RES_REQ_ID = b.MKT_RES_REQ_ID
+        <if test="null != req.statusCd and  ''!= req.statusCd">
+          and b.STATUS_CD = #{req.statusCd}
+        </if>
+        <if test="null != req.reqCode and  ''!= req.reqCode">
+          and b.REQ_CODE like CONCAT(CONCAT('%',#{req.reqCode}),'%')
+        </if>
+        <if test="null != req.mktResStoreId and  ''!= req.mktResStoreId">
+            and b.MKT_RES_STORE_ID = #{req.mktResStoreId}
+        </if>
+        <if test="null != req.destStoreId and  ''!= req.destStoreId">
+            and b.DEST_STORE_ID = #{req.destStoreId}
+        </if>
+        <if test="null!=req.beginDate">
+            and b.CREATE_DATE  >= #{req.beginDate}
+        </if>
+        <if test="null!=req.endDate">
+            and #{req.endDate} >= b.CREATE_DATE
+        </if>
+        <if test="null!=req.instList and req.instList.size()>0">
+            and a.MKT_RES_REQ_ITEM_ID in(
+            SELECT MKT_RES_REQ_DETAIL_ID from mkt_res_req_detail where MKT_RES_INST_NBR in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.instList">
+                #{item}
+            </foreach>
+            )
+        </if>
+        <if test="null!=req.productList and req.productList.size()>0">
+            and a.MKT_RES_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productList">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY b.CREATE_DATE DESC
+    </select>
+</mapper>

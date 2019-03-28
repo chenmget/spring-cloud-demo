@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.ActivityScopeMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.MARKETING_ACTIVITY_ID
+    ,t.LAN_ID 
+    ,t.CITY 
+    ,t.SUPPLIER_NAME 
+    ,t.SUPPLIER_CODE
+    ,t.CREATOR
+    ,t.GMT_CREATE
+    ,t.MODIFIER
+    ,t.GMT_MODIFIED
+    ,t.SOURCE_FROM
+    ,t.IS_DELETED
+</sql>
+    <delete id="deleteActivityScopeBatch" parameterType="java.lang.String">
+        delete
+
+        FROM act_activity_scope  where 1=1
+        <if test="_parameter != null and _parameter != '' ">
+            and MARKETING_ACTIVITY_ID = #{marketingActivityId}
+        </if>
+    </delete>
+    <select id="queryActivityScopeByMktId" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.promo.dto.ActivityScopeDTO">
+        select
+        <include refid="allFields"></include>
+        from act_activity_scope t where 1=1
+        and t.IS_DELETED = '0'
+        <if test="_parameter != null and _parameter != '' ">
+            and MARKETING_ACTIVITY_ID = #{marketingActivityId}
+        </if>
+        order by GMT_CREATE DESC
+    </select>
+</mapper>

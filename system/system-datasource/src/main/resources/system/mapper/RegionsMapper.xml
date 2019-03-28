@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.system.mapper.RegionsMapper">
+  <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.system.entity.Regions">
+    <result column="REGION_ID" jdbcType="VARCHAR" property="regionId" />
+    <result column="PARENT_REGION_ID" jdbcType="VARCHAR" property="parentRegionId" />
+    <result column="REGION_PATH" jdbcType="VARCHAR" property="regionPath" />
+    <result column="REGION_GRADE" jdbcType="DECIMAL" property="regionGrade" />
+    <result column="REGION_NAME" jdbcType="VARCHAR" property="regionName" />
+    <result column="REGION_CODE" jdbcType="VARCHAR" property="regionCode" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    REGION_ID, PARENT_REGION_ID, REGION_PATH, REGION_GRADE, REGION_NAME,REGION_CODE
+  </sql>
+
+  <!-- listChildren -->
+  <select id="listChildren" parameterType="com.iwhalecloud.retail.system.dto.request.RegionsListReq"
+          resultType="com.iwhalecloud.retail.system.dto.response.RegionsGetResp">
+    SELECT c.region_id,c.region_name,c.region_grade,c.parent_region_id,count(s.region_id) AS childnum
+    FROM sys_regions c
+    LEFT JOIN sys_regions s on s.parent_region_id= c.region_id
+    WHERE 1 = 1
+    <if test="null != regionParentId and '' != regionParentId">
+      AND c.parent_region_id in (#{regionParentId})
+    </if>
+    GROUP BY c.region_id,c.region_name,c.region_grade,c.parent_region_id
+    ORDER BY region_id
+  </select>
+
+    <!-- listDepartment -->
+    <select id="listDepartment" resultType="com.iwhalecloud.retail.system.dto.response.RegionsGetResp">
+      SELECT <include refid="Base_Column_List" /> FROM sys_regions
+      WHERE region_grade in
+      <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+        #{item}
+      </foreach>
+    </select>
+
+  <!-- getRegionsByName -->
+    <select id="getRegionsByName" parameterType="String"
+          resultType="com.iwhalecloud.retail.system.dto.response.RegionsGetResp">
+		select <include refid="Base_Column_List" /> from sys_regions where region_name= #{regionName}
+	</select>
+
+  <!-- getRegionList -->
+    <select id="getRegionList" parameterType="java.util.List"
+          resultType="com.iwhalecloud.retail.system.dto.response.RegionsGetResp">
+		select <include refid="Base_Column_List" /> from sys_regions
+		where region_id in
+        <foreach collection="list" index="index" item="item" open="(" separator="," close=")">
+          #{item}
+        </foreach>
+    </select>
+</mapper>

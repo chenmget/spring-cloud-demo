@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.BusinessEntityMapper">
+
+<sql id="allFields">
+    t.BUSINESS_ENTITY_ID 
+    ,t.BUSINESS_ENTITY_CODE 
+    ,t.BUSINESS_ENTITY_NAME 
+    ,t.BUSINESS_ENTITY_SHORT_NAME 
+    ,t.BUSINESS_ENTITY_LEVEL 
+    ,t.STATUS 
+    ,t.PARENT_BUSINESS_ENTITY_CODE
+    ,t.LINKMAN
+    ,t.PHONE_NO
+    ,t.LAN_ID
+    ,t.ORG_CODE
+    ,t.PARENT_ORG_CODE
+    ,t.REGION_ID
+    ,t.USERID
+</sql>
+
+    <!--<select id="pageBusinessEntity" resultType="com.iwhalecloud.retail.partner.dto.BusinessEntityDTO"-->
+            <!--parameterType="com.iwhalecloud.retail.partner.dto.req.BusinessEntityPageReq">-->
+        <!--select t.*-->
+        <!--from par_business_entity t where 1=1-->
+        <!--<if test="req.businessEntityCode != null and req.businessEntityCode != ''">-->
+            <!--and t.BUSINESS_ENTITY_CODE like CONCAT(CONCAT('%', #{req.businessEntityCode }), '%')-->
+        <!--</if>-->
+        <!--<if test="req.businessEntityName != null and req.businessEntityName != ''">-->
+            <!--and lower(t.BUSINESS_ENTITY_NAME) like lower(CONCAT(CONCAT('%', #{req.businessEntityName }), '%'))-->
+        <!--</if>-->
+        <!--<if test="req.status != null and req.status != ''">-->
+            <!--and t.STATUS = #{req.status }-->
+        <!--</if>-->
+        <!--order by t.BUSINESS_ENTITY_ID desc-->
+    <!--</select>-->
+
+    <!-- 权限过滤查询-->
+    <select id="pageBusinessEntityByRight" resultType="com.iwhalecloud.retail.partner.dto.BusinessEntityDTO"
+            parameterType="com.iwhalecloud.retail.partner.dto.req.BusinessEntityPageReq">
+        select <include refid="allFields" />
+        from par_business_entity t left join par_merchant pm on t.BUSINESS_ENTITY_CODE = pm.BUSINESS_ENTITY_CODE
+        WHERE 1 = 1
+        <if test="req.businessEntityCode != null and req.businessEntityCode != ''">
+            and t.BUSINESS_ENTITY_CODE like CONCAT(CONCAT('%', #{req.businessEntityCode }), '%')
+        </if>
+        <if test="req.businessEntityName != null and req.businessEntityName != ''">
+            and lower(t.BUSINESS_ENTITY_NAME) like lower(CONCAT(CONCAT('%', #{req.businessEntityName }), '%'))
+        </if>
+        <if test="req.status != null and req.status != ''">
+            and t.STATUS = #{req.status }
+        </if>
+        <if test="null!=req.merchantIdList">
+            and pm.MERCHANT_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIdList">
+                #{item}
+            </foreach>
+        </if>
+        order by t.BUSINESS_ENTITY_ID desc
+    </select>
+
+</mapper>

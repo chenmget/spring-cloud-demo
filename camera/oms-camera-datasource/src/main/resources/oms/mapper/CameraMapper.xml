@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.CameraMapper">
+
+	<insert id="addVisitData" parameterType="com.iwhalecloud.retail.entity.VisitDataEntity">
+		INSERT INTO t_visit_data
+		(
+			msgid,
+			type,
+			equno,
+			image_time,
+			sex,
+			age,
+			face_frame,
+			person_ids_str,
+			repeats_str,
+			star
+		)
+		VALUES
+		(
+			#{msgid} ,
+			#{type},
+			#{equno},
+			#{imageTime},
+			#{sex},
+			#{age},
+			#{faceFrame},
+			#{personIdsStr},
+			#{repeatsStr},
+			#{star}
+		)
+		ON DUPLICATE KEY UPDATE
+		type=#{type},sex=#{sex},age=#{age},msgid=#{msgid}
+	</insert>
+	
+	<select id="queryNewVisitData"  resultType="com.iwhalecloud.retail.entity.VisitDataEntity">
+    	select * from t_visit_data a where 
+		date_format(a.create_time,'%e %b %Y') =date_format(now(),'%e %b %Y')
+		 order by a.image_time desc LIMIT 15
+  	</select>
+
+
+	<select id="sumAllNum" resultType="java.lang.Integer">
+    	select count(1) from t_visit_data a
+    	where
+        a.type='0'
+  	</select>
+
+	<select id="sumNum" resultType="java.lang.Integer">
+    	select count(1) from t_visit_data a
+    	where
+         date_format(a.create_time,'%e %b %Y') =date_format(now(),'%e %b %Y')
+         and a.type='0'
+  	</select>
+
+
+	<select id="vipNum" resultType="java.lang.Integer">
+    	select count(1) from t_visit_data a
+    	where
+			date_format(a.create_time,'%e %b %Y') =date_format(now(),'%e %b %Y')
+			and a.person_ids_str is not null
+			and a.type='0'
+  	</select>
+
+	<select id="repeatNum" resultType="java.lang.Integer">
+    	select count(1) from t_visit_data a
+    		where
+				date_format(a.create_time,'%e %b %Y') =date_format(now(),'%e %b %Y')
+			 	and a.repeats_str is not null
+			    and a.type='0'
+  	</select>
+
+
+</mapper>

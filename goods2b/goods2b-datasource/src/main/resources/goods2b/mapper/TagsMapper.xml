@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.TagsMapper" >
+
+  <sql id="Base_Column_List" >
+    TAG_ID, TAG_TYPE, TAG_NAME, IS_DELETED, CREATE_STAFF, CREATE_DATE, UPDATE_STAFF, UPDATE_DATE
+  </sql>
+
+  <select id="getTagsByGoodsId" resultType="com.iwhalecloud.retail.goods2b.dto.TagsDTO"
+          parameterType="String">
+      select t1.TAG_ID,t1.TAG_TYPE,t1.TAG_NAME,t1.CREATE_STAFF,t1.UPDATE_STAFF
+      from prod_tags t1
+      left join prod_tag_rel t2 on t1.TAG_ID = t2.TAG_ID
+      where t1.IS_DELETED=0 and goods_id = #{goodsId}
+
+    </select>
+
+    <select id="listProdTags" resultType="com.iwhalecloud.retail.goods2b.dto.TagsDTO">
+        select
+        <include refid="Base_Column_List"></include>
+         from prod_tags where IS_DELETED=0
+    </select>
+
+</mapper>

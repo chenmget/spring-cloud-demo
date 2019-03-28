@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.QJobTaskManagerMapper">
+
+    <select id="queryJobTask1" parameterType="hashmap" resultType="hashmap">
+        select t.*
+        from ES_JOB_TASK t
+        where t.class_name=#{className}
+        and t.run_method=#{runMethod}
+        and t.status='00A'
+        and #{curTime} between t.start_time and t.end_time
+    </select>
+    <select id="queryJobTask2" parameterType="hashmap" resultType="hashmap">
+       select t.*
+       from ES_JOB_TASK t
+       where t.class_name=#{className}
+       and t.status='00A'
+       and #{curTime} between t.start_time and t.end_time
+    </select>
+
+    <update id="updateJobTask" parameterType="hashmap">
+        update ES_JOB_TASK t set t.status=#{status} where job_id=#{jobId}
+    </update>
+
+    <insert id="insertJobRunLog" parameterType="hashmap">
+        INSERT INTO ES_JOB_RUN_LOG(job_id,run_time,run_ip,run_port,class_name,metnod)
+        VALUE (#{job_id},#{run_time},#{run_ip},#{run_port},#{class_name},#{metnod})
+    </insert>
+
+    <select id="listJobTask" parameterType="hashmap" resultType="hashmap">
+        select t.*
+        from ES_JOB_TASK t
+        where #{curTime} between t.start_time and t.end_time
+--         and source_from is not null
+    </select>
+</mapper>

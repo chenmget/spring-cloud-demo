@@ -1,0 +1,22 @@
+spring:
+  profiles:
+    #本机环境:local 开发环境:dev 测试环境:test 生产环境:prod
+    active: local
+
+logging.level.com.iwhalecloud.retail.rights.mapper: debug
+
+mybatis-plus:
+  mapperLocations: classpath:rights/mapper/*.xml,rights/mapper/mysql/*.xml
+
+#用来后去主键生成策略
+#TelDB 通过配置的序列获取
+#Oracle 通过配置的序列获取
+#MySql  通过IDWork获取
+db-type: TelDB
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    
+effInterval: 300000
+

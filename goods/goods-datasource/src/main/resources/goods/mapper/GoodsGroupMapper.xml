@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.goods.mapper.GoodsGroupMapper">
+
+    <select id="listGoodsByGroupId" resultType="com.iwhalecloud.retail.goods.dto.GoodsDTO"
+    parameterType="String">
+      select s.name as goodsName,p.FILE_URL as imageFile,s.goods_id
+         from prod_goods_group t, prod_goods_group_rel r,prod_goods s,prod_file p
+      where r.group_id = t.group_id and r.goods_id = s.goods_id and p.TARGET_TYPE = 1 and p.SUB_TYPE = 3 and  r.goods_id = p.TARGET_ID
+          and t.group_id = #{groupId}
+    </select>
+
+    <select id="listGoodGroup" resultType="com.iwhalecloud.retail.goods.dto.GoodsGroupDTO" parameterType="com.iwhalecloud.retail.goods.dto.req.GoodGroupQueryReq">
+        select t.*
+         from prod_goods_group t where 1=1
+         <if test="req.groupName != null and req.groupName != ''">
+             and upper(t.group_name) like  upper(CONCAT(CONCAT('%', #{req.groupName}), '%'))
+         </if>
+        <if test="req.groupCode != null and req.groupCode != ''">
+            and upper(t.group_code) like upper(CONCAT(CONCAT('%', #{req.groupCode }), '%'))
+        </if>
+        order by create_time desc
+    </select>
+
+</mapper>

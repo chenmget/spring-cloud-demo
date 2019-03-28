@@ -1,0 +1,2 @@
+sourceFromProviderfilter=com.iwhalecloud.retail.rights.interceptor.SourceFromProviderFilter
+sourceFromConsumerfilter=com.iwhalecloud.retail.rights.interceptor.SourceFromConsumerFilter

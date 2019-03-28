@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.ActivityGoodMapper">
+    <sql id = "listMarketingActivityByMerchantFields">
+        t.id,
+        t.name,
+        t.description,
+        t.activity_type,
+        t.start_time,
+        t.end_time,
+        t.page_img_url,
+        t.top_img_url,
+        t.status
+    </sql>
+    
+    <select id = "listMarketingActivityByMerchant" resultType="com.iwhalecloud.retail.promo.dto.MarketingActivityDTO" 
+            parameterType="com.iwhalecloud.retail.promo.dto.req.MarketingActivityByMerchantListReq">
+        select 
+        <include refid="listMarketingActivityByMerchantFields"></include>
+        from act_marketing_activity t,act_activity_participant p 
+        <where>
+            and t.is_deleted = '0' 
+            and p.marketing_activity_id = t.id
+            and t.start_time <![CDATA[ <= ]]> now()
+            and t.end_time <![CDATA[ >= ]]> now()
+            and t.status = '20'
+            <if test="req.merchantId != null or req.userInfo != null">
+                and(
+                <if test="req.merchantId != null and req.merchantId !=''">
+                    lower(p.shop_code) = #{req.merchantId} or
+                </if>
+                <if test="req.userInfo != null">
+                    <if test="req.userInfo.lanId != null and req.userInfo.lanId !=''">
+                        lower(p.lan_id) = #{req.userInfo.lanId} or
+                    </if>
+                    <if test="req.userInfo.regionId != null and req.userInfo.regionId !=''">
+                        lower(p.city) = #{req.userInfo.regionId} or
+                    </if>
+                </if>
+                1=0
+                )
+            </if>
+        </where>
+        <!--<if test="req.merchantId == null or req.merchantId == ''">-->
+            <!--and (lower(p.lan_id) = #{req.userInfo.lanId}-->
+            <!--or lower(p.city) = #{req.userInfo.regionId})-->
+        <!--</if>-->
+        order by now() - t.start_time
+    </select>
+
+
+
+
+
+
+
+
+
+
+
+</mapper>

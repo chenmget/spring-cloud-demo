@@ -1,0 +1,21 @@
+spring:
+  profiles:
+    active: local
+
+logging.level.com.iwhalecloud.retail.member.mapper: debug
+
+mybatis-plus:
+  mapperLocations: classpath:member/mapper/*.xml,member/mapper/mysql/*.xml
+  
+  
+#用来后去主键生成策略
+#TelDB
+#Oracle
+#MySql
+db-type: TelDB
+
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+

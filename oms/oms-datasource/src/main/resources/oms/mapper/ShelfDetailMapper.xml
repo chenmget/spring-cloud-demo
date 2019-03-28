@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ShelfDetailMapper">
+
+    <insert id="createShelfDetail" parameterType="com.iwhalecloud.retail.oms.dto.ShelfDetailDTO">
+		insert into cloud_shelf_detail (id,gmt_create,gmt_modified,creator,modifier,is_deleted,cloud_shelf_number,shelf_category_id,operating_position_id,operating_position_name,operating_position_adscription,operating_position_type,operating_position_property,operating_position_expiry_time,operating_position_play_mode,is_recommended) values (#{id},#{gmtCreate},#{gmtModified},#{creator},#{modifier},#{isDeleted},#{cloudShelfNumber},#{shelfCategoryId},#{operatingPositionId},#{operatingPositionName},#{operatingPositionAdscription},#{operatingPositionType},#{operatingPositionProperty},#{operatingPositionExpiryTime},#{operatingPositionPlayMode},#{isRecommended})
+	</insert>
+
+    <update id="editShelfDetail" parameterType="com.iwhalecloud.retail.oms.dto.ShelfDetailUpdateDTO">
+		UPDATE cloud_shelf set status = #{status}
+		WHERE number = (select cloud_shelf_number from cloud_shelf_detail where operating_position_id =#{operatingPositionId})
+	</update>
+
+    <delete id="deleteShelfDetail" parameterType="com.iwhalecloud.retail.oms.dto.ShelfDetailDTO">
+		delete from cloud_shelf_detail
+		 <where>
+             <if test="id != null">
+                 id=#{id}
+             </if>
+             <if test="cloudShelfNumber != null">
+                 and cloud_shelf_number=#{cloudShelfNumber}
+             </if>
+             <if test="shelfCategoryId != null">
+                 and shelf_category_id=#{shelfCategoryId}
+             </if>
+         </where>
+	</delete>
+
+    <select id="queryCloudShelfDetailProductList" parameterType="Map"
+            resultType="java.lang.String">
+		select product_name from product where product_number in (select product_number from operating_position_bind_product where operating_position_id = (select operating_position_id from shelf_templates where id = (select shelf_templates_number from cloud_shelf where number = #{cloudShelfNumber}) and shelf_category_id = #{shelfCategoryId}));
+	</select>
+
+    <select id="queryCloudShelfDetailContentList" parameterType="Map"
+            resultType="java.lang.String">
+        select Content_name from content where content_number in (select CONTENT_number from operating_position_bind where OPERATING_POSITION_ID =( select OPERATING_POSITION_ID from CLOUD_SHELF_DETAIL where CLOUD_SHELF_NUMBER = (select num from CLOUD_SHELF where num =#{cloudShelfNumber}) and SHELF_CATEGORY_ID = #{shelfCategoryId}))
+	</select>
+
+
+	<select id="queryShelfDetailList" resultType="com.iwhalecloud.retail.oms.dto.ShelfDetailDTO">
+		select * from cloud_shelf_detail
+		where
+		CLOUD_SHELF_NUMBER = #{cloudShelfNumber}
+	</select>
+
+    <update id="batchUpdateShelfDetai" parameterType="java.util.List">
+        update cloud_shelf_detail
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="shelf_category_id =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.shelfCategoryId !=null">
+                        when CLOUD_SHELF_NUMBER = #{item.cloudShelfNumber} then #{item.shelfCategoryId}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="operating_position_id =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.operatingPositionId !=null">
+                        when CLOUD_SHELF_NUMBER = #{item.cloudShelfNumber} then #{item.operatingPositionId}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where  CLOUD_SHELF_NUMBER = #{item.cloudShelfNumber}
+    </update>
+
+
+    <select id="queryCloudShelfDetailList" resultType="com.iwhalecloud.retail.oms.dto.ShelfDetailDTO">
+		select * from cloud_shelf_detail
+        <where>
+            <if test="cloudShelfNumber != null">
+                and cloud_shelf_number=#{cloudShelfNumber}
+            </if>
+            <if test="shelfCategoryId != null">
+                and shelf_category_id=#{shelfCategoryId}
+            </if>
+        </where>
+        order by OPERATING_POSITION_SEQUENCE desc
+	</select>
+
+
+
+    <select id="queryCloudShelfDetailByProductId" resultType="com.iwhalecloud.retail.oms.dto.ShelfDetailDTO">
+        SELECT
+        DISTINCT d.*, s.NAME AS cloud_shelf_name
+        FROM
+        cloud_shelf_detail d,
+        cloud_shelf s,
+        operating_position_bind o
+        WHERE
+        d.CLOUD_SHELF_NUMBER = s.NUM
+        AND d.OPERATING_POSITION_ID = o.operating_position_id
+        AND o.product_number LIKE CONCAT(CONCAT('%', #{productId}), '%')
+    </select>
+
+</mapper>

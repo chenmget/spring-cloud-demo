@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.QJobManagerMapper">
+    <select id="queryList" parameterType="hashmap" resultType="hashmap">
+        SELECT
+        b.sched_name,
+        A .job_info_id,
+        A .job_info_name,
+        A .start_now,
+        A .create_date,
+        A . TYPE,
+        b.job_name,
+        b.job_group,
+        (
+        SELECT
+        P .pname
+        FROM
+        es_dc_public_ext P
+        WHERE
+        P .pkey = c.trigger_state
+        <if test="job_trigger_state !=null and job_trigger_state !=''">
+            AND P .stype = #{job_trigger_state}
+        </if>
+        AND P .source_from = A .source_from
+        ) trigger_state_name,
+        <if test="sched_name !=null and sched_name !=''">
+            DECODE (
+            b.sched_name ,#{sched_name},
+            'yes',
+            'no'
+            ) sched_name_is_my,
+        </if>
+        b.job_class_name,
+        b.description,
+        D .cron_expression,
+        c.trigger_state,
+        TO_CHAR (
+        c.next_fire_time / (1000 * 60 * 60 * 24) + TO_DATE (
+        '1970-01-01 08:00:00',
+        'YYYY-MM-DD HH:MI:SS'
+        ),
+        'YYYY-MM-DD HH24:MI:SS'
+        ) AS next_fire_time_date,
+        TO_CHAR (
+        c.prev_fire_time / (1000 * 60 * 60 * 24) + TO_DATE (
+        '1970-01-01 08:00:00',
+        'YYYY-MM-DD HH:MI:SS'
+        ),
+        'YYYY-MM-DD HH24:MI:SS'
+        ) AS prev_fire_time_date
+        FROM
+        es_qrtz_job_info A,
+        es_qrtz_job_details b,
+        es_qrtz_triggers c,
+        es_qrtz_cron_triggers D
+        WHERE
+        b.job_name = A .job_name
+        AND b.job_group = A .job_group
+        AND c.job_name = b.job_name
+        AND c.job_group = b.job_group
+        AND D .trigger_name = c.trigger_name
+        AND D .trigger_group = c.trigger_group
+        <if test="job_info_name !=null and job_info_name !=''">
+            and a.job_info_name like #{job_info_name}
+        </if>
+        <if test="job_info_id !=null and job_info_id !=''">
+            and a.job_info_id = #{job_info_id}
+        </if>
+        <if test="job_class_name !=null and job_class_name !=''">
+            and b.job_class_name like #{job_class_name}
+        </if>
+        <if test="trigger_state !=null and trigger_state !=''">
+            and a.trigger_state = #{trigger_state}
+        </if>
+        <if test="trigger_state !=null and trigger_state !=''">
+            and a.trigger_state = #{trigger_state}
+        </if>
+        <if test="is_only_my_sched !=null and is_only_my_sched =='yes' ">
+            and b.is_only_my_sched = #{sched_name}
+        </if>
+        order by b.job_class_name
+    </select>
+
+
+    <update id="update" parameterType="hashmap">
+        update es_qrtz_job_info
+        set job_info_name = #{job_info_name}, start_now = #{start_now}, type=#{type}
+        where job_info_id = #{job_info_id}
+    </update>
+
+    <select id="queryTriggerState" parameterType="hashmap" resultType="string">
+        select trigger_state
+        from es_qrtz_triggers where job_name =#{job_name} and job_group =#{job_group}  and rownum=1
+    </select>
+
+    <select id="validateSingle" resultType="hashmap" parameterType="hashmap">
+        select a.*
+        from es_qrtz_job_details a
+        where a.sched_name=#{schedulerName} and a.job_class_name=#{job_class_name}
+    </select>
+
+
+    <select id="jobSchedulerList" parameterType="hashmap" resultType="hashmap">
+        SELECT
+            A .SCHED_NAME,
+            A .INSTANCE_NAME,
+            TO_CHAR (
+                A .LAST_CHECKIN_TIME / (1000 * 60 * 60 * 24) + TO_DATE (
+                    '1970-01-01 08:00:00',
+                    'YYYY-MM-DD HH:MI:SS'
+                ),
+                'YYYY-MM-DD HH24:MI:SS'
+            ) AS LAST_CHECKIN_TIME_date,
+            A .CHECKIN_INTERVAL AS CHECKIN_INTERVAL_date
+        FROM
+            es_qrtz_scheduler_state A
+    </select>
+
+    <delete id="delete" parameterType="hashmap">
+        delete from es_qrtz_job_info where job_info_id = #{job_info_id}
+    </delete>
+
+    <insert id="save" parameterType="hashmap">
+        INSERT INTO es_qrtz_job_info(JOB_INFO_ID,JOB_INFO_NAME,JOB_NAME,JOB_GROUP,CREATE_DATE)
+        VALUES (#{job_info_id},#{job_info_name},#{job_name},#{job_group},to_date(#{create_date},'YYYY-MM-DD HH24:MI:SS'))
+    </insert>
+</mapper>

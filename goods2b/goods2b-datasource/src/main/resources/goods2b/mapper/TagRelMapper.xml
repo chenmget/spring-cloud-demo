@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.TagRelMapper" >
+  <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.goods2b.entity.TagRel" >
+    <constructor >
+      <idArg column="REL_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="TAG_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="GOODS_ID" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    REL_ID, TAG_ID, GOODS_ID
+  </sql>
+
+  <!-- listAll -->
+  <select id="listAll" resultType="com.iwhalecloud.retail.goods2b.entity.TagRel">
+    SELECT <include refid="Base_Column_List" />
+    FROM prod_tag_rel
+    WHERE 1 = 1
+  </select>
+
+  <insert id="batchAddTagRel" parameterType="java.util.List" useGeneratedKeys="true">
+    insert into prod_tag_rel (REL_ID, TAG_ID, GOODS_ID)
+    values
+    <foreach collection="list" index="index" item="item" separator=",">
+      (#{item.relId},#{item.tagId},#{item.goodsId})
+    </foreach>
+  </insert>
+</mapper>

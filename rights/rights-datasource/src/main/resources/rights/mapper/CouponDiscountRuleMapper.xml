@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.CouponDiscountRuleMapper">
+
+<sql id="commonFields">
+    t.DISCOUNT_RULE_ID 
+    ,t.MKT_RES_ID 
+    ,t.DISCOUNT_VALUE 
+    ,t.MAX_VALUE 
+    ,t.MIN_VALUE 
+    ,t.RULE_AMOUNT 
+    ,t.USE_TYPE 
+    ,t.REUSE_FLAG 
+    ,t.MIX_USE_FLAG 
+    ,t.DISCOUNT_RULE_DESC 
+    ,t.CREATE_STAFF
+    ,t.RECYCLE_FLAG
+</sql>
+
+
+	<!-- query couponDiscountRule by CouponApplyObjectResponseDTO-->
+	<select id="queryCouponDiscountRule" parameterType="com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO"
+	resultType="com.iwhalecloud.retail.rights.dto.response.CouponDiscountRuleRespDTO">
+		SELECT <include refid="commonFields" />,mrc.mkt_res_name
+        FROM coupon_discount_rule t,mkt_res_coupon mrc
+        WHERE t.mkt_res_id=mrc.mkt_res_id
+        <if test="req.mktResId != null and req.mktResId !=''">
+            AND t.mkt_res_id = #{req.mktResId}
+        </if>
+	</select>
+
+	<update id="updateCouponDiscountRule" parameterType="com.iwhalecloud.retail.rights.dto.request.UpdateCouponDiscountRuleReqDTO">
+ 			UPDATE coupon_discount_rule SET
+ 			<if test="updateStaff != null">
+			    update_staff = #{updateStaff}
+ 			</if>
+		    <if test="updateDate !=null">
+			   ,update_date = #{updateDate}
+		    </if>
+ 			<if test="discountValue != null">
+			    ,discount_value = #{discountValue}
+ 			</if>
+ 			<if test="maxValue != null">
+			     ,max_value = #{maxValue}
+ 			</if>
+ 			<if test="minValue != null">
+			    ,min_value = #{minValue}
+ 			</if>
+ 			<if test="ruleAmount != null">
+			    ,rule_amount = #{ruleAmount}
+ 			</if>
+ 			<if test="useType != null">
+			    ,use_type = #{useType}
+ 			</if>
+ 			<if test="reuseFlag != null">
+			    ,reuse_flag = #{reuseFlag}
+ 			</if>
+ 			<if test="mixUseFlag != null">
+			   ,mix_use_flag = #{mixUseFlag}
+ 			</if>
+		    <if test="recycleFlag != null">
+			   ,recycle_flag = #{recycleFlag}
+		    </if>
+ 			<if test="discountRuleDesc != null">
+			    ,discount_rule_desc = #{discountRuleDesc}
+ 			</if>
+ 			<if test="remark != null">
+			    ,remark = #{remark}
+ 			</if>
+			WHERE discount_rule_id = #{discountRuleId}
+    </update>
+
+</mapper>

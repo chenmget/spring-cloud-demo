@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.GoodsExtMapper">
+
+<sql id="allFields">
+    t.GOODS_ID 
+    ,t.PARAM1 
+    ,t.PARAM2 
+    ,t.PARAM3 
+    ,t.PARAM4 
+    ,t.PARAM5 
+    ,t.PARAM6 
+    ,t.PARAM7 
+    ,t.PARAM8 
+    ,t.PARAM9 
+    ,t.PARAM10 
+    ,t.PARAM11 
+    ,t.PARAM12 
+    ,t.PARAM13 
+    ,t.PARAM14 
+    ,t.PARAM15 
+    ,t.PARAM16 
+    ,t.PARAM17 
+    ,t.PARAM18 
+    ,t.PARAM19 
+    ,t.PARAM20 
+    ,t.PARAM21 
+    ,t.PARAM22 
+    ,t.PARAM23 
+    ,t.PARAM24 
+    ,t.PARAM25 
+</sql>
+
+</mapper>

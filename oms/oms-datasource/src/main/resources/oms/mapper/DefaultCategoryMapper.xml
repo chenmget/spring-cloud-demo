@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.DefaultCategoryMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.GMT_CREATE 
+    ,t.GMT_MODIFIED 
+    ,t.CREATOR 
+    ,t.MODIFIER 
+    ,t.IS_DELETED 
+    ,t.CATEGORY_NAME 
+    ,t.CATEGORY_STYLE 
+    ,t.SHELF_TEMPLATES_NUMBER 
+</sql>
+
+    <resultMap id="DefaultCategoryResult" type="com.iwhalecloud.retail.oms.entity.DefaultCategory">
+        <result property="id" column="ID"></result>
+        <result property="gmtCreate" column="GMT_CREATE"></result>
+        <result property="gmtModified" column="GMT_MODIFIED"></result>
+        <result property="creator" column="CREATOR"></result>
+        <result property="modifier" column="MODIFIER"></result>
+        <result property="isDeleted" column="IS_DELETED"></result>
+        <result property="categoryName" column="CATEGORY_NAME"></result>
+        <result property="categoryStyle" column="CATEGORY_STYLE"></result>
+        <result property="shelfTemplatesNumber" column="SHELF_TEMPLATES_NUMBER"></result>
+    </resultMap>
+
+    <insert id="insertDefaultCatagory" parameterType="com.iwhalecloud.retail.oms.entity.DefaultCategory">
+		insert into
+		   DEFAULT_CATEGORY
+            (ID,gmt_create,is_deleted,CATEGORY_NAME,SHELF_TEMPLATES_NUMBER)
+		 values
+            (
+            #{id},
+            #{gmtCreate},
+            #{isDeleted},
+            #{categoryName},
+            #{shelfTemplatesNumber}
+            )
+	</insert>
+
+
+    <update id="updateBatchDefaultCatagory" parameterType="java.util.List">
+        update DEFAULT_CATEGORY
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="IS_DELETED =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.isDeleted !=null">
+                        when id = #{item.id} then #{item.isDeleted}
+                    </if>
+                </foreach>
+            </trim>
+            <trim prefix="CATEGORY_NAME =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.categoryName !=null">
+                        when id = #{item.id} then #{item.categoryName}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where  id in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </update>
+
+
+    <select id="queryDefaultCategorys" resultMap="DefaultCategoryResult">
+      select
+        <include refid="allFields"/>
+        from
+        DEFAULT_CATEGORY
+        where
+        <foreach collection="list" separator="or" item="i" index="index" >
+            id=#{i.id}
+        </foreach>
+    </select>
+
+</mapper>

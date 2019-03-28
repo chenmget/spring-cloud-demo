@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iwhalecloud.retail.goods.mapper.ProdGoodsContractMapper" >
+  <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.goods.entity.ProdGoodsContract" >
+    <constructor >
+      <idArg column="GOODS_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="CONTRACT_PERIOD" jdbcType="DECIMAL" javaType="java.lang.Short" />
+      <arg column="PURCHASE_PRICE" jdbcType="DECIMAL" javaType="java.lang.Long" />
+      <arg column="DEPOSIT" jdbcType="DECIMAL" javaType="java.lang.Long" />
+      <arg column="FIRST_RETURN" jdbcType="DECIMAL" javaType="java.lang.Long" />
+      <arg column="NEXT_RETURN" jdbcType="DECIMAL" javaType="java.lang.Long" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    GOODS_ID, CONTRACT_PERIOD, PURCHASE_PRICE, DEPOSIT, FIRST_RETURN, NEXT_RETURN
+  </sql>
+</mapper>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResourceBatchRecMapper">
+
+<sql id="allFields">
+    t.MKT_RES_BATCH_ID 
+    ,t.MKT_RES_BATCH_NBR 
+    ,t.MKT_RES_ID 
+    ,t.COST_PRICE 
+    ,t.QUANTITY 
+    ,t.REMARK 
+    ,t.STATUS_DATE 
+    ,t.STATUS_CD 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REGION_ID 
+    ,t.LAN_ID 
+</sql>
+
+</mapper>

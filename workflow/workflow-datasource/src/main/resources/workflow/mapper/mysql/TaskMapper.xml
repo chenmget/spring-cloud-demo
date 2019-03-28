@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.workflow.mapper.TaskMapper">
+
+<sql id="allFields">
+    t.TASK_ID 
+    ,t.FORM_ID 
+    ,t.TASK_TITLE 
+    ,t.TASK_TYPE 
+    ,t.TASK_SUB_TYPE 
+    ,t.PROCESS_ID 
+    ,t.TASK_STATUS 
+    ,t.CREATE_USER_ID 
+    ,t.CREATE_USER_NAME 
+    ,t.CREATE_TIME 
+</sql>
+
+    <!-- 我的待办查询    开始 -->
+    <sql id="queryTaskContidion">
+        a.task_id = b.task_id
+        <!-- 处理中待办 -->
+        and a.task_status = '${@com.iwhalecloud.retail.workflow.common.WorkFlowConst@TASK_STATUS_PROCESSING}'
+
+        <!-- 任务项的状态为待领取或者待处理 -->
+        and b.item_status in ('${@com.iwhalecloud.retail.workflow.common.WorkFlowConst@TASK_ITEM_STATE_WAITING}','${@com.iwhalecloud.retail.workflow.common.WorkFlowConst@TASK_ITEM_STATE_PENDING}')
+        <!-- 查询已经领取的任务和共享池中包含自己的任务 -->
+        <if test="req.handlerUserId != null and req.handlerUserId != ''" >
+            and (
+                b.handler_user_id = #{req.handlerUserId,jdbcType=VARCHAR}
+                or b.task_item_id in (
+                    select task_item_id from wf_task_pool where user_id = #{req.handlerUserId,jdbcType=VARCHAR}
+                )
+            )
+        </if>
+
+        <!-- 根据申请人条件查询 -->
+        <if test="req.createUserId!=null and req.createUserId!=''" >
+            and a.create_user_id = #{req.createUserId,jdbcType=VARCHAR}
+        </if>
+
+        <!-- 根据创建名称查询 -->
+        <if test="req.createUserName!=null and req.createUserName!=''" >
+            and a.create_user_name like  CONCAT('%', #{req.createUserName}, '%')
+        </if>
+
+        <!-- 根据任务标题查询 -->
+        <if test="req.taskTitle!=null and req.taskTitle!=''" >
+            and a.task_title like  CONCAT('%', #{req.taskTitle}, '%')
+        </if>
+
+        <!-- 根据任务类型查询 -->
+        <if test="req.taskSubType!=null and req.taskSubType!=''" >
+            and a.task_sub_type = #{req.taskSubType,jdbcType=VARCHAR}
+        </if>
+
+        <!-- 根据当前节点查询 -->
+        <if test="req.curNodeName!=null and req.curNodeName!=''" >
+            and b.cur_node_name like  CONCAT('%', #{req.curNodeName}, '%')
+        </if>
+
+        <if test="req.lastDealTimeStart!=null and req.lastDealTimeStart!=''">
+            <![CDATA[   and DATE_FORMAT(a.last_deal_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.lastDealTimeStart}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="req.lastDealTimeEnd!=null and req.lastDealTimeEnd!=''">
+            <![CDATA[  and DATE_FORMAT(a.last_deal_time, '%Y-%m-%d') <= DATE_FORMAT(#{req.lastDealTimeEnd}, '%Y-%m-%d')    ]]>
+        </if>
+    </sql>
+
+    <select id="queryTask" parameterType="com.iwhalecloud.retail.workflow.dto.req.TaskPageReq"
+            resultType="com.iwhalecloud.retail.workflow.dto.resp.TaskPageResp">
+        select distinct
+            a.task_id,a.form_id,a.task_title,a.task_type,a.task_sub_type,a.process_id,a.task_status,a.create_user_id,a.create_user_name,a.create_time,
+            b.task_item_id,b.route_id,b.route_name,b.pre_node_id,b.pre_node_name,b.cur_node_id,b.cur_node_name,b.item_status,b.assign_time,b.handler_time,
+            b.handler_user_id,b.handler_user_name,b.handler_msg,last_deal_time
+        from
+            wf_task a,
+            wf_task_item b
+        <where>
+            <include refid="queryTaskContidion" />
+        </where>
+        ORDER BY last_deal_time DESC
+    </select>
+
+    <select id="queryTaskCnt" parameterType="com.iwhalecloud.retail.workflow.dto.req.TaskPageReq"
+            resultType="java.lang.Long">
+        select count(DISTINCT a.task_id) cnt
+        from
+        wf_task a,
+        wf_task_item b
+        <where>
+            <include refid="queryTaskContidion" />
+        </where>
+    </select>
+    <!-- 我的待办查询    结束 -->
+
+
+
+
+
+    <!-- 我的经办查询    开始 -->
+    <sql id="queryHandleTaskContidion">
+        a.task_id = b.task_id
+
+        <!-- 根据任务状态  处理中、已办结  -->
+        <if test="req.taskStatus != null and req.taskStatus != ''">
+           and a.task_status = #{req.taskStatus,jdbcType=VARCHAR}
+        </if>
+
+        <!-- 任务项-已处理 -->
+        <!-- and b.item_status='${@com.iwhalecloud.retail.workflow.common.WorkFlowConst@TASK_ITEM_STATE_FINISH}'-->
+
+        <!-- 根据申请人条件查询 -->
+        <if test="req.createUserId!=null and req.createUserId !=''" >
+            and a.create_user_id = #{req.createUserId,jdbcType=VARCHAR}
+        </if>
+
+        <!-- 我创建的流程或者我处理过的流程 -->
+        <if test="req.handlerUserId != null and req.handlerUserId != ''" >
+            and (
+                b.handler_user_id = #{req.handlerUserId,jdbcType=VARCHAR}
+                or
+                a.create_user_id = #{req.handlerUserId,jdbcType=VARCHAR}
+            )
+        </if>
+
+        <!-- 根据任务标题查询 -->
+        <if test="req.taskTitle!=null and req.taskTitle!=''" >
+            and a.task_title like  CONCAT('%', #{req.taskTitle}, '%')
+        </if>
+
+        <!-- 根据任务类型查询 -->
+        <if test="req.taskSubType!=null and req.taskSubType!=''" >
+            and a.task_sub_type = #{req.taskSubType,jdbcType=VARCHAR}
+        </if>
+
+        <!-- 根据当前节点查询 -->
+        <if test="req.curNodeName!=null and req.curNodeName!=''" >
+            and a.cur_node_name like  CONCAT('%', #{req.curNodeName}, '%')
+        </if>
+
+        <!-- 根据创建名称查询 -->
+        <if test="req.createUserName!=null and req.createUserName!=''" >
+            and a.create_user_name like  CONCAT('%', #{req.createUserName}, '%')
+        </if>
+
+        <if test="req.lastDealTimeStart!=null and req.lastDealTimeStart!=''">
+            <![CDATA[   and DATE_FORMAT(a.last_deal_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.lastDealTimeStart}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="req.lastDealTimeEnd!=null and req.lastDealTimeEnd!=''">
+            <![CDATA[  and DATE_FORMAT(a.last_deal_time, '%Y-%m-%d') <= DATE_FORMAT(#{req.lastDealTimeEnd}, '%Y-%m-%d')    ]]>
+        </if>
+    </sql>
+
+    <select id="queryHandleTask" parameterType="com.iwhalecloud.retail.workflow.dto.req.HandleTaskPageReq"
+            resultType="com.iwhalecloud.retail.workflow.dto.resp.HandleTaskPageResp">
+        select distinct
+            a.task_id,a.form_id,a.task_title,a.task_type,a.task_sub_type,a.process_id,a.task_status,a.create_user_id,a.create_user_name,a.create_time,
+            a.cur_node_id,a.cur_node_name,a.last_deal_time,a.extends1
+        from
+        wf_task a,
+        wf_task_item b
+        <where>
+            <include refid="queryHandleTaskContidion" />
+        </where>
+        ORDER BY a.last_deal_time DESC
+    </select>
+
+    <select id="queryHandleTaskCnt" parameterType="com.iwhalecloud.retail.workflow.dto.req.HandleTaskPageReq"
+            resultType="java.lang.Long">
+        select count(DISTINCT a.task_id) cnt
+        from
+        wf_task a,
+        wf_task_item b
+        <where>
+            <include refid="queryHandleTaskContidion" />
+        </where>
+    </select>
+    <!-- 我的经办查询    结束 -->
+
+
+    <!-- 待办基本信息查询 -->
+    <select id="getTaskItemDetail" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.workflow.model.TaskItemDetailModel">
+        SELECT
+            a.task_id,
+            a.task_status,
+            b.task_item_id,
+            b.item_status,
+            a.task_title,
+            a.task_type,
+            a.task_sub_type,
+            a.create_user_name,
+            a.create_time,
+            a.process_id,
+            b.cur_node_id
+        FROM
+            wf_task a,
+            wf_task_item b
+        <where>
+            a.task_id = b.task_id
+            AND b.item_status != '${@com.iwhalecloud.retail.workflow.common.WorkFlowConst@TASK_ITEM_STATE_FINISH}'
+            AND b.task_item_id = #{taskItemId}
+        </where>
+    </select>
+</mapper>

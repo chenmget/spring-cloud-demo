@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.PromotionMapper">
+
+    <insert id="batchInsertPromotion">
+        INSERT INTO ord_promotion(
+        ORD_PROMOTIO_ID,ORDER_ID,ORDER_ITEM_ID,GOODS_ID,PRODUCT_ID,MKT_ACT_ID,MKT_ACT_NAME,
+        PROMOTION_ID,PROMOTION_NAME,PROMOTION_TYPE,PROMOTION_INST_ID,DISCOUNT,STATUS_CD,STATUS_DATE,CREATE_DATE,
+        SOURCE_FROM,mkt_act_type,lan_id)
+        VALUES
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.ordPromotioId},#{item.orderId},#{item.orderItemId},#{item.goodsId},#{item.productId},#{item.mktActId},#{item.mktActName},
+            #{item.promotionId},#{item.promotionName},#{item.promotionType},#{item.promotionInstId},#{item.discount},#{item.statusCd},#{item.statusDate},#{item.createDate},
+            #{item.sourceFrom}, #{item.mktActType},#{item.lanId})
+        </foreach>
+    </insert>
+
+    <select id="selectPromotion" resultType="com.iwhalecloud.retail.order2b.entity.Promotion">
+        SELECT * FROM ord_promotion WHERE 1=1
+        <if test="ordPromotioId !=null and ordPromotioId !=''">
+            AND ORD_PROMOTIO_ID =#{ordPromotioId}
+        </if>
+        <if test="orderId !=null and orderId !=''">
+            AND order_id =#{orderId}
+        </if>
+      <if test="mktActName !=null and mktActName !=''">
+          AND mkt_act_name like #{mktActName}
+      </if>
+      <if test="mktActType !=null and mktActType !=''">
+          AND mkt_act_type = #{mktActType}
+      </if>
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </select>
+</mapper>

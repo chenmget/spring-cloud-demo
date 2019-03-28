@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.CouponInstProvRecMapper">
+
+<sql id="allFields">
+    t.PROV_REC_ID 
+    ,t.COUPON_INST_ID 
+    ,t.PROV_CHANNEL_TYPE 
+    ,t.PROV_ORDER_ID 
+    ,t.PROV_OBJ_TYPE 
+    ,t.PROV_OBJ_ID 
+    ,t.PROV_DESC 
+    ,t.PROV_DATE 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+</sql>
+
+	<!-- query mktResCoupon number by mktResId in period-->
+	<select id="queryCouponInstProvRecNum" parameterType="com.iwhalecloud.retail.rights.dto.request.QueryCouponInstProvRecNumReqDTO" 
+	resultType="Long" >
+		SELECT count(1) FROM coupon_inst_prov_rec a,coupon_inst b 
+		WHERE a.coupon_inst_id=b.coupon_inst_id 
+		<if test="mktResId != null">
+		   AND b.mkt_res_id = #{mktResId} 
+		</if>
+		<if test="custNum != null">
+		   AND a.prov_obj_id = #{custNum} 
+		</if>
+		<if test="timePeriodMonth != null">
+		   AND to_char(a.create_date,'mm')=to_char(sysdate,'mm')
+		</if>
+		<if test="timePeriodWeek != null">
+		   AND to_char(a.create_date,'iw')=to_char(sysdate,'iw')
+		</if>
+		GROUP BY b.mkt_res_id
+	</select>
+	
+</mapper>

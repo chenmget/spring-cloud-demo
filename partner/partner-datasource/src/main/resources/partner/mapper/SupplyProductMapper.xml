@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.SupplyProductRelMapper">
+
+    <sql id="allFields">
+    t.REL_ID 
+    ,t.SUPPLIER_ID 
+    ,t.PRODUCT_ID 
+    ,t.SUPPLIER_PRICE 
+</sql>
+<!--  待改造 拆解和es_goods表的关联 -->
+    <!--<select id="querySupplyProduct" parameterType="com.iwhalecloud.retail.partner.dto.SupplyProductRelDTO"-->
+            <!--resultType="com.iwhalecloud.retail.partner.dto.resp.SupplyProductQryResp">-->
+        <!--select espr.REL_ID,espr.SUPPLIER_ID,espr.PRODUCT_ID,espr.SUPPLIER_PRICE,eg.SKU as-->
+        <!--productCode,eg.NAME as productName from-->
+        <!--ES_SUPPLY_PRODUCT_REL espr LEFT JOIN es_goods eg on espr.PRODUCT_ID=eg.GOODS_ID-->
+        <!--<where>-->
+            <!--<if test="pageReq.supplierId!=null">-->
+                <!--espr.SUPPLIER_ID=#{pageReq.supplierId}-->
+            <!--</if>-->
+        <!--</where>-->
+    <!--</select>-->
+    <select id="querySupplyProduct" parameterType="com.iwhalecloud.retail.partner.dto.SupplyProductRelDTO"
+            resultType="com.iwhalecloud.retail.partner.dto.resp.SupplyProductQryResp">
+        select espr.* from PAR_SUPPLY_PRODUCT_REL espr
+        <where>
+            <if test="pageReq.supplierId!=null">
+                espr.SUPPLIER_ID=#{pageReq.supplierId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

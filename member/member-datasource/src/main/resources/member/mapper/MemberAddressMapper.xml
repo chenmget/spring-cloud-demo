@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.member.mapper.MemberAddressMapper">
+
+    <sql id="allFields">
+    t.ADDR_ID
+    ,t.MEMBER_ID
+    ,t.COUNTRY
+    ,t.PROVINCE_ID
+    ,t.CITY_ID
+    ,t.REGION_ID
+    ,t.REGION
+    ,t.CITY
+    ,t.PROVINCE
+    ,t.ADDR
+    ,t.ZIP
+    ,t.POST_CODE
+    ,t.IS_EFFECT
+    ,t.IS_DEFAULT
+    ,t.CONSIGEE_NAME
+    ,t.CONSIGEE_MOBILE
+    ,t.LAST_UPDATE
+</sql>
+
+    <select id="listMemberAddress" parameterType="String" resultType="com.iwhalecloud.retail.member.dto.response.MemberAddressRespDTO">
+        select * from mem_member_address where member_id=#{memberId} order by last_update desc
+    </select>
+
+</mapper>

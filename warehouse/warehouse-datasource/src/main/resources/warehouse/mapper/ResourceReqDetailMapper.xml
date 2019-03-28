@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResourceReqDetailMapper">
+
+<sql id="allFields">
+    t.MKT_RES_REQ_DETAIL_ID 
+    ,t.MKT_RES_REQ_ITEM_ID 
+    ,t.MKT_RES_INST_ID 
+    ,t.DISP_DATE 
+    ,t.ARRIVE_DATE 
+    ,t.STATUS_DATE 
+    ,t.STATUS_CD 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.QUANTITY 
+    ,t.UNIT 
+    ,t.CHNG_TYPE 
+    ,t.REMARK 
+</sql>
+    <select id="listDetail" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO">
+
+        select rest.MKT_RES_STORE_ID,rest.DEST_STORE_ID,rest.LAN_ID,rest.REGION_ID,detail.*,item.MKT_RES_ID from MKT_RES_REQUEST rest,MKT_RES_REQ_ITEM item,MKT_RES_REQ_DETAIL detail where 1=1
+        and rest.MKT_RES_REQ_ID = item.MKT_RES_REQ_ID and  item.MKT_RES_REQ_ITEM_ID = detail.MKT_RES_REQ_ITEM_ID
+        and rest.MKT_RES_REQ_ID = #{req.mktResReqId}
+
+    </select>
+</mapper>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order.mapper.ContractPInfoMapper">
+
+    <select id="selectContractInfo"
+            parameterType="com.iwhalecloud.retail.order.dto.model.ContractPInfoModel"
+            resultType="com.iwhalecloud.retail.order.dto.model.ContractPInfoModel">
+        SELECT * FROM  ord_order_contract_info WHERE order_id=#{orderId}
+    </select>
+
+    <insert id="insertContractInfo"
+            parameterType="com.iwhalecloud.retail.order.model.ContractPInfoEntity">
+        INSERT INTO ord_order_contract_info
+        (contract_id,order_id,contract_name,contract_phone,ic_num,authentication,ic_type,phone)
+        VALUES (#{contractId},#{orderId},#{contractName,jdbcType=VARCHAR},#{contractPhone},#{icNum},#{authentication,jdbcType=VARCHAR},#{icType},#{phone})
+    </insert>
+
+    <update id="updatePhoneStatus" parameterType="com.iwhalecloud.retail.order.dto.model.ContractPInfoModel">
+      UPDATE  ord_order_contract_info SET phone_status=#{phoneStatus} WHERE  order_id=#{orderId}
+    </update>
+
+    <update id="updateHYJOrderId" parameterType="com.iwhalecloud.retail.order.dto.resquest.OrderInfoEntryRequest">
+        UPDATE ord_order
+        SET  REPLENISH_ORDER_ID=#{afterOrder},AFTER_REMARK=#{remark,jdbcType=VARCHAR},AFTER_TIME=sysdate
+        WHERE order_id =#{orderId}
+    </update>
+
+</mapper>

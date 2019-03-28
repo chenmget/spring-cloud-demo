@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.ProductBaseMapper">
+
+<sql id="allFields">
+    t.PRODUCT_BASE_ID 
+    ,t.CAT_ID
+    ,t.TYPE_ID
+    ,t.BRAND_ID 
+    ,t.PRODUCT_NAME 
+    ,t.UNIT_TYPE
+    ,t.UNIT_TYPE_NAME
+    ,t.EFF_DATE 
+    ,t.EXP_DATE 
+    ,t.IS_IMEI 
+    ,t.IS_ITMS 
+    ,t.IS_CT_CODE 
+    ,t.PRODUCT_CODE 
+    ,t.UNIT
+    ,t.EXCHANGE_OBJECT
+    ,t.PURCHASE_TYPE
+    ,t.PARAM1 
+    ,t.PARAM2 
+    ,t.PARAM3 
+    ,t.PARAM4 
+    ,t.PARAM5 
+    ,t.PARAM6 
+    ,t.PARAM7 
+    ,t.PARAM8 
+    ,t.PARAM9 
+    ,t.PARAM10 
+    ,t.PARAM11 
+    ,t.PARAM12 
+    ,t.PARAM13 
+    ,t.PARAM14 
+    ,t.PARAM15 
+    ,t.PARAM16 
+    ,t.PARAM17 
+    ,t.PARAM18 
+    ,t.PARAM19 
+    ,t.PARAM20 
+    ,t.IS_DELETED 
+    ,t.MANUFACTURER_ID 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE
+    ,t.AVG_SUPPLY_PRICE
+</sql>
+
+
+    <sql id="extFields">
+        p.PARAM21
+        ,p.PARAM22
+        ,p.PARAM23
+        ,p.PARAM24
+        ,p.PARAM25
+        ,p.PARAM26
+        ,p.PARAM27
+        ,p.PARAM28
+        ,p.PARAM29
+        ,p.PARAM30
+        ,p.PARAM31
+        ,p.PARAM32
+        ,p.PARAM33
+        ,p.PARAM34
+        ,p.PARAM35
+        ,p.PARAM36
+        ,p.PARAM37
+        ,p.PARAM38
+        ,p.PARAM39
+        ,p.PARAM40
+        ,p.PARAM41
+        ,p.PARAM42
+        ,p.PARAM43
+        ,p.PARAM44
+        ,p.PARAM45
+        ,p.PARAM46
+        ,p.PARAM47
+        ,p.PARAM48
+        ,p.PARAM49
+        ,p.PARAM50
+        ,p.PARAM51
+        ,p.PARAM52
+        ,p.PARAM53
+        ,p.PARAM54
+        ,p.PARAM55
+        ,p.PARAM56
+        ,p.PARAM57
+        ,p.PARAM58
+        ,p.PARAM59
+        ,p.PARAM60
+        ,p.PARAM61
+        ,p.PARAM62
+        ,p.PARAM63
+        ,p.PARAM64
+        ,p.PARAM65
+        ,p.PARAM66
+        ,p.PARAM67
+        ,p.PARAM68
+        ,p.PARAM69
+        ,p.PARAM70
+    </sql>
+
+    <update id="softDelProdProductBase" parameterType="java.lang.String">
+        UPDATE prod_product_base
+        SET is_deleted = '1' WHERE product_base_id = #{productBaseId}
+    </update>
+
+    <select id="getProductBase" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.goods2b.entity.ProductBase">
+        Select <include refid="allFields" />
+        FROM prod_product_base t
+        WHERE  t.product_base_id = #{productBaseId}
+        AND t.is_deleted = '0'
+    </select>
+
+    <!-- 一个productbase对应多个product的情况去除PRODUCT_NAME相同的记录 -->
+    <select id="getProductBaseList" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductBaseListReq"
+            resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp">
+        Select <include refid="allFields" />,pt.type_name,c.cat_name,pb.name AS brandName,count(distinct t.product_base_id)
+        FROM prod_product_base t
+        left join prod_cat c on c.cat_id = t.cat_id
+        left join prod_type pt on pt.type_id = t.type_id
+        left join prod_product pp on pp.product_base_id = t.product_base_id
+        left join prod_brand pb on pb.brand_id = t.brand_id
+        WHERE t.is_deleted = '0' and pp.is_deleted = '0' and pb.is_deleted = '0'
+        <if test="null!=req.catId and ''!=req.catId">
+            and t.cat_id = #{req.catId}
+        </if>
+        <if test="null!=req.typeId and ''!=req.typeId">
+            and t.type_id = #{req.typeId}
+        </if>
+        <if test="null!=req.brandId and ''!=req.brandId">
+            and pb.brand_id = #{req.brandId}
+        </if>
+        <if test="null!=req.sn and ''!=req.sn">
+            and pp.sn = #{req.sn}
+        </if>
+        <if test="null!=req.productName and ''!=req.productName">
+            and upper(t.product_name) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
+        </if>
+        <if test="null!=req.unitType and ''!=req.unitType">
+            and t.unit_type = #{req.unitType}
+        </if>
+        <if test="null!=req.productCode and ''!=req.productCode">
+            and t.product_code = #{req.productCode}
+        </if>
+        <if test="null!=req.catName and ''!=req.catName">
+            and upper(c.cat_name) like CONCAT(CONCAT('%',upper(#{req.catName})),'%')
+        </if>
+        <if test="null!=req.productBaseIdList">
+            and t.PRODUCT_BASE_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productBaseIdList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=req.brandIdList">
+            and pb.BRAND_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.brandIdList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=req.productIdList">
+            and pp.PRODUCT_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=req.status and ''!=req.status">
+            and pp.status = #{req.status}
+        </if>
+        <if test="null!=req.createStaff and ''!=req.createStaff">
+            and t.create_staff = #{req.createStaff}
+        </if>
+        <if test="null!=req.manufacturerId and ''!=req.manufacturerId">
+            and t.manufacturer_id = #{req.manufacturerId}
+        </if>
+        group by t.PRODUCT_BASE_ID
+        order by t.CREATE_DATE DESC
+    </select>
+
+    <select id="getProductDetail" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductDetailResp">
+        select <include refid="allFields" />,<include refid="extFields"/>, pc.cat_name,pt.type_name,pb.name as brandName
+        from prod_product_base t
+        LEFT JOIN prod_product_ext p on t.product_base_id = p.product_base_id
+        left join prod_cat pc on pc.cat_id = t.cat_id
+        left join prod_type pt on pt.type_id = t.type_id
+        left join prod_brand pb on pb.brand_id = t.brand_id
+        where t.product_base_id = #{productBaseId}
+    </select>
+
+    <select id="getAvgSupplyPrice" parameterType="java.lang.String"
+            resultType="java.lang.Double">
+        SELECT
+        floor(AVG(min_price)) avg_price
+        FROM
+        (
+        SELECT
+        t1.GOODS_ID,
+        t2.PRODUCT_BASE_ID,
+        MIN(t2.DELIVERY_PRICE) min_price
+        FROM
+        prod_goods t1,
+        prod_goods_product_rel t2,
+        prod_product t3,
+        prod_product_base t4
+        WHERE
+        t1.GOODS_ID = t2.GOODS_ID
+        AND t2.PRODUCT_ID = t3.PRODUCT_ID
+        AND t3.PRODUCT_BASE_ID = t4.PRODUCT_BASE_ID
+        AND t1.MERCHANT_TYPE = '3'
+        AND t1.MARKET_ENABLE = '1'
+        AND t4.PRODUCT_BASE_ID=#{productBaseId}
+        GROUP BY
+        t1.GOODS_ID,
+        t2.PRODUCT_BASE_ID
+        )t
+        GROUP BY
+        t.PRODUCT_BASE_ID
+    </select>
+</mapper>

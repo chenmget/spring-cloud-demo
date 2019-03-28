@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+  
+<!-- 指定工作空间，要与接口名相同 -->  
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.UserPointRecordMapper">
+
+	<sql id="allFields">
+	record_id,
+    user_id,
+    change_point,
+    src_type,
+    remark,
+    create_date,
+    total_point
+  </sql>
+
+
+    <select id="queryContentBase"
+            resultType="com.iwhalecloud.retail.oms.dto.ContentBaseDTO">
+		SELECT  <include refid="allFields" />
+        FROM t_content_base t
+		WHERE content_id=#{contentId}
+	</select>
+	
+	<!-- find user_point_record -->
+	<select id="listUserPointRecord"  parameterType="com.iwhalecloud.retail.oms.dto.resquest.gift.ListUserPointRecordReqDTO" 
+	 resultType="com.iwhalecloud.retail.oms.dto.response.gift.UserPointRecordRespDTO">
+         SELECT <include refid="allFields" />
+        FROM user_point_record
+        WHERE 1 = 1
+        <if test="req.userId != null">
+          AND user_id = #{userId}
+        </if>
+	</select>
+	
+	<!-- find user total point -->
+	<select id="getUserPoint"  resultType="com.iwhalecloud.retail.oms.dto.response.gift.UserPointRecordRespDTO">
+		SELECT <include refid="allFields" />
+		FROM user_point_record
+		WHERE user_id = #{userId}
+		AND ROWNUM <![CDATA[ <= ]]> 1 ORDER BY create_date DESC
+	</select>
+
+
+</mapper>

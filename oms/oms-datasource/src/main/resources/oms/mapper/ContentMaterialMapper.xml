@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentMaterialMapper">
+
+    <sql id="allFields">
+        t.MATID
+        ,t.CONTENTID
+        ,t.NAME
+        ,t.PATH
+        ,t.THUMBPATH
+        ,t.LEL
+        ,t.OPRID
+        ,t.UPDDATE
+    </sql>
+
+    <resultMap id="ContentMaterialResult" type="com.iwhalecloud.retail.oms.dto.ContentMaterialDTO">
+        <result property="matid" column="MATID"></result>
+        <result property="contentid" column="CONTENTID"></result>
+        <result property="name" column="NAME"></result>
+        <result property="path" column="PATH"></result>
+        <result property="thumbpath" column="THUMBPATH"></result>
+        <result property="lel" column="LEL"></result>
+        <result property="oprid" column="OPRID"></result>
+        <result property="upddate" column="UPDDATE"></result>
+    </resultMap>
+
+    <select id="queryContentMaterialList"
+            resultMap="ContentMaterialResult">
+        select <include refid="allFields" />
+        from t_content_material t
+        WHERE t.contentid = #{contentId}
+    </select>
+
+
+</mapper>

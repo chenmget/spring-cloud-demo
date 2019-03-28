@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ShelfTemplatesMapper">
+
+    <update id="editShelfTemplates" parameterType="com.iwhalecloud.retail.oms.dto.ShelfTemplatesDTO">
+		UPDATE shelf_templates set shelf_category_id = #{shelfCategoryId}
+		WHERE id=#{id}
+	</update>
+
+    <select id="queryShelfTemplates" resultType="com.iwhalecloud.retail.oms.dto.ShelfTemplatesDTO">
+		select * from shelf_templates where is_deleted = 0
+	</select>
+
+    <update id="deleteShelfTemplates" parameterType="com.iwhalecloud.retail.oms.dto.ShelfTemplatesDTO">
+		UPDATE shelf_templates set is_deleted = 1
+		WHERE id=#{id}
+	</update>
+
+</mapper>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.PartnerMapper">
+
+<sql id="allFields">
+    t.PARTNER_ID 
+    ,t.PARTNER_CODE 
+    ,t.PARTNER_NAME 
+    ,t.LINKMAN 
+    ,t.PHONE_NO 
+    ,t.STATE 
+    ,t.EXP_DATE 
+    ,t.LAST_UPDATE_DATE
+    ,t.REGION_ID
+    ,t.LAN_ID 
+    ,t.PARTNER_SHOP_ID 
+    ,t.BUSINESS_ENTITY_NAME 
+    ,t.BUSINESS_ENTITY_CODE 
+    ,t.MSS_PARTNER_CODE 
+    ,t.CUSTOMER_CODE 
+    ,t.ORG_CODE 
+    ,t.ORG_TYPE 
+</sql>
+
+
+    <select id="querySupplyRel" parameterType="com.iwhalecloud.retail.partner.dto.req.SupplierReq"
+            resultType="com.iwhalecloud.retail.partner.dto.PartnerDTO">
+        SELECT <include refid="allFields" /> FROM PAR_PARTNER t
+        left join PAR_SUPPLY_REL psr
+        on t.PARTNER_ID = psr.PARTNER_ID
+        <where>
+            <if test="pageReq.supplierId!=null">
+                and psr.SUPPLIER_ID=#{pageReq.supplierId}
+            </if>
+        </where>
+    </select>
+
+    <select id="pagePartner" parameterType="com.iwhalecloud.retail.partner.dto.req.PartnerPageReq"
+            resultType="com.iwhalecloud.retail.partner.dto.PartnerDTO">
+--      添加店名称字段 钟文龙 2018-11-23
+        SELECT t.*,a.NAME PARTNER_SHOP_NAME   FROM PAR_PARTNER t
+        left join PAR_PARTNER_SHOP a on t.PARTNER_SHOP_ID = a.PARTNER_SHOP_ID
+        <where>
+            <if test="pageReq.partnerName!=null and pageReq.partnerName!=''">
+                and t.Partner_name like CONCAT(CONCAT('%', #{pageReq.partnerName}), '%')
+            </if>
+            <if test="pageReq.states!=null">
+                and t.state in
+                <foreach item="item" index="index" collection="pageReq.states" open="("  separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+</mapper>

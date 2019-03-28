@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.MerchantAccountMapper">
+
+<sql id="allFields">
+    t.ACCOUNT_ID 
+    ,t.MERCHANT_ID 
+    ,t.ACCOUNT_TYPE 
+    ,t.ACCOUNT 
+    ,t.IS_DEFAULT 
+    ,t.STATE 
+    ,t.BANK 
+    ,t.BANK_ACCOUNT
+</sql>
+
+</mapper>

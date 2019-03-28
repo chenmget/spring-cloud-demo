@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResouceStoreMapper">
+
+    <sql id="allFields">
+        s.MKT_RES_STORE_ID
+        ,s.MKT_RES_STORE_NBR
+        ,s.MKT_RES_STORE_NAME
+        ,s.CHECK_DATE
+        ,s.PAR_STORE_ID
+        ,s.REC_STORE_ID
+        ,s.REC_TYPE
+        ,s.REC_DAY
+        ,s.STORE_TYPE
+        ,s.STORE_SUB_TYPE
+        ,s.STORE_GRADE
+        ,s.EFF_DATE
+        ,s.EXP_DATE
+        ,s.STATUS_CD
+        ,s.STATUS_DATE
+        ,s.REMARK
+        ,s.CREATE_STAFF
+        ,s.CREATE_DATE
+        ,s.UPDATE_STAFF
+        ,s.UPDATE_DATE
+        ,s.LAN_ID
+        ,s.REGION_ID
+    </sql>
+
+    <!--简要字段-->
+    <sql id="simpleFields">
+        s.MKT_RES_STORE_ID
+        ,s.MKT_RES_STORE_NBR
+        ,s.MKT_RES_STORE_NAME
+        ,s.PAR_STORE_ID
+        ,s.REC_STORE_ID
+        ,s.REC_TYPE
+        ,s.REC_DAY
+        ,s.STORE_TYPE
+        ,s.STORE_SUB_TYPE
+        ,s.STORE_GRADE
+        ,s.STATUS_CD
+        ,s.REMARK
+        ,s.LAN_ID
+        ,s.REGION_ID
+    </sql>
+
+    <!--简要字段-->
+    <sql id="simpleDistinctFields">
+        distinct aa.MKT_RES_STORE_ID
+        ,aa.MKT_RES_STORE_NBR
+        ,aa.MKT_RES_STORE_NAME
+        ,aa.PAR_STORE_ID
+        ,aa.REC_STORE_ID
+        ,aa.REC_TYPE
+        ,aa.REC_DAY
+        ,aa.STORE_TYPE
+        ,aa.STORE_SUB_TYPE
+        ,aa.STORE_GRADE
+        ,aa.STATUS_CD
+        ,aa.REMARK
+        ,aa.LAN_ID
+        ,aa.REGION_ID
+        ,aa.MERCHANT_ID
+    </sql>
+
+    <select id="getStore" resultType="com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO" parameterType="String">
+        SELECT <include refid="simpleFields"/>,r.OBJ_ID MERCHANT_ID
+        FROM mkt_res_store s,mkt_res_store_obj_rel r WHERE 1 = 1
+        and s.MKT_RES_STORE_ID = r.MKT_RES_STORE_ID
+        and r.OBJ_ID= #{merchantId}
+        and s.STORE_SUB_TYPE = #{storeSubType}
+    </select>
+
+    <select id="pageStore" resultType="com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO"
+                     parameterType="com.iwhalecloud.retail.warehouse.dto.request.StorePageReq">
+        SELECT <include refid="simpleFields"/>,r.OBJ_ID MERCHANT_ID
+        FROM mkt_res_store s,mkt_res_store_obj_rel r WHERE 1 = 1
+        and s.MKT_RES_STORE_ID = r.MKT_RES_STORE_ID
+        <if test="null!=req.merchantIds and req.merchantIds.size >0">
+            and r.OBJ_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIds">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=req.storeName and ''!=req.storeName">
+            and s.MKT_RES_STORE_NAME like CONCAT(CONCAT('%',#{req.storeName}),'%')
+        </if>
+        <if test="null!=req.storeType and ''!=req.storeType">
+            and s.STORE_SUB_TYPE = #{req.storeSubType}
+        </if>
+        <if test="null!=req.storeSubType and ''!=req.storeSubType">
+            and s.STORE_SUB_TYPE = #{req.storeSubType}
+        </if>
+        <if test="null!=req.lanId and ''!=req.lanId">
+            and s.LAN_ID = #{req.lanId}
+        </if>
+        <if test="null!=req.regionId and ''!=req.regionId">
+            and s.REGION_ID = #{req.regionId}
+        </if>
+        order by s.MKT_RES_STORE_ID desc
+    </select>
+
+    <select id="pageAllocateStore" resultType="com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO"
+            parameterType="com.iwhalecloud.retail.warehouse.dto.request.AllocateStorePageReq">
+            SELECT <include refid="simpleFields"/>,r.OBJ_ID MERCHANT_ID
+            FROM mkt_res_store s LEFT JOIN mkt_res_store_obj_rel r on s.MKT_RES_STORE_ID = r.MKT_RES_STORE_ID
+            <if test="null!=req.merchantIdList and req.merchantIdList.size >0">
+                and r.OBJ_ID in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIdList">
+                #{item}
+            </foreach>
+            </if>
+            WHERE 1 = 1
+            and s.MKT_RES_STORE_ID = r.MKT_RES_STORE_ID
+            <if test="null!=req.storyType and ''!=req.storyType">
+                and s.STORE_TYPE = #{req.storyType}
+            </if>
+            <if test="null!=req.storeSubType and ''!=req.storeSubType">
+                and s.STORE_SUB_TYPE = #{req.storeSubType}
+            </if>
+            <if test="null!=req.storeName and ''!=req.storeName">
+                and s.MKT_RES_STORE_NAME like CONCAT(CONCAT('%',#{req.storeName}),'%')
+            </if>
+
+        order by s.MKT_RES_STORE_ID desc
+    </select>
+
+    <update id="updateStore" parameterType="com.iwhalecloud.retail.warehouse.entity.ResouceStore">
+      update MKT_RES_STORE set
+        MKT_RES_STORE_NBR = #{mktResStoreNbr},
+        MKT_RES_STORE_NAME = #{mktResStoreName},
+        CHECK_DATE = #{checkDate},
+        PAR_STORE_ID = #{parStoreId},
+        REC_STORE_ID = #{recStoreId},
+        REC_TYPE = #{recType},
+        REC_DAY = #{recDay},
+        STORE_TYPE = #{storeType},
+        STORE_SUB_TYPE = #{storeSubType},
+        STORE_GRADE = #{storeGrade},
+        EFF_DATE = #{effDate},
+        EXP_DATE = #{expDate},
+        STATUS_CD = #{statusCd},
+        STATUS_DATE = #{statusDate},
+        REMARK = #{remark},
+        CREATE_STAFF = #{createStaff},
+        CREATE_DATE = #{createDate},
+        UPDATE_STAFF = #{updateStaff},
+        UPDATE_DATE = #{updateDate},
+        LAN_ID = #{lanId},
+        REGION_ID = #{regionId}
+        where MKT_RES_STORE_ID = #{mktResStoreId}
+    </update>
+
+    <select id="getStoreId" resultType="java.lang.String"
+            parameterType="com.iwhalecloud.retail.warehouse.dto.request.StoreGetStoreIdReq">
+        SELECT s.MKT_RES_STORE_ID
+        FROM mkt_res_store s,mkt_res_store_obj_rel r WHERE 1 = 1
+        and s.MKT_RES_STORE_ID = r.MKT_RES_STORE_ID
+        and r.OBJ_ID = #{merchantId}
+        and s.STORE_SUB_TYPE = #{storeSubType}
+    </select>
+</mapper>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.MktResStoreTempMapper">
+
+<sql id="allFields">
+    t.MKT_RES_STORE_ID 
+    ,t.MKT_RES_STORE_NAME 
+    ,t.CHECK_DATE 
+    ,t.CREATE_DATE 
+    ,t.PAR_STORE_ID 
+    ,t.ORG_ID 
+    ,t.STAFF_ID 
+    ,t.REGION_ID 
+    ,t.CHANNEL_ID 
+    ,t.STORE_TYPE 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.REMARK 
+    ,t.MKT_RES_STORE_NBR 
+    ,t.STORAGE_CODE1 
+    ,t.STORAGE_CODE2 
+    ,t.LAN_ID 
+    ,t.OPER_ID 
+    ,t.ADDRESS 
+    ,t.VBATCHCODE 
+    ,t.RC_TYPE 
+    ,t.FAMILY_ID 
+    ,t.CREATE_STAFF 
+    ,t.DIRECT_SUPPLY 
+    ,t.PROVIDER 
+    ,t.PROVIDER_NAME 
+    ,t.REC_STORE_ID 
+    ,t.REC_TYPE 
+    ,t.REC_DAY 
+    ,t.STORE_SUB_TYPE 
+    ,t.STORE_GRADE 
+    ,t.EFF_DATE 
+    ,t.EXP_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE
+    ,t.SYN_STATUS
+    ,t.SYN_DATE
+</sql>
+    <select id="listSynMktResStoreTempDTOList" parameterType="com.iwhalecloud.retail.warehouse.dto.request.markres.SynMarkResStoreToFormalReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.MktResStoreTempDTO" >
+        Select <include refid="allFields" />
+        FROM MKT_RES_STORE_TEMP t
+        WHERE 1=1 and SYN_STATUS=#{req.synStatus}
+        <if test="req.day != null">
+            and DATE_FORMAT(t.UPDATE_DATE,'%Y-%m-%d')=DATE_FORMAT(date_add(now(), interval #{req.day} day),'%Y-%m-%d')
+        </if>
+        ORDER BY T.MKT_RES_STORE_ID
+
+
+
+
+
+
+
+    </select>
+    <update id="updateMktResStoreTemp" parameterType="com.iwhalecloud.retail.warehouse.entity.MktResStoreTemp" >
+    update MKT_RES_STORE_TEMP
+    set  MKT_RES_STORE_NAME = #{mktResStoreName},
+        CHECK_DATE = #{checkDate},
+        CREATE_DATE = #{createDate},
+        PAR_STORE_ID = #{parStoreId},
+        ORG_ID = #{orgId},
+        STAFF_ID = #{staffId},
+        REGION_ID = #{regionId},
+        CHANNEL_ID = #{channelId},
+        STORE_TYPE = #{storeType},
+        STATUS_CD = #{statusCd},
+        STATUS_DATE = #{statusDate},
+        REMARK = #{remark},
+        MKT_RES_STORE_NBR = #{mktResStoreNbr},
+        STORAGE_CODE1 = #{storageCode1},
+        STORAGE_CODE2 = #{storageCode2},
+        LAN_ID = #{lanId},
+        OPER_ID = #{operId},
+        ADDRESS = #{address},
+        VBATCHCODE = #{vbatchcode},
+        RC_TYPE = #{rcType},
+        FAMILY_ID = #{familyId},
+        CREATE_STAFF = #{createStaff},
+        DIRECT_SUPPLY = #{directSupply},
+        PROVIDER = #{provider},
+        PROVIDER_NAME = #{providerName},
+        REC_STORE_ID = #{recStoreId},
+        REC_TYPE = #{recType},
+        REC_DAY = #{recDay},
+        STORE_SUB_TYPE = #{storeSubType},
+        STORE_GRADE = #{storeGrade},
+        EFF_DATE = #{effDate},
+        EXP_DATE = #{expDate},
+        UPDATE_STAFF = #{updateStaff},
+        UPDATE_DATE = #{updateDate},
+        SYN_STATUS = #{synStatus}
+    where MKT_RES_STORE_ID = #{mktResStoreId,jdbcType=VARCHAR}
+  </update>
+    <update id="updateMktResStoreTempSyn" parameterType="list" >
+        update MKT_RES_STORE_TEMP
+        set  SYN_STATUS = '1',SYN_DATE = SYSDATE()
+        where MKT_RES_STORE_ID in
+        <foreach collection="list" item="listItem" index="index" open="("
+                                            separator="," close=")">
+              #{listItem,jdbcType=VARCHAR}
+      </foreach>
+    </update>
+
+</mapper>

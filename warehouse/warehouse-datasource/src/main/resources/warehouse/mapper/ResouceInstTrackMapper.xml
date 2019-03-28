@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackMapper">
+
+    <sql id="allFields">
+        t.MKT_RES_INST_NBR
+        ,t.CT_CODE
+        ,t.MKT_RES_ID
+        ,t.MKT_RES_INST_TYPE
+        ,t.SALES_PRICE
+        ,t.SOURCE_TYPE
+        ,t.MERCHANT_ID
+        ,t.MKT_RES_STORE_ID
+        ,t.LAN_ID
+        ,t.REGION_ID
+        ,t.STATUS_CD
+        ,t.STATUS_DATE
+        ,t.CRM_STATUS
+        ,t.SELF_REG_STATUS
+        ,t.IF_PRE_SUBSIDY
+    </sql>
+
+    <select id="qryOrderIdByNbr" resultType="java.lang.String">
+         SELECT ORDER_ID from mkt_res_inst_track_detail where MKT_RES_INST_NBR=#{nbr} and STORAGE_TYPE=#{storageType} LIMIT 1
+    </select>
+
+</mapper>

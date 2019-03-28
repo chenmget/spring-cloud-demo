@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.workflow.mapper.NodeRightsMapper">
+
+<sql id="allFields">
+    t.RIGHTS_ID 
+    ,t.RIGHTS_TYPE 
+    ,t.NODE_ID 
+    ,t.USER_ID 
+    ,t.ROLE_ID 
+    ,t.DEPT_ID 
+    ,t.CREATE_TIME 
+    ,t.CREATE_USER_ID 
+    ,t.UPDATE_TIME 
+    ,t.UPDATE_USER_ID 
+</sql>
+
+</mapper>

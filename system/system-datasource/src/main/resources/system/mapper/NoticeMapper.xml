@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.system.mapper.NoticeMapper">
+
+<sql id="allFields">
+    t.NOTICE_ID 
+    ,t.NOTICE_TYPE 
+    ,t.NOTICE_TITLE 
+    ,t.NOTICE_CONTENT 
+    ,t.PUBLISH_TYPE 
+    ,t.CREATE_TIME 
+    ,t.CREATE_USER_ID 
+    ,t.UPDATE_TIME 
+    ,t.UPDATE_USER_ID 
+    ,t.STATUS
+    ,t.begin_time
+    ,t.end_time
+    ,t.file_url
+</sql>
+
+    <select id="pageNotice" resultType="com.iwhalecloud.retail.system.dto.NoticeDTO"
+            parameterType="com.iwhalecloud.retail.system.dto.request.NoticePageReq">
+        select t.*
+        from sys_notice t
+        where 1=1
+        <if test="'2'.toString() == req.qryAllNotice">
+          and t.begin_time <![CDATA[ <= ]]> now()
+          and t.end_time <![CDATA[ >= ]]> now()
+        </if>
+        <if test="null != req.noticeType and req.noticeType.size()>0">
+            and t.NOTICE_TYPE in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.noticeType">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null != req.publishType and req.publishType.size()>0">
+            and t.PUBLISH_TYPE in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.publishType">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.status != null and req.status != ''">
+            and t.STATUS = #{req.status }
+        </if>
+        <if test="req.noticeTitle != null and req.noticeTitle != ''">
+            and t.NOTICE_TITLE like CONCAT(CONCAT('%', #{req.noticeTitle }), '%')
+        </if>
+        <if test="null != req.noticeIdList">
+            and t.NOTICE_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.noticeIdList">
+                #{item}
+            </foreach>
+        </if>
+        <!--<if test="req.userId != null and req.userId != ''">-->
+            <!--and t.NOTICE_ID in (-->
+              <!--select NOTICE_ID-->
+              <!--from sys_notice_user-->
+              <!--where USER_ID = #{req.userId }-->
+                <!--<if test="req.readStatus != null and req.readStatus != ''">-->
+                    <!--and STATUS = #{req.readStatus }-->
+                <!--</if>-->
+            <!--)-->
+        <!--</if>-->
+        order by t.CREATE_TIME desc
+    </select>
+
+    <!--查询个人的  通知 分页列表-->
+    <select id="pagePersonalNotice" resultType="com.iwhalecloud.retail.system.dto.NoticeDTO"
+            parameterType="com.iwhalecloud.retail.system.dto.request.NoticePagePersonalReq">
+        select t.*
+        from sys_notice t
+        where 1=1
+        and t.begin_time <![CDATA[ <= ]]> now()
+        and t.end_time <![CDATA[ >= ]]> now()
+        <if test="req.noticeType != null and req.noticeType != ''">
+            and t.NOTICE_TYPE = #{req.noticeType }
+        </if>
+        <if test="req.status != null and req.status != ''">
+            and t.STATUS = #{req.status }
+        </if>
+        <if test="req.noticeTitle != null and req.noticeTitle != ''">
+            and t.NOTICE_TITLE like CONCAT(CONCAT('%', #{req.noticeTitle }), '%')
+        </if>
+        <if test="null != req.noticeIdList">
+            and t.NOTICE_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.noticeIdList">
+                #{item}
+            </foreach>
+        </if>
+
+        <choose>
+            <when test="req.userId != null and req.userId != '' and req.publishType != null and req.publishType != '' ">
+                and (
+                    t.NOTICE_ID in (
+                    select NOTICE_ID
+                    from sys_notice_user
+                    where USER_ID = #{req.userId }
+                    <if test="req.readStatus != null and req.readStatus != '' ">
+                        and STATUS = #{req.readStatus }
+                    </if>
+                    )
+                    or
+                    t.PUBLISH_TYPE = #{req.publishType }
+                )
+            </when>
+            <otherwise>
+                <if test="req.publishType != null and req.publishType != ''">
+                    and t.PUBLISH_TYPE = #{req.publishType }
+                </if>
+                <if test="req.userId != null and req.userId != ''">
+                    and t.NOTICE_ID in (
+                    select NOTICE_ID
+                    from sys_notice_user
+                    where USER_ID = #{req.userId }
+                    <if test="req.readStatus != null and req.readStatus != ''">
+                        and STATUS = #{req.readStatus }
+                    </if>
+                    )
+                </if>
+            </otherwise>
+        </choose>
+
+
+        order by t.CREATE_TIME desc
+    </select>
+
+
+</mapper>

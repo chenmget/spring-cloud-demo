@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.CouponInstUseRecMapper">
+
+<sql id="allFields">
+    t.COUPON_INST_USE_ID 
+    ,t.COUPON_INST_ID 
+    ,t.USE_OBJ_TYPE 
+    ,t.USE_OBJ_ID 
+    ,t.USE_ORDER_ID 
+    ,t.USE_DESC 
+    ,t.USE_DATE 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+</sql>
+
+
+</mapper>

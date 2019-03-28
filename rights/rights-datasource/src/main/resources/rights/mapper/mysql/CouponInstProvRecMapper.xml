@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.CouponInstProvRecMapper">
+
+<sql id="allFields">
+    t.PROV_REC_ID 
+    ,t.COUPON_INST_ID 
+    ,t.PROV_CHANNEL_TYPE 
+    ,t.PROV_ORDER_ID 
+    ,t.PROV_OBJ_TYPE 
+    ,t.PROV_OBJ_ID 
+    ,t.PROV_DESC 
+    ,t.PROV_DATE 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+</sql>
+
+	<!-- query mktResCoupon number by mktResId in period-->
+	<select id="queryCouponInstProvRecNum" parameterType="com.iwhalecloud.retail.rights.dto.request.QueryCouponInstProvRecNumReqDTO" 
+	resultType="Long" >
+		SELECT count(1) FROM coupon_inst_prov_rec a,coupon_inst b 
+		WHERE a.coupon_inst_id=b.coupon_inst_id 
+		<if test="mktResId != null">
+		   AND b.mkt_res_id = #{mktResId} 
+		</if>
+		<if test="custNum != null">
+		   AND a.prov_obj_id = #{custNum} 
+		</if>
+		<if test="timePeriodMonth != null">
+		   AND DATE_SUB(CURDATE(), INTERVAL 1 MONTH) &lt;= date(a.CREATE_DATE)
+		</if>
+		<if test="timePeriodWeek != null">
+		   AND DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= date(a.CREATE_DATE)
+		</if>
+		GROUP BY b.mkt_res_id
+	</select>
+
+	<insert id="insertBatchCouponInstProvRec" parameterType="java.util.List">
+		INSERT INTO coupon_inst_prov_rec
+		(PROV_REC_ID, COUPON_INST_ID, PROV_CHANNEL_TYPE, PROV_OBJ_TYPE, PROV_OBJ_ID,PROV_DESC,
+		PROV_DATE,STATUS_CD, STATUS_DATE, CREATE_STAFF, CREATE_DATE,UPDATE_STAFF,UPDATE_DATE )
+		VALUES
+		<foreach collection ="list" item="inst" index="index" separator =",">
+			(#{inst.provRecId},#{inst.couponInstId}, #{inst.provChannelType}, #{inst.provObjType}, #{inst.provObjId},#{inst.provDesc},
+			#{inst.provDate}, #{inst.statusCd}, #{inst.statusDate}, #{inst.createStaff}, #{inst.createDate},#{inst.updateStaff}, #{inst.updateDate})
+		</foreach >
+	</insert>
+	
+</mapper>

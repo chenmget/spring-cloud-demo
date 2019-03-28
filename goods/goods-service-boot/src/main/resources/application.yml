@@ -1,0 +1,13 @@
+spring:
+  profiles:
+    active: local
+
+logging.level.com.iwhalecloud.retail.goods.mapper: debug
+
+mybatis-plus:
+  mapperLocations: classpath:goods/mapper/*.xml,goods/mapper/mysql/*.xml
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+

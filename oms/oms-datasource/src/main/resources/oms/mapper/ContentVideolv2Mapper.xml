@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentVediolv2Mapper">
+
+    <sql id="allFields">
+        t.MATID
+        ,t.UPMATID
+        ,t.OBJURL
+        ,t.OBJTYPE
+        ,t.OBJID
+        ,t.STARTSEC
+        ,t.ENDSEC
+        ,t.OPRID
+        ,t.UPDDATE
+    </sql>
+
+    <resultMap id="ContentVediolvTwoResult" type="com.iwhalecloud.retail.oms.dto.ContentVediolv2DTO">
+        <result property="matid" column="MATID"></result>
+        <result property="upmatid" column="UPMATID"></result>
+        <result property="objurl" column="OBJURL"></result>
+        <result property="objid" column="OBJID"></result>
+        <result property="oprid" column="OPRID"></result>
+        <result property="upddate" column="UPDDATE"></result>
+        <result property="objtype" column="OBJTYPE"></result>
+        <result property="startsec" column="STARTSEC"></result>
+        <result property="endsec" column="ENDSEC"></result>
+    </resultMap>
+
+    <select id="queryContentVediolTwoList" resultMap="ContentVediolvTwoResult">
+        select <include refid="allFields" />
+        from t_content_vediolv2 t
+        where t.MATID in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryContentVediolByUpmatid" resultMap="ContentVediolvTwoResult">
+        select <include refid="allFields" />
+        from t_content_vediolv2 t
+        where t.UPMATID in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryVideolv2ContentIdsByProductIds" resultType="java.lang.Long">
+        select distinct c.CONTENTID from T_CONTENT_VIDEO c
+        where
+        c.HAVELV2MAT = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentVedioStatusEnum@HAVE_LV2.getCode()}
+        and
+        c.MATID in
+        (
+        select distinct t.UPMATID
+        from
+        t_content_vediolv2 t
+        where
+        t.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+        and
+        t.OBJID in
+        <foreach item="item" index="index" collection="productIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        )
+    </select>
+
+</mapper>

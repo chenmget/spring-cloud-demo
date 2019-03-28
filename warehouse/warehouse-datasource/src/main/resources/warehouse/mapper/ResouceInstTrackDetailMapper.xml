@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackDetailMapper">
+
+<sql id="allFields">
+    t.TRACK_DETAIL_ID 
+    ,t.STORAGE_TYPE 
+    ,t.MKT_RES_INST_NBR 
+    ,t.SOURCE_MERCHANT_ID 
+    ,t.TARGET_MERCHANT_ID 
+    ,t.SOURCE_STORE_ID 
+    ,t.TARGET_STORE_ID 
+    ,t.OUT_TIME 
+    ,t.IN_TIME 
+    ,t.SOURCE_LAN_ID 
+    ,t.TARGET_LAN_ID 
+    ,t.SOURCE_REGION_ID 
+    ,t.TARGET_REGION_ID 
+    ,t.ORDER_ID 
+    ,t.ORDER_TIME 
+</sql>
+
+</mapper>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.OrderMapper">
+
+    <select id="getOrderById" parameterType="string"
+            resultType="com.iwhalecloud.retail.order2b.entity.Order">
+        select * from ord_order WHERE order_id = #{orderId}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </select>
+
+
+    <resultMap id="orderInfoList" type="com.iwhalecloud.retail.order2b.model.OrderInfoModel">
+        <id column="order_id" property="orderId"/>
+        <collection property="orderItems"
+                    select="com.iwhalecloud.retail.order2b.mapper.OrderItemMapper.selectOrderItemByOrderId"
+                    column="order_id"/>
+    </resultMap>
+    <select id="selectOrderListByOrder" resultType="com.iwhalecloud.retail.order2b.model.OrderInfoModel">
+        SELECT * FROM ord_order
+        <where>
+            <if test="req.statusAll !=null and req.statusAll.size()>0">
+                AND status IN
+                <foreach collection="req.statusAll" open="(" close=")" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="req.supperIds !=null and req.supperIds.size()>0">
+                AND supplier_id IN
+                <foreach collection="req.supperIds" open="(" close=")" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="req.userIds !=null and req.userIds.size()>0">
+                AND user_id IN
+                <foreach collection="req.userIds" open="(" close=")" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="req.orderList !=null and req.orderList.size()>0">
+                AND order_id IN
+                <foreach collection="req.orderList" open="(" close=")" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="req.userCode !=null and req.userCode !=''">
+                AND user_id = #{req.userCode}
+            </if>
+            <if test="req.userName !=null and req.userName !=''">
+                AND user_name like #{req.userName}
+            </if>
+            <if test="req.supplierName !=null and req.supplierName !=''">
+                AND supplier_name like #{req.supplierName}
+            </if>
+
+            <if test="req.lanId !=null and req.lanId !=''">
+                AND lan_id = #{req.lanId}
+            </if>
+            <if test="req.merchantId !=null and req.merchantId !=''">
+                AND merchant_id = #{req.merchantId}
+            </if>
+            <if test="req.orderTimeStart !=null and req.orderTimeStart !=''">
+                AND create_time >= #{req.orderTimeStart}
+            </if>
+            <if test="req.orderTimeEnd !=null and req.orderTimeEnd !=''">
+                AND #{req.orderTimeEnd} >= create_time
+            </if>
+
+            <if test="req.payTimeStart !=null and req.payTimeStart !=''">
+                AND pay_time >= #{req.payTimeStart}
+            </if>
+            <if test="req.payTimeEnd !=null and req.payTimeEnd !=''">
+                and #{req.payTimeEnd} >= pay_time
+            </if>
+
+            <if test="req.shipTimeStart !=null and req.shipTimeStart !=''">
+                AND ship_time >= #{req.shipTimeStart}
+            </if>
+            <if test="req.shipTimeEnd !=null and req.shipTimeEnd !=''">
+                AND #{req.shipTimeEnd} >= ship_time
+            </if>
+            <if test="req.orderId !=null and req.orderId !=''">
+                AND #{req.orderId} = order_id
+            </if>
+            <if test="req.isDelete !=null and req.isDelete !=''">
+                and is_delete = #{req.isDelete}
+            </if>
+
+            <if test="req.paymentType!=null and req.paymentType!=''">
+                and pay_type = #{req.paymentType}
+            </if>
+            <if test="req.orderCat !=null and req.orderCat !=''">
+                and ORDER_CAT =#{req.orderCat}
+            </if>
+
+            and SOURCE_FROM=#{req.sourceFrom}
+
+            <if test="req.lanId !=null and req.lanId !=''">
+                and lan_id=#{req.lanId}
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="advanceOrderInfoList" type="com.iwhalecloud.retail.order2b.model.AdvanceOrderInfoModel">
+        <id column="order_id" property="orderId"/>
+        <association property="advanceOrder" javaType="com.iwhalecloud.retail.order2b.entity.AdvanceOrder"
+                     select="com.iwhalecloud.retail.order2b.mapper.AdvanceOrderMapper.selectAdvanceOrderByOrderId"
+                     column="order_id"/>
+        <collection property="orderItems"
+                    select="com.iwhalecloud.retail.order2b.mapper.OrderItemMapper.selectOrderItemByOrderId"
+                    column="order_id"/>
+    </resultMap>
+
+    <select id="queryAdvanceOrderList"
+            resultType="com.iwhalecloud.retail.order2b.model.AdvanceOrderInfoModel">
+      SELECT * from ord_order where 1 = 1
+        <if test="req.userName !=null and req.userName !=''">
+            AND user_name like #{req.userName}
+        </if>
+        <if test="req.paymentType!=null and req.paymentType!=''">
+            and pay_type = #{req.paymentType}
+        </if>
+        <if test="req.orderTimeStart !=null and req.orderTimeStart !=''">
+            AND create_time >= #{req.orderTimeStart}
+        </if>
+        <if test="req.orderTimeEnd !=null and req.orderTimeEnd !=''">
+            AND #{req.orderTimeEnd} >= create_time
+        </if>
+
+        <if test="req.shipTimeStart !=null and req.shipTimeStart !=''">
+            AND ship_time >= #{req.shipTimeStart}
+        </if>
+        <if test="req.shipTimeEnd !=null and req.shipTimeEnd !=''">
+            AND #{req.shipTimeEnd} >= ship_time
+        </if>
+        <if test="req.supplierName !=null and req.supplierName !=''">
+            AND supplier_name like #{req.supplierName}
+        </if>
+        <if test="req.statusAll !=null and req.statusAll.size()>0">
+            AND status IN
+            <foreach collection="req.statusAll" open="(" close=")" item="item" index="index" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.orderList !=null and req.orderList.size()>0">
+            AND order_id IN
+            <foreach collection="req.orderList" open="(" close=")" item="item" index="index" separator=",">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.merchantId !=null and req.merchantId != ''">
+            AND merchant_id = #{req.merchantId}
+        </if>
+        <if test="req.userId !=null and req.userId != ''">
+            AND USER_ID = #{req.userId}
+        </if>
+        <if test="req.orderId !=null and req.orderId !=''">
+            AND  order_id = #{req.orderId}
+        </if>
+        and SOURCE_FROM=#{req.sourceFrom}
+        and ORDER_CAT = #{req.orderCat}
+        <if test="req.lanId !=null and req.lanId !=''">
+            and lan_id=#{req.lanId}
+        </if>
+    </select>
+    <update id="updateOrderAttr" parameterType="com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel">
+        UPDATE ord_order
+        SET
+        <if test="status !=null and status!=''">
+            status=#{status},
+        </if>
+
+        <if test="payStatus !=null and  payStatus!=''">
+            pay_status=#{payStatus},
+        </if>
+        <if test="payCode !=null and  payCode!=''">
+            pay_code=#{payCode},
+        </if>
+        <if test="payMoney !=null and  payMoney!=''">
+            pay_money=#{payMoney},
+        </if>
+        <if test="payTime !=null and  payTime!=''">
+            pay_time=#{payTime},
+        </if>
+        <if test="payType !=null and  payType!=''">
+            pay_type=#{payType},
+        </if>
+
+        <if test="shipUserId !=null and  shipUserId!=''">
+            ship_user_id=#{shipUserId},
+        </if>
+        <if test="shipStatus !=null and  shipStatus!=''">
+            ship_status=#{shipStatus},
+        </if>
+        <if test="receiveTime !=null and  receiveTime!=''">
+            receive_time=#{receiveTime},
+        </if>
+        update_time=now()
+        WHERE order_id =#{orderId}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </update>
+
+    <select id="getOrderCountByCondition" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsRawReq" resultType="int">
+        select count(1) from ord_order
+        <where>
+            <if test="null!=req.merchantId and ''!=req.merchantId">
+                <choose>
+                    <when test="req.isBuyer">
+                        and USER_ID = #{req.merchantId}
+                    </when>
+                    <otherwise>
+                        and MERCHANT_ID = #{req.merchantId}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="null!=req.statusList">
+                and STATUS in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.statusList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.isToday">
+                and to_days(CREATE_TIME) = to_days(now())
+            </if>
+            <if test="req.lanId !=null and req.lanId !=''">
+                and lan_id=#{req.lanId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getOrderAmountByCondition" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsRawReq" resultType="double">
+        select sum(ifnull(PAY_MONEY,0)) from ord_order
+        <where>
+            <if test="null!=req.merchantId and ''!=req.merchantId">
+                <choose>
+                    <when test="req.isBuyer">
+                        and USER_ID = #{req.merchantId}
+                    </when>
+                    <otherwise>
+                        and MERCHANT_ID = #{req.merchantId}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="null!=req.statusList">
+                and STATUS in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.statusList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.isToday">
+                and to_days(CREATE_TIME) = to_days(now())
+            </if>
+            <if test="req.lanId !=null and req.lanId !=''">
+                and lan_id=#{req.lanId}
+            </if>
+        </where>
+    </select>
+</mapper>

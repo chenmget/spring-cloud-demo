@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResourceInstStoreMapper">
+
+    <sql id="allFields">
+        t.MKT_RES_INST_STORE_ID
+        ,t.MKT_RES_ID
+        ,t.MKT_RES_STORE_ID
+        ,t.QUANTITY
+        ,t.UNIT
+        ,t.REST_QUANTITY
+        ,t.ONWAY_QUANTITY
+        ,t.RUIN_QUANTITY
+        ,t.PARTNER_ID
+        ,t.LAN_ID
+        ,t.REGION_ID
+        ,t.REMARK
+        ,t.STATUS_DATE
+        ,t.STATUS_CD
+        ,t.CREATE_STAFF
+        ,t.CREATE_DATE
+        ,t.UPDATE_STAFF
+        ,t.UPDATE_DATE
+    </sql>
+
+    <select id="getQuantityByMerchantId" resultType="java.lang.String">
+        select QUANTITY from MKT_RES_INST_STORE
+        <where>
+            <if test="null!=statusList">
+                and STATUS_CD in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="statusList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="null!=merchantId and ''!=merchantId">
+                and MERCHANT_ID = #{merchantId}
+            </if>
+            <if test="null!=mktResStoreId and ''!=mktResStoreId">
+                and MKT_RES_STORE_ID = #{mktResStoreId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getProductQuantityByMerchant" resultType="java.lang.Integer">
+        select ifnull(sum(ONWAY_QUANTITY),0) from MKT_RES_INST_STORE where 1=1
+        <if test="null!=statusCd">
+            and STATUS_CD = #{statusCd}
+        </if>
+        <if test="null!=merchantId and ''!=merchantId">
+            and MERCHANT_ID = #{merchantId}
+        </if>
+        <if test="null!=productId and ''!=productId">
+            and MKT_RES_ID = #{productId}
+        </if>
+        <if test="null!=mktResStoreId and ''!=mktResStoreId">
+            and MKT_RES_STORE_ID = #{mktResStoreId}
+        </if>
+    </select>
+
+    <update id="updateStock">
+        UPDATE mkt_res_inst_store
+        <set>
+            ONWAY_QUANTITY = ONWAY_QUANTITY + #{num}
+        </set>
+        WHERE MKT_RES_ID = #{productId}
+        and MERCHANT_ID = #{merchantId}
+        and MKT_RES_STORE_ID = #{mktResStoreId}
+    </update>
+</mapper>

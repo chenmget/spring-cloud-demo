@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.member.mapper.MemberMapper">
+
+    <!--<sql id="allFields">-->
+    <!--t.MEMBER_ID-->
+    <!--,t.AGENT_ID-->
+    <!--,t.PARENT_ID-->
+    <!--,t.LV_ID-->
+    <!--,t.UNAME-->
+    <!--,t.EMAIL-->
+    <!--,t.PASSWORD-->
+    <!--,t.REG_TIME-->
+    <!--,t.NAME-->
+    <!--,t.SEX-->
+    <!--,t.BIRTHDAY-->
+    <!--,t.PROVINCE_ID-->
+    <!--,t.CITY_ID-->
+    <!--,t.REGION_ID-->
+    <!--,t.PROVINCE-->
+    <!--,t.CITY-->
+    <!--,t.REGION-->
+    <!--,t.ADDRESS-->
+    <!--,t.ZIP-->
+    <!--,t.MOBILE-->
+    <!--,t.TEL-->
+    <!--,t.POINT-->
+    <!--,t.MP-->
+    <!--,t.QQ-->
+    <!--,t.MSN-->
+    <!--,t.LAST_LOGIN_TIME-->
+    <!--,t.IS_AGENT-->
+    <!--,t.LOGIN_COUNT-->
+    <!--,t.IS_CHEKED-->
+    <!--,t.REG_IP-->
+    <!--,t.REMARK-->
+    <!--,t.LV_NAME-->
+    <!--,t.MEMBER_TYPE-->
+    <!--,t.AUDIT_STATUS-->
+    <!--,t.SHIP_AREA-->
+    <!--,t.CERT_CARD_NUM-->
+    <!--,t.CERT_ADDRESS-->
+    <!--,t.CERT_FAILURE_TIME-->
+    <!--,t.CERT_TYPE-->
+    <!--,t.CUSTOMER_TYPE-->
+<!--</sql>-->
+
+<sql id="allFields">
+    t.MEMBER_ID
+    ,t.AGENT_ID
+    ,t.PARENT_ID
+    ,t.UNAME
+    ,t.EMAIL
+    ,t.PASSWORD
+    ,t.ADD_DATE
+    ,t.NAME
+    ,t.SEX
+    ,t.BIRTHDAY
+    ,t.MOBILE
+    ,t.TEL
+    ,t.MP
+    ,t.QQ
+    ,t.MSN
+    ,t.LAST_LOGIN_TIME
+    ,t.IS_AGENT
+    ,t.LOGIN_COUNT
+    ,t.REG_IP
+    ,t.REMARK
+    ,t.MEMBER_TYPE
+    ,t.SOURCE_FROM
+    ,t.ADD_USER
+    ,t.UPDATE_DATE
+    ,t.UPDATE_USER
+    ,t.STATUS
+    ,t.HEAD_PORT
+</sql>
+
+    <!-- 分页查询 -->
+    <select id="pageMember" parameterType="com.iwhalecloud.retail.member.dto.request.MemberPageReq"
+            resultType="com.iwhalecloud.retail.member.dto.MemberDTO">
+        SELECT a.* FROM mem_member a
+        <where>
+            <if test="pageReq.uname!=null and pageReq.uname!=''">
+                and a.UNAME like CONCAT(CONCAT('%', #{pageReq.uname}), '%')
+            </if>
+            <if test="pageReq.name!=null and pageReq.name!=''">
+                and a.NAME LIKE CONCAT(CONCAT('%', #{pageReq.name}), '%')
+            </if>
+            <if test="pageReq.mobile!=null and pageReq.mobile!=''">
+                and a.MOBILE LIKE CONCAT(CONCAT('%', #{pageReq.mobile}), '%')
+            </if>
+        </where>
+        ORDER BY a.ADD_DATE DESC
+    </select>
+
+     <!-- loginByUname -->
+	 <!--<select id="loginByUname" parameterType="com.iwhalecloud.retail.member.pojo.request.LoginByNameReq"-->
+		<!--resultType="com.iwhalecloud.retail.member.pojo.response.MemberLoginResp">-->
+		 <!--SELECT m.*,eml.name as lvname-->
+		 <!--FROM mem_member m LEFT JOIN mem_member_lv eml-->
+		 <!--ON (m.lv_id = eml.lv_id AND m.source_from = eml.source_from)-->
+		 <!--<where>-->
+			 <!--<if test="null != pwd and '' != pwd">-->
+				 <!--AND m.password= #{pwd}-->
+			 <!--</if>-->
+			 <!--<if test="null != userName and '' != userName">-->
+				 <!--AND m.uname= #{userName}-->
+			 <!--</if>-->
+			 <!--<if test="null != email and '' != email">-->
+				 <!--AND m.email = #{email}-->
+			 <!--</if>-->
+		 <!--</where>-->
+	<!--</select>-->
+	
+     <!-- loginByMobile -->
+	 <!--<select id="loginByMobile" parameterType="com.iwhalecloud.retail.member.pojo.request.LoginByMobileReq"-->
+		<!--resultType="com.iwhalecloud.retail.member.pojo.response.MemberLoginResp">-->
+		 <!--SELECT m.*,eml.name as lvname-->
+		 <!--FROM mem_member m LEFT JOIN mem_member_lv eml-->
+		 <!--ON m.lv_id = eml.lv_id-->
+		 <!--<where>-->
+			 <!--<if test="null != pwd and '' != pwd">-->
+				 <!--AND m.password= #{pwd}-->
+			 <!--</if>-->
+			 <!--<if test="null != mobile and '' != mobile">-->
+				 <!--AND m.mobile = #{mobile}-->
+			 <!--</if>-->
+		 <!--</where>-->
+	<!--</select>-->
+    <!---->
+</mapper>

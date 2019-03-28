@@ -1,0 +1,28 @@
+project:
+  name: 测试环境
+  
+server:
+  port: 8324
+
+
+
+
+spring.dubbo:
+    application:
+      name: order-provider
+    registry:
+      address: zookeeper://10.45.47.87:2281
+    protocol:
+      name: dubbo
+      port: 27083
+    scan: com.iwhalecloud.retail
+  
+logging.level.com.iwhalecloud.retail.order.mapper: debug
+
+fdfs.show.url: https://gy.ztesoft.com/
+ 
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.47.88:3306/nretail
+  username: nretail
+  password: nretail

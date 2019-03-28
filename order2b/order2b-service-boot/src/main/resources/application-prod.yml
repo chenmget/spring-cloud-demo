@@ -1,0 +1,36 @@
+project:
+  name: 生产环境
+  
+server:
+  port: 8024
+
+spring.dubbo:
+    application:
+      name: order2b-provider
+    registry:
+      address: zookeeper://10.45.47.87:2285
+    protocol:
+      name: dubbo
+      port: 20882
+    scan: com.iwhalecloud.retail
+  
+logging.level.com.iwhalecloud.retail.order2b.mapper: debug
+
+fdfs.show.url: https://gy.ztesoft.com/
+
+#spring.datasource:
+#  driver-class-name: com.mysql.jdbc.Driver
+#  url: jdbc:mysql://10.45.47.88:3306/nretail_b2b
+#  username: oms
+#  password: oms
+#用来后去主键生成策略
+#TelDB
+#Oracle
+#MySql
+db-type: TelDB
+
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.46.67:8866/nretail_b2b?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: szxtest
+  password: szxtest.2019

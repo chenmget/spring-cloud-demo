@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iwhalecloud.retail.goods.mapper.ProdSpecValuesMapper" >
+  <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.goods.entity.ProdSpecValues" >
+    <constructor >
+      <idArg column="SPEC_VALUE_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SPEC_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SPEC_VALUE" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SPEC_TYPE" jdbcType="DECIMAL" javaType="java.lang.Short" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SPEC_VALUE_ID, SPEC_ID, SPEC_VALUE, SPEC_TYPE
+  </sql>
+  
+  <delete id="deleteSpecValues" parameterType="com.iwhalecloud.retail.goods.dto.req.ProdSpecificationDeleteReq" >
+    DELETE FROM prod_spec_values
+    WHERE SPEC_ID IN
+    <foreach item="item" collection="array" open="(" separator="," close=")">
+            ${item}
+    </foreach>
+  </delete>
+  
+  
+  <select id="getSpecValues" parameterType="String" resultType="com.iwhalecloud.retail.goods.entity.ProdSpecValues">
+    SELECT sv.spec_value_id,sv.spec_id,sv.spec_value,s.spec_type FROM 
+    prod_spec_values sv, prod_specification s 
+    WHERE sv.spec_id=s.spec_id 
+    AND sv.spec_value_id = #{specValueId}
+  </select>
+  
+  <insert id="insertBatchSpecValues"  parameterType="java.util.List">
+	INSERT INTO coupon_inst 
+ 	(SPEC_VALUE_ID, SPEC_ID, SPEC_VALUE, SPEC_TYPE)
+	VALUES
+    <foreach collection ="list" item="item" index="index" separator =",">
+        (#{item.specValueId},#{item.specId}, #{item.specValue}, #{item.specType})
+	</foreach >
+    </insert>  
+</mapper>

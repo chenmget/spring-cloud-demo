@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentPicsetMapper">
+
+<sql id="allFields">
+    t.MATID 
+    ,t.CONTENTID 
+    ,t.OBJTYPE 
+    ,t.OBJID 
+    ,t.OBJURL 
+    ,t.OPRID 
+    ,t.UPDDATE 
+</sql>
+
+    <resultMap id="ContentPicResult" type="com.iwhalecloud.retail.oms.entity.ContentPicset">
+        <result property="matid" column="MATID"></result>
+        <result property="contentid" column="CONTENTID"></result>
+        <result property="objtype" column="OBJTYPE"></result>
+        <result property="objurl" column="OBJURL"></result>
+        <result property="objid" column="OBJID"></result>
+        <result property="oprid" column="OPRID"></result>
+        <result property="upddate" column="UPDDATE"></result>
+    </resultMap>
+
+
+    <select id="queryContentPicsetList" resultMap="ContentPicResult">
+        select <include refid="allFields" />
+        from
+        t_content_picset t
+        where t.CONTENTID =#{contentId}
+    </select>
+
+
+    <select id="queryContentIdsByProductIds" resultType="String">
+        select distinct t.CONTENTID
+        from
+        t_content_picset t
+        where
+        t.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+        and
+        t.OBJID in
+        <foreach item="item" index="index" collection="productIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

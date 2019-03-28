@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.system.mapper.OrganizationMapper">
+
+<sql id="allFields">
+    t.ORG_ID 
+    ,t.PARTNER_ORG_ID
+    ,t.PARTNER_ORG_NAME
+    ,t.ORG_CODE 
+    ,t.ORG_NAME 
+    ,t.LAN_ID
+    ,t.LAN
+    ,t.REGION_ID
+    ,t.REGION
+    ,t.ORG_LEVEL 
+    ,t.STATUS_DATE 
+    ,t.STATUS_CD 
+    ,t.REMARK 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+</sql>
+
+    <select id="queryOrganizationForPage" resultType="com.iwhalecloud.retail.system.dto.OrganizationDTO" parameterType="com.iwhalecloud.retail.system.dto.request.OrganizationsQueryReq">
+        select
+        <include refid="allFields"></include>
+        from sys_organization t where 1=1
+        <if test="req.orgId != null and req.orgId != ''">
+            and t.ORG_ID like CONCAT(CONCAT('%', #{req.orgId }), '%')
+        </if>
+        <if test="req.orgName != null and req.orgName != ''">
+            and lower(t.ORG_NAME) like lower(CONCAT(CONCAT('%', #{req.orgName }), '%'))
+        </if>
+        <if test="req.lanId != null and req.lanId != ''">
+            and t.LAN_ID = #{req.lanId}
+        </if>
+        order by ORG_ID desc
+    </select>
+
+</mapper>

@@ -1,0 +1,39 @@
+logging.level.com.iwhalecloud.retail.system.mapper: debug
+
+mybatis-plus:
+  mapperLocations: classpath:system/mapper/*.xml
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+#验证码有效时间
+effInterval: 300000
+project:
+  name: 测试环境
+
+server:
+  port: 8328
+
+spring:
+  dubbo:
+    application:
+      name: system-provider
+    registry:
+      address: zookeeper://10.45.47.87:2281
+    protocol:
+      name: dubbo
+      port: 27901
+    scan: com.iwhalecloud.retail
+
+jmx:
+  enabled: false
+
+  
+
+
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.47.88:3306/nretail
+  username: nretail
+  password: nretail

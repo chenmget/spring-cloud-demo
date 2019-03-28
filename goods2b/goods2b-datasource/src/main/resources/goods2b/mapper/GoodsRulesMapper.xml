@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.GoodsRulesMapper" >
+    <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true">
+        insert into prod_goods_rules(GOODS_RULE_ID,GOODS_ID, PRODUCT_CODE, PRODUCT_NAME, TARGET_CODE, TARGET_NAME, TARGET_TYPE, MARKET_NUM,PRODUCT_ID,TARGET_ID,STATE)
+        values
+        <foreach collection="list" item="item" index="index" separator="," >
+            (#{item.goodsRuleId},#{item.goodsId},#{item.productCode},#{item.productName},#{item.targetCode},
+            #{item.targetName},#{item.targetType},#{item.marketNum},#{item.productId},#{item.targetId},#{item.state})
+        </foreach>
+    </insert>
+
+    <update id="updateBatch" parameterType="java.util.List">
+        update prod_goods_rules set
+        GOODS_ID =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.goodsId}
+        </foreach>
+        ,PRODUCT_CODE =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.productCode}
+        </foreach>
+        ,PRODUCT_NAME =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.productName}
+        </foreach>
+        ,TARGET_CODE =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.targetCode}
+        </foreach>
+        ,TARGET_NAME =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.targetName}
+        </foreach>
+        ,TARGET_TYPE =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.targetType}
+        </foreach>
+        ,MARKET_NUM =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.marketNum}
+        </foreach>
+        ,PRODUCT_ID =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.productId}
+        </foreach>
+        ,TARGET_ID =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.targetId}
+        </foreach>
+        ,STATE =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.state}
+        </foreach>
+        <where>
+            GOODS_RULE_ID in
+            <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+                #{item.goodsRuleId}
+            </foreach>
+        </where>
+    </update>
+
+    <update id="updatePurchaseNum" parameterType="com.iwhalecloud.retail.goods2b.entity.GoodsRules">
+        update prod_goods_rules set purchased_num = purchased_num + #{purchasedNum}
+        where goods_id = #{goodsId} and product_id = #{productId} and target_type = #{targetType} and target_id = #{targetId}
+    </update>
+
+</mapper>

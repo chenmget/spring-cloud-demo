@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.system.mapper.UserCollectionMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.USER_ID 
+    ,t.OBJ_TYPE 
+    ,t.OBJ_ID 
+    ,t.CREATE_DATE 
+</sql>
+
+</mapper>

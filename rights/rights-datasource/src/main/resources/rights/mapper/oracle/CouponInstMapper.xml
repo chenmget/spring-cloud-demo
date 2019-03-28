@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.CouponInstMapper">
+
+<sql id="commonFields">
+    t.COUPON_INST_ID 
+    ,t.COUPON_INST_NBR 
+    ,t.MKT_RES_ID 
+    ,t.COUPON_AMOUNT 
+    ,t.CUST_ACCT_ID 
+    ,t.EFF_DATE 
+    ,t.EXP_DATE 
+    ,t.STATUS_CD 
+    ,t.REMARK 
+    ,t.UPDATE_DATE
+</sql>
+
+	 <!-- query Couponinst by QueryCouponInstPageReq-->
+	<select id="queryCouponinst" parameterType="com.iwhalecloud.retail.rights.dto.request.QueryCouponInstPageReq"
+	resultType="com.iwhalecloud.retail.rights.dto.response.QueryCouponInstRespDTO">
+		Select <include refid="commonFields" />,mrc.mkt_res_name
+		FROM coupon_inst t,mkt_res_coupon mrc 
+        WHERE t.mkt_res_id=mrc.mkt_res_id 
+        AND eff_date &lt;= sysdate 
+        AND exp_date &gt;=  sysdate
+        <if test="req.custNum != null and req.custNum !=''">
+            AND t.cust_acct_id = #{req.custNum} 
+        </if>
+        <if test="req.statusCd != null and req.statusCd !=''">
+            AND t.status_cd = #{req.statusCd} 
+        </if>
+	</select>
+	
+	 <!-- query Couponinst by couponInstNbr-->
+	<select id="checkByInstNbr" parameterType="String"
+	resultType="com.iwhalecloud.retail.rights.dto.response.CheckCouponInstRespDTO">
+		SELECT <include refid="commonFields" />
+        FROM coupon_inst t WHERE t.coupon_inst_nbr = #{couponInstNbr}
+	</select>
+	
+	<!-- query Couponinst by GetUnuseCouponInstRequestDTO-->
+	<select id="queryByMktResId" parameterType="com.iwhalecloud.retail.rights.dto.request.GetUnuseCouponInstRequestDTO"
+	resultType="com.iwhalecloud.retail.rights.entity.CouponInst">
+        SELECT <include refid="commonFields" /> FROM 
+           (SELECT * FROM coupon_inst ci
+            WHERE ci.mkt_res_id = #{mktResId} 
+            AND ci.status_cd = #{statusCd}
+            AND eff_date &lt;= sysdate 
+            AND exp_date &gt;=  sysdate
+            ORDER BY ci.coupon_inst_id ASC) t
+        WHERE rownum &lt; #{supplyNum}
+	</select>
+	
+	
+	<!-- query biggest couponInstNbr-->
+	<select id="queryBiggestInstNbr" resultType="Long">
+		SELECT coupon_inst_nbr FROM coupon_inst
+	    WHERE coupon_inst_id=(SELECT MAX(coupon_inst_id) FROM coupon_inst)
+	</select>
+	
+	<update id="updateCouponInst" parameterType="com.iwhalecloud.retail.rights.entity.CouponInst">
+ 			UPDATE coupon_inst SET 
+ 			<if test="updateDate != null">
+			    update_date = #{updateDate}
+ 			</if> 
+ 			<if test="couponInstNbr != null">
+			    ,coupon_inst_nbr = #{couponInstNbr}
+ 			</if> 
+ 			<if test="mktResId != null">
+			     ,mkt_res_id = #{mktResId}
+ 			</if> 
+ 			<if test="couponAmount != null">
+			    ,coupon_amount = #{couponAmount}
+ 			</if> 
+ 			<if test="custAcctId != null">
+			    ,cust_acct_id = #{custAcctId}
+ 			</if> 
+ 			<if test="effDate != null">
+			    ,eff_date = #{effDate}
+ 			</if> 
+ 			<if test="expDate != null">
+			    ,exp_date = #{expDate}
+ 			</if> 
+ 			<if test="statusCd != null">
+			   ,status_cd = #{statusCd}
+ 			</if> 
+ 			<if test="statusDate != null"> 
+			    ,status_date = #{statusDate}
+ 			</if> 
+ 			<if test="updateStaff != null">
+			    ,update_staff = #{updateStaff}
+ 			</if> 
+ 			<if test="remark != null">
+			    ,remark = #{remark}
+ 			</if> 
+			WHERE coupon_inst_id = #{couponInstId}
+			
+    </update>   
+    
+    <insert id="insertBatchCouponInst"  parameterType="java.util.List">
+		INSERT ALL
+		 <foreach collection ="list" item="inst" index="index">
+			INTO coupon_inst 
+ 			(COUPON_INST_ID, COUPON_INST_NBR, MKT_RES_ID, EFF_DATE, EXP_DATE,STATUS_CD,
+ 			 STATUS_DATE,CREATE_STAFF, CREATE_DATE, UPDATE_STAFF, UPDATE_DATE )
+			VALUES
+        (#{inst.couponInstId},#{inst.couponInstNbr}, #{inst.mktResId}, #{inst.effDate}, #{inst.expDate},#{inst.statusCd},
+         #{inst.statusDate}, #{inst.createStaff}, #{inst.createDate}, #{inst.updateStaff}, #{inst.updateDate})
+	    </foreach >
+	    SELECT 1 FROM DUAL
+    </insert>  
+    
+     <!-- query valid Couponinst by custnum-->
+	<select id="queryEffInstByCustNum" parameterType="com.iwhalecloud.retail.rights.dto.request.QueryCouponInstReqDTO"
+	resultType="com.iwhalecloud.retail.rights.dto.response.QueryCouponInstRespDTO">
+		Select <include refid="commonFields" />
+		FROM coupon_inst t
+        WHERE eff_date &lt;= sysdate 
+        AND exp_date &gt;=  sysdate
+        <if test="custNum != null and custNum !=''">
+            AND cust_acct_id = #{custNum} 
+        </if>
+        <if test="statusCd != null and statusCd !=''">
+            AND status_cd = #{statusCd} 
+        </if>
+	</select> 
+</mapper>

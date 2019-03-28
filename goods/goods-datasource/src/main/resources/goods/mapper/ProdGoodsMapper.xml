@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iwhalecloud.retail.goods.mapper.ProdGoodsMapper" >
+  <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.goods.entity.ProdGoods" >
+    <constructor >
+      <idArg column="GOODS_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="NAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SN" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="BRAND_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="CAT_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="WEIGHT" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="MARKET_ENABLE" jdbcType="DECIMAL" javaType="java.lang.Short" />
+      <arg column="INTRO" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="PRICE" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="COST" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="MKTPRICE" jdbcType="DOUBLE" javaType="java.lang.Double" />
+      <arg column="CREATE_TIME" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="LAST_MODIFY" jdbcType="TIMESTAMP" javaType="java.util.Date" />
+      <arg column="VIEW_COUNT" jdbcType="DECIMAL" javaType="java.lang.Long" />
+      <arg column="BUY_COUNT" jdbcType="DECIMAL" javaType="java.lang.Long" />
+      <arg column="DISABLED" jdbcType="DECIMAL" javaType="java.lang.Short" />
+      <arg column="SORD" jdbcType="DECIMAL" javaType="java.lang.Long" />
+      <arg column="CREATOR_USER" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SUPPER_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="AUDIT_STATE" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SIMPLE_NAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="MIN_NIM" jdbcType="DECIMAL" javaType="java.lang.Integer" />
+      <arg column="UNIT" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SEARCH_KEY" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SELLING_POINT" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="REGION_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="REGION_NAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    GOODS_ID, NAME, SN, BRAND_ID, CAT_ID, WEIGHT, MARKET_ENABLE, INTRO, PRICE, COST, 
+    MKTPRICE, CREATE_TIME, LAST_MODIFY, VIEW_COUNT, BUY_COUNT, DISABLED, SORD, CREATOR_USER, 
+    SUPPER_ID, AUDIT_STATE, SIMPLE_NAME, MIN_NIM, UNIT, SEARCH_KEY, SELLING_POINT, REGION_ID, 
+    REGION_NAME,IS_SERIAL_NO
+  </sql>
+  
+  <select id="getComplexGoodsByCatId" resultType="com.iwhalecloud.retail.goods.entity.ProdGoods" 
+  parameterType="java.lang.String" >
+    SELECT b.* from prod_cat_complex g,prod_goods b 
+    WHERE g.goods_id = b.goods_id  
+    AND g.cat_id IN(SELECT c.cat_id FROM prod_goods_cat c
+					WHERE c.cat_path LIKE CONCAT(
+					(SELECT cat_path FROM prod_goods_cat WHERE cat_id = #{catId}),'%')
+					)
+    ORDER BY g.create_time DESC
+  </select>
+
+  <select id="queryGoodsForPage" resultType="com.iwhalecloud.retail.goods.dto.ProdGoodsDTO" parameterType="com.iwhalecloud.retail.goods.dto.req.ProdGoodsQueryReq">
+    select
+    <include refid="Base_Column_List"></include>
+    from prod_goods t where 1=1 and DISABLED=0
+    <if test="req.ids != null" >
+      and t.GOODS_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="req.ids">
+        #{item}
+      </foreach>
+    </if>
+    <if test="req.searchKey != null and req.searchKey != ''">
+      and lower(t.SEARCH_KEY) like lower(CONCAT(CONCAT('%', #{req.searchKey }), '%'))
+    </if>
+    <if test="req.catId != null and req.catId != ''">
+      and t.CAT_ID = #{req.catId}
+    </if>
+    <if test="req.marketEnable != null and req.marketEnable != ''">
+      and t.MARKET_ENABLE = #{req.marketEnable}
+    </if>
+    <if test="req.typeIds != null">
+      and t.TYPE_ID not in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="req.typeIds">
+        #{item}
+      </foreach>
+    </if>
+    <if test="req.brandId != null and req.brandId != ''">
+      and t.BRAND_ID = #{req.brandId}
+    </if>
+    <if test="req.sortType != null">
+      order by ${req.sortType}
+    </if>
+  </select>
+
+  <select id="listGoods" resultType="com.iwhalecloud.retail.goods.dto.ProdGoodsDTO" parameterType="com.iwhalecloud.retail.goods.dto.req.ProdGoodsListReq">
+    select
+    <include refid="Base_Column_List"></include>
+    from prod_goods t where 1=1  and DISABLED=0
+    <if test="req.ids != null" >
+      and t.GOODS_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="req.ids">
+        #{item}
+      </foreach>
+    </if>
+    <if test="req.searchKey != null and req.searchKey != ''">
+      and lower(t.SEARCH_KEY) like lower(CONCAT(CONCAT('%', #{req.searchKey }), '%'))
+    </if>
+    <if test="req.catId != null and req.catId != ''">
+      and t.CAT_ID = #{req.catId}
+    </if>
+    <if test="req.marketEnable != null and req.marketEnable != ''">
+      and t.MARKET_ENABLE = #{req.marketEnable}
+    </if>
+    order by CREATE_TIME desc
+  </select>
+</mapper>

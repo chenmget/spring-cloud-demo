@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.member.mapper.MemberMerchantMapper">
+
+<sql id="allFields">
+    t.MERCH_ID 
+    ,t.MEM_ID 
+    ,t.LV_ID 
+    ,t.STATUS 
+    ,t.UPDATE_DATE 
+    ,t.UPDATE_STAFF 
+</sql>
+    <select id="queryMemberMerchantForPage"
+            resultType="com.iwhalecloud.retail.member.dto.response.MemberMerchantQueryForPageResp">
+        select <include refid="allFields"/>
+        from mem_member_merchant t
+        where 1=1
+        <if test="null != req.merchId and '' != req.merchId">
+            and t.MERCH_ID = #{req.merchId}
+        </if>
+        <if test="null != req.memId and '' != req.memId">
+            and t.MEM_ID = #{req.memId}
+        </if>
+        <if test="null != req.lvId and '' != req.lvId">
+            and t.LV_ID = #{req.lvId}
+        </if>
+        <if test="null != req.status and '' != req.status">
+            and t.STATUS = #{req.status}
+        </if>
+        <if test="null != req.updateStartDate">
+            and t.UPDATE_DATE >= #{req.updateStartDate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="null != req.updateEndDate">
+            and t.UPDATE_DATE <![CDATA[ <= ]]> #{req.updateEndDate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="null != req.updateStaff and '' != req.updateStaff">
+            and t.UPDATE_STAFF = #{req.updateStaff}
+        </if>
+        order by t.UPDATE_DATE desc
+    </select>
+
+</mapper>

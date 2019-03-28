@@ -1,0 +1,286 @@
+package com.iwhalecloud.retail.goods2b.entity;
+
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.KeySequence;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
+
+/**
+ * GoodsExt
+ * @author generator
+ * @version 1.0
+ * @since 1.0
+ */
+@Data
+@TableName("PROD_GOODS_EXT")
+@KeySequence(value="seq_prod_goods_ext_goods_id",clazz = String.class)
+@ApiModel(value = "对应模型PROD_GOODS_EXT, 对应实体goodsExt类")
+public class GoodsExt implements Serializable {
+    /**表名常量*/
+    public static final String TNAME = "PROD_GOODS_EXT";
+  	private static final long serialVersionUID = 1L;
+  
+  	
+  	//属性 begin
+  	/**
+  	 * goodsId
+  	 */
+	@TableId
+	@ApiModelProperty(value = "goodsId")
+  	private String goodsId;
+  	
+  	/**
+  	 * param1
+  	 */
+	@ApiModelProperty(value = "param1")
+  	private String param1;
+  	
+  	/**
+  	 * param2
+  	 */
+	@ApiModelProperty(value = "param2")
+  	private String param2;
+  	
+  	/**
+  	 * param3
+  	 */
+	@ApiModelProperty(value = "param3")
+  	private String param3;
+  	
+  	/**
+  	 * param4
+  	 */
+	@ApiModelProperty(value = "param4")
+  	private String param4;
+  	
+  	/**
+  	 * param5
+  	 */
+	@ApiModelProperty(value = "param5")
+  	private String param5;
+  	
+  	/**
+  	 * param6
+  	 */
+	@ApiModelProperty(value = "param6")
+  	private String param6;
+  	
+  	/**
+  	 * param7
+  	 */
+	@ApiModelProperty(value = "param7")
+  	private String param7;
+  	
+  	/**
+  	 * param8
+  	 */
+	@ApiModelProperty(value = "param8")
+  	private String param8;
+  	
+  	/**
+  	 * param9
+  	 */
+	@ApiModelProperty(value = "param9")
+  	private String param9;
+  	
+  	/**
+  	 * param10
+  	 */
+	@ApiModelProperty(value = "param10")
+  	private String param10;
+  	
+  	/**
+  	 * param11
+  	 */
+	@ApiModelProperty(value = "param11")
+  	private String param11;
+  	
+  	/**
+  	 * param12
+  	 */
+	@ApiModelProperty(value = "param12")
+  	private String param12;
+  	
+  	/**
+  	 * param13
+  	 */
+	@ApiModelProperty(value = "param13")
+  	private String param13;
+  	
+  	/**
+  	 * param14
+  	 */
+	@ApiModelProperty(value = "param14")
+  	private String param14;
+  	
+  	/**
+  	 * param15
+  	 */
+	@ApiModelProperty(value = "param15")
+  	private String param15;
+  	
+  	/**
+  	 * param16
+  	 */
+	@ApiModelProperty(value = "param16")
+  	private String param16;
+  	
+  	/**
+  	 * param17
+  	 */
+	@ApiModelProperty(value = "param17")
+  	private String param17;
+  	
+  	/**
+  	 * param18
+  	 */
+	@ApiModelProperty(value = "param18")
+  	private String param18;
+  	
+  	/**
+  	 * param19
+  	 */
+	@ApiModelProperty(value = "param19")
+  	private String param19;
+  	
+  	/**
+  	 * param20
+  	 */
+	@ApiModelProperty(value = "param20")
+  	private String param20;
+  	
+  	/**
+  	 * param21
+  	 */
+	@ApiModelProperty(value = "param21")
+  	private String param21;
+  	
+  	/**
+  	 * param22
+  	 */
+	@ApiModelProperty(value = "param22")
+  	private String param22;
+  	
+  	/**
+  	 * param23
+  	 */
+	@ApiModelProperty(value = "param23")
+  	private String param23;
+  	
+  	/**
+  	 * param24
+  	 */
+	@ApiModelProperty(value = "param24")
+  	private String param24;
+  	
+  	/**
+  	 * param25
+  	 */
+	@ApiModelProperty(value = "param25")
+  	private String param25;
+  	
+  	
+  	//属性 end
+	
+    /** 字段名称枚举. */
+    public enum FieldNames {
+		/** goodsId. */
+		goodsId("goodsId","GOODS_ID"),
+		
+		/** param1. */
+		param1("param1","PARAM1"),
+		
+		/** param2. */
+		param2("param2","PARAM2"),
+		
+		/** param3. */
+		param3("param3","PARAM3"),
+		
+		/** param4. */
+		param4("param4","PARAM4"),
+		
+		/** param5. */
+		param5("param5","PARAM5"),
+		
+		/** param6. */
+		param6("param6","PARAM6"),
+		
+		/** param7. */
+		param7("param7","PARAM7"),
+		
+		/** param8. */
+		param8("param8","PARAM8"),
+		
+		/** param9. */
+		param9("param9","PARAM9"),
+		
+		/** param10. */
+		param10("param10","PARAM10"),
+		
+		/** param11. */
+		param11("param11","PARAM11"),
+		
+		/** param12. */
+		param12("param12","PARAM12"),
+		
+		/** param13. */
+		param13("param13","PARAM13"),
+		
+		/** param14. */
+		param14("param14","PARAM14"),
+		
+		/** param15. */
+		param15("param15","PARAM15"),
+		
+		/** param16. */
+		param16("param16","PARAM16"),
+		
+		/** param17. */
+		param17("param17","PARAM17"),
+		
+		/** param18. */
+		param18("param18","PARAM18"),
+		
+		/** param19. */
+		param19("param19","PARAM19"),
+		
+		/** param20. */
+		param20("param20","PARAM20"),
+		
+		/** param21. */
+		param21("param21","PARAM21"),
+		
+		/** param22. */
+		param22("param22","PARAM22"),
+		
+		/** param23. */
+		param23("param23","PARAM23"),
+		
+		/** param24. */
+		param24("param24","PARAM24"),
+		
+		/** param25. */
+		param25("param25","PARAM25");
+
+		private String fieldName;
+		private String tableFieldName;
+		FieldNames(String fieldName, String tableFieldName){
+			this.fieldName = fieldName;
+			this.tableFieldName = tableFieldName;
+		}
+
+		public String getFieldName() {
+			return fieldName;
+		}
+
+		public String getTableFieldName() {
+			return tableFieldName;
+		}
+	}
+
+}

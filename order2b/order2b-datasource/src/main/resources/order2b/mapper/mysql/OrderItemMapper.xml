@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.OrderItemMapper">
+    <insert id="saveOrderItem" parameterType="list">
+        INSERT INTO ord_order_items(
+        item_id,order_id,goods_id,spec_id,num,goods_name,price,coupon_price,delivery_num,
+        item_type,product_id,spec_desc,image,unit,source_from,product_name,sn,brand_name,
+        lan_id,create_time
+        )
+        VALUES
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.itemId},#{item.orderId},#{item.goodsId},#{item.specId},#{item.num},#{item.goodsName,jdbcType=VARCHAR},#{item.price},#{item.couponPrice},0,
+            #{item.itemType,jdbcType=VARCHAR},#{item.productId},
+            #{item.specDesc,jdbcType=VARCHAR},#{item.image,jdbcType=VARCHAR},#{item.unit,jdbcType=VARCHAR},#{item.sourceFrom,jdbcType=VARCHAR},
+            #{item.productName,jdbcType=VARCHAR}, #{item.sn,jdbcType=VARCHAR}, #{item.brandName,jdbcType=VARCHAR},
+            #{item.lanId,jdbcType=VARCHAR},now()
+            )
+        </foreach>
+    </insert>
+    <update id="updateOrderItemByItemId">
+        UPDATE ord_order_items
+        <set>
+            <if test="deliveryNum !=null and deliveryNum!=''">
+                delivery_num =#{deliveryNum},
+            </if>
+            <if test="receiveNum !=null and receiveNum!=''">
+                receive_num =#{receiveNum},
+            </if>
+            <if test="returnNum !=null  and returnNum1=''">
+                return_num =#{returnNum},
+            </if>
+            <if test="replaceNum !=null and replaceNum!=''">
+                replace_num =#{replaceNum},
+            </if>
+        </set>
+        where item_id=#{itemId}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </update>
+
+    <select id="selectOrderItemByOrderId" resultType="com.iwhalecloud.retail.order2b.entity.OrderItem">
+        SELECT * FROM ord_order_items WHERE  order_id =#{orderID}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </select>
+
+
+    <select id="selectOrderIdByresNbr" resultType="java.lang.String">
+        SELECT  order_id FROM  ord_order_item_detail WHERE  res_nbr= #{resNbr}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </select>
+
+    <resultMap id="orderItemInfo" type="com.iwhalecloud.retail.order2b.model.OrderItemInfoModel">
+        <id column="item_id" property="itemId"/>
+        <collection property="detailList"
+                    select="com.iwhalecloud.retail.order2b.mapper.OrderItemDetailMapper.selectReceiveItemList"
+                    column="item_id"/>
+    </resultMap>
+    <select id="selectOrderItemInfoListById"
+            resultType="com.iwhalecloud.retail.order2b.model.OrderItemInfoModel">
+        SELECT * FROM ord_order_items WHERE 1=1
+         <if test="orderId !=null and orderId !=''">
+             and order_id =#{orderId}
+         </if>
+        <if test="itemId !=null and itemId !=''">
+            and item_id =#{itemId}
+        </if>
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+        and SOURCE_FROM=#{sourceFrom}
+    </select>
+    <select id="selectOrderItemByItemId" resultType="com.iwhalecloud.retail.order2b.entity.OrderItem">
+        select * from ord_order_items WHERE  item_id=#{itemId}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </select>
+
+    <select id="selectOrderItem" resultType="com.iwhalecloud.retail.order2b.entity.OrderItem">
+        select * from ord_order_items WHERE 1=1
+        <if test="itemId !=null and itemId !=''">
+            AND item_id=#{itemId}
+        </if>
+        <if test="orderId !=null and orderId !=''">
+            and order_id=#{orderId}
+        </if>
+        <if test="goodsName !=null and goodsName!=''">
+            and goods_name like #{goodsName}
+        </if>
+        <if test="sn !=null and sn!=''">
+            and sn = #{sn}
+        </if>
+        <if test="brandName !=null and brandName!=''">
+            and brand_name like #{brandName}
+        </if>
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+        and source_from=#{sourceFrom}
+    </select>
+
+
+</mapper>

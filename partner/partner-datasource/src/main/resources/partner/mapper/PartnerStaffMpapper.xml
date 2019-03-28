@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.PartnerStaffMapper">
+
+    <select id="qryPartnerStaffList" parameterType="com.iwhalecloud.retail.partner.dto.req.PartnerStaffPageReq"
+            resultType="com.iwhalecloud.retail.partner.dto.PartnerStaffDTO">
+		SELECT a.*, b.NAME SHOP_NAME FROM PAR_PARTNER_STAFF a, PAR_PARTNER_SHOP b
+        <where>
+            AND a.PARTNER_SHOP_ID = b.PARTNER_SHOP_ID
+            <if test="pageReq.partnerShopId!=null and pageReq.partnerShopId!=''">
+                and a.PARTNER_SHOP_ID=#{pageReq.partnerShopId}
+            </if>
+            <if test="pageReq.staffCode!=null and pageReq.staffCode!=''">
+                and a.STAFF_CODE=#{pageReq.staffCode}
+            </if>
+            <if test="pageReq.staffName!=null and pageReq.staffName!=''">
+                and a.STAFF_NAME like CONCAT(CONCAT('%', #{pageReq.staffName}), '%')
+            </if>
+            <if test="pageReq.shopName!=null and pageReq.shopName!=''">
+               and b.NAME LIKE CONCAT(CONCAT('%', #{pageReq.shopName}), '%')
+            </if>
+        </where>
+        order by a.CREATE_DATE desc
+    </select>
+
+</mapper>

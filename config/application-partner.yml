@@ -1,0 +1,29 @@
+mybatis-plus:
+  mapperLocations: classpath:partner/mapper/*.xml
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+project:
+  name: 测试环境
+  
+server:
+  port: 8325
+
+spring.dubbo:
+    application:
+      name: order-provider
+    registry:
+      address: zookeeper://10.45.47.87:2281
+    protocol:
+      name: dubbo
+      port: 27882
+    scan: com.iwhalecloud.retail
+  
+logging.level.com.iwhalecloud.retail.order.mapper: debug
+ 
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.47.88:3306/nretail
+  username: nretail
+  password: nretail

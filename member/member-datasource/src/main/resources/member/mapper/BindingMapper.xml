@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.member.mapper.BindingMapper">
+
+	<sql id="commonFields">
+	    id
+	    ,member_id
+	    ,target_id
+	    ,target_type
+	    ,uname
+	</sql>
+
+    <insert id="insertBinding"  parameterType="java.util.List">
+		INSERT INTO mem_binding 
+ 		(id ,member_id, target_id, target_type, uname)
+		VALUES
+        (#{id},#{memberId}, #{targetId}, #{targetType}, #{uname})
+    </insert>  
+     
+     
+	<!-- 删除 -->
+	<delete id="deleteBindingCondition" parameterType="com.iwhalecloud.retail.member.entity.Binding">
+		delete from mem_binding where 1 = 1
+        <if test="memberId != null" >
+	      AND member_id = #{memberId}
+	    </if>
+	    <if test="targetId != null" >
+	      AND target_id = #{targetId}
+	    </if>
+	    <if test="targetType != null" >
+	      AND target_type = #{targetType}
+	    </if>
+	    <if test="uname != null" >
+	      AND uname = #{uname}
+	    </if>
+	    <if test="uname != null" >
+	      AND id = #{id}
+	    </if>
+	</delete>
+	
+	
+	 <!-- queryBinding -->
+	 <select id="queryBindingCondition" parameterType="com.iwhalecloud.retail.member.entity.Binding"
+	 resultType="com.iwhalecloud.retail.member.entity.Binding">
+		SELECT <include refid="commonFields" />
+		FROM mem_binding 
+		WHERE 1 = 1
+		<if test="memberId != null" >
+	      AND member_id = #{memberId}
+	    </if>
+	    <if test="targetId != null" >
+	      AND target_id = #{targetId}
+	    </if>
+	    <if test="targetType != null" >
+	      AND target_type = #{targetType}
+	    </if>
+	    <if test="uname != null" >
+	      AND uname = #{uname}
+	    </if>
+	    <if test="id != null" >
+	      AND id = #{id}
+	    </if>
+	</select>
+	
+	<update id="updateBindingCodition" parameterType="com.iwhalecloud.retail.member.entity.Binding" >
+	   update mem_binding
+	   <set >
+	     <if test="memberId != null" >
+	       member_id = #{memberId},
+	     </if>
+	     <if test="targetId != null" >
+	       target_id = #{targetId},
+	     </if>
+	     <if test="targetType != null" >
+	       target_type = #{targetType},
+	     </if>
+	     <if test="uname != null" >
+	       uname = #{uname},
+	     </if>
+	   </set>
+	   where id = #{id}
+   </update>
+   
+</mapper>

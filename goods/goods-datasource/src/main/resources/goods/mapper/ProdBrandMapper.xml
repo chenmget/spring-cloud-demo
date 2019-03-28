@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iwhalecloud.retail.goods.mapper.ProdBrandMapper" >
+  <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.goods.entity.ProdBrand" >
+    <constructor >
+      <idArg column="BRAND_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="NAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="URL" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="BRAND_CODE" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="BRIEF" jdbcType="VARCHAR" javaType="java.lang.String" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    BRAND_ID, NAME, BRAND_CODE, BRAND_DESC
+  </sql>
+
+  <select id="selectByPrimaryKey" resultType="com.iwhalecloud.retail.goods.entity.ProdBrand" parameterType="java.lang.String" >
+    select
+    <include refid="Base_Column_List" />
+    from prod_brand
+    where BRAND_ID = #{brandId,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String" >
+    delete from prod_brand
+    where BRAND_ID = #{brandId,jdbcType=VARCHAR}
+  </delete>
+  <insert id="insert" parameterType="com.iwhalecloud.retail.goods.entity.ProdBrand" >
+    insert into prod_brand (BRAND_ID, NAME, URL,
+    BRAND_CODE, BRIEF)
+    values (#{brandId,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{url,jdbcType=VARCHAR},
+    #{brandCode,jdbcType=VARCHAR}, #{brief,jdbcType=VARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.iwhalecloud.retail.goods.entity.ProdBrand" >
+    insert into prod_brand
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="brandId != null" >
+        BRAND_ID,
+      </if>
+      <if test="name != null" >
+        NAME,
+      </if>
+      <if test="url != null" >
+        URL,
+      </if>
+      <if test="brandCode != null" >
+        BRAND_CODE,
+      </if>
+      <if test="brief != null" >
+        BRIEF,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="brandId != null" >
+        #{brandId,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null" >
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="brandCode != null" >
+        #{brandCode,jdbcType=VARCHAR},
+      </if>
+      <if test="brief != null" >
+        #{brief,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.iwhalecloud.retail.goods.entity.ProdBrand" >
+    update prod_brand
+    <set >
+      <if test="name != null" >
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="url != null" >
+        URL = #{url,jdbcType=VARCHAR},
+      </if>
+      <if test="brandCode != null" >
+        BRAND_CODE = #{brandCode,jdbcType=VARCHAR},
+      </if>
+      <if test="brief != null" >
+        BRIEF = #{brief,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where BRAND_ID = #{brandId,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.iwhalecloud.retail.goods.entity.ProdBrand" >
+    update prod_brand
+    set NAME = #{name,jdbcType=VARCHAR},
+    URL = #{url,jdbcType=VARCHAR},
+    BRAND_CODE = #{brandCode,jdbcType=VARCHAR},
+    BRIEF = #{brief,jdbcType=VARCHAR}
+    where BRAND_ID = #{brandId,jdbcType=VARCHAR}
+  </update>
+
+
+  <!-- listAll -->
+  <select id="listAll" resultType="com.iwhalecloud.retail.goods.entity.ProdBrand">
+    select
+    <include refid="Base_Column_List" />
+    from prod_brand
+    where 1 = 1
+  </select>
+</mapper>

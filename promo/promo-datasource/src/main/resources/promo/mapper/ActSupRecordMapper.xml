@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.ActSupRecordMapper">
+
+    <sql id="allFields">
+    t.RECORD_ID 
+    ,t.GMT_CREATE 
+    ,t.GMT_MODIFIED 
+    ,t.CREATOR 
+    ,t.MODIFIER 
+    ,t.MARKETING_ACTIVITY_ID 
+    ,t.APPLY_PROOF 
+    ,t.DESC 
+    ,t.STATUS 
+</sql>
+
+    <select id="queryActSupRecord" resultType="com.iwhalecloud.retail.promo.dto.resp.ActSupRecodeListResp"
+            parameterType="com.iwhalecloud.retail.promo.dto.req.QueryActSupRecordReq">
+        SELECT asr.RECORD_ID,
+        asr.GMT_CREATE,
+        asr.CREATOR,
+        asr.STATUS,
+        asr.DESCRIPTION,
+        asr.APPLY_PROOF,
+        ama.NAME,
+        ama.CODE,
+        ama.START_TIME,
+        ama.END_TIME
+        FROM act_supplementary_record asr,act_marketing_activity ama
+        WHERE 1 = 1 AND ama.ID = asr.MARKETING_ACTIVITY_ID
+        and asr.status <![CDATA[ <> ]]> ${@com.iwhalecloud.retail.promo.common.PromoConst$ActivitySupStatus@ACTIVITY_SUP_STATUS_CANCEL.getCode()}
+        <if test="req.name!=null and req.name !=''">
+            and ama.name LIKE concat('%',#{req.name},'%')
+        </if>
+        <if test="req.code!=null and req.code !=''">
+            and ama.code = #{req.code}
+        </if>
+        <if test="req.status!=null and req.status !=''">
+            and asr.status = #{req.status}
+        </if>
+        <if test="req.supStartDate != null and req.supStartDate!= 'Invalid date'">
+            and asr.gmt_create <![CDATA[ >= ]]> #{req.supStartDate}
+        </if>
+        <if test="req.supEndDate != null and req.supEndDate!= 'Invalid date'">
+            and asr.gmt_create <![CDATA[ <= ]]> #{req.supEndDate}
+        </if>
+        <if test="req.actBeginStartDate != null and req.actBeginStartDate!= 'Invalid date'">
+            and ama.start_time <![CDATA[ >= ]]> #{req.actBeginStartDate}
+        </if>
+        <if test="req.actBeginEndDate != null and req.actBeginEndDate!= 'Invalid date'">
+            and ama.start_time <![CDATA[ <= ]]> #{req.actBeginEndDate}
+        </if>
+        <if test="req.actFinishStartDate != null and req.actFinishStartDate!= 'Invalid date'">
+            and ama.end_time <![CDATA[ >= ]]> #{req.actFinishStartDate}
+        </if>
+        <if test="req.actFinishEndDate != null and req.actFinishEndDate!= 'Invalid date'">
+            and ama.end_time <![CDATA[ <= ]]> #{req.actFinishEndDate}
+        </if>
+        <if test="req.recordId != null and req.recordId!= ''">
+            and asr.RECORD_ID =#{req.recordId}
+        </if>
+        order by asr.GMT_CREATE DESC
+    </select>
+
+</mapper>

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iwhalecloud.retail.goods.mapper.ProdSpecificationMapper" >
+  <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.goods.entity.ProdSpecification" >
+    <constructor >
+      <idArg column="SPEC_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SPEC_NAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="SPEC_TYPE" jdbcType="DECIMAL" javaType="java.lang.Short" />
+      <arg column="SPEC_MEMO" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="DISABLED" jdbcType="DECIMAL" javaType="java.lang.Short" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    SPEC_ID, SPEC_NAME, SPEC_TYPE, SPEC_MEMO, DISABLED
+  </sql>
+  
+  <select id="listSpec" resultType="com.iwhalecloud.retail.goods.entity.ProdSpecification">
+    SELECT 
+    <include refid="Base_Column_List" />
+    FROM prod_specification
+    WHERE 1 = 1
+  </select>
+  
+  <update id="updateSpec" parameterType="com.iwhalecloud.retail.goods.entity.ProdSpecification" >
+    UPDATE prod_specification
+    <set >
+      <if test="specName != null" >
+        SPEC_NAME = #{specName},
+      </if>
+      <if test="specType != null" >
+        SPEC_TYPE = #{specType},
+      </if>
+      <if test="specMemo != null" >
+        SPEC_MEMO = #{specMemo},
+      </if>
+      <if test="disabled != null" >
+        DISABLED = #{disabled},
+      </if>
+    </set>
+    WHERE SPEC_ID = #{specId}
+  </update>
+  
+  <delete id="deleteSpec" parameterType="com.iwhalecloud.retail.goods.dto.req.ProdSpecificationDeleteReq" >
+    DELETE FROM prod_specification
+    WHERE SPEC_ID IN
+    <foreach item="item" collection="array" open="(" separator="," close=")">
+            ${item}
+    </foreach>
+  </delete>
+</mapper>

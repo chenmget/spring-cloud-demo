@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResouceStoreObjRelMapper">
+
+<sql id="allFields">
+    t.MKT_RES_STORE_OBJ_REL_ID 
+    ,t.MKT_RES_STORE_ID 
+    ,t.OBJ_TYPE 
+    ,t.OBJ_ID 
+    ,t.REGION_ID 
+    ,t.STATUS_CD 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+    ,t.IS_DEFAULT 
+</sql>
+
+    <update id="updateStoreRel" parameterType="com.iwhalecloud.retail.warehouse.dto.ResouceStoreObjRelDTO">
+      update mkt_res_store_obj_rel set
+        STATUS_CD = #{statusCd}
+        where MKT_RES_STORE_ID = #{mktResStoreId}
+    </update>
+
+</mapper>

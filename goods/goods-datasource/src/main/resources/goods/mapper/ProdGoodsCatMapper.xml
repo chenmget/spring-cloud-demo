@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.iwhalecloud.retail.goods.mapper.ProdGoodsCatMapper" >
+  <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.goods.entity.ProdGoodsCat" >
+    <constructor >
+      <idArg column="CAT_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="NAME" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="PARENT_ID" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+      <arg column="CAT_PATH" jdbcType="VARCHAR" javaType="java.lang.String" />
+      <arg column="CAT_ORDER" jdbcType="DECIMAL" javaType="java.lang.Integer" />
+    </constructor>
+  </resultMap>
+  <sql id="Base_Column_List" >
+    CAT_ID, NAME, PARENT_ID, CAT_PATH, CAT_ORDER
+  </sql>
+  
+  <select id="listCats" resultType="com.iwhalecloud.retail.goods.entity.ProdGoodsCat" 
+  parameterType="com.iwhalecloud.retail.goods.dto.req.ProdGoodsCatsListByIdReq" >
+     SELECT <include refid="Base_Column_List" />
+     FROM prod_goods_cat where 1=1 
+     <if test="null != catId and '' != catId">
+        AND cat_id= #{catId}
+     </if>
+     <if test="null != parentCatId and '' != parentCatId">
+        AND parent_id= #{parentCatId}
+     </if>
+  </select>
+  
+</mapper>

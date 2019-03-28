@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">  
+  
+<mapper namespace="com.iwhalecloud.retail.order.mapper.OrderRecommenderMapper">
+
+	 <sql id="allFields">
+        recommender_id,
+        order_id,
+        staff_id,
+        good_id,
+        good_name,
+        good_price,
+        good_amount,
+        shop_id,
+        customer_phone,
+        order_price,
+        percentage,
+        total_percentage,
+        total_order_money,
+        total_order_amount,
+        create_date,
+        shop_address,
+        shop_name,
+        staff_name
+    </sql>
+	
+	<!-- get orderRecommender -->
+	<select id="getOrderRecommender"  parameterType="String"
+	resultType="com.iwhalecloud.retail.order.dto.response.OrderRecommenderResp">
+		SELECT <include refid="allFields" />
+		FROM ord_order_recommender
+		where order_id = #{orderId}
+	</select>
+
+	<select id="listOrderRecommender"  parameterType="com.iwhalecloud.retail.order.dto.resquest.ListOrderRecommenderReq"
+	resultType="com.iwhalecloud.retail.order.dto.response.OrderRecommenderPageResp">
+		SELECT <include refid="allFields" /> FROM ord_order_recommender 
+		WHERE 1 = 1 
+		<if test="null != req.staffId">
+		  AND staff_id = #{req.staffId} 
+		</if> 
+		ORDER BY create_date DESC 
+	</select>
+	
+	<!-- get newest OrderRecommender by user -->
+	<select id="getNewestOrderRecommender" parameterType="String"
+	resultType="com.iwhalecloud.retail.order.dto.response.OrderRecommenderResp">
+		SELECT <include refid="allFields" /> FROM
+		( SELECT <include refid="allFields" /> FROM ord_order_recommender WHERE staff_id = #{staffId} ORDER BY create_date DESC ) 
+		WHERE ROWNUM <![CDATA[ <= ]]> 1 
+	</select>
+
+    <!-- get top n OrderRecommender order by totalPercentage-->
+	<select id="listOrderRecommenderRank" parameterType="String"
+	resultType="com.iwhalecloud.retail.order.dto.response.OrderRecommenderRankResp">
+		Select rownum as rankNo,b.*
+        From (Select Row_Number() Over(Partition By staff_id Order By total_order_amount Desc) RK,eor.*
+          From ord_order_recommender eor) b where b.RK = 1
+                AND ROWNUM <![CDATA[ <= ]]> 10
+                AND shop_id = #{shopIdd} 
+           
+	</select>
+</mapper>

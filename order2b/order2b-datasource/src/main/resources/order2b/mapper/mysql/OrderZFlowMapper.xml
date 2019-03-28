@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.OrderZFlowMapper">
+
+    <select id="selectFlowList"
+            resultType="com.iwhalecloud.retail.order2b.dto.model.order.OrderZFlowDTO">
+        SELECT z.*  FROM  ord_order_z_flow z
+        WHERE  order_id =#{orderId}  and SOURCE_FROM=#{sourceFrom}
+         <if test="lanId !=null and lanId !=''">
+             and lan_id =#{lanId}
+         </if>
+        ORDER BY sort ASC
+    </select>
+
+    <select id="selectFlowInit" parameterType="com.iwhalecloud.retail.order2b.entity.OrderFlowInit"
+    resultType="com.iwhalecloud.retail.order2b.entity.OrderFlowInit">
+        SELECT * FROM  ord_order_init
+        WHERE 1=1
+          <if test="typeCode !=null and typeCode !=''">
+              and type_code=#{typeCode}
+          </if>
+          <if test="bindType !=null and bindType !=''">
+              and bind_type =#{bindType}
+          </if>
+          <if test="serviceType !=null and serviceType !=''">
+              and SERVICE_TYPE=#{serviceType}
+          </if>
+        <if test="orderType !=null and orderType !=''">
+            and order_type =#{orderType}
+        </if>
+        <if test="payType !=null and payType !=''">
+            and pay_type =#{payType}
+        </if>
+    </select>
+
+    <update id="updateFlowList">
+        UPDATE ord_order_z_flow
+        SET is_exe=1,UPDATE_TIME=now()
+        <if test="handlerId !=null and handlerId !=''">
+            ,HANDLER_ID=#{handlerId}
+        </if>
+        WHERE order_id=#{orderId} AND FLOW_TYPE=#{flowType}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id =#{lanId}
+        </if>
+    </update>
+
+    <insert id="insertFlowList" parameterType="list">
+        INSERT INTO ord_order_z_flow (
+        FLOW_ID,order_Id,BIND_TYPE,is_exe,HANDLER_ID,FLOW_TYPE,UPDATE_TIME,CREATE_TIME,sort,SOURCE_FROM,
+        lan_id
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.flowId},#{item.orderId},#{item.bindType},#{item.isExe},#{item.handlerId},#{item.flowType},#{item.updateTime},now(),#{item.sort},#{item.sourceFrom},
+            #{item.lanId}
+            )
+        </foreach>
+    </insert>
+
+    <select id="currentFlow" resultType="com.iwhalecloud.retail.order2b.entity.ZFlow">
+      SELECT flow_type,sort FROM  ord_order_z_flow
+     WHERE order_id =#{orderId} AND is_exe = 0
+     and SOURCE_FROM=#{sourceFrom}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id =#{lanId}
+        </if>
+        ORDER BY sort ASC LIMIT 1
+    </select>
+
+</mapper>

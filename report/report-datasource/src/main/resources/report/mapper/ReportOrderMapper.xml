@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.report.mapper.ReportOrderMapper">
+  
+    <select id="ListReportOrder" parameterType="com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq"
+            resultType="com.iwhalecloud.retail.report.dto.response.ReportOrderResp">
+	select * from (
+	SELECT 
+	j.*,
+	GROUP_CONCAT(l.name) couponActive,
+	k.PROMOTION_TYPE couponType,
+	k.DISCOUNT/100 couponMoney FROM (
+		SELECT
+	       a.order_id,
+	       a.status,
+	       a.source_from,
+	       a.ORDER_CAT TYPE,
+	       a.order_type,
+	       a.payment_type,
+	       a.pay_type,
+	       h.cat_name CAT_ID,
+	       g.name BRAND_ID,
+	       c.product_name unitName,
+	       c.UNIT_TYPE,
+	       b.SN,
+	       d.num,
+	       d.price/100 price,
+	       d.num * d.price/100 sumMoney,
+	       '' ship_num,
+	       a.create_time,
+	       a.pay_time,
+	       a.receive_time,
+	       a.SUPPLIER_NAME MERCHANT_NAME,
+	       e.MERCHANT_CODE,
+	       a.user_name merchantName1,
+	       f.MERCHANT_CODE merchantCode1,
+	       f.BUSINESS_ENTITY_NAME,
+	       f.LAN_ID,
+	       (SELECT region_name FROM sys_common_region WHERE region_id =f.city) CITY
+	  FROM ord_order         a,
+	       prod_product      b,
+	       prod_product_base c,
+	       ord_order_items   d,
+	       par_merchant      e,
+	       par_merchant      f,
+	       prod_brand        g,
+	       PROD_CAT			 h
+  where 1=1
+  <if test="req.createTimeStart!=null and req.createTimeStart!=''">
+    and a.CREATE_TIME &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+  </if>
+  <if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
+      and a.CREATE_TIME &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+  </if>
+  <if test="req.outTimeStart!=null and req.outTimeStart!=''">
+    and a.RECEIVE_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+  </if>
+  <if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
+      and a.RECEIVE_TIME &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+  </if>
+  <if test='req.status!=null and req.status !=""'>
+     and a.status=#{req.status}
+  </if>
+  <if test='req.lanId !=null and req.lanId !="" and req.lanId !="0"'>
+    and f.LAN_ID =#{req.lanId}
+  </if>
+  <if test='req.type!=null and req.type !="" and req.type !="2"'>
+    and a.ORDER_CAT =#{req.type}
+  </if>
+  <if test='req.city!=null and req.city!="" and req.city !="0"'>
+    and f.CITY =#{req.city}
+  </if>  
+  <if test="req.suplierName!=null and req.suplierName!=''">
+    and a.SUPPLIER_NAME like CONCAT(CONCAT('%',#{req.suplierName}),'%')
+  </if>
+  <if test="req.suplierCode!=null and req.suplierCode!=''">
+    and e.MERCHANT_CODE  like CONCAT(CONCAT('%',#{req.suplierCode}),'%')
+  </if>
+  <if test="req.merchantName!=null and req.merchantName!=''">
+    and a.user_name like CONCAT(CONCAT('%',#{req.merchantName}),'%')
+  </if>
+  <if test="req.merchantCode!=null and req.merchantCode!=''">
+    and f.MERCHANT_CODE  like CONCAT(CONCAT('%',#{req.merchantCode}),'%')
+  </if>
+  <if test="req.businessEntityName!=null and req.businessEntityName!=''">
+    and f.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')
+  </if>
+  <if test="req.orderId!=null and req.orderId!=''">
+    and a.order_id  like CONCAT(CONCAT('%',#{req.orderId}),'%')
+  </if>
+  <if test="req.payType!=null and req.payType!='' and req.payType!='0'">  
+       and a.pay_type=#{req.payType}
+  </if>
+  <if test="req.brandName!=null and req.brandName!=''">
+    and c.BRAND_ID=#{req.brandName}
+  </if>
+  <if test="req.productName!=null and req.productName!=''">
+    and b.PRODUCT_BASE_ID=#{req.productName}
+  </if>
+  <if test="req.sn!=null and req.sn!=''">
+    and b.SN like CONCAT(CONCAT('%',#{req.sn}),'%')
+  </if>
+ <choose>  
+           <when test='req.orderType==null or req.orderType=="" or req.orderType=="0"'>
+           </when>
+            <when test='req.orderType!=null and req.orderType!="" and req.orderType!="0"'>  
+                and a.order_type=#{req.orderType}
+            </when >  
+    </choose>
+    AND a.order_id = d.order_id
+	AND d.product_id = b.PRODUCT_ID
+	AND b.PRODUCT_BASE_ID = c.PRODUCT_BASE_ID
+	AND a.supplier_id = e.MERCHANT_ID
+ 	 AND a.user_id = f.MERCHANT_ID
+ 	 AND c.brand_id = g.brand_id
+ 	 AND c.CAT_ID = h.cat_id
+ 	 ) j
+ 	 LEFT OUTER JOIN ORD_PROMOTION k ON j.order_id =k.order_id
+ 	 LEFT OUTER JOIN act_marketing_activity l ON k.MKT_ACT_ID = l.id
+<if test="req.couponActive!=null and req.couponActive!=''">
+ 		WHERE 1=1 AND l.name LIKE CONCAT(CONCAT('%',#{req.couponActive}),'%')
+</if>
+ 	 GROUP BY order_id
+ 	 limit 1000) z
+ 	 ORDER BY z.create_time DESC
+ </select>
+ 
+ <select id="ListReportOrderNbr" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp">
+            select c.UNIT_NAME,b.res_nbr,a.create_time,a.status state
+            from ORD_ORDER a,
+            ORD_ORDER_ITEM_DETAIL b, 
+            prod_product c
+            where  a.order_id=b.order_id
+            and c.product_id=b.product_id
+  <if test="orderId!=null and orderId!=''">
+	and a.order_id = #{orderId}
+  </if>
+ </select>
+ 
+ <select id="ListReportOrderNbr3" parameterType="com.iwhalecloud.retail.report.dto.request.ReportOrderNbrDaoReq"
+            resultType="com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp">
+            select c.UNIT_NAME,b.res_nbr,a.create_time,a.status state
+            from ORD_ORDER a,
+            ORD_ORDER_ITEM_DETAIL b, 
+            prod_product c
+            where 1=1 and a.order_id=b.order_id
+            and c.product_id=b.product_id
+  <if test="req.orderId!=null and req.orderId!=''">
+	and a.order_id = #{req.orderId}
+  </if>
+ </select>
+ 
+</mapper>

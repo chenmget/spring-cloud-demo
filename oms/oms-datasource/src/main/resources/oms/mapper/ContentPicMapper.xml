@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentPicMapper">
+
+    <sql id="allFields">
+        t.MATID
+        ,t.CONTENTID
+        ,t.OBJTYPE
+        ,t.OBJID
+        ,t.OBJURL
+        ,t.OPRID
+        ,t.UPDDATE
+    </sql>
+
+    <resultMap id="ContentPicResult" type="com.iwhalecloud.retail.oms.dto.ContentPicDTO">
+            <result property="matid" column="MATID"></result>
+            <result property="contentid" column="CONTENTID"></result>
+            <result property="objtype" column="OBJTYPE"></result>
+            <result property="objurl" column="OBJURL"></result>
+            <result property="objid" column="OBJID"></result>
+            <result property="oprid" column="OPRID"></result>
+            <result property="upddate" column="UPDDATE"></result>
+    </resultMap>
+
+    <select id="queryContentPicList"  resultMap="ContentPicResult">
+        select <include refid="allFields" />
+        from
+        t_content_pic t
+        where t.contentid = #{contentId}
+    </select>
+
+    <select id="queryContentPicListByObjId"  resultMap="ContentPicResult">
+        select <include refid="allFields" />
+        from
+        t_content_pic t
+        where
+        t.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+        and
+        t.objid in
+        <foreach item="item" index="index" collection="objIds" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+
+
+    <select id="queryContentIdListByProductId"  resultType="String">
+        select distinct  t.CONTENTID
+        from
+        t_content_pic t
+        where
+        t.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+        and
+        t.objid =  #{productId}
+        union  all
+        select distinct a.CONTENTID
+        from
+        t_content_picset a
+        where
+        a.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+        and
+        a.OBJID =  #{productId}
+        union  all
+        select distinct b.CONTENTID
+        from
+        T_CONTENT_VIDEO b
+        where
+        b.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+        and
+        b.OBJID =  #{productId}
+        union  all
+        select distinct c.CONTENTID from T_CONTENT_VIDEO c
+        where
+        c.HAVELV2MAT = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentVedioStatusEnum@HAVE_LV2.getCode()}
+        and
+        c.MATID in
+        (
+        select distinct d.UPMATID
+        from
+        t_content_vediolv2 d
+        where
+        d.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+        and
+        d.OBJID = #{productId}
+        )
+    </select>
+</mapper>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.OrderApplyMapper">
+    <update id="updateApplyState">
+        UPDATE ord_order_apply
+        <set>
+            <if test="applyState !=null and applyState !=''">
+                APPLY_STATE =#{applyState},
+            </if>
+            <if test="refundImgUrl !=null and refundImgUrl !=''">
+                refund_Img_url =#{refundImgUrl},
+            </if>
+            <if test="refundDesc !=null and refundDesc !=''">
+                refund_desc =#{refundDesc},
+            </if>
+            <if test="auditDesc !=null and auditDesc !=''">
+                AUDIT_DESC =#{auditDesc},
+            </if>
+        </set>
+        where order_apply_id= #{orderApplyId}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </update>
+
+
+    <select id="getLastOrderApplyByOrderId" resultType="com.iwhalecloud.retail.order2b.entity.OrderApply">
+        SELECT ORDER_APPLY_ID,SERVICE_TYPE,APPLY_STATE , BATCH_ID,CREATE_TIME
+        FROM  ord_order_apply WHERE  order_id=#{orderId}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+         order by create_time desc LIMIT 1
+    </select>
+
+
+    <select id="selectOrderApplyById" resultType="com.iwhalecloud.retail.order2b.entity.OrderApply">
+        SELECT * FROM ord_order_apply WHERE order_apply_id= #{orderApplyId}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </select>
+
+    <resultMap id="afterSalesList" type="com.iwhalecloud.retail.order2b.model.AfterSalesModel">
+    <id column="order_item_id" property="orderItemId"/>
+    <collection property="orderItems"
+                select="com.iwhalecloud.retail.order2b.mapper.OrderItemMapper.selectOrderItemByItemId"
+                column="order_item_id"/>
+    </resultMap>
+    <select id="selectAfterSales" resultType="com.iwhalecloud.retail.order2b.model.AfterSalesModel">
+        SELECT * FROM  ord_order_apply
+        <where>
+            <if test="req.orderList !=null and req.orderList.size()>0">
+               AND order_id IN
+                <foreach collection="req.orderList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.itemList !=null and req.itemList.size()>0">
+              and  order_item_id IN
+                <foreach collection="req.itemList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.serviceTypeList !=null and req.serviceTypeList.size()>0">
+               and service_type IN
+                <foreach collection="req.serviceTypeList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.startTime!=null and req.startTime !=''">
+                and create_time >= #{req.startTime}
+            </if>
+            <if test="req.endTime!=null and req.endTime !=''">
+                and  #{req.endTime} >=create_time
+            </if>
+            <if test="req.status !=null and req.status !=''">
+                and apply_state = #{req.status}
+            </if>
+            <if test="req.orderId !=null and req.orderId !=''">
+                and order_id = #{req.orderId}
+            </if>
+
+            <if test="req.applyUserCode !=null and req.applyUserCode !=''">
+                and  applicant_id = #{req.applyUserCode}
+            </if>
+            <if test="req.handlerCode !=null and req.handlerCode !=''">
+                and  handler_id = #{req.handlerCode}
+            </if>
+
+            <if test="req.orderApplyId!=null and req.orderApplyId !=''">
+               and order_apply_id = #{req.orderApplyId}
+            </if>
+
+            <if test="req.supplierName !=null and req.supplierName!=''">
+                and supplier_name =#{supplierName}
+            </if>
+            and SOURCE_FROM=#{req.sourceFrom}
+            <if test="req.lanId !=null and req.lanId !=''">
+                and lan_id=#{req.lanId}
+            </if>
+        </where>
+    </select>
+
+    <select id="getApplyOrderCountByCondition" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsRawReq" resultType="int">
+        select count(1) from ord_order_apply
+        <where>
+            <if test="null!=req.merchantId and ''!=req.merchantId">
+                <choose>
+                    <when test="req.isBuyer">
+                        and applicant_id = #{req.merchantId}
+                    </when>
+                    <otherwise>
+                        and handler_id = #{req.merchantId}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="null!=req.statusList">
+                and apply_state in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.statusList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.isToday">
+                and to_days(CREATE_TIME) = to_days(now())
+            </if>
+            <if test="req.lanId !=null and req.lanId !=''">
+                and lan_id=#{req.lanId}
+            </if>
+        </where>
+    </select>
+    <select id="selectAllSubmit" resultType="int">
+        SELECT ifnull(SUM (submit_num),0) FROM ord_order_apply WHERE order_id=#{orderId}
+         AND apply_state in ('-1','-2')
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </select>
+    <select id="selectOrderApply" resultType="com.iwhalecloud.retail.order2b.entity.OrderApply">
+        SELECT * FROM ord_order_apply
+        WHERE 1=1
+        <if test="serviceType !=null and serviceType!=''">
+            and service_type = #{serviceType}
+        </if>
+        <if test="orderItemId !=null and orderItemId !=''">
+            and order_item_id = #{orderItemId}
+        </if>
+        <if test="orderApplyId!=null and orderApplyId !=''">
+            and order_apply_id = #{orderApplyId}
+        </if>
+        <if test="orderId !=null and orderId !=''">
+            and order_id = #{orderId}
+        </if>
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+        and SOURCE_FROM=#{sourceFrom}
+
+    </select>
+</mapper>

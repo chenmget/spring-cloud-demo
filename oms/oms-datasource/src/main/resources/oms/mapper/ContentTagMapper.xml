@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentTagMapper">
+
+    <sql id="allFields">
+        t.RELA_ID
+        ,t.CONTENT_ID
+        ,t.TAG_ID
+        ,t.OPR_ID
+        ,t.OPR_DATE
+    </sql>
+
+    <resultMap id="CotentTagResult" type="com.iwhalecloud.retail.oms.dto.ContentTagDTO">
+        <result property="relaId" column="RELA_ID"></result>
+        <result property="contentId" column="CONTENT_ID"></result>
+        <result property="tagId" column="TAG_ID"></result>
+        <result property="oprId" column="OPR_ID"></result>
+        <result property="oprDate" column="OPR_DATE"></result>
+    </resultMap>
+
+    <select id="queryContentTag" parameterType="com.iwhalecloud.retail.oms.dto.ContentTagDTO" resultMap="CotentTagResult">
+      select <include refid="allFields" />
+       from
+      t_content_tag t
+      where
+      t.content_Id = #{contentTagDTO.contentId}
+    </select>
+
+    <select id="queryContentTagByContentId" parameterType="java.lang.Long" resultMap="CotentTagResult">
+        select <include refid="allFields" />
+        from
+        t_content_tag t
+        where
+        t.content_Id = #{contentId}
+    </select>
+</mapper>

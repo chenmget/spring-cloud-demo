@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.ContentTextMapper">
+
+    <sql id="allFields">
+        t.CONTENTID
+        ,t.TEXTID
+        ,t.URL
+        ,t.OPRID
+        ,t.UPDDATE
+    </sql>
+
+    <resultMap id="ContentTextResult" type="com.iwhalecloud.retail.oms.dto.ContentTextDTO">
+        <result property="contentid" column="CONTENTID"></result>
+        <result property="textid" column="TEXTID"></result>
+        <result property="url" column="URL"></result>
+        <result property="oprid" column="OPRID"></result>
+        <result property="upddate" column="UPDDATE"></result>
+    </resultMap>
+
+    <select id="queryContentText" resultMap="ContentTextResult">
+        select <include refid="allFields" />
+        from
+        t_content_text t
+        where
+        t.CONTENTID = #{contentid}
+    </select>
+
+</mapper>

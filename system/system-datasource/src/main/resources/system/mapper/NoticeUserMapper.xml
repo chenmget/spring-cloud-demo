@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.system.mapper.NoticeUserMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.NOTICE_ID 
+    ,t.USER_ID 
+    ,t.USER_NAME 
+    ,t.STATUS 
+    ,t.READ_TIME 
+</sql>
+
+    <select id="pageNoticeUser" resultType="com.iwhalecloud.retail.system.dto.NoticeUserDTO"
+            parameterType="com.iwhalecloud.retail.system.dto.request.NoticeUserPageReq">
+        select t.*
+        from sys_notice_user t
+        where
+            1=1
+            <if test="req.noticeId != null and req.noticeId != ''">
+                and t.NOTICE_ID = #{req.noticeId }
+            </if>
+            <!--<if test="req.userId != null and req.userId != ''">-->
+                <!--and t.USER_ID = #{req.userId }-->
+            <!--</if>-->
+            <!--<if test="req.status != null and req.status != ''">-->
+                <!--and t.STATUS = #{req.status }-->
+            <!--</if>-->
+        order by t.NOTICE_ID desc
+    </select>
+
+    <select id="getNotReadNoticeCount" resultType="int">
+        select count(1) from sys_notice_user
+        <where>
+            <if test="null != statusList">
+                and status in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="statusList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="null!=userId and ''!=userId">
+                and user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

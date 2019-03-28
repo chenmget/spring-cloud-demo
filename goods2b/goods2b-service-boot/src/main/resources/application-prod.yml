@@ -1,0 +1,29 @@
+project:
+  name: 生产环境
+
+server:
+  port: 8023
+
+spring:
+  dubbo:
+    application:
+      name: goods2b-provider
+    registry:
+      address: zookeeper://10.45.47.87:2285
+    protocol:
+      name: dubbo
+      port: 8023
+    scan: com.iwhalecloud.retail
+
+jmx:
+  enabled: false
+
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.47.88:3306/nretail
+  username: nretail
+  password: nretail
+
+# 分布式文件系统FDFS配置
+fdfs:
+  showUrl: https://gy.ztesoft.com/

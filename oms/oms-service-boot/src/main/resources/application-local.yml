@@ -1,0 +1,50 @@
+project:
+  name: 本机环境
+
+server:
+  port: 8087
+
+spring:
+  dubbo:
+    application:
+      name: oms-provider
+    registry:
+#      address: zookeeper://10.45.47.87:2285
+      address: zookeeper://localhost:2181
+    protocol:
+      name: dubbo
+      port: 20887
+    scan: com.iwhalecloud.retail
+  redis:
+    database: 0
+#    host: 127.0.0.1
+#    port: 6379
+    cluster:
+      nodes: 10.45.47.129:7021,10.45.47.129:7022,10.45.47.129:7023,10.45.47.129:7024,10.45.47.129:7025,10.45.47.129:7026
+    expireSeconds: 120
+    commandTimeout: 1000  #redis操作的超时时间
+    pool:
+      max-active: 600
+      max-idle: 300
+      max-wait: 1000
+      min-idle: 5
+    password:
+
+jmx:
+  enabled: false
+
+#spring.datasource:
+#  driver-class-name: com.mysql.jdbc.Driver
+#  url: jdbc:mysql://10.45.47.88:3306/oms_b2b
+#  username: oms
+#  password: oms
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.46.67:8866/oms_b2b?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: szxtest
+  password: szxtest.2019
+
+
+# 分布式文件系统FDFS配置
+fdfs:
+  showUrl: https://gy.ztesoft.com/

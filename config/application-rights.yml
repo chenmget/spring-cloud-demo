@@ -1,0 +1,37 @@
+logging.level.com.iwhalecloud.retail.rights.mapper: debug
+
+mybatis-plus:
+  mapperLocations: classpath:rights/mapper/*.xml
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    
+effInterval: 300000
+project:
+  name: 测试环境
+
+server:
+  port: 8327
+
+spring:
+  dubbo:
+    application:
+      name: rights-provider
+    registry:
+      address: zookeeper://10.45.47.87:2281
+    protocol:
+      name: dubbo
+      port: 27788
+    scan: com.iwhalecloud.retail
+
+jmx:
+  enabled: false
+
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.47.88:3306/rights
+  username: rights
+  password: rights
+
+

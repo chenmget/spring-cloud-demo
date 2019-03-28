@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.MerchantRulesMapper">
+
+<sql id="allFields">
+    t.MERCHANT_RULE_ID 
+    ,t.MERCHANT_ID 
+    ,t.RULE_TYPE 
+    ,t.TARGET_TYPE 
+    ,t.TARGET_ID 
+--     ,t.MAX_SERIAL_NUM
+--     ,t.SERIAL_NUM_USED
+</sql>
+
+    <select id="queryMerchantRuleByCondition" parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantRuleGetReq"
+            resultType="com.iwhalecloud.retail.partner.dto.MerchantRulesDTO">
+        SELECT <include refid="allFields"/>
+        FROM PAR_MERCHANT_RULES t
+        WHERE 1 = 1
+        <if test="null != req.merchantId and '' != req.merchantId ">
+            and t.MERCHANT_ID = #{req.merchantId}
+        </if>
+        <if test="null != req.ruleType and '' != req.ruleType ">
+            and t.RULE_TYPE = #{req.ruleType}
+        </if>
+        <if test="null != req.targetTypeList">
+            and t.TARGET_TYPE in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.targetTypeList">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+</mapper>

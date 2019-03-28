@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.ComplexInfoMapper">
+
+    <sql id="allFields">
+        t.COMPLEX_INFO_ID
+        ,t.A_GOODS_ID
+        ,t.Z_GOODS_ID
+        ,t.COMPLEX_NAME
+    </sql>
+
+    <insert id="batchInsert" parameterType="java.util.List" useGeneratedKeys="true">
+        insert into prod_goods_complex_info (COMPLEX_INFO_ID, A_GOODS_ID, Z_GOODS_ID,COMPLEX_INFO)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.complexInfoId},#{item.aGoodsId},#{item.zGoodsId},#{item.complexInfo})
+        </foreach>
+    </insert>
+
+</mapper>

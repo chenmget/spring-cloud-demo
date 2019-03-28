@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.PayOperationLogMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.PLATFORM_TYPE 
+    ,t.ORDER_ID 
+    ,t.COMMERCIAL_ID 
+    ,t.MERCHANT_ID 
+    ,t.PAY_PLATFORM 
+    ,t.PAY_PLATFORM_ORDERID 
+    ,t.STORE_ID 
+    ,t.OPERATION_TYPE 
+    ,t.CREATE_STAFF 
+    ,t.PAY_STATUS 
+    ,t.CREATE_DATE 
+    ,t.PAY_DATA 
+    ,t.RESULT_DATA 
+</sql>
+
+</mapper>

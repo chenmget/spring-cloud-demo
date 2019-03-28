@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.PromotionMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.MARKETING_ACTIVITY_ID
+    ,t.MKT_RES_ID 
+    ,t.MKT_RES_NAME 
+    ,t.PROMOTION_PRICE 
+    ,t.PROMOTION_TYPE 
+    ,t.PROMOTION_EFFECT_TIME 
+    ,t.PROMOTION_OVERDUE_TIME 
+    ,t.REMARK 
+    ,t.CREATOR
+    ,t.GMT_CREATE
+    ,t.MODIFIER
+    ,t.GMT_MODIFIED
+    ,t.SOURCE_FROM
+</sql>
+    <delete id="deletePromotion" parameterType="java.lang.String">
+        delete
+
+        FROM act_promotion  where 1=1
+        <if test="_parameter != null and _parameter != '' ">
+            and MARKETING_ACTIVITY_ID = #{marketingActivityId}
+        </if>
+    </delete>
+</mapper>

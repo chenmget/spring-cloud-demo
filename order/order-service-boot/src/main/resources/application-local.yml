@@ -1,0 +1,29 @@
+project:
+  name: 本机环境
+  
+server:
+  port: 8026
+
+
+
+
+spring.dubbo:
+    application:
+      name: order-provider
+    registry:
+#      address: zookeeper://10.45.47.87:2285
+      address: zookeeper://localhost:2181
+    protocol:
+      name: dubbo
+      port: 20886
+    scan: com.iwhalecloud.retail
+  
+logging.level.com.iwhalecloud.retail.order.mapper: debug
+
+fdfs.show.url: https://gy.ztesoft.com/
+ 
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.47.88:3306/nretail_b2b
+  username: oms
+  password: oms

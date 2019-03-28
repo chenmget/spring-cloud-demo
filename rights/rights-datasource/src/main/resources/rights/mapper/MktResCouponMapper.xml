@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.MktResCouponMapper">
+
+<sql id="commonFields">
+    t.MKT_RES_ID 
+    ,t.MKT_RES_NAME 
+    ,t.MKT_RES_NBR 
+    ,t.MKT_RES_TYPE_ID
+    ,t.DISCOUNT_TYPE
+    ,t.MANAGE_TYPE
+    ,t.USE_SYS_ID 
+    ,t.SHOW_AMOUNT 
+    ,t.STATUS_CD 
+    ,t.REMARK 
+    ,t.CREATE_STAFF 
+</sql>
+
+
+
+     <!-- query mktResCoupon by ListRightsRequestDTO-->
+	<select id="queryrights" parameterType="com.iwhalecloud.retail.rights.dto.request.QueryRightsReqDTO"
+	resultType="com.iwhalecloud.retail.rights.dto.response.QueryRightsRespDTO">
+		SELECT <include refid="commonFields" />
+        FROM mkt_res_coupon t WHERE 1 = 1
+        <if test="req.mktResName != null and req.mktResName !=''">
+            AND mkt_res_name =  #{req.mktResName} 
+        </if>
+        <if test="req.mktResTypeId != null and req.mktResTypeId !=''">
+            AND mkt_res_type_id = #{req.mktResTypeId}
+        </if>
+	</select>
+
+
+	<!-- query mktResCoupon by queryRightsReq-->
+	<select id="queryMktResCoupon" parameterType="String"
+	resultType="com.iwhalecloud.retail.rights.dto.response.QueryMktResCouponRespDTO">
+		SELECT <include refid="commonFields" />
+        ,(case t.COUPON_TYPE when '1' then '平台券'
+        when '2' then '商家券'
+        when '3' then '产品券' else '' end) as COUPON_TYPE
+        FROM mkt_res_coupon t
+        WHERE mkt_res_id =  #{mktResId}
+	</select>
+
+    <!--<update id="updateMktResCoupon" parameterType="com.iwhalecloud.retail.rights.dto.request.UpdateMktResCouponReqDTO">
+        UPDATE mkt_res_coupon SET
+        <if test="updateStaff != null">
+            update_staff = #{updateStaff}
+        </if>
+        <if test="updateDate != null">
+            ,update_date = #{updateDate}
+        </if>
+        <if test="mktResName != null">
+            ,mkt_res_name = #{mktResName}
+        </if>
+        <if test="showAmount != null">
+            ,show_amount = #{showAmount}
+        </if>
+        <if test="mktResTypeId != null">
+            ,mkt_res_type_id = #{mktResTypeId}
+        </if>
+        <if test="manageType != null">
+            ,manage_type = #{manageType}
+        </if>
+        <if test="discountType != null">
+            ,discount_type = #{discountType}
+        </if>
+        <if test="remark != null">
+            ,remark = #{remark}
+        </if>
+        <if test="couponType != null">
+            ,coupon_type = #{couponType}
+        </if>
+        <if test="partnerId != null">
+            ,partner_id = #{partnerId}
+        </if>
+        WHERE mkt_res_id = #{mktResId}
+    </update>-->
+
+    <select id="queryActivityCoupon" parameterType="com.iwhalecloud.retail.rights.dto.request.QueryProductCouponReq"
+            resultType="com.iwhalecloud.retail.rights.dto.response.MktResCouponRespDTO">
+        SELECT mrc.MKT_RES_ID,mrc.MKT_RES_NAME,mrc.SHOW_AMOUNT
+        FROM coupon_apply_object cao
+        LEFT JOIN mkt_res_coupon mrc on mrc.mkt_res_id = cao.mkt_res_id
+        WHERE 1=1
+        <if test="productId != null">
+           and  cao.OBJ_ID = #{productId}
+        </if>
+        <if test="objType != null">
+            and cao.OBJ_TYPE =#{objType}
+        </if>
+        <if test="marketingActivityId != null">
+            and mrc.marketing_activity_id =#{marketingActivityId}
+        </if>
+        <if test="statusCd != null">
+            and mrc.STATUS_CD !=#{statusCd}
+        </if>
+        <if test="statusCd != null">
+            and cao.STATUS_CD !=#{statusCd}
+        </if>
+    </select>
+</mapper>

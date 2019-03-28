@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.CloudDeviceMapper">
+
+    <select id="queryCloudDeviceList" parameterType="com.iwhalecloud.retail.oms.dto.resquest.CloudDevicePageReq"
+            resultType="com.iwhalecloud.retail.oms.dto.CloudDeviceDTO">
+        SELECT * FROM cloud_device t
+        <where>
+            <if test="pageReq.adscriptionCity!=null">
+                and t.adscription_city=#{pageReq.adscriptionCity}
+            </if>
+            <if test="pageReq.adscriptionShop!=null">
+                and t.adscription_shop=#{pageReq.adscriptionShop}
+            </if>
+            <if test="pageReq.num!=null">
+                and upper(t.num) like upper(#{pageReq.num})
+            </if>
+            <if test="pageReq.deviceName!=null">
+                and upper(t.device_name) like upper(#{pageReq.deviceName})
+            </if>
+            <if test="pageReq.status!=null">
+                and t.status=#{pageReq.status}
+            </if>
+            <if test="pageReq.onlineType!=null">
+                and t.online_type=#{pageReq.onlineType}
+            </if>
+            <if test="pageReq.deviceType!=null">
+                and t.device_type=#{pageReq.deviceType}
+            </if>
+            <if test="pageReq.adscriptionCityArea!=null">
+                and t.adscription_city_area=#{pageReq.adscriptionCityArea}
+            </if>
+            <choose>
+                <when test="pageReq.isBindShelf == 'true'">
+                    and t.cloud_shelf_number is not null
+                </when>
+                <when test="pageReq.isBindShelf == null">
+
+                </when>
+                <otherwise>
+                    and t.cloud_shelf_number is null
+                </otherwise>
+            </choose>
+            and t.is_deleted = 0
+        </where>
+        order by t.gmt_create desc
+    </select>
+
+    <select id="queryCloudDeviceListDetails" parameterType="String"
+            resultType="com.iwhalecloud.retail.oms.dto.CloudDeviceDTO">
+		SELECT * FROM cloud_device t WHERE t.num=#{num} and is_deleted = 0
+	</select>
+
+
+    <select id="queryCloudDeviceBycloudShelfNumber" parameterType="String"
+            resultType="com.iwhalecloud.retail.oms.dto.CloudDeviceDTO">
+        SELECT * FROM cloud_device t
+        <where>
+            <if test="cloudShelfNumber != null">
+                t.cloud_shelf_number=#{cloudShelfNumber}
+            </if>
+        </where>
+    </select>
+
+    <insert id="createCloudDevice" parameterType="com.iwhalecloud.retail.oms.dto.CloudDeviceDTO">
+		insert into cloud_device (gmt_create,gmt_modified,creator,modifier,is_deleted,number,cloud_shelf_number,status,device_name,device_type,online_type,totally_work_time,adscription_shop,adscription_city,can_delete,adscription_city_area,device_desc) values (#{gmtCreate},#{gmtModified},#{creator},#{modifier},#{isDeleted},#{number},#{cloudShelfNumber},#{status},#{deviceName},#{deviceType},#{onlineType},#{totallyWorkTime},#{adscriptionShop},#{adscriptionCity},#{canDelete},#{adscriptionCityArea},#{deviceDesc})
+	</insert>
+
+    <update id="editCloudDevice" parameterType="com.iwhalecloud.retail.oms.dto.CloudDeviceDTO">
+        UPDATE cloud_device
+        <set>
+            <if test="deviceType != null">
+                device_type=#{deviceType},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+            <if test="adscriptionCity != null">
+                adscription_city=#{adscriptionCity},
+            </if>
+            <if test="isDeleted != null">
+                is_deleted=#{isDeleted},
+            </if>
+            <if test="adscriptionCityArea != null">
+                adscription_city_area=#{adscriptionCityArea},
+            </if>
+            <if test="adscriptionShop != null">
+                adscription_shop=#{adscriptionShop},
+            </if>
+            <if test="cloudShelfNumber != null">
+                cloud_shelf_number=#{cloudShelfNumber},
+            </if>
+            <if test="deviceDesc != null">
+                device_desc=#{deviceDesc},
+            </if>
+            <if test="modifier != null">
+                modifier=#{modifier},
+            </if>
+        </set>
+        <where>
+            <if test="num != null">
+                num=#{num}
+            </if>
+        </where>
+    </update>
+
+    <update id="deleteCloudDevice" parameterType="com.iwhalecloud.retail.oms.dto.CloudDeviceDTO">
+		update cloud_device set is_deleted = 1 WHERE num=#{num}
+	</update>
+
+    <update id="updateCloudDeviceByNum" parameterType="com.iwhalecloud.retail.oms.dto.CloudDeviceDTO">
+        UPDATE cloud_device
+        <set>
+            cloud_shelf_number=#{cloudShelfNumber},
+        </set>
+        WHERE num in
+        <foreach item="item" index="index" collection="devices" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+    <update id="updateBatchCloudDevice">
+        update cloud_device
+        set num = '00000000'
+        where
+        CLOUD_SHELF_NUMBER = #{number}
+    </update>
+
+
+    <update id="updateBatchNumCloudDevice" parameterType="java.util.List">
+        update cloud_device
+        <trim prefix="set" suffixOverrides=",">
+            <trim prefix="num =case" suffix="end,">
+                <foreach collection="list" item="item" index="index">
+                    <if test="item.cloudShelfNumber !=null">
+                        when CLOUD_SHELF_NUMBER = #{item.cloudShelfNumber} then #{item.num}
+                    </if>
+                </foreach>
+            </trim>
+        </trim>
+        where CLOUD_SHELF_NUMBER in
+        <foreach collection="list" index="index" item="item" separator="," open="(" close=")">
+            #{item.cloudShelfNumber}
+        </foreach>
+    </update>
+
+
+</mapper>

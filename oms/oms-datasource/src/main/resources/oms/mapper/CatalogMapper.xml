@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.CatalogMapper">
+
+    <sql id="allFields">
+        t.CATA_ID
+        ,t.NAME
+        ,t.PARENT_CATA_ID
+        ,t.CATALOG_LEVEL
+        ,t.OPR_ID
+        ,t.CAN_DEL
+        ,t.UPD_DATE
+    </sql>
+
+    <resultMap id="CatalogResult" type="com.iwhalecloud.retail.oms.dto.CataLogDTO">
+        <result property="cataid" column="CATA_ID"></result>
+        <result property="name" column="NAME"></result>
+        <result property="parentCataId" column="PARENT_CATA_ID"></result>
+        <result property="catalogLevel" column="CATALOG_LEVEL"></result>
+        <result property="oprId" column="OPR_ID"></result>
+        <result property="updDate" column="UPD_DATE"></result>
+        <result property="canDel" column="CAN_DEL"></result>
+
+    </resultMap>
+
+
+    <select id="queryCatalog"
+            resultMap="CatalogResult">
+        select <include refid="allFields" />
+        from t_catalog t
+        WHERE t.CATA_ID=#{cataId}
+    </select>
+
+</mapper>

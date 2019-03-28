@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.SupplierAccountMapper">
+
+<sql id="allFields">
+    t.ACCOUNT_ID 
+    ,t.SUPPLIER_ID 
+    ,t.ACCOUNT_TYPE 
+    ,t.ACCOUNT 
+    ,t.IS_DEFAULT 
+    ,t.STATE 
+</sql>
+
+<select id="querySupplierAccount" parameterType="com.iwhalecloud.retail.partner.dto.req.SupplierAccountQueryReq"
+        resultType="com.iwhalecloud.retail.partner.dto.SupplierAccountDTO">
+    SELECT <include refid="allFields" />
+    FROM PAR_SUPPLIER_ACCOUNT t
+    <where>
+        <if test="pageReq.supplierId!=null">
+            and t.SUPPLIER_ID=#{pageReq.supplierId}
+        </if>
+    </where>
+</select>
+
+</mapper>

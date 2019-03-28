@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.member.mapper.MemberLevelMapper">
+
+<sql id="allFields">
+    t.LV_ID 
+    ,t.LV_NAME 
+    ,t.MERCHANT_ID 
+    ,t.DISCOUNT 
+    ,t.POINT_START 
+    ,t.POINT_END 
+    ,t.SHOW_NAME 
+    ,t.IS_DEFAULT 
+    ,t.SOURCE_FROM 
+    ,t.STATUS 
+</sql>
+    <select id="queryGroupLevelForPage"
+            resultType="com.iwhalecloud.retail.member.dto.response.MemberLevelQueryResp">
+        select <include refid="allFields"/>
+        from mem_member_level t
+        where 1=1
+        <if test="null != req.lvId and '' != req.lvId">
+            and t.LV_ID = #{req.lvId}
+        </if>
+        <if test="null != req.lvName and '' != req.lvName">
+            and t.LV_NAME like CONCAT(CONCAT('%',#{req.lvName}),'%')
+        </if>
+        <if test="null != req.merchantId and '' != req.merchantId">
+            and t.MERCHANT_ID = #{req.merchantId}
+        </if>
+        <if test="null != req.discount">
+            and t.DISCOUNT = #{req.discount}
+        </if>
+        <if test="null != req.pointStart">
+            and t.POINT_START = #{req.pointStart}
+        </if>
+        <if test="null != req.pointEnd">
+            and t.POINT_END = #{req.pointEnd}
+        </if>
+        <if test="null != req.showName and '' != req.showName">
+            and t.SHOW_NAME like CONCAT(CONCAT('%',#{req.showName}),'%')
+        </if>
+        <if test="null != req.isDefault and '' != req.isDefault">
+            and t.IS_DEFAULT = #{req.isDefault}
+        </if>
+        <if test="null != req.status and '' != req.status">
+            and t.STATUS = #{req.status}
+        </if>
+        <if test="null != req.sourceFrom and '' != req.sourceFrom">
+            and t.SOURCE_FROM=#{req.sourceFrom}
+        </if>
+        order by t.LV_ID desc
+    </select>
+
+</mapper>

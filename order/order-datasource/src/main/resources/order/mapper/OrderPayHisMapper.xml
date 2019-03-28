@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order.mapper.OrderPayHisMapper">
+
+    <sql id="allFields">
+        t.TRANSACTION_ID
+        ,t.STATUS
+        ,t.PAY_CHANNEL
+        ,t.REQUEST_SEQ
+        ,t.PAY_TYPE
+        ,t.REQUEST_TIME
+        ,t.PAY_AMOUNT
+        ,t.RETURN_URL
+        ,t.NOTIFY_URL
+        ,t.BANK_ID
+        ,t.DIV_DETAILS
+        ,t.PED_CNT
+        ,t.CLIENT_IP
+        ,t.LIMIT_PAY
+        ,t.ORDER_INFO
+        ,t.ATTACH_INFO
+    </sql>
+
+</mapper>

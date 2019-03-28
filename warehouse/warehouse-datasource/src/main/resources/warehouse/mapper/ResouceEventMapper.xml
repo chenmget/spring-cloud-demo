@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResouceEventMapper">
+
+<sql id="allFields">
+    t.MKT_RES_EVENT_ID 
+    ,t.MKT_RES_EVENT_NBR 
+    ,t.MKT_RES_EVENT_NAME 
+    ,t.MKT_RES_STORE_ID 
+    ,t.DEST_STORE_ID 
+    ,t.MKT_RES_ID 
+    ,t.OBJ_TYPE 
+    ,t.OBJ_ID 
+    ,t.EVENT_TYPE 
+    ,t.EVENT_DESC 
+    ,t.PARTNER_ID 
+    ,t.ACCEPT_DATE 
+    ,t.STATUS_DATE 
+    ,t.STATUS_CD 
+    ,t.CREATE_POST 
+    ,t.CREATE_ORG_ID 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.REMARK 
+    ,t.UPDATE_DATE 
+</sql>
+
+</mapper>

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.OrderOperatingDayStatisticsMapper">
+
+    <select id="getOrderCountByTimeAndRole" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsMatureReq" resultType="int">
+        <if test="req.isSupplier==true and req.isBuyer==true">
+            select sum(ifnull(PURCHASE_NUM,0)) from RPT_SUPPLIER_OPERATING_DAY where SUPPLIER_ID = #{req.merchantId}
+        </if>
+        <if test="req.isSupplier==true and req.isBuyer!=true">
+            select sum(ifnull(SELL_NUM,0)) from RPT_SUPPLIER_OPERATING_DAY where SUPPLIER_ID = #{req.merchantId}
+        </if>
+        <if test="req.isSupplier!=true and req.isBuyer==true">
+            select sum(ifnull(PURCHASE_NUM,0)) from RPT_PARTNER_OPERATING_DAY where PARTNER_ID = #{req.merchantId}
+        </if>
+        <if test="req.isSupplier!=true and req.isBuyer!=true">
+            select sum(ifnull(SELL_NUM,0)) from RPT_PARTNER_OPERATING_DAY where PARTNER_ID = #{req.merchantId}
+        </if>
+        <if test="req.isThisMonth">
+            and DATE_FORMAT(ITEM_DATE,'%Y%m') = DATE_FORMAT(now( ),'%Y%m')
+        </if>
+        <if test="req.isThisYear">
+            and DATE_FORMAT(ITEM_DATE,'%Y') = DATE_FORMAT(now( ),'%Y')
+        </if>
+    </select>
+
+    <select id="getOrderAmountByTimeAndRole" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsMatureReq" resultType="double">
+        <if test="req.isSupplier==true and req.isBuyer==true">
+            select sum(ifnull(PURCHASE_AMOUNT,0)) from RPT_SUPPLIER_OPERATING_DAY where SUPPLIER_ID = #{req.merchantId}
+        </if>
+        <if test="req.isSupplier==true and req.isBuyer!=true">
+            select sum(ifnull(SELL_AMOUNT,0)) from RPT_SUPPLIER_OPERATING_DAY where SUPPLIER_ID = #{req.merchantId}
+        </if>
+        <if test="req.isSupplier!=true and req.isBuyer==true">
+            select sum(ifnull(PURCHASE_AMOUNT,0)) from RPT_PARTNER_OPERATING_DAY where PARTNER_ID = #{req.merchantId}
+        </if>
+        <if test="req.isSupplier!=true and req.isBuyer!=true">
+            select sum(ifnull(SELL_AMOUNT,0)) from RPT_PARTNER_OPERATING_DAY where PARTNER_ID = #{req.merchantId}
+        </if>
+        <if test="req.isThisMonth==true">
+            and DATE_FORMAT(ITEM_DATE,'%Y%m') = DATE_FORMAT(now( ),'%Y%m')
+        </if>
+        <if test="req.isThisYear==true">
+            and DATE_FORMAT(ITEM_DATE,'%Y') = DATE_FORMAT(now( ),'%Y')
+        </if>
+    </select>
+
+</mapper>

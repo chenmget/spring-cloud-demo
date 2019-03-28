@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.RandomLogMapper">
+
+    <select id="selectLogIdByRandomCode" parameterType="com.iwhalecloud.retail.oms.entity.TRandomLog"
+            resultType="String">
+		select log_id
+		from (select log_id
+		  from t_random_log
+		 where recevi_no = #{receviNo}
+		   and random_code = #{randomCode}
+		   and EFF_DATE > #{effDate}
+		   order by create_date desc) where rownum &lt;= 1
+	</select>
+	<insert id="insertSelective" parameterType="com.iwhalecloud.retail.oms.entity.TRandomLog" >
+		insert into t_random_log
+		<trim prefix="(" suffix=")" suffixOverrides="," >
+			LOG_ID,
+			<if test="randomCode != null" >
+				RANDOM_CODE,
+			</if>
+			<if test="busiType != null" >
+				BUSI_TYPE,
+			</if>
+			<if test="busiId != null" >
+				BUSI_ID,
+			</if>
+			<if test="sendType != null" >
+				SEND_TYPE,
+			</if>
+			<if test="receviNo != null" >
+				RECEVI_NO,
+			</if>
+			<if test="validStatus != null" >
+				VALID_STATUS,
+			</if>
+			<if test="createDate != null" >
+				CREATE_DATE,
+			</if>
+			<if test="effDate != null" >
+				EFF_DATE,
+			</if>
+			<if test="sendTime != null" >
+				SEND_TIME,
+			</if>
+			<if test="sendStatus != null" >
+				SEND_STATUS,
+			</if>
+		</trim>
+		<trim prefix="values (" suffix=")" suffixOverrides="," >
+			#{logId,jdbcType=BIGINT},
+			<if test="randomCode != null" >
+				#{randomCode,jdbcType=VARCHAR},
+			</if>
+			<if test="busiType != null" >
+				#{busiType,jdbcType=BIGINT},
+			</if>
+			<if test="busiId != null" >
+				#{busiId,jdbcType=VARCHAR},
+			</if>
+			<if test="sendType != null" >
+				#{sendType,jdbcType=BIGINT},
+			</if>
+			<if test="receviNo != null" >
+				#{receviNo,jdbcType=VARCHAR},
+			</if>
+			<if test="validStatus != null" >
+				#{validStatus,jdbcType=BIGINT},
+			</if>
+			<if test="createDate != null" >
+				#{createDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="effDate != null" >
+				#{effDate,jdbcType=TIMESTAMP},
+			</if>
+			<if test="sendTime != null" >
+				#{sendTime,jdbcType=TIMESTAMP},
+			</if>
+			<if test="sendStatus != null" >
+				#{sendStatus,jdbcType=BIGINT},
+			</if>
+		</trim>
+	</insert>
+
+	<update id="updateByPrimaryKey" parameterType="com.iwhalecloud.retail.oms.entity.TRandomLog" >
+		update t_random_log
+   		set VALID_TIME = #{validTime,jdbcType=TIMESTAMP},
+   		VALID_STATUS = #{validStatus,jdbcType=BIGINT}
+ 		where LOG_ID = #{logId,jdbcType=BIGINT}
+	</update>
+</mapper>

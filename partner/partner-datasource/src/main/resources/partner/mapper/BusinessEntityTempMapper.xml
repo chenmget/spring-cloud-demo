@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.BusinessEntityTempMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.TXT_STR 
+    ,t.PATCH 
+    ,t.CREATE_DATE 
+    ,t.STATUS 
+    ,t.HANDLE_DATE 
+    ,t.NOTE 
+</sql>
+
+<!--<insert id="batchInsert"  parameterType="java.util.List">-->
+    <!--INSERT INTO par_business_entity_temp-->
+    <!--(id, txt_str, patch, create_date,status, handle_date, note)-->
+    <!--VALUES-->
+    <!--<foreach collection ="list" item="inst" index="index" separator =",">-->
+        <!--(#{inst.id}, #{inst.txtStr}, #{inst.patch}, now(),#{inst.status},#{inst.handleDate},#{inst.note})-->
+    <!--</foreach >-->
+<!--</insert>-->
+
+<delete id="deleteBusinessEntityTempData" parameterType="java.lang.String">
+  delete from par_business_entity_temp where datediff(curdate(), CREATE_DATE) &gt; #{days}
+</delete>
+
+</mapper>

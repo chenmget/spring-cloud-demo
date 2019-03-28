@@ -1,0 +1,17 @@
+spring:
+  profiles:
+    #本机环境:local 开发环境:dev 测试环境:test 生产环境:prod
+    active: local
+
+#source_from 取值 ：
+#B2B：hnyhj_b2b
+#B2C：hnyhj_b2c
+#hnsqd
+source_from: hnyhj_b2b
+
+
+
+
+
+
+

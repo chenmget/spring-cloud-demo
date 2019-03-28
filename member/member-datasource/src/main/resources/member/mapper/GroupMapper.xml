@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.member.mapper.GroupMapper">
+
+<sql id="allFields">
+    t.GROUP_ID 
+    ,t.GROUP_NAME 
+    ,t.GROUP_TYPE 
+    ,t.TRADE_NAME 
+    ,t.STATUS 
+    ,t.MENO 
+    ,t.SOURCE_FROM 
+    ,t.CREATE_DATE 
+    ,t.CREATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.UPDATE_STAFF 
+</sql>
+    <select id="queryGroupForPage" resultType="com.iwhalecloud.retail.member.dto.response.GroupQueryResp">
+      select
+      <include refid="allFields"/>
+      from mem_group t where 1=1
+        <if test="null != req.groupName and '' != req.groupName">
+            and t.GROUP_NAME like CONCAT(CONCAT('%',#{req.groupName}),'%')
+        </if>
+        <if test="null != req.groupType and '' != req.groupType">
+            and t.GROUP_TYPE = #{req.groupType}
+        </if>
+        <if test="null != req.tradeName and '' != req.tradeName">
+            and t.TRADE_NAME like CONCAT(CONCAT('%',#{req.tradeName}),'%')
+        </if>
+        <if test="null != req.status and '' != req.status">
+            and t.STATUS = #{req.status}
+        </if>
+        <if test="null != req.meno and '' != req.meno">
+            and t.MENO like CONCAT(CONCAT('%',#{req.meno}),'%')
+        </if>
+        <if test="null != req.sourceFrom and '' != req.sourceFrom">
+            and t.SOURCE_FROM=#{req.sourceFrom}
+        </if>
+        <if test="null != req.createStartDate">
+            and t.CREATE_DATE >= #{req.createStartDate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="null != req.createEndDate">
+            and t.CREATE_DATE <![CDATA[ <= ]]> #{req.createEndDate,jdbcType=TIMESTAMP}
+        </if>
+        <if test="null != req.createStaff and '' != req.createStaff">
+            and t.CREATE_STAFF = #{req.createStaff}
+        </if>
+        order by t.CREATE_DATE desc
+    </select>
+
+</mapper>

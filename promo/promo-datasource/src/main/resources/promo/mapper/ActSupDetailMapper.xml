@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.ActSupDetailMapper">
+
+    <sql id="allFields">
+    t.ID 
+    ,t.GMT_CREATE 
+    ,t.GMT_MODIFIED 
+    ,t.CREATOR 
+    ,t.MODIFIER 
+    ,t.RECORD_ID 
+    ,t.MERCHANT_TYPE 
+    ,t.MERCHANT_CODE 
+    ,t.MERCHANT_NAME 
+    ,t.ORDER_TIME 
+    ,t.ORDER_ID 
+    ,t.ORDER_ITEM_ID 
+    ,t.GOODS_ID 
+    ,t.PRODUCT_ID 
+    ,t.PRICE 
+    ,t.DISCOUNT 
+    ,t.RES_NBR 
+    ,t.SHIP_TIME 
+    ,t.SUPPLIER_CODE 
+    ,t.SUPPLIER_NAME 
+</sql>
+
+    <select id="listActSupDetailByRecordId" parameterType="com.iwhalecloud.retail.promo.dto.req.ActSupDetailReq"
+            resultType="com.iwhalecloud.retail.promo.dto.resp.ActSupDetailResp" >
+        SELECT
+        d.RECORD_ID
+        ,d.ORDER_ID
+        ,d.RES_NBR
+        FROM
+        act_supplementary_detail d
+        where 1 = 1
+        <if test="null!=req.recordId and ''!=req.recordId">
+            AND d.record_id =  #{req.recordId}
+        </if>
+    </select>
+
+    <select id="orderResSupCheck" parameterType="com.iwhalecloud.retail.promo.dto.req.ActSupDetailReq" resultType="Integer">
+       SELECT count(1) FROM act_supplementary_detail asd,act_supplementary_record asr
+       WHERE asd.record_id = asr.record_id AND asd.order_id =#{orderId} and asd.res_nbr =#{resNbr}
+       and  (asr.STATUS = ${@com.iwhalecloud.retail.promo.common.PromoConst$ActivitySupStatus@ACTIVITY_SUP_STATUS_PEDING.getCode()}
+       or asr.STATUS = ${@com.iwhalecloud.retail.promo.common.PromoConst$ActivitySupStatus@ACTIVITY_SUP_STATUS_SUCCESS.getCode()})
+    </select>
+
+</mapper>

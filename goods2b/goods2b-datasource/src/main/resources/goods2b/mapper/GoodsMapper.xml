@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.goods2b.mapper.GoodsMapper">
+
+<sql id="allFields">
+    t.GOODS_ID
+    ,t.GOODS_NAME
+    ,t.SN
+    ,t.TYPE_ID
+    ,t.BRAND_ID
+    ,t.GOODS_CAT_ID
+    ,t.MARKET_ENABLE
+    ,t.VIEW_COUNT
+    ,t.BUY_COUNT
+    ,t.MKTPRICE
+    ,t.IS_DELETED
+    ,t.SUPPLIER_ID
+    ,t.AUDIT_STATE
+    ,t.SEARCH_KEY
+    ,t.SELLING_POINT
+    ,t.EFF_DATE
+    ,t.EXP_DATE
+    ,t.CREATE_STAFF
+    ,t.CREATE_DATE
+    ,t.UPDATE_STAFF
+    ,t.UPDATE_DATE
+    ,t.SOURCE_FROM
+</sql>
+
+<sql id="queryGoodsForPageFields">
+    t.GOODS_ID
+    ,t.GOODS_NAME
+    ,t.GOODS_CAT_ID
+    ,t.MKTPRICE
+    ,t.BUY_COUNT
+    ,t.SUPPLIER_ID
+    ,t.SELLING_POINT
+    ,t.SOURCE_FROM
+    ,t.MERCHANT_TYPE
+    ,t.PRODUCT_BASE_ID
+    ,min(t.DELIVERY_PRICE) as DELIVERY_PRICE
+    ,t.PRODUCT_ID
+</sql>
+
+<sql id="fullJoinFieIds">
+ t0.GOODS_ID,
+ t0.GOODS_NAME,
+ t0.GOODS_CAT_ID,
+ t0.MKTPRICE,
+ t0.BUY_COUNT,
+ t0.SUPPLIER_ID,
+ t0.BRAND_ID,
+ t0.SEARCH_KEY,
+ t0.CREATE_DATE,
+ t0.IS_ALLOT,
+ t0.SELLING_POINT,
+ t0.SOURCE_FROM,
+ t0.MERCHANT_TYPE,
+ t1.IS_HAVE_STOCK,
+ t1.DELIVERY_PRICE,
+ t3.PRODUCT_CODE
+,t2.PRODUCT_ID
+,t2.COLOR
+,t2.MEMORY
+,t2.INCH
+,t2.ATTR_VALUE1
+,t2.ATTR_VALUE2
+,t2.ATTR_VALUE3
+,t2.ATTR_VALUE4
+,t2.ATTR_VALUE5
+,t2.ATTR_VALUE6
+,t2.ATTR_VALUE7
+,t2.ATTR_VALUE8
+,t2.ATTR_VALUE9
+,t2.ATTR_VALUE10
+,t3.PRODUCT_BASE_ID
+,t3.PARAM1
+,t3.PARAM2
+,t3.PARAM3
+,t3.PARAM4
+,t3.PARAM5
+,t3.PARAM6
+,t3.PARAM7
+,t3.PARAM8
+,t3.PARAM9
+,t3.PARAM10
+,t3.PARAM11
+,t3.PARAM12
+,t3.PARAM13
+,t3.PARAM14
+,t3.PARAM15
+,t3.PARAM16
+,t3.PARAM17
+,t3.PARAM18
+,t3.PARAM19
+,t3.PARAM20
+,t5.PARAM21
+,t5.PARAM22
+,t5.PARAM23
+,t5.PARAM24
+,t5.PARAM25
+,t5.PARAM26
+,t5.PARAM27
+,t5.PARAM28
+,t5.PARAM29
+,t5.PARAM30
+,t5.PARAM31
+,t5.PARAM32
+,t5.PARAM33
+,t5.PARAM34
+,t5.PARAM35
+,t5.PARAM36
+,t5.PARAM37
+,t5.PARAM38
+,t5.PARAM39
+,t5.PARAM40
+,t5.PARAM41
+,t5.PARAM42
+,t5.PARAM43
+,t5.PARAM44
+,t5.PARAM45
+,t5.PARAM46
+,t5.PARAM47
+,t5.PARAM48
+,t5.PARAM49
+,t5.PARAM50
+,t5.PARAM51
+,t5.PARAM52
+,t5.PARAM53
+,t5.PARAM54
+,t5.PARAM55
+,t5.PARAM56
+,t5.PARAM57
+,t5.PARAM58
+,t5.PARAM59
+,t5.PARAM60
+,t5.PARAM61
+,t5.PARAM62
+,t5.PARAM63
+,t5.PARAM64
+,t5.PARAM65
+,t5.PARAM66
+,t5.PARAM67
+,t5.PARAM68
+,t5.PARAM69
+,t5.PARAM70
+</sql>
+    <select id="queryGoodsForPage" resultType="com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp" parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq">
+        select
+        <include refid="queryGoodsForPageFields"></include>
+        from (select <include refid="fullJoinFieIds"></include>
+        from prod_goods t0,
+        prod_goods_product_rel t1,prod_product t2,prod_product_base t3,prod_product_ext t5 where 1=1 and t0.IS_DELETED=0 and t0.MARKET_ENABLE=1
+        and t2.is_deleted=0 and t0.GOODS_ID = t1.GOODS_ID and t1.PRODUCT_ID=t2.PRODUCT_ID and t1.PRODUCT_BASE_ID=t2.PRODUCT_BASE_ID and
+        t3.is_deleted=0 and t2.PRODUCT_BASE_ID=t3.PRODUCT_BASE_ID and t3.PRODUCT_BASE_ID=t5.PRODUCT_BASE_ID) t where 1=1
+        <if test="req.ids != null" >
+            and t.GOODS_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.ids">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.catIdList != null">
+            and t.GOODS_CAT_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.catIdList">
+            #{item}
+            </foreach>
+        </if>
+        <if test="req.brandIdList != null">
+            and t.BRAND_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.brandIdList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.startPrice != null and req.endPrice == null">
+            and t.MKTPRICE &gt;= #{req.startPrice }
+        </if>
+        <if test="req.startPrice != null and req.endPrice != null">
+            and t.MKTPRICE BETWEEN #{req.startPrice } and #{req.endPrice }
+        </if>
+        <if test="req.startPrice == null and req.endPrice != null">
+            and t.MKTPRICE &lt;= #{req.endPrice }
+        </if>
+        <if test="req.targetCodeList != null">
+            and t.GOODS_ID in ( select goods_id from prod_goods where IS_ALLOT=0
+            <if test ="req.merchantType != null">
+                and MERCHANT_TYPE=#{req.merchantType}
+            </if>
+            union select goods_id from prod_goods where IS_ALLOT=1 and goods_id in
+            (select GOODS_ID from prod_goods_rules t4 where t4.TARGET_CODE in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.targetCodeList">
+                #{item}
+            </foreach>))
+        </if>
+        <if test="req.attrSpecValueList != null">
+            <foreach item="item" index="index" collection="req.attrSpecValueList">
+                <if test="item.filedName != null">
+                    and ${item.filedName} in
+                    <if test="item.valuesList != null">
+                        <foreach item="value" index="index1" open="(" separator="," close=")" collection="item.valuesList">
+                            #{value}
+                        </foreach>
+                    </if>
+                </if>
+            </foreach>
+        </if>
+        <if test="req.searchKey != null and req.searchKey != ''">
+            and lower(t.SEARCH_KEY) like lower(CONCAT(CONCAT('%', #{req.searchKey }), '%'))
+        </if>
+        <if test="req.isHaveStock != null">
+            and t.IS_HAVE_STOCK = #{req.isHaveStock }
+        </if>
+        <if test="req.productIds != null">
+            and t.PRODUCT_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIds">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.regionId != null and req.lanId != null and req.targetId == null">
+            and t.GOODS_ID in
+            (select DISTINCT goods_id from prod_goods_region_rel where (REGION_ID = #{req.regionId } or REGION_ID = #{req.lanId }) and LAN_ID = #{req.lanId }
+            UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)
+        </if>
+        <if test="req.regionId == null and req.lanId == null and req.targetId != null">
+            and t.GOODS_ID in
+            (select DISTINCT goods_id from prod_goods_target_rel where TARGET_ID = #{req.targetId }
+            UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)
+        </if>
+        <if test="req.regionId != null and req.lanId != null and req.targetId != null">
+            and t.GOODS_ID in
+            (select DISTINCT goods_id from prod_goods_region_rel where (REGION_ID = #{req.regionId } or REGION_ID = #{req.lanId })  and LAN_ID = #{req.lanId }
+            UNION select DISTINCT goods_id from prod_goods_target_rel where TARGET_ID = #{req.targetId }
+            UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)
+        </if>
+        <if test="req.sourceFrom != null">
+            and t.SOURCE_FROM = #{req.sourceFrom }
+        </if>
+        <if test="req.isLogin == null or !req.isLogin">
+            and t.IS_ALLOT = 0
+        </if>
+        GROUP BY t.GOODS_ID
+        <if test="req.sortType != null">
+            order by ${req.sortType}
+        </if>
+    </select>
+
+    <select id="queryPageByConditionAdmin" resultType="com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp"
+            parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq">
+        select distinct g.GOODS_ID as goodsId,g.GOODS_NAME as goodsName,g.MARKET_ENABLE as marketEnable,c.CAT_ID as goodsCatId,c.CAT_NAME as goodsCatName,
+        g.SUPPLIER_ID as supplierId ,g.AUDIT_STATE as auditState,g.IS_ALLOT as isAllot,g.SOURCE_FROM as sourceFrom,
+        pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn
+        from prod_goods g left join prod_cat c on g.GOODS_CAT_ID=c.CAT_ID
+        left join prod_brand pb on g.brand_id=pb.brand_id
+        left join
+        (select pgpr.goods_id,pgpr.PRODUCT_ID,group_concat(pp.sn) sn,ppb.PRODUCT_BASE_ID,ppb.UNIT_TYPE from PROD_GOODS_PRODUCT_REL pgpr,PROD_PRODUCT pp,PROD_PRODUCT_BASE ppb
+        where  pgpr.PRODUCT_ID = pp.PRODUCT_ID
+        and pgpr.PRODUCT_BASE_ID = ppb.PRODUCT_BASE_ID GROUP BY pgpr.GOODS_ID) t on t.goods_id=g.goods_id
+        <where>
+            and g.IS_DELETED != 1
+            and EXISTS(select * from PROD_GOODS_PRODUCT_REL pgpr where pgpr.goods_id=g.goods_id and pgpr.product_id !='' and pgpr.PRODUCT_BASE_ID !='')
+            <if test="null!=req.goodsCatId and req.goodsCatId!=''">
+                and c.CAT_ID=#{req.goodsCatId}
+            </if>
+            <if test="null!=req.goodsName and req.goodsName!=''">
+                and g.GOODS_NAME like CONCAT(CONCAT('%', #{req.goodsName}), '%')
+            </if>
+            <if test="null!=req.marketEnable">
+                and g.MARKET_ENABLE=#{req.marketEnable}
+            </if>
+            <if test="null!=req.sourceFrom">
+                and g.SOURCE_FROM=#{req.sourceFrom}
+            </if>
+
+            <if test="null!=req.supplierIds">
+                and SUPPLIER_ID in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.supplierIds">
+                    #{item}
+                </foreach>
+            </if>
+
+
+
+            <if test="null!=req.beginTime">
+                and g.CREATE_DATE >= #{req.beginTime}
+            </if>
+            <if test="null!=req.endTime">
+                and #{req.endTime} >= g.CREATE_DATE
+            </if>
+            <if test="null!=req.beginUpdateTime">
+                and g.UPDATE_DATE >= #{req.beginUpdateTime}
+            </if>
+            <if test="null!=req.endUpdateTime">
+                and #{req.endUpdateTime} >= g.UPDATE_DATE
+            </if>
+            <if test="null!=req.auditState">
+                and g.AUDIT_STATE= #{req.auditState}
+            </if>
+            <if test="null!=req.isAllot">
+                and g.IS_ALLOT = #{req.isAllot}
+            </if>
+            <if test="null!=req.actName and req.actName!=''">
+                and g.GOODS_ID in (select GOODS_ID from prod_goods_act_rel where ACT_NAME like CONCAT(CONCAT('%', #{req.actName}), '%'))
+            </if>
+            <if test="null!=req.unitType and req.unitType!=''">
+                and g.GOODS_ID in (select GOODS_ID from prod_goods_product_rel t1,prod_product_base t2 where t1.PRODUCT_BASE_ID=t2.PRODUCT_BASE_ID and t2.UNIT_TYPE like CONCAT(CONCAT('%', #{req.unitType}), '%'))
+            </if>
+            <if test="null!=req.brandIdList">
+                and g.BRAND_ID in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.brandIdList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.deliveryPriceStart != null and req.deliveryPriceEnd == null">
+                and g.GOODS_ID in (select goods_id from prod_goods_product_rel where DELIVERY_PRICE >= #{req.deliveryPriceStart })
+            </if>
+            <if test="req.deliveryPriceStart != null and req.deliveryPriceEnd != null">
+                and g.GOODS_ID in (select goods_id from prod_goods_product_rel where DELIVERY_PRICE BETWEEN #{req.deliveryPriceStart } and #{req.deliveryPriceEnd })
+
+            </if>
+            <if test="req.deliveryPriceStart == null and req.deliveryPriceEnd != null">
+                and g.GOODS_ID in (select goods_id from prod_goods_product_rel where DELIVERY_PRICE &lt;= #{req.deliveryPriceEnd })
+            </if>
+            <if test="null!=req.productBaseId">
+                and t.PRODUCT_BASE_ID=#{req.productBaseId}
+            </if>
+            <if test="null!=req.sn">
+                and t.sn=#{req.sn}
+            </if>
+        </where>
+        order by g.UPDATE_DATE desc
+    </select>
+
+    <select id="listSupplierGroundId" parameterType="java.lang.String" resultType="java.lang.String">
+        SELECT DISTINCT
+            (t1.SUPPLIER_ID)
+        FROM
+            prod_goods t1,
+            prod_goods_product_rel t2,
+            prod_product_base t3
+        WHERE
+            t1.IS_DELETED = '0'
+        AND t1.GOODS_ID = t2.GOODS_ID
+        AND t2.PRODUCT_BASE_ID = t3.PRODUCT_BASE_ID
+        AND t1.MERCHANT_TYPE = '2'
+        AND t3.PRODUCT_BASE_ID = #{productBaseId}
+    </select>
+</mapper>

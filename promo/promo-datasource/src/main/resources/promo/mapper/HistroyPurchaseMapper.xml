@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.HistoryPurchaseMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.MARKETING_ACTIVITY_CODE 
+    ,t.MERCHANT_TYPE
+    ,t.ACTIVITY_TYPE_CODE
+    ,t.MERCHANT_ID 
+    ,t.MERCHANT_CODE 
+    ,t.MERCHANT_NAME 
+    ,t.PURCHASE_TIME 
+    ,t.PRE_PAY_TIME 
+    ,t.PAY_TIME 
+    ,t.ORDER_ID 
+    ,t.ORDER_TYPE 
+    ,t.GOODS_ID 
+    ,t.PRODUCT_ID 
+    ,t.PRICE 
+    ,t.PRE_PRICE 
+    ,t.PROMOTION_PRICE 
+    ,t.PAY_MONEY 
+    ,t.COUPON_INST_ID 
+    ,t.PAY_TYPE 
+    ,t.NUM 
+    ,t.SUPPLIER_CODE 
+--     ,t.CREATE_STAFF
+--     ,t.CREATE_DATE
+--     ,t.UPDATE_STAFF
+--     ,t.UPDATE_DATE
+    ,t.CREATOR
+    ,t.GMT_CREATE
+    ,t.MODIFIER
+    ,t.GMT_MODIFIED
+</sql>
+    <select id="queryActProductPurchasedSum" parameterType="com.iwhalecloud.retail.promo.dto.req.VerifyProductPurchasesLimitReq" resultType="java.lang.Long">
+        select sum(a.NUM) from act_history_purchase a
+        WHERE   a.is_deleted = '0' and a.MARKETING_ACTIVITY_ID =#{activityId} and a.PRODUCT_ID =#{productId}
+    </select>
+
+    <update id="updateHistroyPurchase" parameterType="com.iwhalecloud.retail.promo.entity.HistoryPurchase">
+        update act_history_purchase t set t.IS_DELETED = '1',
+        t.GMT_MODIFIED = #{gmtCreate}
+        where
+        t.ORDER_ID= #{orderId}
+    </update>
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.system.mapper.CommonRegionMapper">
+
+<sql id="allFields">
+    t.COMMON_REGION_ID 
+    ,t.PAR_REGION_ID 
+    ,t.REGION_NAME 
+    ,t.REGION_NBR 
+    ,t.REGION_TYPE 
+    ,t.REGION_DESC 
+    ,t.REGION_LEVEL 
+    ,t.AREA_CODE 
+    ,t.PATH_NAME 
+    ,t.PATH_CODE 
+</sql>
+
+</mapper>

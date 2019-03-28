@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.CouponEffExpRuleMapper">
+
+<sql id="allFields">
+    t.EFF_EXP_RULE_ID 
+    ,t.MKT_RES_ID 
+    ,t.PERIOD_TIME 
+    ,t.PERIOD_UNIT 
+    ,t.EFF_DATE 
+    ,t.EXP_DATE 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+</sql>
+
+    <!-- query mktResCoupon by mktResId-->
+	<select id="queryCouponEffExpRule" parameterType="com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO"
+	resultType="com.iwhalecloud.retail.rights.dto.response.CouponEffExpRuleRespDTO">
+		SELECT <include refid="allFields" />
+        From coupon_eff_exp_rule t WHERE 1 = 1
+         <if test="req.mktResId != null and req.mktResId !=''">
+            AND t.mkt_res_id = #{req.mktResId} 
+        </if>
+	</select>
+	
+	<update id="updateCouponEffExpRule" parameterType="com.iwhalecloud.retail.rights.dto.request.UpdateCouponEffExpRuleReqDTO">
+ 			UPDATE coupon_eff_exp_rule SET 
+ 			<if test="updateStaff != null">
+			    update_staff = #{updateStaff}
+ 			</if> 
+ 			<if test="periodTime != null">
+			    ,period_time = #{periodTime}
+ 			</if> 
+ 			<if test="periodUnit != null">
+			    ,period_unit = #{periodUnit}
+ 			</if> 
+ 			<if test="effDate != null">
+			   ,eff_date = #{effDate}
+ 			</if> 
+ 			<if test="expDate != null"> 
+			    ,exp_date = #{expDate}
+ 			</if> 
+ 			<if test="remark != null">
+			    ,remark = #{remark}
+ 			</if>
+		    <if test="updateDate != null">
+			    ,update_date= #{updateDate}
+		    </if>
+		WHERE eff_exp_rule_id = #{effExpRuleId}
+    </update>   
+    
+</mapper>

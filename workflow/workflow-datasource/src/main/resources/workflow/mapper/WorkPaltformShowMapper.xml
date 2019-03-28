@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.workflow.mapper.WorkPlatformShowMapper">
+
+    <select id="getUnhandledItemCount" resultType="int">
+        select count(1) from wf_route_inst ri
+        left join wf_process_inst_pool ip on ri.route_inst_id = ip.route_inst_id
+        <where>
+          <if test="null!=statusList">
+              and ri.route_inst_status in
+              <foreach item="item" index="index" open="(" separator="," close=")" collection="statusList">
+                  #{item}
+              </foreach>
+          </if>
+          <if test="null!=userId and ''!=userId">
+              and (ri.handler_user_id = #{userId} or ip.user_id = #{userId})
+          </if>
+        </where>
+    </select>
+
+    <select id="getAppliedItemCount" resultType="int">
+        select count(1) from wf_process_inst
+        <where>
+            <if test="null!=statusList">
+                and process_inst_status in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="statusList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="null!=userId and ''!=userId">
+                and apply_user_id = #{userId}
+            </if>
+        </where>
+    </select>
+
+</mapper>

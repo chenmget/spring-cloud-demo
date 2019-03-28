@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.ActivityProductMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.MARKETING_ACTIVITY_ID
+    ,t.PRODUCT_BASE_ID 
+    ,t.PRODUCT_ID 
+    ,t.PRICE 
+    ,t.PRE_PRICE 
+    ,t.REBATE_PRICE 
+    ,t.DISCOUNT_AMOUNT 
+    ,t.NUM 
+    ,t.REACH_AMOUNT
+    ,t.SUPPLIER_CODE
+--     ,t.CREATE_STAFF
+--     ,t.CREATE_DATE
+--     ,t.UPDATE_STAFF
+--     ,t.UPDATE_DATE
+    ,t.CREATOR
+    ,t.GMT_CREATE
+    ,t.MODIFIER
+    ,t.GMT_MODIFIED
+    ,t.SOURCE_FROM
+</sql>
+
+<!--<insert id="batchInsert"  parameterType="java.util.List">-->
+    <!--INSERT INTO act_activity_product-->
+    <!--(ID, marketing_activity_id, product_base_id, product_id,-->
+    <!--price, DISCOUNT_AMOUNT, pre_price, rebate_price,-->
+    <!--num, reach_amount, supplier_code,CREATOR,GMT_CREATE, MODIFIER, GMT_MODIFIED, source_from,is_deleted)-->
+    <!--VALUES-->
+    <!--<foreach collection ="list" item="inst" index="index" separator =",">-->
+        <!--(#{inst.id}, #{inst.marketingActivityId}, #{inst.productBaseId}, #{inst.productId},#{inst.price},#{inst.discountAmount},-->
+        <!--#{inst.prePrice},#{inst.rebatePrice}, #{inst.num}, #{inst.reachAmount}, #{inst.supplierCode}, 1, now(),1,now(),#{inst.sourceFrom},#{inst.isDeleted})-->
+    <!--</foreach >-->
+<!--</insert>-->
+
+    <delete id="deleteActivityProduct" parameterType="java.lang.String">
+        delete
+
+        FROM act_activity_product  where 1=1
+        <if test="_parameter != null and _parameter != '' ">
+            and MARKETING_ACTIVITY_ID = #{marketingActivityId}
+        </if>
+    </delete>
+    
+    <select id="queryActProductSum" parameterType="java.lang.String" resultType="java.lang.Long">
+        SELECT sum(aap.num) FROM act_activity_product aap
+        WHERE aap.is_deleted ='0' and aap.MARKETING_ACTIVITY_ID =#{marketingActivityId}
+    </select>
+</mapper>

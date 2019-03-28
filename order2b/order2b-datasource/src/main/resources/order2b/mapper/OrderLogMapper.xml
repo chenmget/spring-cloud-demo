@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.OrderLogMapper">
+
+<sql id="allFields">
+    t.LOG_ID 
+    ,t.ORDER_ID 
+    ,t.CHANGE_ACTION 
+    ,t.CHANGE_RESON 
+    ,t.DESC 
+    ,t.PRE_STATUS 
+    ,t.POST_STATUS 
+    ,t.USER_ID 
+    ,t.CREATE_TIME 
+</sql>
+
+</mapper>

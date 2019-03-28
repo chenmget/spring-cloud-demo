@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.MerchantMapper">
+
+<sql id="allFields">
+    t.MERCHANT_ID
+    ,t.MERCHANT_CODE
+    ,t.MERCHANT_NAME
+    ,t.STATUS 
+    ,t.MERCHANT_TYPE
+    ,t.USER_ID
+    ,t.LAST_UPDATE_DATE 
+    ,t.BUSINESS_ENTITY_NAME 
+    ,t.BUSINESS_ENTITY_CODE 
+    ,t.CUSTOMER_CODE 
+    ,t.LAN_ID 
+    ,t.CITY 
+    ,t.SUB_BUREAU 
+    ,t.MARKET_CENTER
+    ,t.SHOP_CODE 
+    ,t.SHOP_NAME 
+    ,t.SHOP_COUNTY_BUSI_ENTITY_CODE 
+    ,t.SHOP_COUNTY_BUSI_ENTITY_NAME 
+    ,t.SHOP_CITY_BUSI_ENTITY_CODE 
+    ,t.SHOP_CITY_BUSI_ENTITY_NAME 
+    ,t.SHOP_PROV_BUSI_ENTITY_CODE 
+    ,t.SHOP_PROV_BUSI_ENTITY_NAME 
+    ,t.SHOP_COUNTRY_BUSI_ENTITY_CODE 
+    ,t.SHOP_COUNTRY_BUSI_ENTITY_NAME 
+    ,t.SELF_SHOP_LEVEL 
+    ,t.CHANNEL_TYPE 
+    ,t.CHANNEL_MEDI_TYPE 
+    ,t.CHANNEL_SUB_TYPE 
+    ,t.SHOP_ADDRESS 
+    ,t.PAR_CRM_ORG_ID 
+    ,t.PAR_CRM_ORG_CODE 
+    ,t.IS_OWN_PROPERTY 
+    ,t.LINKMAN 
+    ,t.PHONE_NO 
+    ,t.BUSI_CENTER_NAME 
+    ,t.BUSI_CENTER_TYPE 
+    ,t.IS_CAMPUS_SHOP 
+    ,t.IS_MANUFACTURER_SHOP 
+    ,t.MANUFACTURER_CHANNEL_ID 
+    ,t.IS_IPHONE_AUTH_SHOP 
+    ,t.CITY_ATTR 
+    ,t.IS_CRM 
+    ,t.BUSI_CENTER_LEVEL 
+    ,t.SHOP_PRI_TYPE 
+    ,t.SHOP_SECOND_TYPE 
+    ,t.SHOP_THIRD_TYPE 
+    ,t.TOP10_ID 
+    ,t.IS_COMMISSION 
+    ,t.SUPPLIER_NAME 
+    ,t.SUPPLIER_CODE 
+    ,t.SUPPLIER_STATE 
+    ,t.SUPPLIER_TAX_CODE 
+    ,t.PAR_COUNTY_BUSI_ENTITY_CODE 
+    ,t.PAR_COUNTY_BUSI_ENTITY_NAME 
+    ,t.PAR_CITY_BUSI_ENTITY_NAME 
+    ,t.PAR_CITY_BUSI_ENTITY_CODE 
+    ,t.PAR_PROV_BUSI_ENTITY_NAME 
+    ,t.PAR_PROV_BUSI_ENTITY_CODE 
+    ,t.PAR_COUNTRY_BUSI_ENTITY_NAME 
+    ,t.PAR_COUNTRY_BUSI_ENTITY_CODE 
+    ,t.BLOCK 
+    ,t.TOP_SHORT_NAME 
+    ,t.TOP_LEVEL 
+    ,t.EFF_DATE 
+    ,t.EXP_DATE 
+</sql>
+<!--简要字段-->
+<sql id="simpleFields">
+    t.MERCHANT_ID
+    ,t.MERCHANT_CODE
+    ,t.MERCHANT_NAME
+    ,t.STATUS
+    ,t.MERCHANT_TYPE
+    ,t.USER_ID
+    ,t.BUSINESS_ENTITY_NAME
+    ,t.BUSINESS_ENTITY_CODE
+    ,t.CUSTOMER_CODE
+    ,t.LAN_ID
+    ,t.CITY
+    ,t.SUB_BUREAU
+    ,t.MARKET_CENTER
+    ,t.SHOP_CODE
+    ,t.SHOP_NAME
+    ,t.SHOP_ADDRESS
+    ,t.PAR_CRM_ORG_ID
+    ,t.PAR_CRM_ORG_CODE
+    ,t.LINKMAN
+    ,t.PHONE_NO
+    ,t.EFF_DATE
+    ,t.EXP_DATE
+</sql>
+
+    <select id="pageMerchant" resultType="com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp"
+            parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantPageReq">
+        select <include refid="simpleFields"/>
+        from par_merchant t
+        where
+            1=1
+            <if test="req.merchantCode != null and req.merchantCode != ''">
+                and t.MERCHANT_CODE like CONCAT(CONCAT('%', #{req.merchantCode }), '%')
+            </if>
+            <if test="req.merchantName != null and req.merchantName != ''">
+                and lower(t.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{req.merchantName }), '%'))
+            </if>
+            <if test="req.businessEntityName != null and req.businessEntityName != ''">
+                and lower(t.BUSINESS_ENTITY_NAME) like lower(CONCAT(CONCAT('%', #{req.businessEntityName }), '%'))
+            </if>
+            <if test="req.businessEntityCode != null and req.businessEntityCode != ''">
+                and lower(t.BUSINESS_ENTITY_CODE) like lower(CONCAT(CONCAT('%', #{req.businessEntityCode }), '%'))
+            </if>
+            <if test="req.lanId != null and req.lanId != ''">
+                and t.LAN_ID =  #{req.lanId}
+            </if>
+            <if test="req.city != null and req.city != ''">
+                and t.CITY =  #{req.city}
+            </if>
+            <if test="req.lanIdList != null and req.lanIdList.size() >0 ">
+                and t.LAN_ID in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.lanIdList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.cityList != null and req.cityList.size() >0 ">
+                and t.CITY in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.cityList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.shopCode != null and req.shopCode != ''">
+                and lower(t.SHOP_CODE) like lower(CONCAT(CONCAT('%', #{req.shopCode}), '%'))
+            </if>
+            <if test="req.status != null and req.status != ''">
+                and t.STATUS =  #{req.status}
+            </if>
+            <if test="req.merchantType != null and req.merchantType != ''">
+                and t.MERCHANT_TYPE =  #{req.merchantType}
+            </if>
+            <if test="req.merchantTypeList != null and req.merchantTypeList.size() >0 ">
+                and t.MERCHANT_TYPE in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantTypeList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.merchantIdList != null and req.merchantIdList.size() >0 ">
+                and t.MERCHANT_ID in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIdList">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.userIdList != null and req.userIdList.size() >0 ">
+                and t.USER_ID in
+                <foreach item="item" index="index" open="(" separator="," close=")" collection="req.userIdList">
+                    #{item}
+                </foreach>
+            </if>
+        order by t.MERCHANT_ID desc
+    </select>
+
+
+</mapper>

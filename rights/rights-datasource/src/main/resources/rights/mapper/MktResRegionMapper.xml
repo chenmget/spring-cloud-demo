@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.MktResRegionMapper">
+
+<sql id="allFields">
+    t.MKT_RES_REGION_ID 
+    ,t.MKT_RES_ID 
+    ,t.APPLY_REGION_ID 
+    ,t.COST_PRICE 
+    ,t.SALES_PRICE 
+    ,t.CLEARING_PRICE 
+    ,t.STATUS_DATE 
+    ,t.STATUS_CD 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+</sql>
+	<!-- query mktResRegion by mktResId-->
+	<select id="queryMktResRegion" parameterType="com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO"
+	resultType="com.iwhalecloud.retail.rights.dto.response.MktResRegionRespDTO">
+		SELECT <include refid="allFields" />
+        FROM mkt_res_region t WHERE 1 = 1
+        <if test="req.mktResId != null and req.mktResId !=''">
+            AND mkt_res_id = #{req.mktResId} 
+        </if>
+	</select>
+
+</mapper>

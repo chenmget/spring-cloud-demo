@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.TagMapper">
+
+    <sql id="allFields">
+        t.TAG_ID
+        ,t.TAG_NAME
+        ,t.TAG_DESC
+        ,t.TAG_TYPE
+        ,t.TAG_COLOR
+        ,t.UPD_DATE
+    </sql>
+
+    <resultMap id="TagResult" type="com.iwhalecloud.retail.oms.dto.TagDTO">
+        <result property="tagId" column="TAG_ID"></result>
+        <result property="tagName" column="TAG_NAME"></result>
+        <result property="tagDesc" column="TAG_DESC"></result>
+        <result property="tagType" column="TAG_TYPE"></result>
+        <result property="tagColor" column="TAG_COLOR"></result>
+        <result property="updDate" column="UPDDATE"></result>
+    </resultMap>
+
+    <insert id="createTag" parameterType="com.iwhalecloud.retail.oms.dto.TagDTO">
+		insert into t_tag (tag_id,tag_name,tag_desc,tag_type,tag_color,upd_date) values
+		(#{tagId},#{tagName},#{tagDesc},#{tagType},#{tagColor},#{updDate})
+	</insert>
+
+    <delete id="deleteTag" parameterType="com.iwhalecloud.retail.oms.dto.TagDTO">
+		delete from t_tag WHERE tag_id=#{tagId}
+	</delete>
+
+    <update id="editTag" parameterType="com.iwhalecloud.retail.oms.dto.TagDTO">
+        UPDATE t_tag
+        <trim prefix="set" suffixOverrides=",">
+            <if test="tagName!=null">tag_name = #{tagName},</if>
+            <if test="tagDesc!=null">tag_desc =#{tagDesc},</if>
+            <if test="tagType!=null">tag_type =#{tagType},</if>
+            <if test="tagColor!=null">tag_color =#{tagColor},</if>
+            <if test="updDate!=null">upd_date =#{updDate},</if>
+        </trim>
+        WHERE tag_id = #{tagId}
+    </update>
+
+    <select id="queryTagList" parameterType="com.iwhalecloud.retail.oms.dto.resquest.TagPageReq"
+            resultType="com.iwhalecloud.retail.oms.dto.SelectTagListDTO">
+        select count(a.rela_id) as contentNumber,b.tag_name as tagName,b.tag_color as tagColor,b.tag_id as
+        tagId,b.tag_desc as tagDesc from t_content_tag a right join t_tag b on a.tag_id = b.tag_id
+        <where>
+            <if test="pageReq.tagName!=null">
+                upper(b.tag_name) like upper(#{pageReq.tagName})
+            </if>
+        </where>
+        group by b.tag_id,b.tag_name,b.tag_color,b.tag_id,b.tag_desc
+    </select>
+
+    <select id="queryTagDetailByTagName" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.oms.dto.TagDTO">
+        select * from t_tag where tag_name = #{tagName}
+    </select>
+
+    <select id="queryTagListByParam"
+            resultMap="TagResult">
+        select
+        <include refid="allFields"/>
+        from t_tag t
+        WHERE t.tag_id in
+        <foreach collection="list" item="item" index="index" open="(" close=")" separator=",">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="queryTagListByTagName"
+            resultMap="TagResult">
+        SELECT
+        <include refid="allFields"/>
+        FROM t_tag t
+        WHERE t.tag_name LIKE #{tagName}
+    </select>
+
+</mapper>

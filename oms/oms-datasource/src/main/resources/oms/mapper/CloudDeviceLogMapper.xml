@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.CloudDeviceLogMapper">
+
+<sql id="allFields">
+    t.ID 
+    ,t.GMT_CREATE 
+    ,t.GMT_MODIFIED 
+    ,t.CREATOR 
+    ,t.MODIFIER 
+    ,t.IS_DELETED 
+    ,t.CLOUD_DEVICE_NUMBER 
+    ,t.ONLINE_TIME 
+    ,t.OFFLINE_TIME 
+    ,t.WORK_TIME
+    ,t.ADSCRIPTION_SHOP_ID
+    ,t.ADSCRIPTION_CITY
+    ,t.ADSCRIPTION_CITY_AREA
+</sql>
+
+
+    <select id="queryCloudDeviceLog" parameterType="com.iwhalecloud.retail.oms.dto.CloudDeviceLogDTO"
+            resultType="com.iwhalecloud.retail.oms.dto.CloudDeviceLogDTO">
+      select * from cloud_device_log
+      <where>
+          <if test="gmtCreate != null">
+             and GMT_CREATE = TO_DATE(to_char(#{gmtCreate},'yyyy-MM-dd HH24:mi:ss'),'yyyy-MM-dd HH24:mi:ss'）
+          </if>
+          <if test="cloudDeviceNumber !=null">
+             and CLOUD_DEVICE_NUMBER = #{cloudDeviceNumber}
+          </if>
+          <if test="isDeleted !=null">
+             and IS_DELETED = #{isDeleted}
+          </if>
+          <if test="adscriptionShopId !=null">
+              and ADSCRIPTION_SHOP_ID = #{adscriptionShopId}
+          </if>
+          <if test="adscriptionCity !=null">
+              and ADSCRIPTION_CITY = #{adscriptionCity}
+          </if>
+          <if test="adscriptionCityArea !=null">
+              and ADSCRIPTION_CITY_AREA = #{adscriptionCityArea}
+          </if>
+          <if test="startTime != null">
+              AND GMT_CREATE <![CDATA[>=]]> #{startTime}
+          </if>
+          <if test = "endTime!= null">
+              AND GMT_MODIFIED <![CDATA[<=]]> #{endTime}
+          </if>
+      </where>
+    </select>
+
+    <select id="getLastUpdateDeviceLogRecord" resultType="com.iwhalecloud.retail.oms.dto.CloudDeviceLogDTO">
+        SELECT * FROM cloud_device_log where CLOUD_DEVICE_NUMBER = #{deviceNum} AND GMT_MODIFIED =
+        (select MAX(GMT_MODIFIED) from cloud_device_log where CLOUD_DEVICE_NUMBER=#{deviceNum})
+    </select>
+
+</mapper>

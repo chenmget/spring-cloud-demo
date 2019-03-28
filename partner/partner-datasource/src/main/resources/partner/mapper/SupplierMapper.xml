@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.SupplierMapper">
+
+	<!--<select id="selectAll"  resultType="com.iwhalecloud.retail.partner.dto.SupplierDTO">-->
+		<!--select SUPPLIER_ID,SUPPLIER_NAME from par_supplier-->
+	<!--</select>-->
+
+	<select id="pageSupplier" parameterType="com.iwhalecloud.retail.partner.dto.req.SupplierQueryReq"
+			resultType="com.iwhalecloud.retail.partner.dto.SupplierDTO">
+		SELECT t.* FROM PAR_SUPPLIER t
+		<where>
+			<if test="pageReq.supplierName!=null">
+				and t.SUPPLIER_NAME LIKE CONCAT(CONCAT('%', #{pageReq.supplierName}), '%')
+			</if>
+			<if test="pageReq.supplierState!=null">
+				and t.SUPPLIER_STATE=#{pageReq.supplierState}
+			</if>
+		</where>
+	</select>
+
+</mapper>

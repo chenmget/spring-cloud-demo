@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.CouponSupplyRuleMapper">
+
+<sql id="allFields">
+    t.SUPPLY_RULE_ID 
+    ,t.MKT_RES_ID 
+    ,t.CUST_RANGE 
+    ,t.MAX_NUM 
+    ,t.SUPPLY_NUM 
+    ,t.TIME_PERIOD 
+    ,t.CYCLE_TYPE 
+    ,t.SUPPLY_RULE_DESC 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+    ,t.BEGIN_TIME 
+    ,t.END_TIME 
+</sql>
+
+    <!-- query mktResCoupon by mktResId-->
+	<select id="queryCouponSupplyRule" parameterType="com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO"
+	resultType="com.iwhalecloud.retail.rights.dto.response.CouponSupplyRuleRespDTO">
+		Select <include refid="allFields" />
+        From coupon_supply_rule t WHERE 1 = 1
+        <if test="req.mktResId != null and req.mktResId !=''">
+            AND t.mkt_res_id = #{req.mktResId} 
+        </if>
+	</select>
+	
+	<update id="updateCouponSupplyRule" parameterType="com.iwhalecloud.retail.rights.dto.request.UpdateCouponSupplyRuleReqDTO">
+ 			UPDATE coupon_supply_rule SET 
+ 			<if test="updateStaff != null">
+			    update_staff = #{updateStaff}
+ 			</if>
+		    <if test="updateDate != null">
+			    ,update_date = #{updateDate}
+		    </if>
+		    <if test="custRange != null">
+			    ,cust_range = #{custRange}
+ 			</if> 
+ 			<if test="maxNum != null">
+			    ,max_num = #{maxNum}
+ 			</if> 
+ 			<if test="supplyNum != null">
+			    ,supply_num = #{supplyNum}
+ 			</if> 
+ 			<if test="beginTime != null">
+			    ,begin_time = #{beginTime}
+ 			</if> 
+ 			<if test="endTime != null">
+			    ,end_time = #{endTime}
+ 			</if> 
+ 			<if test="cycleType != null">
+			   ,cycle_type = #{cycleType}
+ 			</if> 
+ 			<if test="supplyRuleDesc != null"> 
+			    ,supply_rule_desc = #{supplyRuleDesc}
+ 			</if> 
+ 			<if test="remark != null">
+			    ,remark = #{remark}
+ 			</if> 
+			WHERE mkt_res_id = #{mktResId}
+    </update>   
+    
+</mapper>

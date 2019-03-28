@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 指定工作空间，要与接口名相同，源代码没有去看，猜测应该是通过"这里的namespace.下边方法的id"来定位方法的 -->
+<mapper namespace="com.iwhalecloud.retail.oms.mapper.CSInteractionTimeMapper">
+
+    <select id="queryInteractionTime"
+            parameterType="com.iwhalecloud.retail.oms.dto.resquest.EventInteractionTimeReq"
+            resultType="com.iwhalecloud.retail.oms.dto.EventInteractionTimeDTO">
+        SELECT sum(interaction_time) as
+        interaction_time,device_number,adscription_shop_id,adscription_city,adscription_city_area FROM
+        event_interaction_time
+        <where>
+            <if test="adscriptionShopId!=null">
+                and adscription_shop_id = #{adscriptionShopId}
+            </if>
+            <if test="adscriptionCityArea!=null">
+                and adscription_city_area = #{adscriptionCityArea}
+            </if>
+            <if test="adscriptionCity!=null">
+                and adscription_city = #{adscriptionCity}
+            </if>
+            <if test="startTime != null">
+                AND GMT_CREATE <![CDATA[>=]]> #{startTime}
+            </if>
+            <if test = "endTime!= null">
+                AND GMT_CREATE <![CDATA[<=]]> #{endTime}
+            </if>
+        </where>
+        group by device_number,adscription_shop_id,adscription_city,adscription_city_area order by
+        DEVICE_NUMBER
+    </select>
+
+    <select id="queryBeforeInteractionTime" parameterType="com.iwhalecloud.retail.oms.dto.EventDTO"
+            resultType="com.iwhalecloud.retail.oms.dto.EventDTO">
+        SELECT * FROM event where device_number = #{deviceNumber} ORDER BY GMT_CREATE DESC
+    </select>
+
+    <select id="getLastUpdateRecord" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.oms.dto.EventDTO">
+        SELECT * FROM event where device_number = #{deviceNum} AND GMT_MODIFIED = (select MAX(GMT_MODIFIED) from event where device_number=#{deviceNum})
+    </select>
+
+    <select id="getLastUpdateInteracRecord" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.oms.dto.EventInteractionTimeDTO">
+        SELECT * FROM event_interaction_time where device_number = #{deviceNum} AND GMT_MODIFIED = (select MAX(GMT_MODIFIED) from event_interaction_time where device_number=#{deviceNum})
+    </select>
+
+    <select id="queryLastInteractionTime" parameterType="com.iwhalecloud.retail.oms.dto.EventDTO"
+            resultType="com.iwhalecloud.retail.oms.dto.EventDTO">
+        SELECT * FROM event WHERE is_expire = '1' and device_number = #{deviceNumber} ORDER BY GMT_CREATE DESC
+    </select>
+
+    <select id="queryEvent" resultType="com.iwhalecloud.retail.oms.dto.EventDTO">
+        SELECT * FROM event
+    </select>
+
+    <select id="countKeyWord"
+            parameterType="com.iwhalecloud.retail.oms.dto.resquest.CountKeyWordReq"
+            resultType="com.iwhalecloud.retail.oms.dto.RankDTO">
+        SELECT
+        DISTINCT e.EVENT_EXTEND,count (e.EVENT_EXTEND) as eventCount,rank () over ( ORDER BY e.EVENT_EXTEND asc ) AS
+        rank
+        FROM
+        event e
+        <where>
+            <if test="startTime != null and endTime!=null">
+                and trunc(e.GMT_CREATE) <![CDATA[>=]]> TO_DATE(#{startTime},'yyyy-MM-dd HH24:mi:ss'）
+                and trunc(e.GMT_CREATE) <![CDATA[<=]]> TO_DATE(#{endTime},'yyyy-MM-dd HH24:mi:ss'）
+            </if>
+            and e.DEVICE_NUMBER IN ( SELECT eit.DEVICE_NUMBER FROM EVENT_INTERACTION_TIME eit WHERE eit.ADSCRIPTION_CITY
+            =
+            #{adscriptionCity} )
+            and e.EVENT_CODE IN （ '9', '10', '11'）
+            AND e.EVENT_EXTEND LIKE #{eventCode}
+        </where>
+        GROUP BY
+        EVENT_EXTEND
+    </select>
+
+    <select id="countGoods"
+            parameterType="com.iwhalecloud.retail.oms.dto.resquest.CountGoodsReq"
+            resultType="com.iwhalecloud.retail.oms.dto.RankDTO">
+        SELECT
+        DISTINCT e.EVENT_EXTEND,e.EVENT_EXTEND_EXTRA1,count (e.EVENT_EXTEND) as eventCount,rank () over ( ORDER BY
+        e.EVENT_EXTEND asc ) AS
+        rank
+        FROM
+        event e
+        <where>
+            <if test="startTime != null and endTime!=null">
+                and trunc(e.GMT_CREATE) <![CDATA[>=]]> TO_DATE(#{startTime},'yyyy-MM-dd HH24:mi:ss'）
+                and trunc(e.GMT_CREATE) <![CDATA[<=]]> TO_DATE(#{endTime},'yyyy-MM-dd HH24:mi:ss'）
+            </if>
+            and e.DEVICE_NUMBER IN ( SELECT eit.DEVICE_NUMBER FROM EVENT_INTERACTION_TIME eit WHERE eit.ADSCRIPTION_CITY
+            =
+            #{adscriptionCity} )
+            and e.EVENT_CODE = '2'
+        </where>
+        GROUP BY
+        EVENT_EXTEND,EVENT_EXTEND_EXTRA1
+    </select>
+
+</mapper>

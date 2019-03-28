@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.CouponApplyObjectMapper">
+
+<sql id="allFields">
+    t.APPLY_OBJECT_ID 
+    ,t.MKT_RES_ID 
+    ,t.OBJ_TYPE 
+    ,t.OBJ_ID 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+</sql>
+
+	<!-- query Couponinst by CouponApplyObjectResponseDTO-->
+	<select id="queryCouponAppyObject" parameterType="com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO"
+	resultType="com.iwhalecloud.retail.rights.dto.response.CouponApplyObjectRespDTO">
+		SELECT <include refid="allFields" />
+        From coupon_apply_object t WHERE 1 = 1
+        <if test="req.mktResId != null and req.mktResId !=''">
+            AND t.mkt_res_id = #{req.mktResId} 
+        </if>
+	</select>
+
+</mapper>

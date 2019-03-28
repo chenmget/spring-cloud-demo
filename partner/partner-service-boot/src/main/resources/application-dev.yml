@@ -1,0 +1,29 @@
+project:
+  name: 开发环境
+  
+server:
+  port: 8025
+
+spring.dubbo:
+    application:
+      name: partner-provider
+    registry:
+      address: zookeeper://10.45.47.90:2121
+    protocol:
+      name: dubbo
+      port: 20882
+    scan: com.iwhalecloud.retail
+  
+logging.level.com.iwhalecloud.retail.order.mapper: debug
+ 
+#spring.datasource:
+#  driver-class-name: com.mysql.jdbc.Driver
+#  url: jdbc:mysql://10.45.47.88:3306/nretail
+#  username: nretail
+#  password: nretail
+
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.46.67:8866/nretail_b2b?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: szxtest
+  password: szxtest.2019

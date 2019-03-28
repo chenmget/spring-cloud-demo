@@ -4,34 +4,37 @@ import com.iwhalecloud.retail.order2b.annotation.EnumInterface;
 import org.springframework.util.StringUtils;
 
 /**
- * ServiceType(ord_order_apply)
+ * 任务类型
+ *
+ * @author xu.qinyuan@ztesoft.com
+ * @date 2019年03月26日
  */
-public enum OrderServiceType implements EnumInterface {
-    NULL("","",""),
-    ORDER_SHIP_TYPE_1("订购关系","1",""),
-    ORDER_SHIP_TYPE_2("退费关系","2",""),
-    ORDER_SHIP_TYPE_3("换货关系","3",""),
-    ORDER_SHIP_TYPE_4("退货关系","4",""),
-    ORDER_SHIP_TYPE_5("订单关闭","5",""),
-            ;
+public enum TaskType implements EnumInterface {
+
+    NULL("默认","0"),
+    TASK_TYPE_1("流程","1"),
+    TASK_TYPE_2("工单","2"),
+
+    TASK_SUB_TYPE_WAIT("待买家确认","WAIT")
+    ;
 
 
-    public static OrderServiceType matchOpCode(String opCodeStr) {
+
+    public static TaskType matchOpCode(String opCodeStr) {
         if(StringUtils.isEmpty(opCodeStr)){
-            return OrderServiceType.NULL;
+            return TaskType.NULL;
         }
-        for (OrderServiceType opCode : OrderServiceType.values()) {
+        for (TaskType opCode : TaskType.values()) {
             if (opCode.getCode().equalsIgnoreCase(opCodeStr)) {
                 return opCode;
             }
         }
-        return OrderServiceType.NULL;
+        return TaskType.NULL;
     }
 
-    OrderServiceType(String name, String code, String desc) {
+    TaskType(String name, String code) {
         this.code = code;
         this.name = name;
-        this.desc = desc;
     }
 
     private String code;
@@ -52,14 +55,6 @@ public enum OrderServiceType implements EnumInterface {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getDesc() {
-        return desc;
-    }
-
-    public void setDesc(String desc) {
-        this.desc = desc;
     }
 
     @Override

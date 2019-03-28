@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.manager;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.order2b.dto.resquest.order.OrderApplyGetReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsRawReq;
 import com.iwhalecloud.retail.order2b.entity.OrderApply;
 import com.iwhalecloud.retail.order2b.entity.OrderApplyDetail;
@@ -10,6 +11,7 @@ import com.iwhalecloud.retail.order2b.mapper.OrderApplyDetailMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderApplyMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderItemMapper;
 import com.iwhalecloud.retail.order2b.model.AfterSalesModel;
+import com.iwhalecloud.retail.order2b.model.CloseOrderApplyModel;
 import com.iwhalecloud.retail.order2b.model.OrderItemDetailModel;
 import com.iwhalecloud.retail.order2b.model.SelectAfterModel;
 import org.springframework.stereotype.Component;
@@ -93,9 +95,24 @@ public class AfterSaleManager {
         return orderApplyMapper.selectAllSubmit(orderApply);
     }
 
-    public List<OrderApply> selectOrderApply(OrderApply apply){
-        return orderApplyMapper.selectOrderApply(apply);
+    /**
+     * 查询关闭订单申请的信息
+     *
+     * @param req 查询入参
+     * @return
+     */
+    public List<CloseOrderApplyModel> queryCloseOrderApply(OrderApplyGetReq req) {
+        return orderApplyMapper.queryCloseOrderApply(req);
     }
 
+    /**
+     * 根据条件更新申请单的状态
+     *
+     * @param orderApply orderApply
+     * @return
+     */
+    public int updateOrderApplyStateByCondition(OrderApply orderApply) {
+        return orderApplyMapper.updateOrderApplyStateByCondition(orderApply);
+    }
 
 }

@@ -159,4 +159,45 @@
         and SOURCE_FROM=#{sourceFrom}
 
     </select>
+
+    <select id="queryCloseOrderApply" resultType="com.iwhalecloud.retail.order2b.model.CloseOrderApplyModel"
+            parameterType="com.iwhalecloud.retail.order2b.dto.resquest.order.OrderApplyGetReq">
+        SELECT ORDER_APPLY_ID, SERVICE_TYPE, QUESTION_DESC,HANDLER_ID, APPLICANT_ID, CREATE_TIME, APPLY_STATE, ORDER_ID, REFUND_IMG_URL
+        FROM  ord_order_apply
+        <where>
+            <if test="req.status !=null and req.status !=''">
+                and apply_state = #{req.status}
+            </if>
+            <if test="req.orderId !=null and req.orderId !=''">
+                and order_id = #{req.orderId}
+            </if>
+
+            <if test="req.serviceType !=null and req.serviceType !=''">
+                and SERVICE_TYPE = #{req.serviceType}
+            </if>
+            <if test="req.lanId !=null and req.lanId !=''">
+                and lan_id = #{req.lanId}
+            </if>
+            and SOURCE_FROM = #{req.sourceFrom}
+        </where>
+    </select>
+
+    <update id="updateOrderApplyStateByCondition">
+        UPDATE ord_order_apply
+        <set>
+            <if test="applyState !=null and applyState !=''">
+                APPLY_STATE =#{applyState},
+            </if>
+        </set>
+        where 1=1
+        <if test="orderId !=null and orderId !=''">
+            and order_id=#{orderId}
+        </if>
+        <if test="serviceType !=null and serviceType !=''">
+            and service_type=#{serviceType}
+        </if>
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+    </update>
 </mapper>

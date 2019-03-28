@@ -13,7 +13,24 @@
     ,t.PRE_STATUS 
     ,t.POST_STATUS 
     ,t.USER_ID 
-    ,t.CREATE_TIME 
+    ,t.CREATE_TIME
+    ,t.lan_id
 </sql>
-
+    <select id="queryOrderLogByCondition" resultType="com.iwhalecloud.retail.order2b.dto.model.order.OrderLogDTO"
+            parameterType="com.iwhalecloud.retail.order2b.dto.resquest.order.OrderLogGetReq">
+        SELECT <include refid="allFields"/>
+        from ORD_ORDER_LOG t
+        <where>
+            <if test="req.orderId !=null and req.orderId !=''">
+                and ORDER_ID = #{req.orderId}
+            </if>
+            <if test="req.postStatus !=null and req.postStatus !=''">
+                and POST_STATUS = #{req.postStatus}
+            </if>
+            <if test="req.lanId !=null and req.lanId !=''">
+                and lan_id = #{req.lanId}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
 </mapper>

@@ -87,6 +87,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      */
     public ResultVO startProcess(ProcessStartReq processStartDTO) {
 
+
         String processId = processStartDTO.getProcessId();
         log.info("1、根据流程ID查询流程（wf_process表），process_id={}",processStartDTO.getProcessId());
         Process process = processManager.queryProcessById(processId);
@@ -400,8 +401,14 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         String userId = taskAddReq.getCreateUserId();
         String userName = taskAddReq.getCreateUserName();
         String taskType = WorkFlowConst.TaskType.WORK.getCode();
+        if (!StringUtils.isEmpty(taskAddReq.getTaskType())) {
+            taskType = taskAddReq.getTaskType();
+        }
         String taskStatus = WorkFlowConst.TaskState.HANDING.getCode();
         String taskSubType = WorkFlowConst.WORK_TYPE;
+        if (!StringUtils.isEmpty(taskAddReq.getTaskSubType())) {
+            taskSubType = taskAddReq.getTaskSubType();
+        }
         Task task = addTask(formId, taskTitle, WorkFlowConst.WORK_TYPE, userId, userName,
                     taskType,taskStatus, taskSubType,WorkFlowConst.WORK_TYPE,
                     taskAddReq.getNextNodeName(),taskAddReq.getExtends1());
@@ -410,7 +417,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         //如果传入的处理用户列表只有1个，直接填写任务分配时间和处理人信息，忽略第3步
         TaskItem taskItem = new TaskItem();
         taskItem.setTaskId(taskId);
-        taskItem.setTaskType(WorkFlowConst.TaskType.WORK.getCode());
+        taskItem.setTaskType(taskType);
         taskItem.setRouteId(WorkFlowConst.WORK_TYPE);
         taskItem.setRouteName(WorkFlowConst.WORK_TYPE);
         taskItem.setPreNodeId(WorkFlowConst.WORK_TYPE);
@@ -449,8 +456,10 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         //1> 校验任务项是否已经处理
         //2> 修改任务项的状态、任务办理时间、任务处理人、任务处理人名称
         String formId = workTaskHandleReq.getFormId();
-
-        List<Task> tasks = this.getTaskByFormId(formId);
+        if (StringUtils.isEmpty(formId)) {
+            return ResultVO.error("formId不能为空");
+        }
+        List<Task> tasks = this.getTaskByCondition(workTaskHandleReq);
         if (CollectionUtils.isEmpty(tasks) || tasks.size() > 1) {
             log.info("TaskManager.handleWorkTask query taskList error formId ={}" + formId);
             return ResultVO.error(ResultCodeEnum.TASK_LIST_IS_ERROR);
@@ -576,6 +585,26 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         queryWrapper.eq(Task.FieldNames.taskStatus.getTableFieldName(), WorkFlowConst.TaskState.HANDING.getCode());
         queryWrapper.eq("form_id", formId);
 
+        return taskMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 根据条件获取待处理的任务
+     *
+     * @param req
+     * @return
+     */
+    public List<Task> getTaskByCondition(WorkTaskHandleReq req) {
+        QueryWrapper<Task> queryWrapper = new QueryWrapper<>();
+        //只查询待处理的
+        queryWrapper.eq(Task.FieldNames.taskStatus.getTableFieldName(), WorkFlowConst.TaskState.HANDING.getCode());
+        queryWrapper.eq(Task.FieldNames.formId.getTableFieldName(), req.getFormId());
+        if (!StringUtils.isEmpty(req.getTaskType())) {
+            queryWrapper.eq(Task.FieldNames.taskType.getTableFieldName(), req.getTaskType());
+        }
+        if (!StringUtils.isEmpty(req.getTaskSubType())) {
+            queryWrapper.eq(Task.FieldNames.taskSubType.getTableFieldName(), req.getTaskSubType());
+        }
         return taskMapper.selectList(queryWrapper);
     }
 

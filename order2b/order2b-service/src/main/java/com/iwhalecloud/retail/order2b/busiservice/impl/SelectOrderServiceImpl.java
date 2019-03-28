@@ -282,6 +282,8 @@ public class SelectOrderServiceImpl implements SelectOrderService {
         statusList.add(OrderAllStatus.ORDER_STATUS_6.getCode());
         statusList.add(OrderAllStatus.ORDER_STATUS_10.getCode());
         statusList.add(OrderAllStatus.ORDER_STATUS_10_.getCode());
+        statusList.add(OrderAllStatus.ORDER_STATUS_4_.getCode());
+        statusList.add(OrderAllStatus.ORDER_STATUS_31.getCode());
 
         switch (userType) {
             case OrderManagerConsts.USER_EXPORT_TYPE_1:

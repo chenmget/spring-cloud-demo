@@ -180,7 +180,6 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
             }
         }
         resp.setOperateMessage(errorMsgSb.toString());
-        excelFileIs.close();
         return dtoList;
     }
 

@@ -6,6 +6,10 @@ package com.iwhalecloud.retail.goods2b.common;
  */
 public class GoodsConst {
 
+    // 表对应的缓存名称，1、表名的缓存名称：表示单条的缓存的；2、非表名的缓存: 表示存非单条的数据（一般是有父子级关系的列表）
+    // 文件上传表prod_file使用的缓存名称
+    public static final String CACHE_NAME_PROD_FILE = "prod_file";
+
     /**
      * 关联类型
      */

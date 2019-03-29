@@ -721,4 +721,8 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         return resouceInstTrackManager.qryOrderIdByNbr(nbr, ResourceConst.STORAGETYPE.SUPPLIER_DELIVERY.getCode());
     }
 
+    @Override
+    public ResultVO<ResouceInstTrackDTO> getResourceInstTrack(String nbr){
+        return ResultVO.success(resouceInstTrackManager.getResourceInstTrack(nbr));
+    }
 }

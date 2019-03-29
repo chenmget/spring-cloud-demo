@@ -34,6 +34,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -186,6 +187,9 @@ public class RetailerResourceInstB2BController {
     @PostMapping(value="allocateResourceInst")
     public ResultVO allocateResourceInst(@RequestBody ResourceInstAllocateReqDTO dto) {
         String userId = UserContext.getUserId();
+        if (CollectionUtils.isEmpty(dto.getMktResInstNbrs()) || dto.getMktResInstNbrs().size() > 5) {
+            return ResultVO.error("调拨数目不对");
+        }
         RetailerResourceInstAllocateReq req = new RetailerResourceInstAllocateReq();
         BeanUtils.copyProperties(dto, req);
         req.setCreateStaff(userId);
@@ -251,21 +255,28 @@ public class RetailerResourceInstB2BController {
         }else{
             excelTitleNames = ResourceInstColum.retailerColumn();
         }
-
+        OutputStream output = null;
         try{
             //创建Excel
             Workbook workbook = new HSSFWorkbook();
             String fileName = "串码列表";
             ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames);
-            OutputStream output = response.getOutputStream();
+            output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
             response.setContentType("application/msexcel;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             workbook.write(output);
-            output.close();
         }catch (Exception e){
             log.error("串码导出失败",e);
+        } finally {
+            try {
+                if (null != output) {
+                    output.close();
+                }
+            } catch (Exception e) {
+                log.error("error:", e);
+            }
         }
     }
 
@@ -301,19 +312,27 @@ public class RetailerResourceInstB2BController {
         } else {
             excelTitleNames = ResourceInstColum.retailerColumn();
         }
+        OutputStream output = null;
         try {
             Workbook workbook = new HSSFWorkbook();
             String fileName = "串码列表";
             ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames);
-            OutputStream output = response.getOutputStream();
+            output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
             response.setContentType("application/msexcel;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             workbook.write(output);
-            output.close();
         } catch (Exception e) {
             log.error("串码导出失败", e);
+        } finally {
+            try {
+                if (null != output){
+                    output.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.warehouse.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.warehouse.common.GenerateCodeUtil;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestItemQueryReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestQueryReq;
@@ -14,7 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.Calendar;
+import java.util.Date;
 
 
 @Component
@@ -30,10 +29,10 @@ public class ResourceRequestManager{
     public String insertResourceRequest(ResourceRequestAddReq req ){
         ResourceRequest request = new ResourceRequest();
         BeanUtils.copyProperties(req,request);
-        request.setReqCode(GenerateCodeUtil.generateCode());
-        request.setUpdateDate(Calendar.getInstance().getTime());
-        request.setStatusDate(Calendar.getInstance().getTime());
-        request.setCreateDate(Calendar.getInstance().getTime());
+        Date now = new Date();
+        request.setUpdateDate(now);
+        request.setStatusDate(now);
+        request.setCreateDate(now);
         resourceRequestMapper.insert(request);
         return request.getMktResReqId();
     }

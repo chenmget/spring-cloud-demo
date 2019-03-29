@@ -6,12 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
-import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -31,6 +31,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,10 +140,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Override
     //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO delResourceInst(ResourceInstUpdateReq req) {
         List<String> nbrs = Lists.newArrayList(req.getMktResInstNbrs().stream().distinct().collect(Collectors.toList()));
-        List<String> unavailbaleNbrs = new ArrayList<>();
         List<String> productList = new ArrayList<>();
 
         // 获取仓库
@@ -162,12 +164,11 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             ResourceInstGetReq queryReq = new ResourceInstGetReq();
             queryReq.setMktResInstNbr(nbr);
             queryReq.setMerchantId(req.getMerchantId());
-            queryReq.setStatusCd(changeStatusCd);
             ResourceInstDTO inst = resourceInstManager.getResourceInst(queryReq);
             log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstManager.getResourceInst req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(inst));
             String statusCd = inst.getStatusCd();
             // 没删除成功的，不加日志及更新库存
-            if (!changeStatusCd.equals(statusCd)) {
+            if (null == inst || !changeStatusCd.equals(inst.getStatusCd())) {
                 continue;
             }
             String productId = inst.getMktResId();
@@ -350,46 +351,30 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
      * 4、目标仓库处理人进行调拨收货确认，确认后串码进行入库操作；
      */
     @Override
-    //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req) {
         //根据仓库查使用对象
-        ResultVO<MerchantDTO> sorctMerchantVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
-        log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getMktResStoreId(), JSON.toJSONString(sorctMerchantVO));
-        MerchantDTO sourceMerchantDTO = sorctMerchantVO.getResultData();
+        ResultVO<MerchantDTO> sourceMerchantVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
+        log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getMktResStoreId(), JSON.toJSONString(sourceMerchantVO));
+        MerchantDTO sourceMerchantDTO = sourceMerchantVO.getResultData();
         if (null == sourceMerchantDTO) {
             return ResultVO.error("商家获取失败");
         }
-
-        String requestStatusCd = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
-        //step 1: 校验是否需要审核单
-        ResultVO<ResouceStoreDTO> destStoreVO = resouceStoreService.getResouceStore(req.getDestStoreId());
-        log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getResouceStore1 req={},resp={}", req.getDestStoreId(), JSON.toJSONString(destStoreVO));
-        ResultVO<ResouceStoreDTO> sourceStoreVO = resouceStoreService.getResouceStore(req.getMktResStoreId());
-        log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getResouceStore2 req={},resp={}", req.getMktResStoreId(), JSON.toJSONString(sourceStoreVO));
-        // 是否跨地市
-        Boolean isTransRegional = false;
-        Boolean stroeIsNotNull = destStoreVO.isSuccess() && destStoreVO.getResultData() != null && sourceStoreVO.isSuccess() && sourceStoreVO.getResultData() != null;
-        if (stroeIsNotNull) {
-            isTransRegional = !destStoreVO.getResultData().getLanId().equals(sourceStoreVO.getResultData().getLanId());
+        ResultVO<MerchantDTO> destMerchantVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
+        log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getDestStoreId(), JSON.toJSONString(destMerchantVO));
+        MerchantDTO destMerchantDTO = destMerchantVO.getResultData();
+        if (null == destMerchantDTO) {
+            return ResultVO.error("商家获取失败");
         }
-
-        // 是否有前置补贴
-        ResultVO<Boolean> nbrHasActivityVO = resourceInstService.nbrHasActivity(req.getNbrAndProductId());
-        log.info("SupplierResourceInstServiceImpl.allocateResourceInst resourceInstService.nbrHasActivity req={},resp={}", req.getNbrAndProductId(), JSON.toJSONString(nbrHasActivityVO));
-        Boolean nbrHasActivity = false;
-        if (nbrHasActivityVO.isSuccess()) {
-            nbrHasActivity = nbrHasActivityVO.getResultData();
-        }
-
-        // step3 如果跨地市或有前置补贴需要审核，申请单状态为处理中
+        Boolean isTransRegional = sourceMerchantDTO.getLanId() != null && destMerchantDTO.getLanId() != null && sourceMerchantDTO.getLanId().equals(destMerchantDTO.getLanId());
+        // step1 两种情况都要审核，如果跨地市，调出方、调入方都需要审核
+        String processId = ResourceConst.ALLOCATE_WORK_FLOW_INST;
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
-        if (isTransRegional || nbrHasActivity) {
-            requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
+        if (isTransRegional) {
+            processId = ResourceConst.ALLOCATE_WORK_FLOW_INST_2;
             successMessage = ResourceConst.ALLOCATE_AUDITING_MSG;
         }
-
-        //新增申请单
+        // step2 新增申请单
         List<ResourceInstDTO> resourceInstDTOList = resourceInstService.selectByIds(req.getMktResInstIds());
         List<ResourceRequestAddReq.ResourceRequestInst> resourceRequestInsts = new ArrayList<>();
         for (ResourceInstDTO resourceInstDTO : resourceInstDTOList) {
@@ -403,19 +388,33 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         resourceRequestAddReq.setMktResStoreId(req.getMktResStoreId());
         resourceRequestAddReq.setCreateStaff(req.getCreateStaff());
         resourceRequestAddReq.setDestStoreId(req.getDestStoreId());
-        resourceRequestAddReq.setStatusCd(requestStatusCd);
+        resourceRequestAddReq.setStatusCd(ResourceConst.MKTRESSTATE.PROCESSING.getCode());
         resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
         resourceRequestAddReq.setInstList(resourceRequestInsts);
         resourceRequestAddReq.setLanId(sourceMerchantDTO.getLanId());
         resourceRequestAddReq.setRegionId(sourceMerchantDTO.getCity());
         ResultVO<String> resultVOInsertResReq = resourceRequestService.insertResourceRequest(resourceRequestAddReq);
-        if (resultVOInsertResReq == null || resultVOInsertResReq.getResultData() == null) {
-            return ResultVO.error("添加申请单失败");
-        }
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resourceRequestService.insertResourceRequest req={},resp={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVOInsertResReq));
+        if (resultVOInsertResReq == null || resultVOInsertResReq.getResultData() == null) {
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "添加申请单失败");
+        }
 
-        // step2 修改源仓库串码为调拨中
+        // step3 发起流程到目标商家，由目标商家决定是否接受
         String createStaff = req.getCreateStaff();
+        ProcessStartReq processStartDTO = new ProcessStartReq();
+        processStartDTO.setTitle("调拨审批流程");
+        processStartDTO.setApplyUserId(createStaff);
+        processStartDTO.setApplyUserName(sourceMerchantDTO.getMerchantName());
+        processStartDTO.setProcessId(processId);
+        processStartDTO.setFormId(resultVOInsertResReq.getResultData());
+        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType());
+        processStartDTO.setExtends1(sourceMerchantDTO.getCityName());
+        ResultVO startResultVO = taskService.startProcess(processStartDTO);
+        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
+        if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
+        }
+        // step4 修改源仓库串码为调拨中
         AdminResourceInstDelReq updateReq = new AdminResourceInstDelReq();
         BeanUtils.copyProperties(req, updateReq);
         // 设置状态校验条件
@@ -429,59 +428,17 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                 ResourceConst.STATUSCD.SALED.getCode());
         updateReq.setCheckStatusCd(checkStatusCd);
         updateReq.setStatusCd(ResourceConst.STATUSCD.ALLOCATIONING.getCode());
-        updateReq.setUpdateStaff(req.getCreateStaff());
+        updateReq.setUpdateStaff(createStaff);
         updateReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(resultVOInsertResReq.getResultData());
-        updateReq.setMktResStoreId(sourceStoreVO.getResultData().getMktResStoreId());
-        updateReq.setDestStoreId(destStoreVO.getResultData().getMktResStoreId());
+        updateReq.setMktResStoreId(req.getMktResStoreId());
+        updateReq.setDestStoreId(req.getDestStoreId());
         ResultVO updateResultVO = resourceInstService.updateResourceInstByIds(updateReq);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resourceInstService.updateResourceInstByIds req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updateResultVO));
-        List<String> unUse = (List<String>) updateResultVO.getResultData();
-        if (null != unUse && unUse.size() == req.getMktResInstIds().size()) {
-            return ResultVO.error("串码id不正确");
+        if (!updateResultVO.isSuccess()) {
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "更新串码失败");
         }
-
-        //根据仓库查使用对象
-        ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(req.getDestStoreId());
-        log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", JSON.toJSONString(req.getDestStoreId()), JSON.toJSONString(resultVO));
-        MerchantDTO merchantDTO = resultVO.getResultData();
-        if (null == merchantDTO) {
-            return ResultVO.error("商家获取失败");
-        }
-
-        // step4 发起流程到目标商家，由目标商家决定是否接受
-        // 流程ID先传个1，业务ID传个唯一的值就好
-        ProcessStartReq processStartDTO = new ProcessStartReq();
-        processStartDTO.setTitle("调拨审批流程");
-        processStartDTO.setApplyUserId(createStaff);
-        processStartDTO.setApplyUserName(sourceMerchantDTO.getMerchantName());
-        processStartDTO.setProcessId(ResourceConst.ALLOCATE_WORK_FLOW_INST);
-        processStartDTO.setFormId(resultVOInsertResReq.getResultData());
-        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType());
-
-        ResultVO<CommonRegionDTO> resultVOLan = commonRegionService.getCommonRegionById(sourceMerchantDTO.getLanId());
-        ResultVO<CommonRegionDTO> resultVORegion = commonRegionService.getCommonRegionById(sourceMerchantDTO.getCity());
-        StringBuilder extends1 = new StringBuilder();
-        if (resultVOLan.isSuccess() && resultVOLan.getResultData() != null) {
-            extends1.append(resultVOLan.getResultData().getRegionName());
-        }
-        if (resultVORegion.isSuccess() && resultVORegion.getResultData() != null) {
-            extends1.append(resultVORegion.getResultData().getRegionName());
-        }
-        processStartDTO.setExtends1(extends1.toString());
-        ResultVO taskServiceRV = new ResultVO();
-        try {
-            taskServiceRV = taskService.startProcess(processStartDTO);
-        } catch (Exception ex) {
-            log.error("供应商串码调拨发起工作流异常", ex);
-        } finally {
-            log.info("SupplierResourceInstServiceImpl.allocateResourceInst taskService.startProcess req={},resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
-        }
-        if (!CollectionUtils.isEmpty(unUse)) {
-            return ResultVO.success("失败串码", unUse);
-        }
-        log.info("RetailerResourceInstMarketServiceImpl successMessage={}", successMessage);
         return ResultVO.success(successMessage);
     }
 
@@ -732,8 +689,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     }
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO confirmReciveNbr(ConfirmReciveNbrReq req) {
         // step1 申请单状态改为完成
         String resReqId = req.getResReqId();
@@ -802,8 +758,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     }
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO confirmRefuseNbr(ConfirmReciveNbrReq req) {
         log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr req={}, resp={}", JSON.toJSONString(req));
         // step1 申请单修改状态

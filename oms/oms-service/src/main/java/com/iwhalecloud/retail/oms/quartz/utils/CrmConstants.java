@@ -49,9 +49,7 @@ public class CrmConstants {
 	public static int MAX_QUERY_SIZE = 3000;
 	
 	public static String PROJECT_CODE="";
-	
-	public static final String SYS_CT10000_PWD = "CT10000_PWD";	//2009-05-04增加为10000登录配置的密码
-	
+
 	public static void setMaxQuerySize(String size){
 		try {
 			if(null!=size && !"".equals(size))

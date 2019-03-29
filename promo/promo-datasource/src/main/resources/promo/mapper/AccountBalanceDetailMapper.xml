@@ -17,7 +17,9 @@
     ,t.INVALID_AMOUNT 
     ,t.BALANCE_SOURCE_TYPE_ID
     ,t.ORDER_ID
-    ,t.ORDER_ITEM_ID 
+    ,t.ORDER_ITEM_ID
+    ,t.PRODUCT_ID
+    ,t.REWARD_PRICE
     ,t.EFF_DATE 
     ,t.EXP_DATE 
     ,t.CUR_STATUS_DATE 

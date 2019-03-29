@@ -47,14 +47,14 @@
 
     <select id = "queryAccountBalanceDetailAllForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailAllReq"
             resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp">
-        select b.ACCT_ID,b.ACCT_NAME,b.ACCT_TYPE,a.AMOUNT,a.STATUS_CD,a.EFF_DATE,a.EXP_DATE,a.OPER_INCOME_ID,
-        a.SOURCE_DESC,a.oper_type,a.ORDER_ITEM_ID,a.ORDER_ID,c.ACCOUNT_BALANCE_ID,e.obj_id as supplier_id,f.name as act_name from account_balance_detail a
-        inner join account b on a.ACCT_ID=b.ACCT_ID
-        inner join account_balance c on b.ACCT_ID=c.ACCT_ID and c.ACCOUNT_BALANCE_ID=a.ACCOUNT_BALANCE_ID
-        inner join ACCOUNT_BALANCE_TYPE d on d.BALANCE_TYPE_ID=c.BALANCE_TYPE_ID
-        inner join ACCOUNT_BALANCE_RULE e on d.BALANCE_TYPE_ID=e.BALANCE_TYPE_ID
-        inner join act_marketing_activity f on f.id=d.ACT_ID
-        where b.STATUS_CD='1000' AND b.EFF_DATE&lt;=SYSDATE() AND b.EXP_DATE&gt;=SYSDATE()
+        SELECT B.ACCT_ID,B.ACCT_NAME,B.ACCT_TYPE,A.AMOUNT,A.STATUS_CD,A.EFF_DATE,A.EXP_DATE,A.OPER_INCOME_ID,
+        A.SOURCE_DESC,A.OPER_TYPE,A.REWARD_PRICE,A.PRODUCT_ID,A.ORDER_ITEM_ID,A.ORDER_ID,C.ACCOUNT_BALANCE_ID,E.OBJ_ID AS SUPPLIER_ID,F.NAME AS ACT_NAME FROM ACCOUNT_BALANCE_DETAIL A
+        INNER JOIN ACCOUNT B ON A.ACCT_ID=B.ACCT_ID
+        INNER JOIN ACCOUNT_BALANCE C ON B.ACCT_ID=C.ACCT_ID AND C.ACCOUNT_BALANCE_ID=A.ACCOUNT_BALANCE_ID
+        INNER JOIN ACCOUNT_BALANCE_TYPE D ON D.BALANCE_TYPE_ID=C.BALANCE_TYPE_ID
+        INNER JOIN ACCOUNT_BALANCE_RULE E ON D.BALANCE_TYPE_ID=E.BALANCE_TYPE_ID
+        INNER JOIN ACT_MARKETING_ACTIVITY F ON F.ID=D.ACT_ID
+        WHERE B.STATUS_CD='1000' AND B.EFF_DATE&lt;=SYSDATE() AND B.EXP_DATE&gt;=SYSDATE()
 
         <if test="req.custId != null and req.custId != ''">
             and B.CUST_ID = #{req.custId}

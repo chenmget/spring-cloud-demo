@@ -33,7 +33,7 @@ public class AccountManager extends ServiceImpl<AccountMapper, Account> {
 
     public int addAccount(Account account){
         if(StringUtils.isEmpty(account.getStatusCd())){
-            account.setStatusCd(RebateConst.STATUS_USE);
+            account.setStatusCd(RebateConst.Const.STATUS_USE.getValue());
         }
         if(StringUtils.isEmpty(account.getEffDate())){
             account.setEffDate(new Date());
@@ -47,7 +47,7 @@ public class AccountManager extends ServiceImpl<AccountMapper, Account> {
     public Account getAccountByCustId(String  custId,String acctType){
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(Account.FieldNames.custId.getTableFieldName(),custId);
-        queryWrapper.eq(Account.FieldNames.statusCd.getTableFieldName(), RebateConst.STATUS_USE);
+        queryWrapper.eq(Account.FieldNames.statusCd.getTableFieldName(), RebateConst.Const.STATUS_USE.getValue());
         queryWrapper.eq(Account.FieldNames.acctType.getTableFieldName(), acctType);
         queryWrapper.le(Account.FieldNames.effDate.getTableFieldName(),new Date());
         queryWrapper.ge(Account.FieldNames.expDate.getTableFieldName(),new Date());
@@ -67,7 +67,7 @@ public class AccountManager extends ServiceImpl<AccountMapper, Account> {
     public Account getAccountByAcctId(String acctId){
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(Account.FieldNames.acctId.getTableFieldName(),acctId);
-        queryWrapper.eq(Account.FieldNames.statusCd.getTableFieldName(), RebateConst.STATUS_USE);
+        queryWrapper.eq(Account.FieldNames.statusCd.getTableFieldName(), RebateConst.Const.STATUS_USE.getValue());
 
         queryWrapper.le(Account.FieldNames.effDate.getTableFieldName(),new Date());
         queryWrapper.ge(Account.FieldNames.expDate.getTableFieldName(),new Date());

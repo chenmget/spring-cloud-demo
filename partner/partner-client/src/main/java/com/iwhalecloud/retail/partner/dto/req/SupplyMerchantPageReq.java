@@ -63,5 +63,7 @@ public class SupplyMerchantPageReq extends PageVO {
     @ApiModelProperty(value = "收款账号（翼支付、支付宝、微信、银行账号")
     private String account;
 
+    @ApiModelProperty(value = "专票状态 1 未录入/2 审核通过/3 审核中/4 审核不通过/5 已过期")
+    private String vatInvoiceStatus;
 
 }

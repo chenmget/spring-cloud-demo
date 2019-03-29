@@ -10,19 +10,20 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- *
  * @author gongs
  * @date
  */
 @Slf4j
 public class HttpConnectionClient {
     private static final String CHARSET_NAME = "UTF-8";
+
     /**
      * POST请求
      *
-     * @param url    请求地址
+     * @param url 请求地址
      */
-    public static void doPost(String url, String params,FinishCallBack callBack) {
+    public static void doPost(String url, String params, FinishCallBack callBack) {
+        OutputStreamWriter out = null;
         try {
             HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
             conn.setRequestMethod("POST");
@@ -32,17 +33,15 @@ public class HttpConnectionClient {
             conn.setReadTimeout(3000);
             // 超时时间30秒
             conn.connect();
-
-            log.info("url:"+url);
-           log.info("params:"+params);
+            log.info("url:" + url);
+            log.info("params:" + params);
             if (params != null) {
-                OutputStreamWriter out = new OutputStreamWriter(conn.getOutputStream(), CHARSET_NAME);
+                out = new OutputStreamWriter(conn.getOutputStream(), CHARSET_NAME);
                 out.write(params);
                 out.flush();
-                out.close();
             }
             int responseCode = conn.getResponseCode();
-            if(responseCode == HttpURLConnection.HTTP_OK){
+            if (responseCode == HttpURLConnection.HTTP_OK) {
                 InputStreamReader r = new InputStreamReader(conn.getInputStream(), CHARSET_NAME);
                 BufferedReader reader = new BufferedReader(r);
                 String line;
@@ -50,14 +49,22 @@ public class HttpConnectionClient {
                 while ((line = reader.readLine()) != null) {
                     stringBuffer.append(line);
                 }
-                System.out.println(stringBuffer.toString());
+                log.info("stringBuffer:{}", stringBuffer.toString());
                 callBack.success(stringBuffer.toString());
-            }else{
+            } else {
                 callBack.failure("error");
             }
 
         } catch (IOException e) {
             callBack.failure("error");
+        } finally {
+            try {
+                if (null != out){
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

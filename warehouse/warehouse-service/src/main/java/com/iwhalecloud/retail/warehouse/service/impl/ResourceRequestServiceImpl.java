@@ -103,7 +103,7 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
                 detailReq.setMktResInstId(instDTO.getMktResInstId());
                 detailReq.setMktResReqItemId(itemId);
                 detailReq.setMktResInstNbr(instDTO.getMktResInstNbr());
-                detailReq.setQuantity(Long.valueOf(ResourceConst.CONSTANT_01));
+                detailReq.setQuantity(1L);
                 detailReq.setCreateStaff(req.getCreateStaff());
                 detailReq.setChngType(req.getChngType());
                 detailReq.setUnit("个");

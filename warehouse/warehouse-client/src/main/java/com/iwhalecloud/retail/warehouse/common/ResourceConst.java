@@ -30,15 +30,16 @@ public class ResourceConst {
      * 出库
      */
     public final static String OUT_PUT_STOAGE = "1000";
-    /**
-     * 常量
-     */
-    public final static String  CONSTANT_01 = "1";
 
     /**
-     * 常量
+     * 常量是
      */
-    public final static String  CONSTANT_0 = "0";
+    public final static String  CONSTANT_YES = "1";
+
+    /**
+     * 常量否
+     */
+    public final static String  CONSTANT_NO = "0";
 
 
     /**

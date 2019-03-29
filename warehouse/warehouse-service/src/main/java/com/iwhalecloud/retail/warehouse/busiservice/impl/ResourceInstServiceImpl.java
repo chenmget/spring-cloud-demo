@@ -397,10 +397,19 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         List<String> mktResInstNbrs = Lists.newArrayList(req.getMktResInstNbrs());
         resourceInstsGetReq.setMktResInstNbrs(mktResInstNbrs);
         resourceInstsGetReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        resourceInstsGetReq.setMerchantTypes(Lists.newArrayList(req.getMerchantType()));
-        resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
+        List<String> merchantTypes = null;
+        if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(req.getMerchantType())) {
+            // 厂商增加：只校验厂商库
+            merchantTypes = Lists.newArrayList(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
+        }else{
+            // 非厂商增加：只校验非厂商库
+            merchantTypes = Lists.newArrayList(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType(),
+                    PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType(),
+                    PartnerConst.MerchantTypeEnum.PARTNER.getType());
+        }
+        resourceInstsGetReq.setMerchantTypes(merchantTypes);
         List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
-        log.info("ResourceInstServiceImpl.qryEnableInsertNbr resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
+        log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
         if (CollectionUtils.isNotEmpty(inst)) {
             List<String> instNbrs = inst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
             existNbrs = mktResInstNbrs.stream().filter(t -> instNbrs.contains(t)).collect(Collectors.toList());
@@ -721,25 +730,18 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     public ResultVO<List<String>> delResourceInstForMerchant(ResourceInstUpdateReq req){
         log.info("ResourceInstServiceImpl.delResourceInstForMerchant req={}", JSON.toJSONString(req));
         //step 1:串码是否有效
-        String mktResStoreId = req.getMktResStoreId();
         String merchantId = req.getMerchantId();
         List<String> checkStatusCd = req.getCheckStatusCd();
         String statusCd = req.getStatusCd();
 
         // 删除的时候传的是商家Id,没传mktResStoreId
-        if (StringUtils.isBlank(mktResStoreId)) {
-            String storeSubType = req.getStoreType();
-            if(org.apache.commons.lang.StringUtils.isEmpty(storeSubType)){
-                storeSubType = ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode();
-            }
-            ResouceStoreDTO store = resouceStoreManager.getStore(merchantId, storeSubType);
-            log.info("ResourceInstServiceImpl.delResourceInstForMerchant resouceStoreManager.getStore merchantId={},resp={}", merchantId, JSON.toJSONString(store));
-            if (null == store) {
-                return ResultVO.error(constant.getNoStoreMsg());
-            }
-            req.setMktResStoreId(store.getMktResStoreId());
+        String storeSubType = ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode();
+        ResouceStoreDTO store = resouceStoreManager.getStore(merchantId, storeSubType);
+        log.info("ResourceInstServiceImpl.delResourceInstForMerchant resouceStoreManager.getStore merchantId={},resp={}", merchantId, JSON.toJSONString(store));
+        if (null == store) {
+            return ResultVO.error(constant.getNoStoreMsg());
         }
-
+        req.setMktResStoreId(store.getMktResStoreId());
         Map<String, Object> data = assembleDataForMerchant(req);
 
         if(data.containsKey("errors")){
@@ -766,7 +768,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (!availbaleNbrs.isEmpty()) {
             ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
             BeanUtils.copyProperties(req, updateReq);
-            updateReq.setMktResStoreId(req.getDestStoreId());
             updateReq.setMktResInstNbrs(availbaleNbrs);
             successNum = resourceInstManager.updateResourceInst(updateReq);
             log.info("ResourceInstServiceImpl.delResourceInstForMerchant resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
@@ -788,6 +789,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 updatedInstList.add(dto);
             }
             // step3 记录事件(根据产品维度)
+            req.setDestStoreId(req.getMktResStoreId());
+            req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
             resourceInstLogService.updateResourceInstLog(req, updatedInstList);
             // step 4:修改库存(出库)
             ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();

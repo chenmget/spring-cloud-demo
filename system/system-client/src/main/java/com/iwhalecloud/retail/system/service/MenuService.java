@@ -8,7 +8,7 @@ public interface MenuService {
 
     ResultVO saveMenu(MenuDTO menuDTO);
 
-    ResultVO listMenu(String platform);
+    ResultVO listMenu(String platform, String menuName);
 
     ResultVO<MenuDTO> getMenuByMenuId(String menuId);
 

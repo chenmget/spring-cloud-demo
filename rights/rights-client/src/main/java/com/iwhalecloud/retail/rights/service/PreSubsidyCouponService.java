@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.rights.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.rights.dto.request.*;
+import com.iwhalecloud.retail.rights.dto.response.MktResCouponRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.PreSubsidyProductPromResqDTO;
 import com.iwhalecloud.retail.rights.dto.response.QueryPreSubsidyCouponResqDTO;
 
@@ -54,4 +55,21 @@ public interface PreSubsidyCouponService {
      * @return
      */
     ResultVO<List<PreSubsidyProductPromResqDTO>> queryPreSubsidyProduct(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO);
+
+
+    /**
+     * 查询可以混用的优惠券
+     *
+     * @param queryPreSubsidyReqDTO
+     * @return
+     */
+    ResultVO<List<MktResCouponRespDTO>> queryMixUseCoupon(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO);
+
+    /**
+     * 更新活动的优惠券的类型
+     *
+     * @param queryPreSubsidyReqDTO
+     * @return
+     */
+    ResultVO updateActCouponType(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO);
 }

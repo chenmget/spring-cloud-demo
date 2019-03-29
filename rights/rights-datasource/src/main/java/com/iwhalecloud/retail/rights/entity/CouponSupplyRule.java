@@ -126,6 +126,29 @@ public class CouponSupplyRule implements Serializable {
   	 */
 	@ApiModelProperty(value = "endTime")
   	private java.util.Date endTime;
+
+	/**
+	 * 是不限制券总数量
+	 1.限制
+	 0.不限制
+	 */
+	@ApiModelProperty(value = "是不限制券总数量")
+	private String numLimitFlg;
+
+	/**
+	 * 是否限制券的单用户领取数量
+	 1. 限制
+	 0. 不限制
+	 */
+	@ApiModelProperty(value = "是否限制券的单用户领取数量")
+	private String supplyLimitFlg;
+
+	/**
+	 * 领取方式
+	 * 1. 手工领取 2. 主动推送'
+	 */
+	@ApiModelProperty(value = "领取方式")
+	private String releaseMode;
   	
   	
   	//属性 end
@@ -181,7 +204,23 @@ public class CouponSupplyRule implements Serializable {
 		beginTime("beginTime","BEGIN_TIME"),
 		
 		/** endTime. */
-		endTime("endTime","END_TIME");
+		endTime("endTime","END_TIME"),
+
+		/** 是不限制券总数量
+		 1.限制
+		 0.不限制*/
+		numLimitFlg("numLimitFlg","num_limit_flg"),
+
+		/** 是否限制券的单用户领取数量
+		 1. 限制
+		 0. 不限制*/
+		supplyLimitFlg("supplyLimitFlg","supply_limit_flg"),
+
+		/**
+		 * 领取方式
+		 * 1. 手工领取 2. 主动推送'
+		 */
+		releaseMode("releaseMode","RELEASE_MODE");
 
 		private String fieldName;
 		private String tableFieldName;

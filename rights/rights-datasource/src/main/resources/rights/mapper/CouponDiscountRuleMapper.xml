@@ -72,4 +72,20 @@
 			WHERE discount_rule_id = #{discountRuleId}
     </update>
 
+	<update id="deleteMixUseCoupon" parameterType="String">
+		UPDATE coupon_discount_rule cdr SET cdr.MIX_USE_TARGET = REPLACE(cdr.MIX_USE_TARGET,#{req},'')
+		where  cdr.MIX_USE_TARGET like concat('%',#{req},'%')
+	</update>
+
+	<update id="addMixUseCoupon" parameterType="String">
+		UPDATE coupon_discount_rule cdr SET cdr.MIX_USE_TARGET = (
+		CASE WHEN (cdr.MIX_USE_TARGET = '' or  ISNULL(cdr.MIX_USE_TARGET))
+		THEN  #{mixUseId}
+		ELSE concat (cdr.MIX_USE_TARGET, #{mixUseId})END)
+		where cdr.MKT_RES_ID in
+		<foreach collection="mktResIds" open="(" index="index" item="item" separator="," close=")">
+			#{item}
+		</foreach>
+	</update>
+
 </mapper>

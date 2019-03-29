@@ -102,4 +102,26 @@
             and cao.STATUS_CD !=#{statusCd}
         </if>
     </select>
+
+    <select id="queryMixUseCoupon" resultType="com.iwhalecloud.retail.rights.dto.response.MktResCouponRespDTO" parameterType="com.iwhalecloud.retail.rights.dto.request.QueryPreSubsidyReqDTO">
+        SELECT mrc.MKT_RES_ID,mrc.MKT_RES_NAME,mrc.SHOW_AMOUNT
+        FROM mkt_res_coupon mrc, coupon_discount_rule cdr
+        WHERE 1=1 and  mrc.mkt_res_id = cdr.mkt_res_id and mrc.marketing_activity_id =#{marketingActivityId}
+        and cdr.MIX_USE_FLAG =${@com.iwhalecloud.retail.rights.consts.RightsStatusConsts@MIXUSE_FLAG_YSE}
+        <if test="mktResId != null">
+            and  cdr.mkt_res_id <![CDATA[ <> ]]> #{mktResId}
+        </if>
+    </select>
+
+    <select id="queryAutoPushCoupon" parameterType="string" resultType="com.iwhalecloud.retail.rights.dto.response.CouponSupplyRuleRespDTO">
+      SELECT csr.mkt_res_id,
+      csr.NUM_LIMIT_FLG,
+      csr.SUPPLY_LIMIT_FLG,
+      csr.MAX_NUM,
+      csr.SUPPLY_NUM
+      FROM mkt_res_coupon mrc,COUPON_SUPPLY_RULE csr
+      where mrc.mkt_res_id = csr.mkt_res_id and mrc.marketing_activity_id =#{marketingActivityId}
+      and csr.RELEASE_MODE = ${@com.iwhalecloud.retail.rights.consts.RightsConst$ReleaseMode@RELEASE_MODE_2.getType()}
+      and csr.SUPPLY_LIMIT_FLG = ${@com.iwhalecloud.retail.rights.consts.RightsConst$LimitFlg@LIMIT_FLG_1.getType()}
+    </select>
 </mapper>

@@ -89,4 +89,15 @@ public class CouponEffExpRuleManager{
         return couponEffExpRuleMapper.selectList(queryWrapper);
     }
 
+    /**
+     * 新增优惠券生失效规则
+     * @param couponEffExpRule
+     * @return
+     */
+    public Integer  addCouponEffExpRule(CouponEffExpRule couponEffExpRule){
+        couponEffExpRule.setStatusCd(RightsStatusConsts.RIGHTS_STATUS_UNOBTAIN);
+        couponEffExpRule.setCreateDate(new Date());
+        return couponEffExpRuleMapper.insert(couponEffExpRule);
+    }
+
 }

@@ -92,6 +92,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 if(StringUtils.isNotEmpty(supplierId)){
                     ResultVO<MerchantDTO>  supplier = merchantService.getMerchantById(supplierId);
                     if(supplier!=null&&supplier.isSuccess()&&supplier.getResultData()!=null){
+                        queryAccountBalanceDetailAllResp.setLanName(supplier.getResultData().getLanName());
                         queryAccountBalanceDetailAllResp.setSupplierName(supplier.getResultData().getMerchantName());
                     }
                 }

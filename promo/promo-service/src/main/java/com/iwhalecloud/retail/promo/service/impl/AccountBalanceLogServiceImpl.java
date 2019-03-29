@@ -24,7 +24,7 @@ public class AccountBalanceLogServiceImpl implements AccountBalanceLogService {
     public String addAccountBalanceLog(AccountBalanceLogDTO accountBalanceLogDTO) {
         AccountBalanceLog log = new AccountBalanceLog();
 
-        log.setStatusCd(String.valueOf(RebateConst.STATUS_USE));
+        log.setStatusCd(String.valueOf(RebateConst.Const.STATUS_USE.getValue()));
         log.setStatusDate(new Date());
         boolean isSuc = accountBalanceLogManager.save(log);
         if(isSuc){

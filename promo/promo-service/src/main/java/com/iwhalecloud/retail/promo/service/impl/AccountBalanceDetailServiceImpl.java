@@ -65,7 +65,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
         Date date = new Date();
         detail.setCurStatusDate(date);
         detail.setCreateDate(date);
-        detail.setStatusCd(Long.valueOf(RebateConst.STATUS_USE));
+        detail.setStatusCd(Long.valueOf(RebateConst.Const.STATUS_USE.getValue()));
         detail.setStatusDate(date);
 
         boolean isSuc = accountBalanceDetailManager.save(detail);
@@ -89,6 +89,11 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
             for (QueryAccountBalanceDetailAllResp queryAccountBalanceDetailAllResp : dataList) {
                 //卖家ID
                 String supplierId = queryAccountBalanceDetailAllResp.getSupplierId();
+                String statusCdDesc = RebateConst.Const.STATUS_UN_USE.getName();
+                if(RebateConst.Const.STATUS_USE.getValue().equals(queryAccountBalanceDetailAllResp.getStatusCd())){
+                    statusCdDesc = RebateConst.Const.STATUS_USE.getName();
+                }
+                queryAccountBalanceDetailAllResp.setStatusCdDesc(statusCdDesc);
                 if(StringUtils.isNotEmpty(supplierId)){
                     ResultVO<MerchantDTO>  supplier = merchantService.getMerchantById(supplierId);
                     if(supplier!=null&&supplier.isSuccess()&&supplier.getResultData()!=null){

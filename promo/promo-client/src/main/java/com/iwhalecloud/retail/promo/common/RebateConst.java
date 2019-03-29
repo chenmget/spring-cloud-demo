@@ -8,9 +8,6 @@ public final class RebateConst {
 
     public static final String ZERO = "0";
 
-    public static final String STATUS_USE = "1000";
-
-    public static final String STATUS_UN_USE = "1100";
 
     public static final String EXP_DATE_DEF="2037-12-31 00:00:00";
 
@@ -40,6 +37,10 @@ public final class RebateConst {
 
 
         ACCOUNT_BALANCE_DETAIL_BALANCE_SOURCE_TYPE_ID("3001","来源类型标识","来源类型标识"),
+
+
+        STATUS_USE("1000","有效","状态标识"),
+        STATUS_UN_USE("1100","无效","状态标识"),
 
 
         RULE_TYPE_REBATE("10","返利使用规则","规则类型");

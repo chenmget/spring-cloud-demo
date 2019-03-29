@@ -25,7 +25,7 @@ public class AccountBalanceRuleServiceImpl implements AccountBalanceRuleService 
         AccountBalanceRule rule = new AccountBalanceRule();
         BeanUtils.copyProperties(accountBalanceRule, rule);
         rule.setCreateDate(new Date());
-        rule.setStatusCd(String.valueOf(RebateConst.STATUS_USE));
+        rule.setStatusCd(String.valueOf(RebateConst.Const.STATUS_USE.getValue()));
         rule.setEffDate(new Date());
         //失效时间
         rule.setExpDate(DateUtils.strToUtilDate(RebateConst.EXP_DATE_DEF));

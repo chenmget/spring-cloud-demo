@@ -43,6 +43,8 @@ public class QueryAccountBalanceDetailAllResp implements Serializable {
     private String amount;
     @ApiModelProperty(value = "状态")
     private String statusCd;
+    @ApiModelProperty(value = "状态描述")
+    private String statusCdDesc;
     @ApiModelProperty(value = "生效时间")
     private String effDate;
     @ApiModelProperty(value = "失效时间")

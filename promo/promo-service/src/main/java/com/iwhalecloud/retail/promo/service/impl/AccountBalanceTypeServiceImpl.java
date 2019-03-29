@@ -25,7 +25,7 @@ public class AccountBalanceTypeServiceImpl implements AccountBalanceTypeService 
         AccountBalanceType type = new AccountBalanceType();
         BeanUtils.copyProperties(accountBalanceType, type);
         type.setCreateDate(new Date());
-        type.setStatusCd(String.valueOf(RebateConst.STATUS_USE));
+        type.setStatusCd(String.valueOf(RebateConst.Const.STATUS_USE.getValue()));
         type.setStatusDate(new Date());
         boolean isSuc = accountBalanceTypeManager.save(type);
         if(isSuc){

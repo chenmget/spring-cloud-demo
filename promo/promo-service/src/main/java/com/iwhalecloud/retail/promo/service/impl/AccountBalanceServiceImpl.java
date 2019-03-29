@@ -335,7 +335,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         AccountBalance accountBalance = new AccountBalance();
         BeanUtils.copyProperties(accountBalanceDTO, accountBalance);
         accountBalance.setCreateDate(new Date());
-        accountBalance.setStatusCd(RebateConst.STATUS_USE);
+        accountBalance.setStatusCd(RebateConst.Const.STATUS_USE.getValue());
         accountBalance.setEffDate(new Date());
         //失效时间
         accountBalance.setExpDate(DateUtils.strToUtilDate(RebateConst.EXP_DATE_DEF));

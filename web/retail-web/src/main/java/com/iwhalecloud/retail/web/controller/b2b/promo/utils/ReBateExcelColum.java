@@ -20,10 +20,10 @@ public class ReBateExcelColum {
         reBateDetailColumn.add(new ExcelTitleName("unitType", "产品型号"));;
         reBateDetailColumn.add(new ExcelTitleName("rewardPrice", "返利单价"));
         reBateDetailColumn.add(new ExcelTitleName("amount", "入账金额"));;
-        reBateDetailColumn.add(new ExcelTitleName("statusCd", "状态"));
+        reBateDetailColumn.add(new ExcelTitleName("statusCdDesc", "状态"));
         reBateDetailColumn.add(new ExcelTitleName("actName", "活动名称"));;
         reBateDetailColumn.add(new ExcelTitleName("effDate", "生效时间"));
-        reBateDetailColumn.add(new ExcelTitleName("payoutDesc", "备注"));
+        reBateDetailColumn.add(new ExcelTitleName("sourceDesc", "备注"));
         return reBateDetailColumn;
     }
 }

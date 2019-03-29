@@ -154,7 +154,7 @@ public class Invoice implements Serializable {
         busiLicenceFile("busiLicenceFile","BUSI_LICENCE_FILE"),
 
         /** 专票状态  未录入/审核通过/审核中/审核不通过/已过期. */
-        activityUrl("vatInvoiceStatus","VAT_INVOICE_STATUS");
+        vatInvoiceStatus("vatInvoiceStatus","VAT_INVOICE_STATUS");
 
         private String fieldName;
         private String tableFieldName;

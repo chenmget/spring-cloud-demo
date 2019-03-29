@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.partner.response.MerchantRulesImportResp;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Component;
@@ -20,22 +21,24 @@ import java.util.List;
 @Component
 public class ExcelToMerchantRulesUtils {
 
-	private static final String EXCEL_XLS = "xls";  
-    private static final String EXCEL_XLSX = "xlsx";
+	private static final String EXCEL_XLS = "xls";
+	private static final String EXCEL_XLSX = "xlsx";
 
-    /**
-     * 读取Excel并把数据返回，兼容 Excel 2003/2007/2010
-     * @throws Exception  
-     */  
-    public static List<MerchantRulesImportResp> getData(InputStream inputStream) throws Exception {
+	/**
+	 * 读取Excel并把数据返回，兼容 Excel 2003/2007/2010
+	 * @throws Exception
+	 */
+	public static List<MerchantRulesImportResp> getData(InputStream inputStream) throws Exception {
 		List<MerchantRulesImportResp> data = new ArrayList<MerchantRulesImportResp>();
-        try {
+		try {
 			// 这种方式 Excel2003/2007/2010都是可以处理的
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            // 只读第一页
+			Workbook workbook = WorkbookFactory.create(inputStream);
+			// 只读第一页
 			Sheet sheet = workbook.getSheetAt(0);
 			//获得当前sheet的开始行
 			int firstRowNum  = sheet.getFirstRowNum();
+			//获取当前行
+			Row firstRow = sheet.getRow(firstRowNum);
 			//获得当前sheet的结束行
 			int lastRowNum = sheet.getLastRowNum();
 			//循环除了第一行的所有行
@@ -49,11 +52,21 @@ public class ExcelToMerchantRulesUtils {
 				int firstCellNum = row.getFirstCellNum();
 				//获得当前行的列数
 				int lastCellNum = row.getPhysicalNumberOfCells();
+				if(getCellValue(firstRow.getCell(firstCellNum + 1)) == null || "".equals(getCellValue(firstRow.getCell(firstCellNum + 1)))
+						|| getCellValue(firstRow.getCell(firstCellNum)) == null || "".equals(getCellValue(firstRow.getCell(firstCellNum)))){
+					continue;
+				}
 				MerchantRulesImportResp resp = new MerchantRulesImportResp();
-				resp.setMerchantId(getCellValue(row.getCell(firstCellNum)));
+				resp.setMerchantCode(getCellValue(row.getCell(firstCellNum)));
 				// 2种模板
 				if(lastCellNum > firstCellNum) {
-					resp.setBrandCode(getCellValue(row.getCell(firstCellNum + 1)));
+					if("区域编码".equals(getCellValue(firstRow.getCell(firstCellNum + 1)))) {
+						resp.setRegionId(getCellValue(row.getCell(firstCellNum + 1)));
+					}else if("机型编码".equals(getCellValue(firstRow.getCell(firstCellNum + 1)))){
+						resp.setSn(getCellValue(row.getCell(firstCellNum + 1)));
+					}else if("对象编码".equals(getCellValue(firstRow.getCell(firstCellNum + 1)))){
+						resp.setTargetMerchantCode(getCellValue(row.getCell(firstCellNum + 1)));
+					}
 				}
 				data.add(resp);
 			}
@@ -62,7 +75,7 @@ public class ExcelToMerchantRulesUtils {
 			throw new Exception(e);
 		}
 		return data;
-    }
+	}
 
 
 	public static String getCellValue(Cell cell){
@@ -190,13 +203,6 @@ public class ExcelToMerchantRulesUtils {
 			return ResourceConst.STATUSCD.DELETED.getName();
 		}
 
-		if (filedName.equals(SOURCE_TYPE) && ResourceConst.SOURCE_TYPE.MERCHANT.getCode().equals(value)) {
-			return ResourceConst.SOURCE_TYPE.MERCHANT.getName();
-		}else if(filedName.equals(SOURCE_TYPE) && ResourceConst.SOURCE_TYPE.SUPPLIER.getCode().equals(value)){
-			return ResourceConst.SOURCE_TYPE.SUPPLIER.getName();
-		}else if(filedName.equals(SOURCE_TYPE) && ResourceConst.SOURCE_TYPE.RETAILER.getCode().equals(value)){
-			return ResourceConst.SOURCE_TYPE.RETAILER.getName();
-		}
 
 		if (filedName.equals(CREATE_TIME) || filedName.equals(CREATE_DATE)) {
 			try {

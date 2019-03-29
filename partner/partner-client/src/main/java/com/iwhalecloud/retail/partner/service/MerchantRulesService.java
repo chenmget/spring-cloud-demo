@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
 
 import java.util.List;
@@ -59,7 +60,7 @@ public interface MerchantRulesService {
      * @param req
      * @return
      */
-    ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRulesDetail(MerchantRulesDetailPageReq req);
+    ResultVO<Page<MerchantRulesDetailPageResp>> pageMerchantRules(MerchantRulesDetailPageReq req);
 
 
     /**
@@ -105,7 +106,7 @@ public interface MerchantRulesService {
      * @return 机型id集合
      */
     ResultVO<List<String>> getRegionAndMerchantPermission(MerchantRulesCommonReq req);
-    
+
     /**
      * 批量添加 商家 权限规则
      * @param req

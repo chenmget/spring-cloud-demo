@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.AccountBalanceLogMapper">
+
+<sql id="allFields">
+    t.BALANCE_LOG_ID 
+    ,t.ACCOUNT_BALANCE_ID 
+    ,t.OPER_INCOME_ID 
+    ,t.SRC_AMOUNT 
+    ,t.OPER_PAYOUT_ID 
+    ,t.PAYOUT_AMOUNT 
+    ,t.STATUS_DATE 
+    ,t.STATUS_CD 
+</sql>
+    <select id="getAccountBalanceAddSum"  resultType="java.lang.Long"
+            parameterType="com.iwhalecloud.retail.promo.dto.req.AccountBalanceLogStReq">
+        select sum(IFNULL(SRC_AMOUNT,0)) addSum from ACCOUNT_BALANCE_LOG t inner join ACCOUNT_BALANCE t2
+         on t.ACCOUNT_BALANCE_ID=t2.ACCOUNT_BALANCE_ID inner join ACCOUNT t3 on t2.acct_id=t3.acct_id
+         where t.STATUS_CD='1000' and t2.STATUS_CD='1000' AND t2.EFF_DATE&lt;=SYSDATE() AND t2.EXP_DATE&gt;=SYSDATE()
+        and t3.ACCT_ID=#{req.acctId}
+    </select>
+    <select id="getAccountBalanceReduceSum" resultType="java.lang.Long"
+            parameterType="com.iwhalecloud.retail.promo.dto.req.AccountBalanceLogStReq">
+        select sum(IFNULL(PAYOUT_AMOUNT,0)) reduceSum  from ACCOUNT_BALANCE_LOG t inner join ACCOUNT_BALANCE t2
+         on t.ACCOUNT_BALANCE_ID=t2.ACCOUNT_BALANCE_ID inner join ACCOUNT t3 on t2.acct_id=t3.acct_id
+         where t.STATUS_CD='1000' and t2.STATUS_CD='1000' AND t2.EFF_DATE&lt;=SYSDATE() AND t2.EXP_DATE&gt;=SYSDATE()
+        and t3.ACCT_ID=#{req.acctId}
+    </select>
+
+
+
+</mapper>

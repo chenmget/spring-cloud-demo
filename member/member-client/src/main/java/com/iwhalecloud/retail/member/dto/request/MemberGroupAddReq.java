@@ -1,8 +1,11 @@
 package com.iwhalecloud.retail.member.dto.request;
 
+import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
 
 
 /**
@@ -12,7 +15,7 @@ import lombok.Data;
  **/
 @Data
 @ApiModel(value = "对应模型mem_group, 对应实体Group类")
-public class MemberGroupAddReq extends PageVO {
+public class MemberGroupAddReq extends AbstractRequest implements Serializable {
 
     private static final long serialVersionUID = -7380097525604590470L;
 

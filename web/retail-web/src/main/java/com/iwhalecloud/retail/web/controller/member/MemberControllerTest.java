@@ -296,7 +296,7 @@ public class MemberControllerTest extends BaseController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value = "/memberGroup/queryGroupMerchantForPage", method = RequestMethod.POST)
+    @RequestMapping(value = "/memberGroup/addMemberGroup", method = RequestMethod.POST)
     public ResultVO<Boolean> addMemberGroup(@RequestBody @ApiParam(value = "新增群组会员", required = true) MemberGroupAddReq req) {
         // 判空
         if (StringUtils.isEmpty(req.getGroupId())) {
@@ -335,13 +335,13 @@ public class MemberControllerTest extends BaseController {
         return memberGroupService.updateMemberGroupById(req);
     }
 
-    @ApiOperation(value = "新增群组会员", notes = "新增群组会员")
+    @ApiOperation(value = "删除群组会员", notes = "删除群组会员")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/memberGroup/deleteMemberGroup", method = RequestMethod.POST)
-    public ResultVO<Boolean> deleteMemberGroup(@RequestBody @ApiParam(value = "新增群组会员", required = true) MemberGroupDeleteReq req) {
+    public ResultVO<Boolean> deleteMemberGroup(@RequestBody @ApiParam(value = "删除群组会员", required = true) MemberGroupDeleteReq req) {
         // 判空
         if (StringUtils.isEmpty(req.getGroupId())) {
             return ResultVO.error("群组ID不能为空");
@@ -359,7 +359,7 @@ public class MemberControllerTest extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/memberGroup/queryGroupByMemberForPage", method = RequestMethod.POST)
-    public ResultVO<Page<MemberGroupQueryResp>> queryGroupByMemberForPage(@RequestBody @ApiParam(value = "根据会员分页查询群组列表", required = true) MemberGroupQueryGroupReq req) {
+    public ResultVO<Page<GroupQueryResp>> queryGroupByMemberForPage(@RequestBody @ApiParam(value = "根据会员分页查询群组列表", required = true) MemberGroupQueryGroupReq req) {
         // 判空
         if (StringUtils.isEmpty(req.getMemId())) {
             return ResultVO.error("群组ID不能为空");
@@ -373,7 +373,7 @@ public class MemberControllerTest extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/memberGroup/queryMemberByGroupForPage", method = RequestMethod.POST)
-    public ResultVO<Page<GroupQueryResp>> queryMemberByGroupForPage(@RequestBody @ApiParam(value = "根据群组分页查询会员列表", required = true) MemberGroupQueryMemberReq req) {
+    public ResultVO<Page<MemberGroupQueryResp>> queryMemberByGroupForPage(@RequestBody @ApiParam(value = "根据群组分页查询会员列表", required = true) MemberGroupQueryMemberReq req) {
         // 判空
         if (StringUtils.isEmpty(req.getGroupId())) {
             return ResultVO.error("群组ID不能为空");

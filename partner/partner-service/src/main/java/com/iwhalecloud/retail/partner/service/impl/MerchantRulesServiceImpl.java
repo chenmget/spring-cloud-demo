@@ -6,9 +6,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.req.BrandQueryReq;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductAndBrandGetReq;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq;
+import com.iwhalecloud.retail.goods2b.dto.req.*;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.BrandService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
@@ -19,14 +18,18 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import com.iwhalecloud.retail.partner.manager.MerchantRulesManager;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
+import com.iwhalecloud.retail.system.dto.request.UserGetReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -56,6 +59,9 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     @Reference
     private BrandService brandService;
 
+//    @Reference
+//    private RegionsService regionsService;
+
     @Reference
     private CommonRegionService commonRegionService;
 
@@ -64,6 +70,9 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
     @Reference
     private MerchantTagRelService merchantTagRelService;
+
+    @Reference
+    private UserService userService;
 
 
     /**
@@ -192,10 +201,82 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
      * @return
      */
     @Override
-    public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRulesDetail(MerchantRulesDetailPageReq req) {
-        log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", req);
+    public ResultVO<Page<MerchantRulesDetailPageResp>> pageMerchantRules(MerchantRulesDetailPageReq req) {
+        log.info("MerchantRulesServiceImpl.pageMerchantRules(), input: MerchantRulesDetailPageReq={} ", req);
+        if(StringUtils.isNotEmpty(req.getLoginName())){
+            UserGetReq userGetReq = new UserGetReq();
+            userGetReq.setLoginName(req.getLoginName());
+            UserDTO userDTO = userService.getUser(userGetReq);
+            req.setUserId(userDTO.getUserId());
+            req.setRelCode(userDTO.getRelCode());
+        }
+        Page<MerchantRulesDetailPageResp> merchantRulesDetailPageRespPage = merchantRulesManager.pageMerchantRules(req);
+        List<MerchantRulesDetailPageResp> ruleList = merchantRulesDetailPageRespPage.getRecords();
+        if(ruleList != null && ruleList.size() > 0){
+            for (int i = 0; i < ruleList.size(); i++) {
+                MerchantRulesDetailPageResp rule = ruleList.get(i);
+                rule.setLanName(commonRegionService.getCommonRegionById(rule.getLanId()).getResultData().getRegionName());
+                rule.setCityName(commonRegionService.getCommonRegionById(rule.getCity()).getResultData().getRegionName());
+                if(StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType())){
+                    //经营权限
+                    if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
+                        //机型权限
+                        ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                        productGetByIdReq.setProductId(rule.getTargetId());
+                        ProductResp productResp = productService.getProduct(productGetByIdReq).getResultData();
+                        rule.setTargetName(productResp.getUnitName());
+                        rule.setTargetCode(productResp.getSn());
+                    } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())){
+                        //区域权限
+                        rule.setTargetName(commonRegionService.getCommonRegionById(rule.getTargetId()).getResultData().getRegionName());
+                        rule.setTargetCode(rule.getTargetId());
+                    } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())){
+                        //商家权限
+                        MerchantDTO merchantDTO = merchantService.getMerchantById(rule.getMerchantId()).getResultData();
+                        rule.setTargetName(merchantDTO.getMerchantName());
+                        rule.setTargetCode(merchantDTO.getMerchantCode());
+                    }
+                } else if(StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.GREEN_CHANNEL.getType())){
+                    //绿色通道权限
+                    if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.PRODUCT.getType())){
+                        //产品权限
+                        ProductBaseGetByIdReq productBaseGetByIdReq = new ProductBaseGetByIdReq();
+                        productBaseGetByIdReq.setProductBaseId(rule.getTargetId());
+                        ProductBaseGetResp productBaseGetResp = productBaseService.getProductBase(productBaseGetByIdReq).getResultData();
+                        rule.setTargetName(productBaseGetResp.getProductName());
+                    } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.MODEL.getType())){
+                        //机型权限
+                        ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                        productGetByIdReq.setProductId(rule.getTargetId());
+                        ProductResp productResp = productService.getProduct(productGetByIdReq).getResultData();
+                        rule.setTargetName(productResp.getUnitName());
+                        rule.setTargetCode(productResp.getSn());
+                    }
+                } else if(StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType())){
+                    //调拨权限
+                    if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType())){
+                        //机型权限
+                        ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                        productGetByIdReq.setProductId(rule.getTargetId());
+                        ProductResp productResp = productService.getProduct(productGetByIdReq).getResultData();
+                        rule.setTargetName(productResp.getUnitName());
+                        rule.setTargetCode(productResp.getSn());
+                    } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())){
+                        //区域权限
+                        rule.setTargetName(commonRegionService.getCommonRegionById(rule.getTargetId()).getResultData().getRegionName());
+                        rule.setTargetCode(rule.getTargetId());
+                    } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MERCHANT.getType())){
+                        //商家权限
+                        MerchantDTO merchantDTO = merchantService.getMerchantById(rule.getMerchantId()).getResultData();
+                        rule.setTargetName(merchantDTO.getMerchantName());
+                        rule.setTargetCode(merchantDTO.getMerchantCode());
+                    }
+                }
+            }
+            merchantRulesDetailPageRespPage.setRecords(ruleList);
+        }
 
-        return ResultVO.success(merchantRulesManager.pageMerchantRules(req));
+        return ResultVO.success(merchantRulesDetailPageRespPage);
     }
 
     /**

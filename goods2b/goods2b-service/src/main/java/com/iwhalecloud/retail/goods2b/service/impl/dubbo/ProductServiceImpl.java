@@ -105,6 +105,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResultVO<ProductResp> getProductBySn(String sn){
+        return ResultVO.success(productManager.getProductBySn(sn));
+    }
+
+    @Override
     public ResultVO<String> addProductByZT(ProductAddReq req) throws ProductException {
         Product t = new Product();
         BeanUtils.copyProperties(req, t);

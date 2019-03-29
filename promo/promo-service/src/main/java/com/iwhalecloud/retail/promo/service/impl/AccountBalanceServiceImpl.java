@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.promo.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -9,10 +10,7 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.*;
 import com.iwhalecloud.retail.promo.dto.req.*;
-import com.iwhalecloud.retail.promo.dto.resp.AccountBalanceStResp;
-import com.iwhalecloud.retail.promo.dto.resp.ActActivityProductRuleServiceResp;
-import com.iwhalecloud.retail.promo.dto.resp.CalculationOrderItemResp;
-import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceAllResp;
+import com.iwhalecloud.retail.promo.dto.resp.*;
 import com.iwhalecloud.retail.promo.entity.AccountBalance;
 import com.iwhalecloud.retail.promo.exception.BusinessException;
 import com.iwhalecloud.retail.promo.manager.AccountBalanceManager;
@@ -62,11 +60,25 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
     @Reference
     private ActActivityProductRuleService actActivityProductRuleService;
 
-
+    @Override
+    public ResultVO calculation(AccountBalanceCalculationReq req)  {
+        log.info("AccountBalanceServiceImpl calculation, req={}", req == null ? "" : JSON.toJSON(req));
+        try{
+            this.calculationTransactional(req);
+            log.info("AccountBalanceServiceImpl calculation suc");
+        }catch (BusinessException e){
+            log.error("AccountBalanceServiceImpl calculation error",e);
+            return ResultVO.error(e.getMessage());
+        }catch (Exception e){
+            log.error("AccountBalanceServiceImpl calculation error",e);
+            return ResultVO.error(e.getMessage());
+        }
+        return ResultVO.success();
+    }
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public ResultVO calculation(AccountBalanceCalculationReq req)  {
+    public ResultVO calculationTransactional(AccountBalanceCalculationReq req)  {
 
         AccountDTO accout = this.calculationCheck(req);
         List<AccountBalanceCalculationOrderItemReq> orderItemList = req.getOrderItemList();
@@ -95,7 +107,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
             initReq.setCustId(req.getCustId());
             initReq.setOrderItemReqList(itemList);
 
-            calculationForAct(initReq);
+            this.calculationForAct(initReq);
         }
 
 
@@ -120,6 +132,21 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         if (orderItemList == null || orderItemList.isEmpty()) {
             throw new BusinessException("订单项不能为空");
         }
+        //校验订单项不可重复返利
+        for (AccountBalanceCalculationOrderItemReq orderItemReq : orderItemList) {
+            QueryAccountBalanceDetailForPageReq orderItemCheckReq = new QueryAccountBalanceDetailForPageReq();
+            orderItemCheckReq.setOrderItemId(orderItemReq.getOrderItemId());
+
+            orderItemCheckReq.setPageNo(1);
+            orderItemCheckReq.setPageSize(1);
+            ResultVO<Page<AccountBalanceDetailDTO>> orderItemCheckPage =  accountBalanceDetailService.queryAccountBalanceDetailForPage(orderItemCheckReq);
+            if(orderItemCheckPage!=null&&orderItemCheckPage.getResultData()!=null&&orderItemCheckPage.getResultData().getRecords()!=null
+                    &&!orderItemCheckPage.getResultData().getRecords().isEmpty()){
+                throw new BusinessException("订单项:"+orderItemReq.getOrderItemId()+"已计算返利，不可重复计算返利");
+            }
+
+        }
+
         return accout;
     }
 
@@ -184,6 +211,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
                 detail.setPaymentId("");
                 detail.setOrderId(orderItemReq.getOrderId());
                 detail.setProductId(orderItemReq.getProductId());
+                detail.setRewardPrice(calculationOrderItemResp.getRewardPrice());
 
                 String operIncomeId = accountBalanceDetailService.addAccountBalanceDetail(detail);
 
@@ -209,11 +237,17 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         AccountBalance saveAccountBalance = new AccountBalance();
         BeanUtils.copyProperties(currentAccountBalance, saveAccountBalance);
         if(isAddBalance){
-            accountBalanceManager.save(saveAccountBalance);
+            boolean isAdd = accountBalanceManager.save(saveAccountBalance);
+            if(!isAdd){
+                throw new BusinessException("新增账本失败");
+            }
         }else{
             saveAccountBalance.setUpdateDate(new Date());
             saveAccountBalance.setUpdateStaff(req.getCreateStaff());
-            accountBalanceManager.updateById(saveAccountBalance);
+            boolean isUpdate = accountBalanceManager.updateById(saveAccountBalance);
+            if(!isUpdate){
+                throw new BusinessException("修改账本失败");
+            }
         }
 
 
@@ -267,6 +301,12 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         currentAccountBalance.setCreateStaff(req.getCreateStaff());
         //限额类型：1 总额封顶，2  余额对象封顶 ，3   帐户封顶，4  服务封顶，5  消费比例封顶
         currentAccountBalance.setCycleType(RebateConst.Const.CYCLE_TYPE_PER.getValue());
+        currentAccountBalance.setCreateStaff(req.getCreateStaff());
+        currentAccountBalance.setCreateDate(new Date());
+        currentAccountBalance.setStatusCd(RebateConst.Const.STATUS_USE.getValue());
+        currentAccountBalance.setStatusDate(new Date());
+        currentAccountBalance.setEffDate(new Date());
+        currentAccountBalance.setExpDate(DateUtils.strToUtilDate(RebateConst.EXP_DATE_DEF));
         return currentAccountBalance;
     }
 

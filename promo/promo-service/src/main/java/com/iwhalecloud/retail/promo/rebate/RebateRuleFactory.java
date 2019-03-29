@@ -12,7 +12,6 @@ public class RebateRuleFactory {
         if(PromoConst.CALCULATIONRULE.CALCULATION_RULE_10.getCode().equals(calculationRule)){
             return new SimplRebateRuleBase();
         }
-
         if(PromoConst.CALCULATIONRULE.CALCULATION_RULE_20.getCode().equals(calculationRule)){
             return new NumberRebateRule();
         }

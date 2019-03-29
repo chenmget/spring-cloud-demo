@@ -12,7 +12,6 @@ import java.util.List;
  */
 public class SimplRebateRuleBase extends RebateRuleBase{
 
-    private String ruleAmount;
 
     @Override
     public  String calculation(){
@@ -27,9 +26,5 @@ public class SimplRebateRuleBase extends RebateRuleBase{
         Long returnMenoy = Long.valueOf(productRuleDTO.getPrice());
         return String.valueOf(buyCount*returnMenoy);
     }
-    @Override
-    public String getRewardPrice(){
 
-        return this.ruleAmount;
-    }
 }

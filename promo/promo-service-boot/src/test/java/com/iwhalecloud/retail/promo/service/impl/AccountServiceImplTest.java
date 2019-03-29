@@ -83,11 +83,11 @@ public class AccountServiceImplTest {
     @Test
     public void queryAccountBalanceDetailAllForPage(){
         QueryAccountBalanceDetailAllReq req = new QueryAccountBalanceDetailAllReq();
-        req.setAcctId("1");
-//        req.setAcctType("20");
+//        req.setAcctId("1");
+        req.setAcctType("20");
         req.setPageNo(1);
         req.setPageSize(10);
-        req.setEffDateEnd("2019-10-12");
+//        req.setEffDateEnd("2019-10-12");
 
         ResultVO<Page<QueryAccountBalanceDetailAllResp>> pageResultVO = accountBalanceDetailService.queryAccountBalanceDetailAllForPage(req);
         System.out.println(pageResultVO);
@@ -117,11 +117,13 @@ public class AccountServiceImplTest {
         itemReq.setOrderId("1");
         itemReq.setProductId("123456");
         itemReq.setSupplierId("1111");
-        itemReq.setOrderItemId("123");
+        itemReq.setOrderItemId("12312");
 
         orderItemList.add(itemReq);
         req.setOrderItemList(orderItemList);
 
-        accountBalanceService.calculation(req);
+        ResultVO resultVO = accountBalanceService.calculation(req);
+        System.out.println(resultVO);
+
     }
 }

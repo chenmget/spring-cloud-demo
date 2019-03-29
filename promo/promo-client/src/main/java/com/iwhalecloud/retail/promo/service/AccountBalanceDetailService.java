@@ -8,6 +8,8 @@ import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailAllReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailForPageReq;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 
+import java.util.List;
+
 public interface AccountBalanceDetailService{
     /**
      * 添加收入明细
@@ -29,4 +31,6 @@ public interface AccountBalanceDetailService{
      * @return
      */
     ResultVO<Page<QueryAccountBalanceDetailAllResp>> queryAccountBalanceDetailAllForPage(QueryAccountBalanceDetailAllReq req);
+
+
 }

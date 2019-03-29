@@ -20,12 +20,14 @@ import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceDetail;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
+import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
 import com.iwhalecloud.retail.system.service.UserService;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.promo.manager.AccountBalanceDetailManager;
@@ -62,9 +64,13 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
     @Override
     public String addAccountBalanceDetail(AccountBalanceDetailDTO accountBalanceDetailDTO) {
         AccountBalanceDetail detail = new AccountBalanceDetail();
+        BeanUtils.copyProperties(accountBalanceDetailDTO,detail);
         Date date = new Date();
         detail.setCurStatusDate(date);
         detail.setCreateDate(date);
+        detail.setExpDate(DateUtils.strToUtilDate(RebateConst.EXP_DATE_DEF));
+        detail.setEffDate(new Date());
+
         detail.setStatusCd(Long.valueOf(RebateConst.Const.STATUS_USE.getValue()));
         detail.setStatusDate(date);
 

@@ -40,4 +40,5 @@ public class QueryAccountIncomeDetailReq extends AbstractPageReq implements Seri
     private String balanceSourceTypeId;
 
 
+
 }

@@ -15,4 +15,6 @@ public class QueryAccountBalanceDetailForPageReq extends AbstractPageReq impleme
     private String acctId;
     @ApiModelProperty("余额账本标识")
     private String accountBalanceId;
+    @ApiModelProperty("订单项ID")
+    private String orderItemId;
 }

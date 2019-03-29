@@ -35,13 +35,16 @@
         select
         <include refid="allFields"></include>
         from ACCOUNT_BALANCE_DETAIL t
-        where 1=1 and  t.STATUS_CD='1000' AND t.EFF_DATE&gt;=SYSDATE() AND t.EXP_DATE&lt;=SYSDATE()
+        where 1=1 and  t.STATUS_CD='1000' AND t.EFF_DATE<![CDATA[ <= ]]>SYSDATE() AND t.EXP_DATE<![CDATA[ >= ]]>SYSDATE()
 
         <if test="req.acctId != null and req.acctId != ''">
             and T.ACCT_ID = #{req.acctId}
         </if>
         <if test="req.accountBalanceId != null and req.accountBalanceId != ''">
             and T.ACCOUNT_BALANCE_ID = #{req.accountBalanceId}
+        </if>
+        <if test="req.orderItemId != null and req.orderItemId != ''">
+            and T.ORDER_ITEM_ID = #{req.orderItemId}
         </if>
 
 
@@ -50,7 +53,8 @@
     <select id = "queryAccountBalanceDetailAllForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailAllReq"
             resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp">
         SELECT B.ACCT_ID,B.ACCT_NAME,B.ACCT_TYPE,A.AMOUNT,A.STATUS_CD,A.EFF_DATE,A.EXP_DATE,A.OPER_INCOME_ID,
-        A.SOURCE_DESC,A.OPER_TYPE,A.REWARD_PRICE,A.PRODUCT_ID,A.ORDER_ITEM_ID,A.ORDER_ID,C.ACCOUNT_BALANCE_ID,D.ACT_ID,E.OBJ_ID AS SUPPLIER_ID,F.NAME AS ACT_NAME FROM ACCOUNT_BALANCE_DETAIL A
+        A.SOURCE_DESC,A.OPER_TYPE,A.REWARD_PRICE,A.PRODUCT_ID,A.ORDER_ITEM_ID,A.ORDER_ID,C.ACCOUNT_BALANCE_ID,D.ACT_ID,E.OBJ_ID AS SUPPLIER_ID,F.NAME AS ACT_NAME
+        FROM ACCOUNT_BALANCE_DETAIL A
         INNER JOIN ACCOUNT B ON A.ACCT_ID=B.ACCT_ID
         INNER JOIN ACCOUNT_BALANCE C ON B.ACCT_ID=C.ACCT_ID AND C.ACCOUNT_BALANCE_ID=A.ACCOUNT_BALANCE_ID
         INNER JOIN ACCOUNT_BALANCE_TYPE D ON D.BALANCE_TYPE_ID=C.BALANCE_TYPE_ID
@@ -61,6 +65,7 @@
         <if test="req.custId != null and req.custId != ''">
             and B.CUST_ID = #{req.custId}
         </if>
+
         <if test="req.acctType != null and req.acctType != ''">
             and B.ACCT_TYPE = #{req.acctType}
         </if>

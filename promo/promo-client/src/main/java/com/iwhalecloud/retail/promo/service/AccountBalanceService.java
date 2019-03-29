@@ -23,6 +23,8 @@ public interface AccountBalanceService{
      * @param req
      * @return
      */
+    ResultVO calculationTransactional(AccountBalanceCalculationReq req) ;
+
     ResultVO calculation(AccountBalanceCalculationReq req) ;
 
     /**

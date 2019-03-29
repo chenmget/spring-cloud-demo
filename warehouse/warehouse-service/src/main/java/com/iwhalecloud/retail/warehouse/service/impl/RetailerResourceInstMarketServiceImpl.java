@@ -20,7 +20,6 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceEventService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
-import com.iwhalecloud.retail.warehouse.common.GenerateCodeUtil;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
@@ -132,9 +131,11 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 instDTO.setMktResId(req.getMktResId());
                 instDTOList.add(instDTO);
             }
+            String reqCode = resourceInstManager.getPrimaryKey();
             resourceRequestAddReq.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
             BeanUtils.copyProperties(req, resourceRequestAddReq);
             resourceRequestAddReq.setInstList(instDTOList);
+            resourceRequestAddReq.setReqCode(reqCode);
             resourceRequestAddReq.setReqName(createReqName(req.getProductName(), resourceRequestAddReq.getReqType()));
             resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
             resourceRequestAddReq.setLanId(merchantDTOResultVO.getResultData().getLanId());
@@ -159,14 +160,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
                 ResultVO.error();
             }
-            ResourceRequestItemQueryReq queryReq = new ResourceRequestItemQueryReq();
-            queryReq.setMktResReqId(resultVO.getResultData());
-            ResultVO<ResourceRequestResp> respResultVO = requestService.queryResourceRequest(queryReq);
-            String requestCode = "";
-            if (null != respResultVO && null != respResultVO.getResultData()) {
-                requestCode = respResultVO.getResultData().getReqCode();
-            }
-            return ResultVO.error(ResourceConst.SUCESS_MSG + requestCode);
+            return ResultVO.error(ResourceConst.SUCESS_MSG + reqCode);
         }else{
             ResultVO syncTerminalResultVO = resourceInstService.syncTerminal(req);
             if (syncTerminalResultVO.isSuccess()) {
@@ -634,7 +628,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         }
 
         // step4 如果不需要审核则发起流程目标仓库处理人，由目标仓库处理人决定是否接受
-        String uuid = GenerateCodeUtil.generateCode();
+        String uuid = resourceInstManager.getPrimaryKey();
         ProcessStartReq processStartDTO = new ProcessStartReq();
         processStartDTO.setTitle("调拨审批流程");
         processStartDTO.setApplyUserId(req.getCreateStaff());

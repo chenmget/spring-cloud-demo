@@ -230,12 +230,10 @@ public class GoodsProductB2BController {
             merchantId = req.getMerchantId();
         }else if(isAdminType && StringUtils.isBlank(req.getMerchantId())){
             // 管理员选产品如果没传过来商家id；查看全部
-            getPermission = true;
-        }
-
-        // 最高权限查询
-        if (getPermission) {
-            return productService.selectProduct(req);
+            ResultVO<Page<ProductDTO>> pageResultVO = productService.selectProduct(req);
+            List<ProductDTO> list = pageResultVO.getResultData().getRecords();
+            log.info("GoodsProductB2BController.selectProduct req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+            return pageResultVO;
         }
 
         try {
@@ -253,7 +251,10 @@ public class GoodsProductB2BController {
             return ResultVO.error(GoodsResultCodeEnum.INVOKE_PARTNER_SERVICE_EXCEPTION);
         }
 
-        return productService.selectProduct(req);
+        ResultVO<Page<ProductDTO>> pageResultVO = productService.selectProduct(req);
+        List<ProductDTO> list = pageResultVO.getResultData().getRecords();
+        log.info("GoodsProductB2BController.selectProduct req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+        return pageResultVO;
     }
 
     @ApiOperation(value = "分页查询产品", notes = "条件分页查询")
@@ -275,12 +276,18 @@ public class GoodsProductB2BController {
             merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
         }else if(isAdminType){
             // 管理员查看所有
-            return productService.selectPageProductAdmin(req);
+            ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
+            List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
+            log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+            return productPageRespPage;
         }else if(SystemConst.USER_FOUNDER_8 == userFounder){
             // 厂商查看自己的产品
             merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
             req.setManufacturerId(merchantId);
-            return productService.selectPageProductAdmin(req);
+            ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
+            List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
+            log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+            return productPageRespPage;
         }
 
         // 供应商、零售商
@@ -292,7 +299,10 @@ public class GoodsProductB2BController {
             req.setProductIdList(productIdList);
         }
 
-        return productService.selectPageProductAdmin(req);
+        ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
+        List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
+        log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+        return productPageRespPage;
     }
 
 

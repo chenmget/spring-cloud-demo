@@ -31,6 +31,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,10 +140,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Override
     //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO delResourceInst(ResourceInstUpdateReq req) {
         List<String> nbrs = Lists.newArrayList(req.getMktResInstNbrs().stream().distinct().collect(Collectors.toList()));
-        List<String> unavailbaleNbrs = new ArrayList<>();
         List<String> productList = new ArrayList<>();
 
         // 获取仓库
@@ -162,12 +164,11 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             ResourceInstGetReq queryReq = new ResourceInstGetReq();
             queryReq.setMktResInstNbr(nbr);
             queryReq.setMerchantId(req.getMerchantId());
-            queryReq.setStatusCd(changeStatusCd);
             ResourceInstDTO inst = resourceInstManager.getResourceInst(queryReq);
             log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstManager.getResourceInst req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(inst));
             String statusCd = inst.getStatusCd();
             // 没删除成功的，不加日志及更新库存
-            if (!changeStatusCd.equals(statusCd)) {
+            if (null == inst || !changeStatusCd.equals(inst.getStatusCd())) {
                 continue;
             }
             String productId = inst.getMktResId();

@@ -65,29 +65,59 @@ public class RedisCache implements ICache {
 
     private byte[] objectToByte(java.lang.Object obj) {
         byte[] bytes =null;
+        ByteArrayOutputStream bo = null;
+        ObjectOutputStream oo = null;
         try {
-            ByteArrayOutputStream bo = new ByteArrayOutputStream();
-            ObjectOutputStream oo = new ObjectOutputStream(bo);
+            bo = new ByteArrayOutputStream();
+            oo = new ObjectOutputStream(bo);
             oo.writeObject(obj);
             bytes = bo.toByteArray();
-            bo.close();
-            oo.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (null != bo) {
+                    bo.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (null != oo) {
+                    oo.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return (bytes);
     }
 
     private static Object byteToObject(byte[] bytes){
         java.lang.Object obj=null;
+        ByteArrayInputStream bi = null;
+        ObjectInputStream oi = null;
         try {
-            ByteArrayInputStream bi = new ByteArrayInputStream(bytes);
-            ObjectInputStream oi = new ObjectInputStream(bi);
+            bi = new ByteArrayInputStream(bytes);
+            oi = new ObjectInputStream(bi);
             obj = oi.readObject();
-            bi.close();
-            oi.close();
         }catch(Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
+        }finally {
+            try {
+                if (null != bi) {
+                    bi.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (null != oi) {
+                    oi.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         return obj;
     }

@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -161,21 +162,30 @@ public class RightsCardTicketB2BController {
                 }
             }
         }
+        OutputStream output = null;
         try {
             //创建Excel
             Workbook workbook = new HSSFWorkbook();
             String fileName = "优惠券列表";
             ExcelToNbrUtils.builderOrderExcel(workbook, resultData, CouponExportUtil.getCoupon());
 
-            OutputStream output = response.getOutputStream();
+            output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
             response.setContentType("application/msexcel;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             workbook.write(output);
-            output.close();
+
         } catch (Exception e) {
             log.error("串码导出失败", e);
+        } finally {
+            try {
+                if (null != output) {
+                    output.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

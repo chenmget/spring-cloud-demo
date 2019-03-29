@@ -6,7 +6,11 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
+import com.iwhalecloud.retail.partner.dto.req.MerchantListLanCityReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
@@ -51,6 +55,7 @@ import javax.annotation.Resource;
 import javax.naming.Context;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component("marketingActivityService")
@@ -107,6 +112,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Autowired
     private Constant constant;
 
+    @Reference
+    private ProductService productService;
     private List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryRespList;
 
     @Override
@@ -261,6 +268,17 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         List<ActivityProduct> activityGoodsList = activityProductManager.queryActivityProductByCondition(marketingActivityId);
         if (!CollectionUtils.isEmpty(activityGoodsList)) {
             List<ActivityProductDTO> activityProductDTOList = ReflectUtils.batchAssign(activityGoodsList, ActivityProductDTO.class);
+            if (!CollectionUtils.isEmpty(activityProductDTOList)){
+                for (int i = 0; i<activityProductDTOList.size(); i++){
+                    ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                    productGetByIdReq.setProductId(activityProductDTOList.get(i).getProductId());
+                    ResultVO<ProductResp> respResultVO = productService.getProduct(productGetByIdReq);
+                    if (null != respResultVO.getResultData()){
+                        activityProductDTOList.get(i).setUnitName(respResultVO.getResultData().getUnitName());
+                        activityProductDTOList.get(i).setSn(respResultVO.getResultData().getSn());
+                    }
+                }
+            }
             resp.setActivityProductList(activityProductDTOList);
         }
         // 根据活动编码查询活动规则
@@ -275,6 +293,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             List<PromotionDTO> promotionDTOList = ReflectUtils.batchAssign(promotionList, PromotionDTO.class);
             resp.setPromotionDTOList(promotionDTOList);
         }
+
         return ResultVO.success(resp);
     }
 
@@ -510,7 +529,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 marketingActivityIdList.add(item.getId());
             });
             //查询商品适用减免
-            List<ActivityProduct> productList = activityProductManager.queryActivityProductByActIdAndProductId(marketingActivityIdList, req.getProductId());
+            List<ActivityProduct> productList = activityProductManager.queryActivityProductByCondition(marketingActivityIdList);
             if(!CollectionUtils.isEmpty(productList)){
                 productList.forEach(item -> {
                     if(null != item.getDiscountAmount()){
@@ -741,7 +760,6 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     public ResultVO updatePreSaleActivityRule(MarketingActivityAddReq marketingActivityAddReq) {
         MarketingActivity marketingActivity = new MarketingActivity();
         BeanUtils.copyProperties(marketingActivityAddReq,marketingActivity);
-        marketingActivity.setPayType(StringUtils.isEmpty(marketingActivityAddReq.getPayType())? PromoConst.PayType.PAY_TYPE_1.getCode() : marketingActivityAddReq.getPayType());
         marketingActivityManager.updatePreSaleActivityRule(marketingActivity);
         return ResultVO.success();
     }
@@ -828,55 +846,58 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
      * @return
      */
     public ResultVO<List<String>> queryActMerchant(String marketingActivityId) {
-        log.info("MarketingActivityServiceImpl.queryActMerchant--> marketingActivityId={}",marketingActivityId);
+        log.info("MarketingActivityServiceImpl.queryActMerchant--> marketingActivityId={}", marketingActivityId);
         List<String> strings = Lists.newArrayList();
         MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivity(marketingActivityId);
-        if(marketingActivity == null) {
-            return ResultVO.error("活动不存在");
+        log.info("MarketingActivityServiceImpl.queryActMerchant marketingActivityManager.queryMarketingActivity marketingActivity={}", JSON.toJSON(marketingActivity));
+        if (marketingActivity == null) {
+            return ResultVO.error("活动数据无效");
         }
         List<ActivityParticipant> activityParticipants = activityParticipantManager.queryActivityParticipantByCondition(marketingActivityId);
-        log.info("MarketingActivityServiceImpl.queryActMerchant queryActivityParticipantByCondition --> activityParticipants={}",JSON.toJSON(activityParticipants));
-        if(activityParticipants.size()<=0){
+        log.info("MarketingActivityServiceImpl.queryActMerchant queryActivityParticipantByCondition --> activityParticipants={}", JSON.toJSON(activityParticipants));
+        if (activityParticipants.size() <= 0) {
             return ResultVO.success(strings);
         }
         String activityParticipantType = marketingActivity.getActivityParticipantType();
-        if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(activityParticipantType)){
-            for(ActivityParticipant activityParticipant : activityParticipants){
-                /** 参与对象表当前merchant_code字段存的是merchant_id*/
-                if(StringUtils.isNotEmpty(activityParticipant.getMerchantCode())){
-                    strings.add(activityParticipant.getMerchantCode());
+        if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(activityParticipantType)) {
+            /** 参与对象表当前merchant_code字段存的是merchant_id*/
+            strings = activityParticipants.stream().map(ActivityParticipant::getMerchantCode).collect(Collectors.toList());
+        } else if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(activityParticipantType)) {
+            //获取活动参与对象的地区集合
+            List<String> lanList = Lists.newArrayList();
+            List<String> cityList = Lists.newArrayList();
+            activityParticipants.stream().filter((ActivityParticipant activityParticipant) ->
+                    StringUtils.isNotEmpty(activityParticipant.getLanId()) || StringUtils.isNotEmpty(activityParticipant.getLanId())
+            ).forEach((ActivityParticipant activityParticipant) -> {
+                if (StringUtils.isNotEmpty(activityParticipant.getCity())) {
+                    cityList.add(activityParticipant.getCity());
+                } else {
+                    lanList.add(activityParticipant.getLanId());
                 }
+            });
+            if (lanList.size() > 0 || cityList.size() > 0) {
+                MerchantListLanCityReq merchantListLanCityReq = new MerchantListLanCityReq();
+                merchantListLanCityReq.setCityList(cityList);
+                merchantListLanCityReq.setLanList(lanList);
+                ResultVO<List<String>> listResultVO = merchantService.listMerchantByLanCity(merchantListLanCityReq);
+                log.info("MarketingActivityServiceImpl.queryActMerchant listMerchantByLanCity --> listResultVO={}", JSON.toJSON(listResultVO));
+                if (!listResultVO.isSuccess()) {
+                    return ResultVO.error("获取商家失败");
+                }
+                strings = listResultVO.getResultData();
             }
-        }else if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(activityParticipantType)){
-              List<String> participants = Lists.newArrayList();
-              for(ActivityParticipant activityParticipant : activityParticipants){
-                  String city = activityParticipant.getCity();
-                  String lanId = activityParticipant.getLanId();
-                  if(StringUtils.isNotEmpty(city) || StringUtils.isNotEmpty(lanId)){
-                      participants.add(StringUtils.isNotEmpty(city)? city : lanId);
-                  }
-              }
-              if(participants.size()>0){
-                  MerchantListReq merchantListReq = new MerchantListReq();
-                  merchantListReq.setCityList(participants);
-                  ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchantByLanCity(merchantListReq);
-                  log.info("MarketingActivityServiceImpl.queryActMerchant listMerchantByLanCity --> listResultVO={}",JSON.toJSON(listResultVO));
-                  for(MerchantDTO merchantDTO :listResultVO.getResultData()){
-                      strings.add(merchantDTO.getMerchantId());
-                  }
-              }
         }
-        log.info("MarketingActivityServiceImpl.queryActMerchant --> strings={}",JSON.toJSON(strings));
+        log.info("MarketingActivityServiceImpl.queryActMerchant --> strings={}", JSON.toJSON(strings));
         return ResultVO.success(strings);
     }
 
     @Override
     public ResultVO autoPushActivityCoupon(String marketingActivityId) {
         ResultVO<List<String>> listResultVO = queryActMerchant(marketingActivityId);
-        if(ResultCodeEnum.ERROR.getCode().equals(listResultVO.getResultCode())){
+        if (!listResultVO.isSuccess()) {
             return listResultVO;
         }
-        if(listResultVO.getResultData().size()<=0){
+        if (listResultVO.getResultData().size() <= 0) {
             return ResultVO.error("该活动没有参与的商家");
         }
         AutoPushCouponReq autoPushCouponReq = new AutoPushCouponReq();
@@ -885,7 +906,6 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         couponInstService.autoPushCoupon(autoPushCouponReq);
         return ResultVO.success("成功推送!");
     }
-
     public ResultVO turnActMarket(String userId,String userName,String mktId){
         updateMktStatus(mktId,PromoConst.STATUSCD.STATUS_CD_10.getCode());
         NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new NextRouteAndReceiveTaskReq();

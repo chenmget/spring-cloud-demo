@@ -97,6 +97,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 if(StringUtils.isNotEmpty(supplierId)){
                     ResultVO<MerchantDTO>  supplier = merchantService.getMerchantById(supplierId);
                     if(supplier!=null&&supplier.isSuccess()&&supplier.getResultData()!=null){
+                        queryAccountBalanceDetailAllResp.setLanId(supplier.getResultData().getLanId());
                         queryAccountBalanceDetailAllResp.setLanName(supplier.getResultData().getLanName());
                         queryAccountBalanceDetailAllResp.setSupplierName(supplier.getResultData().getMerchantName());
                     }
@@ -105,6 +106,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 String productId = queryAccountBalanceDetailAllResp.getProductId();
                 if(StringUtils.isNotEmpty(productId)){
                     ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                    productGetByIdReq.setProductId(productId);
                     ResultVO<ProductResp>  respResultVO = productService.getProduct(productGetByIdReq);
                     if(respResultVO!=null&&respResultVO.isSuccess()&&respResultVO.getResultData()!=null){
                         queryAccountBalanceDetailAllResp.setProductName(respResultVO.getResultData().getProductName());

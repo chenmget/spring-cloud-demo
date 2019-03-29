@@ -258,6 +258,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
             throw new BusinessException("创建账户余额使用规则出错");
         }
         currentAccountBalance = new AccountBalanceDTO();
+        currentAccountBalance.setAccountBalanceId(accountService.getRebateNextId());
         currentAccountBalance.setAcctId(req.getAcctId());
         currentAccountBalance.setCustId(req.getCustId());
         currentAccountBalance.setBalanceTypeId(typeId);

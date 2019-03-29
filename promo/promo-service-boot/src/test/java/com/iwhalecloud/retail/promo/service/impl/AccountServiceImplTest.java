@@ -73,7 +73,7 @@ public class AccountServiceImplTest {
     @Test
     public void queryTotalAccount(){
         QueryTotalAccountReq req = new QueryTotalAccountReq();
-        req.setCustId("123");
+//        req.setCustId("123");
         req.setAcctType("20");
         req.setPageNo(1);
         req.setPageSize(10);

@@ -80,7 +80,9 @@ public class AccountManager extends ServiceImpl<AccountMapper, Account> {
         return accountMapper.updateById(accountData);
 
     }
-
+    public String getRebateNextId(){
+        return accountMapper.getRebateNextId();
+    }
 
 
 }

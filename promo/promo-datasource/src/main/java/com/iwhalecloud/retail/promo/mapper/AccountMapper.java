@@ -17,4 +17,6 @@ import org.apache.ibatis.annotations.Param;
 public interface AccountMapper extends BaseMapper<Account>{
 
     Page<QueryAccountForPageResp> queryAccountForPage(Page<QueryAccountForPageResp> page, @Param("req") QueryAccountForPageReq req);
+
+    String getRebateNextId();
 }

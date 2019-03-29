@@ -56,4 +56,10 @@ public interface AccountService{
      */
     ResultVO<Page<QueryAccountForPageResp>> queryAccountForPage(QueryAccountForPageReq req);
 
+    /**
+     * 获取功能ID
+     * @return
+     */
+    String getRebateNextId();
+
 }

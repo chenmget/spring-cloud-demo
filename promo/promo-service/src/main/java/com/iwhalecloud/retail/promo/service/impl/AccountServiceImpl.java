@@ -163,4 +163,9 @@ public class AccountServiceImpl implements AccountService {
         return ResultVO.success(accountManager.queryAccountForPage(req));
 
     }
+
+    @Override
+    public String getRebateNextId() {
+        return accountManager.getRebateNextId();
+    }
 }

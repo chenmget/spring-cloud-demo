@@ -38,4 +38,7 @@
 
     </select>
 
+    <select id="getRebateNextId" resultType="java.lang.String">
+        select seq_retail_all_tables.nextval
+    </select>
 </mapper>

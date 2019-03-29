@@ -3,6 +3,8 @@ package com.iwhalecloud.retail.promo.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
+import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.promo.dto.req.ActivityProductReq;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -33,5 +35,19 @@ public interface ActivityProductMapper extends BaseMapper<ActivityProduct>{
      * @param marketingActivityId
      * @return
      */
-    Long queryActProductSum (String marketingActivityId);
+    Long queryActProductSum(String marketingActivityId);
+    /**
+     * 保存更改后的产品信息
+     * @param activityProductReq
+     * @return
+     */
+    ResultVO saveActProduct(ActivityProductReq activityProductReq);
+
+    /**
+     * 删除返利产品
+     * @param activityProductReq
+     * @return
+     */
+    ResultVO deleteReBateProductActivity(ActivityProductReq activityProductReq);
+
 }

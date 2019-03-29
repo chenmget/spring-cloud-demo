@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.AccountBalanceDetailMapper">
+
+<sql id="allFields">
+    t.OPER_INCOME_ID 
+    ,t.ACCOUNT_BALANCE_ID 
+    ,t.ACCT_ID 
+    ,t.ACCT_TYPE 
+    ,t.OPER_TYPE 
+    ,t.AMOUNT 
+    ,t.BALANCE 
+    ,t.CUR_AMOUNT 
+    ,t.UNEFFECTIVE_AMOUNT 
+    ,t.INVALID_AMOUNT 
+    ,t.BALANCE_SOURCE_TYPE_ID
+    ,t.ORDER_ID
+    ,t.ORDER_ITEM_ID 
+    ,t.EFF_DATE 
+    ,t.EXP_DATE 
+    ,t.CUR_STATUS_DATE 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.PAYMENT_ID 
+    ,t.SOURCE_DESC 
+</sql>
+    <select id = "queryAccountBalanceDetailForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailForPageReq"
+            resultType="com.iwhalecloud.retail.promo.dto.AccountBalanceDetailDTO">
+        select
+        <include refid="allFields"></include>
+        from ACCOUNT_BALANCE_DETAIL t
+        where 1=1 and  t.STATUS_CD='1000' AND t.EFF_DATE&gt;=SYSDATE() AND t.EXP_DATE&lt;=SYSDATE()
+
+        <if test="req.acctId != null and req.acctId != ''">
+            and T.ACCT_ID = #{req.acctId}
+        </if>
+        <if test="req.accountBalanceId != null and req.accountBalanceId != ''">
+            and T.ACCOUNT_BALANCE_ID = #{req.accountBalanceId}
+        </if>
+
+
+    </select>
+
+    <select id = "queryAccountBalanceDetailAllForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailAllReq"
+            resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp">
+        select b.ACCT_ID,b.ACCT_NAME,b.ACCT_TYPE,a.AMOUNT,a.STATUS_CD,a.EFF_DATE,a.EXP_DATE,a.OPER_INCOME_ID,
+        a.SOURCE_DESC,a.oper_type,a.ORDER_ITEM_ID,a.ORDER_ID,c.ACCOUNT_BALANCE_ID,e.obj_id as supplier_id,f.name as act_name from account_balance_detail a
+        inner join account b on a.ACCT_ID=b.ACCT_ID
+        inner join account_balance c on b.ACCT_ID=c.ACCT_ID and c.ACCOUNT_BALANCE_ID=a.ACCOUNT_BALANCE_ID
+        inner join ACCOUNT_BALANCE_TYPE d on d.BALANCE_TYPE_ID=c.BALANCE_TYPE_ID
+        inner join ACCOUNT_BALANCE_RULE e on d.BALANCE_TYPE_ID=e.BALANCE_TYPE_ID
+        inner join act_marketing_activity f on f.id=d.ACT_ID
+        where b.STATUS_CD='1000' AND b.EFF_DATE&lt;=SYSDATE() AND b.EXP_DATE&gt;=SYSDATE()
+
+        <if test="req.custId != null and req.custId != ''">
+            and B.CUST_ID = #{req.custId}
+        </if>
+        <if test="req.acctType != null and req.acctType != ''">
+            and B.ACCT_TYPE = #{req.acctType}
+        </if>
+        <if test="req.acctId != null and req.acctId != ''">
+            and B.ACCT_ID = #{req.acctId}
+        </if>
+        <if test="req.statucCd != null and req.statucCd != ''">
+            and a.STATUS_CD = #{req.statucCd}
+        </if>
+        <if test="req.actName != null and req.actName != ''">
+            a.BALANCE_SOURCE_TYPE_ID=#{req.actName}
+        </if>
+        <if test="req.effDateStart != null and req.effDateStart != ''">
+            <![CDATA[   and DATE_FORMAT(a.EFF_DATE, '%Y-%m-%d')>=  DATE_FORMAT(#{req.effDateStart}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="req.effDateEnd != null and req.effDateEnd != ''">
+            <![CDATA[   and DATE_FORMAT(a.EFF_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.effDateEnd}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="req.expDateStart != null and req.expDateStart != ''">
+            <![CDATA[   and DATE_FORMAT(a.EXP_DATE, '%Y-%m-%d')>=  DATE_FORMAT(#{req.EXP_DATE}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="req.expDateEnd != null and req.expDateEnd != ''">
+            <![CDATA[   and DATE_FORMAT(a.EXP_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.expDateEnd}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="req.balanceSourceTypeId != null and req.balanceSourceTypeId != ''">
+            a.BALANCE_SOURCE_TYPE_ID=#{req.balanceSourceTypeId}
+        </if>
+
+        <if test="req.supplierIdList != null and req.supplierIdList.size > 0">
+            and e.obj_id in
+            <foreach collection="req.supplierIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.actIdList != null and req.actIdList.size>0">
+            and d.ACT_ID in
+            <foreach collection="req.actIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+
+    </select>
+
+</mapper>

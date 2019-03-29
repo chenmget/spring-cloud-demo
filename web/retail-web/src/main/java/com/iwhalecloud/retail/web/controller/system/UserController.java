@@ -988,7 +988,7 @@ public class UserController extends BaseController {
 
     /**
      * 重置用户密码
-     *
+     * @param userResetPasswordReq
      * @return
      */
     @ApiOperation(value = "重置用户密码", notes = "重置用户密码")
@@ -998,15 +998,13 @@ public class UserController extends BaseController {
     })
     @RequestMapping(value = "/resetPassword", method = RequestMethod.POST)
     @UserLoginToken
-    public ResultVO resetPassword() {
-        UserEditReq userEditReq = new UserEditReq();
-        userEditReq.setUserId(UserContext.getUserId());
-        //设置初始密码并加密
-        userEditReq.setLoginPwd(new MD5("123").asHex());
-        ResultVO<Integer> integerResultVO = userService.editUser((userEditReq));
-        if(!integerResultVO.isSuccess()){
-            return ResultVO.error("初始化密码失败");
+    public ResultVO resetPassword(@RequestBody UserResetPasswordReq userResetPasswordReq) {
+        // 先密码还原成普通字符串
+        userResetPasswordReq.setUpdatePassword(decodePassword(userResetPasswordReq.getUpdatePassword()));
+
+        if (UserContext.getUser().getUserFounder() != 1) {
+            return ResultVO.error("只有管理员才能重置密码");
         }
-        return ResultVO.successMessage("初始化密码成功");
+        return userService.resetPassword(userResetPasswordReq);
     }
 }

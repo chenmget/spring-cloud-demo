@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.AccountBalancePayoutMapper">
+
+<sql id="allFields">
+    t.OPER_PAYOUT_ID 
+    ,t.ACCOUNT_BALANCE_DETAIL_ID 
+    ,t.ACCT_BALANCE_ID 
+    ,t.ACCT_ITEM_TYPE 
+    ,t.BILL_ID 
+    ,t.PAYMENT_ID 
+    ,t.OPER_TYPE 
+    ,t.AMOUNT 
+    ,t.BALANCE 
+    ,t.EXT_SERIAL_ID 
+    ,t.STAFF_ID 
+    ,t.ORG_ID 
+    ,t.OPER_DATE 
+    ,t.PRN_COUNT 
+    ,t.PAYOUT_DESC 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+</sql>
+
+</mapper>

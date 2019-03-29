@@ -51,7 +51,7 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVO<NoticeDTO> saveNotice(NoticeSaveReq req) {
-        log.info("NoticeServiceImpl.saveNotice(), 入参req={} ", req);
+        log.info("NoticeServiceImpl.saveNotice(), req={} ", req);
         Notice notice = new Notice();
         BeanUtils.copyProperties(req, notice);
         if (StringUtils.isEmpty(req.getStatus())) {
@@ -64,8 +64,8 @@ public class NoticeServiceImpl implements NoticeService {
         String fileString = JSON.toJSONString(req.getFile());
         notice.setFileUrl(fileString);
         NoticeDTO noticeDTO = noticeManager.insert(notice);
-        log.info("NoticeServiceImpl.saveNotice(), 出参noticeDTO={} ", noticeDTO);
-        if (noticeDTO == null) {
+        log.info("NoticeServiceImpl.saveNotice(), noticeDTO={} ", noticeDTO);
+        if (null == noticeDTO) {
             return ResultVO.error("新增公告通知信息失败");
         }
 
@@ -81,6 +81,7 @@ public class NoticeServiceImpl implements NoticeService {
         try {
             taskServiceRV = taskService.startProcess(processStartDTO);
         }catch (Exception e){
+            log.error("NoticeServiceImpl.saveNotice exception={}",e);
             return ResultVO.error();
         }finally {
             log.info("NoticeServiceImpl.saveNotice req={},resp={}",
@@ -103,9 +104,9 @@ public class NoticeServiceImpl implements NoticeService {
      */
     @Override
     public ResultVO<NoticeDTO> getNoticeById(String noticeId){
-        log.info("NoticeServiceImpl.getNoticeById(), 入参noticeId={} ", noticeId);
+        log.info("NoticeServiceImpl.getNoticeById(), noticeId={} ", noticeId);
         NoticeDTO noticeDTO = noticeManager.getNoticeById(noticeId);
-        log.info("NoticeServiceImpl.getNoticeById(), 出参对象noticeDTO={} ", noticeDTO);
+        log.info("NoticeServiceImpl.getNoticeById(), noticeDTO={} ", noticeDTO);
         return ResultVO.success(noticeDTO);
     }
 
@@ -117,14 +118,14 @@ public class NoticeServiceImpl implements NoticeService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVO<Integer> updateNotice(NoticeUpdateReq req) {
-        log.info("NoticeServiceImpl.updateNotice(), 入参BusinessEntityUpdateReq={} ", req);
+        log.info("NoticeServiceImpl.updateNotice(), BusinessEntityUpdateReq={} ", req);
         Notice notice = new Notice();
         BeanUtils.copyProperties(req, notice);
         notice.setUpdateTime(new Date());
         String fileString = JSON.toJSONString(req.getFile());
         notice.setFileUrl(fileString);
         int result = noticeManager.updateNotice(notice);
-        log.info("NoticeServiceImpl.updateNotice(), 出参对象(更新影响数据条数）={} ", result);
+        log.info("NoticeServiceImpl.updateNotice(), result={} ", result);
         if (result <= 0){
             return ResultVO.error("编辑公告通知信息失败");
         }
@@ -141,6 +142,7 @@ public class NoticeServiceImpl implements NoticeService {
             try {
                 taskServiceRV = taskService.startProcess(processStartDTO);
             } catch (Exception e) {
+                log.error("NoticeServiceImpl.updateNotice startProcess exception={}",e);
                 return ResultVO.error();
             } finally {
                 log.info("NoticeServiceImpl.updateNotice req={},resp={}",
@@ -156,6 +158,7 @@ public class NoticeServiceImpl implements NoticeService {
             try {
                 taskServiceRV = taskService.nextRouteAndReceiveTask(nextRouteAndReceiveTaskReq);
             } catch (Exception e) {
+                log.error("NoticeServiceImpl.updateNotice nextRouteAndReceiveTask exception={}",e);
                 return ResultVO.error();
             } finally {
                 log.info("NoticeServiceImpl.updateNotice req={},resp={}",

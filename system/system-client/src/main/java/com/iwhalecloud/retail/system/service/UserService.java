@@ -105,6 +105,13 @@ public interface UserService {
      */
     Page<UserDTO> pageUser(UserPageReq req);
 
+    /**
+     * 重置用户密码
+     * @param req
+     * @return
+     */
+    ResultVO<Integer> resetPassword(UserResetPasswordReq req);
+
 
     /**  对外提供的服务 star **/
 

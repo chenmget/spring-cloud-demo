@@ -26,10 +26,16 @@ public class MemberGroup implements Serializable {
   
   	
   	//属性 begin
-  	/**
+	/**
+	 * ID
+	 */
+	@TableId
+	@ApiModelProperty(value = "ID")
+	private String id;
+
+	/**
   	 * 会员群ID
   	 */
-	@TableId
 	@ApiModelProperty(value = "会员群ID")
   	private String groupId;
   	

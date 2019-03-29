@@ -69,7 +69,7 @@ public class MemberGroupServiceTest {
         req.setPageNo(1);
         req.setPageSize(10);
         req.setMemId("150714920000161980");
-        ResultVO<Page<MemberGroupQueryResp>> resultVO = memberGroupService.queryGroupByMemberForPage(req);
+        ResultVO<Page<GroupQueryResp>> resultVO = memberGroupService.queryGroupByMemberForPage(req);
         log.info("queryGroupByMemberForPageTest result={}",resultVO.getResultData());
     }
 
@@ -79,7 +79,7 @@ public class MemberGroupServiceTest {
         req.setPageNo(1);
         req.setPageSize(10);
         req.setGroupId("1102849388210343937");
-        ResultVO<Page<GroupQueryResp>> resultVO = memberGroupService.queryMemberByGroupForPage(req);
+        ResultVO<Page<MemberGroupQueryResp>> resultVO = memberGroupService.queryMemberByGroupForPage(req);
         log.info("queryMemberByGroupForPageTest result={}",resultVO.getResultData().getRecords());
     }
 }

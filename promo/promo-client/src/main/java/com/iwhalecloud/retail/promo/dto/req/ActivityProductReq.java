@@ -63,4 +63,7 @@ public class ActivityProductReq implements Serializable{
 
     @ApiModelProperty("数据来源")
     private String sourceFrom;
+
+    @ApiModelProperty("修改时间")
+    private Date gmtModified;
 }

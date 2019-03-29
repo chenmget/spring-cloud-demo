@@ -40,6 +40,7 @@ public class MemberGroupManager{
         MemberGroup memberGroup = new MemberGroup();
         BeanUtils.copyProperties(memberGroupDTO, memberGroup);
         memberGroup.setUpdateDate(new Date());
+        memberGroup.setMemId(null);
         return memberGroupMapper.update(memberGroup, updateWrapper);
     }
 
@@ -54,13 +55,13 @@ public class MemberGroupManager{
         return memberGroupMapper.update(memberGroup, updateWrapper);
     }
 
-    public Page<MemberGroupQueryResp> queryGroupByMemberForPage(MemberGroupQueryGroupReq req) {
-        Page<MemberGroupQueryResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+    public Page<GroupQueryResp> queryGroupByMemberForPage(MemberGroupQueryGroupReq req) {
+        Page<GroupQueryResp> page = new Page<>(req.getPageNo(), req.getPageSize());
         return memberGroupMapper.queryGroupByMemberForPage(page, req);
     }
 
-    public Page<GroupQueryResp> queryMemberByGroupForPage(MemberGroupQueryMemberReq req) {
-        Page<GroupQueryResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+    public Page<MemberGroupQueryResp> queryMemberByGroupForPage(MemberGroupQueryMemberReq req) {
+        Page<MemberGroupQueryResp> page = new Page<>(req.getPageNo(), req.getPageSize());
         return memberGroupMapper.queryMemberByGroupForPage(page, req);
     }
 }

@@ -34,13 +34,13 @@ public interface MemberGroupService{
      * @param req
      * @return
      */
-    ResultVO<Page<MemberGroupQueryResp>> queryGroupByMemberForPage(MemberGroupQueryGroupReq req);
+    ResultVO<Page<GroupQueryResp>> queryGroupByMemberForPage(MemberGroupQueryGroupReq req);
 
     /**
      * 根据群组分页查询会员列表
      * @param req
      * @return
      */
-    ResultVO<Page<GroupQueryResp>> queryMemberByGroupForPage(MemberGroupQueryMemberReq req);
+    ResultVO<Page<MemberGroupQueryResp>> queryMemberByGroupForPage(MemberGroupQueryMemberReq req);
 
 }

@@ -26,10 +26,16 @@ public class MemberMerchant implements Serializable {
   
   	
   	//属性 begin
-  	/**
+	/**
+	 * ID
+	 */
+	@TableId
+	@ApiModelProperty(value = "ID")
+	private String id;
+
+	/**
   	 * 商家ID
   	 */
-	@TableId
 	@ApiModelProperty(value = "商家ID")
   	private String merchId;
   	

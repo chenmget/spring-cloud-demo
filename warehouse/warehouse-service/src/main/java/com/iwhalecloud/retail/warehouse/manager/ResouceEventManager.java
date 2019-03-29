@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.iwhalecloud.retail.warehouse.common.GenerateCodeUtil;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceEventDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceEventUpdateReq;
 import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceEventMapper;
+import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -20,6 +20,9 @@ import java.util.Date;
 public class ResouceEventManager{
     @Resource
     private ResouceEventMapper resouceEventMapper;
+
+    @Resource
+    private ResourceInstMapper resourceInstMapper;
 
     /**
      * 新增变动事件
@@ -35,7 +38,7 @@ public class ResouceEventManager{
             resouceEvent.setStatusDate(now);
             resouceEvent.setAcceptDate(now);
             resouceEvent.setStatusCd(ResourceConst.EVENTSTATE.PROCESSING.getCode());
-            resouceEvent.setMktResEventNbr(GenerateCodeUtil.generateCode());
+            resouceEvent.setMktResEventNbr(resourceInstMapper.getPrimaryKey());
             resouceEvent.setUpdateDate(new Date());
             resouceEventMapper.insert(resouceEvent);
         } else {

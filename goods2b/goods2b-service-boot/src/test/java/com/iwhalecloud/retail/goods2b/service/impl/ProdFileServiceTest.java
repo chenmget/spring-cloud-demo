@@ -46,12 +46,6 @@ public class ProdFileServiceTest {
     }
 
     @Test
-    public void deleteById() {
-        int size = prodFileManager.deleteById("1067750914191314945");
-        Assert.assertTrue(size==1);
-    }
-
-    @Test
     public void deleteByGoodsSubType() {
         int size = prodFileManager.deleteByGoodsSubType("1", FileConst.SubType.DEFAULT_SUB);
         Assert.assertTrue(size>=1);

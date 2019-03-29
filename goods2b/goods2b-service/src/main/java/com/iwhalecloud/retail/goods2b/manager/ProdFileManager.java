@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
+import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.helper.FileHelper;
@@ -9,6 +10,9 @@ import com.iwhalecloud.retail.goods2b.mapper.ProdFileMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +42,13 @@ public class ProdFileManager {
      * @param imageUrl 图片地址
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId"),
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId + '_' + #subType.type")
+    })
     public int addGoodsImage(String goodsId,FileConst.SubType subType,String imageUrl) {
-        final String thumbnailUrl = "";  //缩略图
+        //缩略图
+        final String thumbnailUrl = "";
         return this.addGoodsImage(goodsId,subType,imageUrl,thumbnailUrl);
     }
 
@@ -52,6 +61,10 @@ public class ProdFileManager {
      * @param thumbnailUrl 缩略图
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId"),
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId + '_' + #subType.type")
+    })
     public int addGoodsImage(String goodsId,FileConst.SubType subType,String imageUrl,String thumbnailUrl) {
 
         ProdFile prodFile = new ProdFile();
@@ -71,9 +84,9 @@ public class ProdFileManager {
      * @param goodsId 商品ID
      * @return 附件集合
      */
+    @Cacheable(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId")
     public List<ProdFileDTO> queryGoodsImage(String goodsId) {
         QueryWrapper wrapper = new QueryWrapper<>();
-        //wrapper.eq(ProdFile.FieldNames.fileType.getTableFieldName(),FileConst.FileType.IMAGE_TYPE.getType());
         wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.GOODS_TARGET.getType());
         wrapper.eq(ProdFile.FieldNames.targetId.getTableFieldName(),goodsId);
 
@@ -88,9 +101,9 @@ public class ProdFileManager {
      * @link TargetType
      * @return 附件集合
      */
+    @Cacheable(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId + '_' + #subType.type")
     public List<ProdFileDTO> queryGoodsImage(String goodsId,FileConst.SubType subType) {
         QueryWrapper wrapper = new QueryWrapper<>();
-        //wrapper.eq(ProdFile.FieldNames.fileType.getTableFieldName(),FileConst.FileType.IMAGE_TYPE.getType());
         wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.GOODS_TARGET.getType());
         wrapper.eq(ProdFile.FieldNames.targetId.getTableFieldName(),goodsId);
         wrapper.eq(ProdFile.FieldNames.subType.getTableFieldName(),subType.getType());
@@ -125,9 +138,9 @@ public class ProdFileManager {
      * @param goodsId 商品ID
      * @return 删除的记录数
      */
+    @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, allEntries = true)
     public int deleteByGoodsId(String goodsId) {
         QueryWrapper wrapper = new QueryWrapper<>();
-        //wrapper.eq(ProdFile.FieldNames.fileType.getTableFieldName(),FileConst.FileType.IMAGE_TYPE.getType());
         wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.GOODS_TARGET.getType());
         wrapper.eq(ProdFile.FieldNames.targetId.getTableFieldName(),goodsId);
 
@@ -141,24 +154,16 @@ public class ProdFileManager {
      * @link TargetType
      * @return 删除的记录数
      */
+    @Caching(evict = {
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId"),
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId + '_' + #subType.type")
+    })
     public int deleteByGoodsSubType(String goodsId,FileConst.SubType subType) {
         QueryWrapper wrapper = new QueryWrapper<>();
-        //wrapper.eq(ProdFile.FieldNames.fileType.getTableFieldName(),FileConst.FileType.IMAGE_TYPE.getType());
         wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.GOODS_TARGET.getType());
         wrapper.eq(ProdFile.FieldNames.targetId.getTableFieldName(),goodsId);
         wrapper.eq(ProdFile.FieldNames.subType.getTableFieldName(),subType.getType());
         return this.deleteProdFile(wrapper);
-    }
-
-
-
-    /**
-     * 根据主键ID删除附件
-     * @param fileId 附件ID
-     * @return 删除记录的条数
-     */
-    public int deleteById(String fileId) {
-        return this.prodFileMapper.deleteById(fileId);
     }
 
     /**
@@ -233,7 +238,11 @@ public class ProdFileManager {
      * @param file
      * @return
      */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
+    @Caching(evict = {
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#file.targetId"),
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#file.targetId + '_' + #file.subType"),
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#file.targetId + '_' + #file.subType + '_' + #file.targetType")
+    })
     public Integer addFile(ProdFile file) {
         String fileUrl = replaceUrlPrefix(file.getFileUrl());
         String fileType = FileHelper.getFileType(file.getFileUrl());
@@ -249,6 +258,11 @@ public class ProdFileManager {
      * @param targetType 商品ID
      * @return 删除的记录数
      */
+    @Caching(evict = {
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#targetId"),
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#targetId + '_' + #subType"),
+            @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#targetId + '_' + #subType + '_' + #targetType")
+    })
     public Integer deleteFile(String targetId, String targetType, String subType) {
         QueryWrapper wrapper = new QueryWrapper<>();
         if (org.apache.commons.lang3.StringUtils.isNotBlank(targetId)){
@@ -270,6 +284,7 @@ public class ProdFileManager {
      * @param subType
      * @return 查询图片记录数
      */
+    @Cacheable(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#targetId + '_' + #subType + '_' + #targetType")
     public List<ProdFileDTO> getFile(String targetId, String targetType, String subType) {
         QueryWrapper wrapper = new QueryWrapper<>();
         if (org.apache.commons.lang3.StringUtils.isNotBlank(targetId)){
@@ -297,17 +312,5 @@ public class ProdFileManager {
             dtos.add(dto);
         }
         return dtos;
-    }
-
-    /**
-     * 更新图片
-     * @param file
-     * @return
-     */
-    @Transactional(propagation = Propagation.REQUIRED, readOnly = false)
-    public Integer updateFile(ProdFile file) {
-        String fileUrl = replaceUrlPrefix(file.getFileUrl());
-        file.setFileUrl(fileUrl);
-        return prodFileMapper.updateById(file);
     }
 }

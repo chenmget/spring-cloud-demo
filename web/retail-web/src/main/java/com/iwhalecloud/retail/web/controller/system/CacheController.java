@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.web.controller.system;
 
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.web.controller.BaseController;
@@ -128,6 +129,18 @@ public class CacheController extends BaseController {
     @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_BUSINESS_ENTITY, allEntries = true, beforeInvocation = true)
     public ResultVO<Boolean> cleanCacheBusinessEntity() {
         log.info("CacheController.cleanCacheBusinessEntity clean par_merchant table cache success!!!");
+        return ResultVO.success(true);
+    }
+
+    @ApiOperation(value = "清空prod_file(文件表）表缓存", notes = "清空prod_file(文件表）表缓存")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/cleanCacheProdFile", method = RequestMethod.GET)
+    @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheProdFile() {
+        log.info("CacheController.cleanCacheProdFile clean prod_file table cache success!!!");
         return ResultVO.success(true);
     }
 }

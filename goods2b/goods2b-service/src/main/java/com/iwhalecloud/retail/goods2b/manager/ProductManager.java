@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.goods2b.manager;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
@@ -60,6 +61,23 @@ public class ProductManager {
      */
     public ProductResp getProduct(String productId) {
         return productMapper.getProduct(productId);
+    }
+
+    /**
+     * 根据产品编码获取产品对象
+     * @param sn
+     * @return
+     */
+    public ProductResp getProductBySn(String sn){
+        QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(Product.FieldNames.sn.getFieldName(),sn);
+        Product product = productMapper.selectOne(queryWrapper);
+        ProductResp productResp = new ProductResp();
+        if(product != null) {
+            BeanUtils.copyProperties(product, productResp);
+            return productResp;
+        }
+        return null;
     }
 
     /**

@@ -71,6 +71,11 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(productManager.getProduct(req.getProductId()));
     }
 
+    @Override
+    public ResultVO<ProductResp> getProductBySn(String sn){
+        return ResultVO.success(productManager.getProductBySn(sn));
+    }
+
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
@@ -83,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
         t.setIsDeleted(ProductConst.IsDelete.NO.getCode());
         //默认未提交审核
         if(StringUtils.isEmpty(t.getAuditState())){
-             t.setAuditState(ProductConst.AuditStateType.UN_SUBMIT.getCode());
+            t.setAuditState(ProductConst.AuditStateType.UN_SUBMIT.getCode());
         }
 
         Integer num = productManager.insert(t);
@@ -152,22 +157,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResultVO<Integer> batchDeleteProdProduct(List<PrdoProductDeleteReq> req) {
-        int num = 0;
-        if(!CollectionUtils.isEmpty(req)){
-            for(PrdoProductDeleteReq prdoProductDeleteReq :req){
-                ResultVO<Integer> resultVO = this.deleteProdProduct(prdoProductDeleteReq);
-                if(resultVO.isSuccess() && resultVO.getResultData()!=null){
-                    num += resultVO.getResultData();
-                }else if(!resultVO.isSuccess()){
-                    return resultVO;
-                }
-            }
-        }
-        return ResultVO.success(num);
-    }
-
-    @Override
     public ResultVO<Integer> updateProdProductDelete(PrdoProductDeleteReq req) {
         return ResultVO.success(productManager.updateProdProductDelete(req.getProductId()));
     }
@@ -206,6 +195,8 @@ public class ProductServiceImpl implements ProductService {
                 ResultVO<Integer> resultVO = this.updateProdProduct(productUpdateReq);
                 if(resultVO.isSuccess() && resultVO.getResultData()!=null){
                     num += resultVO.getResultData();
+                }else if(!resultVO.isSuccess()){
+                    return resultVO;
                 }
             }
         }
@@ -223,17 +214,12 @@ public class ProductServiceImpl implements ProductService {
         String newStatue = req.getStatus();
         String auditState = productResp.getAuditState();
         //修改成已挂网
-        if(ProductConst.StatusType.EFFECTIVE.getCode().equals(newStatue)&&!ProductConst.StatusType.EFFECTIVE.getCode().equals(oldStatue)){
+        if(ProductConst.StatusType.EFFECTIVE.getValue().equals(newStatue)&&!ProductConst.StatusType.EFFECTIVE.getValue().equals(oldStatue)){
             //审核未通过的不可进行挂网
             if(!ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(auditState)){
                 return ResultVO.error("未审核通过的产品不可进行挂网");
             }
 
-        }else if(ProductConst.StatusType.INEFFECTIVE.getCode().equals(newStatue)&&!ProductConst.StatusType.INEFFECTIVE.getCode().equals(oldStatue)){
-            //审核未通过的不可进行退市
-            if(!ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(auditState)){
-                return ResultVO.error("未审核通过的产品不可进行退市");
-            }
         }
 
         return ResultVO.success();

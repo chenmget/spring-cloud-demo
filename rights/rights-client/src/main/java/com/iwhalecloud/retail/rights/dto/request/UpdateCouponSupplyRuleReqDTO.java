@@ -89,4 +89,10 @@ public class UpdateCouponSupplyRuleReqDTO extends AbstractRequest implements Ser
 	 */
 	@ApiModelProperty(value = "更新时间")
 	private java.util.Date updateDate;
+
+	@ApiModelProperty(value = "是不限制券总数量")
+	private String numLimitFlg;
+
+	@ApiModelProperty(value = "是否限制券的单用户领取数量")
+	private String supplyLimitFlg;
 }

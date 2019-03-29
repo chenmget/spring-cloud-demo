@@ -79,4 +79,36 @@ public class CouponSupplyRuleManager{
         queryWrapper.eq(CouponSupplyRule.FieldNames.mktResId.getTableFieldName(),mktResId);
         return couponSupplyRuleMapper.delete(queryWrapper);
     }
+
+    /**
+     * 新增优惠券的领取规则
+     * @param couponSupplyRule
+     * @return
+     */
+    public Integer addCouponSupplyRule(CouponSupplyRule couponSupplyRule){
+        couponSupplyRule.setCreateDate(new Date());
+        couponSupplyRule.setStatusCd(RightsStatusConsts.RIGHTS_STATUS_UNOBTAIN);
+        return couponSupplyRuleMapper.insert(couponSupplyRule);
+    }
+
+    /**
+     * 更新优惠券领取规则
+     * @param couponSupplyRule
+     * @return
+     */
+    public Integer updateCouponSupplyRuleById(CouponSupplyRule couponSupplyRule){
+        couponSupplyRule.setUpdateDate(new Date());
+        return couponSupplyRuleMapper.updateById(couponSupplyRule);
+    }
+
+    /**
+     * 根据优惠券id查询领取规则
+     * @param mktResId
+     * @return
+     */
+    public CouponSupplyRule selectOneCouponSupplyRule(String mktResId){
+        QueryWrapper<CouponSupplyRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(CouponSupplyRule.FieldNames.mktResId.getTableFieldName(),mktResId);
+        return couponSupplyRuleMapper.selectOne(queryWrapper);
+    }
 }

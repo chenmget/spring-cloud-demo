@@ -7,10 +7,10 @@ import com.iwhalecloud.retail.rights.dto.request.AddPreSubsidyCouponReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.AddPromotionProductReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.QueryPreSubsidyReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.UpdatePreSubsidyCouponReqDTO;
+import com.iwhalecloud.retail.rights.dto.response.MktResCouponRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.PreSubsidyProductPromResqDTO;
 import com.iwhalecloud.retail.rights.dto.response.QueryPreSubsidyCouponResqDTO;
 import com.iwhalecloud.retail.rights.service.PreSubsidyCouponService;
-import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
@@ -45,17 +45,13 @@ public class PreSubsidyActivityB2BController {
     @UserLoginToken
     public ResultVO addPreSubsidyCoupon(@RequestBody AddPreSubsidyCouponReqDTO req) {
         log.info("PreSubsidyActivityService addPreSubsidyCoupon req={}", JSON.toJSON(req));
-        if(UserContext.isMerchant()){
-            req.setPartnerId(Long.parseLong(UserContext.getUser().getRelCode()));
-        }else{
-            req.setPartnerId(Long.parseLong("-1"));
+        if (UserContext.isMerchant()) {
+            req.setPartnerId(UserContext.getUser().getRelCode());
+        } else {
+            req.setPartnerId("-1");
         }
-        if(StringUtils.isEmpty(UserContext.getUserId())){
-            return ResultVO.error("用户不能为空");
-        }else {
-            req.setCreateStaff(UserContext.getUserId());
-        }
-        return  preSubsidyCouponService.addPreSubsidyCoupon(req);
+        req.setCreateStaff(UserContext.getUserId());
+        return preSubsidyCouponService.addPreSubsidyCoupon(req);
     }
 
     @ApiOperation(value = "前置补贴活动更新优惠劵",notes = "前置补贴活动更新优惠劵")
@@ -68,15 +64,11 @@ public class PreSubsidyActivityB2BController {
     public ResultVO updatePreSubsidyCoupon(@RequestBody UpdatePreSubsidyCouponReqDTO req) {
         log.info("PreSubsidyActivityService updatePreSubsidyCoupon req={}", JSON.toJSON(req));
         if(UserContext.isMerchant()){
-            req.setPartnerId(Long.parseLong(UserContext.getUser().getRelCode()));
+            req.setPartnerId(UserContext.getUser().getRelCode());
         }else{
-            req.setPartnerId(Long.parseLong("-1"));
+            req.setPartnerId("-1");
         }
-        if(StringUtils.isEmpty(UserContext.getUserId())){
-            return ResultVO.error("用户不能为空");
-        }else {
-            req.setUpdateStaff(UserContext.getUserId());
-        }
+        req.setUpdateStaff(UserContext.getUserId());
         return  preSubsidyCouponService.updatePreSubsidyCoupon(req);
     }
 
@@ -112,11 +104,11 @@ public class PreSubsidyActivityB2BController {
     @UserLoginToken
     public ResultVO addPreSubsidyProduct(@RequestBody AddPromotionProductReqDTO addPromotionProductReqDTO) {
         log.info("PreSubsidyActivityService addPreSubsidyProduct addPromotionProductReqDTO={}",addPromotionProductReqDTO);
-        UserDTO userDTO = UserContext.getUser();
-        addPromotionProductReqDTO.setUserId(userDTO.getUserId());
-        addPromotionProductReqDTO.setUserName(userDTO.getUserName());
-        addPromotionProductReqDTO.setSysPostName(userDTO.getUserName());
-        addPromotionProductReqDTO.setOrgId(userDTO.getOrgId());
+        if(StringUtils.isEmpty(UserContext.getUserId())){
+            return ResultVO.error("用户不能为空");
+        }else {
+            addPromotionProductReqDTO.setUserId(UserContext.getUserId());
+        }
         return  preSubsidyCouponService.addPreSubsidyProduct(addPromotionProductReqDTO);
     }
 
@@ -131,4 +123,25 @@ public class PreSubsidyActivityB2BController {
         return  preSubsidyCouponService.queryPreSubsidyProduct(queryPreSubsidyReqDTO);
     }
 
+    @ApiOperation(value = "查询前置补贴活动可混用的优惠券",notes = "配置可混用券使用")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value = "/queryMixUseCoupon")
+    public ResultVO<List<MktResCouponRespDTO>> queryMixUseCoupon(@RequestBody QueryPreSubsidyReqDTO queryPreSubsidyReqDTO) {
+        log.info("PreSubsidyActivityService queryPreSubsidyProduct ,queryPreSubsidyReqDTO={}",JSON.toJSON(queryPreSubsidyReqDTO));
+        return  preSubsidyCouponService.queryMixUseCoupon(queryPreSubsidyReqDTO);
+    }
+
+    @ApiOperation(value = "更新前置补贴活动优惠券类型",notes = "一种活动只有一种类型的券")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value = "/updateActCouponType")
+    public ResultVO updateActCouponType(@RequestBody QueryPreSubsidyReqDTO queryPreSubsidyReqDTO) {
+        log.info("PreSubsidyActivityService updateActCouponType ,queryPreSubsidyReqDTO={}",JSON.toJSON(queryPreSubsidyReqDTO));
+        return  preSubsidyCouponService.updateActCouponType(queryPreSubsidyReqDTO);
+    }
 }

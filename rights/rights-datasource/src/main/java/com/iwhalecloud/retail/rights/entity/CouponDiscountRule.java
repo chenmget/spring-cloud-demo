@@ -136,6 +136,9 @@ public class CouponDiscountRule implements Serializable {
   	 */
 	@ApiModelProperty(value = "备注")
   	private java.lang.String remark;
+
+	@ApiModelProperty(value = "混合使用范围")
+	private String mixUseTarget;
   	
   	
   	//属性 end
@@ -196,7 +199,10 @@ public class CouponDiscountRule implements Serializable {
 		updateDate("updateDate","UPDATE_DATE"),
 
 		/** 备注. */
-		remark("remark","REMARK");
+		remark("remark","REMARK"),
+
+		/** 混合使用范围*/
+		mixUseTarget("mixUseTarget","mix_use_target");
 
 		private String fieldName;
 		private String tableFieldName;

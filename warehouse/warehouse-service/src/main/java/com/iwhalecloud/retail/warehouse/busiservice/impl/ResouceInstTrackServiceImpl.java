@@ -1,10 +1,15 @@
 package com.iwhalecloud.retail.warehouse.busiservice.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.partner.common.PartnerConst;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
+import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
@@ -27,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static com.iwhalecloud.retail.warehouse.common.ResourceConst.CONSTANT_NO;
+
 @Service("asyncTaskService")
 @Slf4j
 public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
@@ -42,6 +49,12 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
 
     @Autowired
     private ResourceReqDetailManager resourceReqDetailManager;
+
+    @Reference
+    private MerchantService merchantService;
+
+    @Autowired
+    private Constant constant;
 
     @Async
     @Override
@@ -389,15 +402,37 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (!resp.isSuccess()) {
             return;
         }
+
+        ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         List<String> distinctList = Lists.newArrayList();
         List<DeliveryResourceInstItem> deliveryResourceInstItemList = req.getDeliveryResourceInstItemList();
         for (DeliveryResourceInstItem deliveryResourceInstItem : deliveryResourceInstItemList) {
             distinctList.addAll(deliveryResourceInstItem.getMktResInstNbrs());
         }
-        ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
+        }
+
+        // 是否省内直供：在零售商收货确认时更新，是省包商交易到零售商的情况下
+        String ifDirectSuppLy = ResourceConst.CONSTANT_NO;
+        // 是否地包供货：地包商交易给零售商时填是
+        String ifGroundSupply = ResourceConst.CONSTANT_NO;
+        // 是否绿色通道：零售商走绿色通道导入串码
+        String ifGreenChannel = ResourceConst.CONSTANT_NO;
+        String buyerMerchantId = req.getBuyerMerchantId();
+        ResultVO<MerchantDTO> buyerMerchantResultVO = merchantService.getMerchantById(req.getBuyerMerchantId());
+        if (buyerMerchantResultVO.isSuccess() && null == buyerMerchantResultVO.getResultData() && PartnerConst.MerchantTypeEnum.PARTNER.equals(buyerMerchantResultVO.getResultData().getMerchantType())) {
+            ResultVO<MerchantDTO> sellMerchantResultVO = merchantService.getMerchantById(req.getSellerMerchantId());
+            if (sellMerchantResultVO.isSuccess() && null == sellMerchantResultVO.getResultData()) {
+                MerchantDTO merchantDTO = sellMerchantResultVO.getResultData();
+                if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.equals(sellMerchantResultVO.getResultData().getMerchantType())) {
+                    ifDirectSuppLy = ResourceConst.CONSTANT_YES;
+                }
+                if (PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.equals(sellMerchantResultVO.getResultData().getMerchantType())) {
+                    ifGroundSupply = ResourceConst.CONSTANT_YES;
+                }
+            }
         }
         resourceInstsGetReq.setStatusCd("");
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
@@ -407,6 +442,8 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             ResourceInstDTO resourceInstDTO = insts.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
+            resouceInstTrackDTO.setIfDirectSuppLy(ifDirectSuppLy);
+            resouceInstTrackDTO.setIfGroundSupply(ifGroundSupply);
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
@@ -517,6 +554,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             ResourceInstDTO resourceInstDTO = insts.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
+            resouceInstTrackDTO.setIfGreenChannel(ResourceConst.CONSTANT_YES);
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
@@ -614,6 +652,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             ResourceInstDTO resourceInstDTO = insts.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
+            resouceInstTrackDTO.setIfGreenChannel(ResourceConst.CONSTANT_YES);
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
@@ -641,6 +680,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         for (ResourceReqDetailDTO resourceReqDetailDTO : list) {
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceReqDetailDTO, resouceInstTrackDTO);
+            resouceInstTrackDTO.setIfGreenChannel(ResourceConst.CONSTANT_YES);
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();

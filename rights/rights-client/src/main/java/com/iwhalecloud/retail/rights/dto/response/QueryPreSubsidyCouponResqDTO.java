@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author zhou.zc
@@ -163,5 +164,24 @@ public class QueryPreSubsidyCouponResqDTO implements Serializable {
      * 合作伙伴标识
      */
     @ApiModelProperty(value = "合作伙伴标识")
-    private Long partnerId;
+    private String partnerId;
+
+
+    @ApiModelProperty(value = "券种类")
+    private String couponKind;
+
+    @ApiModelProperty(value = "是不限制券总数量")
+    private String numLimitFlg;
+
+    @ApiModelProperty(value = "是否限制券的单用户领取数量")
+    private String supplyLimitFlg;
+
+    @ApiModelProperty(value = "混合使用范围")
+    private List<String> mixUseTarget;
+
+    @ApiModelProperty(value = "领取方式")
+    private String releaseMode;
+
+    @ApiModelProperty(value = "可混合优惠券的列表")
+    private List<MktResCouponRespDTO> mktResCouponRespDTOS;
 }

@@ -28,13 +28,20 @@ public abstract class RebateRuleBase {
      */
     public abstract String calculation();
 
+    /**
+     * 获取返利单价，默认产品规则第一条记录，否则需要重写该方法
+     * @return
+     */
+    public String getRewardPrice(){
 
+        return this.productRuleList.get(0).getPrice();
+    }
 
     public void init(AccountBalanceCalculationOrderItemReq orderItemReq,ActivityRuleDTO activityRule,List<ActActivityProductRuleDTO> productRuleList){
         this.activityRule=activityRule;
         this.orderItemReq=orderItemReq;
         this.productRuleList = productRuleList;
-        this.sortProductRule();
+
     }
 
     public AccountBalanceCalculationOrderItemReq getOrderItemReq() {
@@ -44,9 +51,6 @@ public abstract class RebateRuleBase {
     public void setOrderItemReq(AccountBalanceCalculationOrderItemReq orderItemReq) {
         this.orderItemReq = orderItemReq;
     }
-    private void sortProductRule(){
-        productRuleList.sort((ActActivityProductRuleDTO rul1, ActActivityProductRuleDTO rule2) -> rul1.getRuleAmount().compareTo(rule2.getRuleAmount()));
 
-    }
 
 }

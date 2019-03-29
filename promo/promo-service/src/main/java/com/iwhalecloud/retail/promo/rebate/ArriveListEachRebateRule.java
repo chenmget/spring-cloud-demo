@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class ArriveListEachRebateRule extends RebateRuleBase{
 
+    private String ruleAmount;
+
     @Override
     public  String calculation(){
 
@@ -21,7 +23,8 @@ public class ArriveListEachRebateRule extends RebateRuleBase{
          List<ActActivityProductRuleDTO> productRuleList = this.getProductRuleList();
         //购买数
         int buyCount = Integer.valueOf(orderItemReq.getActNum());
-
+        //排序后计算
+        productRuleList.sort((ActActivityProductRuleDTO rul1, ActActivityProductRuleDTO rule2) -> rul1.getRuleAmount().compareTo(rule2.getRuleAmount()));
 
         for (ActActivityProductRuleDTO productRuleDTO : productRuleList) {
             //达量
@@ -29,10 +32,16 @@ public class ArriveListEachRebateRule extends RebateRuleBase{
             //返利金额
             Long returnMenoy = Long.valueOf(productRuleDTO.getPrice());
             if(buyCount-maxCount>=0){
+                ruleAmount = productRuleDTO.getPrice();
                 return String.valueOf(buyCount*returnMenoy);
             }
         }
 
         return "0";
+    }
+    @Override
+    public String getRewardPrice(){
+
+        return this.ruleAmount;
     }
 }

@@ -159,8 +159,17 @@ public class AccountBalanceDetail implements Serializable {
   	 */
 	@ApiModelProperty(value = "余额存入时的来源描述，用于查询、数据统计")
   	private String sourceDesc;
-  	
-  	
+
+
+
+	@ApiModelProperty(value = "产品ID")
+	private String productId;
+
+	/**
+	 * 余额存入时的来源描述，用于查询、数据统计
+	 */
+	@ApiModelProperty(value = "返利单价")
+	private String rewardPrice;
   	//属性 end
 	
     /** 字段名称枚举. */
@@ -227,6 +236,10 @@ public class AccountBalanceDetail implements Serializable {
 		
 		/** 和payment的付款流水号对应. */
 		paymentId("paymentId","PAYMENT_ID"),
+
+		productId("productId","PRODUCT_IDId"),
+
+		rewardPrice("rewardPrice","REWARD_PRICE"),
 		
 		/** 余额存入时的来源描述，用于查询、数据统计. */
 		sourceDesc("sourceDesc","SOURCE_DESC");

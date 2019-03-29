@@ -64,6 +64,8 @@ public class AccountServiceImplTest {
     public void queryAccountForPage(){
         QueryAccountForPageReq  req = new QueryAccountForPageReq();
         req.setAcctType("20");
+        req.setPageSize(1);
+        req.setPageNo(10);
         ResultVO<Page<QueryAccountForPageResp>> resultVO = accountService.queryAccountForPage(req);
         System.out.println(resultVO);
     }

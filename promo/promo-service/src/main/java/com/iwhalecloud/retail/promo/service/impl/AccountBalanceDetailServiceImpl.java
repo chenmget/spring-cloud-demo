@@ -3,19 +3,27 @@ package com.iwhalecloud.retail.promo.service.impl;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.AccountBalanceDetailDTO;
+import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailAllReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailForPageReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryAccountIncomeDetailReq;
+import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceDetail;
+import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
 import com.iwhalecloud.retail.system.service.UserService;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +50,14 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
     @Reference
     private MerchantService merchantService;
+
+    @Reference
+    private ProductService productService;
+
+    @Reference
+    private MarketingActivityService marketingActivityService;
+
+
 
     @Override
     public String addAccountBalanceDetail(AccountBalanceDetailDTO accountBalanceDetailDTO) {
@@ -79,6 +95,19 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                         queryAccountBalanceDetailAllResp.setSupplierName(supplier.getResultData().getMerchantName());
                     }
                 }
+                //产品
+                String productId = queryAccountBalanceDetailAllResp.getProductId();
+                if(StringUtils.isNotEmpty(productId)){
+                    ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                    ResultVO<ProductResp>  respResultVO = productService.getProduct(productGetByIdReq);
+                    if(respResultVO!=null&&respResultVO.isSuccess()&&respResultVO.getResultData()!=null){
+                        queryAccountBalanceDetailAllResp.setProductName(respResultVO.getResultData().getProductName());
+                        queryAccountBalanceDetailAllResp.setSpecName(respResultVO.getResultData().getSpecName());
+                        queryAccountBalanceDetailAllResp.setProductSn(respResultVO.getResultData().getSn());
+                        queryAccountBalanceDetailAllResp.setUnitType(respResultVO.getResultData().getUnitType());
+
+                    }
+                }
 
             }
         }
@@ -88,6 +117,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
     }
     private void initQueryAccountBalanceDetailAll(QueryAccountBalanceDetailAllReq req){
         List<String> supplierIdList = new ArrayList<String>();
+        List<String> actIdList = new ArrayList<String>();
         //供应商名称
         String supplierName = req.getSupplierName();
         //供应商账号:登录账户
@@ -122,7 +152,19 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
         //活动的处理
         String actName = req.getActName();
         if(StringUtils.isNotEmpty(actName)){
-
+            MarketingActivityListReq activityListReq = new MarketingActivityListReq();
+            activityListReq.setActivityName(actName);
+            //只查询返利活动
+            activityListReq.setActivityType(PromoConst.ACTIVITYTYPE.REBATE.getCode());
+            activityListReq.setPageNo(1);
+            activityListReq.setPageSize(Integer.MAX_VALUE);
+            ResultVO<Page<MarketingActivityListResp>> page = marketingActivityService.listMarketingActivity(activityListReq);
+            if(page!=null&&page.getResultData()!=null&&page.getResultData().getRecords()!=null){
+                List<MarketingActivityListResp> actList = page.getResultData().getRecords();
+                for (MarketingActivityListResp marketingActivityListResp : actList) {
+                    actIdList.add(marketingActivityListResp.getId());
+                }
+            }
         }
 
     }

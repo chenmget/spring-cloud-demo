@@ -1594,4 +1594,16 @@ public class GoodsServiceImpl implements GoodsService {
         return ResultVO.success(merchantDTO);
     }
 
+    @Override
+    public ResultVO<Boolean> updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req) {
+        log.info("GoodsServiceImpl.updateGoodsActTypeByGoodsIdList req={}", JSON.toJSON(req));
+        boolean updateFlag = false;
+        if (CollectionUtils.isNotEmpty(req.getGoodsIds())) {
+            int updateNum = goodsManager.updateGoodsActTypeByGoodsIdList(req);
+            updateFlag = updateNum > 0;
+        }
+        log.info("GoodsServiceImpl.updateGoodsActTypeByGoodsIdList req={}", updateFlag);
+        return ResultVO.success(updateFlag);
+    }
+
 }

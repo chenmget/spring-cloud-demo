@@ -22,13 +22,6 @@ public interface ProductService {
      */
     ResultVO<ProductResp> getProduct(ProductGetByIdReq req);
 
-    /**
-     * 根据产品编码获取产品对象
-     * @param sn
-     * @return
-     */
-    ResultVO<ProductResp> getProductBySn(String sn);
-
 
     /**
      * 添加产品
@@ -37,6 +30,13 @@ public interface ProductService {
      * @throws ProductException
      */
     public ResultVO<Integer> addProduct (ProductAddReq req) throws ProductException;
+
+    /**
+     * 根据产品编码获取产品对象
+     * @param sn
+     * @return
+     */
+    ResultVO<ProductResp> getProductBySn(String sn);
 
     /**
      * 添加产品-中台
@@ -52,6 +52,13 @@ public interface ProductService {
      * @return
      */
     public ResultVO<Integer> deleteProdProduct(PrdoProductDeleteReq req);
+
+    /**
+     * 根据productId删除
+     * @param req
+     * @return
+     */
+    public ResultVO<Integer> batchDeleteProdProduct(List<PrdoProductDeleteReq> req);
 
     /**
      * 根据productId软删除

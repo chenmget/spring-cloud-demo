@@ -64,8 +64,6 @@
   
   <select id="getUerRoleForView" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq">
-         
-	   #1省级管理员，2地市管理员，3零售商，4供应商，5厂商 
 	  select b.lan_id regionId,b.rel_code relCode,a.user_id userId,(
 	 case when a.role_id in ('1087891202715070466','1087891300077449217') then '1' 	
 	 when a.role_id in ('10000002') then '2' 	

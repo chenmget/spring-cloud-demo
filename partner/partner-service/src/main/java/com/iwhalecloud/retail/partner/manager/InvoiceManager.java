@@ -106,7 +106,10 @@ public class InvoiceManager {
             hasParam = true;
             queryWrapper.eq(Invoice.FieldNames.invoiceType.getTableFieldName(), req.getInvoiceType());
         }
-
+        if(!StringUtils.isEmpty(req.getVatInvoiceStatus())){
+            hasParam = true;
+            queryWrapper.eq(Invoice.FieldNames.vatInvoiceStatus.getTableFieldName(), req.getVatInvoiceStatus());
+        }
 
         List<Invoice> invoiceList = Lists.newArrayList();
         if (!hasParam) {

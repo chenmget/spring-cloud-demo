@@ -136,7 +136,7 @@ public class SystemController {
             @RequestParam(value = "platform") String platform
     ){
         ResultVO listMenuResp = new ResultVO();
-        ResultVO list = menuService.listMenu(platform);
+        ResultVO list = menuService.listMenu(platform, "");
         listMenuResp.setResultCode(list.getResultCode());
         listMenuResp.setResultMsg(list.getResultMsg());
         listMenuResp.setResultData(list.getResultData());
@@ -277,7 +277,8 @@ public class SystemController {
     @GetMapping(value = "/listRoleMenuByRoleId")
     public ResultVO listRoleMenuByRoleId(
             @RequestParam(value = "roleId", required = false) String roleId,
-            @RequestParam(value = "platform", required = false) String platform
+            @RequestParam(value = "platform", required = false) String platform,
+            @RequestParam(value = "menuName", required = false) String menuName
     ){
         ResultVO listRoleResp = new ResultVO();
         ResultVO roleMenuResult = roleMenuService.listRoleMenuByRoleId(roleId);
@@ -287,7 +288,7 @@ public class SystemController {
             for(RoleMenuDTO roleMenuDTO : roleMenuDTOs){
                 hashMap.put(roleMenuDTO.getMenuId(),roleMenuDTO.getId());
             }
-            ResultVO menuDTOResult = menuService.listMenu(platform);
+            ResultVO menuDTOResult = menuService.listMenu(platform, menuName);
             if(menuDTOResult.isSuccess()){
                 List<MenuDTO> menuDTOS = (List<MenuDTO>) menuDTOResult.getResultData();
                 List<RoleMenuResp> roleMenuResps = new ArrayList<>();

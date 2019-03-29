@@ -86,6 +86,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
             }
             list.add(orderItemReq);
         }
+
         for (String key : orderItemMap.keySet()) {
             List<AccountBalanceCalculationOrderItemReq> itemList = orderItemMap.get(key);
             InitCreateAccountBalanceReq initReq = new InitCreateAccountBalanceReq();
@@ -181,6 +182,8 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
                 detail.setOrderItemId(calculationOrderItemResp.getOrderItemId());
                 //付款流水号:不填
                 detail.setPaymentId("");
+                detail.setOrderId(orderItemReq.getOrderId());
+                detail.setProductId(orderItemReq.getProductId());
 
                 String operIncomeId = accountBalanceDetailService.addAccountBalanceDetail(detail);
 
@@ -304,6 +307,8 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         resp.setOrderItemId(itemReq.getOrderItemId());
         //入账金额
         resp.setAmount(rebateRuleBase.calculation());
+        //返利单价
+        resp.setRewardPrice(rebateRuleBase.getRewardPrice());
         //账户可用余额
         Long amount = accountBalance.getAmount();
         String balance = String.valueOf(amount + Long.valueOf(resp.getAmount()));
@@ -319,6 +324,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         if (StringUtils.isEmpty(deductionScale)) {
             throw new BusinessException("活动返利款抵扣比例配置为空");
         }
+        //使用上限
         accountBalance.setCycleUpper(Long.valueOf(balance) * Long.valueOf(deductionScale) / 10000);
         return resp;
 

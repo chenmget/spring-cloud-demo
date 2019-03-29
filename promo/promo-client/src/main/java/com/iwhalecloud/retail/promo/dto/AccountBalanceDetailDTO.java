@@ -150,6 +150,15 @@ public class AccountBalanceDetailDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "余额存入时的来源描述，用于查询、数据统计")
   	private String sourceDesc;
+
+	@ApiModelProperty(value = "产品ID")
+	private String productId;
+
+	/**
+	 * 余额存入时的来源描述，用于查询、数据统计
+	 */
+	@ApiModelProperty(value = "返利单价")
+	private String rewardPrice;
 	
   	
 }

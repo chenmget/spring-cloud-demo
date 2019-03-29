@@ -39,8 +39,8 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public ResultVO listMenu(String platform) {
-        List<Menu> list = menuManager.listMenu(platform);
+    public ResultVO listMenu(String platform, String menuName) {
+        List<Menu> list = menuManager.listMenu(platform, menuName);
         List<MenuDTO> menuDTOList = new ArrayList<>();
         for(Menu m : list){
             MenuDTO dto = new MenuDTO();

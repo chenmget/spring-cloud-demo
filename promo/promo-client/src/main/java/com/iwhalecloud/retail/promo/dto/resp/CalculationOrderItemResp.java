@@ -25,4 +25,7 @@ public class CalculationOrderItemResp implements Serializable {
     @ApiModelProperty(value = "订单项ID")
     private String orderItemId;
 
+    @ApiModelProperty(value = "返利单价")
+    private String rewardPrice;
+
 }

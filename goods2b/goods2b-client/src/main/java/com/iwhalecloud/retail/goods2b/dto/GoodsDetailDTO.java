@@ -87,4 +87,9 @@ public class GoodsDetailDTO implements java.io.Serializable {
 	 */
 	private String isAdvanceSale;
 
+	/**
+	 * 前置补贴标识(1=前置补贴，0否)
+	 */
+	private String isSubsidy;
+
 }

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
@@ -13,6 +14,8 @@ import com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ActivityGoodsReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;
+import com.iwhalecloud.retail.goods2b.dto.req.GoodsQueryByProductIdsReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.GoodsQueryByProductIdsResp;
 import com.iwhalecloud.retail.goods2b.entity.*;
 import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
@@ -323,5 +326,21 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
         return ResultVO.success(activityGoodsDTOs);
     }
 
+    @Override
+    public ResultVO<GoodsQueryByProductIdsResp> queryGoodsIdsByProductIds(GoodsQueryByProductIdsReq req) {
+        log.info("GoodsProductRelServiceImpl.queryGoodsIdsByProductIds(), req={} ", JSON.toJSONString(req));
+        GoodsQueryByProductIdsResp resp = new GoodsQueryByProductIdsResp();
+        List<GoodsProductRel> goodsProductRelList = goodsProductRelManager.queryGoodsByProductIds(req.getProductIds());
+        log.info("GoodsProductRelServiceImpl.queryGoodsByProductIds(), goodsProductRelList={} ", JSON.toJSONString(goodsProductRelList));
+        if (!CollectionUtils.isEmpty(goodsProductRelList)) {
+            List<String> goodsIdList = Lists.newArrayList();
+            goodsProductRelList.forEach(item -> {
+                goodsIdList.add(item.getGoodsId());
+            });
+            resp.setGoodsIds(goodsIdList);
+        }
+        log.info("GoodsProductRelServiceImpl.queryGoodsIdsByProductIds(), resp={} ", JSON.toJSONString(resp));
+        return ResultVO.success(resp);
+    }
 
 }

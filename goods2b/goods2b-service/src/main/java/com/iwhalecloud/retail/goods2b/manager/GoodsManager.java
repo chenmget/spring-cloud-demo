@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq;
+import com.iwhalecloud.retail.goods2b.dto.req.GoodsUpdateActTypeByGoodsIdsReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp;
 import com.iwhalecloud.retail.goods2b.entity.Goods;
@@ -98,5 +99,18 @@ public class GoodsManager{
 
     public List<String> listSupplierGroundId(String productBaseId) {
         return goodsMapper.listSupplierGroundId(productBaseId);
+    }
+
+    public int updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req){
+        UpdateWrapper<Goods> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("GOODS_ID",req.getGoodsIds());
+        Goods goods = new Goods();
+        if(null != req.getIsAdvanceSale()){
+            goods.setIsAdvanceSale(req.getIsAdvanceSale());
+        }
+        if(null != req.getIsSubsidy()){
+            goods.setIsSubsidy(req.getIsSubsidy());
+        }
+        return goodsMapper.update(goods, updateWrapper);
     }
 }

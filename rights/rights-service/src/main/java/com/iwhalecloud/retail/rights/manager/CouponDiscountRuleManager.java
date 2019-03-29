@@ -108,4 +108,55 @@ public class CouponDiscountRuleManager{
         CouponDiscountRule discountRule = couponDiscountRuleMapper.selectOne(queryWrapper);
         return discountRule;
     }
+
+    /**
+     * 新增优惠券的抵扣规则
+     * @param couponDiscountRule
+     * @return
+     */
+    public Integer addCouponDiscountRule(CouponDiscountRule couponDiscountRule){
+        couponDiscountRule.setCreateDate(new Date());
+        couponDiscountRule.setStatusCd(RightsStatusConsts.RIGHTS_STATUS_UNOBTAIN);
+        return couponDiscountRuleMapper.insert(couponDiscountRule);
+    }
+
+    /**
+     * 删除混用该券的记录
+     * @param mktResId
+     * @return
+     */
+    public Integer deleteMixUseCoupon(String mktResId){
+        return couponDiscountRuleMapper.deleteMixUseCoupon(mktResId);
+    }
+
+    /**
+     * 新增混用该优惠券的记录
+     * @param mktResIds
+     * @param mixUseId
+     * @return
+     */
+    public Integer addMixUseCoupon(List<String> mktResIds,String mixUseId){
+        return couponDiscountRuleMapper.addMixUseCoupon(mktResIds,mixUseId);
+    }
+
+    /**
+     * 更新优惠券抵扣规则
+     * @param couponDiscountRule
+     * @return
+     */
+    public Integer updateCouponDiscountRuleById(CouponDiscountRule couponDiscountRule){
+        couponDiscountRule.setUpdateDate(new Date());
+        return couponDiscountRuleMapper.updateById(couponDiscountRule);
+    }
+
+    /**
+     * 根据优惠券id查询抵扣规则
+     * @param mktResId
+     * @return
+     */
+    public CouponDiscountRule selectOneCouponDiscountRule(String mktResId){
+        QueryWrapper<CouponDiscountRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(CouponDiscountRule.FieldNames.mktResId.getTableFieldName(),mktResId);
+        return couponDiscountRuleMapper.selectOne(queryWrapper);
+    }
 }

@@ -238,7 +238,7 @@
 
   <select id="getProductInfo" parameterType="com.iwhalecloud.retail.goods2b.dto.req.QueryProductInfoReqDTO"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
-    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name
+    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name,ppb.unit_type
     from prod_product t
     left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
     left join prod_brand pb on pb.brand_id = ppb.brand_id

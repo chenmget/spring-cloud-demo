@@ -4,7 +4,9 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.req.QueryProductInfoReqDTO;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
@@ -111,9 +113,9 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 //产品
                 String productId = queryAccountBalanceDetailAllResp.getProductId();
                 if(StringUtils.isNotEmpty(productId)){
-                    ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
-                    productGetByIdReq.setProductId(productId);
-                    ResultVO<ProductResp>  respResultVO = productService.getProduct(productGetByIdReq);
+                    QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();
+                    queryProductInfoReqDTO.setProductId("100000152");
+                    ResultVO<QueryProductInfoResqDTO>  respResultVO = productService.getProductInfo(queryProductInfoReqDTO);
                     if(respResultVO!=null&&respResultVO.isSuccess()&&respResultVO.getResultData()!=null){
                         queryAccountBalanceDetailAllResp.setProductName(respResultVO.getResultData().getProductName());
                         queryAccountBalanceDetailAllResp.setSpecName(respResultVO.getResultData().getSpecName());

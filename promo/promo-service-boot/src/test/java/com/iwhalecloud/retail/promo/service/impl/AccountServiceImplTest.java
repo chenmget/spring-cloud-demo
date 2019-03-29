@@ -117,7 +117,7 @@ public class AccountServiceImplTest {
         itemReq.setOrderId("1");
         itemReq.setProductId("123456");
         itemReq.setSupplierId("1111");
-        itemReq.setOrderItemId("12312");
+        itemReq.setOrderItemId("123121");
 
         orderItemList.add(itemReq);
         req.setOrderItemList(orderItemList);

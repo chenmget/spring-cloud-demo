@@ -208,6 +208,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             userGetReq.setLoginName(req.getLoginName());
             UserDTO userDTO = userService.getUser(userGetReq);
             req.setUserId(userDTO.getUserId());
+            req.setRelCode(userDTO.getRelCode());
         }
         Page<MerchantRulesDetailPageResp> merchantRulesDetailPageRespPage = merchantRulesManager.pageMerchantRules(req);
         List<MerchantRulesDetailPageResp> ruleList = merchantRulesDetailPageRespPage.getRecords();

@@ -397,19 +397,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         List<String> mktResInstNbrs = Lists.newArrayList(req.getMktResInstNbrs());
         resourceInstsGetReq.setMktResInstNbrs(mktResInstNbrs);
         resourceInstsGetReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        List<String> merchantTypes = null;
-        if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(req.getMerchantType())) {
-            // 厂商增加：只校验厂商库
-            merchantTypes = Lists.newArrayList(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
-        }else{
-            // 非厂商增加：只校验非厂商库
-            merchantTypes = Lists.newArrayList(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType(),
-                    PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType(),
-                    PartnerConst.MerchantTypeEnum.PARTNER.getType());
-        }
-        resourceInstsGetReq.setMerchantTypes(merchantTypes);
+        resourceInstsGetReq.setMerchantTypes(Lists.newArrayList(req.getMerchantType()));
+        resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
-        log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
+        log.info("ResourceInstServiceImpl.qryEnableInsertNbr resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
         if (CollectionUtils.isNotEmpty(inst)) {
             List<String> instNbrs = inst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
             existNbrs = mktResInstNbrs.stream().filter(t -> instNbrs.contains(t)).collect(Collectors.toList());

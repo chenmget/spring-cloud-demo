@@ -277,4 +277,38 @@ public class PromoConst {
             this.code = code;
         }
     }
+    /**
+     * 返利计算规则
+     */
+    public enum CALCULATIONRULE{
+        CALCULATION_RULE_10("10","单台返"),
+        CALCULATION_RULE_20("20","达X台，每台返Y元"),
+        CALCULATION_RULE_30("30","达X1台，每台返Y1元；达X2台，每台返Y2元……"),
+        CALCULATION_RULE_40("40","每达X台返Y元"),
+        CALCULATION_RULE_50("50","达X台返Y元");
+
+        private java.lang.String code;
+        private java.lang.String name;
+
+        CALCULATIONRULE(String code,String name){
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
 }

@@ -70,8 +70,7 @@ public class QueryAccountBalanceDetailAllResp implements Serializable {
 
     @ApiModelProperty(value = "返利单价")
     private String rewardPrice;
-    @ApiModelProperty(value = "支出描述")
-    private String payoutDesc;
+
 
 
 

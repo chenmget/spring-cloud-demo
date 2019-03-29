@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.AccountMapper">
+
+<sql id="allFields">
+    t.ACCT_ID 
+    ,t.ACCT_NAME 
+    ,t.ACCT_TYPE 
+    ,t.CUST_ID 
+    ,t.EFF_DATE 
+    ,t.EXP_DATE 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+</sql>
+    <select id = "queryAccountForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountForPageReq"
+            resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountForPageResp">
+        select
+        <include refid="allFields"></include>
+        from ACCOUNT t
+        where 1=1 and  t.STATUS_CD='1000' AND t.EFF_DATE&lt;=SYSDATE() AND t.EXP_DATE&gt;=SYSDATE()
+        <if test="req.acctType != null and req.acctType != ''">
+            and T.ACCT_TYPE = #{req.acctType}
+        </if>
+        <if test="req.acctId != null and req.acctId != ''">
+            and T.ACCT_ID = #{req.acctId}
+        </if>
+        <if test="req.custId != null and req.custId != ''">
+            and T.CUST_ID = #{req.custId}
+        </if>
+
+
+    </select>
+
+</mapper>

@@ -30,7 +30,7 @@
         ama.END_TIME
         FROM act_supplementary_record asr,act_marketing_activity ama
         WHERE 1 = 1 AND ama.ID = asr.MARKETING_ACTIVITY_ID
-        and asr.status <![CDATA[ <> ]]> ${@com.iwhalecloud.retail.promo.common.PromoConst$ActivitySupStatus@ACTIVITY_SUP_STATUS_CANCEL.getCode()}
+        and asr.status <![CDATA[ <> '-9' ]]>
         <if test="req.name!=null and req.name !=''">
             and ama.name LIKE concat('%',#{req.name},'%')
         </if>

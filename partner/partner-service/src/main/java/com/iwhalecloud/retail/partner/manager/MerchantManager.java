@@ -740,12 +740,13 @@ public class MerchantManager {
      * @param merchantListReq
      * @return
      */
-    public List<Merchant> listMerchantByLanCity(MerchantListReq merchantListReq){
-        List<String> cityList = merchantListReq.getCityList();
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.in(Merchant.FieldNames.city.getTableFieldName(),cityList);
+    public List<Merchant> listMerchantByLanCity(MerchantListLanCityReq merchantListReq){
+        QueryWrapper<Merchant> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in(Merchant.FieldNames.city.getTableFieldName(),merchantListReq.getCityList());
         queryWrapper.or();
-        queryWrapper.in(Merchant.FieldNames.lanId.getTableFieldName(),cityList);
+        queryWrapper.in(Merchant.FieldNames.lanId.getTableFieldName(),merchantListReq.getLanList());
+        //只查询出商家的id字段
+        queryWrapper.select(Merchant.FieldNames.merchantId.getTableFieldName());
         return merchantMapper.selectList(queryWrapper);
     }
 

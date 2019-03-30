@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.PromotionDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityProductReq;
+import com.iwhalecloud.retail.promo.dto.req.AuitMarketingActivityReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryMarketingActivityReq;
 import com.iwhalecloud.retail.promo.dto.resp.PreSubsidyProductRespDTO;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
@@ -281,6 +282,11 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
                 }
                 activityProductService.addPreSubsidyProduct(activityProductReq);
             }
+            AuitMarketingActivityReq auitMarketingActivityReq = new AuitMarketingActivityReq();
+            BeanUtils.copyProperties(addPromotionProductReqDTO,auitMarketingActivityReq);
+            auitMarketingActivityReq.setId(addPromotionProductReqDTO.getMarketingActivityId());
+            auitMarketingActivityReq.setName(marketingActivityDTOResultVO.getResultData().getName());
+            marketingActivityService.auitMarketingActivity(auitMarketingActivityReq);
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.info("PreSubsidyCouponServiceImpl addPreSubsidyProduct 前置补贴新增失败", e);

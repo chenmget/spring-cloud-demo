@@ -4,6 +4,8 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.req.MerChantGetProductReq;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
@@ -37,6 +39,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Autowired
     private Constant constant;
 
+    @Reference
+    private ProductService productService;
+
     @Override
     public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req) {
         log.info("AdminResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
@@ -46,6 +51,26 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Override
     public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req) {
         log.info("AdminResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
+        // 获取产品归属厂商
+        MerChantGetProductReq merChantGetProductReq = new MerChantGetProductReq();
+        merChantGetProductReq.setProductId(req.getMktResId());
+        ResultVO<String> productRespResultVO = this.productService.getMerchantByProduct(merChantGetProductReq);
+        log.info("AdminResourceInstServiceImpl.addResourceInst productService.getMerchantByProduct req={} resp={}", JSON.toJSONString(merChantGetProductReq), JSON.toJSONString(productRespResultVO));
+        if (!productRespResultVO.isSuccess() || StringUtils.isEmpty(productRespResultVO.getResultData())) {
+            return ResultVO.error(constant.getCannotGetMuanfacturerMsg());
+        }
+        // 获取厂商源仓库
+        String sourceStoreMerchantId = productRespResultVO.getResultData();
+        StoreGetStoreIdReq storeManuGetStoreIdReq = new StoreGetStoreIdReq();
+        storeManuGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        storeManuGetStoreIdReq.setMerchantId(sourceStoreMerchantId);
+        String manuResStoreId = resouceStoreService.getStoreId(storeManuGetStoreIdReq);
+        log.info("AdminResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={} resp={}", JSON.toJSONString(storeManuGetStoreIdReq), JSON.toJSONString(manuResStoreId));
+        if (StringUtils.isEmpty(manuResStoreId)) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+        req.setMktResStoreId(manuResStoreId);
+
         String merchantId = req.getMerchantId();
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
@@ -59,6 +84,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             req.setLanId(merchantDTO.getLanId());
             req.setRegionId(merchantDTO.getCity());
         }
+
         // 获取仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
@@ -69,7 +95,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
         req.setDestStoreId(mktResStoreId);
-        req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         req.setSourceType(merchantDTOResultVO.getResultData().getMerchantType());
         return resourceInstService.addResourceInst(req);
     }

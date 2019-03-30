@@ -52,6 +52,14 @@ public class ProductManager {
         return productMapper.insert(req);
     }
 
+    /**
+     * 根据产品ID获取产品对象
+     * @param productId 产品ID
+     * @return
+     */
+    public String getMerChantByProduct(String productId) {
+        return productMapper.getMerChantByProduct(productId);
+    }
 
     /**
      * 根据产品ID获取产品对象

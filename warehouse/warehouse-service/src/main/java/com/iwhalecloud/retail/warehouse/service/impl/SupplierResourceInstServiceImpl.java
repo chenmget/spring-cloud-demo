@@ -7,8 +7,11 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
+import com.iwhalecloud.retail.goods2b.dto.req.MerChantGetProductReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -104,15 +107,26 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 //    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO addResourceInst(ResourceInstAddReq req) {
         log.info("SupplierResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
-        // 通过串码找厂商仓库，找到跳出
-        for (String nbr : req.getMktResInstNbrs()) {
-            String storeId = resourceInstService.getMerchantStoreIdByNbr(nbr);
-            log.info("SupplierResourceInstServiceImpl.addResourceInst resourceInstService.getMerchantStoreIdByNbr storeId={}", storeId);
-            if (StringUtils.isNotBlank(storeId)) {
-                req.setMktResStoreId(storeId);
-                break;
-            }
+        // 获取产品归属厂商
+        MerChantGetProductReq merChantGetProductReq = new MerChantGetProductReq();
+        merChantGetProductReq.setProductId(req.getMktResId());
+        ResultVO<String> productRespResultVO = this.productService.getMerchantByProduct(merChantGetProductReq);
+        log.info("SupplierResourceInstServiceImpl.addResourceInst productService.getMerchantByProduct req={} resp={}", JSON.toJSONString(merChantGetProductReq), JSON.toJSONString(productRespResultVO));
+        if (!productRespResultVO.isSuccess() || StringUtils.isEmpty(productRespResultVO.getResultData())) {
+            return ResultVO.error(constant.getCannotGetMuanfacturerMsg());
         }
+        // 获取厂商源仓库
+        String sourceStoreMerchantId = productRespResultVO.getResultData();
+        StoreGetStoreIdReq storeManuGetStoreIdReq = new StoreGetStoreIdReq();
+        storeManuGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        storeManuGetStoreIdReq.setMerchantId(sourceStoreMerchantId);
+        String manuResStoreId = resouceStoreService.getStoreId(storeManuGetStoreIdReq);
+        log.info("SupplierResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={} resp={}", JSON.toJSONString(storeManuGetStoreIdReq), JSON.toJSONString(manuResStoreId));
+        if (StringUtils.isEmpty(manuResStoreId)) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+        req.setMktResStoreId(manuResStoreId);
+
         String merchantId = req.getMerchantId();
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(req.getMerchantId());
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {

@@ -28,7 +28,7 @@ import java.util.Map;
  * @date 2019年03月30日
  * @Description:权益定时任务服务接口
  */
-@Service
+@Service(parameters = {"autoReceiveCoupon.timeout","100000"})
 @Slf4j
 public class RightsJobServiceImpl implements RightsJobService{
 

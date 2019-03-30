@@ -78,8 +78,23 @@
     <if test="req.brandId != null and req.brandId != ''">
       and t.BRAND_ID = #{req.brandId}
     </if>
-    <if test="req.sortType != null">
-      order by ${req.sortType}
+    <if test="'1'.toString() ==req.sortType and null!=req.sortType">
+      order by CREATE_TIME DESC
+    </if>
+    <if test="'2'.toString() ==req.sortType and null!=req.sortType">
+      order by CREATE_TIME ASC
+    </if>
+    <if test="'3'.toString() ==req.sortType and null!=req.sortType">
+      order by PRICE DESC
+    </if>
+    <if test="'4'.toString() ==req.sortType and null!=req.sortType">
+      order by PRICE ASC
+    </if>
+    <if test="'5'.toString() ==req.sortType and null!=req.sortType">
+      order by BUY_COUNT DESC
+    </if>
+    <if test="'6'.toString() ==req.sortType and null!=req.sortType">
+      order by BUY_COUNT ASC
     </if>
   </select>
 

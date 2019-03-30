@@ -377,4 +377,35 @@ public class PromoConst {
             this.code = code;
         }
     }
+
+    /**
+     * 返利结算时间
+     */
+    public enum SETTLEMENT{
+        SETTLEMENT_10("10","订单支付"),
+        SETTLEMENT_20("20","卖家发货"),
+        SETTLEMENT_30("30","买家确认收货");
+        private java.lang.String code;
+        private java.lang.String name;
+
+        SETTLEMENT(String code,String name){
+            this.code = code;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
 }

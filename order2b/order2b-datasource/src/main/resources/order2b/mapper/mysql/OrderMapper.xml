@@ -264,4 +264,17 @@
             </if>
         </where>
     </select>
+
+    <select id="selectNotDeliveryOrderByIds" parameterType="list"
+            resultType="com.iwhalecloud.retail.order2b.model.OrderInfoModel">
+        select * from ord_order
+        WHERE 1 = 1
+        AND is_delete = 0
+        AND status IN (0,11,12,2,13,14,3,4)
+        AND order_id IN
+        <foreach collection="list" item="item" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+        order by create_time desc
+    </select>
 </mapper>

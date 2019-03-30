@@ -625,4 +625,27 @@ public class MerchantServiceImpl implements MerchantService {
         return ResultVO.success(merchantDTOS);
     }
 
+    /**
+     * 根据商家id 获取一个 商家 概要信息（字段不够用的话 用getMerchantDetail（）取）
+     *
+     * @param merchantId
+     * @return
+     */
+    @Override
+    public MerchantDTO getMerchantInfoById(String merchantId) {
+        log.info("MerchantServiceImpl.getMerchantById(), input: merchantId={} ", merchantId);
+        MerchantGetReq req = new MerchantGetReq();
+        req.setMerchantId(merchantId);
+        Merchant merchant = merchantManager.getMerchant(req);
+        MerchantDTO merchantDTO = new MerchantDTO();
+        if (merchant == null) {
+            merchantDTO = null;
+        } else {
+            BeanUtils.copyProperties(merchant, merchantDTO);
+        }
+        log.info("MerchantServiceImpl.getMerchantById(), output: merchantDTO={} ", JSON.toJSONString(merchantDTO));
+        return merchantDTO;
+    }
+
+
 }

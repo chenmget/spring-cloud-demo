@@ -3,11 +3,11 @@ package com.iwhalecloud.retail.workflow.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.dto.ResultCode;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
-import com.iwhalecloud.retail.workflow.dto.TaskItemDTO;
+import com.iwhalecloud.retail.workflow.dto.TaskDTO;
 import com.iwhalecloud.retail.workflow.dto.req.*;
 import com.iwhalecloud.retail.workflow.dto.resp.DealTaskDetailGetResp;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskDetailGetResp;
@@ -32,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 
 @Service
@@ -304,6 +305,44 @@ public class TaskServiceImpl implements TaskService {
     public ResultVO queryNextNodeRights(String nextNodeId,String taskId){
         log.info("TaskServiceImpl.queryNextNodeRights nextNodeId={}",nextNodeId);
         return taskManager.queryNextNodeRights(nextNodeId,taskId);
+    }
+
+    /**
+     * 获取待处理的任务
+     * @param formId 业务ID
+     * @return
+     */
+    @Override
+    public List<TaskDTO> getTaskByFormId(String formId) {
+        List<Task> taskList = taskManager.getTaskByFormId(formId);
+        List<TaskDTO> taskDTOList = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(taskList)) {
+            for (Task task:taskList) {
+                TaskDTO taskDTO = new TaskDTO();
+                BeanUtils.copyProperties(task,taskDTO);
+                taskDTOList.add(taskDTO);
+            }
+
+        }
+
+        return taskDTOList;
+    }
+
+    /**
+     * 获取任务
+     * @param taskId 任务ID
+     * @return
+     */
+    @Override
+    public TaskDTO getTaskById(String taskId) {
+        TaskDTO taskDTO = new TaskDTO();
+        Task task = taskManager.getTask(taskId);
+        if(Objects.nonNull(task)) {
+            BeanUtils.copyProperties(task,taskDTO);
+            return taskDTO;
+
+        }
+        return null;
     }
 
 }

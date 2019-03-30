@@ -7,28 +7,23 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.AdvanceActivityProductInfoReq;
-import com.iwhalecloud.retail.promo.dto.req.MarketingActivityAddReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
 import com.iwhalecloud.retail.promo.dto.resp.AdvanceActivityProductInfoResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
-import com.iwhalecloud.retail.promo.mapper.ActivityProductMapper;
-import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.promo.entity.MarketingActivity;
+import com.iwhalecloud.retail.promo.mapper.ActivityProductMapper;
 import com.iwhalecloud.retail.promo.mapper.MarketingActivityMapper;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import com.iwhalecloud.retail.system.entity.User;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.beans.beancontext.BeanContext;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -300,6 +295,25 @@ public class MarketingActivityManager{
             queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(), PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
         }
         queryWrapper.eq(MarketingActivity.FieldNames.activityType.getTableFieldName(), activityType);
+        return marketingActivityMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 查询发货时间临近的活动
+     */
+    public List<MarketingActivity> queryActivityOrderDeliveryClose(String earlyWarningDays){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(),PromoConst.UNDELETED);
+        queryWrapper.ge(MarketingActivity.FieldNames.deliverEndTime.getTableFieldName(),LocalDate.now());
+        // 若数据字典未查到提前预警天数则提前5天预警
+        if (StringUtils.isNotEmpty(earlyWarningDays)) {
+            queryWrapper.le(MarketingActivity.FieldNames.deliverEndTime.getTableFieldName(),LocalDate.now().plusDays(Long.valueOf(earlyWarningDays)));
+        } else {
+            queryWrapper.le(MarketingActivity.FieldNames.deliverEndTime.getTableFieldName(),LocalDate.now().plusDays(5L));
+
+        }
+
+
         return marketingActivityMapper.selectList(queryWrapper);
     }
 }

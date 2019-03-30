@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 
 @Component
@@ -44,8 +45,18 @@ public class HistoryPurchaseManager extends ServiceImpl<HistoryPurchaseMapper, H
     }
 
     public int updateHistroyPurchase(HistoryPurchase historyPurchase) {
-        int num = historyPurchaseMapper.updateHistroyPurchase(historyPurchase);
-        return num;
+        return historyPurchaseMapper.updateHistroyPurchase(historyPurchase);
+    }
+
+    /**
+     * 根据营销活动Id查询活动购买记录
+     * @return
+     */
+    public List<HistoryPurchase> queryHistoryPurchaseByMarketingActivityId(List<String> marketingActivityIds) {
+        QueryWrapper<HistoryPurchase> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(HistoryPurchase.FieldNames.isDeleted.getTableFieldName(), PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+        queryWrapper.in(HistoryPurchase.FieldNames.marketingActivityCode.getTableFieldName(), marketingActivityIds);
+        return  historyPurchaseMapper.selectList(queryWrapper);
     }
 
 }

@@ -51,4 +51,11 @@ public interface OrderMapper extends BaseMapper<Order> {
      */
      IPage<AdvanceOrderInfoModel> queryAdvanceOrderList(Page page, @Param("req")AdvanceOrderReq req);
 
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    List<OrderInfoModel> selectNotDeliveryOrderByIds(List<String> orderIds);
+
 }

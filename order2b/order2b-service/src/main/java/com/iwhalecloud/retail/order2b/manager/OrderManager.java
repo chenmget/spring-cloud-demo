@@ -155,4 +155,14 @@ public class OrderManager {
         return orderItemMapper.selectOrderItem(item);
     }
 
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    public List<OrderInfoModel> selectNotDeliveryOrderByIds(List<String> orderIds) {
+        return orderMapper.selectNotDeliveryOrderByIds(orderIds);
+
+    }
+
 }

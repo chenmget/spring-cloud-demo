@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
+import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -31,11 +33,17 @@ import com.iwhalecloud.retail.rights.service.CouponApplyObjectService;
 import com.iwhalecloud.retail.rights.service.CouponInstService;
 import com.iwhalecloud.retail.rights.service.MktResCouponService;
 import com.iwhalecloud.retail.rights.service.PreSubsidyCouponService;
+import com.iwhalecloud.retail.system.common.SysUserMessageConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.ConfigInfoDTO;
+import com.iwhalecloud.retail.system.dto.SysUserMessageDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.system.service.ConfigInfoService;
+import com.iwhalecloud.retail.system.service.SysUserMessageService;
 import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
+import com.iwhalecloud.retail.workflow.dto.TaskDTO;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
@@ -48,9 +56,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.naming.Context;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
 
 @Slf4j
 @Component("marketingActivityService")
@@ -73,6 +80,9 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     @Autowired
     private PromotionManager promotionManager;
+
+    @Autowired
+    private HistoryPurchaseManager historyPurchaseManager;
 
     @Autowired
     private ActivityRuleManager activityRuleManager;
@@ -103,6 +113,15 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     @Reference
     private CouponApplyObjectService couponApplyObjectService;
+
+    @Reference
+    private OrderSelectOpenService orderSelectOpenService;
+
+    @Reference
+    private SysUserMessageService sysUserMessageService;
+
+    @Reference
+    private ConfigInfoService configInfoService;
 
     @Autowired
     private Constant constant;
@@ -940,6 +959,80 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 }catch (Exception e){
                     log.info("MarketingActivityServiceImpl.addMarketingActivity 修改营销活动驳回审核失败");
                     e.printStackTrace();
+                }
+            }
+        }
+    }
+
+    private class ActivityContent implements Serializable {
+        public ActivityContent(Date deliverEndItme, String title, String content) {
+            this.deliverEndItme = deliverEndItme;
+            this.title = title;
+            this.content = content;
+        }
+        Date deliverEndItme;
+        String title;
+        String content;
+    }
+
+    /**
+     * 对活动发货时间截止前未发货的订单预警
+     * @return
+     */
+    @Override
+    public void notifyMerchantActivityOrderDelivery() {
+        // 从数据字典取提前预警天数
+        ConfigInfoDTO configInfoDTO = configInfoService.getConfigInfoById(SysUserMessageConst.DELIVER_END_TIME_NOTIFY_DAYS);
+        String earlyWarningDays = configInfoDTO.getCfValue();
+        // 查询发货时间临近的活动
+        List<MarketingActivity> marketingActivityList =  marketingActivityManager.queryActivityOrderDeliveryClose(earlyWarningDays);
+        if (CollectionUtils.isEmpty(marketingActivityList)) {
+            return;
+        }
+
+        // 活动ID和发货截止时间
+        Map<String,ActivityContent> activityIdAndDeliverEndTimeMap = new HashMap();
+        for (MarketingActivity marketingActivity : marketingActivityList) {
+            activityIdAndDeliverEndTimeMap.put(marketingActivity.getId(),new ActivityContent(marketingActivity.getDeliverEndTime(),marketingActivity.getName(),marketingActivity.getDescription()));
+        }
+
+        // 根据活动ID查询活动购买记录
+        List<HistoryPurchase> historyPurchaseList = historyPurchaseManager.queryHistoryPurchaseByMarketingActivityId(Lists.newArrayList(activityIdAndDeliverEndTimeMap.keySet()));
+        if (CollectionUtils.isEmpty(historyPurchaseList)) {
+            return;
+        }
+
+        // 查询未完成发货订单信息
+        List<String> orderIdList;
+        for (HistoryPurchase historyPurchase: historyPurchaseList) {
+            orderIdList = Lists.newArrayList();
+            orderIdList.add(historyPurchase.getOrderId());
+            List<OrderDTO> orderDTOList = orderSelectOpenService.selectNotDeliveryOrderByIds(orderIdList);
+
+            if (CollectionUtils.isEmpty(orderDTOList)) {
+                continue;
+            }
+
+            // 根据ordeId查询任务信息获取任务Id
+            for (OrderDTO orderDTO:orderDTOList) {
+                List<TaskDTO> taskDTOs = taskService.getTaskByFormId(orderDTO.getOrderId());
+                if (CollectionUtils.isEmpty(taskDTOs)){
+                    continue;
+                }
+                // 组装用户消息准备入库
+                for (TaskDTO taskDTO:taskDTOs) {
+                    SysUserMessageDTO sysUserMessageDTO = new SysUserMessageDTO();
+                    sysUserMessageDTO.setTaskId(taskDTO.getTaskId());
+                    sysUserMessageDTO.setEndTime(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).deliverEndItme);
+                    sysUserMessageDTO.setTitle(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).title + SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_TITLE);
+                    sysUserMessageDTO.setContent(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).content);
+                    if (!Objects.isNull(orderDTO.getMerchantId())) {
+                        MerchantDTO merchantDTO = merchantService.getMerchantInfoById(orderDTO.getMerchantId());
+                        if (!Objects.isNull(merchantDTO)) {
+                            sysUserMessageDTO.setUserId(merchantDTO.getUserId());
+                        }
+                    }
+                    sysUserMessageService.addSysUserMessage(sysUserMessageDTO);
                 }
             }
         }

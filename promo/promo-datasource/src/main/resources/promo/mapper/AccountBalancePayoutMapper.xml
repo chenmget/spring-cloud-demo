@@ -32,7 +32,7 @@
       INNER JOIN ACCOUNT_BALANCE_ITEM_PAYED c ON a.OPER_PAYOUT_ID = c.OPER_PAYOUT_ID
       INNER JOIN ACCOUNT_ITEM d ON c.ACCT_ITEM_ID = d.ACCT_ITEM_ID
       INNER JOIN account e on d.acct_id=e.ACCT_ID
-      where A.STATUS_CD='1000'
+      where A.STATUS_CD='1000' and e.STATUS_CD='1000' AND e.EFF_DATE&lt;=SYSDATE() AND e.EXP_DATE&gt;=SYSDATE()
         <if test="req.supplierIdList != null and req.supplierIdList.size > 0">
             and d.MERCHANT_ID in
             <foreach collection="req.supplierIdList" open="(" index="index" item="item" separator="," close=")">

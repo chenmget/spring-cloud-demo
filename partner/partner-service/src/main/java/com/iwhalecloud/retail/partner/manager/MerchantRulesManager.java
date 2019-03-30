@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import com.iwhalecloud.retail.partner.mapper.MerchantRulesMapper;
 import org.apache.commons.lang.StringUtils;
@@ -119,6 +120,11 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
         return merchantRulesDTOList;
     }
 
+    public Page<MerchantRulesDetailPageResp> pageMerchantRules(MerchantRulesDetailPageReq req) {
+        Page<MerchantRulesDetailPageResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+        return merchantRulesMapper.pageMerchantRules(page, req);
+    }
+
     /**
      * 根据条件查询商家权限规则
      * @param req
@@ -126,40 +132,6 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
      */
     public List<MerchantRulesDTO> queryMerchantRuleByCondition(MerchantRuleGetReq req){
         return merchantRulesMapper.queryMerchantRuleByCondition(req);
-    }
-
-    /**
-     * 根据条件 获取 商家 权限规则信息
-     * @param req
-     * @return
-     */
-    public Page<MerchantRulesDetailDTO> pageMerchantRules(MerchantRulesDetailPageReq req) {
-        QueryWrapper<MerchantRules> queryWrapper = new QueryWrapper<MerchantRules>();
-        if(!StringUtils.isEmpty(req.getMerchantId())){
-            queryWrapper.eq(MerchantRules.FieldNames.merchantId.getTableFieldName(), req.getMerchantId());
-        }
-        if(!StringUtils.isEmpty(req.getRuleType())){
-            queryWrapper.eq(MerchantRules.FieldNames.ruleType.getTableFieldName(), req.getRuleType());
-        }
-        if(!StringUtils.isEmpty(req.getTargetType())){
-            queryWrapper.eq(MerchantRules.FieldNames.targetType.getTableFieldName(), req.getTargetType());
-        }
-        if(!StringUtils.isEmpty(req.getTargetId())){
-            queryWrapper.eq(MerchantRules.FieldNames.targetId.getTableFieldName(), req.getTargetId());
-        }
-        Page<MerchantRules> page = new Page<>(req.getPageNo(),req.getPageSize());
-        Page<MerchantRules> merchantRulesDTOPage = (Page)merchantRulesMapper.selectPage(page, queryWrapper);
-        Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = new Page();
-        List<MerchantRulesDetailDTO> merchantRulesDetailDTOS = new ArrayList<>();
-        List<MerchantRules> merchantRules = merchantRulesDTOPage.getRecords();
-        BeanUtils.copyProperties(merchantRulesDTOPage,merchantRulesDetailDTOPage);
-        for (int i = 0; i < merchantRules.size(); i++) {
-            MerchantRulesDetailDTO merchantRulesDetailDTO = new MerchantRulesDetailDTO();
-            BeanUtils.copyProperties(merchantRules.get(i),merchantRulesDetailDTO);
-            merchantRulesDetailDTOS.add(merchantRulesDetailDTO);
-        }
-        merchantRulesDetailDTOPage.setRecords(merchantRulesDetailDTOS);
-        return merchantRulesDetailDTOPage;
     }
 
 }

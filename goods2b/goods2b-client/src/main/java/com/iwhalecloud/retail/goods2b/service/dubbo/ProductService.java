@@ -29,6 +29,13 @@ public interface ProductService {
      */
     ResultVO<ProductResp> getProduct(ProductGetByIdReq req);
 
+    /**
+     * 根据产品编码获取产品对象
+     * @param sn
+     * @return
+     */
+    ResultVO<ProductResp> getProductBySn(String sn);
+
 
     /**
      * 添加产品

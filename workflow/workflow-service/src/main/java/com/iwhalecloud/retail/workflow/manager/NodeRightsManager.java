@@ -21,6 +21,8 @@ import com.iwhalecloud.retail.workflow.service.ServiceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -162,6 +164,9 @@ public class NodeRightsManager{
      * @param nodeRightsDTO
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_NODE_RIGHTS, key = "#nodeRightsDTO.rightsId")
+    })
     public Boolean editNodeRights(NodeRightsDTO nodeRightsDTO){
         NodeRights nodeRights = new NodeRights();
         BeanUtils.copyProperties(nodeRightsDTO, nodeRights);
@@ -175,6 +180,9 @@ public class NodeRightsManager{
      * @param nodeRightsId
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_NODE_RIGHTS, key = "#nodeRightsId")
+    })
     public Boolean delNodeRights(String nodeRightsId){
         return nodeRightsMapper.deleteById(nodeRightsId) > 0;
     }

@@ -67,6 +67,11 @@ public class ProductServiceImpl implements ProductService {
     private TagTelManager tagTelManager;
 
     @Override
+    public ResultVO<String> getMerchantByProduct(MerChantGetProductReq req) {
+        return ResultVO.success(productManager.getMerChantByProduct(req.getProductId()));
+    }
+
+    @Override
     public ResultVO<ProductResp> getProduct(ProductGetByIdReq req) {
         return ResultVO.success(productManager.getProduct(req.getProductId()));
     }
@@ -247,8 +252,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResultVO<Page<ProductDTO>> selectProduct(ProductGetReq req){
         Page<ProductDTO> page = productManager.selectProduct(req);
-        if (null != page && page.getRecords() != null && !page.getRecords().isEmpty()) {
-            for (ProductDTO product : page.getRecords()) {
+        List<ProductDTO> list = page.getRecords();
+        if (!CollectionUtils.isEmpty(list)) {
+            for (ProductDTO product : list) {
                 String productId = product.getProductId();
                 // 查询默认图片
                 String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
@@ -257,6 +263,7 @@ public class ProductServiceImpl implements ProductService {
                 testReflect(product);
             }
         }
+        log.info("ProductServiceImpl.selectProduct req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         return ResultVO.success(page);
     }
 
@@ -317,7 +324,8 @@ public class ProductServiceImpl implements ProductService {
             }
             resp.setDefaultImages(url.toString());
         }
-        List test = page.getRecords();
+        page.setRecords(respList);
+        log.info("ProductServiceImpl.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respList));
         return ResultVO.success(page);
     }
 

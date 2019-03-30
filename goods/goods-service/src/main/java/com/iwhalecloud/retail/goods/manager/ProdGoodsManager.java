@@ -73,6 +73,14 @@ public class ProdGoodsManager{
 
     public Page<ProdGoodsDTO> queryGoodsForPage(ProdGoodsQueryReq req) {
         Page<ProdGoodsDTO> page = new Page<>(req.getPageNo(), req.getPageSize());
+        String sortType = req.getSortType();
+        if(StringUtils.isNotEmpty(sortType)){
+            for(GoodsConst.SortTypeEnum m:GoodsConst.SortTypeEnum.values()){
+                if(m.getValue().equals(req.getSortType())){
+                    req.setSortType(m.getCode().toString());
+                }
+            }
+        }
         Page<ProdGoodsDTO> prodGoodsPage = prodGoodsMapper.queryGoodsForPage(page, req);
         return prodGoodsPage;
     }

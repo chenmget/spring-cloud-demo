@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class Order2BServiceApplication {
 
 	public static void main(String[] args) {
+
 		SpringApplication.run(Order2BServiceApplication.class, args);
 	}
 }

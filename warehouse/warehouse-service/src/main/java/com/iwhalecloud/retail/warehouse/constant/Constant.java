@@ -37,6 +37,11 @@ public class Constant {
     private String noStoreMsg;
 
     /**
+     * 获取不到产品归属厂商
+     */
+    private String cannotGetMuanfacturerMsg;
+
+    /**
      * 获取不到仓库
      */
     private String cannotGetStoreMsg;

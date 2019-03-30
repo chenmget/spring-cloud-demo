@@ -98,6 +98,7 @@ public class GoodsB2BController extends GoodsBaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/addGoods")
+    @UserLoginToken
     public ResultVO<GoodsAddResp> addGoods(@RequestBody GoodsAddReq req) throws Exception {
         log.info("GoodsB2BController addGoods req={} ", JSON.toJSON(req));
         UserDTO userDTO = UserContext.getUser();
@@ -150,6 +151,7 @@ public class GoodsB2BController extends GoodsBaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/addGoodsByZT")
+    @UserLoginToken
     public ResultVO<GoodsAddResp> addGoodsByZT(@RequestBody GoodsAddByZTReq req) throws GoodsRulesException {
         log.info("GoodsB2BController addGoods req={} ", JSON.toJSON(req));
         String goodsId = req.getGoodsId();
@@ -540,6 +542,7 @@ public class GoodsB2BController extends GoodsBaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/updateAuditState")
+    @UserLoginToken
     public ResultVO<GoodsOperateResp> updateAuditState(@RequestBody UpdateAuditStateReq req){
         log.info("GoodsB2BController updateAuditState req={}", req);
         GoodsAuditStateReq req1 = new GoodsAuditStateReq();

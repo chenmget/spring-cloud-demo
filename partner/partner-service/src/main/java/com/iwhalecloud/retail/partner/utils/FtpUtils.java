@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.partner.utils;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.model.FtpDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
@@ -20,6 +21,7 @@ import java.util.Objects;
  * @author xu.qinyuan@ztesoft.com
  * @date 2019年03月7日
  */
+@Slf4j
 public class FtpUtils {
 
     private static String LOCAL_CHARSET = "GBK";
@@ -55,36 +57,55 @@ public class FtpUtils {
      * @throws ParseException
      * @throws IOException
      */
-    public static ResultVO<List<String>> readFile(FtpDTO ftpDTO) throws ParseException, IOException {
+    public static ResultVO<List<String>> readFile(FtpDTO ftpDTO){
         List<String> result = new ArrayList<>();
-        String path = ftpDTO.getFilePath();
-        FTPClient ftpClient = connectServer(ftpDTO);
-        if (path != null && path.length() > 0) {
-            // 跳转到指定目录
-            ftpClient.changeWorkingDirectory(path);
-        }
         InputStream ins = null;
-        // 从服务器上读取指定的文件
-        // 开启服务器对UTF-8的支持，如果服务器支持就用UTF-8编码，否则就使用本地编码（GBK）.
-        if (FTPReply.isPositiveCompletion(ftpClient.sendCommand("OPTS UTF8", "ON"))) {
-            LOCAL_CHARSET = "UTF-8";
+        BufferedReader reader = null;
+        try {
+            String path = ftpDTO.getFilePath();
+            FTPClient ftpClient = connectServer(ftpDTO);
+            if (path != null && path.length() > 0) {
+                // 跳转到指定目录
+                ftpClient.changeWorkingDirectory(path);
+            }
+            // 从服务器上读取指定的文件
+            // 开启服务器对UTF-8的支持，如果服务器支持就用UTF-8编码，否则就使用本地编码（GBK）.
+            if (FTPReply.isPositiveCompletion(ftpClient.sendCommand("OPTS UTF8", "ON"))) {
+                LOCAL_CHARSET = "UTF-8";
+            }
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setControlEncoding(SERVER_CHARSET);
+            ins = ftpClient.retrieveFileStream(ftpDTO.getFileName());
+            if (Objects.isNull(ins)) {
+                return ResultVO.error("文件不存在");
+            }
+            reader = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                result.add(line);
+            }
+            // 主动调用一次getReply()把接下来的226消费掉. 这样做是可以解决这个返回null问题
+            ftpClient.getReply();
+            closeServer(ftpClient);
+        } catch (Exception e) {
+            log.error("error:", e);
+        } finally {
+            try {
+                if (null != reader){
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (null != ins){
+                    ins.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        ftpClient.enterLocalPassiveMode();
-        ftpClient.setControlEncoding(SERVER_CHARSET);
-        ins = ftpClient.retrieveFileStream(ftpDTO.getFileName());
-        if (Objects.isNull(ins)) {
-            return ResultVO.error("文件不存在");
-        }
-        BufferedReader reader = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            result.add(line);
-        }
-        reader.close();
-        ins.close();
-        // 主动调用一次getReply()把接下来的226消费掉. 这样做是可以解决这个返回null问题
-        ftpClient.getReply();
-        closeServer(ftpClient);
+
         return ResultVO.success(result);
     }
 
@@ -118,7 +139,7 @@ public class FtpUtils {
                 System.out.println(resultVO.getResultMsg());
             }
             System.out.println(resultVO.getResultData());
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

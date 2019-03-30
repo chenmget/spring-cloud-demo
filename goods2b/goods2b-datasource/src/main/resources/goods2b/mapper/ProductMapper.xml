@@ -226,6 +226,13 @@
     </if>
   </select>
 
+  <!--根据产品ID产归属商家-->
+  <select id="getMerChantByProduct" parameterType="java.lang.String" resultType="java.lang.String">
+    select t.MANUFACTURER_ID
+    from prod_product t
+    where t.product_id = #{productId}
+  </select>
+
   <select id="getProductCountByManufId" parameterType="java.lang.String" resultType="int">
     select count(1) from prod_product
     <where>

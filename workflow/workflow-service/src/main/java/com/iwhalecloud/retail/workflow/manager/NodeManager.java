@@ -3,10 +3,14 @@ package com.iwhalecloud.retail.workflow.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.NodeDTO;
 import com.iwhalecloud.retail.workflow.entity.Node;
 import com.iwhalecloud.retail.workflow.mapper.NodeMapper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -39,6 +43,9 @@ public class NodeManager{
      * @param nodeDTO
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_NODE, key = "#nodeDTO.nodeId")
+    })
     public Boolean editNode(NodeDTO nodeDTO){
         Node node = new Node();
         BeanUtils.copyProperties(nodeDTO, node);
@@ -52,6 +59,9 @@ public class NodeManager{
      * @param nodeId
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_NODE, key = "#nodeId")
+    })
     public Boolean delNode(String nodeId){
         return nodeMapper.deleteById(nodeId) > 0;
     }
@@ -76,6 +86,7 @@ public class NodeManager{
      * @param nodeId
      * @return
      */
+    @Cacheable(value = WorkFlowConst.CACHE_NAME_WF_NODE, key = "#nodeId")
     public Node getNode(String nodeId) {
         return nodeMapper.selectById(nodeId);
     }

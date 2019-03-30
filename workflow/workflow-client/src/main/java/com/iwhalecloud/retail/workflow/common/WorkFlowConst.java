@@ -6,6 +6,22 @@ package com.iwhalecloud.retail.workflow.common;
  */
 public class WorkFlowConst {
 
+    // 表对应的缓存名称，1、表名的缓存名称：表示单条的缓存的；2、非表名的缓存: 表示存非单条的数据（一般是有父子级关系的列表）
+    // 环节表wf_node使用的缓存名称
+    public static final String CACHE_NAME_WF_NODE = "wf_node";
+
+    // 环节权限表wf_node_rights使用的缓存名称
+    public static final String CACHE_NAME_WF_NODE_RIGHTS = "wf_node_rights";
+
+    // 路由表wf_route使用的缓存名称
+    public static final String CACHE_NAME_WF_ROUTE = "wf_route";
+
+    // 路由服务表wf_route_service使用的缓存名称
+    public static final String CACHE_NAME_WF_ROUTE_SERVICE = "wf_route_service";
+
+    // 服务表wf_service使用的缓存名称
+    public static final String CACHE_NAME_WF_SERVICE = "wf_service";
+
     /**
      * 关联类型
      */

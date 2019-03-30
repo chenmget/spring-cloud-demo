@@ -87,6 +87,7 @@ public class GoodsProductBaseB2BController {
 
         if (!UserContext.isUserLogin()) {
             // 没有登陆，直接返回不能查到数据
+            log.info("GoodsProductBaseB2BController 用户未登陆");
             return ResultVO.success(new Page<ProductBaseGetResp>());
         }
 

@@ -96,10 +96,4 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst>{
      */
     String getPrimaryKey();
 
-    /**
-     * 根据串码查询厂商仓库
-     * @param nbr
-     * @return
-     */
-    String getMerchantStoreIdByNbr(String nbr);
 }

@@ -78,12 +78,6 @@
         <if test="null!=req.sourceType and ''!=req.sourceType">
             and t.source_type = #{req.sourceType}
         </if>
-        <if test="null!=req.mktResStoreIds and req.mktResStoreIds.size()>0">
-            and t.mkt_res_store_id in
-            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
-                #{item}
-            </foreach>
-        </if>
         <if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">
             and t.mkt_res_inst_nbr = #{req.mktResInstNbr}
         </if>
@@ -111,6 +105,10 @@
                 #{item}
             </foreach>
         </if>
+        and t.mkt_res_store_id in
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
+            #{item}
+        </foreach>
         order by create_date desc
     </select>
 
@@ -264,9 +262,5 @@
 
     <select id="getPrimaryKey" resultType="java.lang.String">
         select seq_retail_all_tables.nextval
-    </select>
-
-    <select id="getMerchantStoreIdByNbr" parameterType="java.lang.String"  resultType="java.lang.String">
-        select MKT_RES_STORE_ID from mkt_res_inst WHERE  MKT_RES_INST_NBR = #{nbr} and merchant_type = '1'
     </select>
 </mapper>

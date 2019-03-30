@@ -39,7 +39,7 @@ public class ResouceEventManager{
             resouceEvent.setAcceptDate(now);
             resouceEvent.setStatusCd(ResourceConst.EVENTSTATE.PROCESSING.getCode());
             resouceEvent.setMktResEventNbr(resourceInstMapper.getPrimaryKey());
-            resouceEvent.setUpdateDate(new Date());
+            resouceEvent.setUpdateDate(now);
             resouceEventMapper.insert(resouceEvent);
         } else {
             QueryWrapper queryWrapper = new QueryWrapper();

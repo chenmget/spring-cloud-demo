@@ -26,7 +26,12 @@ public class PayClient {
     private static String payUrl = "http://202.103.124.16:1081/gateway.do";
     public static String busiChannel = "0001";
     public static String accountId = "1001199999";
-    public static String key = "1234567890XXXXXTESTXXX";
+
+    /**
+     * [1550525]【安全漏洞修复】明文密码、日志记录、硬编码、密钥明文存储、敏感信息泄露等
+     * 1234567890XXXXXTESTXXX
+     */
+    public static String key = "";
     public static String notifyUrl = "http://10.45.108.41:8083/api/pay/notifyUrl";
 
 //    private static String payUrl="http://134.175.22.23:1081/gateway.do";

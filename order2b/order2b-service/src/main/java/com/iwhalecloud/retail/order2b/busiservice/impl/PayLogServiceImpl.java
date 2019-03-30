@@ -38,7 +38,6 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     @Autowired
     private PayLogManager payLogManager;
 
-    @Autowired
     private BestpayCertificate bestpayCertificate;
 
     @Autowired

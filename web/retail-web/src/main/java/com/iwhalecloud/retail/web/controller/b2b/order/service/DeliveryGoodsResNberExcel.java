@@ -141,17 +141,23 @@ public class DeliveryGoodsResNberExcel extends ReadExcel<String> {
             response.setHeader("Content-Disposition", "attachment;filename=" + URLEncoder.encode(fileName+".xls", "UTF-8"));
 
             workbook.write(response.getOutputStream());
-            response.getOutputStream().close();
+
         } catch (IOException e) {
             e.printStackTrace();
             ResultVO resultVO=new ResultVO();
             resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             resultVO.setResultMsg("导出异常");
             outputResponse(response,resultVO);
+        } finally {
+            try {
+                response.getOutputStream().close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
-    public  void outputResponse(HttpServletResponse response,ResultVO resultVO) {
+    public void outputResponse(HttpServletResponse response,ResultVO resultVO) {
         response.setCharacterEncoding("UTF-8");
         response.setContentType("application/json; charset=utf-8");
         PrintWriter out = null;
@@ -161,7 +167,7 @@ public class DeliveryGoodsResNberExcel extends ReadExcel<String> {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (out != null) {
+            if (null != out) {
                 out.close();
             }
         }

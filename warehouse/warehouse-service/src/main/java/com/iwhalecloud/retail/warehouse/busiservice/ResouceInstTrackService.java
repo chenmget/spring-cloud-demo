@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.warehouse.busiservice;
 
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 
@@ -137,4 +138,11 @@ public interface ResouceInstTrackService {
      * @return
      */
     String qryOrderIdByNbr(String nbr);
+
+    /**
+     * 通过串码查轨迹
+     * @param nbr
+     * @return
+     */
+    ResultVO<ResouceInstTrackDTO> getResourceInstTrack(String nbr);
 }

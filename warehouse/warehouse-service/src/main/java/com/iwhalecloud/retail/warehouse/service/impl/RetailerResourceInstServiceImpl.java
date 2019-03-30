@@ -19,7 +19,6 @@ import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceEventService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceChngEvtDetailService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
-import com.iwhalecloud.retail.warehouse.common.GenerateCodeUtil;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
@@ -521,7 +520,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
 
         // step4 如果不需要审核则发起流程目标仓库处理人，由目标仓库处理人决定是否接受
         // 流程ID先传个1，业务ID传个唯一的值就好
-        String uuid = GenerateCodeUtil.generateCode();
+        String uuid = resourceInstManager.getPrimaryKey();
         ProcessStartReq processStartDTO = new ProcessStartReq();
         processStartDTO.setTitle("调拨审批流程");
         processStartDTO.setApplyUserId(createStaff);

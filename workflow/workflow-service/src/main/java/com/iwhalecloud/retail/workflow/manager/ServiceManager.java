@@ -3,8 +3,12 @@ package com.iwhalecloud.retail.workflow.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.entity.Service;
 import com.iwhalecloud.retail.workflow.mapper.ServiceMapper;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
@@ -33,6 +37,7 @@ public class ServiceManager{
      * @param serviceId
      * @return
      */
+    @Cacheable(value = WorkFlowConst.CACHE_NAME_WF_SERVICE, key = "#serviceId")
     public Service getService(String serviceId) {
         if (StringUtils.isEmpty(serviceId)) {
             return null;
@@ -58,6 +63,9 @@ public class ServiceManager{
      * @param serviceId
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_SERVICE, key = "#serviceId")
+    })
     public Boolean delService(String serviceId) {
         return serviceMapper.deleteById(serviceId) > 0;
     }
@@ -68,6 +76,9 @@ public class ServiceManager{
      * @param service
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_SERVICE, key = "#service.serviceId")
+    })
     public Boolean editService(Service service) {
         service.setUpdateTime(new Date());
         return serviceMapper.updateById(service) > 0;

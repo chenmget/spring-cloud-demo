@@ -51,9 +51,7 @@ public class RetailerResourceInstOpenServiceImpl implements RetailerResourceInst
             resouceInstTrackService.asynGreenChannelForRetail(req, resp);
             return resp;
         } else {
-            ResultVO resp = retailerResourceInstService.addResourceInstByGreenChannel(req);
-            resouceInstTrackService.asynGreenChannelForRetail(req, resp);
-            return resp;
+            return ResultVO.success();
         }
     }
 

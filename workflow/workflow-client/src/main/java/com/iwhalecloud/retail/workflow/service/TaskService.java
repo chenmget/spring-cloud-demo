@@ -3,11 +3,14 @@ package com.iwhalecloud.retail.workflow.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.workflow.dto.TaskDTO;
 import com.iwhalecloud.retail.workflow.dto.req.*;
 import com.iwhalecloud.retail.workflow.dto.resp.DealTaskDetailGetResp;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskDetailGetResp;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskPageResp;
 import com.iwhalecloud.retail.workflow.dto.resp.TaskPageResp;
+
+import java.util.List;
 
 public interface TaskService{
 
@@ -103,5 +106,19 @@ public interface TaskService{
      * @return
      */
     ResultVO queryNextNodeRights(String nextNodeId,String taskId);
+
+    /**
+     * 获取待处理的任务
+     * @param formId 业务ID
+     * @return
+     */
+    List<TaskDTO> getTaskByFormId(String formId);
+
+    /**
+     *
+     * @param taskId
+     * @return
+     */
+    TaskDTO getTaskById(String taskId);
 
 }

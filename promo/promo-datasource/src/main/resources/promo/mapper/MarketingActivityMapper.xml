@@ -97,6 +97,18 @@
         <if test="req.endTimeE != null and req.endTimeE != '' ">
             and lower(t.END_TIME) &lt;= #{req.endTimeE}
         </if>
+        <if test="req.startTimeS != null and req.startTimeS != '' ">
+            and lower(t.DELIVER_START_TIME) &gt;= #{req.deliverStartTimeS}
+        </if>
+        <if test="req.startTimeE != null and req.startTimeE != '' ">
+            and lower(t.DELIVER_START_TIME) &lt;= #{req.deliverStartE}
+        </if>
+        <if test="req.endTimeS != null and req.endTimeS != '' ">
+            and lower(t.DELIVER_END_TIME) &gt;= #{req.deliverEndTimeS}
+        </if>
+        <if test="req.endTimeE != null and req.endTimeE != '' ">
+            and lower(t.DELIVER_END_TIME) &lt;= #{req.deliverEndTimeE}
+        </if>
         <if test="req.activityInitiator != null and req.activityInitiator != '' ">
             and lower(t.INITIATOR) = #{req.activityInitiator}
         </if>

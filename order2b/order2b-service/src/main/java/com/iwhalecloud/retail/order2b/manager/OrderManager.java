@@ -161,4 +161,14 @@ public class OrderManager {
     public int queryFtpOrderDataRespListCount(FtpOrderDataReq req){
         return orderMapper.queryFtpOrderDataRespListCount(req);
     }
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    public List<OrderInfoModel> selectNotDeliveryOrderByIds(List<String> orderIds) {
+        return orderMapper.selectNotDeliveryOrderByIds(orderIds);
+
+    }
+
 }

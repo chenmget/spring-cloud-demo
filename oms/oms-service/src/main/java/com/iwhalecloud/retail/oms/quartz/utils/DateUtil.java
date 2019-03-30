@@ -16,6 +16,11 @@ import java.util.Locale;
  * @date 2011-10-25 上午11:53:07
  */
 public class DateUtil {
+
+	/**
+	 * 系统默认日期格式
+	 */
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
 	
 	public static final String DATE_FORMAT_1 = "yyyy-MM-dd";
 	public static final String DATE_FORMAT_2 = "yyyy-MM-dd HH:mm:ss";
@@ -616,7 +621,7 @@ public class DateUtil {
     		pattern0 = DATE_FORMAT_2;
 		if (null == dateStr || "".equals(dateStr))
 			return null;
-		SimpleDateFormat dateFormator = new SimpleDateFormat(CrmConstants.DATE_FORMAT);
+		SimpleDateFormat dateFormator = new SimpleDateFormat(DATE_FORMAT);
 		java.util.Date tDate = dateFormator.parse(dateStr, new ParsePosition(0));
 		Locale loc = Locale.getDefault();
 		Calendar cal = new GregorianCalendar(loc);

@@ -47,6 +47,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -614,15 +615,12 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public ResultVO<List<MerchantDTO>> listMerchantByLanCity(MerchantListReq req) {
-        List<MerchantDTO> merchantDTOS = Lists.newArrayList();
+    public ResultVO<List<String>> listMerchantByLanCity(MerchantListLanCityReq req) {
+        log.info("MerchantServiceImpl.listMerchantByLanCity MerchantListReq={}",JSON.toJSON(req));
         List<Merchant> merchants = merchantManager.listMerchantByLanCity(req);
-        for (Merchant merchant : merchants) {
-            MerchantDTO merchantDTO = new MerchantDTO();
-            BeanUtils.copyProperties(merchant, merchantDTO);
-            merchantDTOS.add(merchantDTO);
-        }
-        return ResultVO.success(merchantDTOS);
+        log.info("MerchantServiceImpl.listMerchantByLanCity merchantManager.listMerchantByLanCity merchants={}",JSON.toJSON(merchants));
+        List<String> merchantIds = merchants.stream().distinct().map(Merchant::getMerchantId).collect(Collectors.toList());
+        return ResultVO.success(merchantIds);
     }
 
 }

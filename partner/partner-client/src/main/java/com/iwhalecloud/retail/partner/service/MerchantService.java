@@ -112,5 +112,5 @@ public interface MerchantService{
      * @param req
      * @return
      */
-    ResultVO<List<MerchantDTO>> listMerchantByLanCity(MerchantListReq req);
+    ResultVO<List<String>> listMerchantByLanCity(MerchantListLanCityReq req);
 }

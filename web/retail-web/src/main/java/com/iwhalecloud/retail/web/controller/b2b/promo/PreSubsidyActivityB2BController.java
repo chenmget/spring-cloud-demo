@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.rights.dto.response.MktResCouponRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.PreSubsidyProductPromResqDTO;
 import com.iwhalecloud.retail.rights.dto.response.QueryPreSubsidyCouponResqDTO;
 import com.iwhalecloud.retail.rights.service.PreSubsidyCouponService;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
@@ -104,11 +105,11 @@ public class PreSubsidyActivityB2BController {
     @UserLoginToken
     public ResultVO addPreSubsidyProduct(@RequestBody AddPromotionProductReqDTO addPromotionProductReqDTO) {
         log.info("PreSubsidyActivityService addPreSubsidyProduct addPromotionProductReqDTO={}",addPromotionProductReqDTO);
-        if(StringUtils.isEmpty(UserContext.getUserId())){
-            return ResultVO.error("用户不能为空");
-        }else {
-            addPromotionProductReqDTO.setUserId(UserContext.getUserId());
-        }
+        UserDTO userDTO = UserContext.getUser();
+        addPromotionProductReqDTO.setUserId(userDTO.getUserId());
+        addPromotionProductReqDTO.setUserName(userDTO.getUserName());
+        addPromotionProductReqDTO.setSysPostName(userDTO.getUserName());
+        addPromotionProductReqDTO.setOrgId(userDTO.getOrgId());
         return  preSubsidyCouponService.addPreSubsidyProduct(addPromotionProductReqDTO);
     }
 

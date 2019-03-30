@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.rights.mapper.MktResCouponTaskMapper">
+
+<sql id="allFields">
+    t.TASK_ID 
+    ,t.MARKETING_ACTIVITY_ID 
+    ,t.MKT_RES_ID 
+    ,t.CUST_ACCT_ID 
+    ,t.PROV_REC_ID 
+    ,t.REMARK 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.STATUS_CD 
+</sql>
+
+    <select id="queryCouponTaskPage" resultType="com.iwhalecloud.retail.rights.entity.MktResCouponTask">
+      SELECT MRCT.MKT_RES_ID,
+      MRCT.CUST_ACCT_ID,
+      MRCT.TASK_ID
+      FROM MKT_RES_COUPON_TASK MRCT
+      WHERE MRCT.STATUS_CD = '0'
+      order by MRCT.CREATE_DATE DESC
+    </select>
+
+</mapper>

@@ -211,12 +211,14 @@ public class GoodsProductB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="selectProduct")
+    @UserLoginToken
     public ResultVO<Page<ProductDTO>> selectProduct(@RequestBody ProductGetReq req)
             throws ProductException{
         List<String> productIdList = null;
         req.setProductIdList(productIdList);
         // 没登陆不给查看
         if (!UserContext.isUserLogin()) {
+            log.info("GoodsProductB2BController 用户未登陆");
             return ResultVO.success(new Page<ProductDTO>());
         }
 
@@ -263,6 +265,7 @@ public class GoodsProductB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="selectPageProductAdmin")
+    @UserLoginToken
     public ResultVO<Page<ProductPageResp>> selectPageProductAdmin(@RequestBody ProductsPageReq req) {
         // 没登陆不给查看
         if (!UserContext.isUserLogin()) {

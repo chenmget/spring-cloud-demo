@@ -51,7 +51,6 @@ public class MD5Marker {
 			}
 		}		
 		String md5=buffer.subSequence(0, buffer.toString().length()-1).toString();
-		System.out.println(md5);
 		//去掉字符串最后一个&符号
 		return getMD5Str(md5);
 	}

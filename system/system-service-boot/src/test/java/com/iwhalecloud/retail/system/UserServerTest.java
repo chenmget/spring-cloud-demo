@@ -222,11 +222,12 @@ public class UserServerTest {
 
 
     public static void main(String[] args) {
+        //[1550525]【安全漏洞修复】明文密码、日志记录、硬编码、密钥明文存储、敏感信息泄露等
 //        String reg = "^([A-Z]|[a-z]|[0-9]|[`\\-\\=\\[\\];,./~!@#$%^*()_+}{:?]){8,20}$";
-        String password = "ee4ddw>sW";
-        // 密码匹配  包含 大小写  数字  特殊字符  8到20位
-        boolean result = checkPassword(password);
-        System.out.print(result);
+//        String password = "ee4ddw>sW";
+//        // 密码匹配  包含 大小写  数字  特殊字符  8到20位
+//        boolean result = checkPassword(password);
+//        System.out.print(result);
     }
 
    private static boolean checkPassword(String password) {

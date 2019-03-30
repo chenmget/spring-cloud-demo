@@ -134,14 +134,17 @@ public class WechatController extends BaseController {
 		List<BindingQueryResp> bindingQueryRespList = bindingService.queryeBindingCodition(bindingQueryReq).getResultData();
 		if (CollectionUtils.isEmpty(bindingQueryRespList)) {
 //		if (bindingMember == null) {
-			logger.info("openId未关联会员===>" + openId);
+			//[1550525]【安全漏洞修复】明文密码、日志记录、硬编码、密钥明文存储、敏感信息泄露等
+			logger.info("openId未关联会员===>");
 			//查出微信昵称，存入缓存
 			WxMpUserService mpUserService = new WxMpUserServiceImpl(wxService);
 			WxMpUser wxMpUser = mpUserService.userInfo(openId);
-			logger.info("openId ===>" + openId + "昵称===>" + wxMpUser.getNickname());
+
 			req.getSession().setAttribute(WebConst.SESSION_WX_NICK_NAME, wxMpUser.getNickname());
 		} else {
-			logger.info("openId已关联会员===>" + openId + "--关联会员===>" + bindingQueryRespList.get(0).getUname());
+
+			//[1550525]【安全漏洞修复】明文密码、日志记录、硬编码、密钥明文存储、敏感信息泄露等
+			logger.info("openId已关联会员===>--关联会员===>" + bindingQueryRespList.get(0).getUname());
 			
 			//模拟登录
 			BindingQueryResp bindingQueryResp = bindingQueryRespList.get(0);

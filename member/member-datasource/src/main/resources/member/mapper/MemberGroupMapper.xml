@@ -29,7 +29,7 @@
         from mem_member_group a, mem_group t
         where a.GROUP_ID = t.GROUP_ID
         and a.MEM_ID = #{req.memId }
-        and a.STATUS = ${@com.iwhalecloud.retail.member.common.MemberConst$CommonState@VALID.getCode()}
+        and a.STATUS = '1'
     </select>
     <select id="queryMemberByGroupForPage"
             resultType="com.iwhalecloud.retail.member.dto.response.MemberGroupQueryResp">

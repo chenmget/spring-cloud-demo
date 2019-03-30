@@ -244,8 +244,38 @@
             and t.IS_ALLOT = 0
         </if>
         GROUP BY t.GOODS_ID
-        <if test="req.sortType != null">
-            order by ${req.sortType}
+        <if test="'1'.toString() ==req.sortType and null!=req.sortType">
+            order by t.CREATE_DATE DESC
+        </if>
+        <if test="'2'.toString() ==req.sortType and null!=req.sortType">
+            order by t.CREATE_DATE ASC
+        </if>
+        <if test="'3'.toString() ==req.sortType and null!=req.sortType">
+            order by t.MKTPRICE DESC
+        </if>
+        <if test="'4'.toString() ==req.sortType and null!=req.sortType">
+            order by t.MKTPRICE ASC
+        </if>
+        <if test="'5'.toString() ==req.sortType and null!=req.sortType">
+            order by t.BUY_COUNT DESC
+        </if>
+        <if test="'6'.toString() ==req.sortType and null!=req.sortType">
+            order by t.BUY_COUNT ASC
+        </if>
+        <if test="'7'.toString() ==req.sortType and null!=req.sortType">
+            order by DELIVERY_PRICE DESC
+        </if>
+        <if test="'8'.toString() ==req.sortType and null!=req.sortType">
+            order by DELIVERY_PRICE ASC
+        </if>
+        <if test="'9'.toString() ==req.sortType and null!=req.sortType">
+            order by MKTPRICE DESC
+        </if>
+        <if test="'10'.toString() ==req.sortType and null!=req.sortType">
+            order by MKTPRICE ASC
+        </if>
+        <if test="'11'.toString() ==req.sortType and null!=req.sortType">
+            order by DELIVERY_PRICE ASC,MERCHANT_TYPE ASC
         </if>
     </select>
 

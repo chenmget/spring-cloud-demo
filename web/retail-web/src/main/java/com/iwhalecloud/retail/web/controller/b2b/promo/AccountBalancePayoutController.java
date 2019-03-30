@@ -43,9 +43,9 @@ public class AccountBalancePayoutController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/queryAccountBalanceDetailAllForPage")
+    @PostMapping(value="/queryAccountBalancePayoutForPage")
     @UserLoginToken
-    public ResultVO<Page<QueryAccountBalancePayoutResp>> queryAccountBalanceDetailAllForPage(@RequestBody QueryAccountBalancePayoutReq req){
+    public ResultVO<Page<QueryAccountBalancePayoutResp>> queryAccountBalancePayoutForPage(@RequestBody QueryAccountBalancePayoutReq req){
         log.info("AccountBalancePayoutController queryAccountBalanceDetailAllForPage QueryAccountBalancePayoutReq={} ", req);
         req.setCustId(UserContext.getMerchantId());
         return accountBalancePayoutService.queryAccountBalancePayoutForPage(req);
@@ -69,7 +69,7 @@ public class AccountBalancePayoutController {
         }
         Page<QueryAccountBalancePayoutResp> page = resultVO.getResultData();
         List<QueryAccountBalancePayoutResp> list = page.getRecords();
-        List<ExcelTitleName> excelTitleNames = ReBateExcelColum.reBateDetailColumn();
+        List<ExcelTitleName> excelTitleNames = ReBateExcelColum.reBatePayOutColumn();
         try {
             Workbook workbook = new HSSFWorkbook();
             String fileName = "返利使用明细";

@@ -26,4 +26,20 @@ public class ReBateExcelColum {
         reBateDetailColumn.add(new ExcelTitleName("sourceDesc", "备注"));
         return reBateDetailColumn;
     }
+    public static List<ExcelTitleName> reBatePayOutColumn() {
+        List<ExcelTitleName> columnList = new ArrayList<>();
+        columnList.add(new ExcelTitleName("supplierName", "供应商"));
+        columnList.add(new ExcelTitleName("supplierLoginName", "供应商账号"));
+        columnList.add(new ExcelTitleName("amountYuan", "使用金额"));
+        columnList.add(new ExcelTitleName("balanceYuan", "当前金额"));
+        columnList.add(new ExcelTitleName("orderId", "订单交易号"));
+        columnList.add(new ExcelTitleName("productName", "产品名称"));;
+        columnList.add(new ExcelTitleName("specName", "规格型号"));
+        columnList.add(new ExcelTitleName("lanName", "地市"));;
+        columnList.add(new ExcelTitleName("regionName", "区县"));
+        columnList.add(new ExcelTitleName("operDate", "返利使用时间"));;
+        columnList.add(new ExcelTitleName("payoutDesc", "备注"));
+
+        return columnList;
+    }
 }

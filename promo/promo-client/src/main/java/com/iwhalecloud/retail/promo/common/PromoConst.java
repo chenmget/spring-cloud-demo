@@ -311,4 +311,70 @@ public class PromoConst {
             this.code = code;
         }
     }
+
+    /**
+     * 活动结算记录状态
+     */
+    public enum OperationType {
+        OPERATION_TYPE_1("1","新增"),
+        OPERATION_TYPE_2("2","退库");
+
+
+        private java.lang.String code;
+        private java.lang.String name;
+
+        OperationType(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
+    /**
+     * 活动结算记录状态
+     */
+    public enum SettleMode {
+        SETTLE_MODE_1("1","结算给零售商"),
+        SETTLE_MODE_2("2","结算给地包商");
+
+
+        private java.lang.String code;
+        private java.lang.String name;
+
+        SettleMode(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
 }

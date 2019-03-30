@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.SettleRecordMapper">
+
+    <select id="getSettleRecordByLastMonth" resultType="com.iwhalecloud.retail.promo.dto.SettleRecordDTO">
+        select DISTINCT b.DELIVER_START_TIME as deliverStartTime,b.DELIVER_END_TIME as deliverEndTime,b.ID as marketingActivityId,
+        b.code as marketingActivityCode,a.order_id as orderId,a.ORDER_ITEM_ID as orderItemId,a.PRODUCT_ID as productId,date_format(a.gmt_create, '%Y%m') as settleCycle,
+        a.merchant_code as merchantCode, a.merchant_name as merchantName,a.SUPPLIER_CODE as supplierCode,a.MERCHANT_TYPE as merchantType
+        from ACT_HISTORY_PURCHASE a,act_marketing_activity b
+        where a.marketing_activity_id = b.ID
+        and b.is_deleted='0'
+        and b.activity_type='1002'
+        and date_format(a.gmt_create, '%Y%m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y%m')
+    </select>
+
+    <select id="getSupplementaryRecord" resultType="com.iwhalecloud.retail.promo.dto.SettleRecordDTO">
+        select DISTINCT b.DELIVER_START_TIME as deliverStartTime,b.DELIVER_END_TIME as deliverEndTime,b.ID as marketingActivityId,
+        b.code as marketingActivityCode,c.order_id as orderId,a.ORDER_ITEM_ID as orderItemId,a.PRODUCT_ID as productId,date_format(a.gmt_create, '%Y%m') as settleCycle,
+        a.merchant_code as merchantCode, a.merchant_name as merchantName,a.SUPPLIER_CODE as supplierCode,a.MERCHANT_TYPE as merchantType
+        from ACT_HISTORY_PURCHASE a,act_marketing_activity b,ACT_SUPPLEMENTARY_DETAIL c,ACT_SUPPLEMENTARY_RECORD d
+        where a.marketing_activity_id = b.ID
+          and d.RECORD_ID = c.RECORD_ID
+          and c.order_id=a.order_id
+          and b.is_deleted='0'
+          and b.activity_type='1002'
+          and date_format(d.gmt_create, '%Y%m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y%m')
+    </select>
+</mapper>

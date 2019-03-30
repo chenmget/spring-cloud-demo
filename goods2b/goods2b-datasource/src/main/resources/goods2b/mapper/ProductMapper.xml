@@ -165,7 +165,7 @@
 
   <select id="selectProduct" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductGetReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.ProductDTO">
-    select <include refid="allFields" />,ppb.product_code,ppb.unit_type
+    select <include refid="allFields" />,ppb.product_code,ppb.unit_type,ppb.type_id
     from prod_product t
     left join prod_product_base ppb on ppb.product_base_id = t.product_base_id
     where 1 = 1 and t.IS_DELETED = '0' and ppb.IS_DELETED = '0'

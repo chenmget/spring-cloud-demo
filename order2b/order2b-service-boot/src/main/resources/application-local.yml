@@ -36,6 +36,6 @@ db-type: TelDB
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://10.45.46.67:8866/nretail_b2b?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
   username: szxtest
   password: szxtest.2019

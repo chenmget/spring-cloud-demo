@@ -75,7 +75,8 @@ public class AccountBalanceLog implements Serializable {
   	 */
 	@ApiModelProperty(value = "状态; 1000 有效，1100 失效")
   	private String statusCd;
-  	
+	@ApiModelProperty(value = "账户Id")
+	private String acctId;
   	
   	//属性 end
 	

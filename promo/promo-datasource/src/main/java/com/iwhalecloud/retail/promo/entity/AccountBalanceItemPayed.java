@@ -63,6 +63,9 @@ public class AccountBalanceItemPayed implements Serializable {
   	 */
 	@ApiModelProperty(value = "状态发生改变的时间")
   	private java.util.Date statusDate;
+
+	@ApiModelProperty(value = "账户Id")
+	private String acctId;
   	
   	
   	//属性 end

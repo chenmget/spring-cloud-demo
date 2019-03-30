@@ -144,6 +144,10 @@ public class AccountItemDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "账户类型，余额账户、返利账户、红包账户等")
   	private Long acctType;
-	
-  	
+
+	@ApiModelProperty(value = "账户Id")
+	private String acctId;
+
+	@ApiModelProperty(value = "订单项ID")
+	private String orderItemId;
 }

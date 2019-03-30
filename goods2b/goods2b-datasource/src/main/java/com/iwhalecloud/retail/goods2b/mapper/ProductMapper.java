@@ -88,4 +88,11 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
     List<String> listProduct(@Param("productBaseId")String productBaseId);
+
+    /**
+     * 查询产品(返利使用)
+     * @param req
+     * @return
+     */
+    List<ProductResp> getProductForRebate(@Param("req")ProductRebateReq req);
 }

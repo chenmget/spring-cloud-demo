@@ -14,13 +14,11 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.AccountBalanceDetailDTO;
-import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
-import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailAllReq;
-import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailForPageReq;
-import com.iwhalecloud.retail.promo.dto.req.QueryAccountIncomeDetailReq;
+import com.iwhalecloud.retail.promo.dto.req.*;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceDetail;
+import com.iwhalecloud.retail.promo.service.AccountBalancePayoutService;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.dto.UserDTO;
@@ -60,6 +58,9 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
     @Reference
     private MarketingActivityService marketingActivityService;
+
+    @Reference
+    private AccountBalancePayoutService accountBalancePayoutService;
 
 
 
@@ -114,7 +115,8 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 String productId = queryAccountBalanceDetailAllResp.getProductId();
                 if(StringUtils.isNotEmpty(productId)){
                     QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();
-                    queryProductInfoReqDTO.setProductId("100000152");
+                    queryProductInfoReqDTO.setProductId(productId);
+
                     ResultVO<QueryProductInfoResqDTO>  respResultVO = productService.getProductInfo(queryProductInfoReqDTO);
                     if(respResultVO!=null&&respResultVO.isSuccess()&&respResultVO.getResultData()!=null){
                         queryAccountBalanceDetailAllResp.setProductName(respResultVO.getResultData().getProductName());
@@ -132,38 +134,12 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
     }
     private void initQueryAccountBalanceDetailAll(QueryAccountBalanceDetailAllReq req){
-        List<String> supplierIdList = new ArrayList<String>();
         List<String> actIdList = new ArrayList<String>();
-        //供应商名称
-        String supplierName = req.getSupplierName();
-        //供应商账号:登录账户
-        String supplierLoginName = req.getSupplierLoginName();
-        if(StringUtils.isNotEmpty(supplierName)){
-            MerchantListReq merchantListReq = new MerchantListReq();
-            merchantListReq.setMerchantName(supplierName);
-            ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchant(merchantListReq);
-            if(listResultVO!=null&&listResultVO.isSuccess()&&listResultVO.getResultData()!=null){
-                List<MerchantDTO> merchantDTOList = listResultVO.getResultData();
-                for (MerchantDTO merchantDTO : merchantDTOList) {
-                    supplierIdList.add(merchantDTO.getMerchantId());
-                }
-            }
-        }
 
-        if(StringUtils.isNotEmpty(supplierLoginName)){
-            UserListReq userListReq = new UserListReq();
-            userListReq.setLoginName(supplierLoginName);
-            List<UserDTO> userList = userService.getUserList(userListReq);
-            //根据用户获取商家
-            if(userList!=null&&!userList.isEmpty()){
-                for (UserDTO userDTO : userList) {
-                    supplierIdList.add(userDTO.getRelCode());
-                }
-
-            }
-
-        }
-        req.setSupplierIdList(supplierIdList);
+        GetMerchantIdListReq getMerchantIdListReq = new GetMerchantIdListReq();
+        getMerchantIdListReq.setMerchantName(req.getSupplierName());
+        getMerchantIdListReq.setMerchantLoginName(req.getSupplierLoginName());
+        req.setSupplierIdList(accountBalancePayoutService.getMerchantIdList(getMerchantIdListReq));
 
         //活动的处理
         String actName = req.getActName();
@@ -182,6 +158,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 }
             }
         }
+        req.setActIdList(actIdList);
 
     }
 }

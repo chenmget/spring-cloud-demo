@@ -193,4 +193,13 @@ public class ProductManager {
     public List<String> listProduct(String productBaseId) {
         return productMapper.listProduct(productBaseId);
     }
+
+    /**
+     * 根据条件查询产品（返利使用）
+     * @param req
+     * @return
+     */
+    public List<ProductResp> getProductForRebate(ProductRebateReq req){
+        return productMapper.getProductForRebate(req);
+    }
 }

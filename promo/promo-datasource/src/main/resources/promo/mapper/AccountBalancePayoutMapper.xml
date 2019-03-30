@@ -23,5 +23,37 @@
     ,t.STATUS_CD 
     ,t.STATUS_DATE 
 </sql>
+    <select id="queryAccountBalancePayoutForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalancePayoutReq"
+    resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalancePayoutResp">
+      SELECT
+        d.MERCHANT_ID AS supplier_Id,a.AMOUNT,a.BALANCE,d.ORDER_ID,d.PRODUCT_ID,a.OPER_DATE,a.PAYOUT_DESC
+        FROM  ACCOUNT_BALANCE_PAYOUT A
+      INNER JOIN ACCOUNT_BALANCE b ON a.ACCT_BALANCE_ID = b.ACCOUNT_BALANCE_ID
+      INNER JOIN ACCOUNT_BALANCE_ITEM_PAYED c ON a.OPER_PAYOUT_ID = c.OPER_PAYOUT_ID
+      INNER JOIN ACCOUNT_ITEM d ON c.ACCT_ITEM_ID = d.ACCT_ITEM_ID
+      INNER JOIN account e on d.acct_id=e.ACCT_ID
+      where A.STATUS_CD='1000'
+        <if test="req.supplierIdList != null and req.supplierIdList.size > 0">
+            and d.MERCHANT_ID in
+            <foreach collection="req.supplierIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.productIdList != null and req.productIdList.size > 0">
+            and d.PRODUCT_ID in
+            <foreach collection="req.productIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.custId != null and req.custId != ''">
+            and e.cust_id=#{req.custId}
+        </if>
+        <if test="req.operDateEnd != null and req.operDateEnd != ''">
+            <![CDATA[   and DATE_FORMAT(a.OPER_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.operDateEnd}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="req.operDateStart != null and req.operDateStart != ''">
+            <![CDATA[   and DATE_FORMAT(a.OPER_DATE, '%Y-%m-%d')>=  DATE_FORMAT(#{req.operDateStart}, '%Y-%m-%d')   ]]>
+        </if>
 
+    </select>
 </mapper>

@@ -154,4 +154,11 @@ public interface ProductService {
      * @return
      */
     ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req);
+
+    /**
+     * 返利使用
+     * @param req
+     * @return
+     */
+    ResultVO<List<ProductResp>> getProductForRebate(ProductRebateReq req);
 }

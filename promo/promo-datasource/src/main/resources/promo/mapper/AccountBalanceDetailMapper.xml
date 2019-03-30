@@ -85,7 +85,7 @@
             <![CDATA[   and DATE_FORMAT(a.EFF_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.effDateEnd}, '%Y-%m-%d')   ]]>
         </if>
         <if test="req.expDateStart != null and req.expDateStart != ''">
-            <![CDATA[   and DATE_FORMAT(a.EXP_DATE, '%Y-%m-%d')>=  DATE_FORMAT(#{req.EXP_DATE}, '%Y-%m-%d')   ]]>
+            <![CDATA[   and DATE_FORMAT(a.EXP_DATE, '%Y-%m-%d')>=  DATE_FORMAT(#{req.expDateStart}, '%Y-%m-%d')   ]]>
         </if>
         <if test="req.expDateEnd != null and req.expDateEnd != ''">
             <![CDATA[   and DATE_FORMAT(a.EXP_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.expDateEnd}, '%Y-%m-%d')   ]]>

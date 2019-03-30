@@ -129,15 +129,16 @@ public class AccountBalancePayout implements Serializable {
   	 */
 	@ApiModelProperty(value = "状态发生改变的时间")
   	private java.util.Date statusDate;
-  	
-  	
+
+	@ApiModelProperty(value = "订单项ID")
+	private String orderItemId;
   	//属性 end
 	
     /** 字段名称枚举. */
     public enum FieldNames {
 		/** 为每个余额流水生成的唯一编号，只具有逻辑上的含义，没有物理意义。. */
 		operPayoutId("operPayoutId","OPER_PAYOUT_ID"),
-		
+		acctId("acctId","ACCT_ID"),
 		/** 余额明细ID. */
 		accountBalanceDetailId("accountBalanceDetailId","ACCOUNT_BALANCE_DETAIL_ID"),
 		

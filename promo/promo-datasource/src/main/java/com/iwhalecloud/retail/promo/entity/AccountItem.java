@@ -153,12 +153,20 @@ public class AccountItem implements Serializable {
   	 */
 	@ApiModelProperty(value = "账户类型，余额账户、返利账户、红包账户等")
   	private Long acctType;
-  	
-  	
+
+	@ApiModelProperty(value = "账户Id")
+	private String acctId;
+
+	@ApiModelProperty(value = "订单项ID")
+	private String orderItemId;
   	//属性 end
 	
     /** 字段名称枚举. */
     public enum FieldNames {
+
+		orderItemId("orderItemId","ORDER_ITEM_ID"),
+
+		acctId("acctId","ACCT_ID"),
 		/** 账目标识. */
 		acctItemId("acctItemId","ACCT_ITEM_ID"),
 		

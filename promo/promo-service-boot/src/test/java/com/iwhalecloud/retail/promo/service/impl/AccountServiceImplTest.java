@@ -6,14 +6,11 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.PromoServiceApplication;
 import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.req.*;
-import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceAllResp;
-import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
-import com.iwhalecloud.retail.promo.dto.resp.QueryAccountForPageResp;
-import com.iwhalecloud.retail.promo.dto.resp.QueryTotalAccountResp;
+import com.iwhalecloud.retail.promo.dto.resp.*;
 import com.iwhalecloud.retail.promo.service.AccountBalanceDetailService;
+import com.iwhalecloud.retail.promo.service.AccountBalancePayoutService;
 import com.iwhalecloud.retail.promo.service.AccountBalanceService;
 import com.iwhalecloud.retail.promo.service.AccountService;
-import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +36,9 @@ public class AccountServiceImplTest {
 
     @Reference
     private AccountBalanceService accountBalanceService;
+    @Reference
+    private AccountBalancePayoutService accountBalancePayoutService;
+
 
 
     @Test
@@ -100,6 +100,21 @@ public class AccountServiceImplTest {
         req.setPageSize(10);
         req.setEffDateEnd("2019-10-12");
         ResultVO<Page<QueryAccountBalanceAllResp>> pageResultVO = accountBalanceService.queryAccountBalanceAllForPage(req);
+        System.out.println(pageResultVO);
+
+    }
+    @Test
+    public void queryAccountBalancePayoutForPage(){
+        QueryAccountBalancePayoutReq req = new QueryAccountBalancePayoutReq();
+        req.setPageNo(1);
+        req.setPageSize(10);
+//        req.setBrandName("华为");
+//        req.setSupplierLoginName("111");
+//        req.setSupplierName("ly");
+        req.setOperDateStart("1987-10-10");
+        req.setOperDateEnd("2020-10-10");
+        ResultVO<Page<QueryAccountBalancePayoutResp>> pageResultVO = accountBalancePayoutService.queryAccountBalancePayoutForPage(req);
+
         System.out.println(pageResultVO);
 
     }

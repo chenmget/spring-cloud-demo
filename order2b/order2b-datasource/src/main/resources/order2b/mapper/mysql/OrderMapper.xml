@@ -264,4 +264,23 @@
             </if>
         </where>
     </select>
+
+    <select id="queryFtpOrderDataRespList" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq"
+            resultType="com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp">
+        SELECT t.MERCHANT_CODE as cust_id  FROM par_merchant T
+
+    </select>
+    <select id="getFstTransDate" resultType="java.lang.String">
+        select t.create_time from ord_order t  where t.status in(6,10) order by t.create_time  LIMIT 0,1
+    </select>
+    <select id="queryFtpOrderDataRespListCount" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq"
+            resultType="java.lang.Integer">
+        select count(1)
+        from ord_order t where t.status in(6,10)
+        <![CDATA[   and DATE_FORMAT(t.PAY_TIME, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
+        <![CDATA[   and DATE_FORMAT(t.PAY_TIME, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
+        order by t.PAY_TIME,ord_order
+    </select>
+
+
 </mapper>

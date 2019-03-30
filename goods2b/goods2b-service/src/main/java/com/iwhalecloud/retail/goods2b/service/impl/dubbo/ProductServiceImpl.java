@@ -500,4 +500,8 @@ public class ProductServiceImpl implements ProductService {
 
         return specName.toString();
     }
+    @Override
+    public ResultVO<List<ProductResp>> getProductForRebate(ProductRebateReq req){
+        return ResultVO.success(productManager.getProductForRebate(req));
+    }
 }

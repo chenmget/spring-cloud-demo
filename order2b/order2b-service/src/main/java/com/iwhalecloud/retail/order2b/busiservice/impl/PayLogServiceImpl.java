@@ -70,19 +70,19 @@ public class PayLogServiceImpl implements BPEPPayLogService {
             orgLoginCode = Base64.encodeBase64String(encryptORGLOGINCODE);
             toPayResp.setOrgLoginCode(orgLoginCode);
             String payAccount = toPayResp.getPayAccount();
-            byte[] encryptPayAccount = AESUtil.encrypt(paraCheck(payAccount), cipher);
+            byte[] encryptPayAccount = AESUtil.encrypt(checkIsNull(payAccount), cipher);
             payAccount = Base64.encodeBase64String(encryptPayAccount);
             toPayResp.setPayAccount(payAccount);
             String cardUserName = toPayResp.getCardUserName();
-            byte[] encryptCardUserName = AESUtil.encrypt(paraCheck(cardUserName), cipher);
+            byte[] encryptCardUserName = AESUtil.encrypt(checkIsNull(cardUserName), cipher);
             cardUserName = Base64.encodeBase64String(encryptCardUserName);
             toPayResp.setCardUserName(cardUserName);
             String certNo = toPayResp.getCertNo();
-            byte[] encryptCertNo = AESUtil.encrypt(paraCheck(certNo), cipher);
+            byte[] encryptCertNo = AESUtil.encrypt(checkIsNull(certNo), cipher);
             certNo = Base64.encodeBase64String(encryptCertNo);
             toPayResp.setCertNo(certNo);
             String mobile = toPayResp.getMobile();
-            byte[] encryptMOBILE = AESUtil.encrypt(paraCheck(mobile), cipher);
+            byte[] encryptMOBILE = AESUtil.encrypt(checkIsNull(mobile), cipher);
             mobile = Base64.encodeBase64String(encryptMOBILE);
             toPayResp.setMobile(mobile);
             StringBuilder signData = new StringBuilder();
@@ -261,12 +261,4 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         return 0;
     }
 
-    private String paraCheck(String param){
-        if (null == param) {
-            return "";
-        } else {
-            return param;
-        }
-
-    }
 }

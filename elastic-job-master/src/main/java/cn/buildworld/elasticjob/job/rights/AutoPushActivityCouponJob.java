@@ -23,7 +23,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class AutoPushActivityCouponJob implements SimpleJob {
 
-    @Reference(timeout = 10000)
+    @Reference
     private RightsJobService rightsJobService;
 
     @Override

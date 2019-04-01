@@ -36,24 +36,4 @@
             AND a.form_id = #{form_id}
         </where>
     </select>
-
-    <!-- 待办基本信息查询 -->
-    <select id="getWaitDealTaskItemByFormId" parameterType="java.lang.String"
-            resultType="com.iwhalecloud.retail.workflow.entity.TaskItem">
-        SELECT
-        <include refid="allFields" />
-        FROM
-        wf_task a,
-        wf_task_item t
-        <where>
-            a.task_id = t.task_id
-            AND a.form_id = #{form_id}
-            <![CDATA[
---              /**任务项状态：已处理*/
-            AND t.ITEM_STATUS <> '3'
-            ]]>
-        </where>
-    </select>
-
-
 </mapper>

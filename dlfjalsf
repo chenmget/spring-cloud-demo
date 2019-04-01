@@ -1,0 +1,12 @@
+[33mcommit 581a77f47759b939483acf0d320ac74dea54bb46[m[33m ([m[1;36mHEAD -> [m[1;32mrelease[m[33m)[m
+Merge: 958c074 3035454
+Author: shi.zhuxiong <0027007822@iwhalecloud.com>
+Date:   Sat Mar 30 16:13:07 2019 +0800
+
+    Merge branch 'release' of gitlab.iwhalecloud.com:NBRetail/retail into release
+
+[33mcommit 958c074d23d9697c3a2b26fa4b1144b03253530e[m
+Author: shi.zhuxiong <0027007822@iwhalecloud.com>
+Date:   Sat Mar 30 15:18:45 2019 +0800
+
+    fix:【安全漏洞修复】明文密码、日志记录、硬编码、密钥明文存储、敏感信息泄露等

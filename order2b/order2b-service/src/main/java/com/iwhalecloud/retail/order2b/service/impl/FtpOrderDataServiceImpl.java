@@ -2,7 +2,9 @@ package com.iwhalecloud.retail.order2b.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.consts.FtpOrderDataConsts;
 import com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
@@ -12,6 +14,7 @@ import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
+import com.iwhalecloud.retail.warehouse.dto.MktResStoreTempDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -54,15 +57,13 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
     //@Value("${ftp.order.fifteenPath}")
     private String fifteenPath;
 
-    private static final String fifteen="15";
-    private static final String sixteen="16";
-    private static final String one="01";
 
     @Override
     public List<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req) {
 
-        List<FtpOrderDataResp> orderList = orderManager.queryFtpOrderDataRespList(req);
-        if(orderList!=null&&!orderList.isEmpty()){
+        Page<FtpOrderDataResp>  orderListPage = orderManager.queryFtpOrderDataRespList(req);
+        if(orderListPage!=null&&orderListPage.getRecords()!=null&&!orderListPage.getRecords().isEmpty()){
+            List<FtpOrderDataResp> orderList = orderListPage.getRecords();
             //获取首单时间(月份)
             String fstTransDate = orderManager.getFstTransDate();
             fstTransDate = DateUtils.dateToStr(DateUtils.strToUtilDate(fstTransDate),"yyyyMM");
@@ -71,25 +72,26 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
                 String custId = orderDataResp.getCustId();
             }
         }
+
         return null;
     }
     @Override
     public ResultVO uploadFtpForTask(){
         Date date = DateUtils.strToUtilDate("2019-03-01 12:12:12");
 
-        String day = DateUtils.dateToStr(date,"dd");
+        String day = DateUtils.dateToStr(date,FtpOrderDataConsts.DAY_FOR_DAY);
         String startDate = "";
         String endDate = "";
         String uploadPath = "";
-        if(fifteen.equals(day)){
+        if(FtpOrderDataConsts.FIFTEEN.equals(day)){
             uploadPath = this.fifteenPath;
             //查询1-15的数据
-            startDate = DateUtils.dateToStr(date,"yyyy-MM")+"-"+one;
-            endDate = DateUtils.dateToStr(date,"yyyy-MM-dd");
-        }else if(one.equals(day)){
+            startDate = DateUtils.dateToStr(date,FtpOrderDataConsts.DAY_FOR_YEAR_MONTH)+"-"+FtpOrderDataConsts.ONE;
+            endDate = DateUtils.dateToStr(date,FtpOrderDataConsts.DAY_FOR_YEAR_DAY);
+        }else if(FtpOrderDataConsts.ONE.equals(day)){
             uploadPath = this.onePath;
             //查询上个月16-月末的数据
-            startDate = DateUtils.dateToStr(DateUtils.getLastMonth(date),"yyyy-MM")+"-"+sixteen;
+            startDate = DateUtils.dateToStr(DateUtils.getLastMonth(date),FtpOrderDataConsts.DAY_FOR_YEAR_MONTH)+"-"+FtpOrderDataConsts.SIXTEEN;
             endDate =  DateUtils.getMonthLastDay(DateUtils.getLastMonth(date));
         }else{
             return ResultVO.error("日期错误,不进行上传");
@@ -108,12 +110,11 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
         StringBuffer content = new StringBuffer();
 
 
-
         if(length>0){
-            int pageCount = (length + MarketingResConst.SYN_BATCH - 1) / MarketingResConst.SYN_BATCH;
+            int pageCount = (length + FtpOrderDataConsts.BATCH_COUNT - 1) / FtpOrderDataConsts.BATCH_COUNT;
             for (int page = 1; page <= pageCount; page++) {
-                int start = 1 + (MarketingResConst.SYN_BATCH * (page - 1));
-                int end = MarketingResConst.SYN_BATCH * page > length ? length : MarketingResConst.SYN_BATCH * page;
+                int start = 1 + (FtpOrderDataConsts.BATCH_COUNT * (page - 1));
+                int end = FtpOrderDataConsts.BATCH_COUNT * page > length ? length : FtpOrderDataConsts.BATCH_COUNT * page;
                 try {
 
 

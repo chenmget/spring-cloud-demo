@@ -58,7 +58,7 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @param req
      * @return
      */
-     List<FtpOrderDataResp> queryFtpOrderDataRespList(@Param("req") FtpOrderDataReq req);
+    Page<FtpOrderDataResp> queryFtpOrderDataRespList(Page<FtpOrderDataResp> page,@Param("req") FtpOrderDataReq req);
 
     /**
      * 获取首个订单时间

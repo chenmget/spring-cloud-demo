@@ -38,6 +38,6 @@ public class NoticeAuditPassServiceImpl implements NoticeAuditPassService {
         //审核通过
         req.setStatus(SystemConst.NoticeStatusEnum.VALID.getCode());
 
-        return noticeService.updateNotice(req);
+        return noticeService.updateNoticeStatus(req);
     }
 }

@@ -33,6 +33,14 @@ public interface NoticeService{
     ResultVO<Integer> updateNotice(NoticeUpdateReq req);
 
     /**
+     * 修改公告通知状态
+     * @param req
+     * @return
+     */
+    ResultVO<Integer> updateNoticeStatus(NoticeUpdateReq req);
+
+
+    /**
      * 公告通知 信息列表分页
      * @param pageReq
      * @return

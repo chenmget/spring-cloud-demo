@@ -87,7 +87,8 @@
 		</where>
 	</select>
 
-	<select id="getSettleRecordOrder" resultType="com.iwhalecloud.retail.order2b.dto.model.order.SettleRecordOrderDTO">
+	<select id="getSettleRecordOrder" resultType="com.iwhalecloud.retail.order2b.dto.model.order.SettleRecordOrderDTO"
+			parameterType="com.iwhalecloud.retail.order2b.dto.model.order.SettleRecordOrderDTO">
 		select DISTINCT b.order_id as orderId ,b.RES_NBR as resNbr,c.SUPPLIER_ID as supplierId,c.SUPPLIER_CODE as supplierCode,c.MERCHANT_ID as merchantId,
 		c.MERCHANT_CODE as merchantCode,d.PRICE as price,d.COUPON_PRICE as couponPrice,a.CREATE_TIME as deliveryTime,a.lan_id as lanId,c.create_time as orderCreateTime,
 		c.SHIP_USER_ID as supplierAccountId ,c.CREATE_USER_ID  as merchantAccountId
@@ -97,11 +98,11 @@
 		  and c.order_id =d.order_id
 		  and c.is_delete='0'
 		  and b.order_id in
-		<foreach collection="orderItemIds" index="index" item="item" open="(" separator="," close=")">
+		<foreach collection="req.ids" index="index" item="item" open="(" separator="," close=")">
 			#{item}
 		</foreach>
-		<if test="lanId !=null and lanId !=''">
-			and c.lan_id=#{lanId}
+		<if test="req.lanId !=null and req.lanId !=''">
+			and c.lan_id=#{req.lanId}
 		</if>
 	</select>
 </mapper>

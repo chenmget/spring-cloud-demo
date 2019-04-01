@@ -5,6 +5,7 @@ import com.iwhalecloud.retail.order2b.dto.model.order.SettleRecordOrderDTO;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.DeliveryReq;
 import com.iwhalecloud.retail.order2b.entity.Delivery;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -19,5 +20,5 @@ public interface DeliveryMapper extends BaseMapper<Delivery>{
 
     List<Delivery> selectDeliveryListByOrderIdAndBatchId(DeliveryReq deliveryReq);
 
-    List<SettleRecordOrderDTO> getSettleRecordOrder(List<String> orderIds,String lanId);
+    List<SettleRecordOrderDTO> getSettleRecordOrder(@Param("req")SettleRecordOrderDTO req);
 }

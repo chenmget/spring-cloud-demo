@@ -54,7 +54,7 @@ public class MarketingActivityManager{
             marketingActivity.setGmtModified(new Date());
             //is_delete 默认为 0-未删
             marketingActivity.setIsDeleted("0");
-            marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_10.getCode());
+            marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_1.getCode());
             marketingActivity.setPayType(PromoConst.PayType.PAY_TYPE_1.getCode());
             return marketingActivityMapper.insert(marketingActivity);
         } else{

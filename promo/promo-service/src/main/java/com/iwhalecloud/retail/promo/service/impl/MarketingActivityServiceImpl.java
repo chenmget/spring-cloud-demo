@@ -913,6 +913,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     @Override
     public void auitMarketingActivity(AuitMarketingActivityReq req) {
+        //修改状态
+        updateMktStatus(req.getId(),PromoConst.STATUSCD.STATUS_CD_10.getCode());
         //营销活动审核 1.新增的时候进行审核
         log.info("MarketingActivityServiceImpl.addMarketingActivity marketingActivityId{}");
         if (org.springframework.util.StringUtils.isEmpty(req.getId())){

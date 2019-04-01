@@ -32,5 +32,8 @@ public class FtpOrderDataConsts {
 
     public static final int BATCH_COUNT = 5;
 
+    public static final String DATA_PATH_AGO="ftp.order.dataPathAgo";
+    public static final String DATA_PATH_MID="ftp.order.dataPathMid";
+
 
 }

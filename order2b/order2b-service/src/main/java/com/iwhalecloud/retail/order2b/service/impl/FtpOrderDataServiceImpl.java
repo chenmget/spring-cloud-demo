@@ -15,7 +15,6 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.dto.req.QueryInvoiceByMerchantIdsReq;
 import com.iwhalecloud.retail.partner.dto.resp.InvoicePageResp;
-import com.iwhalecloud.retail.partner.model.FtpDTO;
 import com.iwhalecloud.retail.partner.service.InvoiceService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.ArithUtil;
@@ -23,8 +22,6 @@ import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.dto.PublicDictDTO;
 import com.iwhalecloud.retail.system.service.PublicDictService;
 import com.iwhalecloud.retail.system.service.UserService;
-import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +46,14 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
     @Reference
     private UserService userService;
 
-    @Autowired
-    private Environment env;
 
     @Reference
     private MerchantService merchantService;
     @Reference
     private PublicDictService publicDictService;
 
+    @Autowired
+    private Environment env;
 
 
     private List<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req,
@@ -102,20 +99,14 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
 
                 //平台注册日期:商家表的创建时间
                 String regYrMon = "";
-//                if (merchant != null && merchant.get() != null) {
-//                    bizLicExprYrMon = DateUtils.dateToStr(invoice.getBusiLicenceExpDate(), "yyyymm");
-//                }
-
                 orderDataResp.setRegYrMon(StringUtils.defaultString(regYrMon));
 
-                //交易月份:订单表：创建时间
-//                orderDataResp.setYrMon("");
+                //交易月份:订单表：创建时间:数据库获取
 
                 //订单金额（ORDER_AMOUNT）
                 orderDataResp.setTransAmt(ArithUtil.fenToYuan(orderDataResp.getTransAmt()));
 
-                //GoodsCnt--订单项表的数量num字段
-               // orderDataResp.setGoodsCnt("");
+                //GoodsCnt--订单项表的数量num字段：数据库获取
                 //旧平台客户编号:oldCustId--商家表的
                 orderDataResp.setOldCustId("");
 
@@ -135,12 +126,12 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
         String endDate = "";
         String uploadPath = "";
         if (FtpOrderDataConsts.FIFTEEN.equals(day)) {
-//            uploadPath = this.fifteenPath;
+            uploadPath = getDataPathMid();
             //查询1-15的数据
             startDate = DateUtils.dateToStr(date, FtpOrderDataConsts.DAY_FOR_YEAR_MONTH) + "-" + FtpOrderDataConsts.ONE;
             endDate = DateUtils.dateToStr(date, FtpOrderDataConsts.DAY_FOR_YEAR_DAY);
         } else if (FtpOrderDataConsts.ONE.equals(day)) {
-//            uploadPath = this.onePath;
+            uploadPath = this.getDataPathAgo();
             //查询上个月16-月末的数据
             startDate = DateUtils.dateToStr(DateUtils.getLastMonth(date), FtpOrderDataConsts.DAY_FOR_YEAR_MONTH) + "-" + FtpOrderDataConsts.SIXTEEN;
             endDate = DateUtils.getMonthLastDay(DateUtils.getLastMonth(date));
@@ -150,16 +141,17 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
         FtpOrderDataReq req = new FtpOrderDataReq();
         req.setEndDate(endDate);
         req.setStartDate(startDate);
-
+        req.setFtpPath(uploadPath);
         return this.uploadFtp(req);
     }
 
     @Override
     public ResultVO uploadFtp(FtpOrderDataReq req) {
-        FtpUtils.Ftp  ftpInfo = getFtp();
-        if(ftpInfo==null){
+        FtpUtils.Ftp ftpInfo = getFtp();
+        if (ftpInfo == null) {
             return ResultVO.error("获取ftp配置错误");
         }
+        ftpInfo.setPath(req.getFtpPath());
         //获取需要导入的总记录数
         int length = orderManager.queryFtpOrderDataRespListCount(req);
 
@@ -171,8 +163,6 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
             Map<String, InvoicePageResp> userMap = new HashMap<String, InvoicePageResp>();
             int pageCount = (length + FtpOrderDataConsts.BATCH_COUNT - 1) / FtpOrderDataConsts.BATCH_COUNT;
             for (int page = 1; page <= pageCount; page++) {
-                int start = 1 + (FtpOrderDataConsts.BATCH_COUNT * (page - 1));
-                int end = FtpOrderDataConsts.BATCH_COUNT * page > length ? length : FtpOrderDataConsts.BATCH_COUNT * page;
 
                 FtpOrderDataReq orderDataReq = new FtpOrderDataReq();
                 orderDataReq.setEndDate(req.getEndDate());
@@ -181,35 +171,40 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
                 orderDataReq.setPageSize(FtpOrderDataConsts.BATCH_COUNT);
                 List<FtpOrderDataResp> dataList = this.queryFtpOrderDataRespList(orderDataReq, merchantDTOMap, userMap, invoiceMap);
 
-                for (FtpOrderDataResp orderDataResp : dataList) {
-                    content.append(orderDataResp.getCustId()).append(FtpOrderDataConsts.SPLIT);
-                    content.append(orderDataResp.getCerId()).append(FtpOrderDataConsts.SPLIT);
-                    content.append(orderDataResp.getProvinceNo()).append(FtpOrderDataConsts.SPLIT);
-                    content.append(orderDataResp.getBizLicExprYrMon()).append(FtpOrderDataConsts.SPLIT);
-                    content.append(orderDataResp.getFstTransYrMon()).append(FtpOrderDataConsts.SPLIT);
-                    content.append(orderDataResp.getRegYrMon()).append(FtpOrderDataConsts.SPLIT);
-                    content.append(orderDataResp.getYrMon()).append(FtpOrderDataConsts.SPLIT);
-                    content.append(orderDataResp.getTransAmt()).append(FtpOrderDataConsts.SPLIT);
-                    content.append(length).append(FtpOrderDataConsts.SPLIT);
-                    content.append(orderDataResp.getGoodsCnt()).append(FtpOrderDataConsts.SPLIT);
-                    content.append(orderDataResp.getOldCustId()).append(FtpOrderDataConsts.END);
-                 }
+                if(dataList!=null){
+                    for (FtpOrderDataResp orderDataResp : dataList) {
+                        content.append(orderDataResp.getCustId()).append(FtpOrderDataConsts.SPLIT);
+                        content.append(orderDataResp.getCerId()).append(FtpOrderDataConsts.SPLIT);
+                        content.append(orderDataResp.getProvinceNo()).append(FtpOrderDataConsts.SPLIT);
+                        content.append(orderDataResp.getBizLicExprYrMon()).append(FtpOrderDataConsts.SPLIT);
+                        content.append(orderDataResp.getFstTransYrMon()).append(FtpOrderDataConsts.SPLIT);
+                        content.append(orderDataResp.getRegYrMon()).append(FtpOrderDataConsts.SPLIT);
+                        content.append(orderDataResp.getYrMon()).append(FtpOrderDataConsts.SPLIT);
+                        content.append(orderDataResp.getTransAmt()).append(FtpOrderDataConsts.SPLIT);
+                        content.append(length).append(FtpOrderDataConsts.SPLIT);
+                        content.append(orderDataResp.getGoodsCnt()).append(FtpOrderDataConsts.SPLIT);
+                        content.append(orderDataResp.getOldCustId());
+                        if(page!=pageCount){
+                            content.append(FtpOrderDataConsts.END);
+                        }
+                    }
+                }
+
 
             }
         }
         String startDate = req.getStartDate();
 
-        String month = startDate.substring(0,8).replaceAll("-","");
+        String month = startDate.substring(0, 8).replaceAll("-", "");
 
-
-        String fileName = FtpOrderDataConsts.FILE_NAME_PRE+month+FtpOrderDataConsts.FILE_TYPE;
-        try{
-//            FtpUtils.upload(ftpInfo,content.toString(),fileName);
+        String fileName = FtpOrderDataConsts.FILE_NAME_PRE + month + FtpOrderDataConsts.FILE_TYPE;
+        try {
+            FtpUtils.upload(ftpInfo,content.toString(),fileName);
             return ResultVO.success();
-        }catch (Exception e){
+        } catch (Exception e) {
+            log.error("文件上传ftp失败:",e);
             return ResultVO.error("文件上传ftp失败");
         }
-
 
 
     }
@@ -221,7 +216,7 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
             return ftpInfo;
         }
         ftpInfo = new FtpUtils.Ftp();
-        for (PublicDictDTO publicDictDTO: publicDictDTOS) {
+        for (PublicDictDTO publicDictDTO : publicDictDTOS) {
             if (FtpOrderDataConsts.IP.equals(publicDictDTO.getPkey())) {
                 ftpInfo.setIpAddr(publicDictDTO.getPname());
             } else if (FtpOrderDataConsts.PORT.equals(publicDictDTO.getPkey())) {
@@ -237,6 +232,7 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
 
         return ftpInfo;
     }
+
     private void getMerchantDTOMap(Map<String, MerchantDTO> merchantDTOMap, Map<String, InvoicePageResp> userMap, List<String> idList) {
         if (null == idList || idList.isEmpty()) {
             return;
@@ -280,7 +276,24 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
 
     }
 
-    private void getFtpInfo() {
-        env.getProperty(MarketingResConst.ZOP_APPSECRET);
+    public static void main(String[] args) throws Exception{
+        FtpUtils.Ftp ftpInfo = new FtpUtils.Ftp();
+        ftpInfo.setIpAddr("134.176.97.50");
+        ftpInfo.setPort(21);
+        ftpInfo.setUserName("fdfs");
+        ftpInfo.setPwd("cl3AO&UXBdip");
+        ftpInfo.setPath("/tmp/order/ago");
+
+        String content = "dddddd中文";
+        String fileName = "test.txt";
+        FtpUtils.upload(ftpInfo,content.toString(),fileName);
+    }
+    public String getDataPathAgo() {
+        return env.getProperty(FtpOrderDataConsts.DATA_PATH_AGO);
+    }
+
+
+    public String getDataPathMid() {
+        return env.getProperty(FtpOrderDataConsts.DATA_PATH_MID);
     }
 }

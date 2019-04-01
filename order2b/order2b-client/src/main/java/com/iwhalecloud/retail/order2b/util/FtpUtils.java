@@ -105,9 +105,14 @@ public class FtpUtils {
 
         } finally {
             closeFtp(ftpClient);
-            if (input != null) {
-                input.close();
+            try {
+                if (input != null) {
+                    input.close();
+                }
+            }catch (Exception e){
+
             }
+
         }
         return ResultVO.success();
     }

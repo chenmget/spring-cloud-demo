@@ -13,4 +13,5 @@ import java.io.Serializable;
 public class FtpOrderDataReq extends PageVO implements Serializable {
     private String startDate;
     private String endDate;
+    private String ftpPath;
 }

@@ -22,7 +22,7 @@ public class SettleRecordOrderServiceImpl implements SettleRecordOrderService {
     private DeliveryManager deliveryManager;
 
     @Override
-    public List<SettleRecordOrderDTO> getSettleRecordOrder(List<String> orderIds) {
-        return deliveryManager.getSettleRecordOrder(orderIds);
+    public List<SettleRecordOrderDTO> getSettleRecordOrder(List<String> orderIds,String lanId) {
+        return deliveryManager.getSettleRecordOrder(orderIds,lanId);
     }
 }

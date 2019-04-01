@@ -117,12 +117,4 @@ public interface ResourceInstService {
      * @return
      */
     ResultVO<Boolean> nbrHasActivity(Map<String, String> nbrAndProductId);
-
-    /**
-     * 根据串码查询厂商仓库
-     * @param nbr
-     * @return
-     */
-    String getMerchantStoreIdByNbr(String nbr);
-
 }

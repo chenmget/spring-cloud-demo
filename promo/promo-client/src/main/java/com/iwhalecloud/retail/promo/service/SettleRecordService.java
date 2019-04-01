@@ -18,5 +18,5 @@ public interface SettleRecordService {
     Integer batchAddSettleRecord(List<SettleRecordDTO> settleRecordDTOs);
 
 
-    List<SettleRecordDTO> getSettleRecord() throws Exception;
+    List<SettleRecordDTO> getSettleRecord(String lanId) throws Exception;
 }

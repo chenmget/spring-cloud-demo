@@ -1,27 +1,3 @@
-spring:
-  profiles:
-    active: dev
-  jmx:
-    enabled: false
-
-server:
-  port: 8081
-
-logging.level.com.iwhalecloud.retail.oms.mapper: debug
-
-mybatis-plus:
-  mapperLocations: classpath:oms/mapper/*.xml
-
-mybatis:
-  configuration:
-    map-underscore-to-camel-case: true
-    
-#spring.datasource:
-#  driver-class-name: com.mysql.jdbc.Driver
-#  url: jdbc:mysql://10.45.47.88:3306/retail
-#  username: retail
-#  password: retail123
-
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
   url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
@@ -46,7 +22,7 @@ spring.datasource:
     test-on-borrow: true
     test-on-return: false
     # 是否缓存preparedStatement，也就是PSCache  官方建议MySQL下建议关闭   个人建议如果想用SQL防火墙 建议打开
-    pool-prepared-statements: true
+    pool-prepared-statements: false
     max-pool-prepared-statement-per-connection-size: 20
     # 配置监控统计拦截的filters，去掉后监控界面sql无法统计，'wall'用于防火墙
     filter:
@@ -72,46 +48,3 @@ spring.datasource:
     filters: config,stat,wall,log4j
     #设置public key
     connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJptiLaauFuYuwkmQ2S0NSsvjdka34BLnbG5zFcuRqFi7RJowXs7P/dSmQWmlrx5RekyriyBUzgAgSbTFt1NpMsCAwEAAQ==
-
-
-# 分布式文件系统FDFS配置
-fdfs:
-  soTimeout: 1500 #socket连接超时时长
-  connectTimeout: 600 #连接tracker服务器超时时长
-  thumbImage: #缩略图生成参数，可选
-      width: 150
-      height: 150
-  trackerList: #TrackerList参数,支持多个，我这里只有一个，如果有多个在下方加- x.x.x.x:port :NRetail/NRetail
-    - 10.45.47.87:22133
-    - 10.45.47.90:22133
-    - 10.45.47.87:22133
-
-inf:
-  camera:
-    serverIP: http://dj.reconova.com
-    #合作方编码
-    parentCode: 02G
-    #品牌编码
-    brandCode: 02G-000
-    #门店编码
-    mallCode: 02G-000-000
-    #应用ID
-    clientId: fbbc879b-76e2-40b4-aea1-01130be00948
-    #应用密码
-    clientSecret: 8BE64F296EAD2DAB6320E600CCF4894E
-    #授权类型
-    grantType: client_credentials
-    #帐号
-    phoneNo: zxrcAdmin
-    #密码 屏蔽
-#    password: 123456
-    #版号
-    vi: 00400300200
-    token: 27DE2D38FFEFDC0553BF9EDDB43B04B0
-    #接口地址
-    address:
-      customersDailyReport: /customersReportAppAction!customersDailyReport.action
-      customersWeekReport: /customersReportAppAction!customersWeekReport.action
-      vipInfo: /vipAppAction!vipInfo.action
-      repeatCustomerDetails: /repeatCustomerAppAction!repeatCustomerDetails.action
-      visitHistory: /vipAppAction!visitHistory.action

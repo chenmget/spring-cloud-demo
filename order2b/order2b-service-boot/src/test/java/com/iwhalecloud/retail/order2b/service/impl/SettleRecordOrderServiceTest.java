@@ -22,7 +22,8 @@ public class SettleRecordOrderServiceTest extends TestBase {
         List<String> orderIds = new ArrayList<>();
         orderIds.add("201903254010109902");
         orderIds.add("201903256710109930");
-        List<SettleRecordOrderDTO> settleRecordOrderDTOs = settleRecordOrderService.getSettleRecordOrder(orderIds);
+        String lanId ="731";
+        List<SettleRecordOrderDTO> settleRecordOrderDTOs = settleRecordOrderService.getSettleRecordOrder(orderIds,lanId);
         System.out.println(settleRecordOrderDTOs);
     }
 }

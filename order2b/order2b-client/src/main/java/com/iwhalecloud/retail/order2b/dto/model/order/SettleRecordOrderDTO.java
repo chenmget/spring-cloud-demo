@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by Administrator on 2019/3/29.
@@ -36,4 +37,6 @@ public class SettleRecordOrderDTO implements Serializable {
     private String supplierAccountId;
 
     private String merchantAccountId;
+
+    private List<String> ids;
 }

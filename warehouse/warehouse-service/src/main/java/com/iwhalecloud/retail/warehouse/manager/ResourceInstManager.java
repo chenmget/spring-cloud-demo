@@ -349,13 +349,4 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
         return resourceInstMapper.getPrimaryKey();
     }
 
-
-    /**
-     * 根据串码查询厂商仓库
-     * @param nbr
-     * @return
-     */
-    public String getMerchantStoreIdByNbr(String nbr){
-        return resourceInstMapper.getMerchantStoreIdByNbr(nbr);
-    }
 }

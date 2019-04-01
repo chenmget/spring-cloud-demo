@@ -543,13 +543,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         return b.toString();
     }
 
-    /**
-     * 判断是否需要审核环节：
-     * 1）判断是否跨零售商，即判断源仓库与目标仓库的商家是否同一经营主体，一致则进行下一个判断；不一致，则申请单流转到调出方地市管理员进行审核；
-     * 2）判断是否跨地市，即判断源仓库与目标仓库本地网标识是否一致，一致则不需要审核，申请单流转到目标仓库处理人进行确认；不一致则进行下一个判断
-     * 3、需要审核环节的，申请单流转到配置的运营人员进行审核，审核通过的，申请单流转到目标仓库处理人；不通过则打回到申请单发起人；
-     * 4、目标仓库处理人进行调拨收货确认，确认后串码进行入库操作；
-     */
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO allocateResourceInst(RetailerResourceInstAllocateReq req) {
@@ -573,11 +566,12 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         String auditType = validAllocateNbr(sourceMerchantDTO, destMerchantDTO, mktResInstNbrs);
-        if (ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode().equals(auditType)) {
+        String reqCode = resourceInstManager.getPrimaryKey();
+        if (ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_0.getCode().equals(auditType)) {
             return ResultVO.error("不能调拨，请检查调拨串码和目标仓库");
         }else if(ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode().equals(auditType)){
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
-            successMessage = ResourceConst.ALLOCATE_AUDITING_MSG;
+            successMessage = ResourceConst.ALLOCATE_AUDITING_MSG + reqCode;
         }
         // 此处应该调用BSS3.0接口查
         ResourceInstBatchReq resourceInstBatchReq = new ResourceInstBatchReq();
@@ -608,6 +602,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         resourceRequestAddReq.setInstList(resourceRequestInsts);
         resourceRequestAddReq.setLanId(destMerchantDTO.getLanId());
         resourceRequestAddReq.setRegionId(destMerchantDTO.getCity());
+        resourceRequestAddReq.setReqCode(reqCode);
         ResultVO<String> resultVOInsertResReq = requestService.insertResourceRequest(resourceRequestAddReq);
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resourceRequestService.insertResourceRequest req={},resp={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVOInsertResReq));
         if (!resultVOInsertResReq.isSuccess()) {
@@ -621,7 +616,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         processStartDTO.setApplyUserId(req.getCreateStaff());
         processStartDTO.setProcessId(ResourceConst.ALLOCATE_WORK_FLOW_INST_2);
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
-        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType());
+        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType());
         // 指定下一环节处理人
         HandlerUser user = new HandlerUser();
         user.setHandlerUserId(destMerchantDTO.getUserId());
@@ -630,7 +625,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         processStartDTO.setNextHandlerUser(uerList);
         ResultVO taskServiceRV = taskService.startProcess(processStartDTO);
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst taskService.startProcess req={},resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
-        if (null != taskServiceRV && taskServiceRV.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
+        if (!taskServiceRV.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
         // 删除源串码
@@ -793,9 +788,10 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         return mktResIdAndNbrMap;
     }
 
-    /** 原需求
-     * 绿色通道、省直供串码 跨商不允许调拨（跨不跨地市都不行）；
-     * 地包供货的串码，只能选择同地市的零售商仓库，(跨商与不跨商没区别)不需要审核
+    /**
+     * 判断是否需要审核环节：
+     * 零售商门店，省包供货、绿色通道录入的串码，只能选择同个经营主体下的其他门店仓库进行调拨，同地市时不审核，跨地市时需要审核（调出和调入双方审核）
+     * 地包供货的串码，只能选择同地市的零售商仓库，不需要审核
      * @param sourceMerchant
      * @param destMerchant
      * @param nbrList
@@ -812,15 +808,16 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         Boolean hasDirectSuppLy = false;
         Boolean hasGroundSupply = false;
         for (String nbr : nbrList) {
-            ResultVO<ResouceInstTrackDTO> resouceInstTrackDTOVO = resouceInstTrackService.getResourceInstTrack(nbr);
+            ResultVO<ResouceInstTrackDTO> resouceInstTrackDTOVO = resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId(nbr, sourceMerchant.getMerchantId());
+            log.info("RetailerResourceInstMarketServiceImpl.validAllocateNbr resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId nbr={}, resp={}", nbr, JSON.toJSONString(resouceInstTrackDTOVO));
             if (!resouceInstTrackDTOVO.isSuccess() || null == resouceInstTrackDTOVO.getResultData()) {
-                return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_1.getCode();
+                return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_0.getCode();
             }
             ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOVO.getResultData();
-            if (ResourceConst.CONSTANT_01.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_01.equals(resouceInstTrackDTO.getIfDirectSuppLy())) {
+            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfDirectSuppLy())) {
                 hasDirectSuppLy = true;
             }
-            if (ResourceConst.CONSTANT_01.equals(resouceInstTrackDTO.getIfGroundSupply())) {
+            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGroundSupply())) {
                 hasGroundSupply = true;
             }
         }
@@ -829,18 +826,16 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         Boolean directSuppLyAndNotSameMerchant = hasDirectSuppLy && !hasGroundSupply && !sameMerchant;
         // 全是绿色通道和省直供串码且不跨商，且不跨地市  不需审核
         Boolean directSuppLyAndSameMerchantAndSameLanId = hasDirectSuppLy && !hasGroundSupply && sameMerchant && sameLanId;
-        // 全是绿色通道和省直供串码且不跨商，且跨地市  需要调出方和调入方审核
+        // 全是绿色通道和省直供串码不跨商，跨地市  需要调出方和调入方审核
         Boolean directSuppLyAndSameMerchantAndNotSameLanId = hasDirectSuppLy && !hasGroundSupply && sameMerchant && !sameLanId;
         // 全是地堡供应串码，且不能跨地市（跨地市不让调拨，跨不跨商家都不需要审核）不需要审核
         Boolean directSuppLyAndSameLanId = !hasDirectSuppLy && hasGroundSupply && !sameLanId;
 
         if (directSuppLyAndSameMerchantAndNotSameLanId) {
             return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode();
-        } else if(directSuppLyAndSameMerchantAndSameLanId) {
+        } else if(directSuppLyAndSameMerchantAndSameLanId || directSuppLyAndSameLanId) {
             return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_1.getCode();
-        }else if(directSuppLyAndSameLanId) {
-            return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_1.getCode();
-        }else{
+        } else{
             return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_0.getCode();
         }
     }

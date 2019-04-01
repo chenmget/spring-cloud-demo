@@ -9,5 +9,5 @@ import java.util.List;
  */
 public interface SettleRecordOrderService {
 
-    List<SettleRecordOrderDTO> getSettleRecordOrder(List<String> orderIds);
+    List<SettleRecordOrderDTO> getSettleRecordOrder(List<String> orderIds,String lanId);
 }

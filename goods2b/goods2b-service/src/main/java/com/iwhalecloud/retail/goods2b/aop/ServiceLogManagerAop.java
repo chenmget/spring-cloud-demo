@@ -3,11 +3,13 @@ package com.iwhalecloud.retail.goods2b.aop;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.parser.ParserConfig;
 import com.alibaba.fastjson.serializer.SerializeConfig;
+import com.iwhalecloud.retail.exception.RetailTipException;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 @Aspect
 @Component
@@ -30,14 +32,16 @@ public class ServiceLogManagerAop {
         log.info("interface=({}),gs_start={},url={},request{}",
                 JSON.toJSONString(point.getSignature().getDeclaringType()), time, point.getSignature().getName(),
                 JSON.toJSONString((point.getArgs())));
-
-        Object result = point.proceed();
-
-        log.info("interface=({}),gs_close={},timeConsuming={},request{},result={}",
-                JSON.toJSONString(point.getSignature().getDeclaringType()),time, (System.currentTimeMillis() - time),
-                JSON.toJSONString(point.getArgs()), JSON.toJSONString(result));
-        return result;
-
+        try {
+            Object result = point.proceed();
+            log.info("interface=({}),gs_close={},timeConsuming={},request{},result={}",
+                    JSON.toJSONString(point.getSignature().getDeclaringType()),time, (System.currentTimeMillis() - time),
+                    JSON.toJSONString(point.getArgs()), JSON.toJSONString(result));
+            return result;
+        } catch (RetailTipException e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return e.getTipResultVO();
+        }
 
     }
 

@@ -467,6 +467,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                     PartnerConst.MerchantTypeEnum.PARTNER.getType());
         }
         resourceInstsGetReq.setMerchantTypes(merchantTypes);
+        resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
         if (CollectionUtils.isNotEmpty(inst)) {

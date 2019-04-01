@@ -71,7 +71,7 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @param req
      * @return
      */
-    int queryFtpOrderDataRespListCount(FtpOrderDataReq req);
+    int queryFtpOrderDataRespListCount(@Param("req") FtpOrderDataReq req);
 
     /**
      * 根据orderId查询未全部发货订单

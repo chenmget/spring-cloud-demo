@@ -97,7 +97,7 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
                 //首笔订单发生日期:首单
                 orderDataResp.setFstTransYrMon(StringUtils.defaultString(fstTransDate));
 
-                //平台注册日期:商家表的创建时间
+                //平台注册日期:商家表的创建时间,取不到，目前填空
                 String regYrMon = "";
                 orderDataResp.setRegYrMon(StringUtils.defaultString(regYrMon));
 
@@ -108,7 +108,8 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
 
                 //GoodsCnt--订单项表的数量num字段：数据库获取
                 //旧平台客户编号:oldCustId--商家表的
-                orderDataResp.setOldCustId("");
+                String oldCustId = merchant==null?"":merchant.getOldCustId();
+                orderDataResp.setOldCustId(StringUtils.defaultString(oldCustId));
 
             }
             return orderList;

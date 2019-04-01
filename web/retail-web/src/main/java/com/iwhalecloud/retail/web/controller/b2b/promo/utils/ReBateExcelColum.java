@@ -18,8 +18,8 @@ public class ReBateExcelColum {
         reBateDetailColumn.add(new ExcelTitleName("specName", "规格型号"));
         reBateDetailColumn.add(new ExcelTitleName("productSn", "机型编码"));
         reBateDetailColumn.add(new ExcelTitleName("unitType", "产品型号"));;
-        reBateDetailColumn.add(new ExcelTitleName("rewardPrice", "返利单价"));
-        reBateDetailColumn.add(new ExcelTitleName("amount", "入账金额"));;
+        reBateDetailColumn.add(new ExcelTitleName("rewardPriceYuan", "返利单价"));
+        reBateDetailColumn.add(new ExcelTitleName("amountYuan", "入账金额"));;
         reBateDetailColumn.add(new ExcelTitleName("statusCdDesc", "状态"));
         reBateDetailColumn.add(new ExcelTitleName("actName", "活动名称"));;
         reBateDetailColumn.add(new ExcelTitleName("effDate", "生效时间"));

@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.promo.common.ArithUtil;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.AccountBalanceDetailDTO;
@@ -103,6 +104,14 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                     statusCdDesc = RebateConst.Const.STATUS_USE.getName();
                 }
                 queryAccountBalanceDetailAllResp.setStatusCdDesc(statusCdDesc);
+                if(StringUtils.isNotEmpty(queryAccountBalanceDetailAllResp.getAmount())){
+                    queryAccountBalanceDetailAllResp.setAmountYuan(ArithUtil.fenToYuan(queryAccountBalanceDetailAllResp.getAmount()));
+                }
+                if(StringUtils.isNotEmpty(queryAccountBalanceDetailAllResp.getRewardPrice())){
+                    queryAccountBalanceDetailAllResp.setRewardPrice(ArithUtil.fenToYuan(queryAccountBalanceDetailAllResp.getRewardPrice()));
+                }
+
+
                 if(StringUtils.isNotEmpty(supplierId)){
                     ResultVO<MerchantDTO>  supplier = merchantService.getMerchantById(supplierId);
                     if(supplier!=null&&supplier.isSuccess()&&supplier.getResultData()!=null){

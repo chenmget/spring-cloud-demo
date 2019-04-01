@@ -32,12 +32,13 @@
         <hystrix.version>1.4.22</hystrix.version>
         <ojdbc6.version>11.2.0.3</ojdbc6.version>
         <spring-boot-starter-dubbo.version>1.0.0</spring-boot-starter-dubbo.version>
-        <mybatis-plus.version>3.0.3</mybatis-plus.version>
-        <mybatis-plus-boot-starter.version>3.0.3</mybatis-plus-boot-starter.version>
+        <mybatis-plus.version>3.0.7</mybatis-plus.version>
+        <mybatis-plus-boot-starter.version>3.0.7</mybatis-plus-boot-starter.version>
         <springfox-swagger-ui.version>2.4.0</springfox-swagger-ui.version>
         <springfox-swagger2.version>2.4.0</springfox-swagger2.version>
         <weixin-java-mp.version>2.8.0</weixin-java-mp.version>
         <hystrix-version>1.4.22</hystrix-version>
+        <druid-spring-boot-starter.version>1.1.10</druid-spring-boot-starter.version>
     </properties>
 
     <dependencies>
@@ -66,7 +67,7 @@
         <dependency>
             <groupId>com.alibaba</groupId>
             <artifactId>druid-spring-boot-starter</artifactId>
-            <version>1.1.2</version>
+            <version>${druid-spring-boot-starter.version}</version>
         </dependency>
 
         <dependency>
@@ -79,11 +80,11 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>com.oracle</groupId>
-            <artifactId>ojdbc6</artifactId>
-            <version>11.2.0.3</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>com.oracle</groupId>-->
+            <!--<artifactId>ojdbc6</artifactId>-->
+            <!--<version>11.2.0.3</version>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.springframework.boot</groupId>

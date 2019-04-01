@@ -644,7 +644,7 @@ public class GoodsServiceImpl implements GoodsService {
     public ResultVO<Page<GoodsForPageQueryResp>> queryGoodsForPage(GoodsForPageQueryReq req) {
         log.info("GoodsServiceImpl.queryGoodsForPage req={}", JSON.toJSONString(req));
         List<AttrSpecValueReq> attrSpecValueReqList = req.getAttrSpecValueList();
-        // 获取并设置属性字段名称
+        // 获取并设置属性字段名称F
         getFiledName(attrSpecValueReqList);
         Page<GoodsForPageQueryResp> goodsForPageQueryRespPage = goodsManager.queryGoodsForPage(req);
         // 按照零售商商品展示规则过滤

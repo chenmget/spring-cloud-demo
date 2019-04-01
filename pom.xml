@@ -26,11 +26,12 @@
         <module>workflow</module>
         <module>goods2b</module>
         <module>order2b</module>
-        <module>goods</module>
-        <module>order</module>
+        <!--<module>goods</module>-->
+        <!--<module>order</module>-->
         <module>warehouse</module>
         <module>report</module>
         <module>promo</module>
+        <module>elastic-job-master</module>
     </modules>
     <packaging>pom</packaging>
     <name>retail-parent</name>

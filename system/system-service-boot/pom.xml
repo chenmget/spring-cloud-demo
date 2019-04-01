@@ -17,6 +17,12 @@
             <artifactId>system-service</artifactId>
             <version>${system.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid-spring-boot-starter.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

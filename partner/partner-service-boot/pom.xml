@@ -18,6 +18,12 @@
             <artifactId>partner-service</artifactId>
             <version>${partner.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid-spring-boot-starter.version}</version>
+        </dependency>
     </dependencies>
 	<build>
 		<finalName>partner-service</finalName>

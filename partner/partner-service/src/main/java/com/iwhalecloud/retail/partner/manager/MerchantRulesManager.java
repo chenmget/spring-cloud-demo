@@ -134,5 +134,4 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
         return merchantRulesMapper.queryMerchantRuleByCondition(req);
     }
 
-
 }

@@ -25,6 +25,8 @@ public enum ResultCodeEnum implements ResultCode {
     TASK_LIST_IS_ERROR("10010","查询待处理工单异常"),
     NEXT_HADNLE_USER_IS_EMPTY("10011","获取环节处理人为空"),
     QUERY_HADNLE_USER_IS_EMPTY("10012","根据用户ID【%s】查询用户为空"),
+    TASK_ID_IS_EMPTY("10013","任务ID为空"),
+    TASK_ITEM_ID_IS_EMPTY("10013","任务项ID为空"),
     SYSTEM_ERROR("500","服务器内部错误"),
     PAGE_NOT_FOUND("404","页面找不到");
 

@@ -151,6 +151,10 @@ public class MerchantDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "(商家)联系电话")
   	private java.lang.String phoneNo;
-
+	/**
+	 * 旧平台客户编号
+	 */
+	@ApiModelProperty(value = "旧平台客户编号")
+	private java.lang.String oldCustId;
 
 }

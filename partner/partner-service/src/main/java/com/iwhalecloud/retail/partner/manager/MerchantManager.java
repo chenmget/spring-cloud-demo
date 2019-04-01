@@ -696,7 +696,7 @@ public class MerchantManager {
      * @return
      */
 //    private List<String> getMerchantIdListByTag(MerchantTagRelListReq req) {
-    private List<String> getMerchantIdListByTag(String tagId) {
+    public List<String> getMerchantIdListByTag(String tagId) {
         MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
         merchantTagRelListReq.setTagId(tagId);
         List<String> merchantIdList = Lists.newArrayList();

@@ -270,6 +270,7 @@
         SELECT
             t.BUYER_CODE AS cust_id,
             t.order_id,
+            t.update_time,
             DATE_FORMAT(t.create_time, '%Y%m') AS yr_Mon,
             t.ORDER_AMOUNT AS Trans_Amt,
             (SELECT SUM(num) FROM ord_order_items item where item.order_id=t.order_id) as goods_Cnt
@@ -277,9 +278,9 @@
             ord_order t
         WHERE
             t. STATUS IN (6, 10)
-        <![CDATA[   and DATE_FORMAT(t.PAY_TIME, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
-        <![CDATA[   and DATE_FORMAT(t.PAY_TIME, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
-        order by t.PAY_TIME
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
+        order by t.update_time
 
     </select>
     <select id="getFstTransDate" resultType="java.lang.String">
@@ -289,9 +290,9 @@
             resultType="java.lang.Integer">
         select count(1)
         from ord_order t where t.status in(6,10)
-        <![CDATA[   and DATE_FORMAT(t.PAY_TIME, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
-        <![CDATA[   and DATE_FORMAT(t.PAY_TIME, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
-        order by t.PAY_TIME,ORDER_ID
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
+
     </select>
 
 

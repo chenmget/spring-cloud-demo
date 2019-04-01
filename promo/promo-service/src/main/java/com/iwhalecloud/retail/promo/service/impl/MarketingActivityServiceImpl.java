@@ -908,7 +908,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             return listResultVO;
         }
         if (listResultVO.getResultData().size() <= 0) {
-            return ResultVO.error("该活动没有参与的商家");
+            return ResultVO.success();
         }
         //异步写优惠券推送任务表
         AutoPushCouponReq autoPushCouponReq = new AutoPushCouponReq();

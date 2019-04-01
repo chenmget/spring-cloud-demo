@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.order2b.manager.OrderZFlowManager;
 import com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -50,12 +51,13 @@ public class UpdateOrderFlowServiceImpl implements UpdateOrderFlowService {
 
         CommonResultResp resp=new CommonResultResp();
         if(StringUtils.isEmpty(order.getStatus())){
-             order = orderManager.getOrderById(request.getOrderId());
-            if (order == null) {
+            Order ordera = orderManager.getOrderById(request.getOrderId());
+            if (ordera == null) {
                 resp.setResultMsg("未查询到订单");
                 resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
                 return resp;
             }
+            BeanUtils.copyProperties(ordera,order);
         }
 
         if(OrderAllStatus.ORDER_STATUS_10_.getCode().equals(order.getStatus())){
@@ -78,12 +80,13 @@ public class UpdateOrderFlowServiceImpl implements UpdateOrderFlowService {
     public CommonResultResp checkFlowTypeApply(UpdateApplyStatusRequest request, OrderApply apply) {
         CommonResultResp resp=new CommonResultResp();
         if(StringUtils.isEmpty(apply.getApplyState())){
-            apply=afterSaleManager.selectOrderApplyById(request.getOrderApplyId());
-            if (apply == null) {
+           OrderApply applyById=afterSaleManager.selectOrderApplyById(request.getOrderApplyId());
+            if (applyById == null) {
                 resp.setResultMsg("未找到申请单");
                 resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
                 return resp;
             }
+            BeanUtils.copyProperties(applyById,apply);
         }
 
         if(OrderAllStatus.ORDER_STATUS_10_.getCode().equals(apply.getApplyState())){

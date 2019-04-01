@@ -9,22 +9,24 @@ import com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.service.FtpOrderDataService;
+import com.iwhalecloud.retail.partner.common.ParInvoiceConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
+import com.iwhalecloud.retail.partner.dto.req.QueryInvoiceByMerchantIdsReq;
+import com.iwhalecloud.retail.partner.dto.resp.InvoicePageResp;
+import com.iwhalecloud.retail.partner.service.InvoiceService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.DateUtils;
+import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
-import com.iwhalecloud.retail.warehouse.dto.MktResStoreTempDTO;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 吴良勇
@@ -36,64 +38,109 @@ import java.util.Map;
 public class FtpOrderDataServiceImpl implements FtpOrderDataService {
     @Autowired
     private OrderManager orderManager;
+    @Reference
+    private InvoiceService invoiceService;
+    @Reference
+    private UserService userService;
+
+
     @Autowired
     private Environment env;
 
     @Reference
     private MerchantService merchantService;
-   // @Value("${ftp.order.ip}")
-    private String ip;
-    //@Value("${ftp.order.username}")
-    private String username;
-    //@Value("${ftp.order.password}")
-    private String password;
-   // @Value("${ftp.order.port}")
-    private Integer port;
-    //@Value("${ftp.order.filePath}")
-    private String filePath;
-
-    //@Value("${ftp.order.onePath}")
-    private String onePath;
-    //@Value("${ftp.order.fifteenPath}")
-    private String fifteenPath;
 
 
-    @Override
-    public List<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req) {
 
-        Page<FtpOrderDataResp>  orderListPage = orderManager.queryFtpOrderDataRespList(req);
-        if(orderListPage!=null&&orderListPage.getRecords()!=null&&!orderListPage.getRecords().isEmpty()){
+
+    private List<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req,
+                                                             Map<String, MerchantDTO> merchantDTOMap,
+                                                             Map<String, InvoicePageResp> invoiceMap, Map<String, InvoicePageResp> userMap) {
+
+        Page<FtpOrderDataResp> orderListPage = orderManager.queryFtpOrderDataRespList(req);
+        if (orderListPage != null && orderListPage.getRecords() != null && !orderListPage.getRecords().isEmpty()) {
+            List<String> merchantIdList = new ArrayList<String>();
             List<FtpOrderDataResp> orderList = orderListPage.getRecords();
+            for (FtpOrderDataResp orderDataResp : orderList) {
+                String custId = orderDataResp.getCustId();
+                if (!merchantDTOMap.containsKey(custId)) {
+                    merchantIdList.add(custId);
+                }
+            }
+            //获取商家
+            this.getMerchantDTOMap(merchantDTOMap, userMap, merchantIdList);
+            //获取发票
+            this.getInvoiceMap(invoiceMap, merchantIdList);
             //获取首单时间(月份)
             String fstTransDate = orderManager.getFstTransDate();
-            fstTransDate = DateUtils.dateToStr(DateUtils.strToUtilDate(fstTransDate),"yyyyMM");
+            fstTransDate = DateUtils.dateToStr(DateUtils.strToUtilDate(fstTransDate), "yyyyMM");
             for (FtpOrderDataResp orderDataResp : orderList) {
-
+                //商家ID
                 String custId = orderDataResp.getCustId();
+                InvoicePageResp invoice = invoiceMap.get(custId);
+                MerchantDTO merchant = merchantDTOMap.get(custId);
+                //客户营业执照号:根据custId从PAR_INVOICE表获取
+                String cerId = invoice != null ? invoice.getBusiLicenceCode() : "";
+                orderDataResp.setCerId(StringUtils.defaultString(cerId));
+                //经营省份区域编码provinceNo--写死湖南省
+                orderDataResp.setProvinceNo(FtpOrderDataConsts.PROVINCE_NO);
+                //营业执照失效日期:根据custId从PAR_INVOICE表获取
+                String bizLicExprYrMon = null;
+                if (invoice != null && invoice.getBusiLicenceExpDate() != null) {
+                    bizLicExprYrMon = DateUtils.dateToStr(invoice.getBusiLicenceExpDate(), "yyyymm");
+                }
+                orderDataResp.setBizLicExprYrMon(StringUtils.defaultString(bizLicExprYrMon));
+
+                //首笔订单发生日期:首单
+                orderDataResp.setFstTransYrMon(StringUtils.defaultString(fstTransDate));
+
+                //平台注册日期:商家表的创建时间
+                String regYrMon = "";
+//                if (merchant != null && merchant.get() != null) {
+//                    bizLicExprYrMon = DateUtils.dateToStr(invoice.getBusiLicenceExpDate(), "yyyymm");
+//                }
+
+                orderDataResp.setRegYrMon(StringUtils.defaultString(regYrMon));
+
+                //交易月份:订单表：创建时间
+                orderDataResp.setYrMon("");
+
+                //交易笔数:时间段的订单数
+                orderDataResp.setTransAmt("");
+
+                //GoodsCnt--订单项表的数量num字段
+                orderDataResp.setGoodsCnt("");
+                //旧平台客户编号:oldCustId--商家表的
+
+                orderDataResp.setOldCustId("");
+
             }
+
+
         }
 
         return null;
     }
+
     @Override
-    public ResultVO uploadFtpForTask(){
+    public ResultVO uploadFtpForTask() {
         Date date = DateUtils.strToUtilDate("2019-03-01 12:12:12");
 
-        String day = DateUtils.dateToStr(date,FtpOrderDataConsts.DAY_FOR_DAY);
+        String day = DateUtils.dateToStr(date, FtpOrderDataConsts.DAY_FOR_DAY);
         String startDate = "";
         String endDate = "";
         String uploadPath = "";
-        if(FtpOrderDataConsts.FIFTEEN.equals(day)){
-            uploadPath = this.fifteenPath;
+        if (FtpOrderDataConsts.FIFTEEN.equals(day)) {
+//            uploadPath = this.fifteenPath;
             //查询1-15的数据
-            startDate = DateUtils.dateToStr(date,FtpOrderDataConsts.DAY_FOR_YEAR_MONTH)+"-"+FtpOrderDataConsts.ONE;
-            endDate = DateUtils.dateToStr(date,FtpOrderDataConsts.DAY_FOR_YEAR_DAY);
-        }else if(FtpOrderDataConsts.ONE.equals(day)){
-            uploadPath = this.onePath;
+            startDate = DateUtils.dateToStr(date, FtpOrderDataConsts.DAY_FOR_YEAR_MONTH) + "-" + FtpOrderDataConsts.ONE;
+            endDate = DateUtils.dateToStr(date, FtpOrderDataConsts.DAY_FOR_YEAR_DAY);
+        } else if (FtpOrderDataConsts.ONE.equals(day)) {
+//            uploadPath = this.onePath;
             //查询上个月16-月末的数据
-            startDate = DateUtils.dateToStr(DateUtils.getLastMonth(date),FtpOrderDataConsts.DAY_FOR_YEAR_MONTH)+"-"+FtpOrderDataConsts.SIXTEEN;
-            endDate =  DateUtils.getMonthLastDay(DateUtils.getLastMonth(date));
-        }else{
+            startDate = DateUtils.dateToStr(DateUtils.getLastMonth(date), FtpOrderDataConsts.DAY_FOR_YEAR_MONTH) + "-" + FtpOrderDataConsts.SIXTEEN;
+            endDate = DateUtils.getMonthLastDay(DateUtils.getLastMonth(date));
+        } else {
             return ResultVO.error("日期错误,不进行上传");
         }
         FtpOrderDataReq req = new FtpOrderDataReq();
@@ -102,56 +149,96 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
 
         return this.uploadFtp(req);
     }
+
     @Override
-    public ResultVO uploadFtp(FtpOrderDataReq req){
+    public ResultVO uploadFtp(FtpOrderDataReq req) {
         //获取需要导入的总记录数
         int length = orderManager.queryFtpOrderDataRespListCount(req);
 
         StringBuffer content = new StringBuffer();
 
-
-        if(length>0){
+        if (length > 0) {
+            Map<String, MerchantDTO> merchantDTOMap = new HashMap<String, MerchantDTO>();
+            Map<String, InvoicePageResp> invoiceMap = new HashMap<String, InvoicePageResp>();
+            Map<String, InvoicePageResp> userMap = new HashMap<String, InvoicePageResp>();
             int pageCount = (length + FtpOrderDataConsts.BATCH_COUNT - 1) / FtpOrderDataConsts.BATCH_COUNT;
             for (int page = 1; page <= pageCount; page++) {
                 int start = 1 + (FtpOrderDataConsts.BATCH_COUNT * (page - 1));
                 int end = FtpOrderDataConsts.BATCH_COUNT * page > length ? length : FtpOrderDataConsts.BATCH_COUNT * page;
-                try {
 
+                FtpOrderDataReq orderDataReq = new FtpOrderDataReq();
+                orderDataReq.setEndDate(req.getEndDate());
+                orderDataReq.setStartDate(req.getStartDate());
+                req.setPageNo(page);
+                req.setPageSize(FtpOrderDataConsts.BATCH_COUNT);
+                List<FtpOrderDataResp> dataList = this.queryFtpOrderDataRespList(orderDataReq, merchantDTOMap, userMap, invoiceMap);
 
-                } catch (RuntimeException e) {
+                for (FtpOrderDataResp orderDataResp : dataList) {
+                    content.append(orderDataResp.getCustId()).append(FtpOrderDataConsts.SPLIT);
+                    content.append(orderDataResp.getCerId()).append(FtpOrderDataConsts.SPLIT);
+                    content.append(orderDataResp.getProvinceNo()).append(FtpOrderDataConsts.SPLIT);
+                    content.append(orderDataResp.getBizLicExprYrMon()).append(FtpOrderDataConsts.SPLIT);
+                    content.append(orderDataResp.getFstTransYrMon()).append(FtpOrderDataConsts.SPLIT);
+                    content.append(orderDataResp.getRegYrMon()).append(FtpOrderDataConsts.SPLIT);
+                    content.append(orderDataResp.getYrMon()).append(FtpOrderDataConsts.SPLIT);
+                    content.append(orderDataResp.getTransAmt()).append(FtpOrderDataConsts.SPLIT);
+                    content.append(length).append(FtpOrderDataConsts.SPLIT);
+                    content.append(orderDataResp.getGoodsCnt()).append(FtpOrderDataConsts.SPLIT);
+                    content.append(orderDataResp.getOldCustId()).append(FtpOrderDataConsts.END);
 
-                } catch (Exception e) {
+                 }
 
-
-                }
             }
         }
-        List<FtpOrderDataResp> dataList = this.queryFtpOrderDataRespList(req);
+
 
         return null;
     }
-    private Map<String, MerchantDTO> getMerchantDTOMap(List<String> parCrmOrgIdList) {
-        Map<String, MerchantDTO> marchantMap = new HashMap<String, MerchantDTO>();
-        if (null == parCrmOrgIdList || parCrmOrgIdList.isEmpty()) {
-            return marchantMap;
-        }
-        MerchantListReq req = new MerchantListReq();
-        req.setParCrmOrgIdList(parCrmOrgIdList);
 
+    private void getMerchantDTOMap(Map<String, MerchantDTO> merchantDTOMap, Map<String, InvoicePageResp> userMap, List<String> idList) {
+        if (null == idList || idList.isEmpty()) {
+            return;
+        }
+
+        MerchantListReq req = new MerchantListReq();
+        req.setMerchantIdList(idList);
+        req.setNeedOtherTableFields(false);
         ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchant(req);
         if (null != listResultVO && listResultVO.isSuccess() && null != listResultVO.getResultData()) {
             List<MerchantDTO> merchantDTOList = listResultVO.getResultData();
             for (MerchantDTO merchantDTO : merchantDTOList) {
-                String parCrmOrgId = merchantDTO.getParCrmOrgId();
-                if (!org.springframework.util.StringUtils.isEmpty(parCrmOrgId)) {
-                    marchantMap.put(parCrmOrgId, merchantDTO);
+                String merchantId = merchantDTO.getMerchantId();
+                if (!org.springframework.util.StringUtils.isEmpty(merchantId)) {
+                    merchantDTOMap.put(merchantId, merchantDTO);
+
                 }
             }
         }
-        return marchantMap;
+
 
     }
-    private void getFtpInfo(){
+
+    private void getInvoiceMap(Map<String, InvoicePageResp> invoiceMap, List<String> merchantIdList) {
+        if (null == merchantIdList || merchantIdList.isEmpty()) {
+            return;
+        }
+
+        QueryInvoiceByMerchantIdsReq req = new QueryInvoiceByMerchantIdsReq();
+        req.setMerchantIdList(merchantIdList);
+        req.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
+        ResultVO<List<InvoicePageResp>> listResultVO = invoiceService.queryInvoiceByMerchantIds(req);
+        if (null != listResultVO && listResultVO.isSuccess() && null != listResultVO.getResultData()) {
+            List<InvoicePageResp> invoiceList = listResultVO.getResultData();
+            for (InvoicePageResp invoice : invoiceList) {
+                invoiceMap.put(invoice.getMerchantId(), invoice);
+
+            }
+        }
+
+
+    }
+
+    private void getFtpInfo() {
         env.getProperty(MarketingResConst.ZOP_APPSECRET);
     }
 }

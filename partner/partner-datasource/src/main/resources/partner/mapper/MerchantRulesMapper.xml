@@ -9,7 +9,7 @@
     ,t.MERCHANT_ID 
     ,t.RULE_TYPE 
     ,t.TARGET_TYPE 
-    ,t.TARGET_ID 
+    ,t.TARGET_ID
 --     ,t.MAX_SERIAL_NUM
 --     ,t.SERIAL_NUM_USED
 </sql>

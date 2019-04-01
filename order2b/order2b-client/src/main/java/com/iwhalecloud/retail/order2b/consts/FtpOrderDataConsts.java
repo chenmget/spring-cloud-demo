@@ -10,11 +10,13 @@ public class FtpOrderDataConsts {
     public static final String SIXTEEN="16";
     public static final String ONE="01";
     public static final String SPLIT="|";
-    public static final String END="/n";
+    public static final String END="\n";
 
     public static final String DAY_FOR_DAY="dd";
     public static final String DAY_FOR_YEAR_DAY="yyyy-MM-dd";
     public static final String DAY_FOR_YEAR_MONTH="yyyy-MM";
+    public static final String DAY_FOR_YEAR_MONTH2="yyyyMM";
+
 
     public static final String IP = "IP";
     public static final String PORT = "PORT";
@@ -25,8 +27,10 @@ public class FtpOrderDataConsts {
 
     public static final String PROVINCE_NO="湖南省";
 
+    public static final String FILE_NAME_PRE = "TYG_PRECREDIT_";
+    public static final String FILE_TYPE = ".txt";
 
-    public static final int BATCH_COUNT = 1000;
+    public static final int BATCH_COUNT = 5;
 
 
 }

@@ -14,7 +14,7 @@ public class FtpOrderDataServiceImplTest extends TestBase {
     private FtpOrderDataService ftpOrderDataService;
 
     @Test
-    public void uploadFtpForTask(){
+    public void uploadFtpForTask() {
         ftpOrderDataService.uploadFtpForTask();
     }
 

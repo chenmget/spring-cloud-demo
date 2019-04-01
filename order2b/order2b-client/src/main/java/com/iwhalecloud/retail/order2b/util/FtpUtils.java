@@ -2,10 +2,8 @@ package com.iwhalecloud.retail.order2b.util;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import lombok.Data;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
 import java.io.*;

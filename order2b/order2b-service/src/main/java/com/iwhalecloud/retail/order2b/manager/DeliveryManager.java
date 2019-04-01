@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.promo.AddActSupRecordReq;
 import com.iwhalecloud.retail.order2b.entity.Delivery;
 import com.iwhalecloud.retail.order2b.mapper.DeliveryMapper;
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -48,9 +49,9 @@ public class DeliveryManager {
     }
 
 
-    public List<SettleRecordOrderDTO> getSettleRecordOrder(List<String> orderItemIds){
+    public List<SettleRecordOrderDTO> getSettleRecordOrder(@Param("orderItemIds")List<String> orderItemIds,@Param("lanId")String lanId){
         if(!CollectionUtils.isEmpty(orderItemIds)){
-            return deliveryMapper.getSettleRecordOrder(orderItemIds);
+            return deliveryMapper.getSettleRecordOrder(orderItemIds,lanId);
         }
         return new ArrayList<>();
     }

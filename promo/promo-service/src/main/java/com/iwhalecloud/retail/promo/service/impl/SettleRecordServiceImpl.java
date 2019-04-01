@@ -78,7 +78,7 @@ public class SettleRecordServiceImpl implements SettleRecordService {
     }
 
     @Override
-    public List<SettleRecordDTO> getSettleRecord() throws Exception{
+    public List<SettleRecordDTO> getSettleRecord(String lanId) throws Exception{
         List<SettleRecordDTO> settleRecordDTOs = new ArrayList<>();
         //结算周期记录
         List<SettleRecordDTO> settleRecords1 = settleRecordManager.getSettleRecord();
@@ -100,7 +100,7 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                 }
             }
         }
-        List<SettleRecordOrderDTO> settleRecordOrderDTOs = settleRecordOrderService.getSettleRecordOrder(orderIds);
+        List<SettleRecordOrderDTO> settleRecordOrderDTOs = settleRecordOrderService.getSettleRecordOrder(orderIds,lanId);
         if(!CollectionUtils.isEmpty(settleRecordOrderDTOs) && !CollectionUtils.isEmpty(settleRecords1)){
             for(SettleRecordDTO settleRecordDTO:settleRecords1){
                 String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
@@ -134,7 +134,7 @@ public class SettleRecordServiceImpl implements SettleRecordService {
             }
 
         }
-        List<SettleRecordOrderDTO> settleRecordOrderDTOs2 = settleRecordOrderService.getSettleRecordOrder(supplementaryOrderIds);
+        List<SettleRecordOrderDTO> settleRecordOrderDTOs2 = settleRecordOrderService.getSettleRecordOrder(supplementaryOrderIds,lanId);
         if(!CollectionUtils.isEmpty(settleRecordOrderDTOs2) && !CollectionUtils.isEmpty(settleRecords2)){
             for(SettleRecordDTO settleRecordDTO:settleRecords2){
                 String orderId = settleRecordDTO.getOrderId();

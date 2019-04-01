@@ -45,12 +45,12 @@ public interface ProductService {
      */
     public ResultVO<Integer> addProduct (ProductAddReq req) throws ProductException;
 
-    /**
-     * 根据产品编码获取产品对象
-     * @param sn
-     * @return
-     */
-    ResultVO<ProductResp> getProductBySn(String sn);
+//    /**
+//     * 根据产品编码获取产品对象
+//     * @param sn
+//     * @return
+//     */
+//    ResultVO<ProductResp> getProductBySn(String sn);
 
     /**
      * 添加产品-中台

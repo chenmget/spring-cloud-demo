@@ -43,6 +43,8 @@ public class QueryAccountBalanceDetailAllResp implements Serializable {
     private String actName;
     @ApiModelProperty(value = "入账金额")
     private String amount;
+    @ApiModelProperty(value = "入账金额(元)")
+    private String amountYuan;
     @ApiModelProperty(value = "状态")
     private String statusCd;
     @ApiModelProperty(value = "状态描述")
@@ -75,7 +77,8 @@ public class QueryAccountBalanceDetailAllResp implements Serializable {
     @ApiModelProperty(value = "返利单价")
     private String rewardPrice;
 
-
+    @ApiModelProperty(value = "返利单价(元)")
+    private String rewardPriceYuan;
 
 
 

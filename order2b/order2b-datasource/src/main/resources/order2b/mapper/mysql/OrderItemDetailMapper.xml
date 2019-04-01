@@ -121,12 +121,13 @@
         </if>
     </select>
 
-    <select id="queryOrderItemDetailByOrderId" parameterType="java.lang.String"
+    <select id="queryOrderItemDetailByOrderId" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.promo.ReBateOrderInDetailReq"
             resultType="com.iwhalecloud.retail.order2b.dto.response.OrderItemDetailReBateResp">
     SELECT c.SUPPLIER_ID,c.update_time,c.RECEIVE_TIME,c.MERCHANT_ID,a.order_id,a.product_id,a.res_nbr,a.item_id FROM ord_order_item_detail A
     INNER JOIN ord_order_items B ON A.item_id=b.item_id
     INNER JOIN ord_order c ON a.order_id=c.order_id
     WHERE  a.order_id = #{orderId}
+    AND a.item_id = #{itemId}
     </select>
 
 </mapper>

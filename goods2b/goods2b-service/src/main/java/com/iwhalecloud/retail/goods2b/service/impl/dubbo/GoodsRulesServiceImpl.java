@@ -555,7 +555,7 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
             GoodsRulesDTO goodsRulesDTO = entityList.get(i);
             Long purchasedNum = goodsRulesDTO.getPurchasedNum() == null ? 0:goodsRulesDTO.getPurchasedNum();
             if(GoodsRulesConst.Stockist.PARTNER_IN_SHOP_TYPE.getValue().equals(goodsRulesDTO.getTargetType())){
-                targetList.add(goodsRulesDTO.getTargetCode());
+                targetList.add(goodsRulesDTO.getTargetId());
             }
             if(goodsRulesDTO.getMarketNum() <= 0){
                 //分货数量大于0

@@ -146,8 +146,10 @@
         <where>
             <![CDATA[
             exp_date < sysdate + #{days}
-            and t.status <>  ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentStatusEnum@OFF_SHELVE.getCode()}
-            and t.status <>  ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentStatusEnum@HAVE_DELETE.getCode()}
+--          ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentStatusEnum@OFF_SHELVE.getCode()}  -- 已下架/失效
+            and t.status <>  '6'
+--          ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentStatusEnum@HAVE_DELETE.getCode()}  已删除
+            and t.status <>  '7'
             ]]>
             -- 在有效期间内的内容才给与显示
             --and current_date BETWEEN t.EFF_DATE and t.EXP_DATE
@@ -157,13 +159,16 @@
     <update id="invalidateContentBase">
         UPDATE t_content_base t
         <set>
-            t.status = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentStatusEnum@OFF_SHELVE.getCode()}
+--             OFF_SHELVE(6,"已下架/失效"),
+            t.status = '6'
         </set>
         <where>
             <![CDATA[
             exp_date < sysdate
-            and t.status <>  ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentStatusEnum@OFF_SHELVE.getCode()}
-            and t.status <>  ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentStatusEnum@HAVE_DELETE.getCode()}
+--             OFF_SHELVE(6,"已下架/失效"),
+            and t.status <>  '6'
+--             HAVE_DELETE(7,"已删除"),
+            and t.status <>  '7'
             ]]>
             -- 在有效期间内的内容才给与显示
             --and current_date BETWEEN t.EFF_DATE and t.EXP_DATE

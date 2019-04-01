@@ -13,7 +13,9 @@
 	</insert>
 
 	<update id="setIsDeleted" parameterType="java.lang.String">
-		UPDATE operating_position_bind set is_deleted = ${@com.iwhalecloud.retail.oms.consts.OmsConst$IsDeleted@HAVE_DELETED.getCode()}
+		UPDATE operating_position_bind
+-- HAVE_DELETED(1,"已删除");
+		set is_deleted = '1'
 		WHERE operating_Position_Id=#{operatingPositionId}
 	</update>
 

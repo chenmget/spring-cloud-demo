@@ -332,6 +332,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             List<String> manufacturerTypes = new ArrayList<>();
             manufacturerTypes.add(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
             manufacturerResourceInstsGetReq.setMerchantTypes(manufacturerTypes);
+            manufacturerResourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
             List<ResourceInstDTO> manufacturerInst = resourceInstManager.getResourceInsts(manufacturerResourceInstsGetReq);
             log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(manufacturerResourceInstsGetReq), JSON.toJSONString(manufacturerInst));
             if (CollectionUtils.isNotEmpty(manufacturerInst)) {

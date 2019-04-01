@@ -19,7 +19,8 @@
     <update id="display">
         UPDATE t_content_vedioctr
         <set>
-           is_playback = ${@com.iwhalecloud.retail.oms.consts.OmsConst$IsPlayback@NOT_PLAYBACK.getCode()},
+--             NOT_PLAYBACK(0L,"未启用"),
+           is_playback = '0'
         </set>
         WHERE storage_num = #{StorageNum}
     </update>

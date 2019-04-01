@@ -33,8 +33,8 @@ fdfs.show.url: https://gy.ztesoft.com/
 #  username: nretail
 #  password: nretail
 
-spring.datasource:
-  driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://10.45.46.67:8866/nretail_b2b?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
-  username: szxtest
-  password: szxtest.2019
+#spring.datasource:
+#  driver-class-name: com.mysql.jdbc.Driver
+#  url: jdbc:mysql://10.45.46.67:8866/nretail_b2b?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+#  username: szxtest
+#  password: szxtest.2019

@@ -80,9 +80,9 @@ public abstract class ReadExcel<T> {
    public abstract T builderObject2010(XSSFRow cell);
 
     public String getValue(XSSFCell xssfRow) {
-        if (xssfRow.getCellType() == xssfRow.CELL_TYPE_BOOLEAN) {
+        if (xssfRow.getCellType() == XSSFCell.CELL_TYPE_BOOLEAN) {
             return String.valueOf(xssfRow.getBooleanCellValue());
-        } else if (xssfRow.getCellType() == xssfRow.CELL_TYPE_NUMERIC) {
+        } else if (xssfRow.getCellType() == XSSFCell.CELL_TYPE_NUMERIC) {
             return String.valueOf(xssfRow.getNumericCellValue());
         } else {
             return String.valueOf(xssfRow.getStringCellValue());
@@ -90,9 +90,9 @@ public abstract class ReadExcel<T> {
     }
 
     public String getValue(HSSFCell hssfCell) {
-        if (hssfCell.getCellType() == hssfCell.CELL_TYPE_BOOLEAN) {
+        if (hssfCell.getCellType() == HSSFCell.CELL_TYPE_BOOLEAN) {
             return String.valueOf(hssfCell.getBooleanCellValue());
-        } else if (hssfCell.getCellType() == hssfCell.CELL_TYPE_NUMERIC) {
+        } else if (hssfCell.getCellType() == HSSFCell.CELL_TYPE_NUMERIC) {
             return String.valueOf(hssfCell.getNumericCellValue());
         } else {
             return String.valueOf(hssfCell.getStringCellValue());

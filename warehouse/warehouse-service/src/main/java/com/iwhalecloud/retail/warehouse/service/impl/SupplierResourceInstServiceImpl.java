@@ -837,10 +837,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                 return true;
             }
             ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOVO.getResultData();
-            if (ResourceConst.CONSTANT_01.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_01.equals(resouceInstTrackDTO.getIfDirectSuppLy())) {
+            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfDirectSuppLy())) {
                 hasDirectSuppLy = true;
             }
-            if (ResourceConst.CONSTANT_01.equals(resouceInstTrackDTO.getIfGroundSupply())) {
+            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGroundSupply())) {
                 hasGroundSupply = true;
             }
         }

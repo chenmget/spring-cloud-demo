@@ -8,7 +8,7 @@ import com.iwhalecloud.retail.pay.service.JobService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-@ElasticSimpleJob(cron = "0/2 * * * * ?",
+@ElasticSimpleJob(cron = "0/5 * * * * ?",
         jobName = "firstJob",
         shardingTotalCount = 1,
         jobParameter = "测试参数",
@@ -26,8 +26,8 @@ public class MyJob implements SimpleJob {
     /*    if (jobService == null) {
             System.out.println("321");
             return ;
-        }
-        jobService.myJob();*/
+        }*/
+        jobService.myJob();
         log.info("MyJob demo run...");
     }
 }

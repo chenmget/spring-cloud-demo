@@ -12,11 +12,13 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackDetailManager;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
+import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
@@ -47,6 +49,9 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
 
     @Reference
     private ResouceStoreService resouceStoreService;
+
+    @Reference
+    private RetailerResourceInstService retailerResourceInstService;
 
     @Async
     @Override
@@ -158,7 +163,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             return;
         }
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynUpdateTrackForMerchant resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
@@ -193,7 +197,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             return;
         }
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynSaveTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
@@ -226,7 +229,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
         resourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
-        resourceInstsGetReq.setStatusCd("");
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
@@ -259,7 +261,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
@@ -294,7 +295,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
@@ -375,7 +375,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(storeId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynShipTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
@@ -422,7 +421,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(storeId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
@@ -468,7 +466,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(storeId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         int count = 0;
@@ -511,7 +508,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(storeId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynBackAcceptTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
@@ -539,21 +535,24 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (!resp.isSuccess()) {
             return;
         }
-        List<String> mktResInstNbrs = req.getMktResInstNbrs();
-        List<String> distinctList = mktResInstNbrs.stream().distinct().collect(Collectors.toList());
-        ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
+
+        // 获取仓库
+        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        storeGetStoreIdReq.setMerchantId(req.getMerchantId());
+        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+        log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+
+        ResourceInstBatchReq resourceInstsGetReq = new ResourceInstBatchReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
-        req.setMktResInstNbrs(distinctList);
-        if (CollectionUtils.isEmpty(distinctList)) {
-            return;
-        }
-        resourceInstsGetReq.setStatusCd("");
-        resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
-        List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
-        log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
+        resourceInstsGetReq.setMktResStoreId(mktResStoreId);
+
+        ResultVO<List<ResourceInstListResp>> listResultVO = retailerResourceInstService.getBatch(resourceInstsGetReq);
+        log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(listResultVO));
+        List<ResourceInstListResp> insts = listResultVO.getResultData();
         int count = 0;
         for (int i = 0; i < insts.size(); i++) {
-            ResourceInstDTO resourceInstDTO = insts.get(i);
+            ResourceInstListResp resourceInstDTO = insts.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
@@ -579,7 +578,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
@@ -614,7 +612,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }

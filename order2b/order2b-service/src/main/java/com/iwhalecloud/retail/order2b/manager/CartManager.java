@@ -119,10 +119,10 @@ public class CartManager {
      *
      * @param cartIds
      */
-    public int delete(List<String> cartIds) {
+    public int delete(List<String> cartIds,String userId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.in("cart_id", cartIds);
-        queryWrapper.in("user_id", cartIds);
+        queryWrapper.in("user_id", userId);
         return cartMapper.delete(queryWrapper);
     }
 

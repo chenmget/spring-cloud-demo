@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.workflow.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.dto.TaskItemDTO;
@@ -51,5 +52,16 @@ public class TaskItemServiceImpl implements TaskItemService {
         }
         log.info("TaskItemServiceImpl.queryTaskItem taskItemList={}", JSON.toJSONString(taskItemList));
         return ResultVO.success(taskItemDTOs);
+    }
+
+    @Override
+    public TaskItemDTO queryTaskItemByTaskId(String taskId) {
+        TaskItemDTO taskItemDTO = new TaskItemDTO();
+        TaskItem taskItem = taskItemManager.queryWaitHandlerTaskItem(taskId);
+        if(taskItem != null) {
+            BeanUtils.copyProperties(taskItem, taskItemDTO);
+            return taskItemDTO;
+        }
+        return null;
     }
 }

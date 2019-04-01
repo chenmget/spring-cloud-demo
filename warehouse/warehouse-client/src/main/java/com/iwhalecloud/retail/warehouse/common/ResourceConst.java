@@ -34,12 +34,12 @@ public class ResourceConst {
     /**
      * 常量
      */
-    public final static String  CONSTANT_01 = "1";
+    public final static String  CONSTANT_YES = "1";
 
     /**
      * 常量
      */
-    public final static String  CONSTANT_0 = "0";
+    public final static String  CONSTANT_NO = "0";
 
 
     /**

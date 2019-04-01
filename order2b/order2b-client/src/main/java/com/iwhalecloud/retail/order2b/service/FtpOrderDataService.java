@@ -12,11 +12,7 @@ import java.util.List;
  * 将交易数据上传到FTP上
  */
 public interface FtpOrderDataService {
-    /**
-     * 获取需要导出的订单数据
-     * @return
-     */
-    List<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req);
+
 
     /**
      * 定时任务上传文件到ftp

@@ -8,14 +8,13 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.dto.req.MerChantGetProductReq;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
@@ -97,6 +96,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Autowired
     private ResourceReqDetailManager resourceReqDetailManager;
+
+    @Autowired
+    private ResouceInstTrackService resouceInstTrackService;
 
     @Autowired
     private Constant constant;
@@ -359,10 +361,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     /**
      * 判断是否需要审核环节：
-     * 1）判断是否跨地市，即判断源仓库与目标仓库本地网标识是否一致，一致则不需要审核，申请单流转到目标仓库处理人进行确认；不一致则进行下一个判断
-     * 2）判断是否有补贴，根据订单编号查询是否参与了补贴活动，目前补贴活动未设计，若有参与补贴，则需要审核环节；
-     * 3、需要审核环节的，申请单流转到配置的运营人员进行审核，审核通过的，申请单流转到目标仓库处理人；不通过则打回到申请单发起人；
-     * 4、目标仓库处理人进行调拨收货确认，确认后串码进行入库操作；
+     * 1.本地市内可调拨，地市管理员审核
+     * 2.跨地市调拨，调出和调入双方管理员审核"
      */
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
@@ -380,16 +380,25 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (null == destMerchantDTO) {
             return ResultVO.error("商家获取失败");
         }
-        Boolean isTransRegional = sourceMerchantDTO.getLanId() != null && destMerchantDTO.getLanId() != null && sourceMerchantDTO.getLanId().equals(destMerchantDTO.getLanId());
-        // step1 两种情况都要审核，如果跨地市，调出方、调入方都需要审核
-        String processId = ResourceConst.ALLOCATE_WORK_FLOW_INST;
+        List<ResourceInstDTO> resourceInstDTOList = resourceInstService.selectByIds(req.getMktResInstIds());
+        List<String> nbrList = resourceInstDTOList.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
+
+        Boolean sameLanId = sourceMerchantDTO.getLanId() != null && destMerchantDTO.getLanId() != null && sourceMerchantDTO.getLanId().equals(destMerchantDTO.getLanId());
+        Boolean twoNbrType = twoNbrType(nbrList, sourceMerchantDTO.getMerchantId());
+        // step1 如果跨地市、调拨两种不同的串码不允许调拨
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
-        if (isTransRegional) {
+        String reqCode = resourceInstManager.getPrimaryKey();
+        if (twoNbrType) {
+            return ResultVO.error("不支持同时调拨不同类型");
+        }
+
+        String processId = ResourceConst.ALLOCATE_WORK_FLOW_INST;
+        String taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType();
+        if (!sameLanId) {
             processId = ResourceConst.ALLOCATE_WORK_FLOW_INST_2;
-            successMessage = ResourceConst.ALLOCATE_AUDITING_MSG;
+            taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType() ;
         }
         // step2 新增申请单
-        List<ResourceInstDTO> resourceInstDTOList = resourceInstService.selectByIds(req.getMktResInstIds());
         List<ResourceRequestAddReq.ResourceRequestInst> resourceRequestInsts = new ArrayList<>();
         for (ResourceInstDTO resourceInstDTO : resourceInstDTOList) {
             ResourceRequestAddReq.ResourceRequestInst resourceRequestInst = new ResourceRequestAddReq.ResourceRequestInst();
@@ -402,11 +411,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         resourceRequestAddReq.setMktResStoreId(req.getMktResStoreId());
         resourceRequestAddReq.setCreateStaff(req.getCreateStaff());
         resourceRequestAddReq.setDestStoreId(req.getDestStoreId());
-        resourceRequestAddReq.setStatusCd(ResourceConst.MKTRESSTATE.PROCESSING.getCode());
+        resourceRequestAddReq.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
         resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
         resourceRequestAddReq.setInstList(resourceRequestInsts);
         resourceRequestAddReq.setLanId(sourceMerchantDTO.getLanId());
         resourceRequestAddReq.setRegionId(sourceMerchantDTO.getCity());
+        resourceRequestAddReq.setReqCode(reqCode);
         ResultVO<String> resultVOInsertResReq = resourceRequestService.insertResourceRequest(resourceRequestAddReq);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resourceRequestService.insertResourceRequest req={},resp={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVOInsertResReq));
         if (resultVOInsertResReq == null || resultVOInsertResReq.getResultData() == null) {
@@ -421,7 +431,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         processStartDTO.setApplyUserName(sourceMerchantDTO.getMerchantName());
         processStartDTO.setProcessId(processId);
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
-        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType());
+        processStartDTO.setTaskSubType(taskSubType);
         processStartDTO.setExtends1(sourceMerchantDTO.getCityName());
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
@@ -453,7 +463,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (!updateResultVO.isSuccess()) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "更新串码失败");
         }
-        return ResultVO.success(successMessage);
+        return ResultVO.success(successMessage+reqCode);
     }
 
     @Override
@@ -810,5 +820,31 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResultVO resp = resourceInstService.updateResourceInstByIds(updateReq);
         log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resourceInstService.resourceInstPutIn req={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(resp));
         return ResultVO.success();
+    }
+
+    /**
+     * 调拨串码是否有两种类型
+     * @param nbrList
+     * @return
+     */
+    private Boolean twoNbrType(List<String> nbrList, String merchantId){
+        Boolean hasDirectSuppLy = false;
+        Boolean hasGroundSupply = false;
+        for (String nbr : nbrList) {
+            ResultVO<ResouceInstTrackDTO> resouceInstTrackDTOVO = resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId(nbr, merchantId);
+            log.info("SupplierResourceInstServiceImpl.twoNbrType resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId nbr={}, resp={}", nbr, JSON.toJSONString(resouceInstTrackDTOVO));
+            if (!resouceInstTrackDTOVO.isSuccess() || null == resouceInstTrackDTOVO.getResultData()) {
+                return true;
+            }
+            ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOVO.getResultData();
+            if (ResourceConst.CONSTANT_01.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_01.equals(resouceInstTrackDTO.getIfDirectSuppLy())) {
+                hasDirectSuppLy = true;
+            }
+            if (ResourceConst.CONSTANT_01.equals(resouceInstTrackDTO.getIfGroundSupply())) {
+                hasGroundSupply = true;
+            }
+        }
+        return hasDirectSuppLy && hasGroundSupply;
+
     }
 }

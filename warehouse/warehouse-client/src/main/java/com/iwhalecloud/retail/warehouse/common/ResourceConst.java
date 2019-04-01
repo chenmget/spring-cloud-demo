@@ -53,7 +53,7 @@ public class ResourceConst {
     /**
      * 调拨两端都要审核流程实例ID
      */
-    public final static String  ALLOCATE_WORK_FLOW_INST_2 = "10";
+    public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
 
     /**
      * 调拨返回成功的消息

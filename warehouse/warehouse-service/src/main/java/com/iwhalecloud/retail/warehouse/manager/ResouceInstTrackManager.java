@@ -33,13 +33,7 @@ public class ResouceInstTrackManager{
     }
 
 
-    public ResouceInstTrackDTO getResourceInstTrack(String nbr){
-        ResouceInstTrack resouceInstTrack = resouceInstTrackMapper.selectById(nbr);
-        if (null == resouceInstTrack) {
-            return null;
-        }
-        ResouceInstTrackDTO dto = new ResouceInstTrackDTO();
-        BeanUtils.copyProperties(resouceInstTrack, dto);
-        return dto;
+    public ResouceInstTrackDTO getResourceInstTrackByNbrAndMerchantId(String nbr, String merchantId){
+        return resouceInstTrackMapper.getResourceInstTrackByNbrAndMerchantId(nbr, merchantId);
     }
 }

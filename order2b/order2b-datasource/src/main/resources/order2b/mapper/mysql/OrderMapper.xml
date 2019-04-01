@@ -279,7 +279,7 @@
         from ord_order t where t.status in(6,10)
         <![CDATA[   and DATE_FORMAT(t.PAY_TIME, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
         <![CDATA[   and DATE_FORMAT(t.PAY_TIME, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
-        order by t.PAY_TIME,ord_order
+        order by t.PAY_TIME,ORDER_ID
     </select>
 
 

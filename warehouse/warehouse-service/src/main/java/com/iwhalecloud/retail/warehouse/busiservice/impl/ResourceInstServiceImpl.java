@@ -1039,10 +1039,5 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         return ResultVO.success(false);
     }
 
-    @Override
-    public String getMerchantStoreIdByNbr(String nbr) {
-        return resourceInstManager.getMerchantStoreIdByNbr(nbr);
-    }
-
 
 }

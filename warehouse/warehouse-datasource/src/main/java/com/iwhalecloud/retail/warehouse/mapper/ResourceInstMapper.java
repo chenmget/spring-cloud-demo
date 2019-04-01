@@ -77,13 +77,6 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst>{
     public List<ResourceInstListResp> getBatch(ResourceInstBatchReq req);
 
     /**
-     * 批量插入串码实列
-     * @param insts
-     * @return
-     */
-    public Integer batchInsert(List<ResourceInst> insts);
-
-    /**
      * 批量修改状态
      * @param req
      * @return
@@ -103,10 +96,4 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst>{
      */
     String getPrimaryKey();
 
-    /**
-     * 根据串码查询厂商仓库
-     * @param nbr
-     * @return
-     */
-    String getMerchantStoreIdByNbr(String nbr);
 }

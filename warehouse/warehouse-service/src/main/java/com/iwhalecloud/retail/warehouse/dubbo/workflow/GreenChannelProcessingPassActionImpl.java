@@ -92,6 +92,7 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
         ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getMktResStoreId());
         String merchantId = null;
         if(null == resultVO || null == resultVO.getResultData()){
+            log.warn("GreenChannelProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
             return ResultVO.error("GreenChannelProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
         } else {
             MerchantDTO merchantDTO = resultVO.getResultData();

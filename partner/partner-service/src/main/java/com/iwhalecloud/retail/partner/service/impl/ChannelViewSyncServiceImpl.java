@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.partner.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.*;
@@ -17,11 +18,13 @@ import com.iwhalecloud.retail.partner.model.FtpDTO;
 import com.iwhalecloud.retail.partner.service.ChannelViewSyncService;
 import com.iwhalecloud.retail.partner.utils.FtpUtils;
 import com.iwhalecloud.retail.system.common.DateUtils;
+import com.iwhalecloud.retail.system.dto.PublicDictDTO;
+import com.iwhalecloud.retail.system.service.PublicDictService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -44,22 +47,19 @@ public class ChannelViewSyncServiceImpl implements ChannelViewSyncService {
     private static final String UN_DEAL = "0";
     private static final String DEAL_SUCCESS = "1";
     private static final String DEAL_ERROR = "2";
-
-    @Value("${ftp.channel.ip}")
-    private String ip;
-    @Value("${ftp.channel.username}")
-    private String username;
-    @Value("${ftp.channel.password}")
-    private String password;
-    @Value("${ftp.channel.port}")
-    private Integer port;
-    @Value("${ftp.channel.filePath}")
-    private String filePath;
+    private static final String DICT_TYPE = "FTP_MSG";
+    private static final String IP = "IP";
+    private static final String PORT = "PORT";
+    private static final String USERNAME = "USERNAME";
+    private static final String PASSWORD = "PASSWORD";
+    private static final String FILEPATH = "FILEPATH";
 
     private BusinessEntityManager businessEntityManager;
     private MerchantManager merchantManager;
     private BusinessEntityTempManager businessEntityTempManager;
     private MerchantTempManager merchantTempManager;
+    @Reference
+    private PublicDictService publicDictService;
 
     @Autowired
     public ChannelViewSyncServiceImpl(BusinessEntityManager businessEntityManager, MerchantManager merchantManager, BusinessEntityTempManager businessEntityTempManager, MerchantTempManager merchantTempManager) {
@@ -89,6 +89,9 @@ public class ChannelViewSyncServiceImpl implements ChannelViewSyncService {
     public ResultVO syncBusinessEntity() {
         log.info("----->> ChannelViewSyncServiceImpl.syncBusinessEntity start......");
         FtpDTO ftpDTO = this.generatorFtpDTO(PRE_BUSINESS_ENTITY_FILENAME);
+        if (StringUtils.isEmpty(ftpDTO.getIp())) {
+            return ResultVO.error("ftp信息配置不存在");
+        }
         log.info("=====》开始获取经营主体ftp文件: {}", ftpDTO.getFileName());
         try {
             ResultVO<List<String>> resultVO = FtpUtils.readFile(ftpDTO);
@@ -132,6 +135,9 @@ public class ChannelViewSyncServiceImpl implements ChannelViewSyncService {
     public ResultVO syncMerchant() {
         log.info("----->> ChannelViewSyncServiceImpl.syncMerchant start......");
         FtpDTO ftpDTO = this.generatorFtpDTO(PRE_MERCHANT_FILENAME);
+        if (StringUtils.isEmpty(ftpDTO.getIp())) {
+            return ResultVO.error("ftp信息配置不存在");
+        }
         log.info("=====》开始获取商家ftp文件: {}", ftpDTO.getFileName());
         try {
             ResultVO<List<String>> resultVO = FtpUtils.readFile(ftpDTO);
@@ -299,11 +305,23 @@ public class ChannelViewSyncServiceImpl implements ChannelViewSyncService {
      */
     private FtpDTO generatorFtpDTO(String preFileName) {
         FtpDTO ftpDTO = new FtpDTO();
-        ftpDTO.setIp(ip);
-        ftpDTO.setUserName(username);
-        ftpDTO.setPassword(password);
-        ftpDTO.setPort(port);
-        ftpDTO.setFilePath(filePath);
+        List<PublicDictDTO> publicDictDTOS = publicDictService.queryPublicDictListByType(DICT_TYPE);
+        if (CollectionUtils.isEmpty(publicDictDTOS)) {
+            return ftpDTO;
+        }
+        for (PublicDictDTO publicDictDTO: publicDictDTOS) {
+            if (IP.equals(publicDictDTO.getPkey())) {
+                ftpDTO.setIp(publicDictDTO.getPname());
+            } else if (PORT.equals(publicDictDTO.getPkey())) {
+                ftpDTO.setPort(Integer.valueOf(publicDictDTO.getPname()));
+            } else if (USERNAME.equals(publicDictDTO.getPkey())) {
+                ftpDTO.setUserName(publicDictDTO.getPname());
+            } else if (PASSWORD.equals(publicDictDTO.getPkey())) {
+                ftpDTO.setPassword(publicDictDTO.getPname());
+            } else if (FILEPATH.equals(publicDictDTO.getPkey())) {
+                ftpDTO.setFilePath(publicDictDTO.getPname());
+            }
+        }
         String fixName = DateUtils.getYesterdayTimeForStr();
         String fileName = preFileName + fixName + ".txt";
         ftpDTO.setFileName(fileName);

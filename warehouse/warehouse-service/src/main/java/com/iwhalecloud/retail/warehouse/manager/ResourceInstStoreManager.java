@@ -152,6 +152,7 @@ public class ResourceInstStoreManager{
             updateResourceInstStore.setStatusDate(new Date());
             UpdateWrapper<ResourceInstStore> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq(ResourceInstStore.FieldNames.mktResInstStoreId.getTableFieldName(), resourceInstStore.getMktResInstStoreId());
+            updateWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStore.getMktResStoreId());
             return resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
         }else{
             Date now = new Date();

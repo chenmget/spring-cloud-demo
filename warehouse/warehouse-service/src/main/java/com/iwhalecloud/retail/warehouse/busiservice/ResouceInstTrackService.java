@@ -142,7 +142,8 @@ public interface ResouceInstTrackService {
     /**
      * 通过串码查轨迹
      * @param nbr
+     * @param merchantId
      * @return
      */
-    ResultVO<ResouceInstTrackDTO> getResourceInstTrack(String nbr);
+    ResultVO<ResouceInstTrackDTO> getResourceInstTrackByNbrAndMerchantId(String nbr,String merchantId);
 }

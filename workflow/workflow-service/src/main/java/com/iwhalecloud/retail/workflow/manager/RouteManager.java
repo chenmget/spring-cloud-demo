@@ -1,10 +1,14 @@
 package com.iwhalecloud.retail.workflow.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.RouteDTO;
 import com.iwhalecloud.retail.workflow.entity.Route;
 import com.iwhalecloud.retail.workflow.mapper.RouteMapper;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -38,6 +42,7 @@ public class RouteManager{
     * @param id
     * @return
     */
+    @Cacheable(value = WorkFlowConst.CACHE_NAME_WF_ROUTE, key = "#id")
     public Route queryRouteById(String id) {
         return routeMapper.selectById(id);
     }
@@ -62,6 +67,9 @@ public class RouteManager{
      * @param routeDTO
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_ROUTE, key = "#routeDTO.routeId")
+    })
     public Boolean editRoute(RouteDTO routeDTO){
         Route route = new Route();
         BeanUtils.copyProperties(routeDTO, route);
@@ -75,6 +83,9 @@ public class RouteManager{
      * @param routeId
      * @return
      */
+    @Caching(evict = {
+            @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_ROUTE, key = "#routeId")
+    })
     public Boolean delRoute(String routeId){
         return routeMapper.deleteById(routeId) > 0;
     }

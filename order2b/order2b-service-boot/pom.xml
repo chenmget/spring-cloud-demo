@@ -18,6 +18,12 @@
             <artifactId>order2b-service</artifactId>
             <version>${order.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>druid-spring-boot-starter</artifactId>
+            <version>${druid-spring-boot-starter.version}</version>
+        </dependency>
     </dependencies>
 	<build>
 		<finalName>order2b-service</finalName>

@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-boot-starter</artifactId>
-            <version>3.0.3</version>
+            <version>3.0.7</version>
         </dependency>
         
         <!--jsr303验证框架 -->

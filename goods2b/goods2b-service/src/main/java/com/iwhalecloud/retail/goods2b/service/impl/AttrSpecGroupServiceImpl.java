@@ -17,26 +17,26 @@ import java.util.List;
 public class AttrSpecGroupServiceImpl implements AttrSpecGroupService {
 
     @Autowired
-    private AttrSpecGroupManager AttrSpecGroupManager;
+    private AttrSpecGroupManager attrSpecGroupManager;
 
     @Override
     public ResultVO<List<AttrSpecGroupDTO>> listAttrSpecGroupByCondition(AttrSpecGroupDTO condition) {
-        return ResultVOUtils.genQueryResultVO(AttrSpecGroupManager.listByCondition(condition));
+        return ResultVOUtils.genQueryResultVO(attrSpecGroupManager.listByCondition(condition));
     }
 
     @Override
     public ResultVO addAttrSpecGroup(AttrSpecGroupDTO entity) {
-        return ResultVOUtils.genAduResultVO(AttrSpecGroupManager.addAttrSpecGroup(entity));
+        return ResultVOUtils.genAduResultVO(attrSpecGroupManager.addAttrSpecGroup(entity));
     }
 
     @Override
     public ResultVO deleteAttrSpecGroup(String id) {
-        return ResultVOUtils.genAduResultVO(AttrSpecGroupManager.deleteAttrSpecGroup(id));
+        return ResultVOUtils.genAduResultVO(attrSpecGroupManager.deleteAttrSpecGroup(id));
     }
 
     @Override
     public ResultVO updateAttrSpecGroup(AttrSpecGroupDTO entity) {
-        return ResultVOUtils.genAduResultVO(AttrSpecGroupManager.updateAttrSpecGroup(entity));
+        return ResultVOUtils.genAduResultVO(attrSpecGroupManager.updateAttrSpecGroup(entity));
     }
 
 }

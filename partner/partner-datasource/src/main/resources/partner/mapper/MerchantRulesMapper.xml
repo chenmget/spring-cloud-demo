@@ -9,7 +9,7 @@
     ,t.MERCHANT_ID 
     ,t.RULE_TYPE 
     ,t.TARGET_TYPE 
-    ,t.TARGET_ID 
+    ,t.TARGET_ID
 --     ,t.MAX_SERIAL_NUM
 --     ,t.SERIAL_NUM_USED
 </sql>
@@ -52,7 +52,6 @@
         SELECT <include refid="pageMerchantRulesFields"/>
         FROM PAR_MERCHANT_RULES RULES
         LEFT JOIN PAR_MERCHANT MERCHANT ON RULES.MERCHANT_ID = MERCHANT.MERCHANT_ID
-        LEFT JOIN PROD_MERCHANT_TAG_REL TAG ON RULES.MERCHANT_ID = TAG.MERCHANT_ID
         WHERE 1 = 1
         <if test="null != req.merchantName and '' != req.merchantName">
             AND MERCHANT.MERCHANT_NAME = #{req.merchantName}
@@ -87,14 +86,17 @@
         <if test="null != req.relCode and '' != req.relCode">
             AND MERCHANT.MERCHANT_ID = #{req.relCode}
         </if>
-        <if test="null != req.tagId and '' != req.tagId">
-            AND TAG.TAG_ID = #{req.tagId}
-        </if>
         <if test="null != req.ruleType and '' != req.ruleType">
             AND RULES.RULE_TYPE = #{req.ruleType}
         </if>
         <if test="null != req.targetType and '' != req.targetType">
             AND RULES.TARGET_TYPE = #{req.targetType}
+        </if>
+        <if test="null != req.tagMerchantList and req.tagMerchantList.size() > 0">
+            AND MERCHANT.MERCHANT_ID IN
+            <foreach collection="req.tagMerchantList" item="item3" index="index" open="(" close=")" separator=",">
+                #{item3}
+            </foreach>
         </if>
 
     </select>

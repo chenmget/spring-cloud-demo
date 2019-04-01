@@ -39,7 +39,7 @@ public class GlobalExceptionHandler extends BaseController<Object>{
     private ResultVO<Object> createResultVO(ResultCodeEnum resultCodeEnum,String detailMessage) {
 
         //如果是本地环境/测试环境/开发环境抛出详细错误
-        if (env.contains("local") || env.contains("test") || env.contains("dev")) {
+        if (env.contains("local") || env.contains("test") || env.contains("dev") || true) {
             return resultVO(resultCodeEnum.getCode(), resultCodeEnum.getDesc(), detailMessage);
         }
 

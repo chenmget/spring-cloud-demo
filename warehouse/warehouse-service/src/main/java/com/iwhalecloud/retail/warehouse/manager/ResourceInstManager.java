@@ -79,92 +79,31 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
     }
 
     public ResultVO validResourceInst(ValidResourceInstReq req) {
-        //step1:供应商——串码如果在供应商的仓库中存在，且状态为可用“1302已领用可销售”；
-        // 如果终端串码在供应商仓库中不存在，查询厂商的仓库中是否有此串码，如果有则通过；
         List<ValidResourceInstItemResp> resultList = new ArrayList<ValidResourceInstItemResp>();
         boolean result = true;
-        if (req.getMerchantType().equals(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType())) {
-            List<ValidResourceInstItem> productIds = req.getProductIds();
-            for (ValidResourceInstItem item : productIds) {
-                String productId = item.getProductId();
-                List<String> mktResInstNbr = item.getMktResInstNbr();
-                QueryWrapper<ResourceInst> queryWrapperSuppler = new QueryWrapper<>();
-                queryWrapperSuppler.in(ResourceInst.FieldNames.mktResInstNbr.getTableFieldName(), mktResInstNbr);
-                List<ResourceInst> resourceInst = resourceInstMapper.selectList(queryWrapperSuppler);
-                ResultVO<List<ValidResourceInstItemResp>> validVO = getValidErrorList(resourceInst, mktResInstNbr,productId,req.getMerchantId());
-                resultList.addAll(validVO.getResultData());
-                if (!validVO.isSuccess()) {
-                    result = false;
-                }
-
-            }
-            if (result) {
-                return ResultVO.success();
-            } else {
-                ResultVO resultVO = ResultVO.error(getValidErrorMsg(resultList));
-                ValidResourceInstResp resp = new ValidResourceInstResp();
-                resp.setResultCode(ResourceConst.RESULE_CODE_FAIL);
-                resp.setValidList(resultList);
-                resultVO.setResultData(resp);
-                return resultVO;
+        List<ValidResourceInstItem> productIds = req.getProductIds();
+        for (ValidResourceInstItem item : productIds) {
+            String productId = item.getProductId();
+            List<String> mktResInstNbr = item.getMktResInstNbr();
+            QueryWrapper<ResourceInst> queryWrapperSuppler = new QueryWrapper<>();
+            queryWrapperSuppler.in(ResourceInst.FieldNames.mktResInstNbr.getTableFieldName(), mktResInstNbr);
+            List<ResourceInst> resourceInst = resourceInstMapper.selectList(queryWrapperSuppler);
+            ResultVO<List<ValidResourceInstItemResp>> validVO = getValidErrorList(resourceInst, mktResInstNbr,productId,req.getMerchantId());
+            resultList.addAll(validVO.getResultData());
+            if (!validVO.isSuccess()) {
+                result = false;
             }
         }
-        //step2:地包商——串码必须供应商的仓库中存在，且状态为可用“1302已领用可销售”
-        if (req.getMerchantType().equals(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType())) {
-            List<ValidResourceInstItem> productIds = req.getProductIds();
-            for (ValidResourceInstItem item : productIds) {
-                String productId = item.getProductId();
-                List<String> mktResInstNbr = item.getMktResInstNbr();
-                QueryWrapper<ResourceInst> queryWrapperSuppler = new QueryWrapper<>();
-                queryWrapperSuppler.in(ResourceInst.FieldNames.mktResInstNbr.getTableFieldName(), mktResInstNbr);
-                List<ResourceInst> resourceInst = resourceInstMapper.selectList(queryWrapperSuppler);
-                ResultVO<List<ValidResourceInstItemResp>> validVO = getValidErrorList(resourceInst, mktResInstNbr,productId,req.getMerchantId());
-                resultList.addAll(validVO.getResultData());
-                if (!validVO.isSuccess()) {
-                    result = false;
-
-                }
-
-            }
-            if (result) {
-                return ResultVO.success();
-            } else {
-                ResultVO resultVO = ResultVO.error(getValidErrorMsg(resultList));
-                ValidResourceInstResp resp = new ValidResourceInstResp();
-                resp.setResultCode(ResourceConst.RESULE_CODE_FAIL);
-                resp.setValidList(resultList);
-                resultVO.setResultData(resp);
-                return resultVO;
-            }
+        if (result) {
+            return ResultVO.success();
+        } else {
+            ResultVO resultVO = ResultVO.error(getValidErrorMsg(resultList));
+            ValidResourceInstResp resp = new ValidResourceInstResp();
+            resp.setResultCode(ResourceConst.RESULE_CODE_FAIL);
+            resp.setValidList(resultList);
+            resultVO.setResultData(resp);
+            return resultVO;
         }
-        // step3 增加厂商发货 在库可用可以发货
-        if (req.getMerchantType().equals(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType())) {
-            List<ValidResourceInstItem> productIds = req.getProductIds();
-            for (ValidResourceInstItem item : productIds) {
-                String productId = item.getProductId();
-                List<String> mktResInstNbr = item.getMktResInstNbr();
-                QueryWrapper<ResourceInst> queryWrapperSuppler = new QueryWrapper<>();
-                queryWrapperSuppler.in(ResourceInst.FieldNames.mktResInstNbr.getTableFieldName(), mktResInstNbr);
-                List<ResourceInst> resourceInst = resourceInstMapper.selectList(queryWrapperSuppler);
-                ResultVO<List<ValidResourceInstItemResp>> validVO = getValidErrorList(resourceInst, mktResInstNbr,productId,req.getMerchantId());
-                resultList.addAll(validVO.getResultData());
-                if (!validVO.isSuccess()) {
-                    result = false;
-                }
-            }
-            if (result) {
-                return ResultVO.success();
-            } else {
-                ResultVO resultVO = ResultVO.error(getValidErrorMsg(resultList));
-                ValidResourceInstResp resp = new ValidResourceInstResp();
-                resp.setResultCode(ResourceConst.RESULE_CODE_FAIL);
-                resp.setValidList(resultList);
-                resultVO.setResultData(resp);
-                return resultVO;
-            }
-        }
-
-        return ResultVO.error(constant.getErrorRequest());
     }
     private String getValidErrorMsg(List<ValidResourceInstItemResp> errorList){
         StringBuffer errorMsg = new StringBuffer();
@@ -181,6 +120,10 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
 
     /**
      * 拿到串码列表后，遍历每个串码，计算其出不合法的原因，并返回错误串码列表
+     * 校验3种情况
+     * 一、是否是当前商家
+     * 二、是否是当前产品
+     * 三、是否有效状态
      * @param resourceInstTemp
      * @param mktResInstNbr
      * @param productId

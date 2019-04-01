@@ -36,7 +36,8 @@
         from
         t_content_pic t
         where
-        t.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+--         GOODS (1,"商品"),
+        t.OBJTYPE = '1'
         and
         t.objid in
         <foreach item="item" index="index" collection="objIds" open="(" separator="," close=")">
@@ -51,7 +52,8 @@
         from
         t_content_pic t
         where
-        t.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+--         GOODS (1,"商品"),
+        t.OBJTYPE = '1'
         and
         t.objid =  #{productId}
         union  all
@@ -59,7 +61,8 @@
         from
         t_content_picset a
         where
-        a.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+--         GOODS (1,"商品"),
+        a.OBJTYPE = '1'
         and
         a.OBJID =  #{productId}
         union  all
@@ -67,13 +70,15 @@
         from
         T_CONTENT_VIDEO b
         where
-        b.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+--         GOODS (1,"商品"),
+        b.OBJTYPE = '1'
         and
         b.OBJID =  #{productId}
         union  all
         select distinct c.CONTENTID from T_CONTENT_VIDEO c
         where
-        c.HAVELV2MAT = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentVedioStatusEnum@HAVE_LV2.getCode()}
+--         HAVE_LV2(1,"有二级素材");
+        c.HAVELV2MAT = '1'
         and
         c.MATID in
         (
@@ -81,7 +86,8 @@
         from
         t_content_vediolv2 d
         where
-        d.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+        --         GOODS (1,"商品"),
+        d.OBJTYPE = '1'
         and
         d.OBJID = #{productId}
         )

@@ -59,13 +59,13 @@ public class MerchantRulesDetailDTO<T> implements java.io.Serializable {
     /**
      * 限额
      */
-    @ApiModelProperty(value = "限额")
-    private java.lang.Long maxSerialNum;
+//    @ApiModelProperty(value = "限额")
+//    private java.lang.Long maxSerialNum;
 
     /**
      * 本月已使用
      */
-    @ApiModelProperty(value = "本月已使用")
-    private java.lang.Long serialNumUsed;
+//    @ApiModelProperty(value = "本月已使用")
+//    private java.lang.Long serialNumUsed;
 
 }

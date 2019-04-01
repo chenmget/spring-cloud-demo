@@ -4,7 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
+import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.NodeRightsDTO;
 import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
@@ -138,7 +140,7 @@ public class NodeRightsManager{
         if (null==resultVO || !resultVO.isSuccess()) {
             log.error("NodeRightsManager.getHandlerUserByRemote-->wfServiceExecutor.execute,serviceParamContext={},resultVO={}"
                     ,JSON.toJSONString(serviceParamContext),JSON.toJSONString(resultVO));
-            return Lists.newArrayList();
+            throw new RetailTipException(ResultCodeEnum.NEXT_HADNLE_USER_IS_EMPTY);
         }
 
         return resultVO.getResultData();

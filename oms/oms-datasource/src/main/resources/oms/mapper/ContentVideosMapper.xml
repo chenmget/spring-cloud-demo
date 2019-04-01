@@ -41,7 +41,8 @@
         from
         T_CONTENT_VIDEO t
         where
-        t.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+--         GOODS (1,"商品"),
+        t.OBJTYPE = '1'
         and
         t.OBJID in
         <foreach item="item" index="index" collection="productIds" open="(" separator="," close=")">

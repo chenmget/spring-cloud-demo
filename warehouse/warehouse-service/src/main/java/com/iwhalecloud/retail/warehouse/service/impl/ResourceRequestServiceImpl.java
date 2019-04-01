@@ -29,9 +29,6 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
@@ -103,7 +100,7 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
                 detailReq.setMktResInstId(instDTO.getMktResInstId());
                 detailReq.setMktResReqItemId(itemId);
                 detailReq.setMktResInstNbr(instDTO.getMktResInstNbr());
-                detailReq.setQuantity(Long.valueOf(ResourceConst.CONSTANT_01));
+                detailReq.setQuantity(Long.valueOf(ResourceConst.CONSTANT_YES));
                 detailReq.setCreateStaff(req.getCreateStaff());
                 detailReq.setChngType(req.getChngType());
                 detailReq.setUnit("个");

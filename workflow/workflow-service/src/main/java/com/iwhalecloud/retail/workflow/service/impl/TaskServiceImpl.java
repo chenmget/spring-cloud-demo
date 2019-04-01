@@ -268,6 +268,7 @@ public class TaskServiceImpl implements TaskService {
             Route route = routeList.get(0);
             routeNextReq.setNextNodeId(route.getNextNodeId());
             routeNextReq.setRouteId(route.getRouteId());
+            return routeNextReq;
         }
         return null;
     }

@@ -273,7 +273,7 @@ public class WorkFlowConst {
     }
 
     public enum TASK_SUB_TYPE {
-        TASK_SUB_TYPE_1010("1","1010","供应商串码调拨流程"),
+        TASK_SUB_TYPE_1010("1","1010","串码调拨调流程（调出方要审核）"),
         TASK_SUB_TYPE_1020("1","1020","厂家固网终端抽检流程"),
         TASK_SUB_TYPE_1030("1","1030","供应商库存管理流程"),
         TASK_SUB_TYPE_1040("1","1040","集采终端调货流程"),
@@ -302,7 +302,7 @@ public class WorkFlowConst {
         TASK_SUB_TYPE_2010("1","2010","2B订单销售"),
         TASK_SUB_TYPE_2020("1","2020","专票信息流程"),
         TASK_SUB_TYPE_2030("1","2030","前置补贴补录流程"),
-        TASK_SUB_TYPE_2040("1","2040","零售商串码调拨流程"),
+        TASK_SUB_TYPE_2040("1","2040","串码调拨流程（调出方、调入方都要审核）"),
         TASK_SUB_TYPE_2050("1","2050","通知公告审核流程");
 
         private String taskType;

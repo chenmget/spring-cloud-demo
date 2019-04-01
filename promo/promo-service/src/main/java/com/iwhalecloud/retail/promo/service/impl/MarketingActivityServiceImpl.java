@@ -6,6 +6,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
 import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -134,6 +137,9 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     @Reference
     private MktResCouponTaskService mktResCouponTaskService;
+
+    @Reference
+    private ProductService productService;
 
     private List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryRespList;
 
@@ -289,6 +295,17 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         List<ActivityProduct> activityGoodsList = activityProductManager.queryActivityProductByCondition(marketingActivityId);
         if (!CollectionUtils.isEmpty(activityGoodsList)) {
             List<ActivityProductDTO> activityProductDTOList = ReflectUtils.batchAssign(activityGoodsList, ActivityProductDTO.class);
+            if (!CollectionUtils.isEmpty(activityProductDTOList)){
+                for (int i = 0; i<activityProductDTOList.size(); i++){
+                    ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                    productGetByIdReq.setProductId(activityProductDTOList.get(i).getProductId());
+                    ResultVO<ProductResp> respResultVO = productService.getProduct(productGetByIdReq);
+                    if (null != respResultVO.getResultData()){
+                        activityProductDTOList.get(i).setUnitName(respResultVO.getResultData().getUnitName());
+                        activityProductDTOList.get(i).setSn(respResultVO.getResultData().getSn());
+                    }
+                }
+            }
             resp.setActivityProductList(activityProductDTOList);
         }
         // 根据活动编码查询活动规则

@@ -82,4 +82,4 @@ spring.datasource:
 
 #翼支付企业支付配置文件及相关配置参数
 pay:
-  certificateFile: E:/workspace/retail_git_release/order2b/order2b-service-boot/src/main/resources/pay/bestpay.properties
+  certificateFile: D:/02-project/01-ztesoft/02-git/retail/order2b/order2b-service-boot/src/main/resources/pay/bestpay.properties

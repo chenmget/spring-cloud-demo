@@ -16,9 +16,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -51,7 +48,6 @@ public class ResourceBatchRecServiceImpl implements ResourceBatchRecService {
 
     @Override
     @Async
-    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public ResultVO saveEventAndBatch(BatchAndEventAddReq req) {
         Map<String, List<String>> mktResIdAndNbrMap = req.getMktResIdAndNbrMap();
         List<String> mktResIdList = new ArrayList<>();

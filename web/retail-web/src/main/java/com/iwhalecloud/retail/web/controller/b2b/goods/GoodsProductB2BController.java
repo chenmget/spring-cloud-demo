@@ -237,7 +237,7 @@ public class GoodsProductB2BController {
             req.setManufacturerId(merchantId);
             ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
             List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
-            log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+            log.info("GoodsProductB2BController.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
             return productPageRespPage;
         }
 
@@ -274,7 +274,7 @@ public class GoodsProductB2BController {
     }
 
 
-    @ApiOperation(value = "分页查询产品(无权限过滤)", notes = "条件分页查询")
+    @ApiOperation(value = "分页查询产品(无权限过滤)", notes = "条件分页查询,无需登陆")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")

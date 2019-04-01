@@ -85,11 +85,12 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         String custId = req.getCustId();
 
         Map<String, List<AccountBalanceCalculationOrderItemReq>> orderItemMap = new HashMap<String, List<AccountBalanceCalculationOrderItemReq>>();
-        //组织数据:买家，卖家，活动，确定唯一性，将请求数据进行组织
+        //组织数据:买家，卖家，活动，确定唯一性，将请求数据进行组织到orderItemMap
         for (AccountBalanceCalculationOrderItemReq orderItemReq : orderItemList) {
             String actId = orderItemReq.getActId();
             //卖家ID
             String supplierId = orderItemReq.getSupplierId();
+            //买家，卖家，活动作为唯一性
             String key = custId + RebateConst.SPLIT_V + supplierId + RebateConst.SPLIT_V + actId;
             List<AccountBalanceCalculationOrderItemReq> list = orderItemMap.get(key);
             if (!orderItemMap.containsKey(key)) {
@@ -98,15 +99,15 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
             }
             list.add(orderItemReq);
         }
-
+        //对组织后的数据进行计算
         for (String key : orderItemMap.keySet()) {
+            //计算返利需要的数据
             List<AccountBalanceCalculationOrderItemReq> itemList = orderItemMap.get(key);
             InitCreateAccountBalanceReq initReq = new InitCreateAccountBalanceReq();
             initReq.setAcctId(accout.getAcctId());
             initReq.setCreateStaff(req.getUserId());
             initReq.setCustId(req.getCustId());
             initReq.setOrderItemReqList(itemList);
-
             this.calculationForAct(initReq);
         }
 
@@ -133,17 +134,23 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
             throw new BusinessException("订单项不能为空");
         }
         //校验订单项不可重复返利
+        Set<String> orderItemSet = new HashSet<String>();
         for (AccountBalanceCalculationOrderItemReq orderItemReq : orderItemList) {
             QueryAccountBalanceDetailForPageReq orderItemCheckReq = new QueryAccountBalanceDetailForPageReq();
             orderItemCheckReq.setOrderItemId(orderItemReq.getOrderItemId());
-
             orderItemCheckReq.setPageNo(1);
             orderItemCheckReq.setPageSize(1);
+            orderItemCheckReq.setAcctId(accout.getAcctId());
             ResultVO<Page<AccountBalanceDetailDTO>> orderItemCheckPage =  accountBalanceDetailService.queryAccountBalanceDetailForPage(orderItemCheckReq);
             if(orderItemCheckPage!=null&&orderItemCheckPage.getResultData()!=null&&orderItemCheckPage.getResultData().getRecords()!=null
                     &&!orderItemCheckPage.getResultData().getRecords().isEmpty()){
                 throw new BusinessException("订单项:"+orderItemReq.getOrderItemId()+"已计算返利，不可重复计算返利");
             }
+            if(orderItemSet.contains(orderItemReq.getOrderItemId())){
+                throw new BusinessException("参数错误,订单项:"+orderItemReq.getOrderItemId()+"数据重复");
+            }
+            orderItemSet.add(orderItemReq.getOrderItemId());
+
 
         }
 
@@ -220,6 +227,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
                 }
 
                 AccountBalanceLogDTO log = new AccountBalanceLogDTO();
+                log.setAcctId(req.getAcctId());
                 //余额账本标识
                 log.setAccountBalanceId(currentAccountBalance.getAccountBalanceId());
                 log.setOperIncomeId(operIncomeId);
@@ -275,6 +283,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         //余额类型名称	余额类型的名称，活动名称+返利，活动名称+价保
         accountBalanceType.setBalanceTypeName(actName + RebateConst.BALANCE_TYPE_NAME_END);
         accountBalanceType.setCreateStaff(req.getCreateStaff());
+        accountBalanceType.setRemark("返利计算自动生成");
         String typeId = accountBalanceTypeService.addAccountBalanceType(accountBalanceType);
         if (StringUtils.isEmpty(typeId)) {
             throw new BusinessException("创建账户余额类型出错");
@@ -356,7 +365,8 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         //操作后账户余额:余额加上入账金额
         resp.setBalance(balance);
         //剩余余额:上次的金额
-        resp.setCurAmount(accountBalance.getAmount().toString());
+        String curAmount = accountBalance.getAmount().toString();
+        resp.setCurAmount(curAmount);
         //修改账本可用余额
         accountBalance.setAmount(Long.valueOf(balance));
         //使用上限：活动规则的返利款抵扣比例*可用余额

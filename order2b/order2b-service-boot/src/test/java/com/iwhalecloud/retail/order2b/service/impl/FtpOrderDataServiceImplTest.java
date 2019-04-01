@@ -26,6 +26,7 @@ public class FtpOrderDataServiceImplTest extends TestBase {
         req.setStartDate("2019-02-01");
         req.setEndDate("2019-02-15");
         ResultVO resultVO = ftpOrderDataService.uploadFtp(req);
+        System.out.println(resultVO);
     }
 
 }

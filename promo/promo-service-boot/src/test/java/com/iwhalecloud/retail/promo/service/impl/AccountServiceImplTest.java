@@ -118,6 +118,10 @@ public class AccountServiceImplTest {
         System.out.println(pageResultVO);
 
     }
+
+    /**
+     * 返利计算
+     */
     @Test
     public void calculation(){
         AccountBalanceCalculationReq req = new AccountBalanceCalculationReq();
@@ -133,8 +137,8 @@ public class AccountServiceImplTest {
         itemReq.setProductId("123456");
         itemReq.setSupplierId("1111");
         itemReq.setOrderItemId("123121");
-
         orderItemList.add(itemReq);
+
         req.setOrderItemList(orderItemList);
 
         ResultVO resultVO = accountBalanceService.calculation(req);

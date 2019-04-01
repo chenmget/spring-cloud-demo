@@ -253,24 +253,23 @@ public class TaskServiceImpl implements TaskService {
         String processId = task.getProcessId();
         // 根据formId查询待处理任务项
         TaskItem taskItem = taskItemManager.queryWaitHandlerTaskItem(task.getTaskId());
-
-        if (taskItem != null) {
-            RouteNextReq routeNextReq = new RouteNextReq();
-            routeNextReq.setTaskItemId(taskItem.getTaskItemId());
-            Route condition = new Route();
-            condition.setProcessId(processId);
-            condition.setCurNodeId(taskItem.getCurNodeId());
-            // 查询流程下一步路由id
-            List<Route> routeList = routeManager.listRouteByCondition(condition);
-            if (CollectionUtils.isEmpty(routeList) || routeList.size() > 1) {
-                return null;
-            }
-            Route route = routeList.get(0);
-            routeNextReq.setNextNodeId(route.getNextNodeId());
-            routeNextReq.setRouteId(route.getRouteId());
-            return routeNextReq;
+        if (taskItem == null) {
+            return null;
         }
-        return null;
+        RouteNextReq routeNextReq = new RouteNextReq();
+        routeNextReq.setTaskItemId(taskItem.getTaskItemId());
+        Route condition = new Route();
+        condition.setProcessId(processId);
+        condition.setCurNodeId(taskItem.getCurNodeId());
+        // 查询流程下一步路由id
+        List<Route> routeList = routeManager.listRouteByCondition(condition);
+        if (CollectionUtils.isEmpty(routeList) || routeList.size() > 1) {
+            return null;
+        }
+        Route route = routeList.get(0);
+        routeNextReq.setNextNodeId(route.getNextNodeId());
+        routeNextReq.setRouteId(route.getRouteId());
+        return routeNextReq;
     }
 
     @Override

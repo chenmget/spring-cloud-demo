@@ -149,7 +149,7 @@ public class SupplierResourceInstB2BController {
     }
 
 
-    @ApiOperation(value = "调拨串码查询", notes = "查询")
+    @ApiOperation(value = "调拨串码查询列表", notes = "查询")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")

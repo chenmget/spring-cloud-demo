@@ -582,15 +582,14 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
         // 源仓库
         StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
+        storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storePageReq.setMerchantId(req.getBuyerMerchantId());
         String mktResStoreId = resouceStoreService.getStoreId(storePageReq);
         log.info("ResourceInstServiceImpl.deliveryInResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storePageReq), mktResStoreId);
         // 目标仓库
-        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-        storeGetStoreIdReq.setMerchantId(req.getSellerMerchantId());
-        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        String destStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService  destStoreId{}",destStoreId);
+        storePageReq.setMerchantId(req.getSellerMerchantId());
+        String destStoreId = resouceStoreService.getStoreId(storePageReq);
+        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService  destStoreId={}",destStoreId);
         for (DeliveryResourceInstItem item : req.getDeliveryResourceInstItemList()) {
             ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
             resourceInstsGetReq.setMktResInstNbrs(item.getMktResInstNbrs());

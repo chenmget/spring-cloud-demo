@@ -4,12 +4,19 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.elasticjob.lite.annotation.ElasticSimpleJob;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.dto.SettleRecordDTO;
 import com.iwhalecloud.retail.promo.service.SettleRecordService;
+import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
+import com.iwhalecloud.retail.system.service.CommonRegionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -30,6 +37,8 @@ import java.util.List;
 public class SettleRecordJob implements SimpleJob {
     @Reference(timeout = 10000)
     private SettleRecordService settleRecordService;
+    @Reference(timeout = 10000)
+    private CommonRegionService commonRegionService;
 
     @Override
     public void execute(ShardingContext shardingContext) {
@@ -37,9 +46,21 @@ public class SettleRecordJob implements SimpleJob {
         log.info("SettleRecordJob run start.....{}", startDate);
 
         try {
-            List<SettleRecordDTO> settleRecordDTOs = settleRecordService.getSettleRecord();
-            if(!CollectionUtils.isEmpty(settleRecordDTOs)){
-                settleRecordService.batchAddSettleRecord(settleRecordDTOs);
+            CommonRegionListReq req = new CommonRegionListReq();
+            List<CommonRegionDTO> commonRegionDTOs = new ArrayList<>();
+            ResultVO<List<CommonRegionDTO>> resultVO = commonRegionService.listCommonRegion(req);
+            if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+                commonRegionDTOs = resultVO.getResultData();
+            }
+
+            if(!CollectionUtils.isEmpty(commonRegionDTOs)){
+                for(CommonRegionDTO commonRegionDTO:commonRegionDTOs){
+                    String lanId = commonRegionDTO.getRegionId();
+                    List<SettleRecordDTO> settleRecordDTOs = settleRecordService.getSettleRecord(lanId);
+                    if(!CollectionUtils.isEmpty(settleRecordDTOs)){
+                        settleRecordService.batchAddSettleRecord(settleRecordDTOs);
+                    }
+                }
             }
         }catch (Exception ex) {
             log.error("SettleRecordJob getSettleRecord throw exception ex={}", ex);

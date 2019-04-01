@@ -78,12 +78,6 @@
         <if test="null!=req.sourceType and ''!=req.sourceType">
             and t.source_type = #{req.sourceType}
         </if>
-        <if test="null!=req.mktResStoreIds and req.mktResStoreIds.size()>0">
-            and t.mkt_res_store_id in
-            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
-                #{item}
-            </foreach>
-        </if>
         <if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">
             and t.mkt_res_inst_nbr = #{req.mktResInstNbr}
         </if>
@@ -111,6 +105,10 @@
                 #{item}
             </foreach>
         </if>
+        and t.mkt_res_store_id in
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
+            #{item}
+        </foreach>
         order by create_date desc
     </select>
 
@@ -174,9 +172,7 @@
                 #{item}
             </foreach>
         </if>
-        <if test="null!=mktResStoreId and ''!=mktResStoreId">
-            and t.mkt_res_store_id = #{mktResStoreId}
-        </if>
+        and t.mkt_res_store_id = #{mktResStoreId}
     </select>
 
     <select id="getResourceInsts" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstGetReq"
@@ -205,9 +201,7 @@
                 #{item}
             </foreach>
         </if>
-        <if test="null!=mktResStoreId and ''!=mktResStoreId">
-            and t.mkt_res_store_id = #{mktResStoreId}
-        </if>
+        and t.mkt_res_store_id = #{mktResStoreId}
     </select>
 
     <select id="selectByIds" parameterType="java.util.List"
@@ -244,20 +238,20 @@
         <if test="null!=statusCd and ''!=statusCd">
             and t.STATUS_CD = #{statusCd}
         </if>
-        <if test="null!=mktResStoreId and ''!=mktResStoreId">
-            and t.mkt_res_store_id = #{mktResStoreId}
-        </if>
         <if test="null!=mktResIdList and mktResIdList.size>0">
             and t.mkt_res_id in
             <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResIdList">
                 #{item}
             </foreach>
         </if>
+        and t.mkt_res_store_id = #{mktResStoreId}
     </select>
 
     <update id="batchUpdateInstState" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq">
         update mkt_res_inst t set t.STATUS_CD =#{req.statusCd}
-        where t.MKT_RES_STORE_ID =#{req.mktResStoreId} and t.MKT_RES_INST_NBR in
+        where 1 = 1
+        and t.MKT_RES_STORE_ID =#{req.mktResStoreId}
+        and t.MKT_RES_INST_NBR in
         <if test="null!=req.mktResInstNbrs and req.mktResInstNbrs.size>0">
             <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResInstNbrs">
                 #{item}
@@ -265,27 +259,8 @@
         </if>
     </update>
 
-    <insert id="batchInsert"  parameterType="java.util.List">
-        INSERT INTO mkt_res_inst
-        (MKT_RES_INST_ID, MKT_RES_INST_NBR, CT_CODE, MKT_RES_BATCH_ID, MKT_RES_ID, MKT_RES_STORE_ID, MKT_RES_INST_TYPE,
-        ROOT_INST_ID, SALES_PRICE, SOURCE_TYPE, LAN_ID, REGION_ID, REMARK, STATUS_DATE, STATUS_CD, CREATE_STAFF,
-        CREATE_DATE, UPDATE_STAFF, UPDATE_DATE, RECYCLE_TYPE, ORDER_ID, CREATE_TIME, SUPPLIER_CODE, SUPPLIER_NAME,
-        MERCHANT_ID, MERCHANT_NAME, MERCHANT_CODE, MERCHANT_TYPE, CRM_STATUS, SELF_REG_STATUS, STORAGE_TYPE )
-        VALUES
-        <foreach collection ="list" item="inst" index="index" separator =",">
-            (#{inst.mktResInstId},#{inst.mktResInstNbr}, #{inst.ctCode}, #{inst.mktResBatchId}, #{inst.mktResId},#{inst.mktResStoreId},#{inst.mktResInstType},
-             #{inst.rootInstId},#{inst.salesPrice}, #{inst.sourceType}, #{inst.lanId}, #{inst.regionId},#{inst.remark},now(),#{inst.statusCd},#{inst.createStaff},
-             now(),#{inst.updateStaff}, now(), #{inst.recycleType}, #{inst.orderId},#{inst.createTime},#{inst.supplierCode},#{inst.supplierName},
-            #{inst.merchantId}, #{inst.merchantName}, #{inst.merchantCode}, #{inst.merchantType}, #{inst.crmStatus}, #{inst.selfRegStatus}, #{inst.storageType})
-        </foreach >
-    </insert>
-
 
     <select id="getPrimaryKey" resultType="java.lang.String">
         select seq_retail_all_tables.nextval
-    </select>
-
-    <select id="getMerchantStoreIdByNbr" parameterType="java.lang.String"  resultType="java.lang.String">
-        select MKT_RES_STORE_ID from mkt_res_inst WHERE  MKT_RES_INST_NBR = #{nbr} and merchant_type = '1'
     </select>
 </mapper>

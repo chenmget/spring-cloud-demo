@@ -67,6 +67,11 @@ public class ProductServiceImpl implements ProductService {
     private TagTelManager tagTelManager;
 
     @Override
+    public ResultVO<String> getMerchantByProduct(MerChantGetProductReq req) {
+        return ResultVO.success(productManager.getMerChantByProduct(req.getProductId()));
+    }
+
+    @Override
     public ResultVO<ProductResp> getProduct(ProductGetByIdReq req) {
         return ResultVO.success(productManager.getProduct(req.getProductId()));
     }

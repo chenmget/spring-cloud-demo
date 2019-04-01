@@ -52,3 +52,10 @@ spring.datasource:
   username: szxtest
   password: szxtest.2019
 
+ftp:
+  channel:
+    filePath: /channel/
+    ip: 134.176.97.50
+    username: fdfs
+    password: cl3AO&UXBdip
+    port: 21

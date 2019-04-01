@@ -81,9 +81,9 @@ public class ActActivityProductRuleServiceImpl implements ActActivityProductRule
 
     @Override
     public ResultVO<ActActivityProductRuleServiceResp> queryActActivityProductRuleServiceResp(String marketingActivityId,String prodId) {
-        log.info("ActActivityProductRuleServiceImpl.deleteReBateProductRuleActivity marketingActivityId={}", marketingActivityId);
+        log.info("ActActivityProductRuleServiceImpl.queryActActivityProductRuleServiceResp marketingActivityId={}", marketingActivityId);
         if (StringUtils.isEmpty(marketingActivityId)){
-            return ResultVO.error("ActActivityProductRuleServiceImpl.deleteReBateProductRuleActivity marketingActivityId is null");
+            return ResultVO.error("ActActivityProductRuleServiceImpl.queryActActivityProductRuleServiceResp marketingActivityId is null");
         }
         ActActivityProductRuleServiceResp resp = new ActActivityProductRuleServiceResp();
         // 根据活动Id查询活动规则
@@ -109,7 +109,7 @@ public class ActActivityProductRuleServiceImpl implements ActActivityProductRule
             List<ActActivityProductRuleDTO> actActivityProductRuleDTOS = ReflectUtils.batchAssign(actActivityProductRules, ActActivityProductRuleDTO.class);
             resp.setActActivityProductRuleDTOS(actActivityProductRuleDTOS);
         }
-        log.info("ActActivityProductRuleServiceImpl.deleteReBateProductRuleActivity resp={}", JSON.toJSONString(resp));
+        log.info("ActActivityProductRuleServiceImpl.queryActActivityProductRuleServiceResp resp={}", JSON.toJSONString(resp));
         return ResultVO.success(resp);
     }
     @Override
@@ -147,7 +147,9 @@ public class ActActivityProductRuleServiceImpl implements ActActivityProductRule
             actActivityProductRule.setActProdRelId(actReBateProductReq.getMarketingActivityId());
             actActivityProductRule.setProductId(activityProductReq.getProductId());
             actActivityProductRule.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+            //达量
             actActivityProductRule.setRuleAmount(String.valueOf(activityProductReq.getReachAmount()));
+            //返利金额
             actActivityProductRule.setPrice(String.valueOf(activityProductReq.getRebatePrice()));
             actActivityProductRules.add(actActivityProductRule);
         }
@@ -170,51 +172,14 @@ public class ActActivityProductRuleServiceImpl implements ActActivityProductRule
             // 添加活动规则
             activityRuleManager.addActivityRule(activityRuleList);
         }
-        //更新活动规则表 返利计算规则
-        //activityRuleManager.updateActivityRuleByCondition(actReBateProductReq.getMarketingActivityId(),actReBateProductReq.getCalculationRule());
-
         //启动返利活动审核流程
-      //  MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivity(marketingActivityId);
+      // MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivity(marketingActivityId);
         AuitMarketingActivityReq auitMarketingActivityReq = new AuitMarketingActivityReq();
         BeanUtils.copyProperties(actReBateProductReq, auitMarketingActivityReq);
         auitMarketingActivityReq.setId(actReBateProductReq.getMarketingActivityId());
-       // auitMarketingActivityReq.setName(marketingActivity.getName());
+       //auitMarketingActivityReq.setName(marketingActivity.getName());
         marketingActivityService.auitMarketingActivity(auitMarketingActivityReq);
         return ResultVO.success();
     }
 
-    @Override
-    public ResultVO saveActProduct(ActivityProductReq activityProductReq) {
-        log.info("ActivityProductServiceImpl.saveActProduct activityProductReq={}",JSON.toJSON(activityProductReq));
-        if (null == activityProductReq){
-            return  ResultVO.error("ActivityProductServiceImpl.saveActProduct activityProductReq is null");
-        }
-        ResultVO resultVO =  activityProductManager.saveActProduct(activityProductReq);
-        if (resultVO.isSuccess()){
-            return  ResultVO.successMessage(constant.getUpdateSuccess());
-        }else {
-            return  ResultVO.error(constant.getUpdateFaile());
-        }
-    }
-
-    @Override
-    public ResultVO deleteReBateProducts(ActivityProductReq activityProductReq) {
-        log.info("ActivityProductServiceImpl.deleteReBateProductActivity activityProductReq={}",JSON.toJSON(activityProductReq));
-        if (null == activityProductReq){
-            return  ResultVO.error("ActivityProductServiceImpl.deleteReBateProductActivity activityProductReq is null");
-        }
-        ResultVO resultVO =  activityProductManager.deleteReBateProductActivity(activityProductReq);
-        ResultVO activityProductRuleResultVO = this.deleteReBateProductRuleActivity(activityProductReq);
-        if (resultVO.isSuccess() && activityProductRuleResultVO.isSuccess()){
-            return  ResultVO.successMessage(constant.getUpdateSuccess());
-        }else {
-            return  ResultVO.error(constant.getUpdateFaile());
-        }
-    }
-
-    @Override
-    public ResultVO<Boolean> stopReBateProductActivity(ActivityProductReq req) {
-        log.info("MarketingActivityServiceImpl.endMarketingActivity id={}", req.getMarketingActivityId());
-        return ResultVO.success(marketingActivityManager.updateMarketingActivityById(req.getMarketingActivityId(), PromoConst.STATUSCD.STATUS_CD_30.getCode()));
-    }
 }

@@ -30,26 +30,4 @@ public interface ActActivityProductRuleService{
      */
     ResultVO addReBateProduct(ActReBateProductReq actReBateProductReq);
 
-    /**
-     * 保存更改后的产品
-     * @param activityProductReq
-     * @return
-     */
-    ResultVO saveActProduct(ActivityProductReq activityProductReq);
-
-    ResultVO deleteReBateProducts(ActivityProductReq activityProductReq);
-
-    /**
-     * 修改返利活动信息
-     * @param req
-     * @return
-     */
-    //ResultVO<Boolean> updateReBateActivityInfo(MarketingActivityAddReq req);
-
-    /**
-     * 终止返利
-     * @param req
-     * @return
-     */
-    ResultVO<Boolean> stopReBateProductActivity(ActivityProductReq req);
 }

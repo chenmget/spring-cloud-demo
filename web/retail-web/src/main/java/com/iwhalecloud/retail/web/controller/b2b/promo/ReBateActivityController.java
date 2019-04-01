@@ -55,43 +55,4 @@ public class ReBateActivityController {
         }
         return actActivityProductRuleService.addReBateProduct(actReBateProductReq);
     }
-    @ApiOperation(value = "保存返利活动产品",notes = "保存返利活动产品")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-
-    @PostMapping(value = "/saveReBateProductActivity")
-    @UserLoginToken
-    public ResultVO saveReBateProductActivity(@RequestBody ActivityProductReq activityProductReq){
-        log.info("ReBateActivityController addReBateProductActivity actReBateProductReq={}", JSON.toJSON(activityProductReq));
-        if(StringUtils.isEmpty(UserContext.getUserId())){
-            return ResultVO.error("用户不能为空");
-        }
-        return actActivityProductRuleService.saveActProduct(activityProductReq);
-    }
-
-    @PostMapping(value = "/deleteReBateProducts")
-    @UserLoginToken
-    public ResultVO deleteReBateProductActivity(@RequestBody ActivityProductReq activityProductReq){
-        log.info("ReBateActivityController addReBateProductActivity actReBateProductReq={}", JSON.toJSON(activityProductReq));
-        if(StringUtils.isEmpty(UserContext.getUserId())){
-            return ResultVO.error("用户不能为空");
-        }
-        return actActivityProductRuleService.deleteReBateProducts(activityProductReq);
-    }
-    @ApiOperation(value = "终止返利活动产品",notes = "终止返利活动产品")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping(value = "/stopReBateProductActivity")
-    @UserLoginToken
-    public ResultVO stopReBateProductActivity(@RequestBody ActivityProductReq activityProductReq){
-        log.info("ReBateActivityController addReBateProductActivity actReBateProductReq={}", JSON.toJSON(activityProductReq));
-        if(StringUtils.isEmpty(UserContext.getUserId())){
-            return ResultVO.error("用户不能为空");
-        }
-        return actActivityProductRuleService.stopReBateProductActivity(activityProductReq);
-    }
 }

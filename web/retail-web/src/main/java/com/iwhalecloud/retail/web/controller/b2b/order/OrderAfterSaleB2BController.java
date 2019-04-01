@@ -99,6 +99,7 @@ public class OrderAfterSaleB2BController {
     public ResultVO selectApply(@RequestBody SelectAfterSalesReq request) {
         request.setUserId(UserContext.getUserId());
         request.setUserCode(UserContext.getUser().getRelCode());
+        request.setLanId(UserContext.getUser().getLanId());
         return selectAfterSaleOpenService.selectApply(request);
     }
 

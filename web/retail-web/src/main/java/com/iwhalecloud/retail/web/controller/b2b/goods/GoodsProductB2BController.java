@@ -269,4 +269,19 @@ public class GoodsProductB2BController {
         req.setProductIdList(productIdList);
         return productService.selectPageProductAdmin(req);
     }
+
+
+    @ApiOperation(value = "分页查询产品(无权限过滤)", notes = "条件分页查询")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="selectPageProductAdminWithNoRight")
+    @UserLoginToken
+    public ResultVO<Page<ProductPageResp>> selectPageProductAdminWithNoRight(@RequestBody ProductsPageReq req) {
+        ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
+        List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
+        log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+        return productPageRespPage;
+    }
 }

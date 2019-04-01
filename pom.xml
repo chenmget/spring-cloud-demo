@@ -16,7 +16,7 @@
     <version>2.0.0-SNAPSHOT</version>
 
     <modules>
-        <!--<module>oms</module>-->
+        <module>oms</module>
         <module>partner</module>
         <module>system</module>
         <module>rights</module>
@@ -26,8 +26,8 @@
         <module>workflow</module>
         <module>goods2b</module>
         <module>order2b</module>
-        <!--<module>goods</module>-->
-        <!--<module>order</module>-->
+        <module>goods</module>
+        <module>order</module>
         <module>warehouse</module>
         <module>report</module>
         <module>promo</module>

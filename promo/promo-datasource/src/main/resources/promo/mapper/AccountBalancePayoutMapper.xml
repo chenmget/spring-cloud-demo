@@ -48,6 +48,10 @@
         <if test="req.custId != null and req.custId != ''">
             and e.cust_id=#{req.custId}
         </if>
+        <if test="req.acctType != null and req.acctType != ''">
+            and e.acct_type=#{req.acctType}
+        </if>
+
         <if test="req.operDateEnd != null and req.operDateEnd != ''">
             <![CDATA[   and DATE_FORMAT(a.OPER_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.operDateEnd}, '%Y-%m-%d')   ]]>
         </if>

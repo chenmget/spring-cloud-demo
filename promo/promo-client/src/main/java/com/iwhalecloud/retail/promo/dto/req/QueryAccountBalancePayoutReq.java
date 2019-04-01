@@ -29,6 +29,8 @@ public class QueryAccountBalancePayoutReq extends AbstractPageReq implements Ser
     private String supplierLoginName;
     @ApiModelProperty(value = "商家id")
     private String custId;
+    @ApiModelProperty(value = "账户类型")
+    private String acctType;
 
     private List<String> productIdList;
     private List<String> supplierIdList;

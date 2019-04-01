@@ -109,6 +109,13 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                         queryAccountBalanceDetailAllResp.setLanId(supplier.getResultData().getLanId());
                         queryAccountBalanceDetailAllResp.setLanName(supplier.getResultData().getLanName());
                         queryAccountBalanceDetailAllResp.setSupplierName(supplier.getResultData().getMerchantName());
+                        UserListReq userListReq = new UserListReq();
+                        userListReq.setRelCode(supplierId);
+                        List<UserDTO> userList = userService.getUserList(userListReq);
+                        if (userList != null && !userList.isEmpty()) {
+                            queryAccountBalanceDetailAllResp.setSupplierLoginName(userList.get(0).getLoginName());
+
+                        }
                     }
                 }
                 //产品

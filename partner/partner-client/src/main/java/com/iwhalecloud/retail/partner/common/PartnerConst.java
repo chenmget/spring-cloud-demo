@@ -34,7 +34,7 @@ public class PartnerConst {
 
 
     /**
-     *  通用状态状态 1 有效、0失效
+     *  通用状态 1 有效、0失效
      */
     public enum CommonState {
         VALID("1","有效"),
@@ -42,6 +42,29 @@ public class PartnerConst {
         private String value;
         private String code;
         CommonState(String code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+    }
+
+
+    /**
+     *  电信通用状态 1000 有效、1100失效
+     */
+    public enum TelecomCommonState {
+        VALID("1000","有效"),
+        INVALID("1100","无效");
+        private String value;
+        private String code;
+        TelecomCommonState(String code, String value){
             this.code = code;
             this.value = value;
         }
@@ -294,6 +317,29 @@ public class PartnerConst {
         private String type;
         private String name;
         MerchantAccountTypeEnum(String type, String name){
+            this.type = type;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+        public String getType() {
+            return type;
+        }
+    }
+
+    /**
+     *  商家权限申请单子项 操作类型
+     */
+    public enum PermissionApplyItemOperationTypeEnum {
+
+        ADD("A","添加"),
+        UPDATE("U","修改"),
+        DELETE("D","删除"),
+        ;
+        private String type;
+        private String name;
+        PermissionApplyItemOperationTypeEnum(String type, String name){
             this.type = type;
             this.name = name;
         }

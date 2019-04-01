@@ -31,6 +31,8 @@ public class QueryAccountBalanceDetailAllResp implements Serializable {
     private String supplierId;
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
+    @ApiModelProperty(value = "供应商登录名")
+    private String SupplierLoginName;
     @ApiModelProperty(value = "供应商地市")
     private String lanId;
     @ApiModelProperty(value = "供应商地市名称")

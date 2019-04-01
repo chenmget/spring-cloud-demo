@@ -39,6 +39,8 @@ public class QueryAccountIncomeDetailReq extends AbstractPageReq implements Seri
     @ApiModelProperty(value = "来源类型")
     private String balanceSourceTypeId;
 
+    @ApiModelProperty(value = "订单项ID")
+    private String orderItemId;
 
 
 }

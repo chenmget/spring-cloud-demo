@@ -66,6 +66,11 @@
             and B.CUST_ID = #{req.custId}
         </if>
 
+        <if test="req.orderItemId != null and req.orderItemId != ''">
+            and A.ORDER_ITEM_ID = #{req.orderItemId}
+        </if>
+
+
         <if test="req.acctType != null and req.acctType != ''">
             and B.ACCT_TYPE = #{req.acctType}
         </if>

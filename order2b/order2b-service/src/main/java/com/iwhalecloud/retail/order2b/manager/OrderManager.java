@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.order2b.mapper.OrderItemDetailMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderItemMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.model.*;
+import com.iwhalecloud.retail.warehouse.dto.MktResStoreTempDTO;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -152,8 +153,9 @@ public class OrderManager {
         return orderItemMapper.selectOrderItem(item);
     }
 
-    public List<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req){
-        return orderMapper.queryFtpOrderDataRespList(req);
+    public Page<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req){
+        Page<FtpOrderDataResp> page = new Page<FtpOrderDataResp>(req.getPageNo(), req.getPageSize());
+        return orderMapper.queryFtpOrderDataRespList(page,req);
     }
     public String getFstTransDate(){
         return orderMapper.getFstTransDate();

@@ -30,6 +30,7 @@ public class ResourceConst {
      * 出库
      */
     public final static String OUT_PUT_STOAGE = "1000";
+
     /**
      * 常量
      */

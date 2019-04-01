@@ -21,7 +21,7 @@ import java.util.List;
 public class TagTelServiceImpl implements TagTelService {
 
     @Autowired
-    private TagTelManager TagTelManager;
+    private TagTelManager tagTelManager;
 
 
     /**
@@ -31,7 +31,7 @@ public class TagTelServiceImpl implements TagTelService {
      */
     @Override
     public ResultVO<TagTelDTO> getTagTel(TagTelGetByIdReq tagTelGetByIdReq){
-        return ResultVO.success(TagTelManager.getTagTel(tagTelGetByIdReq.getRelId()));
+        return ResultVO.success(tagTelManager.getTagTel(tagTelGetByIdReq.getRelId()));
     }
 
     /**
@@ -40,7 +40,7 @@ public class TagTelServiceImpl implements TagTelService {
      */
     @Override
     public ResultVO<List<TagTelDTO>> listAll(){
-        return ResultVO.success(TagTelManager.listAll());
+        return ResultVO.success(tagTelManager.listAll());
     }
 
     /**
@@ -50,7 +50,7 @@ public class TagTelServiceImpl implements TagTelService {
      */
     @Override
     public ResultVO<Integer> addTagTel(TagTelAddReq req){
-        return ResultVO.success(TagTelManager.addTagTel(req));
+        return ResultVO.success(tagTelManager.addTagTel(req));
     }
     /**
      * 批量添加标签产品关系
@@ -59,14 +59,14 @@ public class TagTelServiceImpl implements TagTelService {
      */
     @Override
     public ResultVO<Boolean> batchAddTagTel(TagTelBatchAddReq req) {
-        List<TagTel> TagTelList = Lists.newArrayList();
+        List<TagTel> tagTelList = Lists.newArrayList();
         for (String tag : req.getTagList()) {
-            TagTel TagTel = new TagTel();
-            TagTel.setProductId(req.getProductId());
-            TagTel.setTagId(tag);
-            TagTelList.add(TagTel);
+            TagTel tagTel = new TagTel();
+            tagTel.setProductId(req.getProductId());
+            tagTel.setTagId(tag);
+            tagTelList.add(tagTel);
         }
-        TagTelManager.batchAddTagTel(TagTelList);
+        tagTelManager.batchAddTagTel(tagTelList);
         return ResultVO.success(true);
     }
 
@@ -77,7 +77,7 @@ public class TagTelServiceImpl implements TagTelService {
      */
     @Override
     public ResultVO<Integer> updateTagTel(TagTelUpdateReq req){
-        return ResultVO.success(TagTelManager.updateTagTel(req));
+        return ResultVO.success(tagTelManager.updateTagTel(req));
     }
 
     /**
@@ -87,7 +87,7 @@ public class TagTelServiceImpl implements TagTelService {
      */
     @Override
     public ResultVO<Integer> deleteTagTel(TagTelDeleteByIdReq req){
-        return ResultVO.success(TagTelManager.deleteTagTel(req.getRelId()));
+        return ResultVO.success(tagTelManager.deleteTagTel(req.getRelId()));
     }
 
     /**
@@ -97,13 +97,13 @@ public class TagTelServiceImpl implements TagTelService {
      */
     @Override
     public ResultVO<Boolean> deleteTagTelByProductId(TagTelDeleteByProductIdReq req){
-        TagTelManager.deleteTagTelByProductId(req.getProductId());
+        tagTelManager.deleteTagTelByProductId(req.getProductId());
         return ResultVO.success(true);
     }
 
     @Override
     public ResultVO<List<TagTelDTO>> listTagByProductId(TagTelListByProductIdReq req) {
-        return ResultVO.success(TagTelManager.listTagByProductId(req.getProductId()));
+        return ResultVO.success(tagTelManager.listTagByProductId(req.getProductId()));
     }
 
 }

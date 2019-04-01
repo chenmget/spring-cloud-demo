@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author he.sw
@@ -246,12 +247,14 @@ public class GoodsProductB2BController {
         if (productIdListVO.isSuccess() && !CollectionUtils.isEmpty(productIdListVO.getResultData())) {
             // // 设置机型权限
             List<String> productIdList = productIdListVO.getResultData();
-            req.setProductIdList(productIdList);
+            List<String> originProductList = req.getProductIdList();
+            originProductList = originProductList.stream().filter(t -> productIdList.contains(t)).collect(Collectors.toList());
+            req.setProductIdList(originProductList);
         }
 
         ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
         List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
-        log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+        log.info("GoodsProductB2BController.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         return productPageRespPage;
     }
 
@@ -277,11 +280,10 @@ public class GoodsProductB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="selectPageProductAdminWithNoRight")
-    @UserLoginToken
     public ResultVO<Page<ProductPageResp>> selectPageProductAdminWithNoRight(@RequestBody ProductsPageReq req) {
         ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
         List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
-        log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+        log.info("GoodsProductB2BController.selectPageProductAdminWithNoRight req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         return productPageRespPage;
     }
 }

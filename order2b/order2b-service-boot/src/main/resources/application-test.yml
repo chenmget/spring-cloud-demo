@@ -1,8 +1,8 @@
 project:
-  name: 本机环境
+  name: 测试环境
   
 server:
-  port: 8024
+  port: 8324
 
 
 
@@ -11,11 +11,10 @@ spring.dubbo:
     application:
       name: order2b-provider
     registry:
- #     address: zookeeper://10.45.47.87:2285
-      address: zookeeper://localhost:2181
+      address: zookeeper://10.45.47.87:2285
     protocol:
       name: dubbo
-      port: 20882
+      port: 27083
     scan: com.iwhalecloud.retail
   
 logging.level.com.iwhalecloud.retail.order2b.mapper: debug
@@ -79,7 +78,6 @@ spring.datasource:
     #设置public key
     connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJptiLaauFuYuwkmQ2S0NSsvjdka34BLnbG5zFcuRqFi7RJowXs7P/dSmQWmlrx5RekyriyBUzgAgSbTFt1NpMsCAwEAAQ==
 
-
 #翼支付企业支付配置文件及相关配置参数
 pay:
-  certificateFile: D:/02-project/01-ztesoft/02-git/retail/order2b/order2b-service-boot/src/main/resources/pay/bestpay.properties
+  certificateFile: E:/workspace/retail_git_release/order2b/order2b-service-boot/src/main/resources/pay/bestpay.properties

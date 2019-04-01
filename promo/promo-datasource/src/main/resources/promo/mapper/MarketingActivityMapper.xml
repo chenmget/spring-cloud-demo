@@ -66,6 +66,10 @@
         ,t.TOP_IMG_URL
         ,t.DELIVER_START_TIME
         ,t.DELIVER_END_TIME
+        ,t.PRE_START_TIME
+        ,t.PRE_END_TIME
+        ,t.TAIL_PAY_START_TIME
+        ,t.TAIL_PAY_END_TIME
     </sql>
     <!--com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp-->
     <select id="listMarketingActivity" resultType="com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp" parameterType="com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq">

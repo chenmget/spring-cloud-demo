@@ -1,5 +1,5 @@
 project:
-  name: 本机环境
+  name: 开发环境
   
 server:
   port: 8024
@@ -11,8 +11,7 @@ spring.dubbo:
     application:
       name: order2b-provider
     registry:
- #     address: zookeeper://10.45.47.87:2285
-      address: zookeeper://localhost:2181
+      address: zookeeper://10.45.47.87:2285
     protocol:
       name: dubbo
       port: 20882
@@ -82,4 +81,4 @@ spring.datasource:
 
 #翼支付企业支付配置文件及相关配置参数
 pay:
-  certificateFile: D:/02-project/01-ztesoft/02-git/retail/order2b/order2b-service-boot/src/main/resources/pay/bestpay.properties
+  certificateFile: E:/workspace/retail_git_release/order2b/order2b-service-boot/src/main/resources/pay/bestpay.properties

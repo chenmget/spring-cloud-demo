@@ -36,6 +36,15 @@ public class PermissionApplyManager{
     }
 
     /**
+     * 根据ID获取商家权限申请单
+     * @param applyId
+     * @return
+     */
+    public PermissionApply getPermissionApplyById(String applyId) {
+        return permissionApplyMapper.selectById(applyId);
+    }
+
+    /**
      * 修改商家权限申请单
      * @param req
      * @return

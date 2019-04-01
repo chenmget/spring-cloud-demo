@@ -56,6 +56,7 @@ public class CommonRegionServiceImpl implements CommonRegionService {
         log.info("CommonRegionServiceImpl.listCommonRegion(), input：req={} ", JSON.toJSONString(req));
         if (StringUtils.isEmpty(req.getParRegionId())
                 && CollectionUtils.isEmpty(req.getRegionIdList())) {
+            log.info("CommonRegionServiceImpl.listCommonRegion(), 两个条件都为空 默认查湖南的 本地网 ");
             // 两个条件都为空 默认查湖南的 本地网
             req.setParRegionId(SystemConst.HN_DEFAULT_PAR_REGION_ID);
         }

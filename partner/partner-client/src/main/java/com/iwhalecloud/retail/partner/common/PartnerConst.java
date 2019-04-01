@@ -350,4 +350,27 @@ public class PartnerConst {
             return type;
         }
     }
+
+    /**
+     *  商家权限申请单 状态类型
+     */
+    public enum PermissionApplyStatusEnum {
+
+        AUDIT("1002","审核中"),
+        PASS("1003","审核通过"),
+        NOT_PASS("1004","审核不通过"),
+        ;
+        private String code;
+        private String name;
+        PermissionApplyStatusEnum(String code, String name){
+            this.code = code;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+        public String getCode() {
+            return code;
+        }
+    }
 }

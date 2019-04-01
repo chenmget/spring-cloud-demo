@@ -61,5 +61,8 @@ public class MerchantRulesDetailPageReq extends PageVO implements Serializable {
     @ApiModelProperty(value = "用户关联商家Id")
     private String relCode;
 
+    @ApiModelProperty(value = "标签关联商家Id集合",hidden = true)
+    private List<String> tagMerchantList;
+
 
 }

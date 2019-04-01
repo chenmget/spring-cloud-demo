@@ -723,7 +723,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
     }
 
     @Override
-    public ResultVO<ResouceInstTrackDTO> getResourceInstTrack(String nbr){
-        return ResultVO.success(resouceInstTrackManager.getResourceInstTrack(nbr));
+    public ResultVO<ResouceInstTrackDTO> getResourceInstTrackByNbrAndMerchantId(String nbr, String merchantId){
+        return ResultVO.success(resouceInstTrackManager.getResourceInstTrackByNbrAndMerchantId(nbr, merchantId));
     }
 }

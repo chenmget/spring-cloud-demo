@@ -22,8 +22,19 @@
         ,t.IF_PRE_SUBSIDY
     </sql>
 
+    <sql id="nbrSource">
+        t.MKT_RES_INST_NBR
+        ,t.IF_DIRECT_SUPPLY
+        ,t.IF_GROUND_SUPPLY
+        ,t.IF_GREEN_CHANNEL
+    </sql>
+
     <select id="qryOrderIdByNbr" resultType="java.lang.String">
          SELECT ORDER_ID from mkt_res_inst_track_detail where MKT_RES_INST_NBR=#{nbr} and STORAGE_TYPE=#{storageType} LIMIT 1
+    </select>
+
+    <select id="getResourceInstTrackByNbrAndMerchantId" resultType="com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO">
+         SELECT <include refid="nbrSource" /> from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr} and MERCHANT_ID = #{merchantId} LIMIT 1
     </select>
 
 </mapper>

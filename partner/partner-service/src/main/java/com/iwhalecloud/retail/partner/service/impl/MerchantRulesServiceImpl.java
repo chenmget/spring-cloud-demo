@@ -21,6 +21,7 @@ import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
+import com.iwhalecloud.retail.partner.manager.MerchantManager;
 import com.iwhalecloud.retail.partner.manager.MerchantRulesManager;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -73,6 +74,9 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
     @Reference
     private UserService userService;
+
+    @Autowired
+    private MerchantManager merchantManager;
 
 
     /**
@@ -209,6 +213,13 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             UserDTO userDTO = userService.getUser(userGetReq);
             req.setUserId(userDTO.getUserId());
             req.setRelCode(userDTO.getRelCode());
+        }
+        // 分组标签 转换成 merchant_id
+        if (!StringUtils.isEmpty(req.getTagId())) {
+//            MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
+//            merchantTagRelListReq.setTagId(req.getTagId());
+            List<String> resultMerchantList= merchantManager.getMerchantIdListByTag(req.getTagId());
+            req.setTagMerchantList(resultMerchantList);
         }
         Page<MerchantRulesDetailPageResp> merchantRulesDetailPageRespPage = merchantRulesManager.pageMerchantRules(req);
         List<MerchantRulesDetailPageResp> ruleList = merchantRulesDetailPageRespPage.getRecords();

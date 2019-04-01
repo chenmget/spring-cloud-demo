@@ -5,9 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.PermissionApplyDTO;
-import com.iwhalecloud.retail.partner.dto.req.PermissionApplyListReq;
-import com.iwhalecloud.retail.partner.dto.req.PermissionApplySaveReq;
-import com.iwhalecloud.retail.partner.dto.req.PermissionApplyUpdateReq;
+import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.entity.PermissionApply;
 import com.iwhalecloud.retail.partner.manager.PermissionApplyManager;
 import com.iwhalecloud.retail.partner.service.PermissionApplyService;
@@ -17,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -80,5 +79,34 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
         log.info("PermissionApplyServiceImpl.listPermissionApply(), output: resultVO={} ", JSON.toJSONString(resultVO));
         return resultVO;
     }
+
+    /**
+     * 商家权限申请单审核通过
+     * @param req
+     * @return
+     */
+    @Override
+    public ResultVO<Integer> passPermissionApply(PermissionApplyPassReq req) {
+        log.info("PermissionApplyServiceImpl.passPermissionApply(), input: PermissionApplyUpdateReq={} ", JSON.toJSONString(req));
+        PermissionApply permissionApply = permissionApplyManager.getPermissionApplyById(req.getApplyId());
+        if (Objects.isNull(permissionApply)) {
+
+        }
+
+        // 1、取出申请单对应的子项列表
+
+        return null;
+    }
+
+    /**
+     * 商家权限申请单审核不通过
+     * @param req
+     * @return
+     */
+    @Override
+    public ResultVO<Integer> notPassPermissionApply(PermissionApplyNotPassReq req) {
+        return null;
+    }
+
 
 }

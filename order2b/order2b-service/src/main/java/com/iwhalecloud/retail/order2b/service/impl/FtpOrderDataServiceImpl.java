@@ -119,8 +119,8 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
 
     @Override
     public ResultVO uploadFtpForTask() {
-        Date date = DateUtils.strToUtilDate("2019-03-01 12:12:12");
-
+        //当前时间
+        Date date = new Date();
         String day = DateUtils.dateToStr(date, FtpOrderDataConsts.DAY_FOR_DAY);
         String startDate = "";
         String endDate = "";

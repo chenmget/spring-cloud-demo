@@ -277,4 +277,24 @@ public class SupplierResourceInstB2BController {
         }
     }
 
+    @ApiOperation(value = "串码调拨确认", notes = "串码调拨确认")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="test123")
+    @UserLoginToken
+    public ResultVO test123(@RequestBody ConfirmReciveNbrReqDTO dto) {
+        String userId = UserContext.getUserId();
+        ConfirmReciveNbrReq req = new ConfirmReciveNbrReq();
+        req.setUpdateStaff(userId);
+        String confirmRecive = "0";
+        BeanUtils.copyProperties(dto, req);
+        if (confirmRecive.equals(dto.getIsPass())) {
+            return supplierResourceInstService.confirmReciveNbr(req);
+        }else{
+            return supplierResourceInstService.confirmRefuseNbr(req);
+        }
+    }
+
 }

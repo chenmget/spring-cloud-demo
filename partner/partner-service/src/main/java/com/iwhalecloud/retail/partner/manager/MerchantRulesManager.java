@@ -30,11 +30,6 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
      */
     public int insert(MerchantRules merchantRules){
         int resultInt = merchantRulesMapper.insert(merchantRules);
-//        if(resultInt > 0){
-//            MerchantRulesDTO merchantRulesDTO = new MerchantRulesDTO();
-//            BeanUtils.copyProperties(merchantRules, merchantRulesDTO);
-//            return merchantRulesDTO;
-//        }
         return resultInt;
     }
 

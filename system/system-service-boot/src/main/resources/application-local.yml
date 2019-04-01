@@ -95,7 +95,7 @@ spring.datasource:
       reset-enable: true
       #设置监控页面的登录名和密码
       login-username: admin
-      login-password: admin
+      login-password: c481af4a-df94-3413-7e22-24daf5b3a9bb
       allow: 127.0.0.1
     filters: config,stat,wall,log4j
     #设置public key

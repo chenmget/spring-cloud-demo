@@ -43,13 +43,14 @@
 		<hystrix.version>1.4.22</hystrix.version>
 		<ojdbc6.version>11.2.0.3</ojdbc6.version>
 		<spring-boot-starter-dubbo.version>1.0.0</spring-boot-starter-dubbo.version>
-		<mybatis-plus.version>3.0.3</mybatis-plus.version>
-		<mybatis-plus-boot-starter.version>3.0.3</mybatis-plus-boot-starter.version>
+		<mybatis-plus.version>3.0.7</mybatis-plus.version>
+		<mybatis-plus-boot-starter.version>3.0.7</mybatis-plus-boot-starter.version>
 		<springfox-swagger-ui.version>2.4.0</springfox-swagger-ui.version>
 		<springfox-swagger2.version>2.4.0</springfox-swagger2.version>
 		<weixin-java-mp.version>2.8.0</weixin-java-mp.version>
 		<goods.version>2.0.0-SNAPSHOT</goods.version>
 		<mysql-connector-java.version>5.1.6</mysql-connector-java.version>
+		<druid-spring-boot-starter.version>1.1.10</druid-spring-boot-starter.version>
 	</properties>
 
 	<dependencies>

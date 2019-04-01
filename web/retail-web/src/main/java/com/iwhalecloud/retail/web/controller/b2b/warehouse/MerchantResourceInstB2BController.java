@@ -57,7 +57,7 @@ public class MerchantResourceInstB2BController {
     @UserLoginToken
     public ResultVO<Page<ResourceInstListResp>> getResourceInstList(@RequestBody ResourceInstListReq req) {
         if (StringUtils.isEmpty(req.getMktResStoreIds())) {
-            ResultVO.error("仓库为空");
+            return ResultVO.error("仓库为空");
         }
         return resourceInstService.getResourceInstList(req);
     }

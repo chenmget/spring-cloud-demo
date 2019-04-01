@@ -248,8 +248,10 @@ public class GoodsProductB2BController {
             // // 设置机型权限
             List<String> productIdList = productIdListVO.getResultData();
             List<String> originProductList = req.getProductIdList();
-            originProductList = originProductList.stream().filter(t -> productIdList.contains(t)).collect(Collectors.toList());
-            req.setProductIdList(originProductList);
+            if (!CollectionUtils.isEmpty(originProductList)) {
+                originProductList = originProductList.stream().filter(t -> productIdList.contains(t)).collect(Collectors.toList());
+                req.setProductIdList(originProductList);
+            }
         }
 
         ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);

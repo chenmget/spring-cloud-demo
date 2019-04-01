@@ -563,7 +563,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             String destStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
             log.info("ResourceInstServiceImpl.deliveryInResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), destStoreId);
             resourceInstAddReq.setDestStoreId(destStoreId);
-            ResultVO addRS = this.resourceInstService.addResourceInst(resourceInstAddReq);
+            ResultVO addRS = this.resourceInstService.addResourceInstForTransaction(resourceInstAddReq);
             log.info("ResourceInstServiceImpl.deliveryInResourceInst resourceInstService.addResourceInst req={},resp={}", JSON.toJSONString(resourceInstAddReq), JSON.toJSONString(addRS));
             if (addRS == null || !addRS.isSuccess()) {
                 return ResultVO.error(addRS.getResultMsg());

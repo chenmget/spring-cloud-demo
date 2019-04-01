@@ -1,12 +1,11 @@
 package com.iwhalecloud.retail.goods2b.utils;
 
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
+import com.iwhalecloud.retail.exception.RetailTipException;
 import lombok.Data;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @Author My
@@ -22,7 +21,7 @@ public class ReflectUtils implements Serializable {
      * @return
      * @throws Exception
      */
-    public static boolean isAllFieldNull(Object obj, String notCheckField) throws ProductException{
+    public static boolean isAllFieldNull(Object obj, String notCheckField){
         boolean flag = true;
         try{
             // 得到类对象
@@ -44,9 +43,7 @@ public class ReflectUtils implements Serializable {
                 }
             }
         }catch (Exception e){
-            List<String> errors = new ArrayList<String>(1);
-            errors.add("产品拓展属性值异常");
-            throw new ProductException(errors);
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "产品拓展属性值异常");
         }
         return flag;
     }

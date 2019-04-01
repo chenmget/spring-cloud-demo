@@ -11,7 +11,6 @@ import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.system.common.SystemConst;
@@ -24,7 +23,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -74,19 +72,9 @@ public class GoodsProductB2BController {
     })
     @PostMapping(value="addProduct")
     @UserLoginToken
-    public ResultVO<Integer> addProduct(@RequestBody @Valid ProductAddReqDTO dto, BindingResult results)
-            throws ProductException {
-        if(results.hasErrors()) {
-            return ResultVO.error(results.getFieldError().getDefaultMessage());
-        }
+    public ResultVO<Integer> addProduct(@RequestBody @Valid ProductAddReqDTO dto){
         // 获取userId
         String userId = UserContext.getUserId();
-        if(org.apache.commons.lang.StringUtils.isEmpty(userId)){
-            ResultVO resultVO = new ResultVO();
-            resultVO.setResultMsg("userId can not be null");
-            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
-            return resultVO;
-        }
         ProductAddReq req = new ProductAddReq();
         BeanUtils.copyProperties(dto, req);
         req.setCreateStaff(userId);
@@ -100,19 +88,9 @@ public class GoodsProductB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="addProductByZT")
-    public ResultVO<String> addProductByZT(@RequestBody @Valid ProductAddReqDTO dto, BindingResult results)
-            throws ProductException {
-        if(results.hasErrors()) {
-            return ResultVO.error(results.getFieldError().getDefaultMessage());
-        }
+    public ResultVO<String> addProductByZT(@RequestBody @Valid ProductAddReqDTO dto){
         // 获取userId
         String userId = UserContext.getUserId();
-        if(org.apache.commons.lang.StringUtils.isEmpty(userId)){
-            ResultVO resultVO = new ResultVO();
-            resultVO.setResultMsg("userId can not be null");
-            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
-            return resultVO;
-        }
         ProductAddReq req = new ProductAddReq();
         BeanUtils.copyProperties(dto, req);
         req.setCreateStaff(userId);
@@ -127,18 +105,9 @@ public class GoodsProductB2BController {
     })
     @PutMapping(value="updateProdProduct")
     @UserLoginToken
-    public ResultVO<Integer> updateProdProduct(@Valid @RequestBody ProductUpdateReqDTO dto, BindingResult results) {
-        if(results.hasErrors()) {
-            return ResultVO.error(results.getFieldError().getDefaultMessage());
-        }
+    public ResultVO<Integer> updateProdProduct(@Valid @RequestBody ProductUpdateReqDTO dto) {
         // 获取userId
         String userId = UserContext.getUserId();
-        if(org.apache.commons.lang.StringUtils.isEmpty(userId)){
-            ResultVO resultVO = new ResultVO();
-            resultVO.setResultMsg("userId can not be null");
-            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
-            return resultVO;
-        }
         ProductUpdateReq req = new ProductUpdateReq();
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
@@ -153,20 +122,11 @@ public class GoodsProductB2BController {
     })
     @PutMapping(value="bacthUpdateProdProduct")
     @UserLoginToken
-    public ResultVO<Integer> bacthUpdateProdProduct(@Valid @RequestBody List<ProductUpdateReqDTO> dtoList, BindingResult results) {
-        if(results.hasErrors()) {
-            return ResultVO.error(results.getFieldError().getDefaultMessage());
-        }
+    public ResultVO<Integer> bacthUpdateProdProduct(@Valid @RequestBody List<ProductUpdateReqDTO> dtoList) {
         List<ProductUpdateReq> productUpdateReqs =new ArrayList<>();
         for(ProductUpdateReqDTO dto: dtoList){
             // 获取userId
             String userId = UserContext.getUserId();
-            if(org.apache.commons.lang.StringUtils.isEmpty(userId)){
-                ResultVO resultVO = new ResultVO();
-                resultVO.setResultMsg("userId can not be null");
-                resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
-                return resultVO;
-            }
             ProductUpdateReq req = new ProductUpdateReq();
             BeanUtils.copyProperties(dto, req);
             req.setUpdateStaff(userId);
@@ -212,16 +172,9 @@ public class GoodsProductB2BController {
     })
     @PostMapping(value="selectProduct")
     @UserLoginToken
-    public ResultVO<Page<ProductDTO>> selectProduct(@RequestBody ProductGetReq req)
-            throws ProductException{
+    public ResultVO<Page<ProductDTO>> selectProduct(@RequestBody ProductGetReq req){
         List<String> productIdList = null;
         req.setProductIdList(productIdList);
-        // 没登陆不给查看
-        if (!UserContext.isUserLogin()) {
-            log.info("GoodsProductB2BController 用户未登陆");
-            return ResultVO.success(new Page<ProductDTO>());
-        }
-
         Boolean isAdminType = UserContext.isAdminType();
         String merchantId = null;
         Boolean getPermission = false;
@@ -239,7 +192,6 @@ public class GoodsProductB2BController {
         }
 
         try {
-            //
             ResultVO<List<String>> listResultVO = merchantRulesService.getProductAndBrandPermission(merchantId);
             log.info("GoodsProductB2BController.selectProduct.getProductAndBrandPermission req={}, merchantId={}", merchantId, JSON.toJSONString(listResultVO));
             if (listResultVO.isSuccess() && !CollectionUtils.isEmpty(listResultVO.getResultData())) {
@@ -267,11 +219,6 @@ public class GoodsProductB2BController {
     @PostMapping(value="selectPageProductAdmin")
     @UserLoginToken
     public ResultVO<Page<ProductPageResp>> selectPageProductAdmin(@RequestBody ProductsPageReq req) {
-        // 没登陆不给查看
-        if (!UserContext.isUserLogin()) {
-            return ResultVO.success(new Page<ProductPageResp>());
-        }
-
         Boolean isAdminType = UserContext.isAdminType();
         String merchantId = null;
         Integer userFounder = UserContext.getUser().getUserFounder();
@@ -320,11 +267,6 @@ public class GoodsProductB2BController {
     public ResultVO<Page<ProductPageResp>> greenChannelSelectProduct(@RequestBody ProductsPageReq req){
         List<String> productIdList = null;
         req.setProductIdList(productIdList);
-        // 没登陆不给查看
-        if (!UserContext.isUserLogin()) {
-            return ResultVO.success(new Page<ProductPageResp>());
-        }
-
         return productService.selectPageProductAdmin(req);
     }
 }

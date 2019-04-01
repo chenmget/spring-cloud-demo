@@ -4,7 +4,6 @@ import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
 
@@ -84,7 +83,6 @@ public class ResourceInstListReq extends PageVO {
 	/**
 	 * 营销资源仓库标识：非管理员，此项不能为空，前端用户如果没有选择仓库，默认是他下面所有的仓库，如果选，就是指定仓库。
 	 */
-	@NotEmpty(message = "仓库不能为空")
 	@ApiModelProperty(value = "营销资源仓库标识")
 	private List<String> mktResStoreIds;
 

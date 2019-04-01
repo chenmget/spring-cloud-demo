@@ -23,6 +23,7 @@ public class PartnerServiceImpl implements PartnerService {
     @Autowired
     private PartnerManager partnerManager;
 
+
     @Override
     public ResultVO<Page<PartnerDTO>> querySupplyRel(SupplierReq supplierReq) {
         Page<PartnerDTO>  partnerDTOPage = new Page<PartnerDTO>();

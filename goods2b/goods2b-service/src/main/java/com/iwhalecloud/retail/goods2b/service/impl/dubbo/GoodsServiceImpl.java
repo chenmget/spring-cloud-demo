@@ -969,7 +969,7 @@ public class GoodsServiceImpl implements GoodsService {
                 }
                 // 更新该商品有库存字段
                 for (ProductQuantityItem item : productQuantityItemList) {
-                    goodsProductRelManager.updateIsHaveStock(goods.getSupplierId(), item.getProductId(), item.getIsEnough());
+                    goodsProductRelManager.updateIsHaveStock(goods.getGoodsId(), item.getProductId(), item.getIsEnough());
                 }
             } catch (Exception ex) {
                 log.error("GoodsServiceImpl.updateMarketEnable getProductQuantityByMerchant throw exception ex={}", ex);

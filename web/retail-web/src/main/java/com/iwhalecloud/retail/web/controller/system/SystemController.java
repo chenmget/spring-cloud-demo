@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.web.controller.system;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.*;
+import com.iwhalecloud.retail.system.dto.request.MenuListReq;
 import com.iwhalecloud.retail.system.dto.request.OrganizationsQueryReq;
 import com.iwhalecloud.retail.system.dto.request.RoleGetReq;
 import com.iwhalecloud.retail.system.dto.request.RolePageReq;
@@ -126,6 +127,7 @@ public class SystemController {
     @ApiOperation(value = "查询菜单", notes = "")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "platform", value = "平台类型:  1 交易平台   2管理平台", paramType = "query", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "menuName", value = "菜单名称（模糊查询）", paramType = "query", required = false, dataType = "String"),
     })
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
@@ -133,10 +135,14 @@ public class SystemController {
     })
     @GetMapping(value = "/listMenu")
     public ResultVO listMenu(
-            @RequestParam(value = "platform") String platform
+            @RequestParam(value = "platform") String platform,
+            @RequestParam(value = "menuName", required = false) String menuName
     ){
         ResultVO listMenuResp = new ResultVO();
-        ResultVO list = menuService.listMenu(platform);
+        MenuListReq menuListReq = new MenuListReq();
+        menuListReq.setPlatform(platform);
+        menuListReq.setMenuName(menuName);
+        ResultVO list = menuService.listMenu(menuListReq);
         listMenuResp.setResultCode(list.getResultCode());
         listMenuResp.setResultMsg(list.getResultMsg());
         listMenuResp.setResultData(list.getResultData());
@@ -273,11 +279,22 @@ public class SystemController {
         return listRoleResp;
     }
 
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "roleId", value = "角色ID", paramType = "query", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "platform", value = "平台类型:  1 交易平台   2管理平台", paramType = "query", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "menuName", value = "菜单名称（模糊查询）", paramType = "query", required = false, dataType = "String"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
     @ApiOperation(value = "在全菜单列表里勾选当前角色拥有的菜单", notes = "")
     @GetMapping(value = "/listRoleMenuByRoleId")
     public ResultVO listRoleMenuByRoleId(
             @RequestParam(value = "roleId", required = false) String roleId,
-            @RequestParam(value = "platform", required = false) String platform
+            @RequestParam(value = "platform", required = false) String platform,
+            @RequestParam(value = "menuName", required = false) String menuName
+
     ){
         ResultVO listRoleResp = new ResultVO();
         ResultVO roleMenuResult = roleMenuService.listRoleMenuByRoleId(roleId);
@@ -287,7 +304,10 @@ public class SystemController {
             for(RoleMenuDTO roleMenuDTO : roleMenuDTOs){
                 hashMap.put(roleMenuDTO.getMenuId(),roleMenuDTO.getId());
             }
-            ResultVO menuDTOResult = menuService.listMenu(platform);
+            MenuListReq menuListReq = new MenuListReq();
+            menuListReq.setPlatform(platform);
+            menuListReq.setMenuName(menuName);
+            ResultVO menuDTOResult = menuService.listMenu(menuListReq);
             if(menuDTOResult.isSuccess()){
                 List<MenuDTO> menuDTOS = (List<MenuDTO>) menuDTOResult.getResultData();
                 List<RoleMenuResp> roleMenuResps = new ArrayList<>();
@@ -336,13 +356,13 @@ public class SystemController {
     @ApiOperation(value = "插入用户角色", notes = "")
     @RequestMapping(value = "/saveUserRole", method = RequestMethod.POST)
     public ResultVO saveUserRole(@RequestBody @ApiParam(value = "插入用户角色", required = true) SaveUserRoleReq request ) {
-        ResultVO savaRoleMenuResponse = new ResultVO();
+        ResultVO saveRoleMenuResponse = new ResultVO();
         UserRoleDTO userRoleDTO = new UserRoleDTO();
         BeanUtils.copyProperties(request, userRoleDTO);
         ResultVO resultVO = userRoleService.saveUserRole(userRoleDTO);
-        savaRoleMenuResponse.setResultMsg(resultVO.getResultMsg());
-        savaRoleMenuResponse.setResultCode(resultVO.getResultCode());
-        return savaRoleMenuResponse;
+        saveRoleMenuResponse.setResultMsg(resultVO.getResultMsg());
+        saveRoleMenuResponse.setResultCode(resultVO.getResultCode());
+        return saveRoleMenuResponse;
     }
 //
 //    @ApiOperation(value = "查询用户角色", notes = "")

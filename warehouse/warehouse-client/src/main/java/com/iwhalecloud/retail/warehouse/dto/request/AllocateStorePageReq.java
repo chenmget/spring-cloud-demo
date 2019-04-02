@@ -52,4 +52,23 @@ public class AllocateStorePageReq extends PageVO {
      */
     @ApiModelProperty(value = "商家类型")
     private String merchantType;
+
+    /**
+     * 本地网标识集合
+     */
+    @ApiModelProperty(value = "本地网标识集合")
+    private List<String> lanIdList;
+
+    /**
+     * 指向公共管理区域标识
+     */
+    @ApiModelProperty(value = "指向公共管理区域标识")
+    private java.lang.String regionId;
+
+    /**
+     * 本地网名称
+     */
+    @ApiModelProperty(value = "本地网名称")
+    private java.lang.String lanIdName;
+
 }

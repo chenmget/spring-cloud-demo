@@ -26,7 +26,8 @@ public class ServiceLogManagerAop {
         ParserConfig.getGlobalInstance().setAsmEnable(false);
         SerializeConfig.getGlobalInstance().setAsmEnable(false);
     }
-    @Around("execution(* com.iwhalecloud.retail.goods2b.service.*.*(..))")
+
+    @Around("execution(* com.iwhalecloud.retail.goods2b.service..*.*(..))")
     public Object aroundExecuteService(ProceedingJoinPoint point) throws Throwable {
         long time = System.currentTimeMillis();
         log.info("interface=({}),gs_start={},url={},request{}",

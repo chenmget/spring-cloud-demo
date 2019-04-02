@@ -111,4 +111,8 @@ public class GoodsProductRelManager{
     public List<ActivityGoodsDTO> qryActivityGoodsId(ActivityGoodsReq req){
         return goodsProductRelMapper.qryActivityGoodsId(req);
     }
+
+    public List<String> listGoodsBySupplierId(String supplierId, String productId) {
+        return goodsProductRelMapper.listGoodsBySupplierId(supplierId, productId);
+    }
 }

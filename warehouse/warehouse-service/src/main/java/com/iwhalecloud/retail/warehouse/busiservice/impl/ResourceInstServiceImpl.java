@@ -171,7 +171,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO updateResourceInst(ResourceInstUpdateReq req) {
-        log.info("ResourceInstServiceImpl.delResourceInst req={},resp={}", JSON.toJSONString(req));
+        log.info("ResourceInstServiceImpl.updateResourceInst req={},resp={}", JSON.toJSONString(req));
         Map<String, Object> data = assembleData(req);
         Map<String, List<ResourceInstListResp>> insts = (HashMap<String, List<ResourceInstListResp>>)data.get("productNbr");
         List<String> unavailbaleNbrs = (List<String>)data.get("unavailbaleNbrs");
@@ -186,9 +186,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
             BeanUtils.copyProperties(req, updateReq);
             updateReq.setMktResStoreId(req.getDestStoreId());
-            updateReq.setMktResInstNbrs(availbaleNbrs);
+            updateReq.setMktResInstNbrs(availbaleNbrs.stream().distinct().collect(Collectors.toList()));
             successNum = resourceInstManager.updateResourceInst(updateReq);
-            log.info("ResourceInstServiceImpl.delResourceInst resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
+            log.info("ResourceInstServiceImpl.updateResourceInst resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
         }
 
         for (Map.Entry<String, List<ResourceInstListResp>> entry : insts.entrySet()) {
@@ -232,7 +232,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 resourceInstStoreDTO.setQuantityAddFlag(false);
             }
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
-            log.info("ResourceInstServiceImpl.delResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
+            if (updateResInstStore < 1) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            }
+            log.info("ResourceInstServiceImpl.updateResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         }
 
         return ResultVO.success();
@@ -255,7 +258,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (!availbaleNbrs.isEmpty()) {
             ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
             BeanUtils.copyProperties(req, updateReq);
-            updateReq.setMktResInstNbrs(availbaleNbrs);
+            updateReq.setMktResInstNbrs(availbaleNbrs.stream().distinct().collect(Collectors.toList()));
             successNum = resourceInstManager.updateResourceInst(updateReq);
             log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
         }
@@ -300,6 +303,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             }
 
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+            log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={} resp={}", JSON.toJSONString(resourceInstStoreDTO), updateResInstStore);
+            if (updateResInstStore < 1) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            }
             log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         }
 
@@ -828,7 +835,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (!availbaleNbrs.isEmpty()) {
             ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
             BeanUtils.copyProperties(req, updateReq);
-            updateReq.setMktResInstNbrs(availbaleNbrs);
+            updateReq.setMktResInstNbrs(availbaleNbrs.stream().distinct().collect(Collectors.toList()));
             successNum = resourceInstManager.updateResourceInst(updateReq);
             log.info("ResourceInstServiceImpl.delResourceInstForMerchant resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
         }
@@ -875,7 +882,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             }
 
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
-            log.info("ResourceInstServiceImpl.delResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
+            if (updateResInstStore < 1) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            }
+            log.info("ResourceInstServiceImpl.delResourceInstForMerchant resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         }
 
         return ResultVO.success();

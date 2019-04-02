@@ -92,7 +92,7 @@
             and order_id=#{orderId}
         </if>
         <if test="goodsName !=null and goodsName!=''">
-            and goods_name like #{goodsName}
+            and UPPER(goods_name) like UPPER(#{goodsName})
         </if>
         <if test="sn !=null and sn!=''">
             and sn = #{sn}
@@ -103,7 +103,9 @@
         <if test="lanId !=null and lanId !=''">
             and lan_id=#{lanId}
         </if>
-        and source_from=#{sourceFrom}
+        <if test="sourceFrom !=null and sourceFrom !=''">
+            and source_from=#{sourceFrom}
+        </if>
     </select>
 
 

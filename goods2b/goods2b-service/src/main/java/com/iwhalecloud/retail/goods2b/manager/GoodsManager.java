@@ -90,13 +90,6 @@ public class GoodsManager{
         return goodsMapper.updateById(record);
     }
 
-    public List<Goods> listGoodsBySupplierId(String supplierId){
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("is_deleted", GoodsConst.NO_DELETE);
-        queryWrapper.eq("SUPPLIER_ID",supplierId);
-        return goodsMapper.selectList(queryWrapper);
-    }
-
     public int updateBuyCountById(String goodsId, Long buyCount) {
         UpdateWrapper<Goods> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("GOODS_ID",goodsId);

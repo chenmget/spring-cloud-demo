@@ -83,18 +83,17 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
 
     @Override
     public ResultVO<Boolean> updateIsHaveStock(GoodsProductRelEditReq goodsProductRelEditReq) {
-        String supplierId =goodsProductRelEditReq.getGoodsId();
+        String supplierId =goodsProductRelEditReq.getMerchantId();
         String productId = goodsProductRelEditReq.getProductId();
         Boolean isHaveStock = goodsProductRelEditReq.getIsHaveStock();
         log.info("GoodsProductRelServiceImpl.updateIsHaveStock supplierId={},productId={},isHaveStock={}",supplierId,productId,isHaveStock);
         if (supplierId == null || productId == null || isHaveStock == null) {
             ResultVO.errorEnum(ResultCodeEnum.LACK_OF_PARAM);
         }
-        List<Goods> goodsList =  goodsManager.listGoodsBySupplierId(supplierId);
-        if (CollectionUtils.isEmpty(goodsList)) {
+        List<String> goodsIdList =  goodsProductRelManager.listGoodsBySupplierId(supplierId, productId);
+        if (CollectionUtils.isEmpty(goodsIdList)) {
             ResultVO.success();
         }
-        List<String> goodsIdList = goodsList.stream().map(Goods::getGoodsId).collect(Collectors.toList());
         for (String goodsId : goodsIdList) {
             goodsProductRelManager.updateIsHaveStock(goodsId, productId, isHaveStock);
         }
@@ -105,7 +104,7 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
     public ResultVO<GoodsProductRelDTO> qryMinAndMaxNum( GoodsProductRelEditReq goodsProductRelEditReq) {
         String goodsId = goodsProductRelEditReq.getGoodsId();
         String productId = goodsProductRelEditReq.getProductId();
-        log.info("GoodsProductRelServiceImpl.updateIsHaveStock goodsId={},productId={}",goodsId,productId);
+        log.info("GoodsProductRelServiceImpl.qryMinAndMaxNum goodsId={},productId={}",goodsId,productId);
         if (goodsId == null || productId == null) {
             ResultVO.errorEnum(ResultCodeEnum.LACK_OF_PARAM);
         }

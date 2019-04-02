@@ -226,6 +226,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstStoreDTO.setQuantityAddFlag(false);
             resourceInstStoreDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             int restInstStoreCnt = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+            if (restInstStoreCnt < 1) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            }
             log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(restInstStoreCnt));
         }
         return ResultVO.success(num);

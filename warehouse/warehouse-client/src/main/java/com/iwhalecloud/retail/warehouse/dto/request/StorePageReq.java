@@ -47,10 +47,10 @@ public class StorePageReq extends PageVO {
     private String storeSubType;
 
     /**
-     * 本地网标识
+     * 本地网标识集合
      */
-    @ApiModelProperty(value = "本地网标识")
-    private java.lang.String lanId;
+    @ApiModelProperty(value = "本地网标识集合")
+    private List<String> lanIdList;
 
     /**
      * 指向公共管理区域标识
@@ -60,5 +60,11 @@ public class StorePageReq extends PageVO {
 
     @ApiModelProperty(value = "商家类型")
     private java.lang.String merchantType;
+
+    /**
+     * 本地网名称
+     */
+    @ApiModelProperty(value = "本地网名称")
+    private java.lang.String lanIdName;
 
 }

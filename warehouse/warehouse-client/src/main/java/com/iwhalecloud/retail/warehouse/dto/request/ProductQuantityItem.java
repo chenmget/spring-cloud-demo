@@ -24,4 +24,10 @@ public class ProductQuantityItem implements Serializable {
     @ApiModelProperty(value = "售卖数量")
     private Long num;
 
+    /**
+     * 是否有库存
+     */
+    @ApiModelProperty(value = "是否预警")
+    private Boolean isEnough;
+
 }

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.system.service.impl;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.MenuDTO;
+import com.iwhalecloud.retail.system.dto.request.MenuListReq;
 import com.iwhalecloud.retail.system.entity.Menu;
 import com.iwhalecloud.retail.system.manager.RoleMenuManager;
 import org.springframework.beans.BeanUtils;
@@ -39,8 +40,8 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public ResultVO listMenu(String platform) {
-        List<Menu> list = menuManager.listMenu(platform);
+    public ResultVO<List<MenuDTO>> listMenu(MenuListReq req) {
+        List<Menu> list = menuManager.listMenu(req);
         List<MenuDTO> menuDTOList = new ArrayList<>();
         for(Menu m : list){
             MenuDTO dto = new MenuDTO();

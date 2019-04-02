@@ -727,7 +727,6 @@ public class GoodsServiceImpl implements GoodsService {
                 filterPresubsidyGoods(goodsForPageQueryRespList, i, item);
             }
         }
-        goodsForPageQueryRespPage.setSize(goodsForPageQueryRespList.size());
     }
 
     private void filterPresubsidyGoods(List<GoodsForPageQueryResp> goodsForPageQueryRespList, int i,

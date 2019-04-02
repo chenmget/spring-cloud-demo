@@ -240,6 +240,9 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
         }
         ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = activityProductService.queryPreSubsidyProduct(addPromotionProductReqDTO.getMarketingActivityId());
         log.info("PreSubsidyCouponServiceImpl.addPreSubsidyProduct marketingActivityService.queryMarketingActivityById marketingActivityDTOResultVO={}", JSON.toJSON(marketingActivityDTOResultVO));
+        if(!listResultVO.isSuccess()){
+            return ResultVO.error(listResultVO.getResultMsg());
+        }
         try {
             String promotionType = marketingActivityDTOResultVO.getResultData().getPromotionTypeCode();
             if (listResultVO.getResultData().size() > 0) {

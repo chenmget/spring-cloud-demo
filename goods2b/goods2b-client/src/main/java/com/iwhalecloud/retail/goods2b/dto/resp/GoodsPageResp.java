@@ -76,4 +76,10 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "品牌名称")
     private String brandName;
+
+    /**
+     * 市场价
+     */
+    @ApiModelProperty(value = "市场价")
+    private Double mktprice;
 }

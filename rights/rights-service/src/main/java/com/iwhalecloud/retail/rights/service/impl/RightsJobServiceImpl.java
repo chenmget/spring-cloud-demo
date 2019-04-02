@@ -111,7 +111,7 @@ public class RightsJobServiceImpl implements RightsJobService{
             couponInstProvRec.setProvDesc("主动推送优惠券发放");
             couponInstProvRec.setCreateStaff("-1");
             couponInstProvRec.setUpdateStaff("-1");
-            couponInstProvRec.setProvChannelType("1000");
+            couponInstProvRec.setProvChannelType(RightsConst.ProvChannelType.PROV_CHANNEL_TYPE_1000.getType());
             couponInstProvRec.setProvObjType(RightsStatusConsts.PROVOBJ_TYPE_CUS);
             couponInstProvRec.setStatusCd(RightsStatusConsts.RIGHTS_STATUS_UNUSED);
             couponInstProvRecManager.insertCouponInstProvRec(couponInstProvRec);
@@ -123,7 +123,7 @@ public class RightsJobServiceImpl implements RightsJobService{
             mktResCouponTask.setUpdateStaff("-1");
             mktResCouponTaskManager.updateMktResCouponTask(mktResCouponTask);
         }catch (Exception e){
-            log.info("RightsJobServiceImpl.receiveCoupon 主动推送优惠券生成实例失败");
+            log.error("RightsJobServiceImpl.receiveCoupon 主动推送优惠券生成实例失败");
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             mktResCouponTask.setStatusCd(RightsConst.TaskStatusCd.TASK_STATUS_CD_1_.getType());
             mktResCouponTask.setStatusDate(new Date());

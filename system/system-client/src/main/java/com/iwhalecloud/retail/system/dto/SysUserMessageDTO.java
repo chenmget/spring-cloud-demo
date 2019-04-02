@@ -58,6 +58,18 @@ public class SysUserMessageDTO implements java.io.Serializable {
   	private String taskId;
 
 	/**
+  	 * taskItemId
+  	 */
+	@ApiModelProperty(value = "taskItemId")
+  	private String taskItemId;
+
+	/**
+	 * orderId
+	 */
+	@ApiModelProperty(value = "orderId")
+	private String orderId;
+
+	/**
   	 * 记录消息展示的开始时间
   	 */
 	@ApiModelProperty(value = "记录消息展示的开始时间")

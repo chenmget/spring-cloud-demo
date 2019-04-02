@@ -16,6 +16,7 @@ import com.iwhalecloud.retail.warehouse.mapper.ResouceStoreMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstStoreMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -94,6 +95,9 @@ public class ResourceInstStoreManager{
         //Step1:当前商户、当前商品、当前仓库的串码实例是否存在
         //step2:存在，修改库存数量
         //step3:不存在，插入数据
+        if (StringUtils.isEmpty(resourceInstStoreDTO.getMerchantId()) || StringUtils.isEmpty(resourceInstStoreDTO.getMktResStoreId()) || StringUtils.isEmpty(resourceInstStoreDTO.getMktResId())) {
+            return -1;
+        }
         QueryWrapper<ResourceInstStore> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(ResourceInstStore.FieldNames.merchantId.getTableFieldName(), resourceInstStoreDTO.getMerchantId());
         queryWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStoreDTO.getMktResStoreId());

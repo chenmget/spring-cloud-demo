@@ -80,18 +80,6 @@ public class ResouceInstTrackDetail implements Serializable {
   	 */
 	@ApiModelProperty(value = "记录入库时间")
   	private java.util.Date inTime;
-
-	/**
-	 * 记录状态。LOVB=RES-C-0008
-	 */
-	@ApiModelProperty(value = "记录状态。LOVB=RES-C-0008")
-	private java.lang.String statusCd;
-
-	/**
-	 * 记录修改变更时间
-	 */
-	@ApiModelProperty(value = "记录变更时间")
-	private java.util.Date updateDate;
   	
   	/**
   	 * 记录源本地网标识。

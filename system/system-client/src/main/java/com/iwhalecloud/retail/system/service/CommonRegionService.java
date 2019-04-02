@@ -20,6 +20,12 @@ public interface CommonRegionService{
     ResultVO<List<CommonRegionDTO>> listCommonRegion(CommonRegionListReq req);
 
     /**
+     * 获取 湖南本地网 列表
+     * @return
+     */
+    ResultVO<List<CommonRegionDTO>> listLan();
+
+    /**
      * 跟regionId获取本地区域
      * @param regionId
      * @return

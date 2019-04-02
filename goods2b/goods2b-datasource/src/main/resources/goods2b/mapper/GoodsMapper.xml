@@ -188,7 +188,7 @@
                 and MERCHANT_TYPE=#{req.merchantType}
             </if>
             union select goods_id from prod_goods where IS_ALLOT=1 and goods_id in
-            (select GOODS_ID from prod_goods_rules t4 where t4.TARGET_CODE in
+            (select GOODS_ID from prod_goods_rules t4 where t4.STATE=1 and t4.TARGET_CODE in
             <foreach item="item" index="index" open="(" separator="," close=")" collection="req.targetCodeList">
                 #{item}
             </foreach>))
@@ -209,7 +209,7 @@
             and lower(t.SEARCH_KEY) like lower(CONCAT(CONCAT('%', #{req.searchKey }), '%'))
         </if>
         <if test="req.isHaveStock != null">
-            and t.IS_HAVE_STOCK = #{req.isHaveStock }
+            and t.GOODS_ID in (select DISTINCT GOODS_ID from (select GOODS_ID,MAX(IS_HAVE_STOCK) max_stock from prod_goods_product_rel GROUP BY GOODS_ID) t where t.max_stock=#{req.isHaveStock})
         </if>
         <if test="req.productIds != null">
             and t.PRODUCT_ID in

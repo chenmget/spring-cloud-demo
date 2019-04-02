@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.warehouse.dto.response.markresswap.SynMarkResStore
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface MktResStoreTempService {
     /**
@@ -24,7 +25,7 @@ public interface MktResStoreTempService {
      * @param reqStr
      * @return
      */
-    ResultVO<SynMarkResStoreResp> synMarkResStore(String reqStr);
+    Map<String,Object> synMarkResStore(String reqStr);
 
     /**
      * 新增

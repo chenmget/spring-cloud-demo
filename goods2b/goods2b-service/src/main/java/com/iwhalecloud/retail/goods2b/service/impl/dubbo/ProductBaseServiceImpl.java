@@ -143,6 +143,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             startProductFlowReq.setProductBaseId(productBaseId);
             startProductFlowReq.setDealer(t.getCreateStaff());
             startProductFlowReq.setProductName(req.getProductName());
+            startProductFlowReq.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
             ResultVO flowResltVO = productFlowService.startProductFlow(startProductFlowReq);
             if(!flowResltVO.isSuccess()){
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());

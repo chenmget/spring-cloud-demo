@@ -303,6 +303,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             }
 
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+            log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={} resp={}", JSON.toJSONString(resourceInstStoreDTO), updateResInstStore);
             if (updateResInstStore < 1) {
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
             }

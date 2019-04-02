@@ -134,4 +134,10 @@ public class GoodsForPageQueryResp implements Serializable {
      */
     @ApiModelProperty(value = "是否前置补贴商品 1.是 0.否")
     private Integer isSubsidy;
+
+    /**
+     * 支付方式
+     */
+    @ApiModelProperty(value = "支付方式")
+    private String payments;
 }

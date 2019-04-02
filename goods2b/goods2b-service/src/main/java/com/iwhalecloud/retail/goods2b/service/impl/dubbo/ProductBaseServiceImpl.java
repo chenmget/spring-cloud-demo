@@ -14,10 +14,7 @@ import com.iwhalecloud.retail.goods2b.entity.ProductBase;
 import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
-import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.ProductExtService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.ProductFlowService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.DateUtil;
 import com.iwhalecloud.retail.goods2b.utils.GenerateCodeUtil;
 import com.iwhalecloud.retail.goods2b.utils.ReflectUtils;
@@ -56,6 +53,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Autowired
     private ProductFlowService productFlowService;
 
+    @Autowired
+    private TagRelService tagRelService;
 
 
     @Override
@@ -137,6 +136,15 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
         }
 
+//         添加零售商标签
+        List<String> tagList = req.getTagList();
+        if (!CollectionUtils.isEmpty(tagList)) {
+            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+            relBatchAddReq.setProductBaseId(productBaseId);
+            relBatchAddReq.setTagList(tagList);
+            tagRelService.batchAddTagRel(relBatchAddReq);
+        }
+
         //除了待提交，都是审核中,都要提交审核
         if(!ProductConst.StatusType.SUBMIT.getCode().equals(status)){
             StartProductFlowReq startProductFlowReq= new StartProductFlowReq();
@@ -165,6 +173,17 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         if (product==null||product.getResultData() == null) {
             errorList.add("产品不存在");
             throw new ProductException(errorList);
+        }
+
+        List<String> tagList = req.getTagList();
+        if (!CollectionUtils.isEmpty(tagList)) {
+            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+            relDeleteByGoodsIdReq.setProductBaseId(req.getProductBaseId());
+            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
+            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+            relBatchAddReq.setTagList(tagList);
+            relBatchAddReq.setProductBaseId(req.getProductBaseId());
+            tagRelService.batchAddTagRel(relBatchAddReq);
         }
 
         ProductExtUpdateReq extUpdateReq = req.getProductExtUpdateReq();

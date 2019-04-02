@@ -48,7 +48,7 @@ public class GoodsServiceImplTest {
         List<String> tagList = Lists.newArrayList();
         tagList.add("1");
         tagList.add("1070147537508532226");
-        req.setTagList(tagList);
+//        req.setTagList(tagList);
         req.setChannelType("渠道类型");
         req.setEffDate(new Date());
         req.setExpDate(new Date());
@@ -58,7 +58,7 @@ public class GoodsServiceImplTest {
         req.setGoodsName("这是一个商品测试");
         req.setTypeId("1");
         req.setMktprice(100.0);
-        req.setTagList(tagList);
+//        req.setTagList(tagList);
         req.setTargetType("2");
         List<FileAddReq> fileAddReqList = Lists.newArrayList();
         FileAddReq fileAddReq = new FileAddReq();

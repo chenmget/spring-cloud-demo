@@ -242,13 +242,13 @@ public class GoodsServiceImpl implements GoodsService {
         List<FileAddReq> fileAddReqList = req.getFileAddReqList();
         addImageFile(goodsId, fileAddReqList);
         // 添加零售商标签
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setGoodsId(goodsId);
-            relBatchAddReq.setTagList(tagList);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setGoodsId(goodsId);
+//            relBatchAddReq.setTagList(tagList);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
         log.info("添加图片、标签成功");
 
         //如果有配置活动信息
@@ -343,13 +343,13 @@ public class GoodsServiceImpl implements GoodsService {
         List<FileAddReq> fileAddReqList = req.getFileAddReqList();
         addImageFile(goodsId, fileAddReqList);
         // 添加零售商标签
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setGoodsId(goodsId);
-            relBatchAddReq.setTagList(tagList);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setGoodsId(goodsId);
+//            relBatchAddReq.setTagList(tagList);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
 
         //如果有配置活动信息
         if (!CollectionUtils.isEmpty(req.getGoodsActs())) {
@@ -447,16 +447,16 @@ public class GoodsServiceImpl implements GoodsService {
         List<FileAddReq> fileAddReqList = req.getFileAddReqList();
         addImageFile(goodsId, fileAddReqList);
         // 添加零售商标签前先删除再新增
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
-            relDeleteByGoodsIdReq.setGoodsId(goodsId);
-            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setTagList(tagList);
-            relBatchAddReq.setGoodsId(goodsId);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+//            relDeleteByGoodsIdReq.setGoodsId(goodsId);
+//            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setTagList(tagList);
+//            relBatchAddReq.setGoodsId(goodsId);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
         log.info("添加商品图片成功");
 
         //如果有配置活动信息
@@ -584,16 +584,16 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         // 添加零售商标签前先删除再新增
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
-            relDeleteByGoodsIdReq.setGoodsId(goodsId);
-            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setTagList(tagList);
-            relBatchAddReq.setGoodsId(goodsId);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+//            relDeleteByGoodsIdReq.setGoodsId(goodsId);
+//            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setTagList(tagList);
+//            relBatchAddReq.setGoodsId(goodsId);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
 
         //如果有配置活动信息
         if (!CollectionUtils.isEmpty(req.getGoodsActs())) {

@@ -61,7 +61,7 @@ public class TagRelServiceImpl implements TagRelService {
         List<TagRel> tagRelList = Lists.newArrayList();
         for (String tag : relBatchAddReq.getTagList()) {
             TagRel tagRel = new TagRel();
-            tagRel.setGoodsId(relBatchAddReq.getGoodsId());
+            tagRel.setProductBaseId(relBatchAddReq.getProductBaseId());
             tagRel.setTagId(tag);
             tagRelList.add(tagRel);
         }
@@ -96,13 +96,13 @@ public class TagRelServiceImpl implements TagRelService {
      */
     @Override
     public ResultVO<Boolean> deleteTagRelByGoodsId(TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq){
-        tagRelManager.deleteTagRelByGoodsId(relDeleteByGoodsIdReq.getGoodsId());
+        tagRelManager.deleteTagRelByProductBaseId(relDeleteByGoodsIdReq.getProductBaseId());
         return ResultVO.success(true);
     }
 
     @Override
     public ResultVO<List<TagRelDTO>> listTagByGoodsId(TagRelListByGoodsIdReq relListByGoodsIdReq) {
-        return ResultVO.success(tagRelManager.listTagByGoodsId(relListByGoodsIdReq.getGoodsId()));
+        return ResultVO.success(tagRelManager.listTagByProductBaseId(relListByGoodsIdReq.getProductBaseId()));
     }
 
 }

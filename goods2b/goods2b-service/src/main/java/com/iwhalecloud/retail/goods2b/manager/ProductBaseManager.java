@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.goods2b.dto.TagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseGetReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseUpdateReq;
@@ -12,6 +13,7 @@ import com.iwhalecloud.retail.goods2b.mapper.ProductBaseMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -23,6 +25,9 @@ import java.util.List;
 public class ProductBaseManager {
     @Resource
     private ProductBaseMapper productBaseMapper;
+
+    @Resource
+    private TagRelManager tagRelManager;
 
     /**
      * 根据产品基本信息ID获取产品产品基本信息对象
@@ -37,6 +42,14 @@ public class ProductBaseManager {
 
         ProductBaseGetResp dto = new ProductBaseGetResp();
         BeanUtils.copyProperties(resp, dto);
+        List<TagRelDTO> tagRelDTOs = tagRelManager.listTagByProductBaseId(productBaseId);
+        List<String> tagList = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(tagRelDTOs)){
+            for(TagRelDTO tagRelDTO:tagRelDTOs){
+                tagList.add(tagRelDTO.getTagId());
+            }
+        }
+        dto.setTagList(tagList);
         return dto;
     }
 
@@ -46,7 +59,23 @@ public class ProductBaseManager {
      */
     public Page<ProductBaseGetResp> getProductBaseList(ProductBaseListReq req){
         Page<ProductBaseGetResp> page = new Page<>(req.getPageNo(), req.getPageSize());
-        return productBaseMapper.getProductBaseList(page, req);
+        Page<ProductBaseGetResp> pageResp = productBaseMapper.getProductBaseList(page, req);
+        List<ProductBaseGetResp> respList = pageResp.getRecords();
+        for(ProductBaseGetResp dto : respList){
+            String productBaseId = dto.getProductBaseId();
+            if(StringUtils.isNotEmpty(productBaseId)){
+                List<TagRelDTO> tagRelDTOs = tagRelManager.listTagByProductBaseId(productBaseId);
+                List<String> tagList = new ArrayList<>();
+                if(!CollectionUtils.isEmpty(tagRelDTOs)){
+                    for(TagRelDTO tagRelDTO:tagRelDTOs){
+                        tagList.add(tagRelDTO.getTagId());
+                    }
+                }
+                dto.setTagList(tagList);
+            }
+        }
+
+        return pageResp;
     }
 
     /**
@@ -165,6 +194,14 @@ public class ProductBaseManager {
 
             ProductBaseGetResp dto = new ProductBaseGetResp();
             BeanUtils.copyProperties(t,dto);
+            List<TagRelDTO> tagRelDTOs = tagRelManager.listTagByProductBaseId(t.getProductBaseId());
+            List<String> tagList = new ArrayList<>();
+            if(!CollectionUtils.isEmpty(tagRelDTOs)){
+                for(TagRelDTO tagRelDTO:tagRelDTOs){
+                    tagList.add(tagRelDTO.getTagId());
+                }
+            }
+            dto.setTagList(tagList);
             dtoList.add(dto);
         }
         return dtoList;
@@ -176,7 +213,16 @@ public class ProductBaseManager {
      * @return
      */
     public ProductDetailResp getProductDetail(String productBaseId){
-        return productBaseMapper.getProductDetail(productBaseId);
+        ProductDetailResp productDetailResp = productBaseMapper.getProductDetail(productBaseId);
+        List<TagRelDTO> tagRelDTOs = tagRelManager.listTagByProductBaseId(productBaseId);
+        List<String> tagList = new ArrayList<>();
+        if(!CollectionUtils.isEmpty(tagRelDTOs)){
+            for(TagRelDTO tagRelDTO:tagRelDTOs){
+                tagList.add(tagRelDTO.getTagId());
+            }
+        }
+        productDetailResp.setTagList(tagList);
+        return productDetailResp;
     }
 
     /**

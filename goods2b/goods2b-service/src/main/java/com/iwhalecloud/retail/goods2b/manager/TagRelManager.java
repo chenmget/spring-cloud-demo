@@ -24,12 +24,12 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
     @Resource
     private TagRelMapper tagRelMapper;
 
-    public void addTagRel(String[] tagIds, String goodsId) {
+    public void addTagRel(String[] tagIds, String productBaseId) {
         if (tagIds != null && tagIds.length > 0) {
             for (String tagId : tagIds) {
                 TagRel tagRel = new TagRel();
                 tagRel.setTagId(tagId);
-                tagRel.setGoodsId(goodsId);
+                tagRel.setProductBaseId(productBaseId);
                 tagRelMapper.insert(tagRel);
             }
         }
@@ -110,12 +110,12 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
 
     /**
      * 删除标签商品关系
-     * @param goodsId
+     * @param productBaseId
      * @return
      */
-    public int deleteTagRelByGoodsId(String goodsId){
+    public int deleteTagRelByProductBaseId(String productBaseId){
         UpdateWrapper<TagRel> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("GOODS_ID",goodsId);
+        updateWrapper.eq("PRODUCT_BASE_ID",productBaseId);
         return tagRelMapper.delete(updateWrapper);
     }
 
@@ -124,9 +124,9 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
      * 根据商品ID查询标签
      * @return
      */
-    public List<TagRelDTO> listTagByGoodsId(String goodsId) {
+    public List<TagRelDTO> listTagByProductBaseId(String productBaseId) {
         QueryWrapper<TagRel> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("GOODS_ID",goodsId);
+        queryWrapper.eq("PRODUCT_BASE_ID",productBaseId);
         List<TagRel> tagRelList = tagRelMapper.selectList(queryWrapper);
         List<TagRelDTO> tagRelDTOList = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(tagRelList)) {

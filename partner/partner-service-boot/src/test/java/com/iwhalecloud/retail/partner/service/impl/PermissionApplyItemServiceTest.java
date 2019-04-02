@@ -40,8 +40,8 @@ public class PermissionApplyItemServiceTest {
     public void update() {
         PermissionApplyItemUpdateReq req = new PermissionApplyItemUpdateReq();
         req.setApplyItemId("10120547");
-        req.setOperationType(PartnerConst.PermissionApplyItemOperationTypeEnum.UPDATE.getType());
-        req.setMerchantId("1234566");
+//        req.setOperationType(PartnerConst.PermissionApplyItemOperationTypeEnum.UPDATE.getType());
+//        req.setMerchantId("1234566");
         ResultVO resultVO = permissionApplyItemService.updatePermissionApplyItem(req);
         System.out.print("结果：" + resultVO.toString());
     }

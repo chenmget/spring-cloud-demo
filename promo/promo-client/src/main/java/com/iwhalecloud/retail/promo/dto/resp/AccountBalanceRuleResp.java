@@ -15,4 +15,5 @@ public class AccountBalanceRuleResp implements Serializable {
     private String objType;
     private String objId;
     private String balanceTypeId;
+    private String balanceTypeName;
 }

@@ -5,6 +5,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author 吴良勇
@@ -26,5 +27,9 @@ public class QueryAccountBalanceAllReq  extends AbstractPageReq implements Seria
     private String effDateStart;
     @ApiModelProperty(value = "生效时间止")
     private String effDateEnd;
+
+
+    private List<String> balanceTypeIdList;
+
 
 }

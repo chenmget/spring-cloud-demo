@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.promo.dto.AccountBalanceDetailDTO;
 import com.iwhalecloud.retail.promo.dto.req.*;
 import com.iwhalecloud.retail.promo.dto.resp.AccountBalanceRuleResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp;
+import com.iwhalecloud.retail.promo.dto.resp.MarketingGoodsActivityQueryResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceDetail;
 import com.iwhalecloud.retail.promo.manager.AccountBalanceDetailManager;
@@ -100,6 +101,17 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
         if(page!=null&&page.getRecords()!=null){
             List<QueryAccountBalanceDetailAllResp> dataList = page.getRecords();
             for (QueryAccountBalanceDetailAllResp queryAccountBalanceDetailAllResp : dataList) {
+                AccountBalanceRuleReq ruleReq = new AccountBalanceRuleReq();
+                ruleReq.setActId(queryAccountBalanceDetailAllResp.getActId());
+                ruleReq.setRuleType(RebateConst.Const.RULE_TYPE_REBATE.getValue());
+                ResultVO<List<AccountBalanceRuleResp>> ruleResult = accountBalanceRuleService.queryAccountBalanceRuleList(ruleReq);
+                if(ruleResult!=null&&ruleResult.getResultData()!=null&&!ruleResult.getResultData().isEmpty()){
+                    String supplierId = ruleResult.getResultData().get(0).getObjId();
+                    queryAccountBalanceDetailAllResp.setSupplierId(supplierId);
+                    String actId = ruleResult.getResultData().get(0).getActId();
+                    queryAccountBalanceDetailAllResp.setActId(actId);
+                }
+
                 //卖家ID
                 String supplierId = queryAccountBalanceDetailAllResp.getSupplierId();
                 String statusCdDesc = RebateConst.Const.STATUS_UN_USE.getName();
@@ -145,6 +157,14 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
                     }
                 }
+                //活动
+                if(StringUtils.isNotEmpty(queryAccountBalanceDetailAllResp.getActId())){
+                    ResultVO<MarketingGoodsActivityQueryResp> activity = marketingActivityService.getMarketingActivity(queryAccountBalanceDetailAllResp.getActId());
+                    if(activity!=null&&activity.getResultData()!=null){
+                        queryAccountBalanceDetailAllResp.setAcctName(activity.getResultData().getName());
+                    }
+
+                }
 
             }
         }
@@ -160,6 +180,11 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
         List<String> actIdList = new ArrayList<String>();
         List<String> balanceTypeIdList = new ArrayList<String>();
         List<String> objIdList = new ArrayList<String>();
+        boolean isQueryBalanceTypeId = false;
+        if(StringUtils.isNotEmpty(req.getSupplierName())||StringUtils.isNotEmpty(req.getSupplierLoginName())
+                ||StringUtils.isNotEmpty(req.getActName())){
+            isQueryBalanceTypeId = true;
+        }
 
         GetMerchantIdListReq getMerchantIdListReq = new GetMerchantIdListReq();
         getMerchantIdListReq.setMerchantName(req.getSupplierName());
@@ -195,7 +220,10 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 balanceTypeIdList.add(accountBalanceRuleResp.getBalanceTypeId());
             }
         }
-
+        //有查询，但是查询不到
+        if(isQueryBalanceTypeId&&balanceTypeIdList.isEmpty()){
+            balanceTypeIdList.add("-1");
+        }
         req.setBalanceTypeIdList(balanceTypeIdList);
     }
 }

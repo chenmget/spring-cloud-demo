@@ -71,6 +71,8 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
     private AccountBalanceDetailService accountBalanceDetailService;
 
 
+
+
     @Override
     public ResultVO calculation(AccountBalanceCalculationReq req)  {
         log.info("AccountBalanceServiceImpl calculation, req={}", req == null ? "" : JSON.toJSON(req));
@@ -432,13 +434,22 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
 
     @Override
     public ResultVO<Page<QueryAccountBalanceAllResp>> queryAccountBalanceAllForPage(QueryAccountBalanceAllReq req) {
-        String acctId = accountService.getAccountId(req.getCustId(),req.getAcctType());
-        req.setAcctId(acctId);
+        initQueryAccountBalanceAllReq(req);
         Page<QueryAccountBalanceAllResp> page = accountBalanceManager.queryAccountBalanceAllForPage(req);
         //获取供应商名称
         if (page != null && page.getRecords() != null) {
             List<QueryAccountBalanceAllResp> dataList = page.getRecords();
             for (QueryAccountBalanceAllResp queryAccountBalanceAllResp : dataList) {
+                AccountBalanceRuleReq ruleReq = new AccountBalanceRuleReq();
+                ruleReq.setBalanceTypeId(queryAccountBalanceAllResp.getBalanceTypeId());
+                ResultVO<List<AccountBalanceRuleResp>> listResultVO = accountBalanceRuleService.queryAccountBalanceRuleList(ruleReq);
+
+                if(listResultVO!=null&&listResultVO.getResultData()!=null&&!listResultVO.getResultData().isEmpty()){
+                    AccountBalanceRuleResp rule = listResultVO.getResultData().get(0);
+                    queryAccountBalanceAllResp.setSupplierId(rule.getObjId());
+                    queryAccountBalanceAllResp.setBalanceTypeName(rule.getBalanceTypeName());
+                }
+
                 //卖家ID
                 String supplierId = queryAccountBalanceAllResp.getSupplierId();
                 if (org.apache.commons.lang.StringUtils.isNotEmpty(supplierId)) {
@@ -453,5 +464,32 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
 
 
         return ResultVO.success(page);
+    }
+    private void initQueryAccountBalanceAllReq(QueryAccountBalanceAllReq req){
+        String acctId = accountService.getAccountId(req.getCustId(),req.getAcctType());
+        req.setAcctId(acctId);
+         List<String> balanceTypeIdList = new ArrayList<String>();
+        String supplierId = req.getSupplierId();
+        boolean isQuery = false;
+        if(StringUtils.isNotEmpty(supplierId)){
+            isQuery = true;
+            AccountBalanceRuleReq ruleReq = new AccountBalanceRuleReq();
+            ruleReq.setObjId(supplierId);
+            ruleReq.setRuleType(RebateConst.Const.RULE_TYPE_REBATE.getValue());
+            ResultVO<List<AccountBalanceRuleResp>>  ruleListResult = accountBalanceRuleService.queryAccountBalanceRuleList(ruleReq);
+            if(ruleListResult!=null&&ruleListResult.getResultData()!=null&&!ruleListResult.getResultData().isEmpty()){
+                List<AccountBalanceRuleResp> ruleList = ruleListResult.getResultData();
+                for (AccountBalanceRuleResp accountBalanceRuleResp : ruleList) {
+                    balanceTypeIdList.add(accountBalanceRuleResp.getBalanceTypeId()) ;
+                }
+
+            }
+        }
+        if(isQuery&&balanceTypeIdList.isEmpty()){
+            balanceTypeIdList.add("-1");
+        }
+        req.setBalanceTypeIdList(balanceTypeIdList);
+
+
     }
 }

@@ -73,6 +73,7 @@ public class AccountServiceImplTest {
 
     @Test
     public void queryTotalAccount(){
+        //测试通过
         QueryTotalAccountReq req = new QueryTotalAccountReq();
         req.setCustId("4300001063072");
         req.setAcctType("20");
@@ -83,13 +84,15 @@ public class AccountServiceImplTest {
     }
     @Test
     public void queryAccountBalanceDetailAllForPage(){
+        //测试通过
         QueryAccountBalanceDetailAllReq req = new QueryAccountBalanceDetailAllReq();
 //        req.setAcctId("1");
         req.setAcctType("20");
         req.setCustId("4300001063072");
         req.setPageNo(1);
         req.setPageSize(10);
-        req.setActName("ly");
+//        req.setActName("优惠券");
+//        req.setSupplierName("三星投资有限公司");
 //        req.setEffDateEnd("2019-10-12");
 
         ResultVO<Page<QueryAccountBalanceDetailAllResp>> pageResultVO = accountBalanceDetailService.queryAccountBalanceDetailAllForPage(req);
@@ -97,6 +100,7 @@ public class AccountServiceImplTest {
     }
     @Test
     public void queryAccountBalanceAllForPage(){
+        //已改未测试
         QueryAccountBalanceAllReq req = new QueryAccountBalanceAllReq();
         req.setAcctId("1");
         req.setPageNo(1);
@@ -128,6 +132,7 @@ public class AccountServiceImplTest {
      */
     @Test
     public void calculation(){
+        //测试通过，需要改造
         AccountBalanceCalculationReq req = new AccountBalanceCalculationReq();
         req.setBalanceSourceType(RebateConst.Const.ACCOUNT_BALANCE_DETAIL_BALANCE_SOURCE_TYPE_ID.getValue());
         req.setCustId("4300001063072");

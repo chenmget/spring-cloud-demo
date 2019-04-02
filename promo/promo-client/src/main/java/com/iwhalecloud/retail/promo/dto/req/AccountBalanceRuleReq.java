@@ -17,6 +17,8 @@ public class AccountBalanceRuleReq  extends AbstractRequest implements Serializa
     private String actId;
     private String ruleType;
     private String objId;
+    private String balanceTypeId;
+
     private List<String> actIdList;
 
     private List<String> objIdList;

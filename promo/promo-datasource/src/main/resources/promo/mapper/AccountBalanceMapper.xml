@@ -66,14 +66,13 @@
     </select>
     <select id="queryAccountBalanceAllForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceAllReq"
             resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceAllResp">
-        select a.ACCT_ID,a.ACCOUNT_BALANCE_ID,a.AMOUNT,a.UNEFFECTIVE_AMOUNT,
-            a.INVALID_AMOUNT,a.CYCLE_LOWER,a.CYCLE_UPPER,a.EFF_DATE,a.EXP_DATE,a.STATUS_CD,a.CYCLE_TYPE,
-            a.AMOUNT as total_Amount,d.OBJ_ID as supplier_Id
-            ,b.CUST_ID,c.BALANCE_TYPE_ID,c.BALANCE_TYPE_NAME
-             from account_balance a inner join account b on a.ACCT_ID=b.ACCT_ID
-            inner join ACCOUNT_BALANCE_TYPE c on a.BALANCE_TYPE_ID=c.BALANCE_TYPE_ID
-            inner join ACCOUNT_BALANCE_RULE d on c.BALANCE_TYPE_ID=d.BALANCE_TYPE_ID
-            where b.STATUS_CD='1000' AND b.EFF_DATE&lt;=SYSDATE() AND b.EXP_DATE&gt;=SYSDATE()
+        select a.ACCT_ID,a.ACCOUNT_BALANCE_ID,a.AMOUNT,a.UNEFFECTIVE_AMOUNT,a.BALANCE_TYPE_ID,
+        a.INVALID_AMOUNT,a.CYCLE_LOWER,a.CYCLE_UPPER,a.EFF_DATE,a.EXP_DATE,a.STATUS_CD,a.CYCLE_TYPE,
+        a.AMOUNT as total_Amount
+        ,b.CUST_ID
+        from account_balance a inner join account b on a.ACCT_ID=b.ACCT_ID
+
+            where b.STATUS_CD='1000' AND b.EFF_DATE&lt;=SYSDATE() AND b.EXP_DATE&gt;=SYSDATE() and a.acct_id=#{req.acctId}
             <if test="req.custId != null and req.custId != ''">
                 and B.CUST_ID = #{req.custId}
             </if>
@@ -92,6 +91,13 @@
           <if test="req.effDateEnd != null and req.effDateEnd != ''">
                 <![CDATA[   and DATE_FORMAT(a.EFF_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.effDateEnd}, '%Y-%m-%d')   ]]>
           </if>
+        <if test="req.balanceTypeIdList != null and req.balanceTypeIdList.size>0">
+            and a.BALANCE_TYPE_ID in
+            <foreach collection="req.balanceTypeIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
     </select>
 
 </mapper>

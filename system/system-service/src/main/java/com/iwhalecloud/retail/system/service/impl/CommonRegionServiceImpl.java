@@ -81,7 +81,6 @@ public class CommonRegionServiceImpl implements CommonRegionService {
     @Override
     public ResultVO<List<CommonRegionDTO>> listLan() {
         log.info("CommonRegionServiceImpl.listLan() ");
-
         CommonRegionListReq req = new CommonRegionListReq();
         req.setParRegionId(SystemConst.HN_DEFAULT_PAR_REGION_ID);
         List<CommonRegion> commonRegionList = commonRegionManager.listCommonRegion(req);

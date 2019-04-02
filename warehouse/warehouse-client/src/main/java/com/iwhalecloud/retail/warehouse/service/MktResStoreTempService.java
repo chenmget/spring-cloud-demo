@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.markres.SynMarkResStoreReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markres.SynMarkResStoreToFormalReq;
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.SynMarkResStoreResp;
 
+import java.util.HashMap;
 import java.util.List;
 
 public interface MktResStoreTempService {
@@ -16,7 +17,14 @@ public interface MktResStoreTempService {
      * @param req
      * @return
      */
-    ResultVO<SynMarkResStoreResp> synMarkResStore(SynMarkResStoreReq req);
+    ResultVO<SynMarkResStoreResp> synMarkResStoreForObj(SynMarkResStoreReq req);
+    /**
+     * 同步库存数据
+     *
+     * @param reqStr
+     * @return
+     */
+    ResultVO<SynMarkResStoreResp> synMarkResStore(String reqStr);
 
     /**
      * 新增

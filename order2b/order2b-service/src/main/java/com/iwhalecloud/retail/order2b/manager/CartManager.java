@@ -60,6 +60,7 @@ public class CartManager {
     public int updateNum(UpdateCartReq req) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("cart_id", req.getCartId());
+        queryWrapper.eq("user_id", req.getUserId());
         Cart cart = new Cart();
         cart.setNum(Long.valueOf(req.getNum()));
         return cartMapper.update(cart, queryWrapper);

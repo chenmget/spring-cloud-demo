@@ -92,7 +92,7 @@ public class ActivityProductResq implements Serializable {
      * 记录首次创建的时间。
      */
     @ApiModelProperty(value = "创建时间。")
-    private java.util.Date gmt_create;
+    private java.util.Date gmtCreate;
     /**
      * 记录每次修改的员工标识。
      */
@@ -103,7 +103,7 @@ public class ActivityProductResq implements Serializable {
      * 记录每次修改的时间。
      */
     @ApiModelProperty(value = "修改时间。")
-    private java.util.Date gmt_modified;
+    private java.util.Date gmtModified;
     /**
      * 是否删除：0未删、1删除。
      */
@@ -115,4 +115,12 @@ public class ActivityProductResq implements Serializable {
      */
     @ApiModelProperty(value = "记录数据来源。")
     private java.lang.String sourceFrom;
+
+    /**
+     * 是否限制产品参与总数量
+     1.限制
+     0.不限制
+     */
+    @ApiModelProperty(value = "产品参与总数量限制标识")
+    private String numLimitFlg;
 }

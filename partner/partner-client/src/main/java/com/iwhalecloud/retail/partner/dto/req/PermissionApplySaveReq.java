@@ -6,6 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
+ * 商家权限申请单 新增请求对象（单表）
  * @author wenlong.zhong
  * @date 2019/3/29
  */

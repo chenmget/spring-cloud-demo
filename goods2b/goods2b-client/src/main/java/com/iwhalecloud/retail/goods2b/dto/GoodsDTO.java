@@ -169,4 +169,10 @@ public class GoodsDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "商家类型")
 	private String merchantType;
+
+	/**
+	 * 支付方式
+	 */
+	@ApiModelProperty(value = "支付方式")
+	private String payments;
 }

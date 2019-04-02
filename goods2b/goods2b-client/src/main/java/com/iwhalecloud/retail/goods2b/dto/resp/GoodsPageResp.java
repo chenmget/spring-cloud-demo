@@ -76,4 +76,10 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "品牌名称")
     private String brandName;
+
+    /**
+     * 支付方式
+     */
+    @ApiModelProperty(value = "支付方式")
+    private String payments;
 }

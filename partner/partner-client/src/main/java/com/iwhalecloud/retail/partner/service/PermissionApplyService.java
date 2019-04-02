@@ -12,9 +12,9 @@ public interface PermissionApplyService {
     /**
      * 新增商家权限申请单
      * @param req
-     * @return
+     * @return 申请单ID
      */
-    ResultVO<Integer> savePermissionApply(PermissionApplySaveReq req);
+    ResultVO<String> savePermissionApply(PermissionApplySaveDTO req) throws Exception;
 
     /**
      * 修改商家权限申请单
@@ -31,17 +31,10 @@ public interface PermissionApplyService {
     ResultVO<List<PermissionApplyDTO>> listPermissionApply(PermissionApplyListReq req);
 
     /**
-     * 商家权限申请单审核通过
+     * 商家权限申请单审核（通过或不通过）
      * @param req
      * @return
      */
-    ResultVO<Integer> passPermissionApply(PermissionApplyPassReq req);
-
-    /**
-     * 商家权限申请单审核不通过
-     * @param req
-     * @return
-     */
-    ResultVO<Integer> notPassPermissionApply(PermissionApplyNotPassReq req);
+    ResultVO<Integer> auditPermissionApply(PermissionApplyAuditReq req) throws Exception;
 
 }

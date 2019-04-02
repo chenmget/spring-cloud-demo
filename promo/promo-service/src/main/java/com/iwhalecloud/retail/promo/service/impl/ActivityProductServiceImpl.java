@@ -118,27 +118,26 @@ public class ActivityProductServiceImpl implements ActivityProductService {
 
     @Override
     public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProduct(String marketingActivityId) {
+        log.info("ActivityProductServiceImpl.queryPreSubsidyProduct marketingActivityId={}", marketingActivityId);
         List<PreSubsidyProductRespDTO> preSubsidyProductResqDTOS = new ArrayList<>();
         List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityId);
-        log.info("ActivityProductServiceImpl.queryPreSubsidyProduct activityProductManager.queryActivityProductByCondition activityProducts={}",JSON.toJSON(activityProducts));
-        if(activityProducts.size()<=0){
+        log.info("ActivityProductServiceImpl.queryPreSubsidyProduct activityProductManager.queryActivityProductByCondition activityProducts={}", JSON.toJSON(activityProducts));
+        if (activityProducts.size() <= 0) {
             return ResultVO.success(preSubsidyProductResqDTOS);
         }
-        for(ActivityProduct activityProduct : activityProducts){
+        for (ActivityProduct activityProduct : activityProducts) {
             PreSubsidyProductRespDTO preSubsidyProductResqDTO = new PreSubsidyProductRespDTO();
             String productId = activityProduct.getProductId();
             QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();
             queryProductInfoReqDTO.setProductId(productId);
             ResultVO<QueryProductInfoResqDTO> productInfoResqDTOResultVO = productService.getProductInfo(queryProductInfoReqDTO);
-            log.info("ActivityProductServiceImpl.queryPreSubsidyProduct productService.getProductInfo productInfoResqDTOResultVO ={}",JSON.toJSON(productInfoResqDTOResultVO));
-            if(productInfoResqDTOResultVO.getResultData()==null){
+            log.info("ActivityProductServiceImpl.queryPreSubsidyProduct productService.getProductInfo productInfoResqDTOResultVO ={}", JSON.toJSON(productInfoResqDTOResultVO));
+            if (productInfoResqDTOResultVO.getResultData() == null) {
                 continue;
             }
-            BeanUtils.copyProperties(productInfoResqDTOResultVO.getResultData(),preSubsidyProductResqDTO);
+            BeanUtils.copyProperties(productInfoResqDTOResultVO.getResultData(), preSubsidyProductResqDTO);
             ActivityProductRespDTO activityProductResqDTO = new ActivityProductRespDTO();
-            BeanUtils.copyProperties(activityProduct,activityProductResqDTO);
-            MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivity(marketingActivityId);
-            BeanUtils.copyProperties(marketingActivity,activityProductResqDTO);
+            BeanUtils.copyProperties(activityProduct, activityProductResqDTO);
             preSubsidyProductResqDTO.setActivityProductResqDTO(activityProductResqDTO);
             preSubsidyProductResqDTOS.add(preSubsidyProductResqDTO);
         }
@@ -149,6 +148,9 @@ public class ActivityProductServiceImpl implements ActivityProductService {
     public ResultVO addPreSubsidyProduct(ActivityProductReq activityProductReq) {
         ActivityProduct activityProduct = new ActivityProduct();
         BeanUtils.copyProperties(activityProductReq, activityProduct);
+        if (PromoConst.ProductNumFlg.ProductNumFlg_0.getCode().equals(activityProductReq.getNumLimitFlg())) {
+            activityProduct.setNum(Long.getLong("-1"));
+        }
         activityProduct.setGmtCreate(new Date());
         activityProduct.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
         activityProductManager.insertProductActivity(activityProduct);

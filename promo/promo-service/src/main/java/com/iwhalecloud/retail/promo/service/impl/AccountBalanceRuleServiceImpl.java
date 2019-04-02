@@ -1,7 +1,10 @@
 package com.iwhalecloud.retail.promo.service.impl;
 
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.AccountBalanceRuleDTO;
+import com.iwhalecloud.retail.promo.dto.req.AccountBalanceRuleReq;
+import com.iwhalecloud.retail.promo.dto.resp.AccountBalanceRuleResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceRule;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import org.springframework.beans.BeanUtils;
@@ -11,6 +14,7 @@ import com.iwhalecloud.retail.promo.manager.AccountBalanceRuleManager;
 import com.iwhalecloud.retail.promo.service.AccountBalanceRuleService;
 
 import java.util.Date;
+import java.util.List;
 
 
 @Service
@@ -35,5 +39,9 @@ public class AccountBalanceRuleServiceImpl implements AccountBalanceRuleService 
             return rule.getRuleId();
         }
         return null;
+    }
+    @Override
+    public ResultVO<List<AccountBalanceRuleResp>> queryAccountBalanceRuleList(AccountBalanceRuleReq req){
+        return ResultVO.success(accountBalanceRuleManager.queryAccountBalanceRuleList(req));
     }
 }

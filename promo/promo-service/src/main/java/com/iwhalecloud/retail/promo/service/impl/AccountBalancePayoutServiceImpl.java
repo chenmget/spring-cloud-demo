@@ -18,7 +18,9 @@ import com.iwhalecloud.retail.promo.dto.req.GetMerchantIdListReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalancePayoutReq;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalancePayoutResp;
 import com.iwhalecloud.retail.promo.manager.AccountBalancePayoutManager;
+import com.iwhalecloud.retail.promo.service.AccountBalanceLogService;
 import com.iwhalecloud.retail.promo.service.AccountBalancePayoutService;
+import com.iwhalecloud.retail.promo.service.AccountService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -44,6 +46,8 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
 
     @Reference
     private ProductService productService;
+    @Reference
+    private AccountService accountService;
 
     @Autowired
     private AccountBalancePayoutManager accountBalancePayoutManager;
@@ -111,7 +115,8 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
     }
 
     private void initQueryAccountBalancePayoutReq(QueryAccountBalancePayoutReq req) {
-
+        String acctId = this.accountService.getAccountId(req.getCustId(),req.getAcctType());
+        req.setAcctId(acctId);
         GetMerchantIdListReq getMerchantIdListReq = new GetMerchantIdListReq();
         getMerchantIdListReq.setMerchantName(req.getSupplierName());
         getMerchantIdListReq.setMerchantLoginName(req.getSupplierLoginName());

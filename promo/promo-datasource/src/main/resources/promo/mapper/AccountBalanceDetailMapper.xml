@@ -53,14 +53,12 @@
     <select id = "queryAccountBalanceDetailAllForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceDetailAllReq"
             resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp">
         SELECT B.ACCT_ID,B.ACCT_NAME,B.ACCT_TYPE,A.AMOUNT,A.STATUS_CD,A.EFF_DATE,A.EXP_DATE,A.OPER_INCOME_ID,
-        A.SOURCE_DESC,A.OPER_TYPE,A.REWARD_PRICE,A.PRODUCT_ID,A.ORDER_ITEM_ID,A.ORDER_ID,C.ACCOUNT_BALANCE_ID,D.ACT_ID,E.OBJ_ID AS SUPPLIER_ID,F.NAME AS ACT_NAME
+        A.SOURCE_DESC,A.OPER_TYPE,A.REWARD_PRICE,A.PRODUCT_ID,A.ORDER_ITEM_ID,A.ORDER_ID,C.ACCOUNT_BALANCE_ID
         FROM ACCOUNT_BALANCE_DETAIL A
         INNER JOIN ACCOUNT B ON A.ACCT_ID=B.ACCT_ID
         INNER JOIN ACCOUNT_BALANCE C ON B.ACCT_ID=C.ACCT_ID AND C.ACCOUNT_BALANCE_ID=A.ACCOUNT_BALANCE_ID
-        INNER JOIN ACCOUNT_BALANCE_TYPE D ON D.BALANCE_TYPE_ID=C.BALANCE_TYPE_ID
-        INNER JOIN ACCOUNT_BALANCE_RULE E ON D.BALANCE_TYPE_ID=E.BALANCE_TYPE_ID
-        INNER JOIN ACT_MARKETING_ACTIVITY F ON F.ID=D.ACT_ID
-        WHERE B.STATUS_CD='1000' AND B.EFF_DATE&lt;=SYSDATE() AND B.EXP_DATE&gt;=SYSDATE()
+
+        WHERE B.STATUS_CD='1000' AND B.EFF_DATE&lt;=SYSDATE() AND B.EXP_DATE&gt;=SYSDATE() and a.acct_id=#{req.acctId}
 
         <if test="req.custId != null and req.custId != ''">
             and B.CUST_ID = #{req.custId}
@@ -80,9 +78,7 @@
         <if test="req.statucCd != null and req.statucCd != ''">
             and a.STATUS_CD = #{req.statucCd}
         </if>
-        <if test="req.actName != null and req.actName != ''">
-            a.BALANCE_SOURCE_TYPE_ID=#{req.actName}
-        </if>
+
         <if test="req.effDateStart != null and req.effDateStart != ''">
             <![CDATA[   and DATE_FORMAT(a.EFF_DATE, '%Y-%m-%d')>=  DATE_FORMAT(#{req.effDateStart}, '%Y-%m-%d')   ]]>
         </if>
@@ -99,15 +95,10 @@
             a.BALANCE_SOURCE_TYPE_ID=#{req.balanceSourceTypeId}
         </if>
 
-        <if test="req.supplierIdList != null and req.supplierIdList.size > 0">
-            and e.obj_id in
-            <foreach collection="req.supplierIdList" open="(" index="index" item="item" separator="," close=")">
-                #{item}
-            </foreach>
-        </if>
-        <if test="req.actIdList != null and req.actIdList.size>0">
-            and d.ACT_ID in
-            <foreach collection="req.actIdList" open="(" index="index" item="item" separator="," close=")">
+
+        <if test="req.balanceTypeIdList != null and req.balanceTypeIdList.size>0">
+            and c.balance_type_id in
+            <foreach collection="req.balanceTypeIdList" open="(" index="index" item="item" separator="," close=")">
                 #{item}
             </foreach>
         </if>

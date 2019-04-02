@@ -18,7 +18,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @Data
 @TableName("ACCOUNT_BALANCE_DETAIL")
 @ApiModel(value = "对应模型ACCOUNT_BALANCE_DETAIL, 对应实体AccountBalanceDetail类")
-@KeySequence(value="seq_retail_all_tables",clazz = String.class)
+
 
 public class AccountBalanceDetail implements Serializable {
     /**表名常量*/
@@ -30,7 +30,7 @@ public class AccountBalanceDetail implements Serializable {
   	/**
   	 * 为每个余额流水生成的唯一编号，只具有逻辑上的含义，没有物理意义。
   	 */
-	@TableId
+	@TableId(type = IdType.INPUT)
 	@ApiModelProperty(value = "为每个余额流水生成的唯一编号，只具有逻辑上的含义，没有物理意义。")
   	private String operIncomeId;
   	

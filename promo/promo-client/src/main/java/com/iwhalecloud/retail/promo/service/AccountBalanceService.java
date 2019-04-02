@@ -24,7 +24,7 @@ public interface AccountBalanceService{
      * @param req
      * @return
      */
-    ResultVO calculationTransactional(AccountBalanceCalculationReq req)throws BusinessException;
+    ResultVO calculationTransactional(AccountBalanceCalculationReq req)throws Exception;
 
     /**
      * 计算返利，该接口，如果执行成功事务直接提交，不会回滚事务，如需要回滚则请调用calculationTransactional方法
@@ -59,7 +59,7 @@ public interface AccountBalanceService{
      * @param itemReq
      * @return
      */
-    CalculationOrderItemResp calculationOrderItemNoDb(AccountBalanceDTO accountBalance,AccountBalanceCalculationOrderItemReq itemReq);
+    CalculationOrderItemResp calculationOrderItemNoDb(AccountBalanceDTO accountBalance,AccountBalanceCalculationOrderItemReq itemReq) throws Exception;
 
 
     /**

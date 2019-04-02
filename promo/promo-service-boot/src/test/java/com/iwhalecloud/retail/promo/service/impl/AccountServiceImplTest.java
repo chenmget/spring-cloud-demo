@@ -89,6 +89,7 @@ public class AccountServiceImplTest {
         req.setCustId("4300001063072");
         req.setPageNo(1);
         req.setPageSize(10);
+        req.setActName("ly");
 //        req.setEffDateEnd("2019-10-12");
 
         ResultVO<Page<QueryAccountBalanceDetailAllResp>> pageResultVO = accountBalanceDetailService.queryAccountBalanceDetailAllForPage(req);
@@ -134,12 +135,14 @@ public class AccountServiceImplTest {
         List<AccountBalanceCalculationOrderItemReq> orderItemList = new ArrayList<AccountBalanceCalculationOrderItemReq>();
         AccountBalanceCalculationOrderItemReq itemReq = new AccountBalanceCalculationOrderItemReq();
         itemReq.setActId("10008987");
-        itemReq.setActName("111");
+        itemReq.setActName("20190402lytest1");
         itemReq.setActNum("20");
-        itemReq.setOrderId("1");
-        itemReq.setProductId("123456");
-        itemReq.setSupplierId("1111");
-        itemReq.setOrderItemId("123121");
+        itemReq.setOrderId("201903210910000049");
+        itemReq.setProductId("100000092");
+//        itemReq.setProductId("11111");
+        itemReq.setSupplierId("10000578");
+//        itemReq.setOrderItemId("201903210910000050");
+        itemReq.setOrderItemId("1111");
         orderItemList.add(itemReq);
 
         req.setOrderItemList(orderItemList);

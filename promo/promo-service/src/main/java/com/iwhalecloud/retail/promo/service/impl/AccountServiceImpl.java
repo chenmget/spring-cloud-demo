@@ -95,11 +95,10 @@ public class AccountServiceImpl implements AccountService {
     }
     @Override
     public ResultVO<Page<QueryTotalAccountResp>> queryTotalAccount(QueryTotalAccountReq req){
+
         log.info(AccountServiceImpl.class.getName()+" queryTotalAccount, req={}", req == null ? "" : JSON.toJSON(req));
         QueryAccountForPageReq pageReq = new QueryAccountForPageReq();
-
-        pageReq.setCustId(req.getCustId());
-        pageReq.setAcctType(req.getAcctType());
+        pageReq.setAcctId(this.getAccountId(req.getCustId(),req.getAcctType()));
         pageReq.setPageNo(req.getPageNo());
         pageReq.setPageSize(req.getPageSize());
         ResultVO<Page<QueryAccountForPageResp>> pageResultVO = this.queryAccountForPage(pageReq);
@@ -168,7 +167,15 @@ public class AccountServiceImpl implements AccountService {
         return resultVO;
 
     }
-
+    @Override
+    public String  getAccountId(String custId,String acctType){
+        String acctId = "-1";
+        ResultVO<AccountDTO> accountDTOResultVO = this.getAccountByCustId(custId,acctType);
+        if(accountDTOResultVO!=null&&accountDTOResultVO.getResultData()!=null){
+            acctId =  accountDTOResultVO.getResultData().getAcctId();
+        }
+        return acctId;
+    }
     @Override
     public String getRebateNextId() {
         return accountManager.getRebateNextId();

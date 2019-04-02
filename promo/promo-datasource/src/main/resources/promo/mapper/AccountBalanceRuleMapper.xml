@@ -19,5 +19,27 @@
     ,t.UPDATE_STAFF 
     ,t.UPDATE_DATE 
 </sql>
+    <select id="queryAccountBalanceRuleList" parameterType="com.iwhalecloud.retail.promo.dto.req.AccountBalanceRuleReq"
+    resultType="com.iwhalecloud.retail.promo.dto.resp.AccountBalanceRuleResp">
+        SELECT A.BALANCE_TYPE_ID,A.ACT_ID,B.OBJ_ID,B.OBJ_TYPE,B.RULE_TYPE FROM ACCOUNT_BALANCE_TYPE A INNER JOIN ACCOUNT_BALANCE_RULE B
+        ON A.BALANCE_TYPE_ID=B.BALANCE_TYPE_ID
+        WHERE 1=1 AND A.STATUS_CD='1000' AND B.STATUS_CD='1000' AND B.EFF_DATE<![CDATA[ <= ]]>SYSDATE()
+        AND B.EXP_DATE<![CDATA[ >= ]]>SYSDATE()
+        <if test="req.actId != null and req.actId != ''">
+            and A.ACT_ID=#{req.actId}
+        </if>
+        <if test="req.ruleType != null and req.ruleType != ''">
+            and B.RULE_TYPE=#{req.ruleType}
+        </if>
+        <if test="req.objId != null and req.objId != ''">
+            and B.OBJ_ID=#{req.objId}
+        </if>
+        <if test="req.balanceTypeIdList != null and req.balanceTypeIdList.size > 0">
+            and A.BALANCE_TYPE_ID in
+            <foreach collection="req.supplierIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
 
 </mapper>

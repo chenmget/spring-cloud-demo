@@ -1,39 +1,34 @@
 package com.iwhalecloud.retail.promo.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.QueryProductInfoReqDTO;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.ArithUtil;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.AccountBalanceDetailDTO;
 import com.iwhalecloud.retail.promo.dto.req.*;
+import com.iwhalecloud.retail.promo.dto.resp.AccountBalanceRuleResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceDetail;
-import com.iwhalecloud.retail.promo.service.AccountBalancePayoutService;
-import com.iwhalecloud.retail.promo.service.MarketingActivityService;
+import com.iwhalecloud.retail.promo.manager.AccountBalanceDetailManager;
+import com.iwhalecloud.retail.promo.service.*;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
 import com.iwhalecloud.retail.system.service.UserService;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.promo.manager.AccountBalanceDetailManager;
-import com.iwhalecloud.retail.promo.service.AccountBalanceDetailService;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -64,6 +59,11 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
     @Reference
     private AccountBalancePayoutService accountBalancePayoutService;
 
+    @Reference
+    private AccountService accountService;
+
+    @Reference
+    private AccountBalanceRuleService accountBalanceRuleService;
 
 
     @Override
@@ -155,12 +155,17 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
     }
     private void initQueryAccountBalanceDetailAll(QueryAccountBalanceDetailAllReq req){
+        String acctId = this.accountService.getAccountId(req.getCustId(),req.getAcctType());
+        req.setAcctId(acctId);
         List<String> actIdList = new ArrayList<String>();
+        List<String> balanceTypeIdList = new ArrayList<String>();
+        List<String> objIdList = new ArrayList<String>();
 
         GetMerchantIdListReq getMerchantIdListReq = new GetMerchantIdListReq();
         getMerchantIdListReq.setMerchantName(req.getSupplierName());
         getMerchantIdListReq.setMerchantLoginName(req.getSupplierLoginName());
-        req.setSupplierIdList(accountBalancePayoutService.getMerchantIdList(getMerchantIdListReq));
+        objIdList = accountBalancePayoutService.getMerchantIdList(getMerchantIdListReq);
+
 
         //活动的处理
         String actName = req.getActName();
@@ -179,7 +184,18 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 }
             }
         }
-        req.setActIdList(actIdList);
+        AccountBalanceRuleReq balanceRuleReq = new AccountBalanceRuleReq();
+        balanceRuleReq.setActIdList(actIdList);
+        balanceRuleReq.setObjIdList(objIdList);
+        ResultVO<List<AccountBalanceRuleResp>> ruleList = accountBalanceRuleService.queryAccountBalanceRuleList(balanceRuleReq);
 
+        if(ruleList!=null&&ruleList.getResultData()!=null&&!ruleList.getResultData().isEmpty()){
+            List<AccountBalanceRuleResp> ruleRespList = ruleList.getResultData();
+            for (AccountBalanceRuleResp accountBalanceRuleResp : ruleRespList) {
+                balanceTypeIdList.add(accountBalanceRuleResp.getBalanceTypeId());
+            }
+        }
+
+        req.setBalanceTypeIdList(balanceTypeIdList);
     }
 }

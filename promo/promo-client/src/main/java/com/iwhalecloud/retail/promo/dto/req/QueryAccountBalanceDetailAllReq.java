@@ -12,8 +12,9 @@ import java.util.List;
  */
 @Data
 public class QueryAccountBalanceDetailAllReq  extends QueryAccountIncomeDetailReq implements Serializable {
-    @ApiModelProperty(value = "卖家ID集合")
-    private List<String> supplierIdList;
-    @ApiModelProperty(value = "活动ID集合")
-    private List<String> actIdList;
+
+    @ApiModelProperty(value = "余额类型集合")
+    private List<String> balanceTypeIdList;
+
+
 }

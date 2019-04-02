@@ -25,9 +25,9 @@ public class PageVO extends AbstractRequest implements Serializable {
     private static final Logger log = LoggerFactory.getLogger(PageVO.class);
     private static final long serialVersionUID = -6550827640887727324L;
     @ApiModelProperty(value = "页码")
-    private Integer pageNo = 1;
+    private String pageNo = "1";
     @ApiModelProperty(value = "每页数量")
-    private Integer pageSize = 10;
+    private String pageSize = "10";
     @ApiModelProperty(value = "排序字段")
     private String sortName;
     @ApiModelProperty(value = "排序方向")
@@ -79,18 +79,18 @@ public class PageVO extends AbstractRequest implements Serializable {
     }
 
     public Integer getPageNo() {
-        return this.pageNo;
+        return Integer.valueOf(this.pageNo);
     }
 
     public Integer getPageSize() {
-        return this.pageSize;
+        return Integer.valueOf(this.pageSize);
     }
 
-    public void setPageNo(Integer pageNo) {
+    public void setPageNo(String pageNo) {
         this.pageNo = pageNo;
     }
 
-    public void setPageSize(Integer pageSize) {
+    public void setPageSize(String pageSize) {
         this.pageSize = pageSize;
     }
 
@@ -154,6 +154,7 @@ public class PageVO extends AbstractRequest implements Serializable {
         }
     }
 
+    @Override
     protected boolean canEqual(Object other) {
         return other instanceof PageVO;
     }

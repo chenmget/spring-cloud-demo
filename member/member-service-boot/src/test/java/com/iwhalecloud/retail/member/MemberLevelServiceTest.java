@@ -70,8 +70,8 @@ public class MemberLevelServiceTest {
     @Test
     public void queryGroupLevelForPageTest(){
         MemberLevelQueryReq req = new MemberLevelQueryReq();
-        req.setPageNo(1);
-        req.setPageSize(10);
+        req.setPageNo("1");
+        req.setPageSize("10");
         req.setLvId("");
         req.setLvName("等级");
         req.setMerchantId("1234567890");

@@ -176,7 +176,7 @@ public class ActivityManagerReference {
 
                         double disTotal=Double.parseDouble(promotionResp.getPromotionPrice());
                         disTotal =CurrencyUtil.mul(disTotal,orderiMT.getNum());
-
+                        log.info("gs_10010_discuontTotal,disTotal",disTotal);
                         if(disTotal>=goodAmount){
                             isContinueUse = false;
                             promotion.setDiscount(String.valueOf(goodAmount));

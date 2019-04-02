@@ -66,4 +66,12 @@ public class ActivityProductReq implements Serializable{
 
     @ApiModelProperty("修改时间")
     private Date gmtModified;
+
+    /**
+     * 是否限制产品参与总数量
+     1.限制
+     0.不限制
+     */
+    @ApiModelProperty(value = "产品参与总数量限制标识")
+    private String numLimitFlg;
 }

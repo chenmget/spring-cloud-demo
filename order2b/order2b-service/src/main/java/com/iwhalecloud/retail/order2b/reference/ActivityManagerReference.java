@@ -171,17 +171,26 @@ public class ActivityManagerReference {
                     promotion.setProductId(promotionResp.getProductId());
                     promotion.setGoodsId(orderiMT.getGoodsId());
                     promotion.setPromotionName(promotionResp.getMktResName());
+                    promotion.setMktActType(promotionResp.getActivityType());
                     if (promotionResp.getPromotionPrice() != null) {
-                        if (discuontTotal > goodAmount) {
+
+                        double disTotal=Double.parseDouble(promotionResp.getPromotionPrice());
+                        disTotal =CurrencyUtil.mul(disTotal,orderiMT.getNum());
+                        log.info("gs_10010_discuontTotal,disTotal",disTotal);
+                        if(disTotal>=goodAmount){
                             isContinueUse = false;
-                        } else {
-                            double disTotal=Double.parseDouble(promotionResp.getPromotionPrice());
-                            disTotal =CurrencyUtil.mul(disTotal,orderiMT.getNum());
-                            promotion.setDiscount(String.valueOf(disTotal));
-                            promotion.setMktActType(promotionResp.getActivityType());
+                            promotion.setDiscount(String.valueOf(goodAmount));
                             promotionList.add(promotion);
+                        }else{
+                            if (discuontTotal >= goodAmount) {
+                                isContinueUse = false;
+                            } else {
+                                promotion.setDiscount(String.valueOf(disTotal));
+                                promotionList.add(promotion);
+                            }
                         }
-                        discuontTotal = CurrencyUtil.add(discuontTotal, Double.parseDouble(promotionResp.getPromotionPrice()));
+                        discuontTotal = CurrencyUtil.add(discuontTotal,disTotal);
+                        log.info("gs_10010_discuontTotal,discuontTotal",discuontTotal);
                     }
                     if (!isContinueUse) {
                         break;

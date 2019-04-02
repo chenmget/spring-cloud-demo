@@ -59,10 +59,11 @@ public class OrderItemDetailForReBateServiceImpl implements OrderItemDetailForRe
     public ResultVO<Page<ReBateOrderInDetailResp>> queryOrderItemDetailDtoByOrderId(ReBateOrderInDetailReq reBateOrderInDetailReq) {
         log.info("OrderItemDetailForReBateServiceImpl.queryAccountBalanceOrderDetailPage req{}",JSON.toJSON(reBateOrderInDetailReq));
         Page<ReBateOrderInDetailResp> page = new Page<ReBateOrderInDetailResp>();
-        ResultVO<Page<OrderItemDetailReBateResp>> resultOrderItemDetail = orderInDetailManager.queryOrderItemDetailByOrderId(reBateOrderInDetailReq);
+        List<ReBateOrderInDetailResp> list = Lists.newArrayList();
+        Page<OrderItemDetailReBateResp> resultOrderItemDetail = orderInDetailManager.queryOrderItemDetailByOrderId(reBateOrderInDetailReq);
         log.info("OrderItemDetailForReBateServiceImpl.queryAccountBalanceOrderDetailPage resultOrderItemDetail{}",JSON.toJSON(resultOrderItemDetail));
-        if (!CollectionUtils.isEmpty(resultOrderItemDetail.getResultData().getRecords())){
-            for (OrderItemDetailReBateResp orderItemDetailReBateResp : resultOrderItemDetail.getResultData().getRecords()){
+        if (!CollectionUtils.isEmpty(resultOrderItemDetail.getRecords())){
+            for (OrderItemDetailReBateResp orderItemDetailReBateResp : resultOrderItemDetail.getRecords()){
                 ReBateOrderInDetailResp reBateOrderInDetailResp = new ReBateOrderInDetailResp();
                 //订单时间
                 reBateOrderInDetailResp.setUpdateTime(orderItemDetailReBateResp.getUpdateTime());
@@ -76,21 +77,23 @@ public class OrderItemDetailForReBateServiceImpl implements OrderItemDetailForRe
                 req.setPageSize(1);
                 ResultVO<Page<QueryAccountBalanceDetailAllResp>> accountBalanceDetailAllResp = accountBalanceDetailService.queryAccountBalanceDetailAllForPage(req);
                 log.info("OrderItemDetailForReBateServiceImpl.queryAccountBalanceOrderDetailPage accountBalanceDetailAllResp{}",JSON.toJSON(accountBalanceDetailAllResp));
-                // 产品
-                reBateOrderInDetailResp.setProductName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getProductName());
-                reBateOrderInDetailResp.setSpecName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getSpecName());
-                reBateOrderInDetailResp.setUnitType(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getUnitType());
-                reBateOrderInDetailResp.setOrderId(orderItemDetailReBateResp.getOrderId());
-                reBateOrderInDetailResp.setLanName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getLanName());
-                reBateOrderInDetailResp.setSupplierName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getSupplierName());
-                //供货商账号
-                reBateOrderInDetailResp.setSupplyAccount(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getSupplierLoginName());
-                //返利活动名称
-                reBateOrderInDetailResp.setReBateActivityName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getActName());
-                //返利活动规则
-                List<ActivityRuleDTO> activityRuleDTOS = activityRuleService.queryActivityRuleByCondition(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getActId());
-                if  (!CollectionUtils.isEmpty(activityRuleDTOS)){
-                    reBateOrderInDetailResp.setReBateRule(activityRuleDTOS.get(0).getCalculationRule());
+                if (!CollectionUtils.isEmpty(accountBalanceDetailAllResp.getResultData().getRecords())){
+                    // 产品
+                    reBateOrderInDetailResp.setProductName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getProductName());
+                    reBateOrderInDetailResp.setSpecName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getSpecName());
+                    reBateOrderInDetailResp.setUnitType(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getUnitType());
+                    reBateOrderInDetailResp.setOrderId(orderItemDetailReBateResp.getOrderId());
+                    reBateOrderInDetailResp.setLanName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getLanName());
+                    reBateOrderInDetailResp.setSupplierName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getSupplierName());
+                    //供货商账号
+                    reBateOrderInDetailResp.setSupplyAccount(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getSupplierLoginName());
+                    //返利活动名称
+                    reBateOrderInDetailResp.setReBateActivityName(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getActName());
+                    //返利活动规则
+                    List<ActivityRuleDTO> activityRuleDTOS = activityRuleService.queryActivityRuleByCondition(accountBalanceDetailAllResp.getResultData().getRecords().get(0).getActId());
+                    if  (!CollectionUtils.isEmpty(activityRuleDTOS)){
+                        reBateOrderInDetailResp.setReBateRule(activityRuleDTOS.get(0).getCalculationRule());
+                    }
                 }
                 //串码入库时间
                 reBateOrderInDetailResp.setMktResNbrStorageDate(orderItemDetailReBateResp.getReceiveTime());
@@ -104,10 +107,11 @@ public class OrderItemDetailForReBateServiceImpl implements OrderItemDetailForRe
                 if (userList != null && !userList.isEmpty()) {
                     reBateOrderInDetailResp.setMerchantAccount(userList.get(0).getLoginName());
                 }
-                page.getRecords().add(reBateOrderInDetailResp);
+                log.info("OrderItemDetailForReBateServiceImpl.queryAccountBalanceOrderDetailPage reBateOrderInDetailResp{}", JSON.toJSON(reBateOrderInDetailResp));
+                list.add(reBateOrderInDetailResp);
             }
             log.info("OrderItemDetailForReBateServiceImpl.queryAccountBalanceOrderDetailPage page{}", JSON.toJSON(page));
-            return ResultVO.success(page);
+            return ResultVO.success(page.setRecords(list));
         }
         return ResultVO.error();
     }

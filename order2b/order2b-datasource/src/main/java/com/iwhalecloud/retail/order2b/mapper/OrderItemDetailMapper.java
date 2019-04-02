@@ -30,6 +30,6 @@ public interface OrderItemDetailMapper extends BaseMapper<OrderItemDetail> {
 
     List<OrderItemDetail> selectOrderItemDetail(OrderItemDetailModel orderItemDetail);
 
-    ResultVO<Page<OrderItemDetailReBateResp>> queryOrderItemDetailByOrderId(Page<OrderItemDetailReBateResp> page,@Param("req") ReBateOrderInDetailReq req);
+    Page<OrderItemDetailReBateResp> queryOrderItemDetailByOrderId(Page<OrderItemDetailReBateResp> page,@Param("req") ReBateOrderInDetailReq req);
 
 }

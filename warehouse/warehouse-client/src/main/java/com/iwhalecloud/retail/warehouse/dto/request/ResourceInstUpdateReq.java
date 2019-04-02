@@ -101,4 +101,10 @@ public class ResourceInstUpdateReq implements Serializable {
 	 */
 	@ApiModelProperty(value = "目标营销资源仓库")
 	private java.lang.String destStoreId;
+
+	/**
+	 * 记录状态变更的时间。
+	 */
+	@ApiModelProperty(value = "记录状态变更的时间。")
+	private java.util.Date statusDate;
 }

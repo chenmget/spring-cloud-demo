@@ -14,9 +14,6 @@ public interface ResouceEventService{
      */
      ResultVO<Boolean> insertResouceEvent(ResouceEventDTO resouceEventDTO);
 
-
-     ResultVO<Boolean> updateResouceEventState(ResouceEventUpdateReq req);
-
     /**
      * 变动串码保存事件及事件明细
      * @param req

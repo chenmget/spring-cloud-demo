@@ -156,6 +156,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public ResultVO<Integer> updateProductBase(ProductBaseUpdateReq req) {
         log.info("ProductBaseServiceImpl.updateProductBase,req={}", JSON.toJSONString(req));
+
+        final long startTime = System.currentTimeMillis();
         ProductBaseGetByIdReq req1 = new ProductBaseGetByIdReq();
         req1.setProductBaseId(req.getProductBaseId());
         ResultVO<ProductBaseGetResp> product = this.getProductBase(req1);
@@ -197,7 +199,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         if(page==null||page.getRecords()==null||page.getRecords().isEmpty()){
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "原产品为空无法获取审核状态");
         }
-
         oldAuditState = page.getRecords().get(0).getAuditState();
         if(StringUtils.isEmpty(oldAuditState)){
             oldAuditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();

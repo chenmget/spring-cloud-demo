@@ -55,8 +55,9 @@ public class CommonRegionServiceImpl implements CommonRegionService {
     public ResultVO<List<CommonRegionDTO>> listCommonRegion(CommonRegionListReq req) {
         log.info("CommonRegionServiceImpl.listCommonRegion(), input：req={} ", JSON.toJSONString(req));
         if (StringUtils.isEmpty(req.getParRegionId())
-                && CollectionUtils.isEmpty(req.getRegionIdList())) {
-            // 两个条件都为空 默认查湖南的 本地网
+                && CollectionUtils.isEmpty(req.getRegionIdList())
+                && StringUtils.isEmpty(req.getRegionName())) {
+            // 三个条件都为空 默认查湖南的 本地网
             req.setParRegionId(SystemConst.HN_DEFAULT_PAR_REGION_ID);
         }
 
@@ -72,7 +73,32 @@ public class CommonRegionServiceImpl implements CommonRegionService {
         log.info("CommonRegionServiceImpl.listCommonRegion(), output：commonRegionDTOList={} ", JSON.toJSONString(commonRegionDTOList));
         return ResultVO.success(commonRegionDTOList);
     }
-    
-    
-    
+
+    /**
+     * 获取 湖南本地网 列表
+     * @return
+     */
+    @Override
+    public ResultVO<List<CommonRegionDTO>> listLan() {
+        log.info("CommonRegionServiceImpl.listLan() ");
+
+        CommonRegionListReq req = new CommonRegionListReq();
+        req.setParRegionId(SystemConst.HN_DEFAULT_PAR_REGION_ID);
+        List<CommonRegion> commonRegionList = commonRegionManager.listCommonRegion(req);
+        List<CommonRegionDTO> commonRegionDTOList = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(commonRegionList)) {
+            commonRegionList.forEach(commonRegion -> {
+                CommonRegionDTO commonRegionDTO = new CommonRegionDTO();
+                BeanUtils.copyProperties(commonRegion, commonRegionDTO);
+                commonRegionDTOList.add(commonRegionDTO);
+            });
+        }
+        log.info("CommonRegionServiceImpl.listLan(), output：commonRegionDTOList={} ", JSON.toJSONString(commonRegionDTOList));
+        return ResultVO.success(commonRegionDTOList);
+    }
+
+
+
+
+
 }

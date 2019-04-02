@@ -32,8 +32,11 @@ import com.iwhalecloud.retail.rights.service.CouponInstService;
 import com.iwhalecloud.retail.rights.service.MktResCouponService;
 import com.iwhalecloud.retail.rights.service.PreSubsidyCouponService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
+import com.iwhalecloud.retail.system.dto.request.UserGetReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
@@ -104,6 +107,9 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Reference
     private CouponApplyObjectService couponApplyObjectService;
 
+    @Reference
+    private UserService userService;
+
     @Autowired
     private Constant constant;
 
@@ -111,7 +117,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVO<MarketingActivityAddResp> addMarketingActivity(MarketingActivityAddReq req){
+    public ResultVO<MarketingActivityAddResp> addMarketingActivity(MarketingActivityAddReq req) {
         log.info("MarketingActivityServiceImpl.addMarketingActivity req={}", JSON.toJSONString(req));
         MarketingActivity marketingActivity = new MarketingActivity();
         BeanUtils.copyProperties(req, marketingActivity);
@@ -172,16 +178,16 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         log.info("MarketingActivityServiceImpl.queryMarketingActivity activityScopeList=" + activityScopeDTOList);
 
         if (!CollectionUtils.isEmpty(activityScopeDTOList)) {
-            for (ActivityScopeDTO activityScopeDTO:activityScopeDTOList
-                 ) {
-               List<String> list =new ArrayList<>();
+            for (ActivityScopeDTO activityScopeDTO : activityScopeDTOList
+            ) {
+                List<String> list = new ArrayList<>();
                 CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
                 list.add(activityScopeDTO.getLanId());
                 commonRegionListReq.setRegionIdList(list);
-                ResultVO<List<CommonRegionDTO>> lancommonRegionDTOList=commonRegionService.listCommonRegion(commonRegionListReq);
-                if (!CollectionUtils.isEmpty(lancommonRegionDTOList.getResultData())){
-                    for (CommonRegionDTO commonRegionDTO:lancommonRegionDTOList.getResultData()
-                         ) {
+                ResultVO<List<CommonRegionDTO>> lancommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(lancommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : lancommonRegionDTOList.getResultData()
+                    ) {
                         activityScopeDTO.setLanName(commonRegionDTO.getRegionName());
                         activityScopeDTO.setKey(commonRegionDTO.getRegionId());
                         activityScopeDTO.setTitle(commonRegionDTO.getRegionName());
@@ -196,10 +202,10 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 commonRegionListReq.setRegionIdList(list);
                 log.info("MarketingActivityServiceImpl.queryMarketingActivity list commonRegionListReq=" +
                         list, commonRegionListReq.getRegionIdList());
-                ResultVO<List<CommonRegionDTO>> citycommonRegionDTOList=commonRegionService.listCommonRegion(commonRegionListReq);
-                if (!CollectionUtils.isEmpty(citycommonRegionDTOList.getResultData())){
-                    for (CommonRegionDTO commonRegionDTO:citycommonRegionDTOList.getResultData()
-                            ) {
+                ResultVO<List<CommonRegionDTO>> citycommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(citycommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : citycommonRegionDTOList.getResultData()
+                    ) {
                         activityScopeDTO.setCityName(commonRegionDTO.getRegionName());
                         activityScopeDTO.setKey(commonRegionDTO.getRegionId());
                         activityScopeDTO.setTitle(commonRegionDTO.getRegionName());
@@ -217,15 +223,15 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 activityParticipantDTOList);
         if (!CollectionUtils.isEmpty(activityParticipantDTOList)) {
             for (ActivityParticipantDTO activityParticipantDTO : activityParticipantDTOList
-                 ) {
-                List<String> list =new ArrayList<>();
+            ) {
+                List<String> list = new ArrayList<>();
                 CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
                 list.add(activityParticipantDTO.getLanId());
                 commonRegionListReq.setRegionIdList(list);
-                ResultVO<List<CommonRegionDTO>> lancommonRegionDTOList=commonRegionService.listCommonRegion(commonRegionListReq);
-                if (!CollectionUtils.isEmpty(lancommonRegionDTOList.getResultData())){
-                    for (CommonRegionDTO commonRegionDTO:lancommonRegionDTOList.getResultData()
-                            ) {
+                ResultVO<List<CommonRegionDTO>> lancommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(lancommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : lancommonRegionDTOList.getResultData()
+                    ) {
                         activityParticipantDTO.setLanName(commonRegionDTO.getRegionName());
                         activityParticipantDTO.setKey(commonRegionDTO.getRegionId());
                         activityParticipantDTO.setTitle(commonRegionDTO.getRegionName());
@@ -240,19 +246,20 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 commonRegionListReq.setRegionIdList(list);
                 log.info("MarketingActivityServiceImpl.queryMarketingActivity list commonRegionListReq=" +
                         list, commonRegionListReq.getRegionIdList());
-                ResultVO<List<CommonRegionDTO>> citycommonRegionDTOList=commonRegionService.listCommonRegion(commonRegionListReq);
-                if (!CollectionUtils.isEmpty(citycommonRegionDTOList.getResultData())){
-                    for (CommonRegionDTO commonRegionDTO:citycommonRegionDTOList.getResultData()) {
+                ResultVO<List<CommonRegionDTO>> citycommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(citycommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : citycommonRegionDTOList.getResultData()) {
                         activityParticipantDTO.setCityName(commonRegionDTO.getRegionName());
                         activityParticipantDTO.setKey(commonRegionDTO.getRegionId());
-                        activityParticipantDTO.setTitle(commonRegionDTO.getRegionName());;
+                        activityParticipantDTO.setTitle(commonRegionDTO.getRegionName());
+                        ;
                         activityParticipantDTO.setRegionId(commonRegionDTO.getRegionId());
                     }
                 }
                 log.info("MarketingActivityServiceImpl.queryMarketingActivity citycommonRegionDTOList=" +
                         citycommonRegionDTOList.getResultData());
             }
-            List<ActivityParticipantDTO> activityParticipantDTOLists = ReflectUtils.batchAssign(activityParticipantDTOList,ActivityParticipantDTO.class );
+            List<ActivityParticipantDTO> activityParticipantDTOLists = ReflectUtils.batchAssign(activityParticipantDTOList, ActivityParticipantDTO.class);
             resp.setActivityParticipantList(activityParticipantDTOLists);
             log.info("MarketingActivityServiceImpl.queryMarketingActivity resp.getActivityParticipantList=" +
                     resp.getActivityParticipantList());
@@ -304,6 +311,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     /**
      * 查询商品详情页面中的适用活动
+     *
      * @param req 商品参数
      * @return
      */
@@ -311,24 +319,24 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     public ResultVO<List<MarketingGoodsActivityQueryResp>> listGoodsMarketingActivitys(MarketingActivityQueryByGoodsReq req) {
         log.info("MarketingActivityServiceImpl.listGoodsMarketingActivitys req={}", JSON.toJSONString(req));
         List<MarketingGoodsActivityQueryResp> marketingGoodsActivityQueryRespList = Lists.newArrayList();
-        //产品鉴定
+        // 产品鉴定
         List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByProductId(req.getProductId());
-        if(!CollectionUtils.isEmpty(activityProducts)) {
+        if (!CollectionUtils.isEmpty(activityProducts)) {
             List<String> marketingActivityIdList = Lists.newArrayList();
             activityProducts.forEach(item -> {
                 marketingActivityIdList.add(item.getMarketingActivityId());
             });
-            //查询活动列表
+            // 查询活动列表
             List<MarketingActivity> marketingActivities = marketingActivityManager.listMarketingActivitysByCodes(marketingActivityIdList, req.getActivityType());
             if (!CollectionUtils.isEmpty(marketingActivities)) {
                 List<MarketingActivity> marketingActivitieList = Lists.newArrayList();
                 marketingActivities.forEach(item -> {
                     String activityScopeType = item.getActivityScopeType();
-                    //根据活动对象类型过滤活动
+                    // 根据活动对象类型过滤活动
                     filterActivitys(req, marketingActivitieList, item, activityScopeType);
                 });
-                //返回活动列表
-                if(marketingActivitieList.size() > 0){
+                // 返回活动列表
+                if (marketingActivitieList.size() > 0) {
                     marketingActivitieList.forEach(item -> {
                         MarketingGoodsActivityQueryResp marketingGoodsActivityQueryResp = new MarketingGoodsActivityQueryResp();
                         BeanUtils.copyProperties(item, marketingGoodsActivityQueryResp);
@@ -343,108 +351,110 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     /**
      * 根据活动ID查询活动详情
+     *
      * @param activityId
      * @return
      */
     @Override
     public ResultVO<MarketingGoodsActivityQueryResp> getMarketingActivity(String activityId) {
 
-        log.error("MarketingActivityServiceImpl.getMarketingGoodsActivity -->activityId={}",activityId);
+        log.error("MarketingActivityServiceImpl.getMarketingGoodsActivity -->activityId={}", activityId);
         MarketingActivity marketingActivity = marketingActivityManager.getMarketingActivityById(activityId);
         if (marketingActivity == null) {
-            log.error("MarketingActivityServiceImpl.getMarketingGoodsActivity  activity not exist-->activityId={}",activityId);
+            log.error("MarketingActivityServiceImpl.getMarketingGoodsActivity  activity not exist-->activityId={}", activityId);
             return ResultVO.error("活动不存在");
         }
         MarketingGoodsActivityQueryResp marketingGoodsActivityQueryResp = new MarketingGoodsActivityQueryResp();
         BeanUtils.copyProperties(marketingActivity, marketingGoodsActivityQueryResp);
-        log.error("MarketingActivityServiceImpl.getMarketingGoodsActivity -->marketingGoodsActivityQueryResp={}",JSON.toJSONString(marketingGoodsActivityQueryResp));
+        log.error("MarketingActivityServiceImpl.getMarketingGoodsActivity -->marketingGoodsActivityQueryResp={}", JSON.toJSONString(marketingGoodsActivityQueryResp));
         return ResultVO.success(marketingGoodsActivityQueryResp);
     }
 
     /**
      * 查询营销活动信息关联的优惠信息
+     *
      * @param req 商品参数
      * @return
      */
     @Override
-     public ResultVO<List<MarketingAndPromotionResp>> listMarketingActivityAndPromotions(MarketingActivityQueryByGoodsReq req){
-         log.info("MarketingActivityServiceImpl.listMarketingActivityAndPromotions req{} ",req);
-         ResultVO<List<MarketingGoodsActivityQueryResp>> resultVO = listGoodsMarketingActivitys(req);
-         List<MarketingGoodsActivityQueryResp> marketingGoodsActivityQueryRespList = resultVO.getResultData();
+    public ResultVO<List<MarketingAndPromotionResp>> listMarketingActivityAndPromotions(MarketingActivityQueryByGoodsReq req) {
+        log.info("MarketingActivityServiceImpl.listMarketingActivityAndPromotions req{} ", req);
+        ResultVO<List<MarketingGoodsActivityQueryResp>> resultVO = listGoodsMarketingActivitys(req);
+        List<MarketingGoodsActivityQueryResp> marketingGoodsActivityQueryRespList = resultVO.getResultData();
         log.info("MarketingActivityServiceImpl.listMarketingActivityAndPromotions marketingGoodsActivityQueryRespList{} ",
                 resultVO.getResultData());
-         log.info("MarketingActivityServiceImpl.listMarketingActivityAndPromotions marketingGoodsActivityQueryRespList{} ",
-                 marketingGoodsActivityQueryRespList);
-         List<MarketingAndPromotionResp> respList = new ArrayList<>();
-         if (!CollectionUtils.isEmpty(marketingGoodsActivityQueryRespList)){
-             for (int i = 0;i<marketingGoodsActivityQueryRespList.size();i++){
-                 MarketingActivity marketingActivity = marketingActivityManager.getMarketingActivityById(marketingGoodsActivityQueryRespList.get(i).getId());
-                 List<String> marketingActivityIds = new ArrayList<>();
-                 marketingActivityIds.add(marketingActivity.getId());
-                 List<ActivityProduct> activityGoodsList = activityProductManager.queryActivityProductBymktIdProdId(marketingActivityIds,req.getProductId());
-                 if (!CollectionUtils.isEmpty(activityGoodsList)) {
-                     for (int k=0; k<activityGoodsList.size();k++){
-                         MarketingAndPromotionResp marketingAndPromotionResp = new MarketingAndPromotionResp();
-                         marketingAndPromotionResp.setPromotionTypeCode(marketingActivity.getPromotionTypeCode());
-                         marketingAndPromotionResp.setActivityType(marketingActivity.getActivityType());
-                         marketingAndPromotionResp.setName(marketingActivity.getName());
-                         marketingAndPromotionResp.setId(marketingActivity.getId());
-                         marketingAndPromotionResp.setPromotionPrice(String.valueOf(activityGoodsList.get(k).getDiscountAmount()));
-                         marketingAndPromotionResp.setProductId(activityGoodsList.get(k).getProductId());
-                         respList.add(marketingAndPromotionResp);
-                     }
-                 }
-             }
-         }
-         log.info("MarketingActivityServiceImpl.listMarketingActivityAndPromotions resp{} ",
-                 respList);
-         return   ResultVO.success(respList);
-     }
-
+        log.info("MarketingActivityServiceImpl.listMarketingActivityAndPromotions marketingGoodsActivityQueryRespList{} ",
+                marketingGoodsActivityQueryRespList);
+        List<MarketingAndPromotionResp> respList = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(marketingGoodsActivityQueryRespList)) {
+            for (int i = 0; i < marketingGoodsActivityQueryRespList.size(); i++) {
+                MarketingActivity marketingActivity = marketingActivityManager.getMarketingActivityById(marketingGoodsActivityQueryRespList.get(i).getId());
+                List<String> marketingActivityIds = new ArrayList<>();
+                marketingActivityIds.add(marketingActivity.getId());
+                List<ActivityProduct> activityGoodsList = activityProductManager.queryActivityProductBymktIdProdId(marketingActivityIds, req.getProductId());
+                if (!CollectionUtils.isEmpty(activityGoodsList)) {
+                    for (int k = 0; k < activityGoodsList.size(); k++) {
+                        MarketingAndPromotionResp marketingAndPromotionResp = new MarketingAndPromotionResp();
+                        marketingAndPromotionResp.setPromotionTypeCode(marketingActivity.getPromotionTypeCode());
+                        marketingAndPromotionResp.setActivityType(marketingActivity.getActivityType());
+                        marketingAndPromotionResp.setName(marketingActivity.getName());
+                        marketingAndPromotionResp.setId(marketingActivity.getId());
+                        marketingAndPromotionResp.setPromotionPrice(String.valueOf(activityGoodsList.get(k).getDiscountAmount()));
+                        marketingAndPromotionResp.setProductId(activityGoodsList.get(k).getProductId());
+                        respList.add(marketingAndPromotionResp);
+                    }
+                }
+            }
+        }
+        log.info("MarketingActivityServiceImpl.listMarketingActivityAndPromotions resp{} ",
+                respList);
+        return ResultVO.success(respList);
+    }
 
 
     /**
      * 根据活动对象类型过滤活动
-     * @param req 查询总入参
+     *
+     * @param req                    查询总入参
      * @param marketingActivitieList 接收结果的List
-     * @param item  当前循环体内的活动对象
-     * @param activityScopeType 活动类型
+     * @param item                   当前循环体内的活动对象
+     * @param activityScopeType      活动类型
      */
     private void filterActivitys(MarketingActivityQueryByGoodsReq req, List<MarketingActivity> marketingActivitieList, MarketingActivity item, String activityScopeType) {
-        if(PromoConst.ActivityScopeType.ACTIVITY_SCOPE_TYPE_10.getCode().equals(activityScopeType)){
-            //过滤活动对象，即买家
+        if (PromoConst.ActivityScopeType.ACTIVITY_SCOPE_TYPE_10.getCode().equals(activityScopeType)) {
+            // 过滤活动对象，即买家
             ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(req.getSupplierCode());
             MerchantDTO merchant = merchantDTO.getResultData();
-            if(merchant != null){
-                //过滤地市、区县
+            if (merchant != null) {
+                // 过滤地市、区县
                 ActivityScope activityScopeByLanId = activityScopeManager.queryActivityScopeByLandId(item.getId(), merchantDTO.getResultData().getLanId());
-                //过滤地市
-                if(activityScopeByLanId != null){
-                    //过滤活动对象，即买家，根据参与对象类型过滤活动
+                // 过滤地市
+                if (activityScopeByLanId != null) {
+                    // 过滤活动对象，即买家，根据参与对象类型过滤活动
                     Boolean aBoolean = filterMerchant(req.getMerchantCode(), item, marketingActivitieList);
-                    if (aBoolean){
+                    if (aBoolean) {
                         marketingActivitieList.add(item);
                     }
                 } else {
-                    //过滤区县
+                    // 过滤区县
                     ActivityScope activityScopeByCity = activityScopeManager.queryActivityScopeByCityId(item.getId(), merchantDTO.getResultData().getCity());
-                    if(activityScopeByCity != null){
-                        //过滤活动对象，即买家，根据参与对象类型过滤活动
+                    if (activityScopeByCity != null) {
+                        // 过滤活动对象，即买家，根据参与对象类型过滤活动
                         Boolean aBoolean = filterMerchant(req.getMerchantCode(), item, marketingActivitieList);
-                        if (aBoolean){
+                        if (aBoolean) {
                             marketingActivitieList.add(item);
                         }
                     }
                 }
 
             }
-        } else if (PromoConst.ActivityScopeType.ACTIVITY_SCOPE_TYPE_20.getCode().equals(activityScopeType)){
-            //过滤供应商（卖家）编码
+        } else if (PromoConst.ActivityScopeType.ACTIVITY_SCOPE_TYPE_20.getCode().equals(activityScopeType)) {
+            // 过滤供应商（卖家）编码
             ActivityScope activityScope = activityScopeManager.queryActivityScopeBySupplierCode(item.getId(), req.getSupplierCode());
-            if(activityScope != null){
-                //过滤活动对象，即买家，根据参与对象类型过滤活动
+            if (activityScope != null) {
+                // 过滤活动对象，即买家，根据参与对象类型过滤活动
                 Boolean aBoolean = filterMerchant(req.getMerchantCode(), item, marketingActivitieList);
-                if (aBoolean){
+                if (aBoolean) {
                     marketingActivitieList.add(item);
                 }
             }
@@ -453,39 +463,53 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     /**
      * 根据参与对象类型过滤活动
+     *
      * @param merchantCode
      * @param item
      * @param marketingActivitieList
      * @return
      */
-    private Boolean filterMerchant(String merchantCode, MarketingActivity item, List<MarketingActivity> marketingActivitieList){
-        if(StringUtils.isBlank(merchantCode)){
-            //未登录
+    private Boolean filterMerchant(String merchantCode, MarketingActivity item, List<MarketingActivity> marketingActivitieList) {
+        if (StringUtils.isBlank(merchantCode)) {
+            // 未登录
             return true;
         }
-        //已登录
+        // 已登录
+        // 过滤当前登录用户是否为创建者
+        UserGetReq userGetReq = new UserGetReq();
+        userGetReq.setRelCode(merchantCode);
+        UserDTO user = userService.getUser(userGetReq);
+        if (null != user) {
+            String currentUserId = user.getUserId();
+            String activityCreator = item.getCreator();
+            if (activityCreator.equals(currentUserId)) {
+                // 创建者是当前登录商家
+                return false;
+            }
+        }
+        // 创建者不为当前登录商家
         String activityParticipantType = item.getActivityParticipantType();
-        if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(activityParticipantType)){
+        if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(activityParticipantType)) {
             //过滤地市、区县
             ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(merchantCode);
             MerchantDTO merchant = merchantDTO.getResultData();
-            if(merchant != null){
+            if (merchant != null) {
                 ActivityParticipant activityParticipantsByLandId = activityParticipantManager.queryActivityParticipantByLandId(item.getId(), merchantDTO.getResultData().getLanId());
-                if(activityParticipantsByLandId != null){
+                if (activityParticipantsByLandId != null) {
                     //过滤地市
                     marketingActivitieList.add(item);
                 } else {
                     //过滤区县
                     ActivityParticipant activityParticipantsByCity = activityParticipantManager.queryActivityParticipantByCityId(item.getId(), merchantDTO.getResultData().getCity());
-                    if(activityParticipantsByCity != null){
+                    if (activityParticipantsByCity != null) {
                         marketingActivitieList.add(item);
                     }
                 }
             }
-        } else if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(activityParticipantType)){
+        } else if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(activityParticipantType)) {
             //过滤商家（买家）编码
             ActivityParticipant activityParticipantList = activityParticipantManager.queryActivityParticipantByMerchantCode(item.getId(), merchantCode);
-            if(activityParticipantList != null){
+            if (activityParticipantList != null) {
                 marketingActivitieList.add(item);
             }
         }
@@ -495,6 +519,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     /**
      * 查询商品详情页面中的适用减免
+     *
      * @param req 商品参数
      * @return
      */
@@ -504,16 +529,16 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryRespList = Lists.newArrayList();
         ResultVO<List<MarketingGoodsActivityQueryResp>> listResultVO = this.listGoodsMarketingActivitys(req);
         List<MarketingGoodsActivityQueryResp> activityList = listResultVO.getResultData();
-        if(!CollectionUtils.isEmpty(activityList)){
+        if (!CollectionUtils.isEmpty(activityList)) {
             List<String> marketingActivityIdList = Lists.newArrayList();
             activityList.forEach(item -> {
                 marketingActivityIdList.add(item.getId());
             });
             //查询商品适用减免
             List<ActivityProduct> productList = activityProductManager.queryActivityProductByActIdAndProductId(marketingActivityIdList, req.getProductId());
-            if(!CollectionUtils.isEmpty(productList)){
+            if (!CollectionUtils.isEmpty(productList)) {
                 productList.forEach(item -> {
-                    if(null != item.getDiscountAmount()){
+                    if (null != item.getDiscountAmount()) {
                         MarketingReliefActivityQueryResp marketingReliefActivityQueryResp = new MarketingReliefActivityQueryResp();
                         marketingReliefActivityQueryResp.setMarketingActivityId(item.getMarketingActivityId());
                         marketingReliefActivityQueryResp.setPromotionPrice(String.valueOf(item.getDiscountAmount()));
@@ -528,6 +553,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     /**
      * 查询商品详情页面中的适用优惠券
+     *
      * @param req 商品参数
      * @return
      */
@@ -537,14 +563,14 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         List<MarketingCouponActivityQueryResp> marketingCouponActivityQueryRespArrayList = Lists.newArrayList();
         ResultVO<List<MarketingGoodsActivityQueryResp>> listResultVO = this.listGoodsMarketingActivitys(req);
         List<MarketingGoodsActivityQueryResp> activityList = listResultVO.getResultData();
-        if(!CollectionUtils.isEmpty(activityList)){
+        if (!CollectionUtils.isEmpty(activityList)) {
             List<String> marketingActivityIdList = Lists.newArrayList();
             activityList.forEach(item -> {
                 marketingActivityIdList.add(item.getId());
             });
             //查询商品适用卡券
             List<Promotion> promotionList = promotionManager.getPromotion(marketingActivityIdList, PromoConst.PromotionType.PROMOTION_TYPE_CD_20.getCode());
-            if(!CollectionUtils.isEmpty(promotionList)){
+            if (!CollectionUtils.isEmpty(promotionList)) {
                 List<String> mktIds = Lists.newArrayList();
                 QueryCouponByProductAndActivityIdReq queryCouponByProductAndActivityIdReq = new QueryCouponByProductAndActivityIdReq();
                 queryCouponByProductAndActivityIdReq.setProductId(req.getProductId());
@@ -554,12 +580,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 queryCouponByProductAndActivityIdReq.setMktResIds(mktIds);
                 ResultVO<List<CouponApplyObjectRespDTO>> resultVO = couponApplyObjectService.queryCouponApplyObjectByCondition(queryCouponByProductAndActivityIdReq);
                 List<CouponApplyObjectRespDTO> couponApplyObjectRespDTOS = resultVO.getResultData();
-                if(!CollectionUtils.isEmpty(couponApplyObjectRespDTOS)){
+                if (!CollectionUtils.isEmpty(couponApplyObjectRespDTOS)) {
                     couponApplyObjectRespDTOS.forEach(item -> {
                         QueryCouponByIdReq queryCouponByIdReq = new QueryCouponByIdReq();
                         queryCouponByIdReq.setMktResId(item.getMktResId());
                         CouponRuleAndTypeQueryResp ruleAndTypeRespDTO = mktResCouponService.queryCouponRuleAndTypeById(queryCouponByIdReq);
-                        if(ruleAndTypeRespDTO != null){
+                        if (ruleAndTypeRespDTO != null) {
                             Promotion promotoObj = promotionManager.getPromotoObj(item.getMktResId(), PromoConst.PromotionType.PROMOTION_TYPE_CD_20.getCode());
                             MarketingCouponActivityQueryResp mcResp = new MarketingCouponActivityQueryResp();
                             mcResp.setMktResId(item.getMktResId());
@@ -581,22 +607,23 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     /**
      * 营销活动更新
+     *
      * @param req
      * @return
      */
     @Override
     public ResultVO<Boolean> updateMarketingActivity(MarketingActivityAddReq req) {
         log.info("MarketingActivityServiceImpl.updateMarketingActivity req={}", JSON.toJSONString(req));
-        MarketingActivity marketingActivity=new MarketingActivity();
+        MarketingActivity marketingActivity = new MarketingActivity();
         BeanUtils.copyProperties(req, marketingActivity);
         String marketingActivityId = marketingActivity.getId();
-        if (StringUtils.isNotEmpty(marketingActivityId)){
+        if (StringUtils.isNotEmpty(marketingActivityId)) {
             ResultVO<MarketingActivityAddResp> response = addMarketingActivity(req);
             log.info("MarketingActivityServiceImpl.updateMarketingActivity resp={}", JSON.toJSONString(response));
-            if(response.isSuccess() && null != response.getResultData()){
+            if (response.isSuccess() && null != response.getResultData()) {
 
                 return ResultVO.successMessage(constant.getUpdateSuccess());
-            }else{
+            } else {
                 return ResultVO.error(constant.getUpdateFaile());
             }
         } else {
@@ -611,36 +638,37 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
      * @return
      */
     @Override
-    public ResultVO marketingActivityAuitStartProcess(String mktName,String userId,String userName,String orgName,String sysPostName,String marketId) {
+    public ResultVO marketingActivityAuitStartProcess(String mktName, String userId, String userName, String orgName, String sysPostName, String marketId) {
         log.info("MarketingActivityServiceImpl.marketingActivityAuit userId={} userName{}" +
                         "lanId{} regionId{} marketId{}",
-                userId,userName,orgName,sysPostName,marketId);
-                ProcessStartReq processStartDTO = new ProcessStartReq();
-                processStartDTO.setTitle(mktName);
-                //创建流程者，参数需要提供
-                processStartDTO.setApplyUserId(userId);
-                processStartDTO.setApplyUserName(userName);
-                processStartDTO.setExtends1(orgName+sysPostName);
-                processStartDTO.setProcessId("4");
-                processStartDTO.setFormId(marketId);
-                //TASK_SUB_TYPE_1140 销售活动配置流程
-                processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1140.getTaskSubType());
-                ResultVO taskServiceRV = new ResultVO();
-                try{
-                    //开启流程
-                    taskServiceRV = taskService.startProcess(processStartDTO);
-                    return ResultVO.success();
-                }catch (Exception ex){
-                    return ResultVO.error();
-                }finally {
-                    log.info("MarketingActivityServiceImpl.marketingActivityAuit req={},resp={}",
-                            JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
-                }
+                userId, userName, orgName, sysPostName, marketId);
+        ProcessStartReq processStartDTO = new ProcessStartReq();
+        processStartDTO.setTitle(mktName);
+        //创建流程者，参数需要提供
+        processStartDTO.setApplyUserId(userId);
+        processStartDTO.setApplyUserName(userName);
+        processStartDTO.setExtends1(orgName + sysPostName);
+        processStartDTO.setProcessId("4");
+        processStartDTO.setFormId(marketId);
+        //TASK_SUB_TYPE_1140 销售活动配置流程
+        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1140.getTaskSubType());
+        ResultVO taskServiceRV = new ResultVO();
+        try {
+            //开启流程
+            taskServiceRV = taskService.startProcess(processStartDTO);
+            return ResultVO.success();
+        } catch (Exception ex) {
+            return ResultVO.error();
+        } finally {
+            log.info("MarketingActivityServiceImpl.marketingActivityAuit req={},resp={}",
+                    JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
+        }
     }
 
 
     /**
      * 根据优惠ID集合查询 营销活动集合
+     *
      * @param mktResIds 优惠ID集合
      * @return
      */
@@ -681,11 +709,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     /**
      * 根据营销活动ID查询营销活动、优惠券、参与产品详情
+     *
      * @param activityId
      * @return
      */
     @Override
-    public ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfo(String activityId){
+    public ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfo(String activityId) {
         MarketingActivityInfoResp marketingActivityInfoResp = new MarketingActivityInfoResp();
 
         //营销活动基本信息
@@ -693,7 +722,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         marketingActivityInfoResp.setMarketingActivityDetailResp(marketingActivityDetailResp);
         QueryPreSubsidyReqDTO queryPreSubsidyReqDTO = new QueryPreSubsidyReqDTO();
         queryPreSubsidyReqDTO.setMarketingActivityId(activityId);
-        if(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode().equals(marketingActivityDetailResp.getActivityType())) {
+        if (PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode().equals(marketingActivityDetailResp.getActivityType())) {
             //营销活动优惠券列表信息
             List<QueryPreSubsidyCouponResqDTO> queryPreSubsidyCouponResqDTOList = new ArrayList<>();
             List couponList = preSubsidyCouponService.queryPreSubsidyCoupon(queryPreSubsidyReqDTO).getResultData();
@@ -708,7 +737,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
             //营销活动产品列表信息
             List<PreSubsidyProductPromResqDTO> preSubsidyProductPromResqDTOS = new ArrayList<>();
-            List<com.iwhalecloud.retail.rights.dto.response.PreSubsidyProductPromResqDTO> productList = 
+            List<com.iwhalecloud.retail.rights.dto.response.PreSubsidyProductPromResqDTO> productList =
                     preSubsidyCouponService.queryPreSubsidyProduct(queryPreSubsidyReqDTO).getResultData();
             if (productList != null && productList.size() > 0) {
                 for (int i = 0; i < productList.size(); i++) {
@@ -720,8 +749,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 }
             }
             marketingActivityInfoResp.setQueryPreSubsidyProductPromResqDTOList(preSubsidyProductPromResqDTOS);
-        }else if(PromoConst.ACTIVITYTYPE.BOOKING.getCode().equals(marketingActivityDetailResp.getActivityType())){
-            QueryMarketingActivityReq queryMarketingActivityReq =new QueryMarketingActivityReq();
+        } else if (PromoConst.ACTIVITYTYPE.BOOKING.getCode().equals(marketingActivityDetailResp.getActivityType())) {
+            QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
             queryMarketingActivityReq.setMarketingActivityId(activityId);
             ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = activityProductService.queryPreSaleProduct(queryMarketingActivityReq);
             marketingActivityInfoResp.setPreSaleProductInfo(listResultVO.getResultData());
@@ -740,19 +769,19 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Override
     public ResultVO updatePreSaleActivityRule(MarketingActivityAddReq marketingActivityAddReq) {
         MarketingActivity marketingActivity = new MarketingActivity();
-        BeanUtils.copyProperties(marketingActivityAddReq,marketingActivity);
-        marketingActivity.setPayType(StringUtils.isEmpty(marketingActivityAddReq.getPayType())? PromoConst.PayType.PAY_TYPE_1.getCode() : marketingActivityAddReq.getPayType());
+        BeanUtils.copyProperties(marketingActivityAddReq, marketingActivity);
+        marketingActivity.setPayType(StringUtils.isEmpty(marketingActivityAddReq.getPayType()) ? PromoConst.PayType.PAY_TYPE_1.getCode() : marketingActivityAddReq.getPayType());
         marketingActivityManager.updatePreSaleActivityRule(marketingActivity);
         return ResultVO.success();
     }
 
     @Override
     public ResultVO<AdvanceActivityProductInfoResp> getAdvanceActivityProductInfo(AdvanceActivityProductInfoReq advanceActivityProductInfoReq) {
-        log.info("MarketingActivityServiceImpl.getAdvanceActivityProductInfo-->advanceActivityProductInfoReq={}",JSON.toJSONString(advanceActivityProductInfoReq));
+        log.info("MarketingActivityServiceImpl.getAdvanceActivityProductInfo-->advanceActivityProductInfoReq={}", JSON.toJSONString(advanceActivityProductInfoReq));
         if (StringUtils.isEmpty(advanceActivityProductInfoReq.getProductId())
                 || StringUtils.isEmpty(advanceActivityProductInfoReq.getMarketingActivityId())) {
             log.error("MarketingActivityServiceImpl.getAdvanceActivityProductInfo--> !!miss args!!,productId={},activityId={}"
-                    ,advanceActivityProductInfoReq.getProductId(),advanceActivityProductInfoReq.getMarketingActivityId());
+                    , advanceActivityProductInfoReq.getProductId(), advanceActivityProductInfoReq.getMarketingActivityId());
             return ResultVO.error("产品ID和活动ID为必填项");
         }
         AdvanceActivityProductInfoResp advanceActivityProductInfo = marketingActivityManager.getAdvanceActivityProductInfo(advanceActivityProductInfoReq);
@@ -774,7 +803,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             log.info("MarketingActivityServiceImpl.queryMarketingActivityQueryBySupplier-->invalid activties is empty");
             return ResultVO.success(activityQueryBySupplierResps);
         }
-        log.info("MarketingActivityServiceImpl.queryMarketingActivityQueryBySupplier-->invalid activties size={}",marketingActivities.size());
+        log.info("MarketingActivityServiceImpl.queryMarketingActivityQueryBySupplier-->invalid activties size={}", marketingActivities.size());
 
         //2、过滤出当前卖家能参与的活动
         marketingActivities.forEach(marketingActivitity -> {
@@ -782,7 +811,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             boolean hasPermission = sellerActivityFilter.doFilter(activityAuthModel);
             if (hasPermission) {
                 MarketingActivityQueryBySupplierResp resp = new MarketingActivityQueryBySupplierResp();
-                BeanUtils.copyProperties(marketingActivitity,resp);
+                BeanUtils.copyProperties(marketingActivitity, resp);
                 activityQueryBySupplierResps.add(resp);
             }
         });
@@ -792,6 +821,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     /**
      * 获取营销活动校验模型
+     *
      * @param merchantId
      * @param marketingActivitity
      * @return
@@ -803,7 +833,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         if (merchantDTOResultVO.isSuccess()) {
 
             log.info("MarketingActivityServiceImpl.getActivityAuthModel get merchantDTOResultVO,merchantDTOResultVO={}-->"
-                    ,JSON.toJSONString(merchantDTOResultVO));
+                    , JSON.toJSONString(merchantDTOResultVO));
 
             //设置商家信息
             activityAuthModel.setMerchantSeller(merchantDTOResultVO.getResultData());
@@ -811,7 +841,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         } else {
             //无商家信息了
             log.error("MarketingActivityServiceImpl.getActivityAuthModel get merchantDTOResultVO !!error!!,merchantDTOResultVO={}-->"
-                    ,JSON.toJSONString(merchantDTOResultVO));
+                    , JSON.toJSONString(merchantDTOResultVO));
         }
 
         return activityAuthModel;
@@ -824,59 +854,60 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     /**
      * 根据活动id查询所有商家id
+     *
      * @param marketingActivityId
      * @return
      */
     public ResultVO<List<String>> queryActMerchant(String marketingActivityId) {
-        log.info("MarketingActivityServiceImpl.queryActMerchant--> marketingActivityId={}",marketingActivityId);
+        log.info("MarketingActivityServiceImpl.queryActMerchant--> marketingActivityId={}", marketingActivityId);
         List<String> strings = Lists.newArrayList();
         MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivity(marketingActivityId);
-        if(marketingActivity == null) {
+        if (marketingActivity == null) {
             return ResultVO.error("活动不存在");
         }
         List<ActivityParticipant> activityParticipants = activityParticipantManager.queryActivityParticipantByCondition(marketingActivityId);
-        log.info("MarketingActivityServiceImpl.queryActMerchant queryActivityParticipantByCondition --> activityParticipants={}",JSON.toJSON(activityParticipants));
-        if(activityParticipants.size()<=0){
+        log.info("MarketingActivityServiceImpl.queryActMerchant queryActivityParticipantByCondition --> activityParticipants={}", JSON.toJSON(activityParticipants));
+        if (activityParticipants.size() <= 0) {
             return ResultVO.success(strings);
         }
         String activityParticipantType = marketingActivity.getActivityParticipantType();
-        if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(activityParticipantType)){
-            for(ActivityParticipant activityParticipant : activityParticipants){
+        if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(activityParticipantType)) {
+            for (ActivityParticipant activityParticipant : activityParticipants) {
                 /** 参与对象表当前merchant_code字段存的是merchant_id*/
-                if(StringUtils.isNotEmpty(activityParticipant.getMerchantCode())){
+                if (StringUtils.isNotEmpty(activityParticipant.getMerchantCode())) {
                     strings.add(activityParticipant.getMerchantCode());
                 }
             }
-        }else if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(activityParticipantType)){
-              List<String> participants = Lists.newArrayList();
-              for(ActivityParticipant activityParticipant : activityParticipants){
-                  String city = activityParticipant.getCity();
-                  String lanId = activityParticipant.getLanId();
-                  if(StringUtils.isNotEmpty(city) || StringUtils.isNotEmpty(lanId)){
-                      participants.add(StringUtils.isNotEmpty(city)? city : lanId);
-                  }
-              }
-              if(participants.size()>0){
-                  MerchantListReq merchantListReq = new MerchantListReq();
-                  merchantListReq.setCityList(participants);
-                  ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchantByLanCity(merchantListReq);
-                  log.info("MarketingActivityServiceImpl.queryActMerchant listMerchantByLanCity --> listResultVO={}",JSON.toJSON(listResultVO));
-                  for(MerchantDTO merchantDTO :listResultVO.getResultData()){
-                      strings.add(merchantDTO.getMerchantId());
-                  }
-              }
+        } else if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(activityParticipantType)) {
+            List<String> participants = Lists.newArrayList();
+            for (ActivityParticipant activityParticipant : activityParticipants) {
+                String city = activityParticipant.getCity();
+                String lanId = activityParticipant.getLanId();
+                if (StringUtils.isNotEmpty(city) || StringUtils.isNotEmpty(lanId)) {
+                    participants.add(StringUtils.isNotEmpty(city) ? city : lanId);
+                }
+            }
+            if (participants.size() > 0) {
+                MerchantListReq merchantListReq = new MerchantListReq();
+                merchantListReq.setCityList(participants);
+                ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchantByLanCity(merchantListReq);
+                log.info("MarketingActivityServiceImpl.queryActMerchant listMerchantByLanCity --> listResultVO={}", JSON.toJSON(listResultVO));
+                for (MerchantDTO merchantDTO : listResultVO.getResultData()) {
+                    strings.add(merchantDTO.getMerchantId());
+                }
+            }
         }
-        log.info("MarketingActivityServiceImpl.queryActMerchant --> strings={}",JSON.toJSON(strings));
+        log.info("MarketingActivityServiceImpl.queryActMerchant --> strings={}", JSON.toJSON(strings));
         return ResultVO.success(strings);
     }
 
     @Override
     public ResultVO autoPushActivityCoupon(String marketingActivityId) {
         ResultVO<List<String>> listResultVO = queryActMerchant(marketingActivityId);
-        if(ResultCodeEnum.ERROR.getCode().equals(listResultVO.getResultCode())){
+        if (ResultCodeEnum.ERROR.getCode().equals(listResultVO.getResultCode())) {
             return listResultVO;
         }
-        if(listResultVO.getResultData().size()<=0){
+        if (listResultVO.getResultData().size() <= 0) {
             return ResultVO.error("该活动没有参与的商家");
         }
         AutoPushCouponReq autoPushCouponReq = new AutoPushCouponReq();
@@ -886,8 +917,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         return ResultVO.success("成功推送!");
     }
 
-    public ResultVO turnActMarket(String userId,String userName,String mktId){
-        updateMktStatus(mktId,PromoConst.STATUSCD.STATUS_CD_10.getCode());
+    public ResultVO turnActMarket(String userId, String userName, String mktId) {
+        updateMktStatus(mktId, PromoConst.STATUSCD.STATUS_CD_10.getCode());
         NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new NextRouteAndReceiveTaskReq();
         nextRouteAndReceiveTaskReq.setFormId(mktId);
         nextRouteAndReceiveTaskReq.setHandlerUserId(userId);
@@ -895,13 +926,14 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
         return taskService.nextRouteAndReceiveTask(nextRouteAndReceiveTaskReq);
     }
-    public Boolean updateMktStatus(String mktId,String vatInvoiceStatus){
-        return marketingActivityManager.updateMarketingActivityById(mktId,vatInvoiceStatus);
+
+    public Boolean updateMktStatus(String mktId, String vatInvoiceStatus) {
+        return marketingActivityManager.updateMarketingActivityById(mktId, vatInvoiceStatus);
     }
 
     @Override
-    public ResultVO<List<MarketingActivityDTO>> queryActivityByProductId(String productId,String activityType){
-        List<MarketingActivity> marketingActivityList = marketingActivityManager.queryActivityByProductId(productId,activityType);
+    public ResultVO<List<MarketingActivityDTO>> queryActivityByProductId(String productId, String activityType) {
+        List<MarketingActivity> marketingActivityList = marketingActivityManager.queryActivityByProductId(productId, activityType);
         List<MarketingActivityDTO> marketingActivityDTOList = Lists.newArrayList();
         for (MarketingActivity marketingActivity : marketingActivityList) {
             MarketingActivityDTO marketingActivityDTO = new MarketingActivityDTO();
@@ -914,32 +946,32 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Override
     public void auitMarketingActivity(AuitMarketingActivityReq req) {
         //修改状态
-        updateMktStatus(req.getId(),PromoConst.STATUSCD.STATUS_CD_10.getCode());
+        updateMktStatus(req.getId(), PromoConst.STATUSCD.STATUS_CD_10.getCode());
         //营销活动审核 1.新增的时候进行审核
         log.info("MarketingActivityServiceImpl.addMarketingActivity marketingActivityId{}");
-        if (org.springframework.util.StringUtils.isEmpty(req.getId())){
-            try{
-                ResultVO auditMktResultVO = marketingActivityAuitStartProcess(req.getName(),req.getUserId(),req.getUserName(),req.getOrgId(),req.getSysPostName(), req.getId());
-            }catch (Exception e){
+        if (org.springframework.util.StringUtils.isEmpty(req.getId())) {
+            try {
+                ResultVO auditMktResultVO = marketingActivityAuitStartProcess(req.getName(), req.getUserId(), req.getUserName(), req.getOrgId(), req.getSysPostName(), req.getId());
+            } catch (Exception e) {
                 log.info("MarketingActivityServiceImpl.addMarketingActivity 新增营销活动审核失败");
                 e.printStackTrace();
             }
-        }else {
+        } else {
             ResultVO<MarketingActivityDetailResp> respResultVO = queryMarketingActivity(req.getId());
             MarketingActivityDetailResp marketingActivityDetailResp = respResultVO.getResultData();
             //修改的时候 如果是审核通过或者是审核中 不起流程
-            if(PromoConst.STATUSCD.STATUS_CD_20.getCode().equals(marketingActivityDetailResp.getStatus())
-                    || PromoConst.STATUSCD.STATUS_CD_10.getCode().equals(marketingActivityDetailResp.getStatus())){
-                try{
-                    ResultVO auditMktResultVO = marketingActivityAuitStartProcess(req.getName(),req.getUserId(),req.getUserName(),req.getOrgId(),req.getSysPostName(), req.getId());
-                }catch (Exception e){
+            if (PromoConst.STATUSCD.STATUS_CD_20.getCode().equals(marketingActivityDetailResp.getStatus())
+                    || PromoConst.STATUSCD.STATUS_CD_10.getCode().equals(marketingActivityDetailResp.getStatus())) {
+                try {
+                    ResultVO auditMktResultVO = marketingActivityAuitStartProcess(req.getName(), req.getUserId(), req.getUserName(), req.getOrgId(), req.getSysPostName(), req.getId());
+                } catch (Exception e) {
                     log.info("MarketingActivityServiceImpl.addMarketingActivity 修改营销活动通过审核失败");
                     e.printStackTrace();
                 }
-            }else {
-                try{
-                    ResultVO workFlowResultVO = turnActMarket(req.getUserId(),req.getUserName(), req.getId());
-                }catch (Exception e){
+            } else {
+                try {
+                    ResultVO workFlowResultVO = turnActMarket(req.getUserId(), req.getUserName(), req.getId());
+                } catch (Exception e) {
                     log.info("MarketingActivityServiceImpl.addMarketingActivity 修改营销活动驳回审核失败");
                     e.printStackTrace();
                 }

@@ -156,6 +156,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public ResultVO<Integer> updateProductBase(ProductBaseUpdateReq req) {
         log.info("ProductBaseServiceImpl.updateProductBase,req={}", JSON.toJSONString(req));
+
+        final long startTime = System.currentTimeMillis();
         ProductBaseGetByIdReq req1 = new ProductBaseGetByIdReq();
         req1.setProductBaseId(req.getProductBaseId());
         ResultVO<ProductBaseGetResp> product = this.getProductBase(req1);
@@ -197,6 +199,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         if(page==null||page.getRecords()==null||page.getRecords().isEmpty()){
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "原产品为空无法获取审核状态");
         }
+
+        System.out.println("==========>1" + (System.currentTimeMillis() - startTime));
 
         oldAuditState = page.getRecords().get(0).getAuditState();
         if(StringUtils.isEmpty(oldAuditState)){
@@ -243,8 +247,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }
 
         }
+
+        System.out.println("==========>2" + (System.currentTimeMillis() - startTime));
         req.setUpdateDate(new Date());
         int index = productBaseManager.updateProductBase(req);
+        System.out.println("==========>3" + (System.currentTimeMillis() - startTime));
         //修改成功并且非审核中
         if(index>0&&!ProductConst.AuditStateType.AUDITING.getCode().equals(oldAuditState)){
 

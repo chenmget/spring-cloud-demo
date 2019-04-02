@@ -38,7 +38,7 @@ public class MenuManager {
             queryWrapper.eq("PLATFORM", req.getPlatform());
         }
         if (!StringUtils.isEmpty(req.getMenuName())) {
-            queryWrapper.eq("MENU_NAME", req.getMenuName());
+            queryWrapper.like("MENU_NAME", req.getMenuName());
         }
         queryWrapper.orderByAsc("menu_name");
         return menuMapper.selectList(queryWrapper);

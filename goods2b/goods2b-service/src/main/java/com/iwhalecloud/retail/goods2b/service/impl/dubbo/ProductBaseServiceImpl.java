@@ -262,10 +262,15 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                  }else if(ProductConst.AuditStateType.UN_SUBMIT.getCode().equals(oldAuditState)
                          || ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
                      //原审核状态为待提交，且新状态为非待提交
+                     String processId =ProductConst.APP_PRODUCT_FLOW_PROCESS_ID;
+                     if(ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
+                         processId =ProductConst.UPDATE_PRODUCT_FLOW_PROCESS_ID;
+                     }
                      StartProductFlowReq startProductFlowReq = new StartProductFlowReq();
                      startProductFlowReq.setProductBaseId(req.getProductBaseId());
                      startProductFlowReq.setDealer(req.getUpdateStaff());
                      startProductFlowReq.setProductName(product.getResultData().getProductName());
+                     startProductFlowReq.setProcessId(processId);
                      ResultVO flowResltVO =productFlowService.startProductFlow(startProductFlowReq);
                      if(!flowResltVO.isSuccess()){
                          throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());

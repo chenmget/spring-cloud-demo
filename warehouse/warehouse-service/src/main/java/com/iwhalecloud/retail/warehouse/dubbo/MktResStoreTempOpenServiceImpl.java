@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.warehouse.service.MktResStoreTempService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -25,10 +26,14 @@ public class MktResStoreTempOpenServiceImpl implements MktResStoreTempService {
     private MktResStoreTempService mktResStoreTempService;
 
     @Override
-    public ResultVO<SynMarkResStoreResp> synMarkResStore(SynMarkResStoreReq req) {
-        log.info(MktResStoreTempOpenServiceImpl.class.getName()+".synMarkResStore req={}", JSON.toJSONString(req));
-        ResultVO<SynMarkResStoreResp> resultVO = mktResStoreTempService.synMarkResStore(req);
-        log.info(MktResStoreTempOpenServiceImpl.class.getName()+".synMarkResStore resp={}", JSON.toJSONString(resultVO));
+    public ResultVO<SynMarkResStoreResp> synMarkResStore(String reqStr) {
+        return mktResStoreTempService.synMarkResStore(reqStr);
+    }
+    @Override
+    public ResultVO<SynMarkResStoreResp> synMarkResStoreForObj(SynMarkResStoreReq req) {
+        log.info(MktResStoreTempOpenServiceImpl.class.getName()+".synMarkResStoreForObj req={}", JSON.toJSONString(req));
+        ResultVO<SynMarkResStoreResp> resultVO = mktResStoreTempService.synMarkResStoreForObj(req);
+        log.info(MktResStoreTempOpenServiceImpl.class.getName()+".synMarkResStoreForObj resp={}", JSON.toJSONString(resultVO));
         return resultVO;
     }
 

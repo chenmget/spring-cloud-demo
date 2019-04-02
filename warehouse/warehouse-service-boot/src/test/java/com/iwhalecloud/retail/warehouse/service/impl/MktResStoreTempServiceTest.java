@@ -65,7 +65,7 @@ public class MktResStoreTempServiceTest {
             itemReq.setUpdateStaff("1");
             itemReq.setUpdateDate("2019-01-03 12:11:12");
             req.setRequest(itemReq);
-            ResultVO resultVO = mktResStoreTempService.synMarkResStore(req);
+            ResultVO resultVO = mktResStoreTempService.synMarkResStoreForObj(req);
             System.out.println(resultVO);
         }
 

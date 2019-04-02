@@ -9,7 +9,6 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 
 import java.util.List;
 
@@ -41,17 +40,15 @@ public interface ProductService {
      * 添加产品
      * @param req
      * @return
-     * @throws ProductException
      */
-    public ResultVO<Integer> addProduct (ProductAddReq req) throws ProductException;
+    public ResultVO<Integer> addProduct (ProductAddReq req);
 
     /**
      * 添加产品-中台
      * @param req
      * @return
-     * @throws ProductException
      */
-    public ResultVO<String> addProductByZT (ProductAddReq req) throws ProductException;
+    public ResultVO<String> addProductByZT (ProductAddReq req);
 
     /**
      * 根据productId删除
@@ -92,7 +89,6 @@ public interface ProductService {
      * 通用查询
      * @param req
      * @return
-     * @throws ProductException
      */
     public ResultVO<Page<ProductDTO>> selectProduct(ProductGetReq req);
 

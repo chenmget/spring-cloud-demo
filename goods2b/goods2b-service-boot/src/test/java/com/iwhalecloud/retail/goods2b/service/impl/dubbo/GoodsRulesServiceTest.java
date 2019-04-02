@@ -8,7 +8,6 @@ import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesOperateDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsRulesExcelResp;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsRulesService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -53,7 +52,7 @@ public class GoodsRulesServiceTest {
     }
 
     @Test
-    public void addProdGoodsRuleBatch() throws ProductException {
+    public void addProdGoodsRuleBatch(){
 
         List<GoodsRulesDTO> entityList = new ArrayList<>();
 

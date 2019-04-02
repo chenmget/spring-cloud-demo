@@ -6,7 +6,6 @@ import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleByExcelFileReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsRulesExcelResp;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsRulesService;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
@@ -31,8 +30,7 @@ public class GoodsRulesB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/addOrUpdateGoodsRulesBatch")
-    public ResultVO<GoodsRulesExcelResp> addOrUpdateGoodsRulesBatch(@RequestBody List<GoodsRulesDTO> entityList)
-            throws ProductException {
+    public ResultVO<GoodsRulesExcelResp> addOrUpdateGoodsRulesBatch(@RequestBody List<GoodsRulesDTO> entityList){
         ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
         prodGoodsRuleEditReq.setGoodsRulesDTOList(entityList);
         return goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);

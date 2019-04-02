@@ -36,11 +36,11 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
     /**
      * 添加串码
      *
-     * @param t
+     * @param resourceInst
      * @return
      */
-    public Integer addResourceInst(ResourceInst t) {
-        return resourceInstMapper.insert(t);
+    public Integer addResourceInst(ResourceInst resourceInst) {
+        return resourceInstMapper.insert(resourceInst);
     }
 
     /**
@@ -50,6 +50,9 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
      * @return
      */
     public Integer updateResourceInst(ResourceInstUpdateReq req) {
+        Date now = new Date();
+        req.setUpdateDate(now);
+        req.setStatusDate(now);
         return resourceInstMapper.updateResourceInst(req);
     }
 
@@ -64,6 +67,9 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
         if (req.getMktResInstIds() == null || req.getMktResInstIds().size() < 1) {
             return 0;
         }
+        Date now = new Date();
+        req.setUpdateDate(now);
+        req.setStatusDate(now);
         return resourceInstMapper.updateResourceInstByIds(req);
     }
 
@@ -265,6 +271,9 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
      * @return
      */
     public int batchUpdateInstState(ResourceInstUpdateReq req) {
+        Date now = new Date();
+        req.setUpdateDate(now);
+        req.setStatusDate(now);
         return resourceInstMapper.batchUpdateInstState(req);
     }
 

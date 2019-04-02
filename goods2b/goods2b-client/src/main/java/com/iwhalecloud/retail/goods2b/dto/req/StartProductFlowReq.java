@@ -21,6 +21,7 @@ public class StartProductFlowReq  implements Serializable {
 
     @ApiModelProperty(value = "产品名称")
     private String productName;
-
+    @ApiModelProperty(value = "流程ID")
+    private String processId;
 
 }

@@ -24,7 +24,6 @@ public class SystemConst {
     // 公共字段表表sys_public_dict使用的缓存名称
     public static final String CACHE_NAME_SYS_PUBLIC_DICT = "sys_public_dict";
 
-
     // 湖南默认一级本地网的 父级区域ID
     public static final String HN_DEFAULT_PAR_REGION_ID = "10000000";
 

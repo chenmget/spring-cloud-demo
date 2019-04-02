@@ -14,7 +14,6 @@ import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsRulesExcelResp;
 import com.iwhalecloud.retail.goods2b.entity.Goods;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.manager.GoodsManager;
 import com.iwhalecloud.retail.goods2b.manager.GoodsRulesManager;
 import com.iwhalecloud.retail.goods2b.reference.BusinessEntityReference;
@@ -200,7 +199,7 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVO<GoodsRulesExcelResp> addProdGoodsRuleBatch(ProdGoodsRuleEditReq prodGoodsRuleEditReq )throws ProductException{
+    public ResultVO<GoodsRulesExcelResp> addProdGoodsRuleBatch(ProdGoodsRuleEditReq prodGoodsRuleEditReq ){
         log.info("GoodsRulesServiceImpl.addProdGoodsRuleBatch req={}",prodGoodsRuleEditReq);
         List<GoodsRulesDTO> entityList = prodGoodsRuleEditReq.getGoodsRulesDTOList();
         GoodsRulesExcelResp resp = new GoodsRulesExcelResp();
@@ -219,7 +218,6 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
             rv.setResultCode(validResultVO.getResultCode());
             resp.setOperateMessage(validResultVO.getResultMsg());
             resp.setOperateResult(false);
-
             return rv;
         }
 
@@ -235,7 +233,7 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
     }
 
     @Override
-    public ResultVO addProdGoodsRule(GoodsRulesDTO entity) throws ProductException{
+    public ResultVO addProdGoodsRule(GoodsRulesDTO entity){
         supplyTargetInfo(entity);
         supplyProductInfo(entity);
         return ResultVOUtils.genAduResultVO(goodsRulesManager.addOrUpdateOne(entity));
@@ -267,7 +265,7 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
     }
 
     @Override
-    public ResultVO updateProdGoodsRuleByCondition(GoodsRulesDTO condition) throws ProductException{
+    public ResultVO updateProdGoodsRuleByCondition(GoodsRulesDTO condition){
         supplyTargetInfo(condition);
         supplyProductInfo(condition);
         condition.setGoodsRuleId(null);// 不允许更改主键ID
@@ -275,7 +273,7 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
     }
 
     @Override
-    public ResultVO updateProdGoodsRuleById(GoodsRulesDTO condition) throws ProductException {
+    public ResultVO updateProdGoodsRuleById(GoodsRulesDTO condition){
         supplyTargetInfo(condition);
         supplyProductInfo(condition);
         return ResultVOUtils.genAduResultVO(goodsRulesManager.updateById(condition));
@@ -455,7 +453,7 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
      * 补充产品信息
      * @param entity
      */
-    private boolean supplyProductInfo(GoodsRulesDTO entity)throws ProductException{
+    private boolean supplyProductInfo(GoodsRulesDTO entity){
         String code = entity.getProductCode();
         ProductGetReq req = new ProductGetReq();
         req.setSn(code);
@@ -557,7 +555,7 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
             GoodsRulesDTO goodsRulesDTO = entityList.get(i);
             Long purchasedNum = goodsRulesDTO.getPurchasedNum() == null ? 0:goodsRulesDTO.getPurchasedNum();
             if(GoodsRulesConst.Stockist.PARTNER_IN_SHOP_TYPE.getValue().equals(goodsRulesDTO.getTargetType())){
-                targetList.add(goodsRulesDTO.getTargetCode());
+                targetList.add(goodsRulesDTO.getTargetId());
             }
             if(goodsRulesDTO.getMarketNum() <= 0){
                 //分货数量大于0

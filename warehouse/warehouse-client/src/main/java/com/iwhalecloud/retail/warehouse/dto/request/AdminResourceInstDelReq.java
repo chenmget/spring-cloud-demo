@@ -46,6 +46,13 @@ public class AdminResourceInstDelReq implements Serializable{
 	 */
 	@ApiModelProperty(value = "更新后状态")
 	private String statusCd;
+
+	/**
+	 * 记录状态变更的时间。
+	 */
+	@ApiModelProperty(value = "记录状态变更的时间。")
+	private java.util.Date statusDate;
+
 	/**
 	 * 校验状态
 	 */

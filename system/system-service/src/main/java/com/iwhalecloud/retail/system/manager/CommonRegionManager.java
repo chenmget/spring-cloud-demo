@@ -47,6 +47,9 @@ public class CommonRegionManager {
         if (!StringUtils.isEmpty(req.getParRegionId())) {
             queryWrapper.eq(CommonRegion.FieldNames.parRegionId.getTableFieldName(), req.getParRegionId());
         }
+        if (!StringUtils.isEmpty(req.getRegionName())) {
+            queryWrapper.like(CommonRegion.FieldNames.regionName.getTableFieldName(), req.getRegionName());
+        }
         List<CommonRegion> list = commonRegionMapper.selectList(queryWrapper);
         return list;
     }

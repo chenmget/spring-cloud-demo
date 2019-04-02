@@ -174,7 +174,8 @@ public class ProductFlowServiceImpl implements ProductFlowService {
         //标题->产品名称+产品管理审批流程
         processStartDTO.setTitle(productName + "产品管理审批流程");
         //流程ID->待提供
-        processStartDTO.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
+        processStartDTO.setProcessId(req.getProcessId());
+//        processStartDTO.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
 
         //下一环节处理用户,不填
 //        processStartDTO.setNextHandlerUser(null);

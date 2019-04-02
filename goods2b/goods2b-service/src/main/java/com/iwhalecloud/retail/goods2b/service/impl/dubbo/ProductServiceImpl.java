@@ -16,7 +16,6 @@ import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductManager;
 import com.iwhalecloud.retail.goods2b.manager.TagTelManager;
@@ -79,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public ResultVO<Integer> addProduct(ProductAddReq req) throws ProductException {
+    public ResultVO<Integer> addProduct(ProductAddReq req){
         Product t = new Product();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -115,7 +114,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResultVO<String> addProductByZT(ProductAddReq req) throws ProductException {
+    public ResultVO<String> addProductByZT(ProductAddReq req){
         Product t = new Product();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();

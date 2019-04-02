@@ -36,4 +36,6 @@ public interface GoodsProductRelMapper extends BaseMapper<GoodsProductRel>{
     GoodsDetailDTO qryGoodsByProductIdAndGoodsId(@Param("productId") String productId, @Param("goodsId")String goodsId);
 
     public List<ActivityGoodsDTO> qryActivityGoodsId(@Param("req") ActivityGoodsReq req);
+
+    List<String> listGoodsBySupplierId(@Param("supplierId") String supplierId, @Param("productId") String productId);
 }

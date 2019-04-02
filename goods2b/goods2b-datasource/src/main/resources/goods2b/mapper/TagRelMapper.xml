@@ -5,7 +5,7 @@
     <constructor >
       <idArg column="REL_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="TAG_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="GOODS_ID" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+      <arg column="PRODUCT_BASE_ID" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >

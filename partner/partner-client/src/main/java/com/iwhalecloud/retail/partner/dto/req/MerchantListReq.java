@@ -14,9 +14,6 @@ public class MerchantListReq implements Serializable {
 
     private static final long serialVersionUID = 4557127783464661625L;
 
-//    @ApiModelProperty(value = "不需要查其他表的额外字段，默认false：要查其他额外字段   true：只查当前表")
-//    private Boolean noNeedExtraFiles;
-
     @ApiModelProperty(value = "是否需要查其他表的额外字段，默认false：不需要查其他额外字段   true：要查其他额外字段（比如翻译后的lanName 等等")
     private Boolean needOtherTableFields;
 
@@ -61,6 +58,9 @@ public class MerchantListReq implements Serializable {
 
     @ApiModelProperty(value = "商家市县ID")
     private String city;
+
+    @ApiModelProperty(value = "商家市县名称（模糊查询 转换成 cityList集合")
+    private String cityName;
 
     @ApiModelProperty(value = "商家市县ID集合")
     private List<String> cityList;

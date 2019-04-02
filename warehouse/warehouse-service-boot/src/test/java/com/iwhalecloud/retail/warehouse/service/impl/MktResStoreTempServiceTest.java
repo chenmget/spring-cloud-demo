@@ -24,7 +24,7 @@ public class MktResStoreTempServiceTest {
     @Reference
     private MktResStoreTempService mktResStoreTempService;
     @Test
-    public void synMarkResStore(){
+    public void synMarkResStoreForObj(){
         for(int i=0;i<1;i++){
             SynMarkResStoreReq req = new SynMarkResStoreReq();
             req.setActType(MarketingResConst.ACT_TYPE_UPDATE);
@@ -69,6 +69,51 @@ public class MktResStoreTempServiceTest {
             System.out.println(resultVO);
         }
 
+    }
+    @Test
+    public void synMarkResStore(){
+        String json = "{\n" +
+                " \"request\": {\n" +
+                "  \"statusDate\": \"2019-01-03 12:11:12\",\n" +
+                "  \"updateDate\": \"2019-01-03 12:11:12\",\n" +
+                "  \"parStoreId\": \"1232\",\n" +
+                "  \"remark\": \"lytest\",\n" +
+                "  \"lanId\": \"117\",\n" +
+                "  \"expDate\": \"2019-01-03 12:11:12\",\n" +
+                "  \"orgId\": \"1\",\n" +
+                "  \"recType\": \"111\",\n" +
+                "  \"effDate\": \"2010-01-03 12:11:12\",\n" +
+                "  \"mktResStoreId\": \"12310\",\n" +
+                "  \"provider\": \"123\",\n" +
+                "  \"storeGrade\": \"1\",\n" +
+                "  \"storeSubType\": \"1\",\n" +
+                "  \"recStoreId\": \"321\",\n" +
+                "  \"channelId\": \"2\",\n" +
+                "  \"providerName\": \"福建\",\n" +
+                "  \"createDate\": \"2019-01-03 12:11:12\",\n" +
+                "  \"storeType\": \"3\",\n" +
+                "  \"address\": \"fdlksjfffffffffff\",\n" +
+                "  \"mktResStoreName\": \"120\",\n" +
+                "  \"rcType\": \"123\",\n" +
+                "  \"rStorageCode2\": \"code2\",\n" +
+                "  \"recDay\": \"333\",\n" +
+                "  \"statusCd\": \"01\",\n" +
+                "  \"checkDate\": \"2019-01-03 12:11:12\",\n" +
+                "  \"directSupply\": \"1\",\n" +
+                "  \"rStorageCode1\": \"code1\",\n" +
+                "  \"createStaff\": \"111\",\n" +
+                "  \"familyId\": \"99\",\n" +
+                "  \"regionId\": \"111\",\n" +
+                "  \"vbatchcode\": \"123\",\n" +
+                "  \"mktResStoreNbr\": \"abcddddd\",\n" +
+                "  \"cOperId\": \"321\",\n" +
+                "  \"staffId\": \"12311\",\n" +
+                "  \"updateStaff\": \"1\"\n" +
+                " },\n" +
+                " \"actType\": \"A\"\n" +
+                "}";
+        ResultVO resultVO = mktResStoreTempService.synMarkResStore(json);
+        System.out.println(resultVO);
     }
     @Test
     public void synTempToMktResStore(){

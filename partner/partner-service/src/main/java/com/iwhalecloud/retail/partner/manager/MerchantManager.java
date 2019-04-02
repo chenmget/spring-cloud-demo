@@ -166,6 +166,8 @@ public class MerchantManager {
         }
         queryWrapper.last(" limit 30000 "); // 限定查询条数(避免没参数的查出整表）
 
+        queryWrapper.last(" limit 30000 "); // 限定查询条数(避免没参数的查出整表）
+
         // 设置查询字段(优化 不查全表字段  避免耗时超长）
         queryWrapper.select(
                 Merchant.FieldNames.merchantId.getTableFieldName(),

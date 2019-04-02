@@ -13,6 +13,8 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.Map;
+
 /**
  * @author 吴良勇
  * @date 2019/3/9 18:14
@@ -112,7 +114,7 @@ public class MktResStoreTempServiceTest {
                 " },\n" +
                 " \"actType\": \"A\"\n" +
                 "}";
-        ResultVO resultVO = mktResStoreTempService.synMarkResStore(json);
+        Map resultVO = mktResStoreTempService.synMarkResStore(json);
         System.out.println(resultVO);
     }
     @Test

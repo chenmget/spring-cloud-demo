@@ -186,7 +186,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
             BeanUtils.copyProperties(req, updateReq);
             updateReq.setMktResStoreId(req.getDestStoreId());
-            updateReq.setMktResInstNbrs(availbaleNbrs);
+            updateReq.setMktResInstNbrs(availbaleNbrs.stream().distinct().collect(Collectors.toList()));
             successNum = resourceInstManager.updateResourceInst(updateReq);
             log.info("ResourceInstServiceImpl.updateResourceInst resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
         }
@@ -258,7 +258,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (!availbaleNbrs.isEmpty()) {
             ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
             BeanUtils.copyProperties(req, updateReq);
-            updateReq.setMktResInstNbrs(availbaleNbrs);
+            updateReq.setMktResInstNbrs(availbaleNbrs.stream().distinct().collect(Collectors.toList()));
             successNum = resourceInstManager.updateResourceInst(updateReq);
             log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
         }
@@ -834,7 +834,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (!availbaleNbrs.isEmpty()) {
             ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
             BeanUtils.copyProperties(req, updateReq);
-            updateReq.setMktResInstNbrs(availbaleNbrs);
+            updateReq.setMktResInstNbrs(availbaleNbrs.stream().distinct().collect(Collectors.toList()));
             successNum = resourceInstManager.updateResourceInst(updateReq);
             log.info("ResourceInstServiceImpl.delResourceInstForMerchant resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
         }

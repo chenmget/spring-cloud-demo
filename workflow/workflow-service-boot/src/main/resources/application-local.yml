@@ -9,8 +9,8 @@ spring.dubbo:
       name: wf-provider
     registry:
       address: zookeeper://localhost:2181
-      username: admin
-      password: 123
+      username:
+      password:
     protocol:
       name: dubbo
       port: 20880

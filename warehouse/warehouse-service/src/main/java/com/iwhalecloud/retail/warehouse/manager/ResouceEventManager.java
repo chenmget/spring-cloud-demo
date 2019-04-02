@@ -5,7 +5,9 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceEventDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceEventUpdateReq;
 import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
+import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceEventMapper;
+import com.iwhalecloud.retail.warehouse.mapper.ResourceChngEvtDetailMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -15,15 +17,19 @@ import java.util.Date;
 
 
 @Component
-public class ResouceEventManager{
+public class ResouceEventManager {
     @Resource
     private ResouceEventMapper resouceEventMapper;
+
+    @Resource
+    private ResourceChngEvtDetailMapper resourceChngEvtDetailMapper;
 
     @Resource
     private ResourceInstMapper resourceInstMapper;
 
     /**
      * 新增变动事件
+     *
      * @param resouceEventDTO
      * @return
      */
@@ -53,23 +59,17 @@ public class ResouceEventManager{
             updateEvent.setUpdateDate(now);
             int i = resouceEventMapper.update(updateEvent, queryWrapper);
             eventId = event.getMktResEventId();
+
+            ResourceChngEvtDetail resourceChngEvtDetail = new ResourceChngEvtDetail();
+            resourceChngEvtDetail.setUpdateDate(now);
+            resourceChngEvtDetail.setStatusDate(now);
+            QueryWrapper detailQueryWrapper = new QueryWrapper();
+            detailQueryWrapper.eq(ResourceChngEvtDetail.FieldNames.mktResEventId.getTableFieldName(), eventId);
+            detailQueryWrapper.eq(ResourceChngEvtDetail.FieldNames.mktResStoreId.getTableFieldName(), resouceEventDTO.getMktResStoreId());
+            resourceChngEvtDetailMapper.update(resourceChngEvtDetail, detailQueryWrapper);
         }
         return eventId;
     }
 
-    /**
-     * 修改变动事件的状态
-     * @param req
-     * @return
-     */
-    public int updateResouceEventState(ResouceEventUpdateReq req){
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(ResouceEvent.FieldNames.mktResEventId.getTableFieldName(),req.getMktResEventId());
-        ResouceEvent resouceEvent = new ResouceEvent();
-        resouceEvent.setStatusCd(req.getStatusCd());
-        return resouceEventMapper.update(resouceEvent,queryWrapper);
-    }
-    
-    
-    
+
 }

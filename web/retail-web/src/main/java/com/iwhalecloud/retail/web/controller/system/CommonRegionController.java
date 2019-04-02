@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.web.controller.system;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
@@ -57,9 +56,7 @@ public class CommonRegionController {
     })
     @GetMapping(value = "/listLan")
     public ResultVO<List<CommonRegionDTO>> listLan(){
-        CommonRegionListReq req = new CommonRegionListReq();
-        req.setParRegionId(SystemConst.HN_DEFAULT_PAR_REGION_ID);
-        return commonRegionService.listCommonRegion(req);
+        return commonRegionService.listLan();
     }
 
 }

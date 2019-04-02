@@ -173,20 +173,9 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
             if (resultVO.isSuccess() && resultVO.getResultData() != null) {
                 MerchantDetailDTO merchantDetailDTO = resultVO.getResultData();
                 BeanUtils.copyProperties(merchantDetailDTO, dto);
+                dto.setRegionName(merchantDetailDTO.getCityName());
             } else {
                 log.warn("ResouceStoreServiceImpl.pageMerchantAllocateStore merchantService.getMerchantById merchantId={} merchant is null", merchantId);
-            }
-            ResultVO<CommonRegionDTO> regionResultVO = commonRegionService.getCommonRegionById(dto.getRegionId());
-            if (regionResultVO != null && regionResultVO.isSuccess() && regionResultVO.getResultData() != null) {
-                dto.setRegionName(regionResultVO.getResultData().getRegionName());
-            } else {
-                log.warn("ResouceStoreServiceImpl.pageStore commonRegionService.getCommonRegionById regionId={} regionResultVO is null", dto.getRegionId());
-            }
-            ResultVO<CommonRegionDTO> landResultVO = commonRegionService.getCommonRegionById(dto.getLanId());
-            if (landResultVO != null && landResultVO.isSuccess() && landResultVO.getResultData() != null) {
-                dto.setLanName(landResultVO.getResultData().getRegionName());
-            } else {
-                log.warn("ResouceStoreServiceImpl.pageStore commonRegionService.getCommonRegionById landId={} landResultVO is null", dto.getLanId());
             }
         }
         return ResultVO.success(resouceStoreDTOPage);

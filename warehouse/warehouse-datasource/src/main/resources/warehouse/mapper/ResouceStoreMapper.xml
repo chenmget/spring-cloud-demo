@@ -101,6 +101,7 @@
             </foreach>
         </if>
         order by s.MKT_RES_STORE_ID desc
+        limit 100000
     </select>
 
     <select id="pageAllocateStore" resultType="com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO"
@@ -131,6 +132,7 @@
                 </foreach>
             </if>
         order by s.MKT_RES_STORE_ID desc
+
     </select>
 
     <update id="updateStore" parameterType="com.iwhalecloud.retail.warehouse.entity.ResouceStore">

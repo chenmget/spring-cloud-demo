@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.order2b.mapper.OrderItemDetailMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -20,15 +21,12 @@ import java.util.List;
 @Component
 public class ReBateOrderInDetailManager {
 
-    @Reference
+    @Resource
     private OrderItemDetailMapper orderItemDetailMapper;
 
-    public ResultVO<Page<OrderItemDetailReBateResp>> queryOrderItemDetailByOrderId(ReBateOrderInDetailReq req){
-        if (StringUtils.isEmpty(req.getOrderId())){
-            return ResultVO.error();
-        }
+    public Page<OrderItemDetailReBateResp> queryOrderItemDetailByOrderId(ReBateOrderInDetailReq req){
         Page<OrderItemDetailReBateResp> page = new Page<OrderItemDetailReBateResp>(req.getPageNo(), req.getPageSize());
-      return orderItemDetailMapper.queryOrderItemDetailByOrderId(page,req);
+        return orderItemDetailMapper.queryOrderItemDetailByOrderId(page,req);
     }
 
 }

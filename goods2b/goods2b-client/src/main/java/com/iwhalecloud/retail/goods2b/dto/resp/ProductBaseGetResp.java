@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by fadeaway on 2018/12/24.
@@ -305,4 +306,10 @@ public class ProductBaseGetResp implements Serializable {
      */
     @ApiModelProperty(value = "平均供货价")
     private Double avgSupplyPrice;
+
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
 }

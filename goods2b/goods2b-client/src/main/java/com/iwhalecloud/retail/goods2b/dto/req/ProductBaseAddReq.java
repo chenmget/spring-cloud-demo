@@ -547,4 +547,10 @@ public class ProductBaseAddReq extends AbstractRequest implements Serializable {
      */
     @ApiModelProperty(value = "manufacturerId")
     private String manufacturerId;
+
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
 }

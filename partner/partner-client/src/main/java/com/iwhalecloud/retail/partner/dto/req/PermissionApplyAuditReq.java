@@ -10,7 +10,7 @@ import java.io.Serializable;
  * @date 2019/4/1
  */
 @Data
-public class PermissionApplyPassReq implements Serializable {
+public class PermissionApplyAuditReq implements Serializable {
 
     private static final long serialVersionUID = -1590333808160805066L;
 

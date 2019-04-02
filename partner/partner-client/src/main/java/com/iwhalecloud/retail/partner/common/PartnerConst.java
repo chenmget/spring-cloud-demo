@@ -356,7 +356,7 @@ public class PartnerConst {
      */
     public enum PermissionApplyStatusEnum {
 
-        AUDIT("1002","审核中"),
+        AUDITING("1002","审核中"),
         PASS("1003","审核通过"),
         NOT_PASS("1004","审核不通过"),
         ;

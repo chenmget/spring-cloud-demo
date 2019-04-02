@@ -88,7 +88,7 @@ spring.datasource:
 #翼支付企业支付配置文件及相关配置参数
 pay:
   certificateFile: D:\git\retail\retail\order2b\order2b-service-boot\src\main\resources\pay\bestpay.properties
-
+#订单数据推送FTP文件路径
 ftp:
   order:
     dataPathAgo: /tmp/order/ago

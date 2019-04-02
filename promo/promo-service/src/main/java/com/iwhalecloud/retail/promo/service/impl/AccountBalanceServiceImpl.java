@@ -78,7 +78,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public ResultVO calculationTransactional(AccountBalanceCalculationReq req)  {
+    public ResultVO calculationTransactional(AccountBalanceCalculationReq req)  throws BusinessException{
 
         AccountDTO accout = this.calculationCheck(req);
         List<AccountBalanceCalculationOrderItemReq> orderItemList = req.getOrderItemList();

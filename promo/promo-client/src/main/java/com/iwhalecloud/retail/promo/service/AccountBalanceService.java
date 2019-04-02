@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.promo.dto.resp.CalculationOrderItemResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceAllResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 import com.iwhalecloud.retail.promo.exception.BaseException;
+import com.iwhalecloud.retail.promo.exception.BusinessException;
 
 import java.util.List;
 /**
@@ -19,12 +20,17 @@ import java.util.List;
  */
 public interface AccountBalanceService{
     /**
-     * 计算返利
+     * 计算返利，该接口有有异常会抛出异常进行事务回滚
      * @param req
      * @return
      */
-    ResultVO calculationTransactional(AccountBalanceCalculationReq req) ;
+    ResultVO calculationTransactional(AccountBalanceCalculationReq req)throws BusinessException;
 
+    /**
+     * 计算返利，该接口，如果执行成功事务直接提交，不会回滚事务，如需要回滚则请调用calculationTransactional方法
+     * @param req
+     * @return
+     */
     ResultVO calculation(AccountBalanceCalculationReq req) ;
 
     /**

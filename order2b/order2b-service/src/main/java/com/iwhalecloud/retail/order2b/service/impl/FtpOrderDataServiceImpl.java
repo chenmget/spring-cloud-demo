@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.consts.FtpOrderDataConsts;
@@ -151,6 +152,7 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
 
     @Override
     public ResultVO uploadFtp(FtpOrderDataReq req) {
+        log.info("FtpOrderDataServiceImpl uploadFtp, req={}", req == null ? "" : JSON.toJSON(req));
         FtpUtils.Ftp ftpInfo = getFtp();
         if (ftpInfo == null) {
             return ResultVO.error("获取ftp配置错误");

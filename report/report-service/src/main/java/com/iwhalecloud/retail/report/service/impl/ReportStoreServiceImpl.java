@@ -77,6 +77,11 @@ public class ReportStoreServiceImpl implements ReportStoreService{
 		    	}
 	    	}
 	    	
+	    	String typeId = rr.getTypeId();
+			if("201903142030001".equals(typeId)){
+				rr.setTypeId("手机");
+			}
+			
 	    	list2.add(rr);
 	    }
 	    

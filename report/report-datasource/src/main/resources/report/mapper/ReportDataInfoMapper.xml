@@ -20,6 +20,7 @@
 		SUM(CONTRACT_NUM) CRMContractNum, 
 		SUM(REGISTER_NUM) RegisterNum,  
 		SUM(RETURN_NUM) ReturnNum ,
+		a.type_id typeId,
 		(SELECT (SUM(b.CONTRACT_NUM)+SUM(b.REGISTER_NUM))/7 FROM RPT_PARTNER_OPERATING_DAY b WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(b.DATE) AND a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID GROUP BY b.PRODUCT_BASE_ID) AverageDailySales,
 		(SELECT SUM(c.STOCK_NUM) FROM RPT_PARTNER_OPERATING_DAY c WHERE c.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY)  AND  a.PRODUCT_BASE_ID=c.PRODUCT_BASE_ID GROUP BY c.PRODUCT_BASE_ID) StockNum
 		FROM RPT_PARTNER_OPERATING_DAY a
@@ -32,6 +33,9 @@
 		</if>
 		<if test="req.brand!=null and req.brand!=''">  
 			and a.BRAND_ID=#{req.brand}
+		</if>
+		<if test="req.typeId!=null and req.typeId!=''">  
+			and a.TYPE_ID=#{req.typeId}
 		</if>
 		<if test="req.businessEntityName!=null and req.businessEntityName!=''">  
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')	

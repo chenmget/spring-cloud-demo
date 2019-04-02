@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.report.dto.request.MktResInstEventReq;
 import com.iwhalecloud.retail.report.dto.request.RptSupplierOperatingDayReq;
+//import com.iwhalecloud.retail.report.dto.response.MktIdStatusResp;
 import com.iwhalecloud.retail.report.dto.response.MktResEventruchu;
 import com.iwhalecloud.retail.report.dto.response.MktResInstResq;
 import com.iwhalecloud.retail.report.dto.response.ParMerchantResp;
@@ -51,6 +52,7 @@ public class DataForSuDayImpl implements DataForSuDay {
 				String brand_name = mktResInst.getBrandName();//品牌名称
 				String price_level = mktResInst.getPriceLevel();//档位
 				String product_base_id = mktResInst.getProductBaseId();//型号id
+				String type_id = mktResInst.getTypeId();//产品类型
 				mktreq.setProductBaseId(product_base_id);
 				//每一个机型的入库：
 				int manual_num = 0;
@@ -143,12 +145,19 @@ public class DataForSuDayImpl implements DataForSuDay {
 				req.setStockNum(Integer.toString(stock_num));//库存总量=入库总量—出库总量
 				req.setStockAmount(Double.toString(stock_amount));//库存金额
 				req.setCreateDate(nowTime);//创建时间
+				req.setTypeId(type_id);
 				 rptSupplierOperatingDayManager.getDataForRptSupplierOperatingDay(req);
-			
 			}
-				
 		}
-		
 	}
+
+//	@Override
+//	public void testUpdate() {
+//		List<MktIdStatusResp> list = rptSupplierOperatingDayManager.getMktResEventId();
+//		for(int i=0;i<list.size();i++){
+//			MktIdStatusResp mktIdStatusResp = list.get(i);
+//			rptSupplierOperatingDayManager.updateMktResEvent(mktIdStatusResp);
+//		}
+//	}
 
 }

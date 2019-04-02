@@ -16,5 +16,5 @@ public class MktResEventruchu extends PageVO {/**
 	private String productId;
 	private String goodsId;
 	private String price;
-
+	private String typeId;
 }

@@ -149,6 +149,7 @@ public class ReportDataInfoController extends BaseController {
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("productBaseName", "机型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
+        orderMap.add(new ExcelTitleName("typeId", "产品类型"));
         orderMap.add(new ExcelTitleName("theTotalInventory", "入库总量"));
         orderMap.add(new ExcelTitleName("theTotalOutbound", "出库总量"));
         orderMap.add(new ExcelTitleName("stockTotalNum", "库存总量"));

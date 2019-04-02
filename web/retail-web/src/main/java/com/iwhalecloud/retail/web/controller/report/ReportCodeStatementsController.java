@@ -3,6 +3,8 @@ package com.iwhalecloud.retail.web.controller.report;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,8 +66,7 @@ public class ReportCodeStatementsController extends BaseController  {
 			String manufacturerCode = UserContext.getUser().getRelCode();
 			req.setManufacturerCode(manufacturerCode);
 		}
-		
-        return reportCodeStateService.getCodeStatementsReport(req);
+			return reportCodeStateService.getCodeStatementsReport(req);
     }
 	
 	/**
@@ -77,7 +78,7 @@ public class ReportCodeStatementsController extends BaseController  {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/codeStatementsReportExport")
-    public ResultVO StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req) {
+    public ResultVO StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
 		String userType=req.getUserType();
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
 			String regionId = UserContext.getUser().getRegionId();
@@ -88,6 +89,7 @@ public class ReportCodeStatementsController extends BaseController  {
         if (!resultVO.isSuccess()) {
             result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             result.setResultData("失败：" + resultVO.getResultMsg());
+            deliveryGoodsResNberExcel.outputResponse(response, resultVO);
             return result;
         }
         List<ReportCodeStatementsResp> data = resultVO.getResultData();
@@ -127,6 +129,8 @@ public class ReportCodeStatementsController extends BaseController  {
         //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
         		orderMap, "串码");
+        deliveryGoodsResNberExcel.exportExcel("串码明细报表导出", workbook, response);
+        
         return deliveryGoodsResNberExcel.uploadExcel(workbook);
     }
     

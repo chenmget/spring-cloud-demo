@@ -3,6 +3,8 @@ package com.iwhalecloud.retail.web.controller.report;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +102,7 @@ public class ReportStoreController extends BaseController {
 	        orderMap.add(new ExcelTitleName("countryId", "所属区县"));
         orderMap.add(new ExcelTitleName("productBaseName", "机型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
+        orderMap.add(new ExcelTitleName("typeId", "产品类型"));
         orderMap.add(new ExcelTitleName("theTotalInventory", "入库总量"));
         orderMap.add(new ExcelTitleName("theTotalOutbound", "出库总量"));
         orderMap.add(new ExcelTitleName("stockTotalNum", "库存总量"));

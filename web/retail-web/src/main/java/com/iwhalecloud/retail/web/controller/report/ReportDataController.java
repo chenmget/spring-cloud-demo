@@ -129,6 +129,7 @@ public class ReportDataController extends BaseController {
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
         orderMap.add(new ExcelTitleName("priceLevel", "机型档位"));
         orderMap.add(new ExcelTitleName("totalInnum", "入库总量"));
+        orderMap.add(new ExcelTitleName("typeId", "产品类型"));
         orderMap.add(new ExcelTitleName("totalOutNum", "出库总量"));
         orderMap.add(new ExcelTitleName("sumPurchase", "交易进货量"));
         orderMap.add(new ExcelTitleName("amoutPurcchase", "进货金额"));

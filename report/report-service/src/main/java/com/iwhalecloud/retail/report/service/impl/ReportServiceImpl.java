@@ -66,6 +66,10 @@ public class ReportServiceImpl implements ReportService {
 					rr.setRedStatus("严重缺货");
 				}
 			}
+			String typeId = rr.getTypeId();
+			if("201903142030001".equals(typeId)){
+				rr.setTypeId("手机");
+			}
 			list2.add(rr);
 		}
 		// TODO Auto-generated method stub

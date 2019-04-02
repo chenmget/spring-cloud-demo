@@ -15,4 +15,11 @@ public interface TaskItemService{
      * @return
      */
     ResultVO<List<TaskItemDTO>> queryTaskItem(TaskItemListReq req);
+
+    /**
+     * 根据工作流ID查询未处理的工作项详情
+     * @param taskId
+     * @return
+     */
+    TaskItemDTO queryTaskItemByTaskId(String taskId);
 }

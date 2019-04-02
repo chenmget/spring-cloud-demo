@@ -42,8 +42,8 @@ public class TagRel implements Serializable {
   	/**
   	 * goodsId
   	 */
-	@ApiModelProperty(value = "goodsId")
-  	private String goodsId;
+	@ApiModelProperty(value = "productBaseId")
+  	private String productBaseId;
   	
   	
   	//属性 end
@@ -53,8 +53,8 @@ public class TagRel implements Serializable {
         relId,
         /** tagId */
         tagId,
-        /** goodsId */
-        goodsId
+        /** productBaseId */
+		productBaseId
     }
 
 	

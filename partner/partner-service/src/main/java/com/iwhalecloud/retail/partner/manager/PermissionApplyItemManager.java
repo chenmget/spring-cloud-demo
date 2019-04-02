@@ -1,6 +1,8 @@
 package com.iwhalecloud.retail.partner.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.partner.dto.req.PermissionApplyItemListReq;
 import com.iwhalecloud.retail.partner.dto.req.PermissionApplyItemSaveReq;
@@ -17,7 +19,7 @@ import java.util.List;
 
 
 @Component
-public class PermissionApplyItemManager{
+public class PermissionApplyItemManager  extends ServiceImpl<PermissionApplyItemMapper, PermissionApplyItem> {
     @Resource
     private PermissionApplyItemMapper permissionApplyItemMapper;
 
@@ -49,6 +51,27 @@ public class PermissionApplyItemManager{
     }
 
     /**
+     * 根据申请单ID 批量 修改商家权限申请单子项状态
+     * @param req
+     * @return
+     */
+    public Integer updateStatus(PermissionApplyItemUpdateReq req) {
+        PermissionApplyItem entity = new PermissionApplyItem();
+        BeanUtils.copyProperties(req, entity);
+        entity.setUpdateDate(new Date());
+
+        UpdateWrapper<PermissionApplyItem> updateWrapper = new UpdateWrapper<>();
+        // 更新条件
+        updateWrapper.eq(PermissionApplyItem.FieldNames.applyId.getTableFieldName(), req.getApplyId());
+        // 更新字段
+        updateWrapper.set(PermissionApplyItem.FieldNames.statusCd.getTableFieldName(), req.getStatusCd());
+        updateWrapper.set(PermissionApplyItem.FieldNames.updateStaff.getTableFieldName(), req.getUpdateStaff());
+        updateWrapper.set(PermissionApplyItem.FieldNames.updateDate.getTableFieldName(), new Date());
+
+        return permissionApplyItemMapper.update(entity, updateWrapper);
+    }
+
+    /**
      * 商家权限申请单列表查询子项
      * @param req
      * @return
@@ -63,6 +86,10 @@ public class PermissionApplyItemManager{
         if(!StringUtils.isEmpty(req.getApplyId())){
             hasParam = true;
             queryWrapper.eq(PermissionApplyItem.FieldNames.applyId.getTableFieldName(), req.getApplyId());
+        }
+        if(!StringUtils.isEmpty(req.getStatusCd())){
+            hasParam = true;
+            queryWrapper.eq(PermissionApplyItem.FieldNames.statusCd.getTableFieldName(), req.getStatusCd());
         }
 
         if (!hasParam) {

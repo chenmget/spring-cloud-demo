@@ -14,6 +14,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 
 @Component
@@ -24,15 +25,19 @@ public class PermissionApplyManager{
     /**
      * 新增商家权限申请单
      * @param req
-     * @return
+     * @return 申请单ID
      */
-    public Integer savePermissionApply(PermissionApplySaveReq req) {
+    public String savePermissionApply(PermissionApplySaveReq req) {
+        if (Objects.isNull(req)) {
+            return null;
+        }
         PermissionApply permissionApply = new PermissionApply();
         BeanUtils.copyProperties(req, permissionApply);
         permissionApply.setCreateDate(new Date());
         permissionApply.setUpdateDate(new Date());
         permissionApply.setStatusDate(new Date());
-        return permissionApplyMapper.insert(permissionApply);
+        permissionApplyMapper.insert(permissionApply);
+        return permissionApply.getApplyId();
     }
 
     /**

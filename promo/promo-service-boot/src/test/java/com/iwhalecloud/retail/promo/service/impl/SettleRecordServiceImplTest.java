@@ -23,8 +23,8 @@ public class SettleRecordServiceImplTest {
     private SettleRecordService settleRecordService;
     @Test
     public void test() throws Exception{
-        List<SettleRecordDTO> settleRecordDTOs = settleRecordService.getSettleRecord();
-        Integer num = settleRecordService.batchAddSettleRecord(settleRecordDTOs);
-        System.out.println(num);
+//        List<SettleRecordDTO> settleRecordDTOs = settleRecordService.getSettleRecord();
+//        Integer num = settleRecordService.batchAddSettleRecord(settleRecordDTOs);
+//        System.out.println(num);
     }
 }

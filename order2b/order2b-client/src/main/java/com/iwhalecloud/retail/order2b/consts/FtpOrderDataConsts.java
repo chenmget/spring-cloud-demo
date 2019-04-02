@@ -30,7 +30,7 @@ public class FtpOrderDataConsts {
     public static final String FILE_NAME_PRE = "TYG_PRECREDIT_";
     public static final String FILE_TYPE = ".txt";
 
-    public static final int BATCH_COUNT = 5;
+    public static final int BATCH_COUNT = 500;
 
     public static final String DATA_PATH_AGO="ftp.order.dataPathAgo";
     public static final String DATA_PATH_MID="ftp.order.dataPathMid";

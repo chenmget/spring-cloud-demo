@@ -3,7 +3,8 @@ package com.iwhalecloud.retail.partner.service.impl.workflow;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.partner.dto.req.PermissionApplyPassReq;
+import com.iwhalecloud.retail.partner.common.PartnerConst;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyAuditReq;
 import com.iwhalecloud.retail.partner.service.PermissionApplyService;
 import com.iwhalecloud.retail.partner.service.workflow.MerchantPermissionApplyAuditPassService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
@@ -28,8 +29,17 @@ public class MerchantPermissionApplyAuditPassServiceImpl implements MerchantPerm
             return ResultVO.error(ResultCodeEnum.LACK_OF_PARAM);
         }
         String applyId = params.getBusinessId();
-        PermissionApplyPassReq req = new PermissionApplyPassReq();
+        PermissionApplyAuditReq req = new PermissionApplyAuditReq();
         req.setApplyId(applyId);
-        return permissionApplyService.passPermissionApply(req);
+        req.setUpdateStaff(params.getHandlerUserId());
+        req.setStatusCd(PartnerConst.PermissionApplyStatusEnum.PASS.getCode());
+        ResultVO resultVO;
+        try {
+            resultVO = permissionApplyService.auditPermissionApply(req);
+        } catch (Exception e) {
+            resultVO = ResultVO.error("审核失败");
+        }
+        return resultVO;
+
     }
 }

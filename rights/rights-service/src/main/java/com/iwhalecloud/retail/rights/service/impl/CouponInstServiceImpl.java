@@ -1384,33 +1384,50 @@ public class CouponInstServiceImpl implements CouponInstService {
 	@Override
 //	@Transactional(rollbackFor = Exception.class)
 	public ResultVO receiveRights(SaveRightsRequestDTO saveRightsRequestDTO) {
+		log.info("CouponInstServiceImpl receiveRights saveRightsRequestDTO={}",JSON.toJSON(saveRightsRequestDTO));
 		Long supplyNum = saveRightsRequestDTO.getSupplyNum();
 		if (supplyNum == null || 0 == supplyNum) {
 			return ResultVO.error("领取数量不可用");
 		}
-		CouponSupplyRuleRespDTO couponSupplyRuleRespDTO = couponSupplyRuleManager.queryCouponSupplyRuleOne(saveRightsRequestDTO.getMktResId());
-		log.info("CouponInstServiceImpl receiveRights queryCouponSupplyRuleOne--> couponSupplyRuleRespDTO={}",JSON.toJSON(couponSupplyRuleRespDTO));
-		if (couponSupplyRuleRespDTO == null) {
+		CouponSupplyRule couponSupplyRule = couponSupplyRuleManager.selectOneCouponSupplyRule(saveRightsRequestDTO.getMktResId());
+		log.info("CouponInstServiceImpl receiveRights couponSupplyRuleManager.selectOneCouponSupplyRule--> couponSupplyRule={}",JSON.toJSON(couponSupplyRule));
+		if (couponSupplyRule == null) {
 			return ResultVO.error("优惠券领取规则不存在");
 		}
-		if (new Date().after(couponSupplyRuleRespDTO.getEndTime()) || new Date().before(couponSupplyRuleRespDTO.getBeginTime())) {
+		//判断领取时间可用
+		if (new Date().after(couponSupplyRule.getEndTime()) || new Date().before(couponSupplyRule.getBeginTime())) {
 			return ResultVO.error("优惠券不在领取时间范围");
 		}
-		if(couponSupplyRuleRespDTO.getSupplyNum()<supplyNum){
+		//当优惠券领取限制为是的时候，判断可领取数量是否可用
+		if(RightsConst.LimitFlg.LIMIT_FLG_1.getType().equals(couponSupplyRule.getSupplyLimitFlg()) && couponSupplyRule.getSupplyNum()<supplyNum){
 			return ResultVO.error("领取数量大于领取规则可领取数量");
 		}
-		Integer sum = couponInstManager.queryAreadyReceiveNum(saveRightsRequestDTO.getMktResId());
-		if (sum + supplyNum > couponSupplyRuleRespDTO.getMaxNum()) {
-			return ResultVO.error("优惠券库存不足");
+		//当优惠券总量限制为否的时候，判断券总量是否可用
+		if(RightsConst.LimitFlg.LIMIT_FLG_1.getType().equals(couponSupplyRule.getNumLimitFlg())){
+			Integer sum = couponInstManager.queryAreadyReceiveNum(saveRightsRequestDTO.getMktResId());
+			if (sum + supplyNum > couponSupplyRule.getMaxNum()) {
+				return ResultVO.error("优惠券库存不足");
+			}
 		}
-		Integer receiveNum = couponInstManager.queryCustAreadyReceiveNum(saveRightsRequestDTO.getMktResId(), saveRightsRequestDTO.getCustNum());
-		if(couponSupplyRuleRespDTO.getSupplyNum()<receiveNum+supplyNum){
-			return ResultVO.error("用户领取数量达到领取上线");
+		//当优惠券领取总量限制为否的时候，判断领取总量是否可用
+		if (RightsConst.LimitFlg.LIMIT_FLG_1.getType().equals(couponSupplyRule.getSupplyLimitFlg())) {
+			Integer receiveNum = couponInstManager.queryCustAreadyReceiveNum(saveRightsRequestDTO.getMktResId(), saveRightsRequestDTO.getCustNum());
+			if (couponSupplyRule.getSupplyNum() < receiveNum + supplyNum) {
+				return ResultVO.error("用户领取数量达到领取上线");
+			}
 		}
 		CouponEffExpRuleRespDTO couponEffExpRuleRespDTO = couponEffExpRuleManager.queryCouponEffExpRuleOne(saveRightsRequestDTO.getMktResId());
+		log.info("CouponInstServiceImpl receiveRights couponEffExpRuleManager.queryCouponEffExpRuleOne--> couponEffExpRuleRespDTO={}",JSON.toJSON(couponEffExpRuleRespDTO));
+		if(couponEffExpRuleRespDTO == null){
+			return ResultVO.error("优惠券生失效规则不存在");
+		}
 		CouponDiscountRuleRespDTO couponDiscountRuleRespDTO = couponDiscountRuleManager.queryCouponDiscountRuleOne(saveRightsRequestDTO.getMktResId());
+		log.info("CouponInstServiceImpl receiveRights couponDiscountRuleManager.queryCouponDiscountRuleOne--> couponDiscountRuleRespDTO={}",JSON.toJSON(couponDiscountRuleRespDTO));
+		if(couponDiscountRuleRespDTO == null){
+			return ResultVO.error("优惠券抵扣规则不存在");
+		}
 		for (int i = 0; i < supplyNum; i++) {
-			/**领取实例*/
+			//领取实例
 			CouponInst couponInst = new CouponInst();
 			Long biggestInstNbr = couponInstManager.queryBiggestInstNbr();
 			biggestInstNbr = biggestInstNbr == null ? 0 : biggestInstNbr;
@@ -1427,10 +1444,9 @@ public class CouponInstServiceImpl implements CouponInstService {
 			couponInst.setCustAcctId(saveRightsRequestDTO.getCustNum());
 			couponInst.setCouponAmount(couponDiscountRuleRespDTO.getDiscountValue().longValue());
 			couponInstManager.insertCouponInst(couponInst);
-			/**优惠券领取记录*/
-			String couponInstId = couponInst.getCouponInstId();
+			//优惠券领取记录
 			CouponInstProvRec couponInstProvRec = new CouponInstProvRec();
-			couponInstProvRec.setCouponInstId(couponInstId);
+			couponInstProvRec.setCouponInstId(couponInst.getCouponInstId());
 			couponInstProvRec.setProvObjId(saveRightsRequestDTO.getCustNum());
 			couponInstProvRec.setCreateDate(new Date());
 			couponInstProvRec.setUpdateDate(new Date());

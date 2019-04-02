@@ -248,7 +248,7 @@
     </select>
 
     <update id="batchUpdateInstState" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq">
-        update mkt_res_inst t set t.STATUS_CD =#{req.statusCd}, t.UPDATE_DATE = #{updateDate}, t.STATUS_DATE = #{statusDate}
+        update mkt_res_inst t set t.STATUS_CD =#{req.statusCd}, t.UPDATE_DATE = #{req.updateDate}, t.STATUS_DATE = #{req.statusDate}
         where 1 = 1
         and t.MKT_RES_STORE_ID =#{req.mktResStoreId}
         and t.MKT_RES_INST_NBR in

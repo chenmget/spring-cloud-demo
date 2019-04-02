@@ -59,9 +59,6 @@ public class MerchantListReq implements Serializable {
     @ApiModelProperty(value = "商家市县ID")
     private String city;
 
-    @ApiModelProperty(value = "商家市县名称（模糊查询 转换成 cityList集合")
-    private String cityName;
-
     @ApiModelProperty(value = "商家市县ID集合")
     private List<String> cityList;
 

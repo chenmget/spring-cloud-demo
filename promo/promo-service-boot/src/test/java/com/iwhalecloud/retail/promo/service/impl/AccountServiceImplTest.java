@@ -64,8 +64,9 @@ public class AccountServiceImplTest {
     public void queryAccountForPage(){
         QueryAccountForPageReq  req = new QueryAccountForPageReq();
         req.setAcctType("20");
-        req.setPageSize(1);
-        req.setPageNo(10);
+        req.setPageSize(10);
+        req.setPageNo(1);
+        req.setCustId("4300001063072");
         ResultVO<Page<QueryAccountForPageResp>> resultVO = accountService.queryAccountForPage(req);
         System.out.println(resultVO);
     }
@@ -73,7 +74,7 @@ public class AccountServiceImplTest {
     @Test
     public void queryTotalAccount(){
         QueryTotalAccountReq req = new QueryTotalAccountReq();
-//        req.setCustId("123");
+        req.setCustId("4300001063072");
         req.setAcctType("20");
         req.setPageNo(1);
         req.setPageSize(10);
@@ -85,6 +86,7 @@ public class AccountServiceImplTest {
         QueryAccountBalanceDetailAllReq req = new QueryAccountBalanceDetailAllReq();
 //        req.setAcctId("1");
         req.setAcctType("20");
+        req.setCustId("4300001063072");
         req.setPageNo(1);
         req.setPageSize(10);
 //        req.setEffDateEnd("2019-10-12");
@@ -108,6 +110,7 @@ public class AccountServiceImplTest {
         QueryAccountBalancePayoutReq req = new QueryAccountBalancePayoutReq();
         req.setPageNo(1);
         req.setPageSize(10);
+        req.setCustId("4300001063072");
 //        req.setBrandName("华为");
 //        req.setSupplierLoginName("111");
 //        req.setSupplierName("ly");

@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.promo.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.dto.AccountDTO;
@@ -94,7 +95,7 @@ public class AccountServiceImpl implements AccountService {
     }
     @Override
     public ResultVO<Page<QueryTotalAccountResp>> queryTotalAccount(QueryTotalAccountReq req){
-
+        log.info(AccountServiceImpl.class.getName()+" queryTotalAccount, req={}", req == null ? "" : JSON.toJSON(req));
         QueryAccountForPageReq pageReq = new QueryAccountForPageReq();
 
         pageReq.setCustId(req.getCustId());
@@ -128,6 +129,7 @@ public class AccountServiceImpl implements AccountService {
             }
         }
         resultVO.setResultData(respPage);
+        log.info(AccountServiceImpl.class.getName()+" queryTotalAccount, rsp={}", resultVO == null ? "" : JSON.toJSON(resultVO));
         return resultVO;
 
     }
@@ -160,7 +162,10 @@ public class AccountServiceImpl implements AccountService {
 
     @Override
     public ResultVO<Page<QueryAccountForPageResp>> queryAccountForPage(QueryAccountForPageReq req) {
-        return ResultVO.success(accountManager.queryAccountForPage(req));
+        log.info(AccountServiceImpl.class.getName()+" queryAccountForPage, req={}", req == null ? "" : JSON.toJSON(req));
+        ResultVO<Page<QueryAccountForPageResp>> resultVO = ResultVO.success(accountManager.queryAccountForPage(req));
+        log.info(AccountServiceImpl.class.getName()+" queryAccountForPage, rsp={}", resultVO == null ? "" : JSON.toJSON(resultVO));
+        return resultVO;
 
     }
 

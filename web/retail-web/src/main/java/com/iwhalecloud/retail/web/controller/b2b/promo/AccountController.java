@@ -49,6 +49,7 @@ public class AccountController {
     @PostMapping(value="/queryAccountForPage")
 
     public ResultVO<Page<QueryAccountForPageResp>> queryAccountForPage(@RequestBody QueryAccountForPageReq req){
+        req.setCustId(UserContext.getMerchantId());
         log.info("AccountController queryAccountForPage QueryAccountForPageReq={} ", req);
         return accountService.queryAccountForPage(req);
 

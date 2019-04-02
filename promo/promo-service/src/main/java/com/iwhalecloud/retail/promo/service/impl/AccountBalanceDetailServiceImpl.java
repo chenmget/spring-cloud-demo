@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.promo.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
@@ -92,6 +93,8 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
     }
     @Override
     public ResultVO<Page<QueryAccountBalanceDetailAllResp>> queryAccountBalanceDetailAllForPage(QueryAccountBalanceDetailAllReq req){
+        log.info(AccountBalanceDetailServiceImpl.class.getName()+" queryAccountBalanceDetailAllForPage, req={}", req == null ? "" : JSON.toJSON(req));
+
         this.initQueryAccountBalanceDetailAll(req);
         Page<QueryAccountBalanceDetailAllResp> page = accountBalanceDetailManager.queryAccountBalanceDetailAllForPage(req);
         if(page!=null&&page.getRecords()!=null){
@@ -145,8 +148,10 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
             }
         }
+        ResultVO resultVO = ResultVO.success(page);
+        log.info(AccountBalanceDetailServiceImpl.class.getName()+" queryAccountBalanceDetailAllForPage, rsp={}", resultVO == null ? "" : JSON.toJSON(resultVO));
 
-        return ResultVO.success(page);
+        return resultVO;
 
     }
     private void initQueryAccountBalanceDetailAll(QueryAccountBalanceDetailAllReq req){

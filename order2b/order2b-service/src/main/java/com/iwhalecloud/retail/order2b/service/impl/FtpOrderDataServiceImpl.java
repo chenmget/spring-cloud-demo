@@ -139,6 +139,9 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
         } else {
             return ResultVO.error("日期错误,不进行上传");
         }
+        if(StringUtils.isEmpty(uploadPath)){
+            return ResultVO.error("配置路径未配置");
+        }
         FtpOrderDataReq req = new FtpOrderDataReq();
         req.setEndDate(endDate);
         req.setStartDate(startDate);

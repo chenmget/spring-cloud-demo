@@ -90,11 +90,10 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
         if (supplierId == null || productId == null || isHaveStock == null) {
             ResultVO.errorEnum(ResultCodeEnum.LACK_OF_PARAM);
         }
-        List<Goods> goodsList =  goodsManager.listGoodsBySupplierId(supplierId);
-        if (CollectionUtils.isEmpty(goodsList)) {
+        List<String> goodsIdList =  goodsProductRelManager.listGoodsBySupplierId(supplierId, productId);
+        if (CollectionUtils.isEmpty(goodsIdList)) {
             ResultVO.success();
         }
-        List<String> goodsIdList = goodsList.stream().map(Goods::getGoodsId).collect(Collectors.toList());
         for (String goodsId : goodsIdList) {
             goodsProductRelManager.updateIsHaveStock(goodsId, productId, isHaveStock);
         }

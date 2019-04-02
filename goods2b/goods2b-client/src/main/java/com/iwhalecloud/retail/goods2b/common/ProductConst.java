@@ -8,7 +8,7 @@ public class ProductConst {
 
     public static final String APP_PRODUCT_FLOW_PROCESS_ID="1";
 
-    //public static final String PRODUCT_BASE_CHECK = "2";
+    public static final String UPDATE_PRODUCT_FLOW_PROCESS_ID="10";
 
     /**
      * 状态常量

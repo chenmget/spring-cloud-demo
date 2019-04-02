@@ -143,6 +143,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             startProductFlowReq.setProductBaseId(productBaseId);
             startProductFlowReq.setDealer(t.getCreateStaff());
             startProductFlowReq.setProductName(req.getProductName());
+            startProductFlowReq.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
             ResultVO flowResltVO = productFlowService.startProductFlow(startProductFlowReq);
             if(!flowResltVO.isSuccess()){
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());
@@ -156,6 +157,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public ResultVO<Integer> updateProductBase(ProductBaseUpdateReq req) {
         log.info("ProductBaseServiceImpl.updateProductBase,req={}", JSON.toJSONString(req));
+
+        final long startTime = System.currentTimeMillis();
         ProductBaseGetByIdReq req1 = new ProductBaseGetByIdReq();
         req1.setProductBaseId(req.getProductBaseId());
         ResultVO<ProductBaseGetResp> product = this.getProductBase(req1);
@@ -197,7 +200,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         if(page==null||page.getRecords()==null||page.getRecords().isEmpty()){
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "原产品为空无法获取审核状态");
         }
-
         oldAuditState = page.getRecords().get(0).getAuditState();
         if(StringUtils.isEmpty(oldAuditState)){
             oldAuditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();
@@ -262,10 +264,15 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                  }else if(ProductConst.AuditStateType.UN_SUBMIT.getCode().equals(oldAuditState)
                          || ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
                      //原审核状态为待提交，且新状态为非待提交
+                     String processId =ProductConst.APP_PRODUCT_FLOW_PROCESS_ID;
+                     if(ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
+                         processId =ProductConst.UPDATE_PRODUCT_FLOW_PROCESS_ID;
+                     }
                      StartProductFlowReq startProductFlowReq = new StartProductFlowReq();
                      startProductFlowReq.setProductBaseId(req.getProductBaseId());
                      startProductFlowReq.setDealer(req.getUpdateStaff());
                      startProductFlowReq.setProductName(product.getResultData().getProductName());
+                     startProductFlowReq.setProcessId(processId);
                      ResultVO flowResltVO =productFlowService.startProductFlow(startProductFlowReq);
                      if(!flowResltVO.isSuccess()){
                          throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());

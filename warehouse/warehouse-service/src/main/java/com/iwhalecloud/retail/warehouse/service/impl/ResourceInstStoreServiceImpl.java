@@ -73,6 +73,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 flag = false;
                 itemResp.setProductId(item.getProductId());
                 itemResp.setNum(0L);
+                itemResp.setIsEnough(false);
             } else {
                 Long quantity = dto.getQuantity();
                 Long onwayQuantity = dto.getOnwayQuantity();
@@ -80,6 +81,9 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 if (Long.compare(quantity - onwayQuantity, item.getNum()) < 0) {
                     stringBuffer.append(item.getProductId() + ":库存不够;");
                     flag = false;
+                    itemResp.setIsEnough(false);
+                } else {
+                    itemResp.setIsEnough(true);
                 }
                 itemResp.setProductId(item.getProductId());
                 itemResp.setNum(quantity - onwayQuantity - item.getNum());

@@ -185,6 +185,10 @@ public class UserController extends BaseController {
             return failResultVO(resp.getErrorMessage());
         }
 
+        request.getSession().invalidate();//清空session
+        Cookie cookie = request.getCookies()[0];//获取cookie
+        cookie.setMaxAge(0);//让cookie过期
+
         // 获取其他信息  并保存
         UserOtherMsgDTO userOtherMsgDTO = saveUserOtherMsg(resp.getUserDTO());
 

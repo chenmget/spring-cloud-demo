@@ -141,6 +141,7 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
         }
 
         ResouceStoreDTO resouceStoreDTO = storeManager.getStore(req.getMerchantId(), ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        log.info("ResourceRequestServiceImpl.listResourceRequest storeManager.getStore resp={} ",JSON.toJSONString(resouceStoreDTO));
         if (null == resouceStoreDTO) {
             return ResultVO.error("商家对应的仓库不存在");
         }

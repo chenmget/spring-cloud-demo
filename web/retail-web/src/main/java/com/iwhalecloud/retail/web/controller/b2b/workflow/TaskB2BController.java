@@ -130,6 +130,11 @@ public class TaskB2BController extends BaseController {
     @PostMapping(value="/receiveTask")
     @UserLoginToken
     public ResultVO receiveTask(@RequestBody FlowTaskClaimReq req){
+
+        req.setUserId(UserContext.getUserId());
+        if (UserContext.getUser() != null) {
+            req.setUserName(UserContext.getUser().getUserName());
+        }
         log.info("TaskB2BController receiveTask req={} ", JSON.toJSON(req));
         return taskService.receiveTask(req);
     }

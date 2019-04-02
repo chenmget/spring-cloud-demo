@@ -19,8 +19,6 @@ public class ResouceInstTrackDetailManager {
     public int saveResouceInstTrackDetail(ResouceInstTrackDetailDTO resouceInstTrackDTO){
         ResouceInstTrackDetail resouceInstTrackDetail = new ResouceInstTrackDetail();
         BeanUtils.copyProperties(resouceInstTrackDTO, resouceInstTrackDetail);
-        Date now = new Date();
-        resouceInstTrackDetail.setUpdateDate(now);
         return resouceInstTrackDetailMapper.insert(resouceInstTrackDetail);
     }
 

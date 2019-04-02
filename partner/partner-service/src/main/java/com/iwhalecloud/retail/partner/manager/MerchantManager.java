@@ -164,6 +164,9 @@ public class MerchantManager {
             hasParam = true;
             queryWrapper.in(Merchant.FieldNames.parCrmOrgId.getTableFieldName(), req.getParCrmOrgIdList());
         }
+        queryWrapper.last(" limit 30000 "); // 限定查询条数(避免没参数的查出整表）
+
+        queryWrapper.last(" limit 30000 "); // 限定查询条数(避免没参数的查出整表）
 
         // 设置查询字段(优化 不查全表字段  避免耗时超长）
         queryWrapper.select(
@@ -233,9 +236,9 @@ public class MerchantManager {
             merchantIdList = req.getMerchantIdList();
         }
 
-        // 非商家表字段  基本上是  先转换成  user_id 或  merchant_id  集合 再作为条件  进行查询
+        // 非商家表字段  基本上是  先转换成  merchant_id  集合 再作为条件  进行查询
 
-        // 系统账号和系统状态 转换成 user_id集合
+        // 系统账号和系统状态 转换成 merchant_id集合
         if (!StringUtils.isEmpty(req.getLoginName())
                 || Objects.nonNull(req.getUserStatus())) {
             UserListReq userListReq = new UserListReq();
@@ -365,7 +368,7 @@ public class MerchantManager {
         Boolean isNeedGetMerchantIdList = false;
         List<String> merchantIdList = Lists.newArrayList();
 
-        // 非商家表字段  基本上是  先转换成  user_id 或  merchant_id  集合 再作为条件  进行查询
+        // 非商家表字段  基本上是  先转换成   merchant_id  集合 再作为条件  进行查询
 
         // 系统账号和系统状态 转换成 merchant_id集合
         if (!StringUtils.isEmpty(req.getLoginName())

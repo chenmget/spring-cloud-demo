@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -15,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+
+import static com.iwhalecloud.retail.workflow.common.ResultCodeEnum.QUERY_HADNLE_USER_IS_EMPTY;
 
 /**
  * @author mzl
@@ -51,8 +54,13 @@ public class UserClientImpl implements UserClient {
     @Override
     public HandlerUser queryUserByUserId(String userId) {
         UserDTO userDTO = userService.getUserByUserId(userId);
+
+        if (userDTO == null) {
+            throw new RetailTipException(QUERY_HADNLE_USER_IS_EMPTY,userId);
+        }
         HandlerUser handlerUser = new HandlerUser();
-        BeanUtils.copyProperties(userDTO, handlerUser);
+        handlerUser.setHandlerUserId(userDTO.getUserId());
+        handlerUser.setHandlerUserName(userDTO.getUserName());
         return handlerUser;
     }
 

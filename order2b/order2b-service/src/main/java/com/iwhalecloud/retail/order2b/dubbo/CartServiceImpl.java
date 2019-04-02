@@ -89,15 +89,18 @@ public class CartServiceImpl implements CartService {
         AddCartReq checkReq = new AddCartReq();
         BeanUtils.copyProperties(cart, checkReq);
         checkReq.setNum(checkReq.getNum()+req.getNum());
-        /**
-         * 规则校验
-         */
-        CommonResultResp resultResp = builderCartService.goodsRulesCheck(checkReq);
-        if (resultResp.isFailure()) {
-            return ResultVO.error(resultResp.getResultMsg());
-        }
+
 
         if (UpdateCartReq.ACTION_NUM.equals(req.getAction())) {
+
+            /**
+             * 规则校验
+             */
+            CommonResultResp resultResp = builderCartService.goodsRulesCheck(checkReq);
+            if (resultResp.isFailure()) {
+                return ResultVO.error(resultResp.getResultMsg());
+            }
+
             cartManager.updateNum(req);
         } else if (UpdateCartReq.ACTION_CHECKED_FLAG.equals(req.getAction())) {
             cartManager.updateCheckedFlag(req);

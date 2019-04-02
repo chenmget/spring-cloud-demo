@@ -18,7 +18,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface ResouceStoreMapper extends BaseMapper<ResouceStore>{
 
-    ResouceStoreDTO getStore(@Param("merchantId") String merchantId, @Param("storeSubType") String merchantType);
+    ResouceStoreDTO getStore(@Param("merchantId") String merchantId, @Param("storeSubType") String storeSubType);
 
     Page<ResouceStoreDTO> pageStore(Page<ResouceStoreDTO> page, @Param("req") StorePageReq req);
 

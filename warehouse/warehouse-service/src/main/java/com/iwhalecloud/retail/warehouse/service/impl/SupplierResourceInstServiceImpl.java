@@ -226,6 +226,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstStoreDTO.setQuantityAddFlag(false);
             resourceInstStoreDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             int restInstStoreCnt = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+            if (restInstStoreCnt < 1) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            }
             log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(restInstStoreCnt));
         }
         return ResultVO.success(num);
@@ -582,15 +585,14 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
         // 源仓库
         StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
+        storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storePageReq.setMerchantId(req.getBuyerMerchantId());
         String mktResStoreId = resouceStoreService.getStoreId(storePageReq);
         log.info("ResourceInstServiceImpl.deliveryInResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storePageReq), mktResStoreId);
         // 目标仓库
-        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-        storeGetStoreIdReq.setMerchantId(req.getSellerMerchantId());
-        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        String destStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService  destStoreId{}",destStoreId);
+        storePageReq.setMerchantId(req.getSellerMerchantId());
+        String destStoreId = resouceStoreService.getStoreId(storePageReq);
+        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService  destStoreId={}",destStoreId);
         for (DeliveryResourceInstItem item : req.getDeliveryResourceInstItemList()) {
             ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
             resourceInstsGetReq.setMktResInstNbrs(item.getMktResInstNbrs());
@@ -606,9 +608,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                     ResourceConst.STATUSCD.AUDITING.getCode(),
                     ResourceConst.STATUSCD.ALLOCATIONED.getCode(),
                     ResourceConst.STATUSCD.ALLOCATIONING.getCode());
-            //退库中的不过滤
-            //       ResourceConst.STATUSCD.RESTORAGEING.getCode()
-
             adminResourceInstDelReq.setCheckStatusCd(checkStatusCd);
             adminResourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
             adminResourceInstDelReq.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
@@ -633,16 +632,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (null == merchantResultVO || !merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
             return ResultVO.error("查无该商家");
         }
-        // 源仓库
+        // 仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-        storeGetStoreIdReq.setMerchantId(req.getBuyerMerchantId());
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService req={} mktResStoreId={}",JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
-        // 目标仓库
         storeGetStoreIdReq.setMerchantId(req.getSellerMerchantId());
-        String destStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService req={} destStoreId={}",JSON.toJSONString(storeGetStoreIdReq), destStoreId);
+        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService req={} destStoreId={}",JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
         for (DeliveryResourceInstItem item : req.getDeliveryResourceInstItemList()) {
             ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
             resourceInstsGetReq.setMktResInstNbrs(item.getMktResInstNbrs());
@@ -659,17 +654,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                     ResourceConst.STATUSCD.AUDITING.getCode(),
                     ResourceConst.STATUSCD.ALLOCATIONED.getCode(),
                     ResourceConst.STATUSCD.ALLOCATIONING.getCode());
-            // 不用校验1306-已退库条件 1305-退库中
-            //ResourceConst.STATUSCD.RESTORAGEING.getCode()
-            //ResourceConst.STATUSCD.RESTORAGED.getCode()
-
             adminResourceInstDelReq.setCheckStatusCd(checkStatusCd);
             adminResourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.RESTORAGED.getCode());
             adminResourceInstDelReq.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
             adminResourceInstDelReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
             adminResourceInstDelReq.setObjId(req.getOrderId());
             //目标仓库
-            adminResourceInstDelReq.setDestStoreId(destStoreId);
             adminResourceInstDelReq.setMktResStoreId(mktResStoreId);
             ResultVO updateResultVO = resourceInstService.updateResourceInstByIdsForTransaction(adminResourceInstDelReq);
             log.info("ResourceInstServiceImpl.backDeliveryInResourceInst resourceInstService.updateResultVO req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(updateResultVO));

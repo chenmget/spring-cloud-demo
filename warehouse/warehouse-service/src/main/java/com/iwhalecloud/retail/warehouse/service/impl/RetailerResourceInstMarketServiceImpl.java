@@ -205,6 +205,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 resourceInstStoreDTO.setQuantityAddFlag(true);
                 resourceInstStoreDTO.setQuantity(Long.valueOf(req.getMktResInstNbrs().size()));
                 int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+                if (updateResInstStore < 1) {
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+                }
                 log.info("RetailerResourceInstMarketServiceImpl.confirmReciveNbr resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
             }
 
@@ -270,6 +273,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceInstStoreDTO.setQuantityAddFlag(false);
             resourceInstStoreDTO.setQuantity(Long.valueOf(entry.getValue().size()));
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+            if (updateResInstStore < 1) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            }
             log.info("RetailerResourceInstMarketServiceImpl.confirmReciveNbr resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         }
 
@@ -360,6 +366,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 resourceInstStoreDTO.setQuantityAddFlag(true);
                 resourceInstStoreDTO.setQuantity(Long.valueOf(entry.getValue().size()));
                 int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+                if (updateResInstStore < 1) {
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+                }
                 log.info("RetailerResourceInstMarketServiceImpl.confirmReciveNbr resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
             }
         }
@@ -667,6 +676,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceInstStoreDTO.setQuantityAddFlag(false);
             resourceInstStoreDTO.setQuantity(Long.valueOf(entry.getValue().size()));
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+            if (updateResInstStore < 1) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            }
             log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         }
 

@@ -74,8 +74,8 @@ public class GroupServiceTest {
     @Test
     public void queryGroupForPageTest(){
         GroupQueryForPageReq req = new GroupQueryForPageReq();
-        req.setPageNo(1);
-        req.setPageSize(10);
+        req.setPageNo("1");
+        req.setPageSize("10");
         req.setGroupName("测试");
         req.setGroupType("1");
         req.setCreateStaff("张三");

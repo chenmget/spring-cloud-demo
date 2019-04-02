@@ -4,6 +4,7 @@ package com.iwhalecloud.retail.web.controller.b2b.goods;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsResultCodeEnum;
@@ -248,8 +249,14 @@ public class GoodsProductB2BController {
             // // 设置机型权限
             List<String> productIdList = productIdListVO.getResultData();
             List<String> originProductList = req.getProductIdList();
-            originProductList = originProductList.stream().filter(t -> productIdList.contains(t)).collect(Collectors.toList());
-            req.setProductIdList(originProductList);
+            if (!CollectionUtils.isEmpty(originProductList)) {
+                String nullListValue = "null";
+                originProductList = originProductList.stream().filter(t -> productIdList.contains(t)).collect(Collectors.toList());
+                originProductList = CollectionUtils.isEmpty(originProductList) ? Lists.newArrayList(nullListValue) : originProductList;
+                req.setProductIdList(originProductList);
+            }else {
+                req.setProductIdList(productIdList);
+            }
         }
 
         ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);

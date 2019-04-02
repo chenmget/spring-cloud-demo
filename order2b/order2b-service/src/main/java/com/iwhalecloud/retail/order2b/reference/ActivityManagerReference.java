@@ -190,6 +190,7 @@ public class ActivityManagerReference {
                             }
                         }
                         discuontTotal = CurrencyUtil.add(discuontTotal,disTotal);
+                        log.info("gs_10010_discuontTotal,discuontTotal",discuontTotal);
                     }
                     if (!isContinueUse) {
                         break;

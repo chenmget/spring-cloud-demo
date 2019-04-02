@@ -21,9 +21,9 @@ public interface SysUserMessageService{
     IPage<SysUserMessageDTO>  selectWarnMessageList(SysUserMessageReq sysUserMessageReq);
 
     /**
-     * 更新活动发货时间截止前未发货订单预警信息
+     * 更新用户消息状态
      */
-    void updateNotifyOrder();
+    void updateSysUserMessage();
 
     /**
      *根据userId、taskId查询未过期且有效的用户告警消息

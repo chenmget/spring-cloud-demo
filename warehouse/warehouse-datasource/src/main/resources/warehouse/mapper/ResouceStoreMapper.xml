@@ -131,6 +131,7 @@
                 </foreach>
             </if>
         order by s.MKT_RES_STORE_ID desc
+
     </select>
 
     <update id="updateStore" parameterType="com.iwhalecloud.retail.warehouse.entity.ResouceStore">

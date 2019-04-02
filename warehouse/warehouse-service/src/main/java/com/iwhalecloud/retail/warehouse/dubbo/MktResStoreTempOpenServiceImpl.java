@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author 吴良勇
@@ -26,7 +27,7 @@ public class MktResStoreTempOpenServiceImpl implements MktResStoreTempService {
     private MktResStoreTempService mktResStoreTempService;
 
     @Override
-    public ResultVO<SynMarkResStoreResp> synMarkResStore(String reqStr) {
+    public Map<String,Object> synMarkResStore(String reqStr) {
         return mktResStoreTempService.synMarkResStore(reqStr);
     }
     @Override

@@ -5,12 +5,14 @@ import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Maps;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.member.dto.MemberDTO;
 import com.iwhalecloud.retail.member.dto.request.*;
 import com.iwhalecloud.retail.member.dto.response.*;
 import com.iwhalecloud.retail.member.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,6 +21,12 @@ import java.util.Map;
  * @description:
  **/
 public class MemberDockingAbilityServiceImpl implements MemberDockingAbilityService {
+
+    @Autowired
+    private MemberService memberService;
+
+    @Autowired
+    private MemberAddressService memberAddressService;
 
     @Autowired
     private GroupService groupService;
@@ -34,6 +42,111 @@ public class MemberDockingAbilityServiceImpl implements MemberDockingAbilityServ
 
     @Autowired
     private MemberMerchantService memberMerchantService;
+
+    @Override
+    public Map<String, Object> register(String params) {
+        HashMap<String, Object> resultMap = Maps.newHashMap();
+        resultMap.put("resultCode", "0");
+        resultMap.put("resultMsg", "调用成功");
+        if (params instanceof String) {
+            MemberAddReq req = JSON.parseObject(params, new TypeReference<MemberAddReq>() {});
+            ResultVO resultVO = memberService.register(req);
+            if (resultVO.isSuccess()) {
+                resultMap.put("resultData", resultVO.getResultData());
+                resultMap.put("resultCode", resultVO.getResultCode());
+                resultMap.put("resultMsg", resultVO.getResultMsg());
+            }
+        }
+        resultMap.put("resultCode", "9999");
+        resultMap.put("resultMsg", "调用失败");
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> getMember(String params) {
+        HashMap<String, Object> resultMap = Maps.newHashMap();
+        resultMap.put("resultCode", "0");
+        resultMap.put("resultMsg", "调用成功");
+        if (params instanceof String) {
+            MemberGetReq req = JSON.parseObject(params, new TypeReference<MemberGetReq>() {});
+            ResultVO<MemberDTO> resultVO = memberService.getMember(req);
+            if (successResultMap(resultMap, resultVO)) {
+                return resultMap;
+            }
+        }
+        resultMap.put("resultCode", "9999");
+        resultMap.put("resultMsg", "调用失败");
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> addAddress(String params) {
+        HashMap<String, Object> resultMap = Maps.newHashMap();
+        resultMap.put("resultCode", "0");
+        resultMap.put("resultMsg", "调用成功");
+        if (params instanceof String) {
+            MemberAddressAddReq req = JSON.parseObject(params, new TypeReference<MemberAddressAddReq>() {});
+            ResultVO<MemberAddressAddResp> resultVO = memberAddressService.addAddress(req);
+            if (successResultMap(resultMap, resultVO)) {
+                return resultMap;
+            }
+        }
+        resultMap.put("resultCode", "9999");
+        resultMap.put("resultMsg", "调用失败");
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> deleteAddressById(String params) {
+        HashMap<String, Object> resultMap = Maps.newHashMap();
+        resultMap.put("resultCode", "0");
+        resultMap.put("resultMsg", "调用成功");
+        if (params instanceof String) {
+//            MemberAddressAddReq req = JSON.parseObject(params, new TypeReference<MemberAddressAddReq>() {});
+            ResultVO<Integer> resultVO = memberAddressService.deleteAddressById(params);
+            if (successResultMap(resultMap, resultVO)) {
+                return resultMap;
+            }
+        }
+        resultMap.put("resultCode", "9999");
+        resultMap.put("resultMsg", "调用失败");
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> updateAddress(String params) {
+        HashMap<String, Object> resultMap = Maps.newHashMap();
+        resultMap.put("resultCode", "0");
+        resultMap.put("resultMsg", "调用成功");
+        if (params instanceof String) {
+            MemberAddressUpdateReq req = JSON.parseObject(params, new TypeReference<MemberAddressUpdateReq>() {});
+            ResultVO<Integer> resultVO = memberAddressService.updateAddress(req);
+            if (successResultMap(resultMap, resultVO)) {
+                return resultMap;
+            }
+        }
+        resultMap.put("resultCode", "9999");
+        resultMap.put("resultMsg", "调用失败");
+        return resultMap;
+    }
+
+    @Override
+    public Map<String, Object> listMemberAddress(String params) {
+        HashMap<String, Object> resultMap = Maps.newHashMap();
+        resultMap.put("resultCode", "0");
+        resultMap.put("resultMsg", "调用成功");
+        if (params instanceof String) {
+            MemberAddressListReq req = JSON.parseObject(params, new TypeReference<MemberAddressListReq>() {});
+            ResultVO<List<MemberAddressRespDTO>> resultVO = memberAddressService.listMemberAddress(req);
+            if (successResultMap(resultMap, resultVO)) {
+                return resultMap;
+            }
+        }
+        resultMap.put("resultCode", "9999");
+        resultMap.put("resultMsg", "调用失败");
+        return resultMap;
+    }
+
 
     @Override
     public Map<String, Object> addGroup(String params) throws Exception {

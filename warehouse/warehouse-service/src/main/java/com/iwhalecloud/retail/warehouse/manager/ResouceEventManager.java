@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceEventMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceChngEvtDetailMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -37,12 +38,24 @@ public class ResouceEventManager {
         String eventId = "";
         Date now = new Date();
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq(ResouceEvent.FieldNames.objId.getTableFieldName(), resouceEventDTO.getObjId());
-        queryWrapper.eq(ResouceEvent.FieldNames.objType.getTableFieldName(), resouceEventDTO.getObjType());
-        queryWrapper.eq(ResouceEvent.FieldNames.mktResId.getTableFieldName(), resouceEventDTO.getMktResId());
-        queryWrapper.eq(ResouceEvent.FieldNames.eventType.getTableFieldName(), resouceEventDTO.getEventType());
-        ResouceEvent event = resouceEventMapper.selectOne(queryWrapper);
-        if (null == event) {
+        boolean exist = true;
+        ResouceEvent event = null;
+        if (StringUtils.isEmpty(resouceEventDTO.getObjId()) || StringUtils.isEmpty(resouceEventDTO.getObjType())) {
+            exist = false;
+        } else {
+            queryWrapper.eq(ResouceEvent.FieldNames.objId.getTableFieldName(), resouceEventDTO.getObjId());
+            queryWrapper.eq(ResouceEvent.FieldNames.objType.getTableFieldName(), resouceEventDTO.getObjType());
+            queryWrapper.eq(ResouceEvent.FieldNames.mktResId.getTableFieldName(), resouceEventDTO.getMktResId());
+            queryWrapper.eq(ResouceEvent.FieldNames.eventType.getTableFieldName(), resouceEventDTO.getEventType());
+            event = resouceEventMapper.selectOne(queryWrapper);
+            if (null == event) {
+                exist = false;
+            } else {
+                exist = true;
+            }
+
+        }
+        if (!exist) {
             ResouceEvent resouceEvent = new ResouceEvent();
             BeanUtils.copyProperties(resouceEventDTO, resouceEvent);
             resouceEvent.setCreateDate(now);

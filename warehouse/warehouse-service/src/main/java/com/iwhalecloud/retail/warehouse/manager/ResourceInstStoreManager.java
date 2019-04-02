@@ -91,7 +91,7 @@ public class ResourceInstStoreManager{
      * @param resourceInstStoreDTO
      * @return
      */
-    public Integer updateResourceInstStore(ResourceInstStoreDTO resourceInstStoreDTO){
+    public int updateResourceInstStore(ResourceInstStoreDTO resourceInstStoreDTO){
         //Step1:当前商户、当前商品、当前仓库的串码实例是否存在
         //step2:存在，修改库存数量
         //step3:不存在，插入数据

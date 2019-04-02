@@ -139,7 +139,7 @@ public class ResourceInstStoreManager{
             if (Long.compare(quantity, 0) < 1) {
                 try {
                     GoodsProductRelEditReq goodsProductRelEditReq = new GoodsProductRelEditReq();
-                    goodsProductRelEditReq.setGoodsId(resourceInstStoreDTO.getMerchantId());
+                    goodsProductRelEditReq.setMerchantId(resourceInstStoreDTO.getMerchantId());
                     goodsProductRelEditReq.setProductId(resourceInstStoreDTO.getMktResId());
                     goodsProductRelEditReq.setIsHaveStock(false);
                     goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);

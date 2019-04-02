@@ -29,7 +29,7 @@ public class GoodsProductRelServiceImplTest {
         String supplierId = "4301811025392";
         String productId = "1082241745046700034";
         GoodsProductRelEditReq goodsProductRelEditReq = new GoodsProductRelEditReq();
-        goodsProductRelEditReq.setGoodsId(supplierId);
+        goodsProductRelEditReq.setMerchantId(supplierId);
         goodsProductRelEditReq.setProductId(productId);
         goodsProductRelEditReq.setIsHaveStock(true);
         ResultVO<Boolean> resultVO = goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);

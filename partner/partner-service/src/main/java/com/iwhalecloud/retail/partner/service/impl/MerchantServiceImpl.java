@@ -30,7 +30,6 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.dto.request.UserEditReq;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
@@ -48,7 +47,6 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -351,22 +349,6 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public ResultVO<List<MerchantDTO>> listMerchant(MerchantListReq req) {
         log.info("MerchantServiceImpl.listMerchant(), input: MerchantListReq={} ", JSON.toJSONString(req));
-
-        // 商家市县名称（模糊查询 转换成 cityList集合）
-        if (!StringUtils.isEmpty(req.getCityName())) {
-            CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
-            commonRegionListReq.setRegionName(req.getCityName());
-            List<CommonRegionDTO> commonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
-            if (!CollectionUtils.isEmpty(commonRegionDTOList)) {
-                List<String> regionIdList = commonRegionDTOList.stream().map(CommonRegionDTO::getRegionId).collect(Collectors.toList());
-                if (CollectionUtils.isEmpty(req.getCityList())) {
-                    req.setCityList(regionIdList);
-                } else {
-                    // 取并集
-                    req.getCityList().addAll(regionIdList);
-                }
-            }
-        }
 
         List<MerchantDTO> list = merchantManager.listMerchant(req);
 

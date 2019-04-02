@@ -105,4 +105,16 @@
         and pc.TARGET_TYPE='1') t on t.TARGET_ID = p.GOODS_ID
     </select>
 
+    <select id="listGoodsBySupplierId" parameterType="java.lang.String"
+            resultType="java.lang.String">
+                SELECT
+            t1.GOODS_ID
+        FROM
+            prod_goods t1,
+            prod_goods_product_rel t2
+        WHERE
+            t1.GOODS_ID = t2.GOODS_ID
+        AND t1.SUPPLIER_ID = #{supplierId}
+        AND PRODUCT_ID = #{productId}
+    </select>
 </mapper>

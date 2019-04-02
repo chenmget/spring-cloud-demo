@@ -292,6 +292,7 @@ public class TaskServiceImpl implements TaskService {
         taskClaimReq.setTaskItemId(taskItemId);
         taskClaimReq.setUserId(req.getHandlerUserId());
         taskClaimReq.setUserName(req.getHandlerUserName());
+        taskClaimReq.setTaskId(routeNextReq.getTaskId());
         ResultVO resultVO = receiveTask(taskClaimReq);
         if (resultVO.isSuccess()) {
             // 执行流程下一步

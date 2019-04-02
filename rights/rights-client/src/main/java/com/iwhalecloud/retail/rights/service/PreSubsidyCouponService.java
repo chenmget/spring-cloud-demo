@@ -72,4 +72,11 @@ public interface PreSubsidyCouponService {
      * @return
      */
     ResultVO updateActCouponType(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO);
+
+    /**
+     * 更新优惠券的时间
+     * @param marketingActivityId
+     * @return
+     */
+    ResultVO updateCouponDate( String marketingActivityId);
 }

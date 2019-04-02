@@ -413,4 +413,26 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
         log.info("PreSubsidyCouponServiceImpl.updateActCouponType queryPreSubsidyReqDTO={}", JSON.toJSON(queryPreSubsidyReqDTO));
         return ResultVO.success(mktResCouponManager.updateActCouponType(queryPreSubsidyReqDTO.getMarketingActivityId(), queryPreSubsidyReqDTO.getCouponKind()));
     }
+
+    @Override
+    @Transactional
+    public ResultVO updateCouponDate(String marketingActivityId) {
+        log.info("PreSubsidyCouponServiceImpl.updateCouponDate marketingActivityId={}", marketingActivityId);
+        QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
+        queryMarketingActivityReq.setMarketingActivityId(marketingActivityId);
+        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(queryMarketingActivityReq);
+        log.info("PreSubsidyCouponServiceImpl.updateCouponDate marketingActivityService.queryMarketingActivityById marketingActivityDTOResultVO ={} ", JSON.toJSON(marketingActivityDTOResultVO));
+        if (!marketingActivityDTOResultVO.isSuccess() || marketingActivityDTOResultVO.getResultData() == null) {
+            return ResultVO.error("活动数据异常");
+        }
+        MarketingActivityDTO resultData = marketingActivityDTOResultVO.getResultData();
+        List<MktResCoupon> mktResCoupons = mktResCouponManager.queryCouponByActId(marketingActivityId);
+        log.info("PreSubsidyCouponServiceImpl.updateCouponDate mktResCouponManager.queryCouponByActId mktResCoupons ={} ", JSON.toJSON(mktResCoupons));
+        List<String> mktResIds = mktResCoupons.stream().map(MktResCoupon::getMktResId).collect(Collectors.toList());
+        //更新优惠券生失效时间
+        couponEffExpRuleManager.updateCouponEffExpDate(mktResIds, resultData.getStartTime(), resultData.getEndTime());
+        //更新优惠券领取时间
+        couponSupplyRuleManager.updateCouponSupplyDate(mktResIds, resultData.getStartTime(), resultData.getEndTime());
+        return ResultVO.success();
+    }
 }

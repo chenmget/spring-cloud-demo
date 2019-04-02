@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 
 @Component
@@ -110,5 +111,21 @@ public class CouponSupplyRuleManager{
         QueryWrapper<CouponSupplyRule> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(CouponSupplyRule.FieldNames.mktResId.getTableFieldName(),mktResId);
         return couponSupplyRuleMapper.selectOne(queryWrapper);
+    }
+
+    /**
+     * 更新优惠券券的领取时间
+     * @param mktResIds
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public Integer updateCouponSupplyDate(List<String> mktResIds, Date startDate, Date endDate) {
+        CouponSupplyRule couponSupplyRule = new CouponSupplyRule();
+        couponSupplyRule.setBeginTime(startDate);
+        couponSupplyRule.setEndTime(endDate);
+        QueryWrapper<CouponSupplyRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in(CouponSupplyRule.FieldNames.mktResId.getTableFieldName(), mktResIds);
+        return couponSupplyRuleMapper.update(couponSupplyRule, queryWrapper);
     }
 }

@@ -408,4 +408,34 @@ public class PromoConst {
             this.code = code;
         }
     }
+
+    /**
+     * 活动产品配置数量限制
+     */
+    public enum ProductNumFlg{
+        ProductNumFlg_0("0","不限制"),
+        ProductNumFlg_1("1","限制");
+        private java.lang.String code;
+        private java.lang.String name;
+
+        ProductNumFlg(String code,String name){
+            this.code = code;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
 }

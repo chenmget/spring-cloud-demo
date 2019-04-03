@@ -222,19 +222,12 @@ public class FtpOrderDataServiceImpl implements FtpOrderDataService {
             return ftpInfo;
         }
         ftpInfo = new FtpUtils.Ftp();
-        for (PublicDictDTO publicDictDTO : publicDictDTOS) {
-            if (FtpOrderDataConsts.IP.equals(publicDictDTO.getPkey())) {
-                ftpInfo.setIpAddr(publicDictDTO.getPname());
-            } else if (FtpOrderDataConsts.PORT.equals(publicDictDTO.getPkey())) {
-                ftpInfo.setPort(Integer.valueOf(publicDictDTO.getPname()));
-            } else if (FtpOrderDataConsts.USERNAME.equals(publicDictDTO.getPkey())) {
-                ftpInfo.setUserName(publicDictDTO.getPname());
-            } else if (FtpOrderDataConsts.PASSWORD.equals(publicDictDTO.getPkey())) {
-                ftpInfo.setPwd(publicDictDTO.getPname());
-            } else if (FtpOrderDataConsts.FILEPATH.equals(publicDictDTO.getPkey())) {
-                ftpInfo.setPath(publicDictDTO.getPname());
-            }
-        }
+        PublicDictDTO publicDictDTO = publicDictDTOS.get(0);
+        ftpInfo.setIpAddr(publicDictDTO.getPname());
+        ftpInfo.setPort(Integer.valueOf(publicDictDTO.getCodea()));
+        ftpInfo.setUserName(publicDictDTO.getCodeb());
+        ftpInfo.setPwd(publicDictDTO.getCodec());
+        ftpInfo.setPath(publicDictDTO.getCoded());
 
         return ftpInfo;
     }

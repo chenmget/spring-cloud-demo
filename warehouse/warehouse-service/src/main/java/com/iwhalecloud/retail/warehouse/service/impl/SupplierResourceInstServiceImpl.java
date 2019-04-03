@@ -200,14 +200,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                 eventDTO.setMktResStoreId(ResourceConst.NULL_STORE_ID);
                 eventId = resouceEventManager.insertResouceEvent(eventDTO);
                 log.info("SupplierResourceInstServiceImpl.delResourceInst resouceEventManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
-                // DOWN 增加批次，不同的产品Id不同的事件、批次
-                ResourceBatchRecDTO batchRecDTO = new ResourceBatchRecDTO();
-                BeanUtils.copyProperties(inst, batchRecDTO);
-                batchRecDTO.setCostPrice(salePrice);
-                String size = String.valueOf(nbrs.size());
-                batchRecDTO.setQuantity(Long.parseLong(size));
-                String batchId = batchRecManager.insertResourceBatchRec(batchRecDTO);
-                log.info("SupplierResourceInstServiceImpl.delResourceInst batchRecManager.insertResourceBatchRec req={},resp={}", JSON.toJSONString(batchRecDTO), JSON.toJSONString(batchId));
                 productList.add(productId);
             }
             // 增加日志

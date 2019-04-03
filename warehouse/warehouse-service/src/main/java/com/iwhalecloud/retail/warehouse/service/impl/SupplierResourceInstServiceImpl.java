@@ -180,9 +180,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             ResourceInstGetReq queryReq = new ResourceInstGetReq();
             queryReq.setMktResInstNbr(nbr);
             queryReq.setMerchantId(req.getMerchantId());
+            queryReq.setMktResStoreId(mktResStoreId);
             ResourceInstDTO inst = resourceInstManager.getResourceInst(queryReq);
             log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstManager.getResourceInst req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(inst));
-            String statusCd = inst.getStatusCd();
             // 没删除成功的，不加日志及更新库存
             if (null == inst || !changeStatusCd.equals(inst.getStatusCd())) {
                 continue;

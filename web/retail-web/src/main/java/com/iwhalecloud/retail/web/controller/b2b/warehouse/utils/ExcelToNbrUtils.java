@@ -168,6 +168,7 @@ public class ExcelToNbrUtils {
 		}
 
 		if (filedName.equals(STATUS_CD)) {
+			log.info("STATUS_CD={}", value);
 			if (isRetailer) {
 				return ResourceConst.CRM_STATUS.getCrmStatusName(value);
 			}

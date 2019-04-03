@@ -6,6 +6,7 @@ import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author zhou.zc
@@ -74,9 +75,8 @@ public class UpdatePreSubsidyCouponReqDTO extends AbstractRequest implements Ser
     /**
      * 优惠券生失效规则标识，唯一主键
      */
-    @NotNull
     @ApiModelProperty(value = "优惠券生失效规则标识，唯一主键")
-    private Long effExpRuleId;
+    private String effExpRuleId;
 
     /**
      * 生效时间
@@ -95,7 +95,7 @@ public class UpdatePreSubsidyCouponReqDTO extends AbstractRequest implements Ser
      */
     @NotNull
     @ApiModelProperty(value = "优惠券领取规则标识，主键")
-    private Long supplyRuleId;
+    private String supplyRuleId;
 
     /**
      * 领取周期类型
@@ -126,7 +126,7 @@ public class UpdatePreSubsidyCouponReqDTO extends AbstractRequest implements Ser
      */
     @NotNull
     @ApiModelProperty(value = "抵扣规则标识")
-    private Long discountRuleId;
+    private String discountRuleId;
 
     /**
      * 抵扣额
@@ -174,5 +174,20 @@ public class UpdatePreSubsidyCouponReqDTO extends AbstractRequest implements Ser
      * 合作伙伴标识
      */
     @ApiModelProperty(value = "合作伙伴标识")
-    private Long partnerId;
+    private String partnerId;
+
+    @ApiModelProperty(value = "券种类")
+    private String couponKind;
+
+    @ApiModelProperty(value = "是不限制券总数量")
+    private String numLimitFlg;
+
+    @ApiModelProperty(value = "是否限制券的单用户领取数量")
+    private String supplyLimitFlg;
+
+    @ApiModelProperty(value = "混合使用范围")
+    private List<String> mixUseTarget;
+
+    @ApiModelProperty(value = "领取方式")
+    private String releaseMode;
 }

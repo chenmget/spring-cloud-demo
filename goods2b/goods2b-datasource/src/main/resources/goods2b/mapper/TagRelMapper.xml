@@ -5,11 +5,11 @@
     <constructor >
       <idArg column="REL_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
       <arg column="TAG_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
-      <arg column="GOODS_ID" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
+      <arg column="PRODUCT_BASE_ID" jdbcType="DECIMAL" javaType="java.math.BigDecimal" />
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    REL_ID, TAG_ID, GOODS_ID
+    REL_ID, TAG_ID, PRODUCT_BASE_ID
   </sql>
 
   <!-- listAll -->
@@ -20,10 +20,10 @@
   </select>
 
   <insert id="batchAddTagRel" parameterType="java.util.List" useGeneratedKeys="true">
-    insert into prod_tag_rel (REL_ID, TAG_ID, GOODS_ID)
+    insert into prod_tag_rel (REL_ID, TAG_ID, PRODUCT_BASE_ID)
     values
     <foreach collection="list" index="index" item="item" separator=",">
-      (#{item.relId},#{item.tagId},#{item.goodsId})
+      (#{item.relId},#{item.tagId},#{item.productBaseId})
     </foreach>
   </insert>
 </mapper>

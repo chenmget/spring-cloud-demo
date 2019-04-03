@@ -233,4 +233,6 @@ public class ProductDTO extends PageVO {
 	@ApiModelProperty(value = "审核状态")
 	private String auditState;
 
+	@ApiModelProperty(value = "类型ID")
+	private String typeId;
 }

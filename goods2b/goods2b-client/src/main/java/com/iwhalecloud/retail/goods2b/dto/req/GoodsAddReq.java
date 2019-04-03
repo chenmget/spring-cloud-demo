@@ -76,11 +76,11 @@ public class GoodsAddReq extends AbstractRequest implements Serializable {
     @ApiModelProperty(value = "发布地市")
     private List<RegionReq> regionList;
 
-    /**
-     * 零售商标签
-     */
-    @ApiModelProperty(value = "零售商标签")
-    private List<String> tagList;
+//    /**
+//     * 零售商标签
+//     */
+//    @ApiModelProperty(value = "零售商标签")
+//    private List<String> tagList;
 
     /**
      * 渠道类型
@@ -171,6 +171,12 @@ public class GoodsAddReq extends AbstractRequest implements Serializable {
     @ApiModelProperty(value = "是否预售商品,商品是否为预售商品，预售商品可以无库存发布\n" +
             "1.是 0.否")
     private Integer isAdvanceSale;
+
+    /**
+     * 是否预售商品
+     */
+    @ApiModelProperty(value = "是否前置补贴商品 1.是 0.否")
+    private Integer isSubsidy;
 
     @ApiModelProperty(value = "配置的营销活动信息")
     private List<GoodsActRelDTO> goodsActs;

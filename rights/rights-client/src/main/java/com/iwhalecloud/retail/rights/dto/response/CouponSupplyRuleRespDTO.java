@@ -79,5 +79,14 @@ public class CouponSupplyRuleRespDTO implements Serializable {
   	 */
 	@ApiModelProperty(value = "备注")
   	private String remark;
-  	
+
+	@ApiModelProperty(value = "是不限制券总数量")
+	private String numLimitFlg;
+
+	@ApiModelProperty(value = "是否限制券的单用户领取数量")
+	private String supplyLimitFlg;
+
+	@ApiModelProperty(value = "领取方式")
+	private String releaseMode;
+
 }

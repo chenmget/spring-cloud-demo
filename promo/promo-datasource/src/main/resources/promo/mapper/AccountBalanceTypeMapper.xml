@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.AccountBalanceTypeMapper">
+
+<sql id="allFields">
+    t.BALANCE_TYPE_ID 
+    ,t.BALANCE_TYPE_NAME 
+    ,t.ACT_ID 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+</sql>
+
+
+</mapper>

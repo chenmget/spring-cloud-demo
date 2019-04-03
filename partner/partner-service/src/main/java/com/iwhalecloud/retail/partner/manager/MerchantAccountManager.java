@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.partner.entity.MerchantAccount;
 import com.iwhalecloud.retail.partner.mapper.MerchantAccountMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -98,6 +99,11 @@ public class MerchantAccountManager{
             hasParam = true;
             queryWrapper.like(MerchantAccount.FieldNames.bankAccount.getTableFieldName(), req.getBankAccount());
         }
+        if(!CollectionUtils.isEmpty(req.getMerchantIdList())){
+            hasParam = true;
+            queryWrapper.in(MerchantAccount.FieldNames.merchantId.getTableFieldName(), req.getMerchantIdList());
+        }
+
         if (!hasParam) {
             // 没参数 返回空  不能查整个表
             return Lists.newArrayList();

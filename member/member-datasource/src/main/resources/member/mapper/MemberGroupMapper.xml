@@ -14,7 +14,7 @@
     ,t.UPDATE_STAFF 
 </sql>
     <select id="queryGroupByMemberForPage"
-            resultType="com.iwhalecloud.retail.member.dto.response.MemberGroupQueryResp">
+            resultType="com.iwhalecloud.retail.member.dto.response.GroupQueryResp">
         select t.GROUP_ID
             ,t.GROUP_NAME
             ,t.GROUP_TYPE
@@ -29,14 +29,14 @@
         from mem_member_group a, mem_group t
         where a.GROUP_ID = t.GROUP_ID
         and a.MEM_ID = #{req.memId }
-        and a.STATUS = ${@com.iwhalecloud.retail.member.common.MemberConst$CommonState@VALID.getCode()}
+        and a.STATUS = '1'
     </select>
     <select id="queryMemberByGroupForPage"
-            resultType="com.iwhalecloud.retail.member.dto.response.GroupQueryResp">
-        select <include refid="allFields"/>,a.name
-        from mem_member_group t,mem_member a
-        where t.MEM_ID = a.MEMBER_ID
-        and t.STATUS = ${@com.iwhalecloud.retail.member.common.MemberConst$CommonState@VALID.getCode()}
+            resultType="com.iwhalecloud.retail.member.dto.response.MemberGroupQueryResp">
+        select <include refid="allFields"/>,a.NAME
+        from mem_member_group t
+        left join mem_member a on t.MEM_ID = a.MEMBER_ID
+        WHERE t.STATUS = ${@com.iwhalecloud.retail.member.common.MemberConst$CommonState@VALID.getCode()}
         and t.GROUP_ID = #{req.groupId }
     </select>
 

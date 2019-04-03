@@ -4,9 +4,11 @@ package com.iwhalecloud.retail.partner.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.common.ParInvoiceConst;
 import com.iwhalecloud.retail.partner.dto.req.InvoiceListReq;
 import com.iwhalecloud.retail.partner.dto.req.InvoicePageReq;
+import com.iwhalecloud.retail.partner.dto.req.QueryInvoiceByMerchantIdsReq;
 import com.iwhalecloud.retail.partner.dto.resp.InvoicePageResp;
 import com.iwhalecloud.retail.partner.entity.Invoice;
 import com.iwhalecloud.retail.partner.mapper.InvoiceMapper;
@@ -106,7 +108,10 @@ public class InvoiceManager {
             hasParam = true;
             queryWrapper.eq(Invoice.FieldNames.invoiceType.getTableFieldName(), req.getInvoiceType());
         }
-
+        if(!StringUtils.isEmpty(req.getVatInvoiceStatus())){
+            hasParam = true;
+            queryWrapper.eq(Invoice.FieldNames.vatInvoiceStatus.getTableFieldName(), req.getVatInvoiceStatus());
+        }
 
         List<Invoice> invoiceList = Lists.newArrayList();
         if (!hasParam) {
@@ -115,5 +120,7 @@ public class InvoiceManager {
         invoiceList = invoiceMapper.selectList(queryWrapper);
         return invoiceList;
     }
-    
+    public List<InvoicePageResp> queryInvoiceByMerchantIds(QueryInvoiceByMerchantIdsReq req){
+        return invoiceMapper.queryInvoiceByMerchantIds(req);
+    }
 }

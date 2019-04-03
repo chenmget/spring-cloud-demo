@@ -30,15 +30,16 @@ public class ResourceConst {
      * 出库
      */
     public final static String OUT_PUT_STOAGE = "1000";
-    /**
-     * 常量
-     */
-    public final static String  CONSTANT_01 = "1";
 
     /**
-     * 常量
+     * 常量是
      */
-    public final static String  CONSTANT_0 = "0";
+    public final static String  CONSTANT_YES = "1";
+
+    /**
+     * 常量否
+     */
+    public final static String  CONSTANT_NO = "0";
 
 
     /**
@@ -46,9 +47,14 @@ public class ResourceConst {
      */
     public final static String  GREEN_CHANNEL_WORK_FLOW_INST = "8";
     /**
-     * 调拨流程实例ID
+     * 调拨调出方审核流程实例ID
      */
     public final static String  ALLOCATE_WORK_FLOW_INST = "7";
+    /**
+     * 调拨两端都要审核流程实例ID
+     */
+    public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
+
     /**
      * 调拨返回成功的消息
      */
@@ -666,6 +672,44 @@ public class ResourceConst {
         private String name;
 
         REQUEST_QRY_TYPE(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+    }
+
+    /**
+     * 调拨审核类型
+     */
+    public enum ALLOCATE_AUDIT_TYPE{
+        // 调入的
+        ALLOCATE_AUDIT_TYPE_0("0","不能调拨"),
+        // 调出的
+        ALLOCATE_AUDIT_TYPE_1("1","不审核"),
+
+        ALLOCATE_AUDIT_TYPE_2("2","调出方和调入方都审核");
+
+
+        private String code;
+        private String name;
+
+        ALLOCATE_AUDIT_TYPE(String code,String name) {
             this.code = code;
             this.name = name;
         }

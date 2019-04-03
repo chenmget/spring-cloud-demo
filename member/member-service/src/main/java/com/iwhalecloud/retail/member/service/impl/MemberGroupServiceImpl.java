@@ -77,17 +77,17 @@ public class MemberGroupServiceImpl implements MemberGroupService {
     }
 
     @Override
-    public ResultVO<Page<MemberGroupQueryResp>> queryGroupByMemberForPage(MemberGroupQueryGroupReq req) {
+    public ResultVO<Page<GroupQueryResp>> queryGroupByMemberForPage(MemberGroupQueryGroupReq req) {
         log.info("MemberGroupServiceImpl queryGroupByMemberForPage req={} ", JSON.toJSONString(req));
-        Page<MemberGroupQueryResp> page = memberGroupManager.queryGroupByMemberForPage(req);
+        Page<GroupQueryResp> page = memberGroupManager.queryGroupByMemberForPage(req);
         log.info("MemberGroupServiceImpl queryGroupByMemberForPage resp={} ", JSON.toJSONString(page.getRecords()));
         return ResultVO.success(page);
     }
 
     @Override
-    public ResultVO<Page<GroupQueryResp>> queryMemberByGroupForPage(MemberGroupQueryMemberReq req) {
+    public ResultVO<Page<MemberGroupQueryResp>> queryMemberByGroupForPage(MemberGroupQueryMemberReq req) {
         log.info("MemberGroupServiceImpl queryMemberByGroupForPage req={} ", JSON.toJSONString(req));
-        Page<GroupQueryResp> page = memberGroupManager.queryMemberByGroupForPage(req);
+        Page<MemberGroupQueryResp> page = memberGroupManager.queryMemberByGroupForPage(req);
         log.info("MemberGroupServiceImpl queryMemberByGroupForPage resp={} ", JSON.toJSONString(page.getRecords()));
         return ResultVO.success(page);
     }

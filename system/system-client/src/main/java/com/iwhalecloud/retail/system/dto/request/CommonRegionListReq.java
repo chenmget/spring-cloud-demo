@@ -8,7 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-@ApiModel("本地区域列表查询 请求对象")
+@ApiModel("本地区域列表查询 请求对象, 两个条件都为空 默认查湖南的 本地网")
 public class CommonRegionListReq implements Serializable {
     private static final long serialVersionUID = 7121728434046699553L;
 

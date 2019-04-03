@@ -1,13 +1,16 @@
 package com.iwhalecloud.retail.order2b.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.SourceFromContext;
 import com.iwhalecloud.retail.order2b.TestBase;
 import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.dto.base.OrderRequest;
 import com.iwhalecloud.retail.order2b.dto.model.order.AdvanceOrderDTO;
+import com.iwhalecloud.retail.order2b.entity.OrderItem;
 import com.iwhalecloud.retail.order2b.entity.ZFlow;
 import com.iwhalecloud.retail.order2b.manager.AdvanceOrderManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
+import com.iwhalecloud.retail.order2b.mapper.OrderItemMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderZFlowMapper;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,5 +56,18 @@ public class MybatisTest extends TestBase {
         orderRequest.setSourceFrom("YHJ");
         Order2bContext.setDBLanId(orderRequest);
         advanceOrderManager.updateAdvanceOrderAttr(advanceOrderDTO);
+    }
+
+
+    @Autowired
+    private OrderItemMapper orderItemMapper;
+
+    @Test
+    public void selectOrdrByGoodsName(){
+
+        OrderItem orderItem=new OrderItem();
+        orderItem.setGoodsName("%yy手机%");
+        List or=orderItemMapper.selectOrderItem(orderItem);
+        System.out.println(JSON.toJSONString(or));
     }
 }

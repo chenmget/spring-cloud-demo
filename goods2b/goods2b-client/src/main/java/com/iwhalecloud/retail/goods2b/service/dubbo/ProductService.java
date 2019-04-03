@@ -16,11 +16,25 @@ import java.util.List;
 public interface ProductService {
 
     /**
+     * 根据产品ID获取归属商家
+     * @param req 产品ID
+     * @return 产品对象
+     */
+    ResultVO<String> getMerchantByProduct(MerChantGetProductReq req);
+
+    /**
      * 根据产品ID获取产品对象
      * @param req 产品ID
      * @return 产品对象
      */
     ResultVO<ProductResp> getProduct(ProductGetByIdReq req);
+
+    /**
+     * 根据产品编码获取产品对象
+     * @param sn
+     * @return
+     */
+    ResultVO<ProductResp> getProductBySn(String sn);
 
 
     /**
@@ -30,6 +44,13 @@ public interface ProductService {
      * @throws ProductException
      */
     public ResultVO<Integer> addProduct (ProductAddReq req) throws ProductException;
+
+//    /**
+//     * 根据产品编码获取产品对象
+//     * @param sn
+//     * @return
+//     */
+//    ResultVO<ProductResp> getProductBySn(String sn);
 
     /**
      * 添加产品-中台
@@ -147,4 +168,11 @@ public interface ProductService {
      * @return
      */
     ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req);
+
+    /**
+     * 返利使用
+     * @param req
+     * @return
+     */
+    ResultVO<List<ProductResp>> getProductForRebate(ProductRebateReq req);
 }

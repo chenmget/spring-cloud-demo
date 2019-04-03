@@ -81,6 +81,29 @@ public class DateUtils {
         String str = sf.format(date);
         return str;
     }
+    public static Date getLastMonth(Date date) {
+        SimpleDateFormat sf = new SimpleDateFormat(strFormatYMRSFM);
+        Calendar  calendar= Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.MONTH,calendar.get(Calendar.MONTH)-1);
+
+        return calendar.getTime();
+    }
+    public static String getMonthLastDay(Date date){
+        Calendar  calendar= Calendar.getInstance();
+        calendar.setTime(date);
+        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+        String s = df.format(date);
+        calendar.add(Calendar.MONTH, 1);
+        calendar.set(Calendar.DATE, 1);
+        calendar.add(Calendar.DATE, -1);
+        String dayLast = df.format(calendar.getTime());
+        StringBuffer endStr = new StringBuffer().append(dayLast);
+        dayLast = endStr.toString();
+        return dayLast;
+
+    }
+
 
     /**
      * String字符串转换为java.util.Date格式日期

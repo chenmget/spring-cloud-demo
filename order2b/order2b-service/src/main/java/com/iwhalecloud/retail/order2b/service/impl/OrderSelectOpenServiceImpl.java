@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.order2b.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
 import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
@@ -567,4 +568,24 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         return null;
     }
 
+
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    @Override
+    public List<OrderDTO> selectNotDeliveryOrderByIds(List<String> orderIds) {
+        List<OrderInfoModel> orderInfoModellist = orderManager.selectNotDeliveryOrderByIds(orderIds);
+        List<OrderDTO> orderDTOList = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(orderInfoModellist)) {
+            for (OrderInfoModel orderInfoModel : orderInfoModellist) {
+                OrderDTO orderDTO = new OrderDTO();
+                BeanUtils.copyProperties(orderInfoModel, orderDTO);
+                orderDTOList.add(orderDTO);
+            }
+
+        }
+        return  orderDTOList;
+    }
 }

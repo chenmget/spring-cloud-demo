@@ -261,7 +261,7 @@ public class BuilderCartServiceImpl implements BuilderCartService {
             if (org.apache.commons.collections.CollectionUtils.isEmpty(req.getCartIds())) {
                 return ResultVO.error("cartId must not be null");
             }
-            int num = cartManager.delete(req.getCartIds());
+            int num = cartManager.delete(req.getCartIds(),req.getUserId());
             if (num < 1) {
                 return ResultVO.error("删除购物车失败");
             }

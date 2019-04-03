@@ -4,8 +4,10 @@ import javax.annotation.Resource;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.iwhalecloud.retail.rights.dto.request.QueryPreSubsidyReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.QueryProductCouponReq;
 import com.iwhalecloud.retail.rights.dto.request.UpdateMktResCouponReqDTO;
+import com.iwhalecloud.retail.rights.dto.response.CouponSupplyRuleRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.MktResCouponRespDTO;
 import com.iwhalecloud.retail.rights.entity.MktResCoupon;
 import org.springframework.beans.BeanUtils;
@@ -17,6 +19,7 @@ import com.iwhalecloud.retail.rights.dto.response.QueryRightsRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.QueryMktResCouponRespDTO;
 import com.iwhalecloud.retail.rights.mapper.MktResCouponMapper;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -79,5 +82,48 @@ public class MktResCouponManager{
         QueryWrapper<MktResCoupon> queryWrapper = new QueryWrapper<MktResCoupon>();
         queryWrapper.eq(MktResCoupon.FieldNames.marketingActivityId.getTableFieldName(),marketingActivityId);
         return mktResCouponMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 更新优惠券基础信息
+     *
+     * @param mktResCoupon
+     * @return
+     */
+    public Integer updateMktResCouponById(MktResCoupon mktResCoupon) {
+        mktResCoupon.setUpdateDate(new Date());
+        return mktResCouponMapper.updateById(mktResCoupon);
+    }
+
+    /**
+     * 更新活动的优惠券的券种类
+     * @param marketingActivityId
+     * @param couponKind
+     * @return
+     */
+    public Integer updateActCouponType(String marketingActivityId,String couponKind){
+        MktResCoupon mktResCoupon = new MktResCoupon();
+        mktResCoupon.setCouponKind(couponKind);
+        QueryWrapper<MktResCoupon> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(MktResCoupon.FieldNames.marketingActivityId.getTableFieldName(), marketingActivityId);
+        return mktResCouponMapper.update(mktResCoupon,queryWrapper);
+    }
+
+    /**
+     * 查询可混合使用的优惠券
+     * @param queryPreSubsidyReqDTO
+     * @return
+     */
+    public List<MktResCouponRespDTO> queryMixUseCoupon(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO){
+        return mktResCouponMapper.queryMixUseCoupon(queryPreSubsidyReqDTO);
+    }
+
+    /**
+     * 查询可以推送优惠券
+     * @param marketingActivityId
+     * @return
+     */
+    public List<CouponSupplyRuleRespDTO> queryAutoPushCoupon(String marketingActivityId){
+        return mktResCouponMapper.queryAutoPushCoupon(marketingActivityId);
     }
 }

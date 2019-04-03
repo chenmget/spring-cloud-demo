@@ -112,5 +112,12 @@ public interface MerchantService{
      * @param req
      * @return
      */
-    ResultVO<List<MerchantDTO>> listMerchantByLanCity(MerchantListReq req);
+    ResultVO<List<String>> listMerchantByLanCity(MerchantListLanCityReq req);
+
+    /**
+     * 根据商家id 获取一个 商家 概要信息     *
+     * @param merchantId
+     * @return
+     */
+    MerchantDTO getMerchantInfoById(String merchantId);
 }

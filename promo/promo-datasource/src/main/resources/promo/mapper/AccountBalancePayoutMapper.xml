@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.AccountBalancePayoutMapper">
+
+<sql id="allFields">
+    t.OPER_PAYOUT_ID 
+    ,t.ACCOUNT_BALANCE_DETAIL_ID 
+    ,t.ACCT_BALANCE_ID 
+    ,t.ACCT_ITEM_TYPE 
+    ,t.BILL_ID 
+    ,t.PAYMENT_ID 
+    ,t.OPER_TYPE 
+    ,t.AMOUNT 
+    ,t.BALANCE 
+    ,t.EXT_SERIAL_ID 
+    ,t.STAFF_ID 
+    ,t.ORG_ID 
+    ,t.OPER_DATE 
+    ,t.PRN_COUNT 
+    ,t.PAYOUT_DESC 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+</sql>
+    <select id="queryAccountBalancePayoutForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalancePayoutReq"
+    resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalancePayoutResp">
+      SELECT
+        d.MERCHANT_ID AS supplier_Id,a.AMOUNT,a.BALANCE,d.ORDER_ID,d.PRODUCT_ID,a.OPER_DATE,a.PAYOUT_DESC
+        FROM  ACCOUNT_BALANCE_PAYOUT A
+      INNER JOIN ACCOUNT_BALANCE b ON a.ACCT_BALANCE_ID = b.ACCOUNT_BALANCE_ID
+      INNER JOIN ACCOUNT_BALANCE_ITEM_PAYED c ON a.OPER_PAYOUT_ID = c.OPER_PAYOUT_ID
+      INNER JOIN ACCOUNT_ITEM d ON c.ACCT_ITEM_ID = d.ACCT_ITEM_ID
+      INNER JOIN account e on d.acct_id=e.ACCT_ID
+      where A.STATUS_CD='1000' and e.STATUS_CD='1000' AND e.EFF_DATE&lt;=SYSDATE() AND e.EXP_DATE&gt;=SYSDATE()
+        and e.acct_id = #{req.acctId}
+        <if test="req.supplierIdList != null and req.supplierIdList.size > 0">
+            and d.MERCHANT_ID in
+            <foreach collection="req.supplierIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.productIdList != null and req.productIdList.size > 0">
+            and d.PRODUCT_ID in
+            <foreach collection="req.productIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.custId != null and req.custId != ''">
+            and e.cust_id=#{req.custId}
+        </if>
+        <if test="req.acctType != null and req.acctType != ''">
+            and e.acct_type=#{req.acctType}
+        </if>
+
+        <if test="req.operDateEnd != null and req.operDateEnd != ''">
+            <![CDATA[   and DATE_FORMAT(a.OPER_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.operDateEnd}, '%Y-%m-%d')   ]]>
+        </if>
+        <if test="req.operDateStart != null and req.operDateStart != ''">
+            <![CDATA[   and DATE_FORMAT(a.OPER_DATE, '%Y-%m-%d')>=  DATE_FORMAT(#{req.operDateStart}, '%Y-%m-%d')   ]]>
+        </if>
+
+    </select>
+</mapper>

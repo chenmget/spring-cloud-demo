@@ -1,12 +1,10 @@
 package com.iwhalecloud.retail.order2b.manager;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
-import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
-import com.iwhalecloud.retail.order2b.dto.resquest.promo.AddActSupRecordReq;
+import com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsRawReq;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.entity.OrderItem;
@@ -15,7 +13,7 @@ import com.iwhalecloud.retail.order2b.mapper.OrderItemDetailMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderItemMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.model.*;
-import org.apache.commons.lang.StringUtils;
+import com.iwhalecloud.retail.warehouse.dto.MktResStoreTempDTO;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -153,6 +151,27 @@ public class OrderManager {
     //查询订单项
     public List<OrderItem> selectOrderItem(OrderItem item){
         return orderItemMapper.selectOrderItem(item);
+    }
+
+    public Page<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req){
+        Page<FtpOrderDataResp> page = new Page<FtpOrderDataResp>(req.getPageNo(), req.getPageSize());
+        page.setSearchCount(false);
+        return orderMapper.queryFtpOrderDataRespList(page,req);
+    }
+    public String getFstTransDate(){
+        return orderMapper.getFstTransDate();
+    }
+    public int queryFtpOrderDataRespListCount(FtpOrderDataReq req){
+        return orderMapper.queryFtpOrderDataRespListCount(req);
+    }
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    public List<OrderInfoModel> selectNotDeliveryOrderByIds(List<String> orderIds) {
+        return orderMapper.selectNotDeliveryOrderByIds(orderIds);
+
     }
 
 }

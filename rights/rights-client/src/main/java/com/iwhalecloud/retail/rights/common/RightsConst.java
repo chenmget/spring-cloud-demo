@@ -142,4 +142,171 @@ public class RightsConst {
             this.type = type;
         }
     }
+
+
+    /**
+     * 管理类型
+     */
+    public enum ManagerType {
+        MANAGER_TYPE_1000("1000","内部"),
+        MANAGER_TYPE_2000("2000","外部"),
+        MANAGER_TYPE_3000("3000","电信出资"),
+        MANAGER_TYPE_4000("4000","商家出资"),
+        MANAGER_TYPE_5000("5000","共同出资");
+
+        private String type;
+        private String name;
+
+        ManagerType(String type,String name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setCode(String type) {
+            this.type = type;
+        }
+    }
+
+    /**
+     * 管理类型
+     */
+    public enum ReleaseMode {
+        RELEASE_MODE_1("1","手动领取"),
+        RELEASE_MODE_2("2","主动推送");
+
+        private String type;
+        private String name;
+
+        ReleaseMode(String type,String name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setCode(String type) {
+            this.type = type;
+        }
+    }
+
+    /**
+     * 领取总量或是数量的限制标识
+     */
+    public enum LimitFlg {
+        LIMIT_FLG_0("0","不限制"),
+        LIMIT_FLG_1("1","限制");
+
+        private String type;
+        private String name;
+
+        LimitFlg(String type,String name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setCode(String type) {
+            this.type = type;
+        }
+    }
+
+    /**
+     * 优惠券发放任务状态
+     */
+    public enum TaskStatusCd {
+        TASK_STATUS_CD_0("0","待处理"),
+        TASK_STATUS_CD_1("1","已处理"),
+        TASK_STATUS_CD_1_("-1","处理异常");
+
+        private String type;
+        private String name;
+
+        TaskStatusCd(String type,String name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setCode(String type) {
+            this.type = type;
+        }
+    }
+
+    /**
+     * 发放渠道类型LOVB=RES-C-0047
+     */
+    public enum ProvChannelType{
+        PROV_CHANNEL_TYPE_1000("1000","网厅"),
+        PROV_CHANNEL_TYPE_2000("2000","微信"),
+        PROV_CHANNEL_TYPE_3000("3000","短信");
+
+        private String type;
+        private String name;
+
+        ProvChannelType(String type,String name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setCode(String type) {
+            this.type = type;
+        }
+    }
+
 }

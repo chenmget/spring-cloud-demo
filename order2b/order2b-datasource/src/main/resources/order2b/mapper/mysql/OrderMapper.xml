@@ -264,4 +264,49 @@
             </if>
         </where>
     </select>
+
+    <select id="queryFtpOrderDataRespList" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq"
+            resultType="com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp">
+        SELECT
+            t.BUYER_CODE AS cust_id,
+            t.order_id,
+            t.update_time,
+            DATE_FORMAT(t.create_time, '%Y%m') AS yr_Mon,
+            t.ORDER_AMOUNT AS Trans_Amt,
+            (SELECT SUM(num) FROM ord_order_items item where item.order_id=t.order_id) as goods_Cnt
+        FROM
+            ord_order t
+        WHERE
+            t. STATUS IN (6, 10)
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
+        order by t.update_time
+
+    </select>
+    <select id="getFstTransDate" resultType="java.lang.String">
+        select t.create_time from ord_order t  where t.status in(6,10) order by t.create_time  LIMIT 0,1
+    </select>
+    <select id="queryFtpOrderDataRespListCount" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq"
+            resultType="java.lang.Integer">
+        select count(1)
+        from ord_order t where t.status in(6,10)
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
+
+    </select>
+
+
+
+    <select id="selectNotDeliveryOrderByIds" parameterType="list"
+            resultType="com.iwhalecloud.retail.order2b.model.OrderInfoModel">
+        select * from ord_order
+        WHERE 1 = 1
+        AND is_delete = 0
+        AND status IN (0,11,12,2,13,14,3,4)
+        AND order_id IN
+        <foreach collection="list" item="item" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+        order by create_time desc
+    </select>
 </mapper>

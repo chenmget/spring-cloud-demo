@@ -242,13 +242,13 @@ public class GoodsServiceImpl implements GoodsService {
         List<FileAddReq> fileAddReqList = req.getFileAddReqList();
         addImageFile(goodsId, fileAddReqList);
         // 添加零售商标签
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setGoodsId(goodsId);
-            relBatchAddReq.setTagList(tagList);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setGoodsId(goodsId);
+//            relBatchAddReq.setTagList(tagList);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
         log.info("添加图片、标签成功");
 
         //如果有配置活动信息
@@ -343,13 +343,13 @@ public class GoodsServiceImpl implements GoodsService {
         List<FileAddReq> fileAddReqList = req.getFileAddReqList();
         addImageFile(goodsId, fileAddReqList);
         // 添加零售商标签
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setGoodsId(goodsId);
-            relBatchAddReq.setTagList(tagList);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setGoodsId(goodsId);
+//            relBatchAddReq.setTagList(tagList);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
 
         //如果有配置活动信息
         if (!CollectionUtils.isEmpty(req.getGoodsActs())) {
@@ -447,16 +447,16 @@ public class GoodsServiceImpl implements GoodsService {
         List<FileAddReq> fileAddReqList = req.getFileAddReqList();
         addImageFile(goodsId, fileAddReqList);
         // 添加零售商标签前先删除再新增
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
-            relDeleteByGoodsIdReq.setGoodsId(goodsId);
-            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setTagList(tagList);
-            relBatchAddReq.setGoodsId(goodsId);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+//            relDeleteByGoodsIdReq.setGoodsId(goodsId);
+//            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setTagList(tagList);
+//            relBatchAddReq.setGoodsId(goodsId);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
         log.info("添加商品图片成功");
 
         //如果有配置活动信息
@@ -584,16 +584,16 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         // 添加零售商标签前先删除再新增
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
-            relDeleteByGoodsIdReq.setGoodsId(goodsId);
-            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setTagList(tagList);
-            relBatchAddReq.setGoodsId(goodsId);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+//            relDeleteByGoodsIdReq.setGoodsId(goodsId);
+//            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setTagList(tagList);
+//            relBatchAddReq.setGoodsId(goodsId);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
 
         //如果有配置活动信息
         if (!CollectionUtils.isEmpty(req.getGoodsActs())) {
@@ -644,7 +644,7 @@ public class GoodsServiceImpl implements GoodsService {
     public ResultVO<Page<GoodsForPageQueryResp>> queryGoodsForPage(GoodsForPageQueryReq req) {
         log.info("GoodsServiceImpl.queryGoodsForPage req={}", JSON.toJSONString(req));
         List<AttrSpecValueReq> attrSpecValueReqList = req.getAttrSpecValueList();
-        // 获取并设置属性字段名称
+        // 获取并设置属性字段名称F
         getFiledName(attrSpecValueReqList);
         Page<GoodsForPageQueryResp> goodsForPageQueryRespPage = goodsManager.queryGoodsForPage(req);
         // 按照零售商商品展示规则过滤
@@ -793,13 +793,14 @@ public class GoodsServiceImpl implements GoodsService {
         log.info("GoodsServiceImpl.queryGoodsForPage getUserByUserId req={}", req.getUserId());
         UserDTO userDTO = userService.getUserByUserId(req.getUserId());
         if(null != userDTO){
-            MerchantGetReq merchantGetReq = new MerchantGetReq();
-            merchantGetReq.setMerchantId(userDTO.getRelCode());
-            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
-            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
-            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
-                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
-            }
+            merchantCode = userDTO.getRelCode();
+//            MerchantGetReq merchantGetReq = new MerchantGetReq();
+//            merchantGetReq.setMerchantId(userDTO.getRelCode());
+//            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
+//            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
+//            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
+//                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
+//            }
         }
         // 查询商品是否收藏
         log.info("GoodsServiceImpl.queryGoodsForPage queryUserCollection userCollectionListReq={}", userCollectionListReq);
@@ -822,7 +823,7 @@ public class GoodsServiceImpl implements GoodsService {
             // 设置前置补贴价格
             goods.setDeliveryPrice(goods.getDeliveryPrice());
             goods.setIsPresubsidy(false);
-            this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierCode(), merchantCode, goods);
+            this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
         }
         long endTime = System.currentTimeMillis();
         log.info("setPresubsidyPrice costTime={}:",endTime-startTime);
@@ -1502,6 +1503,18 @@ public class GoodsServiceImpl implements GoodsService {
             }
         }
         return ResultVO.success(merchantDTO);
+    }
+
+    @Override
+    public ResultVO<Boolean> updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req) {
+        log.info("GoodsServiceImpl.updateGoodsActTypeByGoodsIdList req={}", JSON.toJSON(req));
+        boolean updateFlag = false;
+        if (CollectionUtils.isNotEmpty(req.getGoodsIds())) {
+            int updateNum = goodsManager.updateGoodsActTypeByGoodsIdList(req);
+            updateFlag = updateNum > 0;
+        }
+        log.info("GoodsServiceImpl.updateGoodsActTypeByGoodsIdList req={}", updateFlag);
+        return ResultVO.success(updateFlag);
     }
 
 }

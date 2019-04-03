@@ -19,7 +19,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface MemberGroupMapper extends BaseMapper<MemberGroup>{
 
-    Page<MemberGroupQueryResp> queryGroupByMemberForPage(Page<MemberGroupQueryResp> page, @Param("req") MemberGroupQueryGroupReq req);
+    Page<GroupQueryResp> queryGroupByMemberForPage(Page<GroupQueryResp> page, @Param("req") MemberGroupQueryGroupReq req);
 
-    Page<GroupQueryResp> queryMemberByGroupForPage(Page<GroupQueryResp> page, @Param("req") MemberGroupQueryMemberReq req);
+    Page<MemberGroupQueryResp> queryMemberByGroupForPage(Page<MemberGroupQueryResp> page, @Param("req") MemberGroupQueryMemberReq req);
 }

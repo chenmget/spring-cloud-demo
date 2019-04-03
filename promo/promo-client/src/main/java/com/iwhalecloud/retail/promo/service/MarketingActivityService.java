@@ -143,4 +143,12 @@ public interface MarketingActivityService{
      * @param req
      */
     void auitMarketingActivity(AuitMarketingActivityReq req);
+
+
+    /**
+     * 对活动发货时间截止前未发货的订单预警
+     * @return
+     */
+    void notifyMerchantActivityOrderDelivery();
+
 }

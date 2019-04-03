@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.rights.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.rights.common.RightsConst;
 import com.iwhalecloud.retail.rights.consts.RightsStatusConsts;
 import com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO;
@@ -21,7 +22,7 @@ import java.util.List;
 
 
 @Component
-public class CouponApplyObjectManager{
+public class CouponApplyObjectManager extends ServiceImpl<CouponApplyObjectMapper,CouponApplyObject> {
     @Resource
     private CouponApplyObjectMapper couponApplyObjectMapper;
     
@@ -135,5 +136,18 @@ public class CouponApplyObjectManager{
 		queryWrapper.eq(CouponApplyObject.FieldNames.objId.getTableFieldName(), req.getProductId());
 		queryWrapper.eq(CouponApplyObject.FieldNames.objType.getTableFieldName(), RightsConst.CouponApplyObjType.PRODUCT.getType());
 		return couponApplyObjectMapper.selectList(queryWrapper);
+	}
+
+
+	/**
+	 * 根据活动删除配置的优惠券适用对象
+	 * @param mktResIds
+	 * @return
+	 */
+	public Integer deleteCouponApplyObjectByAct(List<String> mktResIds){
+		QueryWrapper<CouponApplyObject> queryWrapper = new QueryWrapper<>();
+		queryWrapper.in(CouponApplyObject.FieldNames.mktResId.getTableFieldName(),mktResIds);
+		queryWrapper.eq(CouponApplyObject.FieldNames.objType.getTableFieldName(),RightsConst.CouponApplyObjType.PRODUCT.getType());
+		return couponApplyObjectMapper.delete(queryWrapper);
 	}
 }

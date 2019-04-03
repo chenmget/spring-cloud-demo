@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.PermissionApplyMapper">
+
+<sql id="allFields">
+    t.APPLY_ID 
+    ,t.APPLY_CODE 
+    ,t.APPLY_NAME 
+    ,t.APPLY_TYPE 
+    ,t.CONTENT 
+    ,t.MERCHANT_ID 
+    ,t.RULE_TYPE 
+    ,t.LAN_ID 
+    ,t.REGION_ID 
+    ,t.AUTHORIZE_FILE 
+    ,t.PROMISE_FILE 
+    ,t.FILE_URL 
+    ,t.STATUS_CD 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.STATUS_DATE 
+</sql>
+
+</mapper>

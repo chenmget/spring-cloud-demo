@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.List;
 
 
 @Component
@@ -78,5 +79,53 @@ public class CouponSupplyRuleManager{
         QueryWrapper<CouponSupplyRule> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(CouponSupplyRule.FieldNames.mktResId.getTableFieldName(),mktResId);
         return couponSupplyRuleMapper.delete(queryWrapper);
+    }
+
+    /**
+     * 新增优惠券的领取规则
+     * @param couponSupplyRule
+     * @return
+     */
+    public Integer addCouponSupplyRule(CouponSupplyRule couponSupplyRule){
+        couponSupplyRule.setCreateDate(new Date());
+        couponSupplyRule.setStatusCd(RightsStatusConsts.RIGHTS_STATUS_UNOBTAIN);
+        return couponSupplyRuleMapper.insert(couponSupplyRule);
+    }
+
+    /**
+     * 更新优惠券领取规则
+     * @param couponSupplyRule
+     * @return
+     */
+    public Integer updateCouponSupplyRuleById(CouponSupplyRule couponSupplyRule){
+        couponSupplyRule.setUpdateDate(new Date());
+        return couponSupplyRuleMapper.updateById(couponSupplyRule);
+    }
+
+    /**
+     * 根据优惠券id查询领取规则
+     * @param mktResId
+     * @return
+     */
+    public CouponSupplyRule selectOneCouponSupplyRule(String mktResId){
+        QueryWrapper<CouponSupplyRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(CouponSupplyRule.FieldNames.mktResId.getTableFieldName(),mktResId);
+        return couponSupplyRuleMapper.selectOne(queryWrapper);
+    }
+
+    /**
+     * 更新优惠券券的领取时间
+     * @param mktResIds
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public Integer updateCouponSupplyDate(List<String> mktResIds, Date startDate, Date endDate) {
+        CouponSupplyRule couponSupplyRule = new CouponSupplyRule();
+        couponSupplyRule.setBeginTime(startDate);
+        couponSupplyRule.setEndTime(endDate);
+        QueryWrapper<CouponSupplyRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in(CouponSupplyRule.FieldNames.mktResId.getTableFieldName(), mktResIds);
+        return couponSupplyRuleMapper.update(couponSupplyRule, queryWrapper);
     }
 }

@@ -42,6 +42,9 @@
     ,t.PRODUCT_BASE_ID
     ,min(t.DELIVERY_PRICE) as DELIVERY_PRICE
     ,t.PRODUCT_ID
+    ,t.IS_ADVANCE_SALE
+    ,t.IS_SUBSIDY
+    ,t.PAYMENTS
 </sql>
 
 <sql id="fullJoinFieIds">
@@ -58,6 +61,8 @@
  t0.SELLING_POINT,
  t0.SOURCE_FROM,
  t0.MERCHANT_TYPE,
+ t0.IS_ADVANCE_SALE,
+ t0.IS_SUBSIDY,
  t1.IS_HAVE_STOCK,
  t1.DELIVERY_PRICE,
  t3.PRODUCT_CODE
@@ -146,6 +151,7 @@
 ,t5.PARAM68
 ,t5.PARAM69
 ,t5.PARAM70
+,t0.PAYMENTS
 </sql>
     <select id="queryGoodsForPage" resultType="com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp" parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq">
         select
@@ -236,12 +242,45 @@
         <if test="req.sourceFrom != null">
             and t.SOURCE_FROM = #{req.sourceFrom }
         </if>
+        <if test="req.payments != null">
+            and t.PAYMENTS like CONCAT(CONCAT('%', #{req.payments}), '%')
+        </if>
         <if test="req.isLogin == null or !req.isLogin">
             and t.IS_ALLOT = 0
         </if>
         GROUP BY t.GOODS_ID
-        <if test="req.sortType != null">
-            order by ${req.sortType}
+        <if test="'1'.toString() ==req.sortType and null!=req.sortType">
+            order by t.CREATE_DATE DESC
+        </if>
+        <if test="'2'.toString() ==req.sortType and null!=req.sortType">
+            order by t.CREATE_DATE ASC
+        </if>
+        <if test="'3'.toString() ==req.sortType and null!=req.sortType">
+            order by t.MKTPRICE DESC
+        </if>
+        <if test="'4'.toString() ==req.sortType and null!=req.sortType">
+            order by t.MKTPRICE ASC
+        </if>
+        <if test="'5'.toString() ==req.sortType and null!=req.sortType">
+            order by t.BUY_COUNT DESC
+        </if>
+        <if test="'6'.toString() ==req.sortType and null!=req.sortType">
+            order by t.BUY_COUNT ASC
+        </if>
+        <if test="'7'.toString() ==req.sortType and null!=req.sortType">
+            order by DELIVERY_PRICE DESC
+        </if>
+        <if test="'8'.toString() ==req.sortType and null!=req.sortType">
+            order by DELIVERY_PRICE ASC
+        </if>
+        <if test="'9'.toString() ==req.sortType and null!=req.sortType">
+            order by MKTPRICE DESC
+        </if>
+        <if test="'10'.toString() ==req.sortType and null!=req.sortType">
+            order by MKTPRICE ASC
+        </if>
+        <if test="'11'.toString() ==req.sortType and null!=req.sortType">
+            order by DELIVERY_PRICE ASC,MERCHANT_TYPE ASC
         </if>
     </select>
 
@@ -249,7 +288,7 @@
             parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq">
         select distinct g.GOODS_ID as goodsId,g.GOODS_NAME as goodsName,g.MARKET_ENABLE as marketEnable,c.CAT_ID as goodsCatId,c.CAT_NAME as goodsCatName,
         g.SUPPLIER_ID as supplierId ,g.AUDIT_STATE as auditState,g.IS_ALLOT as isAllot,g.SOURCE_FROM as sourceFrom,
-        pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn
+        pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn,g.PAYMENTS as payments
         from prod_goods g left join prod_cat c on g.GOODS_CAT_ID=c.CAT_ID
         left join prod_brand pb on g.brand_id=pb.brand_id
         left join
@@ -270,6 +309,9 @@
             </if>
             <if test="null!=req.sourceFrom">
                 and g.SOURCE_FROM=#{req.sourceFrom}
+            </if>
+            <if test="null!=req.payments">
+                and g.PAYMENTS like CONCAT(CONCAT('%', #{req.payments}), '%')
             </if>
 
             <if test="null!=req.supplierIds">

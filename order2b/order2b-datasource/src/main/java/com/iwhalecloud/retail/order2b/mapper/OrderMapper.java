@@ -4,7 +4,9 @@ package com.iwhalecloud.retail.order2b.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.AdvanceOrderReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsRawReq;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.model.AdvanceOrderInfoModel;
@@ -50,5 +52,32 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @return
      */
      IPage<AdvanceOrderInfoModel> queryAdvanceOrderList(Page page, @Param("req")AdvanceOrderReq req);
+
+    /**
+     * 根据条件查询需要传送的订单数据
+     * @param req
+     * @return
+     */
+    Page<FtpOrderDataResp> queryFtpOrderDataRespList(Page<FtpOrderDataResp> page,@Param("req") FtpOrderDataReq req);
+
+    /**
+     * 获取首个订单时间
+     * @return
+     */
+     String getFstTransDate();
+
+    /**
+     * 获取需要导出的总条数
+     * @param req
+     * @return
+     */
+    int queryFtpOrderDataRespListCount(@Param("req") FtpOrderDataReq req);
+
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    List<OrderInfoModel> selectNotDeliveryOrderByIds(List<String> orderIds);
 
 }

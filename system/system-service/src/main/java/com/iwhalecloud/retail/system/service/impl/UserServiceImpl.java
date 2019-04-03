@@ -412,6 +412,31 @@ public class UserServiceImpl implements UserService {
         return page;
     }
 
+    /**
+     * 密码重置
+     *
+     * @param req
+     * @return
+     */
+    @Override
+    public ResultVO<Integer> resetPassword(UserResetPasswordReq req) {
+        log.info("UserServiceImpl.resetPassword req：UserResetPasswordReq={}", JSON.toJSON(req));
+        User user = userManager.getUserByUserId(req.getUpdateUserId());
+        if (user == null) {
+            return ResultVO.error("用户不存在");
+        }
+        if (!checkPassword(req.getUpdatePassword())) {
+            return ResultVO.error("密码校验不通过，格式必须为：8--20位，包含 大写、小写字母、数字 特殊字符");
+        }
+        user.setLoginPwd(new MD5(req.getUpdatePassword()).asHex());
+        int result = userManager.updateUser(user);
+        log.info("UserServiceImpl.resetPassword resp：result={}", result);
+        if (result <= 0) {
+            return ResultVO.error("重置密码失败");
+        }
+        return ResultVO.success(result);
+    }
+
 
     /**  对外提供的服务 star **/
 

@@ -8,6 +8,8 @@ import com.iwhalecloud.retail.order2b.dto.resquest.order.AdvanceOrderReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SelectNbrReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SelectOrderReq;
 
+import java.util.List;
+
 
 public interface OrderSelectOpenService {
 
@@ -80,5 +82,13 @@ public interface OrderSelectOpenService {
      * @return
      */
     DeliveryDTO selectDeliveryListByOrderIdAndBatchId(String orderId, String batchId);
+
+
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    List<OrderDTO> selectNotDeliveryOrderByIds(List<String> orderIds);
 
 }

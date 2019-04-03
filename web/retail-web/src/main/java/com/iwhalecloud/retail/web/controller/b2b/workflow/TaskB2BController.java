@@ -10,12 +10,10 @@ import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
+import com.iwhalecloud.retail.workflow.dto.TaskDTO;
 import com.iwhalecloud.retail.workflow.dto.TaskItemDTO;
 import com.iwhalecloud.retail.workflow.dto.req.*;
-import com.iwhalecloud.retail.workflow.dto.resp.DealTaskDetailGetResp;
-import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskDetailGetResp;
-import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskPageResp;
-import com.iwhalecloud.retail.workflow.dto.resp.TaskPageResp;
+import com.iwhalecloud.retail.workflow.dto.resp.*;
 import com.iwhalecloud.retail.workflow.service.TaskItemService;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import io.swagger.annotations.Api;
@@ -188,6 +186,23 @@ public class TaskB2BController extends BaseController {
     public ResultVO queryNextNodeRights(@RequestParam String nextNodeId,@RequestParam String taskId){
 
         return taskService.queryNextNodeRights(nextNodeId,taskId);
+    }
+
+    @ApiOperation(value = "根据业务ID获取处理中的工作流信息",notes = "获取工作流")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="/getTaskByFormId")
+    public ResultVO getTaskByFormId(@RequestParam String formId){
+        log.info("TaskB2BController getTaskByFormId formId={} ", formId);
+        QueryTaskByFormIdResp queryTaskByFormIdResp = new QueryTaskByFormIdResp();
+        TaskDTO taskDTO = taskService.getTaskByFormId(formId).get(0);
+        TaskItemDTO taskItemDTO = taskItemService.queryTaskItemByTaskId(taskDTO.getTaskId()).getResultData();
+        queryTaskByFormIdResp.setTaskDTO(taskDTO);
+        queryTaskByFormIdResp.setTaskItemDTO(taskItemDTO);
+        queryTaskByFormIdResp.setFormId(formId);
+        return ResultVO.success(queryTaskByFormIdResp);
     }
 
 }

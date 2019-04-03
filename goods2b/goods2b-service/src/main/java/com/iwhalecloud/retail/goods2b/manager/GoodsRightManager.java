@@ -42,8 +42,9 @@ public class GoodsRightManager {
 
     public Boolean batchInsertGoodsRight(List<GoodsRight> goodsRightList){
         int i = goodsRightMapper.batchAddGoodsRight(goodsRightList);
-        if(i>0)
+        if(i>0) {
             return true;
+        }
         return false;
     }
 

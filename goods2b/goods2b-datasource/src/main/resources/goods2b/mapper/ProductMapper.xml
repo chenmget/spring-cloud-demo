@@ -165,7 +165,7 @@
 
   <select id="selectProduct" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductGetReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.ProductDTO">
-    select <include refid="allFields" />,ppb.product_code,ppb.unit_type
+    select <include refid="allFields" />,ppb.product_code,ppb.unit_type,ppb.type_id
     from prod_product t
     left join prod_product_base ppb on ppb.product_base_id = t.product_base_id
     where 1 = 1 and t.IS_DELETED = '0' and ppb.IS_DELETED = '0'
@@ -226,6 +226,13 @@
     </if>
   </select>
 
+  <!--根据产品ID产归属商家-->
+  <select id="getMerChantByProduct" parameterType="java.lang.String" resultType="java.lang.String">
+    select t.MANUFACTURER_ID
+    from prod_product t
+    where t.product_id = #{productId}
+  </select>
+
   <select id="getProductCountByManufId" parameterType="java.lang.String" resultType="int">
     select count(1) from prod_product
     <where>
@@ -238,7 +245,7 @@
 
   <select id="getProductInfo" parameterType="com.iwhalecloud.retail.goods2b.dto.req.QueryProductInfoReqDTO"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
-    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name
+    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name,ppb.unit_type
     from prod_product t
     left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
     left join prod_brand pb on pb.brand_id = ppb.brand_id
@@ -297,6 +304,24 @@
     left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
     WHERE t.product_base_id = #{productBaseId}
     AND t.is_deleted = '0'
+  </select>
+  <select id="getProductForRebate" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductRebateReq"
+  resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductResp">
+    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name,ppb.unit_type
+    from prod_product t
+    left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
+    left join prod_brand pb on pb.brand_id = ppb.brand_id
+    where 1 = 1 and t.is_deleted = '0' and ppb.is_deleted = '0' and pb.is_deleted = '0'
+    <if test="null!=req.productName and ''!=req.productName">
+      and upper(ppb.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
+    </if>
+    <if test="null!=req.brandName and ''!=req.brandName">
+      and upper(pb.name) like CONCAT(CONCAT('%',upper(#{req.brandName})),'%')
+
+    </if>
+    <if test="null!=req.unitType and ''!=req.unitType">
+      and upper(ppb.unit_Type) like CONCAT(CONCAT('%',upper(#{req.unitType})),'%')
+    </if>
   </select>
 
 </mapper>

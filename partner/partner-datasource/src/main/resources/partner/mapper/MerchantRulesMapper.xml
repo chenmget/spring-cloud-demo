@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.partner.mapper.MerchantRulesMapper">
 
-<sql id="allFields">
+    <sql id="allFields">
     t.MERCHANT_RULE_ID 
     ,t.MERCHANT_ID 
     ,t.RULE_TYPE 
@@ -12,6 +12,20 @@
     ,t.TARGET_ID 
 --     ,t.MAX_SERIAL_NUM
 --     ,t.SERIAL_NUM_USED
+</sql>
+    <sql id="pageMerchantRulesFields">
+	MERCHANT.MERCHANT_ID,
+	MERCHANT.MERCHANT_CODE,
+	MERCHANT.MERCHANT_NAME,
+	MERCHANT.LAN_ID,
+	MERCHANT.CITY,
+	MERCHANT.MERCHANT_TYPE,
+	MERCHANT. STATUS,
+	RULES.RULE_TYPE,
+	RULES.TARGET_TYPE,
+	RULES.TARGET_ID,
+	RULES.RULE_TYPE,
+	RULES.TARGET_TYPE
 </sql>
 
     <select id="queryMerchantRuleByCondition" parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantRuleGetReq"
@@ -32,4 +46,60 @@
             </foreach>
         </if>
     </select>
+
+    <select id="pageMerchantRules" parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantRulesDetailPageReq"
+            resultType="com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp">
+        SELECT <include refid="pageMerchantRulesFields"/>
+        FROM PAR_MERCHANT_RULES RULES
+        LEFT JOIN PAR_MERCHANT MERCHANT ON RULES.MERCHANT_ID = MERCHANT.MERCHANT_ID
+        WHERE 1 = 1
+        <if test="null != req.merchantName and '' != req.merchantName">
+            AND MERCHANT.MERCHANT_NAME = #{req.merchantName}
+        </if>
+        <if test="null != req.merchantCode and '' != req.merchantCode">
+            AND MERCHANT.MERCHANT_CODE = #{req.merchantCode}
+        </if>
+        <if test="null != req.lanId and req.lanId.size() > 0">
+            AND MERCHANT.LAN_ID IN
+            <foreach collection="req.lanId" item="item1" index="index" open="(" close=")" separator=",">
+                #{item1}
+            </foreach>
+        </if>
+        <if test="null != req.city and req.city.size() > 0">
+            AND MERCHANT.CITY IN
+            <foreach collection="req.city" item="item2" index="index" open="(" close=")" separator=",">
+                #{item2}
+            </foreach>
+        </if>
+        <if test="null != req.status and '' != req.status">
+            AND MERCHANT.STATUS = #{req.status}
+        </if>
+        <if test="null != req.businessEntityName and '' != req.businessEntityName">
+            AND MERCHANT.BUSINESS_ENTITY_NAME = #{req.businessEntityName}
+        </if>
+        <if test="null != req.businessEntityCode and '' != req.businessEntityCode">
+            AND MERCHANT.BUSINESS_ENTITY_CODE = #{req.businessEntityCode}
+        </if>
+        <!--<if test="null != req.userId and '' != req.userId">-->
+        <!--AND MERCHANT.USER_ID = #{req.userId}-->
+        <!--</if>-->
+        <if test="null != req.relCode and '' != req.relCode">
+            AND MERCHANT.MERCHANT_ID = #{req.relCode}
+        </if>
+        <if test="null != req.ruleType and '' != req.ruleType">
+            AND RULES.RULE_TYPE = #{req.ruleType}
+        </if>
+        <if test="null != req.targetType and '' != req.targetType">
+            AND RULES.TARGET_TYPE = #{req.targetType}
+        </if>
+        <if test="null != req.tagMerchantList and req.tagMerchantList.size() > 0">
+            AND MERCHANT.MERCHANT_ID IN
+            <foreach collection="req.tagMerchantList" item="item3" index="index" open="(" close=")" separator=",">
+                #{item3}
+            </foreach>
+        </if>
+
+    </select>
+
+
 </mapper>

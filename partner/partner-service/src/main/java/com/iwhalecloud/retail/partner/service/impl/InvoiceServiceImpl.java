@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.partner.common.ParInvoiceConst;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.req.InvoiceAddReq;
 import com.iwhalecloud.retail.partner.dto.req.InvoicePageReq;
+import com.iwhalecloud.retail.partner.dto.req.QueryInvoiceByMerchantIdsReq;
 import com.iwhalecloud.retail.partner.dto.resp.InvoiceAddResp;
 import com.iwhalecloud.retail.partner.dto.resp.InvoicePageResp;
 import com.iwhalecloud.retail.partner.entity.Invoice;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
 import java.util.Objects;
 
 @Component("invoiceService")
@@ -176,5 +178,10 @@ public class InvoiceServiceImpl implements InvoiceService {
     
     public int updateInvoiceStatus(String invoiceId,String vatInvoiceStatus){
         return invoiceManager.updateInvoiceStatus(invoiceId,vatInvoiceStatus);
+    }
+    @Override
+    public ResultVO<List<InvoicePageResp>> queryInvoiceByMerchantIds(QueryInvoiceByMerchantIdsReq req){
+        log.info("InvoiceServiceImpl.queryInvoiceByMerchantIds req={}", JSON.toJSONString(req));
+        return ResultVO.success(invoiceManager.queryInvoiceByMerchantIds(req));
     }
 }

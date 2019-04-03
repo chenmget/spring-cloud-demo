@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -104,4 +105,10 @@ public class MerchantPageReq extends PageVO {
 
     @ApiModelProperty(value = "销售点编码")
     private java.lang.String shopCode;
+
+    @ApiModelProperty(value = "营业执照到期日期")
+    private Date busiLicenceExpDate;
+
+    @ApiModelProperty(value = "专票状态 1 未录入/2 审核通过/3 审核中/4 审核不通过/5 已过期")
+    private java.lang.String vatInvoiceStatus;
 }

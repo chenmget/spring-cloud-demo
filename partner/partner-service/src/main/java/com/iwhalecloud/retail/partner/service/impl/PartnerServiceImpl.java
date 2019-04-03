@@ -26,16 +26,9 @@ public class PartnerServiceImpl implements PartnerService {
 
     @Override
     public ResultVO<Page<PartnerDTO>> querySupplyRel(SupplierReq supplierReq) {
-        ResultVO<Page<PartnerDTO>>  resultVO = new ResultVO<Page<PartnerDTO>>();
         Page<PartnerDTO>  partnerDTOPage = new Page<PartnerDTO>();
-//        try {
         partnerDTOPage = partnerManager.querySupplyRel(supplierReq);
-//        } catch (Exception e) {
-//            log.error("SupplierServiceImpl.querySupplyRel Exception ex={}", e);
-//            ResultVO.error(ResultCodeEnum.QUERY_DB_EXCEPTION);
-//        }
-
-        return resultVO.success(partnerDTOPage);
+        return ResultVO.success(partnerDTOPage);
     }
 
     @Override

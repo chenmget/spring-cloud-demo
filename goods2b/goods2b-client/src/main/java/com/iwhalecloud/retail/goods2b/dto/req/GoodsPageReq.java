@@ -74,4 +74,10 @@ public class GoodsPageReq extends PageVO {
 
     @ApiModelProperty(value = "产品编码")
     private String sn;
+
+    /**
+     * 支付方式
+     */
+    @ApiModelProperty(value = "支付方式")
+    private String payments;
 }

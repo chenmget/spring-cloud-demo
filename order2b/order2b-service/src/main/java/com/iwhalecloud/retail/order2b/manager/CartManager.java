@@ -60,6 +60,7 @@ public class CartManager {
     public int updateNum(UpdateCartReq req) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("cart_id", req.getCartId());
+        queryWrapper.eq("user_id", req.getUserId());
         Cart cart = new Cart();
         cart.setNum(Long.valueOf(req.getNum()));
         return cartMapper.update(cart, queryWrapper);
@@ -83,10 +84,10 @@ public class CartManager {
         queryWrapper.eq("user_id", req.getUserId());
         Cart cart = new Cart();
         cart.setIsCheck(String.valueOf(req.getCheckedFlag()));
-        cart.setSupplierId(req.getSupplierId());
-        cart.setSessionId(req.getSessionId());
-        cart.setUserId(req.getUserId());
-        cart.setNum(Long.valueOf(req.getNum()));
+//        cart.setSupplierId(req.getSupplierId());
+//        cart.setSessionId(req.getSessionId());
+//        cart.setUserId(req.getUserId());
+//        cart.setNum(Long.valueOf(req.getNum()));
 //        cartMapper.updateCheckedFlag(req);
         Integer num = cartMapper.update(cart, queryWrapper);
         return num;
@@ -119,10 +120,10 @@ public class CartManager {
      *
      * @param cartIds
      */
-    public int delete(List<String> cartIds) {
+    public int delete(List<String> cartIds,String userId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.in("cart_id", cartIds);
-        queryWrapper.in("user_id", cartIds);
+        queryWrapper.in("user_id", userId);
         return cartMapper.delete(queryWrapper);
     }
 

@@ -22,8 +22,8 @@ public class TagRelListByGoodsIdReq extends AbstractRequest implements Serializa
   	/**
   	 * goodsId
   	 */
-	@ApiModelProperty(value = "goodsId")
-  	private String goodsId;
+	@ApiModelProperty(value = "productBaseId")
+  	private String productBaseId;
 
   	
 }

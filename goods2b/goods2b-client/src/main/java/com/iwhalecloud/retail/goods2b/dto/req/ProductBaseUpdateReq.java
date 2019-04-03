@@ -214,4 +214,10 @@ public class ProductBaseUpdateReq extends AbstractRequest implements Serializabl
     @ApiModelProperty(value = "平均供货价")
     private Double avgSupplyPrice;
 
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
+
 }

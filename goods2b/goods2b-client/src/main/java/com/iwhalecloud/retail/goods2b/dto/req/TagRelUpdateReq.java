@@ -33,7 +33,7 @@ public class TagRelUpdateReq extends AbstractRequest implements Serializable {
   	/**
   	 * goodsId
   	 */
-	@ApiModelProperty(value = "goodsId")
-  	private String goodsId;
+	@ApiModelProperty(value = "productBaseId")
+  	private String productBaseId;
   	
 }

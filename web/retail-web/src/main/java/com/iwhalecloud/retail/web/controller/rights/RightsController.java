@@ -182,7 +182,7 @@ public class RightsController {
 		log.info("RightsController receiveRights req={}", JSON.toJSON(req));
 		String merchantId = UserContext.getMerchantId();
 		if(StringUtils.isEmpty(merchantId)){
-			return ResultVO.error("用户id不能为空");
+			return ResultVO.error("商家id不能为空");
 		}
 		SaveRightsRequestDTO request = new SaveRightsRequestDTO();
 		BeanUtils.copyProperties(req, request);

@@ -6,6 +6,10 @@ package com.iwhalecloud.retail.goods2b.common;
  */
 public class GoodsConst {
 
+    // 表对应的缓存名称，1、表名的缓存名称：表示单条的缓存的；2、非表名的缓存: 表示存非单条的数据（一般是有父子级关系的列表）
+    // 文件上传表prod_file使用的缓存名称
+    public static final String CACHE_NAME_PROD_FILE = "prod_file";
+
     /**
      * 关联类型
      */
@@ -321,16 +325,52 @@ public class GoodsConst {
     }
 
     /**
-     *
+     * 是否预售
      */
     public enum IsAdvanceSale {
+        /**
+         * 非预售商品
+         */
         IS_NOT_ADVANCE_SALE(0,"非预售商品"),
+        /**
+         * 预售商品
+         */
         IS_ADVANCE_SALE(1,"预售商品");
 
         private Integer code;
         private String value;
 
         IsAdvanceSale(Integer code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    /**
+     * 是否前置补贴
+     */
+    public enum IsSubsidy {
+        /**
+         * 非前置补贴商品
+         */
+        IS_NOT_SUBSIDY(0,"非前置补贴商品"),
+        /**
+         * 前置补贴商品
+         */
+        IS_SUBSIDY(1,"前置补贴商品");
+
+        private Integer code;
+        private String value;
+
+        IsSubsidy(Integer code, String value){
             this.code = code;
             this.value = value;
         }

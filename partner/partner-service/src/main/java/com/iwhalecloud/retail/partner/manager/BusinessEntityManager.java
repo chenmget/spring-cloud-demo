@@ -56,7 +56,7 @@ public class BusinessEntityManager{
      * @param req
      * @return
      */
-    @Cacheable(value = PartnerConst.CACHE_NAME_PAR_BUSINESS_ENTITY, key = "#req.businessEntityId", condition = "#req.businessEntityId != null")
+    @Cacheable(value = PartnerConst.CACHE_NAME_PAR_BUSINESS_ENTITY, key = "#req.businessEntityCode", condition = "#req.businessEntityCode != null")
     public BusinessEntity getBusinessEntity(BusinessEntityGetReq req){
         QueryWrapper<BusinessEntity> queryWrapper = new QueryWrapper<BusinessEntity>();
         Boolean hasParam = false;
@@ -87,14 +87,14 @@ public class BusinessEntityManager{
      * @param businessEntity
      * @return
      */
-    @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_BUSINESS_ENTITY, key = "#businessEntity.businessEntityId")
+    @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_BUSINESS_ENTITY, key = "#businessEntity.businessEntityCode")
     public int updateBusinessEntity(BusinessEntity businessEntity){
         return businessEntityMapper.updateById(businessEntity);
     }
 
     /**
      * 根据经营主体编码更新经营主体
-     * 调用这个更新要清除全部的缓存，因为没有根据code 做缓存
+     * 调用这个更新要清除全部的缓存，因为没有根据id 做缓存
      * @param businessEntityDTO
      * @return
      */
@@ -109,10 +109,11 @@ public class BusinessEntityManager{
 
     /**
      * 删除
+     * 调用这个更新要清除全部的缓存，因为没有根据id 做缓存
      * @param businessEntityId
      * @return
      */
-    @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_BUSINESS_ENTITY, key = "#businessEntityId")
+    @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_BUSINESS_ENTITY, allEntries = true)
     public int deleteBusinessEntityById(String businessEntityId){
         return businessEntityMapper.deleteById(businessEntityId);
     }

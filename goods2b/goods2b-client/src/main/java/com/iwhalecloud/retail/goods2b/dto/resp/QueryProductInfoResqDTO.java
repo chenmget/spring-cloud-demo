@@ -70,4 +70,10 @@ public class QueryProductInfoResqDTO implements Serializable {
      */
     @ApiModelProperty(value = "来源")
     private String sourceFrom;
+
+    /**
+     * 产品规格
+     */
+    @ApiModelProperty(value = "产品型号")
+    private String unitType;
 }

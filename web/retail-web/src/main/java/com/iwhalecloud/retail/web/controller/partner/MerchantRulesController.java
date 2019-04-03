@@ -3,14 +3,24 @@ package com.iwhalecloud.retail.web.controller.partner;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods.dto.req.ProdBrandGetReq;
+import com.iwhalecloud.retail.goods.dto.resp.ProdBrandGetResp;
+
+import com.iwhalecloud.retail.goods2b.dto.req.BrandGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.BrandUrlResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.BrandService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
+import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.web.controller.b2b.partner.response.MerchantRulesImportResp;
 import com.iwhalecloud.retail.web.controller.b2b.partner.utils.ExcelToMerchantRulesUtils;
 import io.swagger.annotations.*;
@@ -33,12 +43,18 @@ public class MerchantRulesController {
 
     @Reference
     private MerchantRulesService merchantRulesService;
-    
+
     @Reference
     private MerchantService merchantService;
-    
+
     @Reference
     private BrandService brandService;
+
+    @Reference
+    private ProductService productService;
+
+    @Reference
+    private CommonRegionService commonRegionService;
 
     @Value("${fdfs.suffix.allowUpload}")
     private String allowUploadSuffix;
@@ -118,16 +134,15 @@ public class MerchantRulesController {
     })
     @RequestMapping(value = "/page", method = RequestMethod.POST)
     @Transactional
-    public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRules(@RequestBody @ApiParam(value = "查询商家权限规则列表参数", required = true) MerchantRulesDetailPageReq req) {
+    public ResultVO<Page<MerchantRulesDetailPageResp>> pageMerchantRules(@RequestBody @ApiParam(value = "查询商家权限规则列表参数", required = true) MerchantRulesDetailPageReq req) {
 
-        return merchantRulesService.pageMerchantRulesDetail(req);
+        return merchantRulesService.pageMerchantRules(req);
     }
 
 
 /*** 绿色通道权限 star ***/
 
     /**
-     *  此接口  已换成 /api/merchantLimit/save
      * 商家 绿色通道权限--按机型或产品修改限额 列表接口
      * @param req
      * @return
@@ -196,16 +211,41 @@ public class MerchantRulesController {
             List<MerchantRulesImportResp> data = ExcelToMerchantRulesUtils.getData(is);
             for (int i = 0; i < data.size(); i++) {
                 MerchantRulesImportResp merchantRulesImportResp = data.get(i);
-                ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantRulesImportResp.getMerchantId());
+                ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantByCode(merchantRulesImportResp.getMerchantCode());
                 if(merchantDTOResultVO.isSuccess() && merchantDTOResultVO.getResultData() != null){
                     MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
                     data.get(i).setMerchantName(merchantDTO.getMerchantName());
                     data.get(i).setMerchantType(merchantDTO.getMerchantType());
+                    data.get(i).setMerchantId(merchantDTO.getMerchantId());
+                }else{
+                    return ResultVO.error("商家编码{"+merchantRulesImportResp.getMerchantCode()+"}不存在");
                 }
-                ResultVO<BrandUrlResp> brandUrlRespResultVO = brandService.getBrandByBrandId(merchantRulesImportResp.getBrandCode());
-                if(brandUrlRespResultVO.isSuccess() && brandUrlRespResultVO.getResultData() != null){
-                    BrandUrlResp brandUrlResp = brandUrlRespResultVO.getResultData();
-                    data.get(i).setBrandName(brandUrlResp.getName());
+                if(merchantRulesImportResp.getBrandCode() != null) {
+                    ResultVO<BrandUrlResp> brandUrlRespResultVO = brandService.getBrandByBrandId(merchantRulesImportResp.getBrandCode());
+                    if (brandUrlRespResultVO.isSuccess() && brandUrlRespResultVO.getResultData() != null) {
+                        BrandUrlResp brandUrlResp = brandUrlRespResultVO.getResultData();
+                        data.get(i).setBrandName(brandUrlResp.getName());
+                    }
+                }else if(merchantRulesImportResp.getTargetMerchantCode() != null){
+                    MerchantDTO merchantDTO = merchantService.getMerchantByCode(merchantRulesImportResp.getTargetMerchantCode()).getResultData();
+                    if(merchantDTO == null){
+                        return ResultVO.error("对象编码{"+merchantRulesImportResp.getTargetMerchantCode()+"}不存在");
+                    }
+                    data.get(i).setTargetMerchantName(merchantDTO.getMerchantName());
+                    data.get(i).setTargetMerchantId(merchantDTO.getMerchantId());
+                }else if(merchantRulesImportResp.getRegionId() != null){
+                    CommonRegionDTO commonRegionDTO = commonRegionService.getCommonRegionById(merchantRulesImportResp.getRegionId()).getResultData();
+                    if(commonRegionDTO == null){
+                        return ResultVO.error("区域编码{"+merchantRulesImportResp.getRegionId()+"}不存在");
+                    }
+                    data.get(i).setRegionName(commonRegionDTO.getRegionName());
+                }else if(merchantRulesImportResp.getSn() != null){
+                    ProductResp productResp = productService.getProductBySn(merchantRulesImportResp.getSn()).getResultData();
+                    if(productResp == null){
+                        return ResultVO.error("机型编码{"+merchantRulesImportResp.getSn()+"}不存在");
+                    }
+                    data.get(i).setProductId(productResp.getProductId());
+                    data.get(i).setUnitName(productResp.getUnitName());
                 }
             }
             resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());

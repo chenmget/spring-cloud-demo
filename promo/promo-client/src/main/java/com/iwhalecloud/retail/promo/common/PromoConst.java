@@ -277,4 +277,165 @@ public class PromoConst {
             this.code = code;
         }
     }
+    /**
+     * 返利计算规则
+     */
+    public enum CALCULATIONRULE{
+        CALCULATION_RULE_10("10","单台返"),
+        CALCULATION_RULE_20("20","达X台，每台返Y元"),
+        CALCULATION_RULE_30("30","达X1台，每台返Y1元；达X2台，每台返Y2元……"),
+        CALCULATION_RULE_40("40","每达X台返Y元"),
+        CALCULATION_RULE_50("50","达X台返Y元");
+
+        private java.lang.String code;
+        private java.lang.String name;
+
+        CALCULATIONRULE(String code,String name){
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
+    /**
+     * 活动结算记录状态
+     */
+    public enum OperationType {
+        OPERATION_TYPE_1("1","新增"),
+        OPERATION_TYPE_2("2","退库");
+
+
+        private java.lang.String code;
+        private java.lang.String name;
+
+        OperationType(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
+    /**
+     * 活动结算记录状态
+     */
+    public enum SettleMode {
+        SETTLE_MODE_1("1","结算给零售商"),
+        SETTLE_MODE_2("2","结算给地包商");
+
+
+        private java.lang.String code;
+        private java.lang.String name;
+
+        SettleMode(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
+    /**
+     * 返利结算时间
+     */
+    public enum SETTLEMENT{
+        SETTLEMENT_10("10","订单支付"),
+        SETTLEMENT_20("20","卖家发货"),
+        SETTLEMENT_30("30","买家确认收货");
+        private java.lang.String code;
+        private java.lang.String name;
+
+        SETTLEMENT(String code,String name){
+            this.code = code;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
+    /**
+     * 活动产品配置数量限制
+     */
+    public enum ProductNumFlg{
+        ProductNumFlg_0("0","不限制"),
+        ProductNumFlg_1("1","限制");
+        private java.lang.String code;
+        private java.lang.String name;
+
+        ProductNumFlg(String code,String name){
+            this.code = code;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
 }

@@ -23,61 +23,61 @@ public class ActivityProductDTO implements java.io.Serializable {
   	 * ID
   	 */
 	@ApiModelProperty(value = "ID")
-  	private java.lang.String id;
+  	private String id;
 	
 	/**
   	 * 营销活动code
   	 */
 	@ApiModelProperty(value = "营销活动Id")
-  	private java.lang.String marketingActivityId;
+  	private String marketingActivityId;
 	
 	/**
   	 * 产品基础表
   	 */
 	@ApiModelProperty(value = "产品基础表")
-  	private java.lang.String productBaseId;
+  	private String productBaseId;
 	
 	/**
   	 * 产品ID
   	 */
 	@ApiModelProperty(value = "产品ID")
-  	private java.lang.String productId;
+  	private String productId;
 	
 	/**
   	 * 价格
   	 */
 	@ApiModelProperty(value = "价格")
-  	private java.lang.Long price;
+  	private Long price;
 	
 	/**
   	 * 预付价格
   	 */
 	@ApiModelProperty(value = "预付价格")
-  	private java.lang.Long prePrice;
+  	private Long prePrice;
 	
 	/**
   	 * 返利金额
   	 */
 	@ApiModelProperty(value = "返利金额")
-  	private java.lang.Long rebatePrice;
+  	private Long rebatePrice;
 	
 	/**
   	 * 优惠方式为直减时，保存减免的金额
   	 */
 	@ApiModelProperty(value = "优惠方式为直减时，保存减免的金额")
-  	private java.lang.Long discountAmount;
+  	private Long discountAmount;
 	
 	/**
   	 * 数量
   	 */
 	@ApiModelProperty(value = "数量")
-  	private java.lang.Long num;
+  	private Long num;
 	
 	/**
   	 * 达量
   	 */
 	@ApiModelProperty(value = "达量")
-  	private java.lang.Long reachAmount;
+  	private Long reachAmount;
 	
 //	/**
 //  	 * 支付方式
@@ -89,7 +89,7 @@ public class ActivityProductDTO implements java.io.Serializable {
   	 * 供应商编码
   	 */
 	@ApiModelProperty(value = "供应商编码")
-  	private java.lang.String supplierCode;
+  	private String supplierCode;
 
 //	/**
 //  	 * 记录首次创建的员工标识。
@@ -118,7 +118,7 @@ public class ActivityProductDTO implements java.io.Serializable {
 	 * 记录首次创建的员工标识。
 	 */
 	@ApiModelProperty(value = "创建人。")
-	private java.lang.String creator;
+	private String creator;
 
 	/**
 	 * 记录首次创建的时间。
@@ -130,7 +130,7 @@ public class ActivityProductDTO implements java.io.Serializable {
 	 * 记录每次修改的员工标识。
 	 */
 	@ApiModelProperty(value = "修改人。")
-	private java.lang.String modifier;
+	private String modifier;
 
 	/**
 	 * 记录每次修改的时间。
@@ -142,5 +142,14 @@ public class ActivityProductDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "是否删除：0未删、1删除。")
 	private String isDeleted;
-  	
+	/**
+	 * 产品名称
+	 */
+	@ApiModelProperty(value = "产品名称")
+	private String unitName;
+	/**
+	 * 产品编码
+	 */
+	@ApiModelProperty(value = "产品编码")
+	private String sn;
 }

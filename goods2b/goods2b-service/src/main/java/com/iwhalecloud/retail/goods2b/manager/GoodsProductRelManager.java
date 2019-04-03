@@ -111,4 +111,10 @@ public class GoodsProductRelManager{
     public List<ActivityGoodsDTO> qryActivityGoodsId(ActivityGoodsReq req){
         return goodsProductRelMapper.qryActivityGoodsId(req);
     }
+
+    public List<GoodsProductRel> queryGoodsByProductIds(List<String> productIds) {
+        QueryWrapper<GoodsProductRel> wrapper = new QueryWrapper<>();
+        wrapper.in(GoodsProductRel.FieldNames.productId.getTableFieldName(), productIds);
+        return goodsProductRelMapper.selectList(wrapper);
+    }
 }

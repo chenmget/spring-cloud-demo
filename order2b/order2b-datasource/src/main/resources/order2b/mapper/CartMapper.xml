@@ -17,41 +17,12 @@
     ,t.IS_CHECK
     ,t.PARTNER_ID
 </sql>
-    <sql id="Update_By_Example_Where_Clause" >
-        <where >
-            <foreach collection="example.oredCriteria" item="criteria" separator="or" >
-                <if test="criteria.valid" >
-                    <trim prefix="(" suffix=")" prefixOverrides="and" >
-                        <foreach collection="criteria.criteria" item="criterion" >
-                            <choose >
-                                <when test="criterion.noValue" >
-                                    and ${criterion.condition}
-                                </when>
-                                <when test="criterion.singleValue" >
-                                    and ${criterion.condition} #{criterion.value}
-                                </when>
-                                <when test="criterion.betweenValue" >
-                                    and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
-                                </when>
-                                <when test="criterion.listValue" >
-                                    and ${criterion.condition}
-                                    <foreach collection="criterion.value" item="listItem" open="(" close=")" separator="," >
-                                        #{listItem}
-                                    </foreach>
-                                </when>
-                            </choose>
-                        </foreach>
-                    </trim>
-                </if>
-            </foreach>
-        </where>
-    </sql>
     <select id="listGoods" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.cart.ListCartReq"
             resultType="com.iwhalecloud.retail.order2b.dto.model.cart.CartItemDTO">
         SELECT c.product_id, c.price, c.cart_id, c.num, c.addon,c.goods_id,c.supplier_id, c.user_id,
         CASE is_check WHEN 0 THEN 0 ELSE 1 END is_check
-        FROM ord_cart c
-        WHERE c.user_id = #{req.userId}
+        FROM ord_cart c,PROD_GOODS g
+        WHERE c.user_id = #{req.userId} and c.goods_id = g.goods_id
         <if test="null!= req.partnerId and ''!= req.partnerId">
             and c.partner_id =#{req.partnerId}
         </if>

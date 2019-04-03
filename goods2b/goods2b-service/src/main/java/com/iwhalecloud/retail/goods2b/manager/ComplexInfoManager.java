@@ -37,8 +37,9 @@ public class ComplexInfoManager  {
             complexInfoList.add(complexInfo);
         }
         int  i = complexInfoMapper.batchInsert(complexInfoList);
-        if(i > 0)
+        if(i > 0) {
             return true;
+        }
         return false;
     }
 

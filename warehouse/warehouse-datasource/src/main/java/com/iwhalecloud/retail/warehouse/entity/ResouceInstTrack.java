@@ -113,6 +113,24 @@ public class ResouceInstTrack implements Serializable {
   	 */
 	@ApiModelProperty(value = "是/否")
   	private java.lang.String ifPreSubsidy;
+
+	/**
+	 * 是否省内直供
+	 */
+	@ApiModelProperty(value = "是否省内直供")
+	private java.lang.String ifDirectSuppLy;
+
+	/**
+	 * 是否地包供货
+	 */
+	@ApiModelProperty(value = "是否地包供货")
+	private java.lang.String ifGroundSupply;
+
+	/**
+	 * 是否绿色通道
+	 */
+	@ApiModelProperty(value = "是否绿色通道")
+	private java.lang.String ifGreenChannel;
   	
   	
   	//属性 end
@@ -162,7 +180,16 @@ public class ResouceInstTrack implements Serializable {
 		selfRegStatus("selfRegStatus","SELF_REG_STATUS"),
 		
 		/** 是/否. */
-		ifPreSubsidy("ifPreSubsidy","IF_PRE_SUBSIDY");
+		ifPreSubsidy("ifPreSubsidy","IF_PRE_SUBSIDY"),
+
+		/** 是否省内直供. */
+		ifDirectSuppLy("ifDirectSuppLy","IF_DIRECT_SUPPLY"),
+
+		/** 是否地包供货. */
+		ifGroundSupply("ifGroundSupply","IF_GROUND_SUPPLY"),
+
+		/**是否绿色通道. */
+		ifGreenChannel("ifGreenChannel","IF_GREEN_CHANNEL");
 
 		private String fieldName;
 		private String tableFieldName;

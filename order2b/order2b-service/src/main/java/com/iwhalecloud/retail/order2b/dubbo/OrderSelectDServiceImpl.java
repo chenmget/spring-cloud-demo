@@ -11,6 +11,8 @@ import com.iwhalecloud.retail.order2b.dto.resquest.order.SelectOrderReq;
 import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @Service
 public class OrderSelectDServiceImpl implements OrderSelectOpenService {
 
@@ -95,4 +97,13 @@ public class OrderSelectDServiceImpl implements OrderSelectOpenService {
         return orderSelectService.selectDeliveryListByOrderIdAndBatchId(orderId, batchId);
     }
 
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    @Override
+    public List<OrderDTO> selectNotDeliveryOrderByIds(List<String> orderIds) {
+        return  orderSelectService.selectNotDeliveryOrderByIds(orderIds);
+    }
 }

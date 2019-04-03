@@ -137,6 +137,12 @@ public class MktResCoupon implements Serializable {
 	@ApiModelProperty(value = "活动id")
 	private String marketingActivityId;
 
+	/**
+	 * 优惠券种类
+	 */
+	@ApiModelProperty(value = "券种类:优惠券的种类 1. 无条件券2. 满减券（满X元减Y元）3. 循环满减券（每满X元减Y元）")
+	private String couponKind;
+
 
 	//属性 end
 	
@@ -197,7 +203,10 @@ public class MktResCoupon implements Serializable {
 		couponType("couponType","COUPON_TYPE"),
 
 		/** marketingActivityId. */
-		marketingActivityId("marketingActivityId","marketing_activity_id");
+		marketingActivityId("marketingActivityId","marketing_activity_id"),
+
+		/**券种类*/
+		couponKind("couponKind","coupon_kind");
 
 		private String fieldName;
 		private String tableFieldName;

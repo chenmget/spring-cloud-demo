@@ -31,6 +31,7 @@
         <module>warehouse</module>
         <module>report</module>
         <module>promo</module>
+        <module>elastic-job-master</module>
     </modules>
     <packaging>pom</packaging>
     <name>retail-parent</name>

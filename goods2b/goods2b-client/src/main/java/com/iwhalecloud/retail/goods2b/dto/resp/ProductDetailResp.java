@@ -559,4 +559,10 @@ public class ProductDetailResp extends PageVO {
      */
     @ApiModelProperty(value = "归属厂家名称")
     private String manufacturerName;
+
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
 }

@@ -50,8 +50,14 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @param productId
      * @return
      */
-    public ProductResp getProduct(@Param("productId")String productId);
+    public String getMerChantByProduct(@Param("productId")String productId);
 
+    /**
+     * 根据IdId
+     * @param productId
+     * @return
+     */
+    public ProductResp getProduct(@Param("productId")String productId);
     /**
      * 根据厂商ID获取产品数量
      * @param manufacturerId
@@ -88,4 +94,11 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
     List<String> listProduct(@Param("productBaseId")String productBaseId);
+
+    /**
+     * 查询产品(返利使用)
+     * @param req
+     * @return
+     */
+    List<ProductResp> getProductForRebate(@Param("req")ProductRebateReq req);
 }

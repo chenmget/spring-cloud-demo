@@ -31,10 +31,13 @@ public class MenuManager {
         return  menuMapper.insert(menu);
     }
 
-    public List<Menu> listMenu(String platform){
+    public List<Menu> listMenu(String platform, String menuName){
         QueryWrapper<Menu> queryWrapper = new QueryWrapper<>();
         if (!StringUtils.isEmpty(platform)) {
             queryWrapper.eq("PLATFORM", platform);
+        }
+        if (!StringUtils.isEmpty(menuName)) {
+            queryWrapper.like("menu_name", menuName);
         }
 //        queryWrapper.eq("deleteflag", "0"); // 有效的
         queryWrapper.orderByAsc("menu_name");

@@ -89,4 +89,30 @@ public class CouponEffExpRuleManager{
         return couponEffExpRuleMapper.selectList(queryWrapper);
     }
 
+    /**
+     * 新增优惠券生失效规则
+     * @param couponEffExpRule
+     * @return
+     */
+    public Integer  addCouponEffExpRule(CouponEffExpRule couponEffExpRule){
+        couponEffExpRule.setStatusCd(RightsStatusConsts.RIGHTS_STATUS_UNOBTAIN);
+        couponEffExpRule.setCreateDate(new Date());
+        return couponEffExpRuleMapper.insert(couponEffExpRule);
+    }
+
+    /**
+     * 根据活动时间更新优惠券生失效时间
+     * @param mktResIds
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public Integer updateCouponEffExpDate(List<String> mktResIds, Date startDate, Date endDate) {
+        CouponEffExpRule couponEffExpRule = new CouponEffExpRule();
+        couponEffExpRule.setEffDate(startDate);
+        couponEffExpRule.setExpDate(endDate);
+        QueryWrapper<CouponEffExpRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in(CouponEffExpRule.FieldNames.mktResId.getTableFieldName(), mktResIds);
+        return couponEffExpRuleMapper.update(couponEffExpRule, queryWrapper);
+    }
 }

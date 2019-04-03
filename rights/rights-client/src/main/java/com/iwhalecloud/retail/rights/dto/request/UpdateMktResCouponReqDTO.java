@@ -75,4 +75,7 @@ public class UpdateMktResCouponReqDTO extends AbstractRequest implements Seriali
      */
     @ApiModelProperty(value = "更新时间")
     private java.util.Date updateDate;
+
+    @ApiModelProperty(value = "券种类")
+    private String couponKind;
 }

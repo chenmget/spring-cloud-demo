@@ -822,7 +822,7 @@ public class GoodsServiceImpl implements GoodsService {
             // 设置前置补贴价格
             goods.setDeliveryPrice(goods.getDeliveryPrice());
             goods.setIsPresubsidy(false);
-            this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierCode(), merchantCode, goods);
+            this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
         }
         long endTime = System.currentTimeMillis();
         log.info("setPresubsidyPrice costTime={}:",endTime-startTime);

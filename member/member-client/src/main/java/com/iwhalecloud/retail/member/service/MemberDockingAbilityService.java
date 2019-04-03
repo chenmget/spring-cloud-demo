@@ -9,6 +9,18 @@ import java.util.Map;
  **/
 public interface MemberDockingAbilityService {
 
+    Map<String, Object> register(String params) throws Exception;
+
+    Map<String, Object> getMember(String params) throws Exception;
+
+    Map<String, Object> addAddress(String params) throws Exception;
+
+    Map<String, Object> deleteAddressById(String params) throws Exception;
+
+    Map<String, Object> updateAddress(String params) throws Exception;
+
+    Map<String, Object> listMemberAddress(String params) throws Exception;
+
     Map<String, Object> addGroup(String params) throws Exception;
 
     Map<String, Object> updateGroupById(String params) throws Exception;

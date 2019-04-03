@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.member.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -20,6 +21,7 @@ import java.util.Map;
  * @date: 2019年04月02日
  * @description:
  **/
+@Service
 public class MemberDockingAbilityServiceImpl implements MemberDockingAbilityService {
 
     @Autowired

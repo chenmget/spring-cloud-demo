@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
@@ -320,6 +321,21 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
             activityGoodsDTOs.add(activityGoodsDTO);
         }
         return ResultVO.success(activityGoodsDTOs);
+    }
+
+    @Override
+    public ResultVO<List<GoodsProductRelDTO>> listGoodsProductRel(String goodsId) {
+        List<GoodsProductRel> goodsProductRelList = goodsProductRelManager.listGoodsProductRel(goodsId);
+        List<GoodsProductRelDTO> goodsProductRelDTOList = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(goodsProductRelList)) {
+            for (GoodsProductRel goodsProductRel : goodsProductRelList) {
+                GoodsProductRelDTO goodsProductRelDTO = new GoodsProductRelDTO();
+                BeanUtils.copyProperties(goodsProductRel, goodsProductRelDTO);
+                goodsProductRelDTOList.add(goodsProductRelDTO);
+            }
+            return ResultVO.success(goodsProductRelDTOList);
+        }
+        return ResultVO.success(goodsProductRelDTOList);
     }
 
 

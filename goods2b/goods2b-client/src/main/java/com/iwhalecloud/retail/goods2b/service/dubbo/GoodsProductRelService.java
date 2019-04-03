@@ -51,4 +51,6 @@ public interface GoodsProductRelService{
      * @return
      */
     ResultVO<List<ActivityGoodsDTO>> qryActivityGoodsId(List<String> productIdList,String regionId,String lanId,String merchantId);
+
+    ResultVO<List<GoodsProductRelDTO>> listGoodsProductRel(String goodsId);
 }

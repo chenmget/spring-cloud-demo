@@ -11,12 +11,14 @@ import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsResultCodeEnum;
 import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsActRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.GoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 import com.iwhalecloud.retail.goods2b.service.AttrSpecService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
@@ -91,6 +93,9 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @Reference
     private ProductBaseService productBaseService;
+
+    @Reference
+    private GoodsProductRelService goodsProductRelService;
 
     @ApiOperation(value = "添加商品", notes = "添加商品")
     @ApiResponses({
@@ -486,7 +491,30 @@ public class GoodsB2BController extends GoodsBaseController {
     @PostMapping(value="/deleteGoods")
     public ResultVO<GoodsOperateResp> deleteGoods(@RequestBody GoodsDeleteReq req){
         log.info("GoodsB2BController deleteGoods req={} ", JSON.toJSON(req));
-        return goodsService.deleteGoods(req);
+        String goodsId = req.getGoodsId();
+        GoodsIdListReq goodsIdListReq = new GoodsIdListReq();
+        List<String> list = Lists.newArrayList();
+        list.add(goodsId);
+        goodsIdListReq.setGoodsIdList(list);
+        ResultVO<List<GoodsDTO>> listResultVO = goodsService.listGoods(goodsIdListReq);
+        if (!listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
+            return ResultVO.error("商品不存在");
+        }
+        GoodsDTO goodsDTO = listResultVO.getResultData().get(0);
+        String merchantType = goodsDTO.getMerchantType();
+        ResultVO<List<GoodsProductRelDTO>> resultVO = goodsProductRelService.listGoodsProductRel(goodsId);
+        if (!resultVO.isSuccess() || CollectionUtils.isEmpty(resultVO.getResultData())) {
+            return ResultVO.error("产商品关联不存在");
+        }
+        GoodsProductRelDTO goodsProductRelDTO = resultVO.getResultData().get(0);
+        ResultVO<GoodsOperateResp> respResultVO = goodsService.deleteGoods(req);
+        if (respResultVO.isSuccess() && respResultVO.getResultData() != null) {
+            List<GoodsProductRelDTO> goodsProductRelDTOList = Lists.newArrayList();
+            goodsProductRelDTOList.add(goodsProductRelDTO);
+            // 更新省包平均供货价
+            updateAvgSupplyPrice(merchantType, goodsProductRelDTOList);
+        }
+        return respResultVO;
     }
 
     @ApiOperation(value = "商品上下架", notes = "商品上下架")

@@ -20,18 +20,13 @@ import java.util.List;
  */
 public interface AccountBalanceService{
     /**
-     * 计算返利，该接口有有异常会抛出异常进行事务回滚
+     * 计算返利
      * @param req
      * @return
      */
-    ResultVO calculationTransactional(AccountBalanceCalculationReq req)throws Exception;
+    ResultVO calculation(AccountBalanceCalculationReq req);
 
-    /**
-     * 计算返利，该接口，如果执行成功事务直接提交，不会回滚事务，如需要回滚则请调用calculationTransactional方法
-     * @param req
-     * @return
-     */
-    ResultVO calculation(AccountBalanceCalculationReq req) ;
+
 
     /**
      * 查询账本列表(基本信息)

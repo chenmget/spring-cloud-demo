@@ -35,13 +35,14 @@ public class AccountBalanceRuleServiceImpl implements AccountBalanceRuleService 
         rule.setExpDate(DateUtils.strToUtilDate(RebateConst.EXP_DATE_DEF));
         rule.setStatusDate(new Date());
         boolean isSuc = accountBalanceRuleManager.save(rule);
-        if(isSuc){
+        if (isSuc) {
             return rule.getRuleId();
         }
         return null;
     }
+
     @Override
-    public ResultVO<List<AccountBalanceRuleResp>> queryAccountBalanceRuleList(AccountBalanceRuleReq req){
+    public ResultVO<List<AccountBalanceRuleResp>> queryAccountBalanceRuleList(AccountBalanceRuleReq req) {
         return ResultVO.success(accountBalanceRuleManager.queryAccountBalanceRuleList(req));
     }
 }

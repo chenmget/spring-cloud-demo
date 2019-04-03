@@ -35,13 +35,7 @@ public interface AccountService{
      */
     ResultVO<AccountDTO> getAccountByCustId(String custId,String acctType);
 
-    /**
-     * 获取accountId
-     * @param custId
-     * @param acctType
-     * @return
-     */
-    String  getAccountId(String custId,String acctType);
+
 
 
     /**

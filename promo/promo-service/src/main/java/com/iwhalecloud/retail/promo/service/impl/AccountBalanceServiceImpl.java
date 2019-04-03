@@ -17,10 +17,7 @@ import com.iwhalecloud.retail.promo.entity.AccountBalanceDetail;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceLog;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceType;
 import com.iwhalecloud.retail.promo.exception.BusinessException;
-import com.iwhalecloud.retail.promo.manager.AccountBalanceDetailManager;
-import com.iwhalecloud.retail.promo.manager.AccountBalanceLogManager;
-import com.iwhalecloud.retail.promo.manager.AccountBalanceManager;
-import com.iwhalecloud.retail.promo.manager.AccountBalanceTypeManager;
+import com.iwhalecloud.retail.promo.manager.*;
 import com.iwhalecloud.retail.promo.rebate.RebateRuleBase;
 import com.iwhalecloud.retail.promo.rebate.RebateRuleFactory;
 import com.iwhalecloud.retail.promo.service.*;
@@ -48,6 +45,9 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
     @Autowired
     private AccountService accountService;
 
+    @Autowired
+    private AccountManager accountManager;
+
     @Reference
     private MerchantService merchantService;
     @Reference
@@ -73,6 +73,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO calculation(AccountBalanceCalculationReq req) {
+        log.info(AccountBalanceServiceImpl.class.getName()+" calculation, req={}", req == null ? "" : JSON.toJSON(req));
 
         AccountDTO accout = this.calculationCheck(req);
         List<AccountBalanceCalculationOrderItemReq> orderItemList = req.getOrderItemList();
@@ -444,7 +445,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
     }
 
     private void initQueryAccountBalanceAllReq(QueryAccountBalanceAllReq req) {
-        String acctId = accountService.getAccountId(req.getCustId(), req.getAcctType());
+        String acctId = accountManager.getAccountId(req.getCustId(), req.getAcctType());
         req.setAcctId(acctId);
         List<String> balanceTypeIdList = new ArrayList<String>();
         String supplierId = req.getSupplierId();

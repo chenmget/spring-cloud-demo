@@ -143,13 +143,13 @@ public class AccountServiceImplTest {
         AccountBalanceCalculationOrderItemReq itemReq = new AccountBalanceCalculationOrderItemReq();
         itemReq.setActId("10008987");
         itemReq.setActName("20190402lytest1");
-        itemReq.setActNum("20");
-        itemReq.setOrderId("201903210910000049");
+        itemReq.setActNum("30");
+        itemReq.setOrderId("201903223810003591");
         itemReq.setProductId("100000092");
 //        itemReq.setProductId("11111");
         itemReq.setSupplierId("10000578");
 //        itemReq.setOrderItemId("201903210910000050");
-        itemReq.setOrderItemId("1111");
+        itemReq.setOrderItemId("201903223810003592");
         orderItemList.add(itemReq);
 
         req.setOrderItemList(orderItemList);

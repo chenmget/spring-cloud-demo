@@ -12,8 +12,5 @@ public class AccountItemServiceImpl implements AccountItemService {
     @Autowired
     private AccountItemManager accountItemManager;
 
-    
-    
-    
-    
+
 }

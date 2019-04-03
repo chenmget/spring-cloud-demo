@@ -19,6 +19,7 @@ import com.iwhalecloud.retail.promo.dto.req.GetMerchantIdListReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalancePayoutReq;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalancePayoutResp;
 import com.iwhalecloud.retail.promo.manager.AccountBalancePayoutManager;
+import com.iwhalecloud.retail.promo.manager.AccountManager;
 import com.iwhalecloud.retail.promo.service.AccountBalanceLogService;
 import com.iwhalecloud.retail.promo.service.AccountBalancePayoutService;
 import com.iwhalecloud.retail.promo.service.AccountService;
@@ -47,8 +48,10 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
 
     @Reference
     private ProductService productService;
-    @Reference
-    private AccountService accountService;
+
+
+    @Autowired
+    private AccountManager accountManager;
 
     @Autowired
     private AccountBalancePayoutManager accountBalancePayoutManager;
@@ -115,7 +118,7 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
     }
 
     private void initQueryAccountBalancePayoutReq(QueryAccountBalancePayoutReq req) {
-        String acctId = this.accountService.getAccountId(req.getCustId(),req.getAcctType());
+        String acctId = this.accountManager.getAccountId(req.getCustId(),req.getAcctType());
         req.setAcctId(acctId);
         boolean istMerchant = false;
         if(StringUtils.isNotEmpty(req.getSupplierName())||StringUtils.isNotEmpty(req.getSupplierLoginName())){

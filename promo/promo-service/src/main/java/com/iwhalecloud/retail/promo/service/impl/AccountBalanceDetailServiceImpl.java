@@ -21,6 +21,7 @@ import com.iwhalecloud.retail.promo.dto.resp.MarketingGoodsActivityQueryResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceDetail;
 import com.iwhalecloud.retail.promo.manager.AccountBalanceDetailManager;
+import com.iwhalecloud.retail.promo.manager.AccountManager;
 import com.iwhalecloud.retail.promo.service.*;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.dto.UserDTO;
@@ -60,12 +61,12 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
     @Reference
     private AccountBalancePayoutService accountBalancePayoutService;
 
-    @Reference
-    private AccountService accountService;
 
     @Reference
     private AccountBalanceRuleService accountBalanceRuleService;
 
+    @Autowired
+    private AccountManager accountManager;
 
     @Override
     public String addAccountBalanceDetail(AccountBalanceDetailDTO accountBalanceDetailDTO) {
@@ -180,7 +181,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
      * @param req
      */
     private void initQueryAccountBalanceDetailAll(QueryAccountBalanceDetailAllReq req){
-        String acctId = this.accountService.getAccountId(req.getCustId(),req.getAcctType());
+        String acctId = this.accountManager.getAccountId(req.getCustId(),req.getAcctType());
         req.setAcctId(acctId);
         List<String> actIdList = new ArrayList<String>();
         List<String> balanceTypeIdList = new ArrayList<String>();

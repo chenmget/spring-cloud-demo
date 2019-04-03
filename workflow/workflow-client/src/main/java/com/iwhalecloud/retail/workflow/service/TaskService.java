@@ -112,13 +112,13 @@ public interface TaskService{
      * @param formId 业务ID
      * @return
      */
-    List<TaskDTO> getTaskByFormId(String formId);
+    ResultVO<List<TaskDTO>> getTaskByFormId(String formId);
 
     /**
      *
      * @param taskId
      * @return
      */
-    TaskDTO getTaskById(String taskId);
+    ResultVO<TaskDTO> getTaskById(String taskId);
 
 }

@@ -91,7 +91,7 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
                 periodToDeliverEndTime = Period.between(LocalDate.now(),sysUserMessageDTO.getEndTime().toInstant().atZone(zoneId).toLocalDate());
                 sysUserMessageDTO.setContent(sysUserMessageDTO.getContent() + String.format(SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT,periodToDeliverEndTime.getDays()));
             }
-            taskItemDTO = taskItemService.queryTaskItemByTaskId(sysUserMessageDTO.getTaskId());
+            taskItemDTO = taskItemService.queryTaskItemByTaskId(sysUserMessageDTO.getTaskId()).getResultData();
             if (Objects.nonNull(taskItemDTO)) {
                 sysUserMessageDTO.setTaskItemId(taskItemDTO.getTaskItemId());
             }

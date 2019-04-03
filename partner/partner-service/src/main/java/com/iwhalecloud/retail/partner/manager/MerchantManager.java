@@ -164,7 +164,7 @@ public class MerchantManager {
             hasParam = true;
             queryWrapper.in(Merchant.FieldNames.parCrmOrgId.getTableFieldName(), req.getParCrmOrgIdList());
         }
-        queryWrapper.last(" limit 30000 "); // 限定查询条数(避免没参数的查出整表）
+        queryWrapper.last(" limit 40000 "); // 限定查询条数(避免没参数的查出整表）
 
         // 设置查询字段(优化 不查全表字段  避免耗时超长）
         queryWrapper.select(

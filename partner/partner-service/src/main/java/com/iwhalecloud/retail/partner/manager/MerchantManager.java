@@ -204,9 +204,19 @@ public class MerchantManager {
         if (!StringUtils.isEmpty(req.getTagId())) {
             // 有同一个tagId的 商家ID集合
             List<String> merchantIdList = getMerchantIdListByTag(req.getTagId());
-           return merchantDTOList.stream().filter(item -> merchantIdList.contains(item.getMerchantId())).collect(Collectors.toList());
+//            return merchantDTOList.stream().filter(item -> merchantIdList.contains(item.getMerchantId())).collect(Collectors.toList());
+            merchantDTOList = merchantDTOList.stream().filter(item -> merchantIdList.contains(item.getMerchantId())).collect(Collectors.toList());
         }
 
+        // loginName不空的情况  过滤
+        if (!StringUtils.isEmpty(req.getLoginName())) {
+            // 有同一个tagId的 商家ID集合
+            UserListReq userListReq = new UserListReq();
+            userListReq.setLoginName(req.getLoginName());
+            List<String> merchantIdList = getMerchantIdListByLoginName(userListReq);
+//            return merchantDTOList.stream().filter(item -> merchantIdList.contains(item.getMerchantId())).collect(Collectors.toList());
+            merchantDTOList = merchantDTOList.stream().filter(item -> merchantIdList.contains(item.getMerchantId())).collect(Collectors.toList());
+        }
 
         return merchantDTOList;
     }

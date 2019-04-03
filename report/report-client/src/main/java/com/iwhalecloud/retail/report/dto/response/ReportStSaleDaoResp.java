@@ -43,4 +43,5 @@ public class ReportStSaleDaoResp implements Serializable {
 	private String transOutNum;//调拨出库量 
 	private String userType;
 	private String userId;
+	private String typeId;	//产品类型
 }

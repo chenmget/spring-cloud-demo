@@ -42,4 +42,11 @@ public class AuitMarketingActivityReq implements Serializable {
      */
     @ApiModelProperty(value = "关联组织 id")
     private java.lang.String orgId;
+
+    /**
+     * 营销活动变更Id
+     */
+    @ApiModelProperty(value = "营销活动变更 id")
+    private java.lang.String marketingActivityModiftyId;
+
 }

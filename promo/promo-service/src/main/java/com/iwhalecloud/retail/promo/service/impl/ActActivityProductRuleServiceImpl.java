@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.promo.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
@@ -9,11 +10,9 @@ import com.iwhalecloud.retail.promo.constant.Constant;
 import com.iwhalecloud.retail.promo.dto.ActActivityProductRuleDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityRuleDTO;
-import com.iwhalecloud.retail.promo.dto.req.ActReBateProductReq;
-import com.iwhalecloud.retail.promo.dto.req.ActivityProductListReq;
-import com.iwhalecloud.retail.promo.dto.req.ActivityProductReq;
-import com.iwhalecloud.retail.promo.dto.req.AuitMarketingActivityReq;
+import com.iwhalecloud.retail.promo.dto.req.*;
 import com.iwhalecloud.retail.promo.dto.resp.ActActivityProductRuleServiceResp;
+import com.iwhalecloud.retail.promo.dto.resp.ReBateActivityListResp;
 import com.iwhalecloud.retail.promo.entity.ActActivityProductRule;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
 import com.iwhalecloud.retail.promo.entity.ActivityRule;
@@ -175,13 +174,19 @@ public class ActActivityProductRuleServiceImpl implements ActActivityProductRule
             activityRuleManager.addActivityRule(activityRuleList);
         }
         //启动返利活动审核流程
-      // MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivity(marketingActivityId);
+        MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivity(marketingActivityId);
         AuitMarketingActivityReq auitMarketingActivityReq = new AuitMarketingActivityReq();
         BeanUtils.copyProperties(actReBateProductReq, auitMarketingActivityReq);
         auitMarketingActivityReq.setId(actReBateProductReq.getMarketingActivityId());
-       //auitMarketingActivityReq.setName(marketingActivity.getName());
+        auitMarketingActivityReq.setName(marketingActivity.getName());
         marketingActivityService.auitMarketingActivity(auitMarketingActivityReq);
         return ResultVO.success();
+    }
+
+    @Override
+    public ResultVO<Page<ReBateActivityListResp>> listReBateActivity(ReBateActivityListReq req) {
+        log.info("ActivityProductServiceImpl.listReBateActivity req={}", JSON.toJSONString(req));
+        return ResultVO.success(actActivityProductRuleManager.listMarketingActivity(req));
     }
 
 }

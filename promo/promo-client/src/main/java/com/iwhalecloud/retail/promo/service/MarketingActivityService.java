@@ -151,4 +151,17 @@ public interface MarketingActivityService{
      */
     void notifyMerchantActivityOrderDelivery();
 
+    /**
+     * 营销活动变更内容审核流程
+     * @param userId  invoiceId
+     * @return
+     */
+    ResultVO marketingActivityModifyAuitStartProcess(String mktName,String userId,String userName,String orgName,String sysPostName,String id);
+
+    /**
+     * 营销活动变更内容审核
+     * @param req
+     */
+    void auitMarketingActivityMoify(AuitMarketingActivityReq req);
+
 }

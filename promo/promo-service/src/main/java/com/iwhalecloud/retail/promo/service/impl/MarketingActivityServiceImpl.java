@@ -15,6 +15,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListLanCityReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
+import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.constant.Constant;
 import com.iwhalecloud.retail.promo.dto.*;
 import com.iwhalecloud.retail.promo.dto.req.*;
@@ -46,6 +47,7 @@ import com.iwhalecloud.retail.workflow.dto.TaskDTO;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -132,7 +134,14 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Reference
     private ProductService productService;
 
+    @Autowired
+    private AccountBalanceTypeManager accountBalanceTypeManager;
+
+    @Autowired
+    private AccountBalanceRuleManager accountBalanceRuleManager;
     private List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryRespList;
+
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -144,7 +153,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         marketingActivityManager.addMarketingActivity(marketingActivity);
         String marketingActivityId = marketingActivity.getId();
         String marketingActivityCode = marketingActivity.getCode();
-
+        MarketingActivityModify marketingActivityModify = new MarketingActivityModify();
+        BeanUtils.copyProperties(req, marketingActivityModify);
+        marketingActivityModify.setMarketingActivityId(marketingActivityId);
+        marketingActivityManager.addMarketingActivityModify(req.getId(),marketingActivityModify);
+        //营销活动变更内容Id
+        String marketingActivityModifyId = marketingActivityModify.getId();
         List<ActivityScopeDTO> activityScopeDTOList = req.getActivityScopeList();
         List<ActivityScope> activityScopeList = Lists.newArrayList();
         activityScopeManager.deleteActivityScopeBatch(marketingActivityId);
@@ -175,8 +189,30 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             // 添加活动参与人员
             activityParticipantManager.addActivityParticipantBatch(activityParticipantList);
         }
+        //返利活动
+        if (PromoConst.ACTIVITYTYPE.REBATE.getCode().equals(req.getActivityType())){
+
+            //添加账户余额类型
+            AccountBalanceType balanceType = new AccountBalanceType();
+            balanceType.setBalanceTypeName(req.getName()+"返利");
+            balanceType.setActId(marketingActivityId);
+            balanceType.setCreateStaff(req.getCreator());
+            balanceType.setUpdateStaff(req.getModifier());
+            balanceType.setRemark(req.getDescription());
+            accountBalanceTypeManager.addAccountBalanceType(balanceType);
+            String balanceTypeId = balanceType.getBalanceTypeId();
+            log.info("MarketingActivityServiceImpl.addMarketingActivity balanceTypeId={}", JSON.toJSONString(balanceTypeId));
+            //添加账户余额使用规则
+            AccountBalanceRule balanceRule = new AccountBalanceRule();
+            balanceRule.setBalanceTypeId(balanceTypeId);
+            balanceRule.setObjId(req.getInitiator());
+            balanceRule.setCreateStaff(req.getCreator());
+            balanceRule.setUpdateStaff(req.getModifier());
+            accountBalanceRuleManager.addAccountBalanceRule(balanceRule);
+        }
         MarketingActivityAddResp marketingActivityAddResp = new MarketingActivityAddResp();
         marketingActivityAddResp.setId(marketingActivityId);
+        marketingActivityAddResp.setMarketingActivityModifyId(marketingActivityModifyId);
         return ResultVO.success(marketingActivityAddResp);
     }
 
@@ -627,13 +663,33 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         BeanUtils.copyProperties(req, marketingActivity);
         String marketingActivityId = marketingActivity.getId();
         if (StringUtils.isNotEmpty(marketingActivityId)){
-            ResultVO<MarketingActivityAddResp> response = addMarketingActivity(req);
-            log.info("MarketingActivityServiceImpl.updateMarketingActivity resp={}", JSON.toJSONString(response));
-            if(response.isSuccess() && null != response.getResultData()){
-
-                return ResultVO.successMessage(constant.getUpdateSuccess());
-            }else{
-                return ResultVO.error(constant.getUpdateFaile());
+            //1. 先判断此数据的状态， 审核通过用新逻辑，不通过用原逻辑
+            MarketingActivity result = marketingActivityManager.getMarketingActivityById(marketingActivityId);
+            if (PromoConst.STATUSCD.STATUS_CD_20.getCode().equals(result.getStatus())){
+                int num = 0;
+                List<MarketingActivityModify> list = marketingActivityManager.queryMarketingActivityModifySize(req.getId());
+                if (!CollectionUtils.isEmpty(list)){
+                    num = list.size();
+                }
+                MarketingActivityModify marketingActivityModify = new MarketingActivityModify();
+                req.setId("");
+                BeanUtils.copyProperties(req, marketingActivityModify);
+                marketingActivityModify.setMarketingActivityId(marketingActivityId);
+                marketingActivityModify.setVerNum(Long.valueOf(num+1));
+                int size =  marketingActivityManager.updateMarketingActivityModify(marketingActivityModify);
+                if (size > 0){
+                  return ResultVO.successMessage(constant.getUpdateSuccess());
+                } else {
+                  return ResultVO.error(constant.getUpdateFaile());
+                }
+            }else {
+                ResultVO<MarketingActivityAddResp> response = addMarketingActivity(req);
+                log.info("MarketingActivityServiceImpl.updateMarketingActivity resp={}", JSON.toJSONString(response));
+                if(response.isSuccess() && null != response.getResultData()){
+                    return ResultVO.successMessage(constant.getUpdateSuccess());
+                }else{
+                    return ResultVO.error(constant.getUpdateFaile());
+                }
             }
         } else {
             return ResultVO.error(constant.getNoMarketingActivityId());
@@ -641,7 +697,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     }
 
     /**
-     * 营销活动审核
+     * 营销活动审核启动流程
      *
      * @param userId,invoiceId
      * @return
@@ -1058,4 +1114,76 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             }
         }
     }
+
+    @Override
+    public ResultVO marketingActivityModifyAuitStartProcess(String mktName, String userId, String userName, String orgName, String sysPostName, String id) {
+        log.info("MarketingActivityServiceImpl.marketingActivityAuit userId={} userName{}" +
+                        "lanId{} regionId{} marketId{}",
+                userId,userName,orgName,sysPostName,id);
+        ProcessStartReq processStartDTO = new ProcessStartReq();
+        processStartDTO.setTitle(mktName);
+        //创建流程者，参数需要提供
+        processStartDTO.setApplyUserId(userId);
+        processStartDTO.setApplyUserName(userName);
+        processStartDTO.setExtends1(orgName+sysPostName);
+        processStartDTO.setProcessId("10");
+        //营销活动变更内容Id
+        processStartDTO.setFormId(id);
+        //TASK_SUB_TYPE_1140 销售活动配置流程
+        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2060.getTaskSubType());
+        ResultVO taskServiceRV = new ResultVO();
+        try{
+            //开启流程
+            taskServiceRV = taskService.startProcess(processStartDTO);
+            return ResultVO.success();
+        }catch (Exception ex){
+            return ResultVO.error();
+        }finally {
+            log.info("MarketingActivityServiceImpl.marketingActivityAuit req={},resp={}",
+                    JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
+        }
+    }
+
+    @Override
+    public void auitMarketingActivityMoify(AuitMarketingActivityReq req) {
+//        if (org.springframework.util.StringUtils.isEmpty(req.getMarketingActivityModiftyId())){
+//            try{
+//                List<MarketingActivityModify> modifies =marketingActivityManager.queryMarketingActivityModifySize(req.getId());
+//                String id= null;
+//                if (!CollectionUtils.isEmpty(modifies)){
+//                    id = modifies.get(modifies.size()-1).getId();
+//                }
+//                //审核变更内容表最新数据
+//                ResultVO auditMktResultVO = marketingActivityModifyAuitStartProcess(req.getName(),req.getUserId(),req.getUserName(),req.getOrgId(),req.getSysPostName(), id);
+//            }catch (Exception e){
+//                log.info("MarketingActivityServiceImpl.addMarketingActivity 新增营销活动审核失败");
+//                e.printStackTrace();
+//            }
+//        }
+        List<MarketingActivityModify> modifies =marketingActivityManager.queryMarketingActivityModifySize(req.getId());
+        MarketingActivityModify marketingActivityModify = new MarketingActivityModify();
+        String id= null;
+        if (!CollectionUtils.isEmpty(modifies)){
+            marketingActivityModify = modifies.get(modifies.size()-1);
+        }
+            ResultVO<MarketingActivityDetailResp> respResultVO = queryMarketingActivity(req.getId());
+            MarketingActivityDetailResp marketingActivityDetailResp = respResultVO.getResultData();
+            //修改的时候 如果是审核通过或者是审核中 不起流程
+            if(PromoConst.STATUSCD.STATUS_CD_20.getCode().equals(marketingActivityModify.getStatus())
+                    || PromoConst.STATUSCD.STATUS_CD_10.getCode().equals(marketingActivityModify.getStatus())){
+                try{
+                    ResultVO auditMktResultVO = marketingActivityModifyAuitStartProcess(req.getName(),req.getUserId(),req.getUserName(),req.getOrgId(),req.getSysPostName(),id);
+                }catch (Exception e){
+                    log.info("MarketingActivityServiceImpl.auitMarketingActivityMoify 变更营销活动通过审核失败");
+                    e.printStackTrace();
+                }
+            }else {
+                try{
+                    ResultVO workFlowResultVO = turnActMarket(req.getUserId(),req.getUserName(), id);
+                }catch (Exception e){
+                    log.info("MarketingActivityServiceImpl.auitMarketingActivityMoify 变更营销活动驳回审核失败");
+                    e.printStackTrace();
+                }
+            }
+        }
 }

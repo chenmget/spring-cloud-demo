@@ -21,4 +21,10 @@ public class MarketingActivityAddResp implements Serializable {
      */
     @ApiModelProperty(value = "营销活动id")
     private String id;
+
+    /**
+     * 营销活动变更Id
+     */
+    @ApiModelProperty(value = "营销活动变更Id")
+    private String marketingActivityModifyId;
 }

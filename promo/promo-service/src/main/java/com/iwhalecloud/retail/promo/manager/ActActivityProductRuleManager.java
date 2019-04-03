@@ -2,17 +2,21 @@ package com.iwhalecloud.retail.promo.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActActivityProductRuleDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityProductReq;
+import com.iwhalecloud.retail.promo.dto.req.ReBateActivityListReq;
+import com.iwhalecloud.retail.promo.dto.resp.ReBateActivityListResp;
 import com.iwhalecloud.retail.promo.entity.ActActivityProductRule;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import com.iwhalecloud.retail.promo.mapper.ActActivityProductRuleMapper;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.Date;
@@ -62,5 +66,16 @@ public class ActActivityProductRuleManager extends ServiceImpl<ActActivityProduc
         }
         queryWrapper.eq(ActActivityProductRule.FieldNames.isDeleted.getTableFieldName(),PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
         return actActivityProductRuleMapper.selectList(queryWrapper);
+    }
+    /**
+     * 查询返利活动列表
+     * @param req 查询返利活动列表
+     * @return
+     */
+    public Page<ReBateActivityListResp> listMarketingActivity(ReBateActivityListReq req) {
+        Page<ReBateActivityListResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+        Page<ReBateActivityListResp> reBatePage = actActivityProductRuleMapper.listReBateActivity(page, req);
+        log.info("ActActivityProductRuleManager.listMarketingActivity reBatePage{}",reBatePage);
+        return reBatePage;
     }
 }

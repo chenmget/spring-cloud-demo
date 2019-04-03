@@ -23,4 +23,37 @@
         WHERE
         ACT_PROD_REL_ID = #{marketingActivityId} AND PRODUCT_ID = #{productId}
     </update>
+
+    <select id="listReBateActivity" parameterType="com.iwhalecloud.retail.promo.dto.req.ReBateActivityListReq" resultType="com.iwhalecloud.retail.promo.dto.resp.ReBateActivityListResp">
+        select t.ID,t.CODE,t.NAME,t.INITIATOR,t.START_TIME,t.END_TIME,t.STATUS,t.GMT_CREATE,s.CALCULATION_RULE  from act_marketing_activity t
+        INNER JOIN act_activity_rule s ON t.ID = s.MARKETING_ACTIVITY_ID
+        where 1=1
+        and t.IS_DELETED = '0' and s.IS_DELETED = '0'
+        <if test="req.activityName != null and req.activityName != ''">
+            and lower(t.NAME) like lower(CONCAT(CONCAT('%', #{req.activityName }), '%'))
+        </if>
+
+        <if test="req.activityStatus != null and req.activityStatus != ''">
+            and lower(t.STATUS) =  #{req.activityStatus}
+        </if>
+        <if test="req.startTimeS != null and req.startTimeS != '' ">
+            and lower(t.START_TIME) &gt;= #{req.startTimeS}
+        </if>
+        <if test="req.startTimeE != null and req.startTimeE != '' ">
+            and lower(t.START_TIME) &lt;= #{req.startTimeE}
+        </if>
+        <if test="req.endTimeS != null and req.endTimeS != '' ">
+            and lower(t.END_TIME) &gt;= #{req.endTimeS}
+        </if>
+        <if test="req.endTimeE != null and req.endTimeE != '' ">
+            and lower(t.END_TIME) &lt;= #{req.endTimeE}
+        </if>
+        <if test="req.activityInitiator != null and req.activityInitiator != '' ">
+            and lower(t.INITIATOR) = #{req.activityInitiator}
+        </if>
+        <if test="req.activityRule != null and req.activityRule != '' ">
+            AND lower(s.CALCULATION_RULE) = #{req.activityRule}
+        </if>
+        order by t.GMT_CREATE DESC
+    </select>
 </mapper>

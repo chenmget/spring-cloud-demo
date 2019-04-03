@@ -113,6 +113,6 @@ public class OrderItemDetailForReBateServiceImpl implements OrderItemDetailForRe
             log.info("OrderItemDetailForReBateServiceImpl.queryAccountBalanceOrderDetailPage page{}", JSON.toJSON(page));
             return ResultVO.success(page.setRecords(list));
         }
-        return ResultVO.error();
+        return ResultVO.success();
     }
 }

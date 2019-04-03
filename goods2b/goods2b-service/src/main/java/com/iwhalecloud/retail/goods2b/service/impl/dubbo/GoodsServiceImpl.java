@@ -793,13 +793,14 @@ public class GoodsServiceImpl implements GoodsService {
         log.info("GoodsServiceImpl.queryGoodsForPage getUserByUserId req={}", req.getUserId());
         UserDTO userDTO = userService.getUserByUserId(req.getUserId());
         if(null != userDTO){
-            MerchantGetReq merchantGetReq = new MerchantGetReq();
-            merchantGetReq.setMerchantId(userDTO.getRelCode());
-            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
-            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
-            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
-                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
-            }
+            merchantCode = userDTO.getRelCode();
+//            MerchantGetReq merchantGetReq = new MerchantGetReq();
+//            merchantGetReq.setMerchantId(userDTO.getRelCode());
+//            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
+//            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
+//            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
+//                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
+//            }
         }
         // 查询商品是否收藏
         log.info("GoodsServiceImpl.queryGoodsForPage queryUserCollection userCollectionListReq={}", userCollectionListReq);
@@ -822,7 +823,7 @@ public class GoodsServiceImpl implements GoodsService {
             // 设置前置补贴价格
             goods.setDeliveryPrice(goods.getDeliveryPrice());
             goods.setIsPresubsidy(false);
-            this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierCode(), merchantCode, goods);
+            this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
         }
         long endTime = System.currentTimeMillis();
         log.info("setPresubsidyPrice costTime={}:",endTime-startTime);

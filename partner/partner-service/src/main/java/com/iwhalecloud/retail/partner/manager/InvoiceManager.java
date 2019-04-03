@@ -98,6 +98,16 @@ public class InvoiceManager {
             queryWrapper.le(Invoice.FieldNames.busiLicenceExpDate.getTableFieldName(), req.getBusiLicenceExpDate());
         }
 
+        // 区间时间
+        if(Objects.nonNull(req.getStartExpireDate())){
+            hasParam = true;
+            queryWrapper.ge(Invoice.FieldNames.busiLicenceExpDate.getTableFieldName(), req.getStartExpireDate());
+        }
+        if(Objects.nonNull(req.getEndExpireDate())){
+            hasParam = true;
+            queryWrapper.le(Invoice.FieldNames.busiLicenceExpDate.getTableFieldName(), req.getEndExpireDate());
+        }
+
         if(!StringUtils.isEmpty(req.getMerchantId())){
             hasParam = true;
             queryWrapper.eq(Invoice.FieldNames.merchantId.getTableFieldName(), req.getMerchantId());

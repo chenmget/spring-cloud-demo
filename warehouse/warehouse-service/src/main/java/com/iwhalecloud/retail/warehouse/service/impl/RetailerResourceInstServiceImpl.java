@@ -404,7 +404,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
      */
     private String createReqName(String productName, String reqType) {
         StringBuilder b = new StringBuilder();
-        b.append(ResourceConst.REQTYPE.getReqtypeCode(reqType));
+        b.append(ResourceConst.REQTYPE.getReqTypeName(reqType));
         b.append("-");
         b.append(productName);
         return b.toString();

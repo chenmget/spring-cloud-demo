@@ -117,10 +117,17 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
     private void initQueryAccountBalancePayoutReq(QueryAccountBalancePayoutReq req) {
         String acctId = this.accountService.getAccountId(req.getCustId(),req.getAcctType());
         req.setAcctId(acctId);
+        boolean istMerchant = false;
+        if(StringUtils.isNotEmpty(req.getSupplierName())||StringUtils.isNotEmpty(req.getSupplierLoginName())){
+            istMerchant = true;
+        }
+        List<String> supplierIdList = new ArrayList<String>();
+
         GetMerchantIdListReq getMerchantIdListReq = new GetMerchantIdListReq();
         getMerchantIdListReq.setMerchantName(req.getSupplierName());
         getMerchantIdListReq.setMerchantLoginName(req.getSupplierLoginName());
-        req.setSupplierIdList(this.getMerchantIdList(getMerchantIdListReq));
+        supplierIdList = this.getMerchantIdList(getMerchantIdListReq);
+
 
         List<String> productIdList = new ArrayList<String>();
         String productName = req.getProductName();
@@ -149,8 +156,13 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
                 }
             }
         }
-
-
+        if(istMerchant&&supplierIdList.isEmpty()){
+            supplierIdList.add("-1");
+        }
+        if(isProduct&&productIdList.isEmpty()){
+            productIdList.add("-1");
+        }
+        req.setSupplierIdList(supplierIdList);
         req.setProductIdList(productIdList);
     }
 

@@ -102,7 +102,8 @@ public class AccountServiceImplTest {
     public void queryAccountBalanceAllForPage(){
         //已改未测试
         QueryAccountBalanceAllReq req = new QueryAccountBalanceAllReq();
-        req.setAcctId("1");
+        req.setCustId("4300001063072");
+        req.setAcctType("20");
         req.setPageNo(1);
         req.setPageSize(10);
         req.setEffDateEnd("2019-10-12");
@@ -116,11 +117,12 @@ public class AccountServiceImplTest {
         req.setPageNo(1);
         req.setPageSize(10);
         req.setCustId("4300001063072");
+        req.setAcctType("20");
 //        req.setBrandName("华为");
 //        req.setSupplierLoginName("111");
 //        req.setSupplierName("ly");
-        req.setOperDateStart("1987-10-10");
-        req.setOperDateEnd("2020-10-10");
+//        req.setOperDateStart("1987-10-10");
+//        req.setOperDateEnd("2020-10-10");
         ResultVO<Page<QueryAccountBalancePayoutResp>> pageResultVO = accountBalancePayoutService.queryAccountBalancePayoutForPage(req);
 
         System.out.println(pageResultVO);

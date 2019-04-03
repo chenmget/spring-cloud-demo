@@ -127,9 +127,9 @@ public class ResourceConst {
         }
 
         public static String getName(String name){
-            for (STORE_SUB_TYPE storeSubType : STORE_SUB_TYPE.values()){
-                if(storeSubType.code.equals(name)){
-                    return storeSubType.name;
+            for (STATUSCD statusCd : STATUSCD.values()){
+                if(statusCd.code.equals(name)){
+                    return statusCd.name;
                 }
             }
             return "";
@@ -173,9 +173,9 @@ public class ResourceConst {
         }
 
         public static String getName(String name){
-            for (STORE_SUB_TYPE storeSubType : STORE_SUB_TYPE.values()){
-                if(storeSubType.code.equals(name)){
-                    return storeSubType.name;
+            for (SOURCE_TYPE sourceType : SOURCE_TYPE.values()){
+                if(sourceType.code.equals(name)){
+                    return sourceType.name;
                 }
             }
             return "";

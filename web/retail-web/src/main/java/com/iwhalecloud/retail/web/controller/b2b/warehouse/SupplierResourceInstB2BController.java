@@ -63,7 +63,7 @@ public class SupplierResourceInstB2BController {
     @PostMapping(value="getResourceInstList")
     public ResultVO<Page<ResourceInstListResp>> getResourceInstList(@RequestBody ResourceInstListReq req) {
         if (StringUtils.isEmpty(req.getMktResStoreIds())) {
-            ResultVO.error("仓库为空");
+            return ResultVO.error("仓库为空");
         }
         return supplierResourceInstService.getResourceInstList(req);
     }

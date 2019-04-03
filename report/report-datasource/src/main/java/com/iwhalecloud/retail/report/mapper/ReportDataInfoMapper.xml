@@ -5,9 +5,6 @@
     <select id="getStorePurchaserReport" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq">
 		select * from (
-		SELECT h.*,(CASE WHEN h.StockTurnover &gt;= 10 THEN 1
-		WHEN h.StockTurnover &gt;= 5 AND h.StockTurnover &lt; 10 THEN 2
-		ELSE 3 END ) InventoryWarning FROM (
   SELECT g.*,g.StockNum/g.AverageDailySales StockTurnover FROM (
 	SELECT PRODUCT_BASE_NAME ProductBaseName,  
 		BRAND_NAME BrandName,	
@@ -20,6 +17,8 @@
 		SUM(CONTRACT_NUM) CRMContractNum, 
 		SUM(REGISTER_NUM) RegisterNum,  
 		SUM(RETURN_NUM) ReturnNum ,
+		a.type_id typeId,
+		a.stock_warning InventoryWarning,
 		(SELECT (SUM(b.CONTRACT_NUM)+SUM(b.REGISTER_NUM))/7 FROM RPT_PARTNER_OPERATING_DAY b WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(b.DATE) AND a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID GROUP BY b.PRODUCT_BASE_ID) AverageDailySales,
 		(SELECT SUM(c.STOCK_NUM) FROM RPT_PARTNER_OPERATING_DAY c WHERE c.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY)  AND  a.PRODUCT_BASE_ID=c.PRODUCT_BASE_ID GROUP BY c.PRODUCT_BASE_ID) StockNum
 		FROM RPT_PARTNER_OPERATING_DAY a
@@ -32,6 +31,9 @@
 		</if>
 		<if test="req.brand!=null and req.brand!=''">  
 			and a.BRAND_ID=#{req.brand}
+		</if>
+		<if test="req.typeId!=null and req.typeId!=''">  
+			and a.TYPE_ID=#{req.typeId}
 		</if>
 		<if test="req.businessEntityName!=null and req.businessEntityName!=''">  
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')	
@@ -59,13 +61,11 @@
 		</if>
 			GROUP BY a.PRODUCT_BASE_ID
 		) g
-		)h limit 1000) z
+		 limit 1000) z
   </select>
   
   <select id="getUerRoleForView" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq">
-         
-	   #1省级管理员，2地市管理员，3零售商，4供应商，5厂商 
 	  select b.lan_id regionId,b.rel_code relCode,a.user_id userId,(
 	 case when a.role_id in ('1087891202715070466','1087891300077449217') then '1' 	
 	 when a.role_id in ('10000002') then '2' 	

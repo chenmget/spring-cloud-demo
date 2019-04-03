@@ -105,16 +105,14 @@ public class AccountServiceImpl implements AccountService {
         pageReq.setAcctId(accountManager.getAccountId(req.getCustId(), req.getAcctType()));
         pageReq.setPageNo(req.getPageNo());
         pageReq.setPageSize(req.getPageSize());
-        ResultVO<Page<QueryAccountForPageResp>> pageResultVO = this.queryAccountForPage(pageReq);
-        ResultVO<Page<QueryTotalAccountResp>> resultVO = new ResultVO<Page<QueryTotalAccountResp>>();
-        resultVO.setResultCode(pageResultVO.getResultCode());
-        resultVO.setResultMsg(pageResultVO.getResultMsg());
+        Page<QueryAccountForPageResp> pageResultVO = accountManager.queryAccountForPage(pageReq);
+        ResultVO<Page<QueryTotalAccountResp>> resultVO = ResultVO.success();
+
         Page<QueryTotalAccountResp> respPage = new Page<QueryTotalAccountResp>();
-        if (pageResultVO.getResultData() != null) {
-            Page<QueryAccountForPageResp> page = pageResultVO.getResultData();
-            BeanUtils.copyProperties(page, respPage);
+        if (pageResultVO != null) {
+            BeanUtils.copyProperties(pageResultVO, respPage);
             List<QueryTotalAccountResp> list = new ArrayList<QueryTotalAccountResp>();
-            List<QueryAccountForPageResp> accountList = page.getRecords();
+            List<QueryAccountForPageResp> accountList = pageResultVO.getRecords();
             if (accountList != null && !accountList.isEmpty()) {
                 for (QueryAccountForPageResp queryAccountForPageResp : accountList) {
                     QueryTotalAccountResp totalAccountResp = new QueryTotalAccountResp();

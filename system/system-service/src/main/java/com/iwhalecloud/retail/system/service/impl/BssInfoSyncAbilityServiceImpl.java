@@ -29,4 +29,12 @@ public class BssInfoSyncAbilityServiceImpl implements BssInfoSyncAbilityService{
         resultMap.put("resultMsg", "调用成功");
         return resultMap;
     }
+
+    @Override
+    public Map<String, Object> userInfoSync(String jsonString) {
+        Map<String, Object> resultMap = new HashMap<>();
+        String resultStr = bssInfoSyncService.userInfoSync(jsonString);
+        resultMap.put("result", resultStr);
+        return resultMap;
+    }
 }

@@ -11,4 +11,6 @@ import java.util.Map;
 public interface BssInfoSyncAbilityService {
 
     Map<String, Object> syncOrgInfo(String jsonString);
+
+    Map<String, Object> userInfoSync(String jsonString);
 }

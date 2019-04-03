@@ -56,8 +56,8 @@ public class BssInfoSyncServiceImplTest {
                 "    \"actType\":\"A\"\n" +
                 "}";
 
-        String result = bssInfoSyncService.userInfoSync(jsonString);
-        log.info("BssInfoSyncServiceImplTest.userInfoSync result:{}", result);
+        Map<String, Object> map = bssInfoSyncAbilityService.userInfoSync(jsonString);
+        log.info("BssInfoSyncServiceImplTest.userInfoSync result:{}", map.get("result"));
     }
 
     @Test

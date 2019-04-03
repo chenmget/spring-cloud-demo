@@ -21,5 +21,5 @@ public interface TaskItemService{
      * @param taskId
      * @return
      */
-    TaskItemDTO queryTaskItemByTaskId(String taskId);
+    ResultVO<TaskItemDTO> queryTaskItemByTaskId(String taskId);
 }

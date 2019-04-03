@@ -198,7 +198,7 @@ public class TaskB2BController extends BaseController {
         log.info("TaskB2BController getTaskByFormId formId={} ", formId);
         QueryTaskByFormIdResp queryTaskByFormIdResp = new QueryTaskByFormIdResp();
         TaskDTO taskDTO = taskService.getTaskByFormId(formId).get(0);
-        TaskItemDTO taskItemDTO = taskItemService.queryTaskItemByTaskId(taskDTO.getTaskId());
+        TaskItemDTO taskItemDTO = taskItemService.queryTaskItemByTaskId(taskDTO.getTaskId()).getResultData();
         queryTaskByFormIdResp.setTaskDTO(taskDTO);
         queryTaskByFormIdResp.setTaskItemDTO(taskItemDTO);
         queryTaskByFormIdResp.setFormId(formId);

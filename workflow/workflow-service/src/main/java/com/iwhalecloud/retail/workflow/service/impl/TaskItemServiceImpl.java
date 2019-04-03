@@ -55,13 +55,13 @@ public class TaskItemServiceImpl implements TaskItemService {
     }
 
     @Override
-    public TaskItemDTO queryTaskItemByTaskId(String taskId) {
+    public ResultVO<TaskItemDTO> queryTaskItemByTaskId(String taskId) {
         TaskItemDTO taskItemDTO = new TaskItemDTO();
         TaskItem taskItem = taskItemManager.queryWaitHandlerTaskItem(taskId);
         if(taskItem != null) {
             BeanUtils.copyProperties(taskItem, taskItemDTO);
-            return taskItemDTO;
+            return ResultVO.success(taskItemDTO);
         }
-        return null;
+        return ResultVO.error();
     }
 }

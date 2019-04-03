@@ -335,7 +335,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
 
         Page<ResourceInstListResp> page = resourceInstManager.getResourceInstList(req);
-        log.info("SupplierResourceInstServiceImpl.listResourceInst resourceInstManager.getResourceInstList req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(page));
+        log.info("SupplierResourceInstServiceImpl.listResourceInst resourceInstManager.getResourceInstList req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(page.getRecords()));
         List<ResourceInstListResp> list = page.getRecords();
         if (CollectionUtils.isEmpty(list)) {
             return ResultVO.success(page);

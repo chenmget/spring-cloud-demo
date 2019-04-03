@@ -313,7 +313,7 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public List<TaskDTO> getTaskByFormId(String formId) {
+    public ResultVO<List<TaskDTO>> getTaskByFormId(String formId) {
         List<Task> taskList = taskManager.getTaskByFormId(formId);
         List<TaskDTO> taskDTOList = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(taskList)) {
@@ -325,7 +325,7 @@ public class TaskServiceImpl implements TaskService {
 
         }
 
-        return taskDTOList;
+        return ResultVO.success(taskDTOList);
     }
 
     /**
@@ -334,12 +334,12 @@ public class TaskServiceImpl implements TaskService {
      * @return
      */
     @Override
-    public TaskDTO getTaskById(String taskId) {
+    public ResultVO<TaskDTO> getTaskById(String taskId) {
         TaskDTO taskDTO = new TaskDTO();
         Task task = taskManager.getTask(taskId);
         if(Objects.nonNull(task)) {
             BeanUtils.copyProperties(task,taskDTO);
-            return taskDTO;
+            return ResultVO.success(taskDTO);
 
         }
         return null;

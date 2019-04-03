@@ -13,7 +13,6 @@ import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
 import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListLanCityReq;
-import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.constant.Constant;
@@ -34,10 +33,6 @@ import com.iwhalecloud.retail.rights.dto.request.QueryPreSubsidyReqDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponApplyObjectRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponRuleAndTypeQueryResp;
 import com.iwhalecloud.retail.rights.service.*;
-import com.iwhalecloud.retail.rights.service.CouponApplyObjectService;
-import com.iwhalecloud.retail.rights.service.CouponInstService;
-import com.iwhalecloud.retail.rights.service.MktResCouponService;
-import com.iwhalecloud.retail.rights.service.PreSubsidyCouponService;
 import com.iwhalecloud.retail.system.common.SysUserMessageConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.ConfigInfoDTO;
@@ -46,7 +41,6 @@ import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.ConfigInfoService;
 import com.iwhalecloud.retail.system.service.SysUserMessageService;
-import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.TaskDTO;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
@@ -61,12 +55,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.naming.Context;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component("marketingActivityService")
@@ -1045,12 +1036,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
             // 根据ordeId查询任务信息获取任务Id
             for (OrderDTO orderDTO:orderDTOList) {
-                List<TaskDTO> taskDTOs = taskService.getTaskByFormId(orderDTO.getOrderId());
-                if (CollectionUtils.isEmpty(taskDTOs)){
+                ResultVO<List<TaskDTO>> taskDTOs = taskService.getTaskByFormId(orderDTO.getOrderId());
+                if (CollectionUtils.isEmpty(taskDTOs.getResultData())){
                     continue;
                 }
                 // 组装用户消息准备入库
-                for (TaskDTO taskDTO:taskDTOs) {
+                for (TaskDTO taskDTO:taskDTOs.getResultData()) {
                     SysUserMessageDTO sysUserMessageDTO = new SysUserMessageDTO();
                     sysUserMessageDTO.setTaskId(taskDTO.getTaskId());
                     sysUserMessageDTO.setEndTime(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).deliverEndItme);

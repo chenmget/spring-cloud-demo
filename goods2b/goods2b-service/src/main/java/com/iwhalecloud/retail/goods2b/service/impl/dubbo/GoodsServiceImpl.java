@@ -792,13 +792,14 @@ public class GoodsServiceImpl implements GoodsService {
         log.info("GoodsServiceImpl.queryGoodsForPage getUserByUserId req={}", req.getUserId());
         UserDTO userDTO = userService.getUserByUserId(req.getUserId());
         if(null != userDTO){
-            MerchantGetReq merchantGetReq = new MerchantGetReq();
-            merchantGetReq.setMerchantId(userDTO.getRelCode());
-            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
-            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
-            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
-                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
-            }
+            merchantCode = userDTO.getRelCode();
+//            MerchantGetReq merchantGetReq = new MerchantGetReq();
+//            merchantGetReq.setMerchantId(userDTO.getRelCode());
+//            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
+//            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
+//            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
+//                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
+//            }
         }
         // 查询商品是否收藏
         log.info("GoodsServiceImpl.queryGoodsForPage queryUserCollection userCollectionListReq={}", userCollectionListReq);

@@ -94,9 +94,8 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
     }
     @Override
     public ResultVO<Page<QueryAccountBalanceDetailAllResp>> queryAccountBalanceDetailAllForPage(QueryAccountBalanceDetailAllReq req){
-        log.info(AccountBalanceDetailServiceImpl.class.getName()+" queryAccountBalanceDetailAllForPage, req={}", req == null ? "" : JSON.toJSON(req));
-
         this.initQueryAccountBalanceDetailAll(req);
+        log.info(AccountBalanceDetailServiceImpl.class.getName()+" queryAccountBalanceDetailAllForPage, req={}", req == null ? "" : JSON.toJSON(req));
         Page<QueryAccountBalanceDetailAllResp> page = accountBalanceDetailManager.queryAccountBalanceDetailAllForPage(req);
         if(page!=null&&page.getRecords()!=null){
             List<QueryAccountBalanceDetailAllResp> dataList = page.getRecords();
@@ -104,6 +103,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 AccountBalanceRuleReq ruleReq = new AccountBalanceRuleReq();
                 ruleReq.setActId(queryAccountBalanceDetailAllResp.getActId());
                 ruleReq.setRuleType(RebateConst.Const.RULE_TYPE_REBATE.getValue());
+                //获取供应商与活动信息
                 ResultVO<List<AccountBalanceRuleResp>> ruleResult = accountBalanceRuleService.queryAccountBalanceRuleList(ruleReq);
                 if(ruleResult!=null&&ruleResult.getResultData()!=null&&!ruleResult.getResultData().isEmpty()){
                     String supplierId = ruleResult.getResultData().get(0).getObjId();
@@ -112,7 +112,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                     queryAccountBalanceDetailAllResp.setActId(actId);
                 }
 
-                //卖家ID
+                //供应商
                 String supplierId = queryAccountBalanceDetailAllResp.getSupplierId();
                 String statusCdDesc = RebateConst.Const.STATUS_UN_USE.getName();
                 if(RebateConst.Const.STATUS_USE.getValue().equals(queryAccountBalanceDetailAllResp.getStatusCd())){
@@ -174,6 +174,11 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
         return resultVO;
 
     }
+
+    /**
+     * 初始化查询条件
+     * @param req
+     */
     private void initQueryAccountBalanceDetailAll(QueryAccountBalanceDetailAllReq req){
         String acctId = this.accountService.getAccountId(req.getCustId(),req.getAcctType());
         req.setAcctId(acctId);
@@ -193,10 +198,10 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
 
         //活动的处理
-        String actName = req.getActName();
-        if(StringUtils.isNotEmpty(actName)){
+
+        if(StringUtils.isNotEmpty(req.getActName())){
             MarketingActivityListReq activityListReq = new MarketingActivityListReq();
-            activityListReq.setActivityName(actName);
+            activityListReq.setActivityName(req.getActName());
             //只查询返利活动
             activityListReq.setActivityType(PromoConst.ACTIVITYTYPE.REBATE.getCode());
             activityListReq.setPageNo(1);
@@ -222,7 +227,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
         }
         //有查询，但是查询不到
         if(isQueryBalanceTypeId&&balanceTypeIdList.isEmpty()){
-            balanceTypeIdList.add("-1");
+            balanceTypeIdList.add(RebateConst.QUERY_NULL);
         }
         req.setBalanceTypeIdList(balanceTypeIdList);
     }

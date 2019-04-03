@@ -5,6 +5,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.AccountDTO;
 import com.iwhalecloud.retail.promo.dto.req.*;
 import com.iwhalecloud.retail.promo.dto.resp.AccountBalanceStResp;
@@ -169,7 +170,7 @@ public class AccountServiceImpl implements AccountService {
     }
     @Override
     public String  getAccountId(String custId,String acctType){
-        String acctId = "-1";
+        String acctId = RebateConst.QUERY_NULL;
         ResultVO<AccountDTO> accountDTOResultVO = this.getAccountByCustId(custId,acctType);
         if(accountDTOResultVO!=null&&accountDTOResultVO.getResultData()!=null){
             acctId =  accountDTOResultVO.getResultData().getAcctId();

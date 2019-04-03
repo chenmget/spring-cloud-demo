@@ -8,7 +8,7 @@ public final class RebateConst {
 
     public static final String ZERO = "0";
 
-
+    public static final String QUERY_NULL = "-1";
     public static final String EXP_DATE_DEF="2037-12-31 00:00:00";
 
     public static final String BALANCE_TYPE_NAME_END = "返利";

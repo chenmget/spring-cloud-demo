@@ -14,6 +14,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.ArithUtil;
+import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.req.GetMerchantIdListReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalancePayoutReq;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalancePayoutResp;
@@ -54,9 +55,8 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
 
     @Override
     public ResultVO<Page<QueryAccountBalancePayoutResp>> queryAccountBalancePayoutForPage(QueryAccountBalancePayoutReq req) {
-        log.info(AccountBalancePayoutServiceImpl.class.getName()+" queryAccountBalancePayoutForPage, req={}", req == null ? "" : JSON.toJSON(req));
-
         this.initQueryAccountBalancePayoutReq(req);
+        log.info(AccountBalancePayoutServiceImpl.class.getName()+" queryAccountBalancePayoutForPage, req={}", req == null ? "" : JSON.toJSON(req));
         Page<QueryAccountBalancePayoutResp> page = accountBalancePayoutManager.queryAccountBalancePayoutForPage(req);
 
         if (page != null && page.getRecords() != null) {
@@ -157,10 +157,10 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
             }
         }
         if(istMerchant&&supplierIdList.isEmpty()){
-            supplierIdList.add("-1");
+            supplierIdList.add(RebateConst.QUERY_NULL);
         }
         if(isProduct&&productIdList.isEmpty()){
-            productIdList.add("-1");
+            productIdList.add(RebateConst.QUERY_NULL);
         }
         req.setSupplierIdList(supplierIdList);
         req.setProductIdList(productIdList);

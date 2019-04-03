@@ -26,8 +26,6 @@ public interface AccountBalanceService{
      */
     ResultVO calculation(AccountBalanceCalculationReq req);
 
-
-
     /**
      * 查询账本列表(基本信息)
      * @param req

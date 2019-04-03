@@ -244,7 +244,7 @@ public class RightsConst {
     }
 
     /**
-     * 领取总量或是数量的限制标识
+     * 优惠券发放任务状态
      */
     public enum TaskStatusCd {
         TASK_STATUS_CD_0("0","待处理"),
@@ -275,4 +275,38 @@ public class RightsConst {
             this.type = type;
         }
     }
+
+    /**
+     * 发放渠道类型LOVB=RES-C-0047
+     */
+    public enum ProvChannelType{
+        PROV_CHANNEL_TYPE_1000("1000","网厅"),
+        PROV_CHANNEL_TYPE_2000("2000","微信"),
+        PROV_CHANNEL_TYPE_3000("3000","短信");
+
+        private String type;
+        private String name;
+
+        ProvChannelType(String type,String name) {
+            this.type = type;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setCode(String type) {
+            this.type = type;
+        }
+    }
+
 }

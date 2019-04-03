@@ -18,6 +18,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.Period;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Component
@@ -42,14 +43,23 @@ public class SysUserMessageManager {
      * @return
      */
      public IPage<SysUserMessage> selectWarnMessageList(SysUserMessageReq sysUserMessageReq) {
-         QueryWrapper queryWrapper = new QueryWrapper<>();
+         QueryWrapper<SysUserMessage> queryWrapper = new QueryWrapper<>();
          Page<SysUserMessage> page = new Page<>(sysUserMessageReq.getPageNo(),sysUserMessageReq.getPageSize());
          queryWrapper.eq(SysUserMessage.FieldNames.status.getTableFieldName(),SysUserMessageConst.MessageStatusEnum.VALID.getCode());
          queryWrapper.eq(SysUserMessage.FieldNames.messageType.getTableFieldName(),SysUserMessageConst.MESSAGE_TYPE_WARN);
          if (StringUtils.isNotEmpty(sysUserMessageReq.getUserId())) {
              queryWrapper.eq(SysUserMessage.FieldNames.userId.getTableFieldName(),sysUserMessageReq.getUserId());
          }
-         queryWrapper.gt(SysUserMessage.FieldNames.endTime.getTableFieldName(), LocalDate.now());
+
+         // 若结束时间不为空则作为查询条件，否则以当前时间为条件，结束时间应大于当前时间
+         if (Objects.nonNull(sysUserMessageReq.getBeginTime()) && Objects.nonNull(sysUserMessageReq.getEndTime())) {
+             queryWrapper.and(wrapper -> wrapper.between(SysUserMessage.FieldNames.beginTime.getTableFieldName(),sysUserMessageReq.getBeginTime(),sysUserMessageReq.getEndTime())
+                     .or()
+                     .between(SysUserMessage.FieldNames.endTime.getTableFieldName(),sysUserMessageReq.getBeginTime(),sysUserMessageReq.getEndTime()));
+         } else {
+             queryWrapper.ge(SysUserMessage.FieldNames.endTime.getTableFieldName(), LocalDate.now());
+         }
+         queryWrapper.like(Objects.nonNull(sysUserMessageReq.getMessageTitle()),SysUserMessage.FieldNames.title.getTableFieldName(),sysUserMessageReq.getMessageTitle());
          queryWrapper.isNotNull(SysUserMessage.FieldNames.taskId.getTableFieldName());
          return sysUserMessageMapper.selectPage(page,queryWrapper);
 

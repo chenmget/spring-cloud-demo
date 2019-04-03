@@ -112,7 +112,7 @@ public class SelectCartGoodsServiceImpl implements SelectCartGoodsService {
             for (OrderItem orderItem : builder.getOrderItem()) {
                 double couponAmount = 0.0;
                 for (Promotion promotion : builder.getPromotionList()) {
-                    if (promotion.getProductId().equals(orderItem.getProductId())) {
+                    if (promotion.getOrderItemId().equals(orderItem.getItemId())) {
                         if (promotion.getDiscount() != null) {
                             couponAmount = CurrencyUtil.add(couponAmount, Double.parseDouble(promotion.getDiscount()));
                         }

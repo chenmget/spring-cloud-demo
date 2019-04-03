@@ -15,6 +15,8 @@ import com.iwhalecloud.retail.system.manager.SysUserMessageManager;
 import com.iwhalecloud.retail.system.service.SysUserMessageService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.TaskDTO;
+import com.iwhalecloud.retail.workflow.dto.TaskItemDTO;
+import com.iwhalecloud.retail.workflow.service.TaskItemService;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -39,6 +41,9 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
 
     @Reference
     private TaskService taskService;
+
+    @Reference
+    private TaskItemService taskItemService;
 
     /**
      * 新增营销活动发货预警记录
@@ -77,6 +82,8 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
         List<SysUserMessageDTO> sysUserMessageDTOList = Lists.newArrayList();
         Period periodToDeliverEndTime;
         ZoneId zoneId = ZoneId.systemDefault();
+        TaskItemDTO taskItemDTO;
+        TaskDTO taskDTO;
         for (SysUserMessage sysUserMessage:sysUserMessagePage.getRecords()) {
             SysUserMessageDTO sysUserMessageDTO = new SysUserMessageDTO();
             BeanUtils.copyProperties(sysUserMessage,sysUserMessageDTO);
@@ -84,7 +91,14 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
                 periodToDeliverEndTime = Period.between(LocalDate.now(),sysUserMessageDTO.getEndTime().toInstant().atZone(zoneId).toLocalDate());
                 sysUserMessageDTO.setContent(sysUserMessageDTO.getContent() + String.format(SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT,periodToDeliverEndTime.getDays()));
             }
-
+            taskItemDTO = taskItemService.queryTaskItemByTaskId(sysUserMessageDTO.getTaskId());
+            if (Objects.nonNull(taskItemDTO)) {
+                sysUserMessageDTO.setTaskItemId(taskItemDTO.getTaskItemId());
+            }
+            taskDTO =  taskService.getTaskById(sysUserMessageDTO.getTaskId());
+            if (Objects.nonNull(taskDTO)) {
+                sysUserMessageDTO.setOrderId(taskDTO.getFormId());
+            }
             sysUserMessageDTOList.add(sysUserMessageDTO);
         }
         page.setRecords(sysUserMessageDTOList);
@@ -93,12 +107,12 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
 
 
     /**
-     * 更新活动发货时间截止前未发货订单预警信息
+     *更新用户消息状态
      */
     @Override
-    public void updateNotifyOrder() {
+    public void updateSysUserMessage() {
 
-        // 1.随着时间推移活动的截止发货日期已晚于当前日期则更新预警信息
+        // 1.随着时间推移,营销活动的截止发货日期已晚于当前日期则更新预警信息状态为无效
         List<SysUserMessage> sysUserMessageList = sysUserMessageManager.selectExpiredWarnMessageList();
         if (CollectionUtils.isEmpty(sysUserMessageList)) {
             return;
@@ -110,7 +124,7 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
         }
         sysUserMessageManager.updateUserMessageById(sysUserMessageList);
 
-        // 2.在活动截止日期前已发货更新预警信息
+        // 2.在活动截止日期前已发货，则更新预警信息为无效
         sysUserMessageList = sysUserMessageManager.selectValidWarnMessageList();
         if (CollectionUtils.isEmpty(sysUserMessageList)) {
             return;
@@ -135,6 +149,7 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
      *根据userId、taskId查询未过期且有效的用户告警消息
      * @return
      */
+    @Override
     public List<SysUserMessageDTO> selectValidWarnMessageList(String userId, String taskId) {
         List<SysUserMessage> sysUserMessageList = sysUserMessageManager.selectValidWarnMessageList(userId,taskId);
         if (CollectionUtils.isEmpty(sysUserMessageList)) {

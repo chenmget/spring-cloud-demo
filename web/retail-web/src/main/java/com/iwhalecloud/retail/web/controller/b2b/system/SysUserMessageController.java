@@ -26,7 +26,7 @@ public class SysUserMessageController {
     private SysUserMessageService sysUserMessageService;
 
     @Reference
-    private com.iwhalecloud.retail.promo.service.MarketingActivityService marketingActivityService;
+    private MarketingActivityService marketingActivityService;
 
 
     @ApiOperation(value = "查询营销活动未发货记录")
@@ -46,12 +46,18 @@ public class SysUserMessageController {
     }
 
     @PostMapping(value = "/notifyMerchantActivityOrderDelivery")
-    public ResultVO<IPage<SysUserMessageDTO>> queryActSupRecordDetail() {
+    public ResultVO<IPage<SysUserMessageDTO>> notifyMerchantActivityOrderDelivery() {
         marketingActivityService.notifyMerchantActivityOrderDelivery();
      return ResultVO.success();
 
     }
 
+    @PostMapping(value = "/updateSysUserMessage")
+    public ResultVO updateSysUserMessage() {
+        sysUserMessageService.updateSysUserMessage();
+        return ResultVO.success();
+
+    }
 
 
 }

@@ -26,4 +26,6 @@ public class ReportDeSaleDaoReq extends PageVO {
   private String warningStatus;//库存预警状态
   private String userType;//用户角色
   private String userId;
+  private String typeId;//产品类型
+
 }

@@ -35,4 +35,5 @@ public class ReportCodeStatementsReq extends PageVO  {
     private String userType;
     private String productCode; // 产品编码
     private String manufacturerCode;//厂家编码
+    private String cpType; // 产品类别
 }

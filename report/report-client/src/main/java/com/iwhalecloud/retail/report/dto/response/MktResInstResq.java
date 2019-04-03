@@ -16,5 +16,5 @@ public class MktResInstResq extends PageVO {/**
 	private String brandName;
 	private String priceLevel;
 	private String productBaseId;
-
+	private String typeId;
 }

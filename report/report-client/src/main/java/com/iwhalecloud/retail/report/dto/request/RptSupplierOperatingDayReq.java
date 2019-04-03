@@ -40,4 +40,5 @@ public class RptSupplierOperatingDayReq extends PageVO  {
 	private String stockNum;//库存总量=入库总量—出库总量
 	private String stockAmount;//库存金额
 	private String createDate;//创建时间
+	private String typeId;	//产品类型
 }

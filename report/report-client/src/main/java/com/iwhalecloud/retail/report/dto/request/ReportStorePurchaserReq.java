@@ -22,6 +22,6 @@ public class ReportStorePurchaserReq extends PageVO {
 	  private String userType;//零售商标识
 	  private String regionGrade; //地市标识
 	  private String warningStatus;//库存预警状态
-
-	  private String userId;
+	  private String typeId;	//产品类型
+ 	  private String userId;
 }

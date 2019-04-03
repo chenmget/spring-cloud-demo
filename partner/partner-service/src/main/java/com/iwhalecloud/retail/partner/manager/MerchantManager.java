@@ -252,10 +252,27 @@ public class MerchantManager {
             isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
         }
 
+        // 营业执照失效期开始时间、营业执照失效期 结束时间 转换成 merchant_id
+        if (Objects.nonNull(req.getEndExpireDate())
+                || Objects.nonNull(req.getStartExpireDate())) {
+            InvoiceListReq invoiceListReq = new InvoiceListReq();
+            BeanUtils.copyProperties(req, invoiceListReq);
+            invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
+
+            List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
+            if (isNeedGetMerchantIdList) {
+                // 取交集
+                merchantIdList.retainAll(resultList);
+            } else {
+                merchantIdList = resultList;
+            }
+
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
+
+        }
+
         // 分组标签 转换成 merchant_id
         if (!StringUtils.isEmpty(req.getTagId())) {
-//            MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
-//            merchantTagRelListReq.setTagId(req.getTagId());
             List<String> resultList= getMerchantIdListByTag(req.getTagId());
             if (isNeedGetMerchantIdList) {
                 // 取交集
@@ -384,11 +401,14 @@ public class MerchantManager {
             isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
         }
 
-        // 营业执照失效期 转换成 merchant_id
-        if (Objects.nonNull(req.getBusiLicenceExpDate())) {
+        // 营业执照失效期 区间 转换成 merchant_id
+        // 营业执照失效期、营业执照失效期开始时间、营业执照失效期 结束时间 转换成 merchant_id
+        if (Objects.nonNull(req.getEndExpireDate())
+                || Objects.nonNull(req.getStartExpireDate())) {
             InvoiceListReq invoiceListReq = new InvoiceListReq();
-            invoiceListReq.setBusiLicenceExpDate(req.getBusiLicenceExpDate());
+            BeanUtils.copyProperties(req, invoiceListReq);
             invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
+
             List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
@@ -505,9 +525,11 @@ public class MerchantManager {
             isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
         }
 
-        // 营业执照号、税号、公司账号、营业执照失效期 转换成 merchant_id
+        // 营业执照号、税号、公司账号、营业执照失效期、营业执照失效期开始时间、营业执照失效期 结束时间 转换成 merchant_id
         if (!StringUtils.isEmpty(req.getBusiLicenceCode()) || !StringUtils.isEmpty(req.getTaxCode())
-                || !StringUtils.isEmpty(req.getRegisterBankAcct()) || Objects.nonNull(req.getBusiLicenceExpDate())) {
+                || !StringUtils.isEmpty(req.getRegisterBankAcct()) || Objects.nonNull(req.getBusiLicenceExpDate())
+                || Objects.nonNull(req.getEndExpireDate()) || Objects.nonNull(req.getStartExpireDate())) {
+
             InvoiceListReq invoiceListReq = new InvoiceListReq();
             BeanUtils.copyProperties(req, invoiceListReq);
             invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
@@ -599,11 +621,37 @@ public class MerchantManager {
 
         // 非商家表字段  基本上是  先转换成  user_id 或  merchant_id  集合 再作为条件  进行查询
 
-        if(!StringUtils.isEmpty(req.getLoginName())){ // 商家对应系统账号 转换成 user_id集合
-            isNeedGetMerchantIdList = true;
+        // 系统账号和系统状态 转换成 merchant_id集合
+        if (!StringUtils.isEmpty(req.getLoginName())) {
             UserListReq userListReq = new UserListReq();
             userListReq.setLoginName(req.getLoginName());
-            merchantIdList = getMerchantIdListByLoginName(userListReq);
+            List<String> resultList= getMerchantIdListByLoginName(userListReq);
+            if (isNeedGetMerchantIdList) {
+                // 取交集
+                merchantIdList.retainAll(resultList);
+            } else {
+                merchantIdList = resultList;
+            }
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
+        }
+
+        // 营业执照失效期、营业执照失效期开始时间、营业执照失效期 结束时间 转换成 merchant_id
+        if (Objects.nonNull(req.getEndExpireDate())
+                || Objects.nonNull(req.getStartExpireDate())) {
+            InvoiceListReq invoiceListReq = new InvoiceListReq();
+            BeanUtils.copyProperties(req, invoiceListReq);
+            invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
+
+            List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
+            if (isNeedGetMerchantIdList) {
+                // 取交集
+                merchantIdList.retainAll(resultList);
+            } else {
+                merchantIdList = resultList;
+            }
+
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
+
         }
 
         if (CollectionUtils.isEmpty(merchantIdList)

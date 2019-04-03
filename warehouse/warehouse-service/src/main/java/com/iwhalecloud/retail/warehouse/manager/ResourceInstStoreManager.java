@@ -16,6 +16,7 @@ import com.iwhalecloud.retail.warehouse.mapper.ResouceStoreMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstStoreMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
@@ -90,10 +91,14 @@ public class ResourceInstStoreManager{
      * @param resourceInstStoreDTO
      * @return
      */
-    public Integer updateResourceInstStore(ResourceInstStoreDTO resourceInstStoreDTO){
+    public int updateResourceInstStore(ResourceInstStoreDTO resourceInstStoreDTO){
+        log.info("ResourceInstStoreManager.updateResourceInstStore req={}", JSON.toJSONString(resourceInstStoreDTO));
         //Step1:当前商户、当前商品、当前仓库的串码实例是否存在
         //step2:存在，修改库存数量
         //step3:不存在，插入数据
+        if (StringUtils.isEmpty(resourceInstStoreDTO.getMerchantId()) || StringUtils.isEmpty(resourceInstStoreDTO.getMktResStoreId()) || StringUtils.isEmpty(resourceInstStoreDTO.getMktResId())) {
+            return -1;
+        }
         QueryWrapper<ResourceInstStore> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(ResourceInstStore.FieldNames.merchantId.getTableFieldName(), resourceInstStoreDTO.getMerchantId());
         queryWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStoreDTO.getMktResStoreId());
@@ -135,7 +140,7 @@ public class ResourceInstStoreManager{
             if (Long.compare(quantity, 0) < 1) {
                 try {
                     GoodsProductRelEditReq goodsProductRelEditReq = new GoodsProductRelEditReq();
-                    goodsProductRelEditReq.setGoodsId(resourceInstStoreDTO.getMerchantId());
+                    goodsProductRelEditReq.setMerchantId(resourceInstStoreDTO.getMerchantId());
                     goodsProductRelEditReq.setProductId(resourceInstStoreDTO.getMktResId());
                     goodsProductRelEditReq.setIsHaveStock(false);
                     goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
@@ -152,6 +157,7 @@ public class ResourceInstStoreManager{
             updateResourceInstStore.setStatusDate(new Date());
             UpdateWrapper<ResourceInstStore> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq(ResourceInstStore.FieldNames.mktResInstStoreId.getTableFieldName(), resourceInstStore.getMktResInstStoreId());
+            updateWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStore.getMktResStoreId());
             return resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
         }else{
             Date now = new Date();

@@ -42,8 +42,8 @@ public class ComplexInfoServiceImpl implements ComplexInfoService {
 
     @Override
     public int deleteOneComplexInfo(ComplexInfoDTO complexInfoDTO) {
-        String complex_info_id = complexInfoDTO.getComplexInfoId();
-        return complexInfoManager.deleteOneComplexInfo(complex_info_id);
+        String complexInfoId = complexInfoDTO.getComplexInfoId();
+        return complexInfoManager.deleteOneComplexInfo(complexInfoId);
     }
 
     @Override

@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp;
 import com.iwhalecloud.retail.goods2b.entity.Goods;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsMapper;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,14 @@ public class GoodsManager{
 
     public Page<GoodsForPageQueryResp> queryGoodsForPage(GoodsForPageQueryReq req) {
         Page<GoodsForPageQueryResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+        String sortType = req.getSortType();
+        if(StringUtils.isNotEmpty(sortType)){
+            for(GoodsConst.SortTypeEnum m:GoodsConst.SortTypeEnum.values()){
+                if(m.getValue().equals(req.getSortType())){
+                    req.setSortType(m.getCode().toString());
+                }
+            }
+        }
         Page<GoodsForPageQueryResp> prodGoodsPage = goodsMapper.queryGoodsForPage(page, req);
         return prodGoodsPage;
     }
@@ -79,13 +88,6 @@ public class GoodsManager{
     public int updateByPrimaryKey(Goods record) {
         record.setUpdateDate(new Date());
         return goodsMapper.updateById(record);
-    }
-
-    public List<Goods> listGoodsBySupplierId(String supplierId){
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("is_deleted", GoodsConst.NO_DELETE);
-        queryWrapper.eq("SUPPLIER_ID",supplierId);
-        return goodsMapper.selectList(queryWrapper);
     }
 
     public int updateBuyCountById(String goodsId, Long buyCount) {

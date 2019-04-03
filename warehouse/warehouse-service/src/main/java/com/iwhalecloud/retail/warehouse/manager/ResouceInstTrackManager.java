@@ -3,10 +3,11 @@ package com.iwhalecloud.retail.warehouse.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.entity.ResouceInstTrack;
+import com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Resource;
-import com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackMapper;
 
 @Component
 public class ResouceInstTrackManager{
@@ -31,5 +32,9 @@ public class ResouceInstTrackManager{
     public String qryOrderIdByNbr(String nbr, String storageType){
         return resouceInstTrackMapper.qryOrderIdByNbr(nbr, storageType);
     }
-    
+
+
+    public ResouceInstTrackDTO getResourceInstTrackByNbrAndMerchantId(String nbr, String merchantId){
+        return resouceInstTrackMapper.getResourceInstTrackByNbrAndMerchantId(nbr, merchantId);
+    }
 }

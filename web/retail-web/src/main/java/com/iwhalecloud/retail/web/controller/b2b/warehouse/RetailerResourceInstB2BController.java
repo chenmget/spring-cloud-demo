@@ -10,8 +10,6 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
-import com.iwhalecloud.retail.system.common.SystemConst;
-import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceAllocateResp;
@@ -34,6 +32,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -186,6 +185,9 @@ public class RetailerResourceInstB2BController {
     @PostMapping(value="allocateResourceInst")
     public ResultVO allocateResourceInst(@RequestBody ResourceInstAllocateReqDTO dto) {
         String userId = UserContext.getUserId();
+        if (CollectionUtils.isEmpty(dto.getMktResInstNbrs()) || dto.getMktResInstNbrs().size() > 5) {
+            return ResultVO.error("调拨数目不对");
+        }
         RetailerResourceInstAllocateReq req = new RetailerResourceInstAllocateReq();
         BeanUtils.copyProperties(dto, req);
         req.setCreateStaff(userId);
@@ -221,51 +223,35 @@ public class RetailerResourceInstB2BController {
     @PostMapping(value="nbrExport")
     @UserLoginToken
     public void nbrExport(@RequestBody ResourceInstListReq req, HttpServletResponse response) {
-        if (org.springframework.util.StringUtils.isEmpty(req.getMktResStoreIds())) {
-            ResultVO.error("仓库为空");
-        }
-        ResultVO result = new ResultVO();
-
-        UserDTO userDTO = UserContext.getUser();
-        if (userDTO == null) {
-            return;
-        }
         ResultVO<Page<ResourceInstListResp>> dataVO = retailerResourceInstService.listResourceInst(req);
         if (!dataVO.isSuccess() || dataVO.getResultData() == null) {
             return;
         }
         List<ResourceInstListResp> list = dataVO.getResultData().getRecords();
         log.info("RetailerResourceInstB2BController.nbrExport retailerResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
-
-        List<Integer> supplierList = Lists.newArrayList(
-                SystemConst.USER_FOUNDER_4,
-                SystemConst.USER_FOUNDER_5,
-                SystemConst.USER_FOUNDER_1,
-                SystemConst.USER_FOUNDER_12,
-                SystemConst.USER_FOUNDER_24
-        );
-        Boolean supplierExcel = supplierList.contains(userDTO.getUserFounder());
-        List<ExcelTitleName> excelTitleNames = null;
-        if (supplierExcel) {
-            excelTitleNames = ResourceInstColum.supplierColumn();
-        }else{
-            excelTitleNames = ResourceInstColum.retailerColumn();
-        }
-
+        List<ExcelTitleName> excelTitleNames = ResourceInstColum.retailerColumn();
+        OutputStream output = null;
         try{
             //创建Excel
             Workbook workbook = new HSSFWorkbook();
             String fileName = "串码列表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames);
-            OutputStream output = response.getOutputStream();
+            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames, true);
+            output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
             response.setContentType("application/msexcel;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             workbook.write(output);
-            output.close();
         }catch (Exception e){
             log.error("串码导出失败",e);
+        } finally {
+            try {
+                if (null != output) {
+                    output.close();
+                }
+            } catch (Exception e) {
+                log.error("error:", e);
+            }
         }
     }
 
@@ -277,43 +263,34 @@ public class RetailerResourceInstB2BController {
     @PostMapping(value="nbrExportAll")
     @UserLoginToken
     public void nbrExportAll(@RequestBody ResourceInstListReq req, HttpServletResponse response) {
-        UserDTO userDTO = UserContext.getUser();
-        if (userDTO == null) {
-            return;
-        }
         ResultVO<List<ResourceInstListResp>> dataVO = retailerResourceInstService.getExportResourceInstList(req);
         if (!dataVO.isSuccess() || dataVO.getResultData() == null) {
             return;
         }
         List<ResourceInstListResp> list = dataVO.getResultData();
         log.info("RetailerResourceInstB2BController.nbrExportAll retailerResourceInstService.getExportResourceInstList req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
-        List<Integer> supplierList = Lists.newArrayList(
-                SystemConst.USER_FOUNDER_4,
-                SystemConst.USER_FOUNDER_5,
-                SystemConst.USER_FOUNDER_1,
-                SystemConst.USER_FOUNDER_12,
-                SystemConst.USER_FOUNDER_24
-        );
-        Boolean supplierExcel = supplierList.contains(userDTO.getUserFounder());
-        List<ExcelTitleName> excelTitleNames = null;
-        if (supplierExcel) {
-            excelTitleNames = ResourceInstColum.supplierColumn();
-        } else {
-            excelTitleNames = ResourceInstColum.retailerColumn();
-        }
+        List<ExcelTitleName> excelTitleNames = ResourceInstColum.retailerColumn();
+        OutputStream output = null;
         try {
             Workbook workbook = new HSSFWorkbook();
             String fileName = "串码列表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames);
-            OutputStream output = response.getOutputStream();
+            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames, true);
+            output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
             response.setContentType("application/msexcel;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             workbook.write(output);
-            output.close();
         } catch (Exception e) {
             log.error("串码导出失败", e);
+        } finally {
+            try {
+                if (null != output){
+                    output.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

@@ -60,7 +60,7 @@ public class ResourceInstUpdateReq implements Serializable {
 	 * 更新时间。
 	 */
 	@ApiModelProperty(value = "更新时间。")
-	private java.util.Date updateDate = new Date();
+	private java.util.Date updateDate;
 	/**
 	 * 描述触发事件的对象类型：资源申请单,订单项等。LOVB=RES-C-0006
 	 */
@@ -101,4 +101,10 @@ public class ResourceInstUpdateReq implements Serializable {
 	 */
 	@ApiModelProperty(value = "目标营销资源仓库")
 	private java.lang.String destStoreId;
+
+	/**
+	 * 记录状态变更的时间。
+	 */
+	@ApiModelProperty(value = "记录状态变更的时间。")
+	private java.util.Date statusDate;
 }

@@ -200,7 +200,8 @@
             wf_task_item b
         <where>
             a.task_id = b.task_id
-            AND b.item_status != '${@com.iwhalecloud.retail.workflow.common.WorkFlowConst@TASK_ITEM_STATE_FINISH}'
+--             /**任务项状态：已处理*/
+            AND b.item_status != '3'
             AND b.task_item_id = #{taskItemId}
         </where>
     </select>

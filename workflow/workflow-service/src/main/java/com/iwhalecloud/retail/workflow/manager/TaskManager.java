@@ -281,6 +281,15 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
 
         String taskItemId = routeNextDTO.getTaskItemId();
         String taskId = routeNextDTO.getTaskId();
+        if (StringUtils.isEmpty(taskItemId)) {
+            log.error("TaskManager.nextRoute-->taskItemId param is null");
+            return ResultVO.errorEnum(ResultCodeEnum.TASK_ITEM_ID_IS_EMPTY);
+        }
+        if (StringUtils.isEmpty(taskId)) {
+            log.error("TaskManager.nextRoute-->taskId param is null");
+            return ResultVO.errorEnum(ResultCodeEnum.TASK_ID_IS_EMPTY);
+        }
+
         log.info("1、根据任务项ID查询任务项（wf_task_item）表，task_item_id={},taskId={}", taskItemId,taskId);
         TaskItem taskItem = taskItemManager.queryTaskItemById(taskItemId,taskId);
         if (taskItem == null) {

@@ -349,7 +349,9 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public ResultVO<List<MerchantDTO>> listMerchant(MerchantListReq req) {
         log.info("MerchantServiceImpl.listMerchant(), input: MerchantListReq={} ", JSON.toJSONString(req));
+
         List<MerchantDTO> list = merchantManager.listMerchant(req);
+
         if (!CollectionUtils.isEmpty(list) && BooleanUtils.isTrue(req.getNeedOtherTableFields())) {
             // 取本地网名称  市县名称
             for (MerchantDTO merchantDTO : list) {

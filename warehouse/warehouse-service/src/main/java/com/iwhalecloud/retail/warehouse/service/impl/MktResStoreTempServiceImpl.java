@@ -60,9 +60,26 @@ public class MktResStoreTempServiceImpl implements MktResStoreTempService {
 
     @Autowired
     private Constant constant;
-
     @Override
-    public ResultVO<SynMarkResStoreResp> synMarkResStore(SynMarkResStoreReq req) {
+    public Map<String,Object> synMarkResStore(String reqStr){
+        Map<String,Object> resp = new HashMap<String,Object>();
+        SynMarkResStoreReq req = JSON.parseObject(reqStr,SynMarkResStoreReq.class);
+        ResultVO<SynMarkResStoreResp>  resultVO = this.synMarkResStoreForObj(req);
+        resp.put("resultCode","0");
+        resp.put("resultMsg","调用成功");
+        if(resultVO!=null&&resultVO.isSuccess()&&resultVO.getResultData()!=null){
+            resp.put("resultCode",resultVO.getResultCode());
+            resp.put("resultMsg",resultVO.getResultMsg());
+            resp.put("resultData",resultVO.getResultData());
+            return resp;
+        }
+        resp.put("resultCode","9999");
+        resp.put("resultMsg","调用失败");
+
+        return resp;
+    }
+    @Override
+    public ResultVO<SynMarkResStoreResp> synMarkResStoreForObj(SynMarkResStoreReq req) {
         log.info("MktResStoreTempServiceImpl.synMarkResStore req={}", req == null ? "" : JSON.toJSON(req));
         String actType = req.getActType();
         ResultVO<SynMarkResStoreResp> resultVO = ResultVO.success();

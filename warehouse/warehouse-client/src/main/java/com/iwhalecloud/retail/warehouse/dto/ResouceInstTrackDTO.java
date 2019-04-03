@@ -108,6 +108,24 @@ public class ResouceInstTrackDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "是/否")
   	private java.lang.String ifPreSubsidy;
+
+	/**
+	 * 是否省内直供
+	 */
+	@ApiModelProperty(value = "是否省内直供")
+	private java.lang.String ifDirectSuppLy;
+
+	/**
+	 * 是否地包供货
+	 */
+	@ApiModelProperty(value = "是否地包供货")
+	private java.lang.String ifGroundSupply;
+
+	/**
+	 * 是否绿色通道
+	 */
+	@ApiModelProperty(value = "是否绿色通道")
+	private java.lang.String ifGreenChannel;
 	
   	
 }

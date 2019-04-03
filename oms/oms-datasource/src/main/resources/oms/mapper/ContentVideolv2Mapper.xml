@@ -49,7 +49,8 @@
     <select id="queryVideolv2ContentIdsByProductIds" resultType="java.lang.Long">
         select distinct c.CONTENTID from T_CONTENT_VIDEO c
         where
-        c.HAVELV2MAT = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentVedioStatusEnum@HAVE_LV2.getCode()}
+--         HAVE_LV2(1,"有二级素材");
+        c.HAVELV2MAT = '1'
         and
         c.MATID in
         (
@@ -57,7 +58,8 @@
         from
         t_content_vediolv2 t
         where
-        t.OBJTYPE = ${@com.iwhalecloud.retail.oms.consts.OmsConst$ContentObjType@GOODS.getCode()}
+--         GOODS (1,"商品"),
+        t.OBJTYPE = '1'
         and
         t.OBJID in
         <foreach item="item" index="index" collection="productIds" open="(" separator="," close=")">

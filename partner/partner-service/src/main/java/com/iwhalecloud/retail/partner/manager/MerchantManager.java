@@ -164,6 +164,7 @@ public class MerchantManager {
             hasParam = true;
             queryWrapper.in(Merchant.FieldNames.parCrmOrgId.getTableFieldName(), req.getParCrmOrgIdList());
         }
+        queryWrapper.last(" limit 30000 "); // 限定查询条数(避免没参数的查出整表）
 
         // 设置查询字段(优化 不查全表字段  避免耗时超长）
         queryWrapper.select(
@@ -228,33 +229,50 @@ public class MerchantManager {
         // 是否需要先获取merchantId集合（后面判空用） 查询条件有涉及到通过merchant_id字段关联的其他表字段且有值时 为true
         Boolean isNeedGetMerchantIdList = false;
         List<String> merchantIdList = Lists.newArrayList();
-        if (!CollectionUtils.isEmpty(req.getUserIdList())) {
+        if (!CollectionUtils.isEmpty(req.getMerchantIdList())) {
             isNeedGetMerchantIdList = true;
-            merchantIdList = req.getUserIdList();
+            merchantIdList = req.getMerchantIdList();
         }
 
-        // 非商家表字段  基本上是  先转换成  user_id 或  merchant_id  集合 再作为条件  进行查询
+        // 非商家表字段  基本上是  先转换成  merchant_id  集合 再作为条件  进行查询
 
-        // 系统账号和系统状态 转换成 user_id集合
+        // 系统账号和系统状态 转换成 merchant_id集合
         if (!StringUtils.isEmpty(req.getLoginName())
                 || Objects.nonNull(req.getUserStatus())) {
             UserListReq userListReq = new UserListReq();
             userListReq.setLoginName(req.getLoginName());
             userListReq.setStatusCd(req.getUserStatus());
-            List<String> resultList= getUserIdListByLoginName(userListReq);
+            List<String> resultList= getMerchantIdListByLoginName(userListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
-                userIdList.retainAll(resultList);
+                merchantIdList.retainAll(resultList);
             } else {
-                userIdList = resultList;
+                merchantIdList = resultList;
             }
-            isNeedGetUserIdList = true; // 这个赋值要放到最后面
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
+        }
+
+        // 营业执照失效期开始时间、营业执照失效期 结束时间 转换成 merchant_id
+        if (Objects.nonNull(req.getEndExpireDate())
+                || Objects.nonNull(req.getStartExpireDate())) {
+            InvoiceListReq invoiceListReq = new InvoiceListReq();
+            BeanUtils.copyProperties(req, invoiceListReq);
+            invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
+
+            List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
+            if (isNeedGetMerchantIdList) {
+                // 取交集
+                merchantIdList.retainAll(resultList);
+            } else {
+                merchantIdList = resultList;
+            }
+
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
+
         }
 
         // 分组标签 转换成 merchant_id
         if (!StringUtils.isEmpty(req.getTagId())) {
-//            MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
-//            merchantTagRelListReq.setTagId(req.getTagId());
             List<String> resultList= getMerchantIdListByTag(req.getTagId());
             if (isNeedGetMerchantIdList) {
                 // 取交集
@@ -365,29 +383,32 @@ public class MerchantManager {
         Boolean isNeedGetMerchantIdList = false;
         List<String> merchantIdList = Lists.newArrayList();
 
-        // 非商家表字段  基本上是  先转换成  user_id 或  merchant_id  集合 再作为条件  进行查询
+        // 非商家表字段  基本上是  先转换成   merchant_id  集合 再作为条件  进行查询
 
-        // 系统账号和系统状态 转换成 user_id集合
+        // 系统账号和系统状态 转换成 merchant_id集合
         if (!StringUtils.isEmpty(req.getLoginName())
                 || Objects.nonNull(req.getUserStatus())) {
             UserListReq userListReq = new UserListReq();
             userListReq.setLoginName(req.getLoginName());
             userListReq.setStatusCd(req.getUserStatus());
-            List<String> resultList= getUserIdListByLoginName(userListReq);
+            List<String> resultList= getMerchantIdListByLoginName(userListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
-                userIdList.retainAll(resultList);
+                merchantIdList.retainAll(resultList);
             } else {
-                userIdList = resultList;
+                merchantIdList = resultList;
             }
-            isNeedGetUserIdList = true; // 这个赋值要放到最后面
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
         }
 
-        // 营业执照失效期 转换成 merchant_id
-        if (Objects.nonNull(req.getBusiLicenceExpDate())) {
+        // 营业执照失效期 区间 转换成 merchant_id
+        // 营业执照失效期、营业执照失效期开始时间、营业执照失效期 结束时间 转换成 merchant_id
+        if (Objects.nonNull(req.getEndExpireDate())
+                || Objects.nonNull(req.getStartExpireDate())) {
             InvoiceListReq invoiceListReq = new InvoiceListReq();
-            invoiceListReq.setBusiLicenceExpDate(req.getBusiLicenceExpDate());
+            BeanUtils.copyProperties(req, invoiceListReq);
             invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
+
             List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
@@ -487,26 +508,28 @@ public class MerchantManager {
 
         // 非商家表字段  基本上是  先转换成  user_id 或  merchant_id  集合 再作为条件  进行查询
 
-        // 系统账号和系统状态 转换成 user_id集合
+        // 系统账号和系统状态 转换成 merchant_id集合
         if (!StringUtils.isEmpty(req.getLoginName())
                 || Objects.nonNull(req.getUserStatus())) {
 
             UserListReq userListReq = new UserListReq();
             userListReq.setLoginName(req.getLoginName());
             userListReq.setStatusCd(req.getUserStatus());
-            List<String> resultList= getUserIdListByLoginName(userListReq);
+            List<String> resultList= getMerchantIdListByLoginName(userListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
-                userIdList.retainAll(resultList);
+                merchantIdList.retainAll(resultList);
             } else {
-                userIdList = resultList;
+                merchantIdList = resultList;
             }
-            isNeedGetUserIdList = true; // 这个赋值要放到最后面
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
         }
 
-        // 营业执照号、税号、公司账号、营业执照失效期 转换成 merchant_id
+        // 营业执照号、税号、公司账号、营业执照失效期、营业执照失效期开始时间、营业执照失效期 结束时间 转换成 merchant_id
         if (!StringUtils.isEmpty(req.getBusiLicenceCode()) || !StringUtils.isEmpty(req.getTaxCode())
-                || !StringUtils.isEmpty(req.getRegisterBankAcct()) || Objects.nonNull(req.getBusiLicenceExpDate())) {
+                || !StringUtils.isEmpty(req.getRegisterBankAcct()) || Objects.nonNull(req.getBusiLicenceExpDate())
+                || Objects.nonNull(req.getEndExpireDate()) || Objects.nonNull(req.getStartExpireDate())) {
+
             InvoiceListReq invoiceListReq = new InvoiceListReq();
             BeanUtils.copyProperties(req, invoiceListReq);
             invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
@@ -593,29 +616,55 @@ public class MerchantManager {
         }
 
         // 是否需要先获取userId集合（后面判空用） 查询条件有非par_merchant表字段且有值时 为true
-        Boolean isNeedGetUserIdList = false;
-        List<String> userIdList = Lists.newArrayList();
+        Boolean isNeedGetMerchantIdList = false;
+        List<String> merchantIdList = Lists.newArrayList();
 
         // 非商家表字段  基本上是  先转换成  user_id 或  merchant_id  集合 再作为条件  进行查询
 
-        if(!StringUtils.isEmpty(req.getLoginName())){ // 商家对应系统账号 转换成 user_id集合
-            isNeedGetUserIdList = true;
+        // 系统账号和系统状态 转换成 merchant_id集合
+        if (!StringUtils.isEmpty(req.getLoginName())) {
             UserListReq userListReq = new UserListReq();
             userListReq.setLoginName(req.getLoginName());
-            userIdList = getUserIdListByLoginName(userListReq);
+            List<String> resultList= getMerchantIdListByLoginName(userListReq);
+            if (isNeedGetMerchantIdList) {
+                // 取交集
+                merchantIdList.retainAll(resultList);
+            } else {
+                merchantIdList = resultList;
+            }
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
         }
 
-        if (CollectionUtils.isEmpty(userIdList)
-                && isNeedGetUserIdList) {
+        // 营业执照失效期、营业执照失效期开始时间、营业执照失效期 结束时间 转换成 merchant_id
+        if (Objects.nonNull(req.getEndExpireDate())
+                || Objects.nonNull(req.getStartExpireDate())) {
+            InvoiceListReq invoiceListReq = new InvoiceListReq();
+            BeanUtils.copyProperties(req, invoiceListReq);
+            invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
+
+            List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
+            if (isNeedGetMerchantIdList) {
+                // 取交集
+                merchantIdList.retainAll(resultList);
+            } else {
+                merchantIdList = resultList;
+            }
+
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
+
+        }
+
+        if (CollectionUtils.isEmpty(merchantIdList)
+                && isNeedGetMerchantIdList) {
             // 筛选后 集合为空
             // 添加一个空值 ID （使查询结果为空的, 因为下面的校验是 空集合 跳过作为查询条件）
-            userIdList.add("");
+            merchantIdList.add("");
         }
 
         // 条件是：in(包含的）  的字段
-        if(!CollectionUtils.isEmpty(userIdList)){
+        if(!CollectionUtils.isEmpty(merchantIdList)){
             // user_id
-            queryWrapper.in(Merchant.FieldNames.userId.getTableFieldName(), userIdList);
+            queryWrapper.in(Merchant.FieldNames.merchantId.getTableFieldName(), merchantIdList);
         }
 
         Page<Merchant> resultPage =  new Page<Merchant>(req.getPageNo(), req.getPageSize());
@@ -637,6 +686,22 @@ public class MerchantManager {
             });
         }
         return userIdList;
+    }
+
+    /**
+     * 根据 loginName 获取 模糊查询对应的 merchant_id 集合
+     * @param req
+     * @return
+     */
+    private List<String> getMerchantIdListByLoginName(UserListReq req) {
+        List<String> merchantIdList = Lists.newArrayList();
+        List<UserDTO> userDTOList = userService.getUserList(req);
+        if (!CollectionUtils.isEmpty(userDTOList)) {
+            userDTOList.forEach(userDTO -> {
+                merchantIdList.add(userDTO.getRelCode());
+            });
+        }
+        return merchantIdList;
     }
 
     /**
@@ -677,7 +742,7 @@ public class MerchantManager {
      * @return
      */
 //    private List<String> getMerchantIdListByTag(MerchantTagRelListReq req) {
-    private List<String> getMerchantIdListByTag(String tagId) {
+    public List<String> getMerchantIdListByTag(String tagId) {
         MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
         merchantTagRelListReq.setTagId(tagId);
         List<String> merchantIdList = Lists.newArrayList();

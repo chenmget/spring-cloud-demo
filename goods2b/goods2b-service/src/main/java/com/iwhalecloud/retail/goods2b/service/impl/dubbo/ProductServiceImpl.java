@@ -16,7 +16,6 @@ import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductManager;
 import com.iwhalecloud.retail.goods2b.manager.TagTelManager;
@@ -67,6 +66,11 @@ public class ProductServiceImpl implements ProductService {
     private TagTelManager tagTelManager;
 
     @Override
+    public ResultVO<String> getMerchantByProduct(MerChantGetProductReq req) {
+        return ResultVO.success(productManager.getMerChantByProduct(req.getProductId()));
+    }
+
+    @Override
     public ResultVO<ProductResp> getProduct(ProductGetByIdReq req) {
         return ResultVO.success(productManager.getProduct(req.getProductId()));
     }
@@ -74,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public ResultVO<Integer> addProduct(ProductAddReq req) throws ProductException {
+    public ResultVO<Integer> addProduct(ProductAddReq req){
         Product t = new Product();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -105,7 +109,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResultVO<String> addProductByZT(ProductAddReq req) throws ProductException {
+    public ResultVO<ProductResp> getProductBySn(String sn){
+        return ResultVO.success(productManager.getProductBySn(sn));
+    }
+
+    @Override
+    public ResultVO<String> addProductByZT(ProductAddReq req){
         Product t = new Product();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -247,8 +256,9 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResultVO<Page<ProductDTO>> selectProduct(ProductGetReq req){
         Page<ProductDTO> page = productManager.selectProduct(req);
-        if (null != page && page.getRecords() != null && !page.getRecords().isEmpty()) {
-            for (ProductDTO product : page.getRecords()) {
+        List<ProductDTO> list = page.getRecords();
+        if (!CollectionUtils.isEmpty(list)) {
+            for (ProductDTO product : list) {
                 String productId = product.getProductId();
                 // 查询默认图片
                 String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
@@ -257,6 +267,7 @@ public class ProductServiceImpl implements ProductService {
                 testReflect(product);
             }
         }
+        log.info("ProductServiceImpl.selectProduct req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         return ResultVO.success(page);
     }
 
@@ -317,7 +328,8 @@ public class ProductServiceImpl implements ProductService {
             }
             resp.setDefaultImages(url.toString());
         }
-        List test = page.getRecords();
+        page.setRecords(respList);
+        log.info("ProductServiceImpl.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respList));
         return ResultVO.success(page);
     }
 

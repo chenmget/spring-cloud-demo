@@ -8,11 +8,13 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.FileDTO;
 import com.iwhalecloud.retail.system.dto.NoticeDTO;
+import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.entity.Notice;
 import com.iwhalecloud.retail.system.manager.NoticeManager;
 import com.iwhalecloud.retail.system.service.NoticeService;
 import com.iwhalecloud.retail.system.service.NoticeUserService;
+import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
@@ -39,6 +41,9 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Reference
     private TaskService taskService;
+
+    @Reference
+    private UserService userService;
 
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
@@ -76,6 +81,13 @@ public class NoticeServiceImpl implements NoticeService {
         processStartDTO.setProcessId(SystemConst.NOTICE_AUDIT_PROCESS_ID);
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2050.getTaskSubType());
         processStartDTO.setApplyUserId(req.getCreateUserId());
+        //根据用户id查询名称
+        ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateUserId());
+        String userName = "";
+        if (userDetailDTO.isSuccess()) {
+            userName = userDetailDTO.getResultData().getUserName();
+        }
+        processStartDTO.setApplyUserName(userName);
 
         ResultVO taskServiceRV = new ResultVO();
         try {
@@ -136,6 +148,13 @@ public class NoticeServiceImpl implements NoticeService {
             processStartDTO.setProcessId(SystemConst.NOTICE_AUDIT_PROCESS_ID);
             processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2050.getTaskSubType());
             processStartDTO.setApplyUserId(req.getUpdateUserId());
+            //根据用户id查询名称
+            ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getUpdateUserId());
+            String userName = "";
+            if (userDetailDTO.isSuccess()) {
+                userName = userDetailDTO.getResultData().getUserName();
+            }
+            processStartDTO.setApplyUserName(userName);
 
             ResultVO taskServiceRV = new ResultVO();
             try {
@@ -172,6 +191,71 @@ public class NoticeServiceImpl implements NoticeService {
                 || !CollectionUtils.isEmpty(req.getUserIdList())) {
             noticeUserService.saveNoticeUserWithUserIds(req.getNoticeId(), req.getUserIdList());
         }
+        return ResultVO.success(result);
+    }
+
+    /**
+     * 修改公告通知状态
+     * @param req
+     * @return
+     */
+    @Override
+    public ResultVO<Integer> updateNoticeStatus(NoticeUpdateReq req) {
+        log.info("NoticeServiceImpl.updateNoticeStatus(), 入参BusinessEntityUpdateReq={} ", req);
+        Notice notice = new Notice();
+        BeanUtils.copyProperties(req, notice);
+        notice.setUpdateTime(new Date());
+        String fileString = JSON.toJSONString(req.getFile());
+        notice.setFileUrl(fileString);
+        int result = noticeManager.updateNotice(notice);
+        log.info("NoticeServiceImpl.updateNoticeStatus(), 出参对象(更新影响数据条数）={} ", result);
+        if (result <= 0){
+            return ResultVO.error("编辑公告通知信息失败");
+        }
+        if (SystemConst.NoticeStatusEnum.AUDIT.getCode().equals(req.getStatus())) {
+            //启动流程
+            ProcessStartReq processStartDTO = new ProcessStartReq();
+            processStartDTO.setTitle("通知公告审核流程");
+            processStartDTO.setFormId(req.getNoticeId());
+            processStartDTO.setProcessId(SystemConst.NOTICE_AUDIT_PROCESS_ID);
+            processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2050.getTaskSubType());
+            processStartDTO.setApplyUserId(req.getUpdateUserId());
+
+            ResultVO taskServiceRV = new ResultVO();
+            try {
+                taskServiceRV = taskService.startProcess(processStartDTO);
+            } catch (Exception e) {
+                return ResultVO.error();
+            } finally {
+                log.info("NoticeServiceImpl.updateNoticeStatus req={},resp={}",
+                        JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
+            }
+        } else if (SystemConst.NoticeStatusEnum.AUDIT_FAILED.getCode().equals(req.getStatus())) {
+            NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new NextRouteAndReceiveTaskReq();
+            nextRouteAndReceiveTaskReq.setFormId(req.getNoticeId());
+            nextRouteAndReceiveTaskReq.setHandlerUserId(req.getUpdateUserId());
+            nextRouteAndReceiveTaskReq.setHandlerMsg("消息公告驳回审核");
+
+            ResultVO taskServiceRV = new ResultVO();
+            try {
+                taskServiceRV = taskService.nextRouteAndReceiveTask(nextRouteAndReceiveTaskReq);
+            } catch (Exception e) {
+                return ResultVO.error();
+            } finally {
+                log.info("NoticeServiceImpl.updateNoticeStatus req={},resp={}",
+                        JSON.toJSONString(nextRouteAndReceiveTaskReq), JSON.toJSONString(taskServiceRV));
+            }
+        }
+//        // 先清空 通知用户关联 绑定关系
+//        NoticeUserDeleteReq noticeUserDeleteReq = new NoticeUserDeleteReq();
+//        noticeUserDeleteReq.setNoticeId(req.getNoticeId());
+//        noticeUserService.deleteNoticeUser(noticeUserDeleteReq);
+//
+//        // 判断是什么发布类型的通知  定向类型 要绑定指定用户
+//        if (StringUtils.equals(req.getPublishType(), SystemConst.NoticePublishTypeEnum.DIRECTION.getType())
+//                || !CollectionUtils.isEmpty(req.getUserIdList())) {
+//            noticeUserService.saveNoticeUserWithUserIds(req.getNoticeId(), req.getUserIdList());
+//        }
         return ResultVO.success(result);
     }
 

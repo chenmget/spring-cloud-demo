@@ -10,7 +10,6 @@ import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseActivityQueryResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductDetailResp;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductFlowService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
@@ -85,11 +84,6 @@ public class GoodsProductBaseB2BController {
     @UserLoginToken
     public ResultVO<Page<ProductBaseGetResp>> getProductBaseList(@RequestBody ProductBaseListReq req) {
 
-        if (!UserContext.isUserLogin()) {
-            // 没有登陆，直接返回不能查到数据
-            return ResultVO.success(new Page<ProductBaseGetResp>());
-        }
-
         String merchantId = null;
         Boolean isAdminType = UserContext.isAdminType();
         Integer userFounder = UserContext.getUser().getUserFounder();
@@ -127,16 +121,9 @@ public class GoodsProductBaseB2BController {
     })
     @PostMapping(value="addProductBase")
     @UserLoginToken
-    public ResultVO<String> addProductBase(@RequestBody ProductBaseAddReqDTO dto)
-            throws ProductException {
+    public ResultVO<String> addProductBase(@RequestBody ProductBaseAddReqDTO dto) {
         //获取memberId
         String userId = UserContext.getUserId();
-        if(org.apache.commons.lang.StringUtils.isEmpty(userId)){
-            ResultVO resultVO = new ResultVO();
-            resultVO.setResultMsg("userId can not be null");
-            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
-            return resultVO;
-        }
         List purchaseTypeList = dto.getPurchaseType();
         String purchaseTypeString = "";
         //list转string
@@ -149,9 +136,6 @@ public class GoodsProductBaseB2BController {
         req.setCreateStaff(userId);
         req.setPurchaseType(purchaseTypeString);
         return prodProductBaseService.addProductBase(req);
-
-
-        
     }
 
 	@ApiOperation(value = "更新产品基本信息", notes = "更新操作")
@@ -161,16 +145,9 @@ public class GoodsProductBaseB2BController {
     })
     @PutMapping(value="updateProductBase")
     @UserLoginToken
-    public ResultVO<Integer> updateProductBase(@RequestBody ProductBaseUpdateReqDTO dto) throws ProductException {
-
+    public ResultVO<Integer> updateProductBase(@RequestBody ProductBaseUpdateReqDTO dto){
         //获取memberId
         String userId = UserContext.getUserId();
-        if(org.apache.commons.lang.StringUtils.isEmpty(userId)){
-            ResultVO resultVO = new ResultVO();
-            resultVO.setResultMsg("userId can not be null");
-            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
-            return resultVO;
-        }
         List purchaseTypeList = dto.getPurchaseType();
         ProductBaseUpdateReq req = new ProductBaseUpdateReq();
         String purchaseTypeString = "";

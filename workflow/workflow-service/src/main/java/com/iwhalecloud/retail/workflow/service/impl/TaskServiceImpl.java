@@ -246,30 +246,33 @@ public class TaskServiceImpl implements TaskService {
         // 根据formId查询processId
         List<Task> taskList = taskManager.getTaskByFormId(formId);
         if (CollectionUtils.isEmpty(taskList) || taskList.size() > 1) {
-            log.info("TaskServiceImpl.getNextRoute query taskList is formId ={}" + formId);
+            log.info("TaskServiceImpl.getNextRoute formId ={},taskList={}" + formId, JSON.toJSONString(taskList));
             return null;
         }
         Task task = taskList.get(0);
         String processId = task.getProcessId();
         // 根据formId查询待处理任务项
         TaskItem taskItem = taskItemManager.queryWaitHandlerTaskItem(task.getTaskId());
-
-        if (taskItem != null) {
-            RouteNextReq routeNextReq = new RouteNextReq();
-            routeNextReq.setTaskItemId(taskItem.getTaskItemId());
-            Route condition = new Route();
-            condition.setProcessId(processId);
-            condition.setCurNodeId(taskItem.getCurNodeId());
-            // 查询流程下一步路由id
-            List<Route> routeList = routeManager.listRouteByCondition(condition);
-            if (CollectionUtils.isEmpty(routeList) || routeList.size() > 1) {
-                return null;
-            }
-            Route route = routeList.get(0);
-            routeNextReq.setNextNodeId(route.getNextNodeId());
-            routeNextReq.setRouteId(route.getRouteId());
+        if (taskItem == null) {
+            log.info("TaskServiceImpl.getNextRoute formId ={},taskItem={}" + formId, JSON.toJSONString(taskItem));
+            return null;
         }
-        return null;
+        RouteNextReq routeNextReq = new RouteNextReq();
+        routeNextReq.setTaskItemId(taskItem.getTaskItemId());
+        Route condition = new Route();
+        condition.setProcessId(processId);
+        condition.setCurNodeId(taskItem.getCurNodeId());
+        // 查询流程下一步路由id
+        List<Route> routeList = routeManager.listRouteByCondition(condition);
+        if (CollectionUtils.isEmpty(routeList) || routeList.size() > 1) {
+            log.info("TaskServiceImpl.getNextRoute formId ={},routeList={}" + formId,JSON.toJSONString(routeList));
+            return null;
+        }
+        Route route = routeList.get(0);
+        routeNextReq.setNextNodeId(route.getNextNodeId());
+        routeNextReq.setRouteId(route.getRouteId());
+        routeNextReq.setTaskId(task.getTaskId());
+        return routeNextReq;
     }
 
     @Override
@@ -289,6 +292,7 @@ public class TaskServiceImpl implements TaskService {
         taskClaimReq.setTaskItemId(taskItemId);
         taskClaimReq.setUserId(req.getHandlerUserId());
         taskClaimReq.setUserName(req.getHandlerUserName());
+        taskClaimReq.setTaskId(routeNextReq.getTaskId());
         ResultVO resultVO = receiveTask(taskClaimReq);
         if (resultVO.isSuccess()) {
             // 执行流程下一步

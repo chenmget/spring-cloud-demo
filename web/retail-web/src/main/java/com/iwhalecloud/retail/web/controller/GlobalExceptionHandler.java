@@ -4,7 +4,6 @@ import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.web.exception.ParamInvalidException;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
@@ -39,7 +38,7 @@ public class GlobalExceptionHandler extends BaseController<Object>{
     private ResultVO<Object> createResultVO(ResultCodeEnum resultCodeEnum,String detailMessage) {
 
         //如果是本地环境/测试环境/开发环境抛出详细错误
-        if (env.contains("local") || env.contains("test") || env.contains("dev")) {
+        if (env.contains("local") || env.contains("test") || env.contains("dev") || true) {
             return resultVO(resultCodeEnum.getCode(), resultCodeEnum.getDesc(), detailMessage);
         }
 
@@ -119,8 +118,6 @@ public class GlobalExceptionHandler extends BaseController<Object>{
     public ResultVO<Object> handleException(HttpServletRequest request,UndeclaredThrowableException ex){
         if (ex.getCause() instanceof ParamInvalidException) {
             return handleException(request,(ParamInvalidException)ex.getCause());
-        } else if (ex.getCause() instanceof ProductException) {
-            return handleException(request,(ProductException)ex.getCause());
         } else if (ex.getCause() instanceof GoodsRulesException) {
             return handleException(request,(GoodsRulesException)ex.getCause());
         } else {
@@ -137,19 +134,6 @@ public class GlobalExceptionHandler extends BaseController<Object>{
         log.error("请求失败[" + request.getRequestURI() + "]", ex);
 
         return createResultVO(ResultCodeEnum.FILE_UPLOAD_ERROR, ex.getMessage());
-    }
-
-
-    @ResponseStatus(HttpStatus.OK)
-    @ResponseBody
-    @ExceptionHandler(ProductException.class)
-    public ResultVO<Object> productException(HttpServletRequest request,ProductException ex){
-        log.error("请求失败[" + request.getRequestURI() + "]，产品添加失败,"+JSON.toJSONString(ex.getErrors()), ex);
-
-        final String detailMessage = StringUtils.collectionToDelimitedString(ex.getErrors(),"\n");
-
-        return resultVO(ResultCodeEnum.ERROR.getCode(), detailMessage, ResultCodeEnum.ERROR.getDesc());
-
     }
 
     @ResponseStatus(HttpStatus.OK)

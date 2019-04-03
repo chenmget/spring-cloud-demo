@@ -30,15 +30,16 @@ public class ResourceConst {
      * 出库
      */
     public final static String OUT_PUT_STOAGE = "1000";
-    /**
-     * 常量
-     */
-    public final static String  CONSTANT_01 = "1";
 
     /**
      * 常量
      */
-    public final static String  CONSTANT_0 = "0";
+    public final static String  CONSTANT_YES = "1";
+
+    /**
+     * 常量
+     */
+    public final static String  CONSTANT_NO = "0";
 
 
     /**
@@ -46,9 +47,14 @@ public class ResourceConst {
      */
     public final static String  GREEN_CHANNEL_WORK_FLOW_INST = "8";
     /**
-     * 调拨流程实例ID
+     * 调拨调出方审核流程实例ID
      */
     public final static String  ALLOCATE_WORK_FLOW_INST = "7";
+    /**
+     * 调拨两端都要审核流程实例ID
+     */
+    public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
+
     /**
      * 调拨返回成功的消息
      */
@@ -119,6 +125,15 @@ public class ResourceConst {
         public void setCode(String code) {
             this.code = code;
         }
+
+        public static String getName(String name){
+            for (STORE_SUB_TYPE storeSubType : STORE_SUB_TYPE.values()){
+                if(storeSubType.code.equals(name)){
+                    return storeSubType.name;
+                }
+            }
+            return "";
+        }
     }
 
 
@@ -155,6 +170,15 @@ public class ResourceConst {
 
         public void setCode(String code) {
             this.code = code;
+        }
+
+        public static String getName(String name){
+            for (STORE_SUB_TYPE storeSubType : STORE_SUB_TYPE.values()){
+                if(storeSubType.code.equals(name)){
+                    return storeSubType.name;
+                }
+            }
+            return "";
         }
     }
 
@@ -349,6 +373,18 @@ public class ResourceConst {
         public void setCode(String code) {
             this.code = code;
         }
+
+        public static String getMKTResInstTypeName(String code){
+            if (null == code){
+                return null;
+            }
+            for(MKTResInstType mKTResInstType:MKTResInstType.values()){
+                if(mKTResInstType.getCode().equals(code)){
+                    return mKTResInstType.getName();
+                }
+            }
+            return null;
+        }
     }
 
     /**
@@ -401,6 +437,18 @@ public class ResourceConst {
         public void setCode(String code) {
             this.code = code;
         }
+
+        public static String getPurchaseTypeName(String code){
+            if (null == code){
+                return null;
+            }
+            for(PURCHASE_TYPE purchaseType:PURCHASE_TYPE.values()){
+                if(purchaseType.getCode().equals(code)){
+                    return purchaseType.getName();
+                }
+            }
+            return null;
+        }
     }
 
 
@@ -442,6 +490,18 @@ public class ResourceConst {
         public void setCode(String code) {
             this.code = code;
         }
+
+        public static String getMktResStateName(String code){
+            if (null == code){
+                return null;
+            }
+            for(MKTRESSTATE mktResState:MKTRESSTATE.values()){
+                if(mktResState.getCode().equals(code)){
+                    return mktResState.getName();
+                }
+            }
+            return null;
+        }
     }
 
     /**
@@ -479,7 +539,7 @@ public class ResourceConst {
             this.code = code;
         }
 
-        public static String getReqtypeCode(String code){
+        public static String getReqTypeName(String code){
             if (null == code){
                 return null;
             }
@@ -523,7 +583,7 @@ public class ResourceConst {
             this.code = code;
         }
 
-        public static String getName(String name){
+        public static String getStoreSubTypeName(String name){
             for (STORE_SUB_TYPE storeSubType : STORE_SUB_TYPE.values()){
                 if(storeSubType.code.equals(name)){
                     return storeSubType.name;
@@ -651,6 +711,15 @@ public class ResourceConst {
         public void setCode(String code) {
             this.code = code;
         }
+
+        public static String getStorageTypeName(String name){
+            for (STORAGETYPE storageType : STORAGETYPE.values()){
+                if(storageType.code.equals(name)){
+                    return storageType.name;
+                }
+            }
+            return "";
+        }
     }
 
     /**
@@ -686,6 +755,97 @@ public class ResourceConst {
             this.code = code;
         }
 
+    }
+
+    /**
+     * 调拨审核类型
+     */
+    public enum ALLOCATE_AUDIT_TYPE{
+        // 调入的
+        ALLOCATE_AUDIT_TYPE_0("0","不能调拨"),
+        // 调出的
+        ALLOCATE_AUDIT_TYPE_1("1","不审核"),
+
+        ALLOCATE_AUDIT_TYPE_2("2","调出方和调入方都审核");
+
+
+        private String code;
+        private String name;
+
+        ALLOCATE_AUDIT_TYPE(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+    }
+
+    /**
+     * 零售商CRM状态枚举
+     */
+    public enum CRM_STATUS{
+        CRM_STATUS_AVAIBLE("1000","可用"),
+
+        CRM_STATUS_SALED_SUBSIDY("1203","已售(未补贴)"),
+
+        CRM_STATUS_SILENT("1204","沉默"),
+
+        CRM_STATUS_SCRAP("1205","已报损作废"),
+
+        CRM_STATUS_SALED_NO_SUBSIDY("1207","已销售已补贴"),
+
+        CRM_STATUS_REJECTED("1228","退货"),
+
+        CRM_STATUS_EXPIRE("1238","已过期"),
+
+        CRM_STATUS_UNCLAIMED("1249","已下发待认领");
+
+        private String code;
+        private String name;
+
+        CRM_STATUS(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public static String getCrmStatusName(String name){
+            for (CRM_STATUS crmStatus : CRM_STATUS.values()){
+                if(crmStatus.code.equals(name)){
+                    return crmStatus.name;
+                }
+            }
+            return "";
+        }
     }
 
 }

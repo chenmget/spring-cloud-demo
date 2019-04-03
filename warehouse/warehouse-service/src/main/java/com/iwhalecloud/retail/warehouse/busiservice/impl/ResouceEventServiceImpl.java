@@ -14,6 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -44,15 +47,7 @@ public class ResouceEventServiceImpl implements ResouceEventService {
     }
 
     @Override
-    public  ResultVO<Boolean> updateResouceEventState(ResouceEventUpdateReq req){
-        int num = resouceEventManager.updateResouceEventState(req);
-        if(num<1){
-            return ResultVO.error();
-        }
-        return ResultVO.success();
-    }
-
-    @Override
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO saveResouceEventAndDetail(EventAndDetailReq req){
         Map<String, List<String>> mktResIdAndNbrMap = req.getMktResIdAndNbrMap();
         List<String> mktResIdList = new ArrayList<>();

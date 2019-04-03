@@ -61,5 +61,5 @@ public class MerchantRuleSaveReq implements Serializable {
 //     */
 //    @ApiModelProperty(value = "本月已使用")
 //    private java.lang.Long serialNumUsed;
-    
+
 }

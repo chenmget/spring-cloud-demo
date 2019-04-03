@@ -22,7 +22,37 @@ import java.util.*;
  * @Version : 1.0
  */
 public class DateFormatUtils {
+
 	private static Logger logger = Logger.getLogger(DateFormatUtils.class);
+
+	/**
+	 * 系统默认日期时间格式
+	 */
+	public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+
+	/**
+	 * 系统默认日期格式
+	 */
+	public static final String DATE_FORMAT = "yyyy-MM-dd";
+
+	/**
+	 * 23位时间格式，带毫秒
+	 */
+	public static final String DATE_TIME_FORMAT23 = "yyyy-MM-dd HH:mm:ss.SSS";
+
+	/**
+	 * 8位日期格式
+	 */
+	public static final String DATE_FORMAT_8 = "yyyyMMdd";
+	/**
+	 * 14位日期时间格式
+	 */
+	public static final String DATE_TIME_FORMAT_14 = "yyyyMMddHHmmss";
+
+	/**
+	 * 默认失效时间
+	 */
+	public static final String DEFAULT_EXPIRED_DATE = "2030-1-1 00:00:00";
 
 	/**
 	 * 得到应用服务器当前日期，以默认格式显示。
@@ -31,7 +61,7 @@ public class DateFormatUtils {
 	 */
 	public static String getFormatedDate() {
 		Date date = getCurrentDate();
-		SimpleDateFormat dateFormator = new SimpleDateFormat(CrmConstants.DATE_FORMAT);
+		SimpleDateFormat dateFormator = new SimpleDateFormat(DATE_FORMAT);
 		return dateFormator.format(date);
 
 	}
@@ -44,7 +74,7 @@ public class DateFormatUtils {
 	public static String getFormatedDateTime8() {
 
 		Date date = getCurrentDate();
-		SimpleDateFormat dateFormator = new SimpleDateFormat(CrmConstants.DATE_FORMAT_8);
+		SimpleDateFormat dateFormator = new SimpleDateFormat(DATE_FORMAT_8);
 		return dateFormator.format(date);
 
 	}
@@ -60,7 +90,7 @@ public class DateFormatUtils {
 	public static String getFormatedDateTime() {
 
 		Date date = getCurrentDate();
-		SimpleDateFormat dateFormator = new SimpleDateFormat(CrmConstants.DATE_TIME_FORMAT);
+		SimpleDateFormat dateFormator = new SimpleDateFormat(DATE_TIME_FORMAT);
 		return dateFormator.format(date);
 
 	}
@@ -88,7 +118,7 @@ public class DateFormatUtils {
 	 * 得到应用服务器当前日期 按照指定的格式返回。
 	 * 
 	 * @param pattern
-	 *            格式类型，通过系统常量中定义，如：CrmConstants.DATE_FORMAT_8
+	 *            格式类型，通过系统常量中定义，如：DATE_FORMAT_8
 	 * @return
 	 */
 	public static String formatDate(String pattern) {
@@ -105,7 +135,7 @@ public class DateFormatUtils {
 	 * 
 	 * @param date
 	 * @param pattern
-	 *            格式类型，通过系统常量中定义，如：CrmConstants.DATE_FORMAT_8
+	 *            格式类型，通过系统常量中定义，如：DATE_FORMAT_8
 	 * @return
 	 */
 	public static String formatDate(Date date, String pattern) {
@@ -140,7 +170,7 @@ public class DateFormatUtils {
 	public static Date formatStringToDate(String date) {
 		if(date.lastIndexOf(".0")>-1)
 			date = date.substring(0, date.lastIndexOf(".0"));
-		DateFormat format1 = new SimpleDateFormat(CrmConstants.DATE_TIME_FORMAT);
+		DateFormat format1 = new SimpleDateFormat(DATE_TIME_FORMAT);
 		try {
 			return format1.parse(date);
 		} catch (ParseException e) {
@@ -154,7 +184,7 @@ public class DateFormatUtils {
 	 * 
 	 * @param date
 	 * @param pattern
-	 *            格式类型，通过系统常量中定义，如：CrmConstants.DATE_FORMAT_8
+	 *            格式类型，通过系统常量中定义，如：DATE_FORMAT_8
 	 * @param loc
 	 *            locale
 	 * @return
@@ -164,8 +194,9 @@ public class DateFormatUtils {
 			return "";
 		}
 		String newDate = "";
-		if (loc == null)
+		if (loc == null) {
 			loc = Locale.getDefault();
+		}
 		if (date != null) {
 			SimpleDateFormat sdf = new SimpleDateFormat(pattern, loc);
 			newDate = sdf.format(date);
@@ -177,14 +208,14 @@ public class DateFormatUtils {
 	 * 将字符时间从一个格式转换成另一个格式。时间的格式，最好通过系统常量定义。 如：
 	 * String dateStr = "2006-10-9 12:09:08";
 	 * DateFormatUtils.convertDateFormat(dateStr,
-	 * CrmConstants.DATE_TIME_FORMAT,
-	 * CrmConstants.DATE_FORMAT_8);
+	 * DATE_TIME_FORMAT,
+	 * DATE_FORMAT_8);
 	 * 
 	 * @param sdate
 	 * @param patternFrom
-	 *            格式类型，通过系统常量中定义，如：CrmConstants.DATE_FORMAT_8
+	 *            格式类型，通过系统常量中定义，如：DATE_FORMAT_8
 	 * @param patternTo
-	 *            格式类型，通过系统常量中定义，如：CrmConstants.DATE_FORMAT_8
+	 *            格式类型，通过系统常量中定义，如：DATE_FORMAT_8
 	 * @return
 	 */
 	public static String convertDateFormat(String dateStr, String patternFrom, String patternTo) {
@@ -207,7 +238,7 @@ public class DateFormatUtils {
 	}
 
 	/**
-	 * 将时间串按照默认格式CrmConstants.DATE_FORMAT，格式化成Date。
+	 * 将时间串按照默认格式DATE_FORMAT，格式化成Date。
 	 * 
 	 * @param dateStr
 	 * @return
@@ -217,7 +248,7 @@ public class DateFormatUtils {
 		if (null == dateStr || "".equals(dateStr))
 			return null;
 
-		SimpleDateFormat dateFormator = new SimpleDateFormat(CrmConstants.DATE_FORMAT);
+		SimpleDateFormat dateFormator = new SimpleDateFormat(DATE_FORMAT);
 
 		java.util.Date tDate = dateFormator.parse(dateStr, new ParsePosition(0));
 
@@ -230,17 +261,17 @@ public class DateFormatUtils {
 		if (null == dateStr || "".equals(dateStr))
 			return null;
 
-		SimpleDateFormat dateFormator = new SimpleDateFormat(CrmConstants.DATE_FORMAT);
+		SimpleDateFormat dateFormator = new SimpleDateFormat(DATE_FORMAT);
 
 		java.util.Date tDate = dateFormator.parse(dateStr, new ParsePosition(0));
-		return formatDate(tDate, CrmConstants.DATE_TIME_FORMAT);
+		return formatDate(tDate, DATE_TIME_FORMAT);
 
 	}
 
 
 
 	/**
-	 * 将时间串按照默认格式CrmConstants.DATE_FORMAT，格式化成Date。
+	 * 将时间串按照默认格式DATE_FORMAT，格式化成Date。
 	 *
 	 * @param dateStr
 	 * @return
@@ -250,7 +281,7 @@ public class DateFormatUtils {
 		if (null == dateStr || "".equals(dateStr))
 			return null;
 
-		SimpleDateFormat dateFormator = new SimpleDateFormat(CrmConstants.DATE_FORMAT);
+		SimpleDateFormat dateFormator = new SimpleDateFormat(DATE_FORMAT);
 
 		java.util.Date tDate = dateFormator.parse(dateStr, new ParsePosition(0));
 
@@ -262,7 +293,7 @@ public class DateFormatUtils {
 	}
 
 	/**
-	 * 将时间串按照默认格式CrmConstants.DATE_TIME_FORMAT，格式化成Date。
+	 * 将时间串按照默认格式DATE_TIME_FORMAT，格式化成Date。
 	 *
 	 * @param dateStr
 	 * @return
@@ -272,7 +303,7 @@ public class DateFormatUtils {
 		if (null == dateStr || "".equals(dateStr))
 			return null;
 
-		SimpleDateFormat dateFormator = new SimpleDateFormat(CrmConstants.DATE_TIME_FORMAT);
+		SimpleDateFormat dateFormator = new SimpleDateFormat(DATE_TIME_FORMAT);
 
 		java.util.Date tDate = dateFormator.parse(dateStr, new ParsePosition(0));
 
@@ -284,7 +315,7 @@ public class DateFormatUtils {
 	 *
 	 * @param date
 	 * @param pattern
-	 *            格式类型，通过系统常量中定义，如：CrmConstants.DATE_FORMAT_8
+	 *            格式类型，通过系统常量中定义，如：DATE_FORMAT_8
 	 * @return
 	 */
 	public static Date parseStrToDate(String dateStr, String pattern) {
@@ -312,11 +343,11 @@ public class DateFormatUtils {
 	static{
 		if(dateFormatMap==null){
 			dateFormatMap=new LinkedHashMap();
-			dateFormatMap.put(CrmConstants.DATE_TIME_FORMAT,"[0-2]{1}[0-9]{1}[0-9]{1}[0-9]{1}-[0-1]?[0-9]{1}-[0-3]?[0-9]{1} [0-2]?[0-9]{1}:[0-5]?[0-9]{1}:[0-5]?[0-9]{1}");//yyyy-mm-dd hh:mm:ss
-			dateFormatMap.put(CrmConstants.DATE_FORMAT,"[0-2]{1}[0-9]{1}[0-9]{1}[0-9]{1}-[0-1]?[0-9]{1}-[0-3]?[0-9]{1}");//yyyy-mm-dd
-			dateFormatMap.put(CrmConstants.DATE_FORMAT_8,"[0-2]{1}[0-9]{1}[0-9]{1}[0-9]{1}[0-1]?[0-9]{1}[0-3]?[0-9]{1}");//yyyymmdd
+			dateFormatMap.put(DATE_TIME_FORMAT,"[0-2]{1}[0-9]{1}[0-9]{1}[0-9]{1}-[0-1]?[0-9]{1}-[0-3]?[0-9]{1} [0-2]?[0-9]{1}:[0-5]?[0-9]{1}:[0-5]?[0-9]{1}");//yyyy-mm-dd hh:mm:ss
+			dateFormatMap.put(DATE_FORMAT,"[0-2]{1}[0-9]{1}[0-9]{1}[0-9]{1}-[0-1]?[0-9]{1}-[0-3]?[0-9]{1}");//yyyy-mm-dd
+			dateFormatMap.put(DATE_FORMAT_8,"[0-2]{1}[0-9]{1}[0-9]{1}[0-9]{1}[0-1]?[0-9]{1}[0-3]?[0-9]{1}");//yyyymmdd
 			
-			dateFormatMap.put(CrmConstants.DATE_TIME_FORMAT_14,"[0-2]{1}[0-9]{1}[0-9]{1}[0-9]{1}[0-1]?[0-9]{1}[0-3]?[0-9]{1}[0-2]?[0-9]{1}[0-5]?[0-9]{1}[0-5]?[0-9]{1}");//yyyyMMddHHmmss
+			dateFormatMap.put(DATE_TIME_FORMAT_14,"[0-2]{1}[0-9]{1}[0-9]{1}[0-9]{1}[0-1]?[0-9]{1}[0-3]?[0-9]{1}[0-2]?[0-9]{1}[0-5]?[0-9]{1}[0-5]?[0-9]{1}");//yyyyMMddHHmmss
 		}
 	}
 	private static String getDateFormat(String dataStr){
@@ -477,10 +508,12 @@ public class DateFormatUtils {
 	 * @return
 	 */
 	public static int getDays(Date date1, Date date2) {
-		if (date1 == null || date2 == null)
+		if (date1 == null || date2 == null) {
 			return 0;
-		else
-			return (int) ((date2.getTime() - date1.getTime()) / 0x5265c00L);//86400000 代表毫秒
+		} else {
+			//86400000 代表毫秒
+			return (int) ((date2.getTime() - date1.getTime()) / 0x5265c00L);
+		}
 	}
 	
 	/**
@@ -490,10 +523,12 @@ public class DateFormatUtils {
 	 * @return
 	 */
 	public static int getSecs(Date date1, Date date2) {
-		if (date1 == null || date2 == null)
+		if (date1 == null || date2 == null) {
 			return 0;
-		else
-			return (int) ((date2.getTime() - date1.getTime()) / 1000);//1000 代表毫秒
+		} else {
+			//1000 代表毫秒
+			return (int) ((date2.getTime() - date1.getTime()) / 1000);
+		}
 	}
 	
 
@@ -505,8 +540,9 @@ public class DateFormatUtils {
 	 * @return
 	 */
 	public static int getDayByStrs(String dateStr1, String dateStr2, String pattern) {
-		if (StringUtils.isEmpty(dateStr1) ||StringUtils.isEmpty(dateStr2))
+		if (StringUtils.isEmpty(dateStr1) ||StringUtils.isEmpty(dateStr2)) {
 			return 0;
+		}
 		Date date1 = DateFormatUtils.parseDateToFormat(dateStr1, pattern);
 		Date date2 = DateFormatUtils.parseDateToFormat(dateStr2, pattern);
 		return getDays(date1,date2);
@@ -520,8 +556,9 @@ public class DateFormatUtils {
 	 * @return
 	 */
 	public static int getSecByStrs(String dateStr1, String dateStr2, String pattern) {
-		if (StringUtils.isEmpty(dateStr1) ||StringUtils.isEmpty(dateStr2))
+		if (StringUtils.isEmpty(dateStr1) ||StringUtils.isEmpty(dateStr2)) {
 			return 0;
+		}
 		Date date1 = DateFormatUtils.parseDateToFormat(dateStr1, pattern);
 		Date date2 = DateFormatUtils.parseDateToFormat(dateStr2, pattern);
 		return getSecs(date1,date2);
@@ -572,7 +609,8 @@ public class DateFormatUtils {
 		int month = cal.get(Calendar.MONTH);
 		int day = cal.get(Calendar.DAY_OF_MONTH);
 
-		cal.add(Calendar.DAY_OF_MONTH, (1 - day)); //日期加减天数
+		//日期加减天数
+		cal.add(Calendar.DAY_OF_MONTH, (1 - day));
 
 		return DateFormatUtils.formatDate(cal.getTime(), pattern);
 	}
@@ -632,8 +670,9 @@ public class DateFormatUtils {
 		int maxDayInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
 		
 		int step = maxDayInMonth - day;
-		
-		cal.add(Calendar.DAY_OF_MONTH, step); //当月天上再添加几天
+
+		//当月天上再添加几天
+		cal.add(Calendar.DAY_OF_MONTH, step);
 
 		return DateFormatUtils.formatDate(cal.getTime(), pattern);
 	}
@@ -668,8 +707,9 @@ public class DateFormatUtils {
 
 	public static long calendarDayPlus(String dateStr1, String dateStr2) {
 		
-		if (dateStr1 == null || dateStr2 == null||dateStr1.equals("")||dateStr2.equals(""))
+		if (StringUtils.isEmpty(dateStr1) || StringUtils.isEmpty(dateStr2)) {
 			return 0;
+		}
 		Date date1 = DateFormatUtils.parseStrToDate(dateStr1);
 		Date date2 = DateFormatUtils.parseStrToDate(dateStr2);
 		Calendar c1 = Calendar.getInstance();
@@ -683,14 +723,15 @@ public class DateFormatUtils {
 	}
 	
 	/**
-	 * @param dateStr
-	 * @param pattern
+	 * @param dateStr1
+	 * @param dateStr2
 	 * @return
 	 */
 	public static int calendarPlus(String dateStr1, String dateStr2) {
 		
-		if (dateStr1 == null || dateStr2 == null||dateStr1.equals("")||dateStr2.equals(""))
+		if (StringUtils.isEmpty(dateStr1) || StringUtils.isEmpty(dateStr2)) {
 			return 0;
+		}
 		
 		Calendar cal1 = DateFormatUtils.parseStrToCalendar(dateStr1);
 		
@@ -716,14 +757,14 @@ public class DateFormatUtils {
 //		String dateStr1 = "2006-7-18 12:13:34";
 //		String dateStr2 = "2006-7-18 12:13:34";
 //		// add
-//		Date date = DateFormatUtils.addDay(DateFormatUtils.parseStrToDate(dateStr, CrmConstants.DATE_TIME_FORMAT), 20);
+//		Date date = DateFormatUtils.addDay(DateFormatUtils.parseStrToDate(dateStr, DATE_TIME_FORMAT), 20);
 //
-//		logger.debug("after add " + DateFormatUtils.formatDate(date, CrmConstants.DATE_TIME_FORMAT));
+//		logger.debug("after add " + DateFormatUtils.formatDate(date, DATE_TIME_FORMAT));
 //		
-//		java.util.Date currDate = DateFormatUtils.parseStrToDate("2010-10-4",CrmConstants.DATE_FORMAT);
+//		java.util.Date currDate = DateFormatUtils.parseStrToDate("2010-10-4",DATE_FORMAT);
 //		Calendar cal = Calendar.getInstance();
 //		
-//		utils.SystemUtils.printLog( DateFormatUtils.getLastDayInMonth("2010-10-4",CrmConstants.DATE_FORMAT));
+//		utils.SystemUtils.printLog( DateFormatUtils.getLastDayInMonth("2010-10-4",DATE_FORMAT));
 		
 		String dateStr1="2004-2-18 12:13:34";
 		String dateStr2="2004-2-17";
@@ -733,10 +774,10 @@ public class DateFormatUtils {
 		
 		
 		String dateStr4="20040217231111";
-		Date finalDate1=DateFormatUtils.parseDateToFormat(dateStr1,CrmConstants.DATE_FORMAT);
-		Date finalDate2=DateFormatUtils.parseDateToFormat(dateStr2,CrmConstants.DATE_FORMAT);
-		Date finalDate3=DateFormatUtils.parseDateToFormat(dateStr3,CrmConstants.DATE_FORMAT);
-		Date finalDate4=DateFormatUtils.parseDateToFormat(dateStr4,CrmConstants.DATE_FORMAT);
+		Date finalDate1=DateFormatUtils.parseDateToFormat(dateStr1,DATE_FORMAT);
+		Date finalDate2=DateFormatUtils.parseDateToFormat(dateStr2,DATE_FORMAT);
+		Date finalDate3=DateFormatUtils.parseDateToFormat(dateStr3,DATE_FORMAT);
+		Date finalDate4=DateFormatUtils.parseDateToFormat(dateStr4,DATE_FORMAT);
 //		utils.SystemUtils.printLog(finalDate1);
 //		utils.SystemUtils.printLog(finalDate2);
 //		utils.SystemUtils.printLog(finalDate3);
@@ -768,17 +809,17 @@ public class DateFormatUtils {
 		// // compareDate
 		// logger.debug(DateFormatUtils.compareDate(dateStr1,
 		// dateStr2,
-		// CrmConstants.DATE_TIME_FORMAT));
+		// DATE_TIME_FORMAT));
 
 		// first or last
 		// logger.debug(DateFormatUtils.getFirstDayInWeek(dateStr,
-		// CrmConstants.DATE_TIME_FORMAT));
+		// DATE_TIME_FORMAT));
 		// logger.debug(DateFormatUtils.getLastDayInWeek(dateStr,
-		// CrmConstants.DATE_TIME_FORMAT));
+		// DATE_TIME_FORMAT));
 		// logger.debug(DateFormatUtils.getFirstDayInMonth(dateStr,
-		// CrmConstants.DATE_TIME_FORMAT));
+		// DATE_TIME_FORMAT));
 		// logger.debug(DateFormatUtils.getLastDayInMonth(dateStr,
-		// CrmConstants.DATE_TIME_FORMAT));
+		// DATE_TIME_FORMAT));
 		//
 		// logger.debug(DateFormatUtils.parseStrToCalendar(dateStr)
 		// .getActualMaximum(Calendar.DAY_OF_MONTH));

@@ -44,7 +44,7 @@
     DELETE FROM prod_specification
     WHERE SPEC_ID IN
     <foreach item="item" collection="array" open="(" separator="," close=")">
-            ${item}
+            #{item}
     </foreach>
   </delete>
 </mapper>

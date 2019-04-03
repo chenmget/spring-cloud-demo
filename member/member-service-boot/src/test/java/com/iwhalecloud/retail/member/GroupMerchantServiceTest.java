@@ -66,8 +66,8 @@ public class GroupMerchantServiceTest {
     @Test
     public void queryGroupMerchantForPageTest(){
         GroupMerchantQueryReq req = new GroupMerchantQueryReq();
-        req.setPageNo(1);
-        req.setPageSize(10);
+        req.setPageNo("1");
+        req.setPageSize("10");
         req.setGroupId("");
         req.setMerchId("");
         req.setStatus("1");

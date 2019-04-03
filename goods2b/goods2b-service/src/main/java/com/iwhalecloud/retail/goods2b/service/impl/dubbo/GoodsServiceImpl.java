@@ -727,7 +727,6 @@ public class GoodsServiceImpl implements GoodsService {
                 filterPresubsidyGoods(goodsForPageQueryRespList, i, item);
             }
         }
-        goodsForPageQueryRespPage.setSize(goodsForPageQueryRespList.size());
     }
 
     private void filterPresubsidyGoods(List<GoodsForPageQueryResp> goodsForPageQueryRespList, int i,
@@ -793,13 +792,14 @@ public class GoodsServiceImpl implements GoodsService {
         log.info("GoodsServiceImpl.queryGoodsForPage getUserByUserId req={}", req.getUserId());
         UserDTO userDTO = userService.getUserByUserId(req.getUserId());
         if(null != userDTO){
-            MerchantGetReq merchantGetReq = new MerchantGetReq();
-            merchantGetReq.setMerchantId(userDTO.getRelCode());
-            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
-            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
-            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
-                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
-            }
+            merchantCode = userDTO.getRelCode();
+//            MerchantGetReq merchantGetReq = new MerchantGetReq();
+//            merchantGetReq.setMerchantId(userDTO.getRelCode());
+//            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
+//            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
+//            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
+//                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
+//            }
         }
         // 查询商品是否收藏
         log.info("GoodsServiceImpl.queryGoodsForPage queryUserCollection userCollectionListReq={}", userCollectionListReq);
@@ -822,7 +822,7 @@ public class GoodsServiceImpl implements GoodsService {
             // 设置前置补贴价格
             goods.setDeliveryPrice(goods.getDeliveryPrice());
             goods.setIsPresubsidy(false);
-            this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierCode(), merchantCode, goods);
+            this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
         }
         long endTime = System.currentTimeMillis();
         log.info("setPresubsidyPrice costTime={}:",endTime-startTime);
@@ -962,6 +962,15 @@ public class GoodsServiceImpl implements GoodsService {
                 if (!booleanResultVO.isSuccess() || merchantResp == null || !merchantResp.getInStock()) {
                     return ResultVO.error(GoodsResultCodeEnum.NOT_HAS_STOCK);
                 }
+                GetProductQuantityByMerchantResp resultData = booleanResultVO.getResultData();
+                List<ProductQuantityItem> productQuantityItemList = resultData.getItemList();
+                if (productQuantityItemList == null && CollectionUtils.isEmpty(productQuantityItemList)) {
+                    return ResultVO.error(GoodsResultCodeEnum.NOT_HAS_STOCK);
+                }
+                // 更新该商品有库存字段
+                for (ProductQuantityItem item : productQuantityItemList) {
+                    goodsProductRelManager.updateIsHaveStock(goods.getGoodsId(), item.getProductId(), item.getIsEnough());
+                }
             } catch (Exception ex) {
                 log.error("GoodsServiceImpl.updateMarketEnable getProductQuantityByMerchant throw exception ex={}", ex);
                 return ResultVO.error(GoodsResultCodeEnum.INVOKE_WAREHOUSE_SERVICE_EXCEPTION);
@@ -982,9 +991,6 @@ public class GoodsServiceImpl implements GoodsService {
             productBaseService.updateAvgApplyPrice(productBaseUpdateReq);
         }
         int result = goodsManager.updateMarketEnableGoodsId(goodsId, marketEnable);
-        if (result > 0 && flag) {
-            goodsProductRelManager.updateIsHaveStock(goodsId, null, true);
-        }
         GoodsOperateResp resp = new GoodsOperateResp();
         resp.setResult(result > 0);
         return ResultVO.success(resp);

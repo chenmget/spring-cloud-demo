@@ -27,11 +27,11 @@ spring:
 
 jmx:
   enabled: false
-
-spring.datasource:
-  driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://10.45.47.88:3306/rights
-  username: rights
-  password: rights
+#
+#spring.datasource:
+#  driver-class-name: com.mysql.jdbc.Driver
+#  url: jdbc:mysql://10.45.47.88:3306/rights
+#  username: rights
+#  password: rights
 
 

@@ -29,7 +29,7 @@ public class Member implements Serializable {
 	/**
 	 * memberId
 	 */
-	@TableId
+	@TableId(type = IdType.INPUT)
 	@ApiModelProperty(value = "memberId")
 	private java.lang.String memberId;
 

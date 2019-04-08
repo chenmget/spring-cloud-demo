@@ -50,8 +50,9 @@ public class DateUtil {
      * @return
      */
     public static String fmtDateToStr(Date date, String dtFormat) {
-        if (date == null)
+        if (date == null){
             return "";
+        }
         try {
             SimpleDateFormat dateFormat = new SimpleDateFormat(dtFormat);
             return dateFormat.format(date);

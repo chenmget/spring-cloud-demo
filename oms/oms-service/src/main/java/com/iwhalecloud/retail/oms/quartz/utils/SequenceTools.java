@@ -55,8 +55,10 @@ public class SequenceTools {
 		randomBuffer.append(serv_id);
 //		int currValue =icInt.incrementAndGet();
 		int prandomNum = randomNum;
-		if(serv_id.length() ==1)//配置一位，则多生成一位随机数
+		//配置一位，则多生成一位随机数
+		if(serv_id.length() ==1) {
 			prandomNum=randomNum+1;
+		}
 		icInt.compareAndSet(getMaxValue(prandomNum), 0);
 		int curValue =icInt.incrementAndGet();
 		String curStrValue =curValue+"";

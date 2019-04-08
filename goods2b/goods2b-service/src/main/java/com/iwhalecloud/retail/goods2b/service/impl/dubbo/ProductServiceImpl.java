@@ -12,7 +12,10 @@ import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.*;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
 import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
@@ -37,10 +40,8 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -273,23 +274,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req) {
-
-        // 产品名称不为空取productBase表查询并把productBaseId作为查询条件
-        if (StringUtils.isNotEmpty(req.getProductName())) {
-            ProductBaseGetReq productBaseReq = new ProductBaseGetReq();
-            productBaseReq.setProductName(req.getProductName());
-            ResultVO<List<ProductBaseGetResp>> productBaseVO = productBaseService.selectProductBase(productBaseReq);
-            List<ProductBaseGetResp> productBaseList = productBaseVO.getResultData();
-            if (null != productBaseList && !productBaseList.isEmpty()) {
-                List<String> productBaseIdList = productBaseList.stream().map(ProductBaseGetResp::getProductBaseId).collect(Collectors.toList());
-                List<String> productBaseIds = req.getProductBaseIdList();
-                productBaseIds = productBaseIds == null ? new ArrayList<String>() : productBaseIds;
-                productBaseIds.addAll(productBaseIdList);
-                req.setProductBaseIdList(productBaseIds);
-            }else{
-                return ResultVO.success(new Page<ProductPageResp>());
-            }
-        }
         Page<ProductPageResp> page = productManager.selectPageProductAdmin(req);
         List<ProductPageResp> respList = page.getRecords();
         for (ProductPageResp resp : respList){

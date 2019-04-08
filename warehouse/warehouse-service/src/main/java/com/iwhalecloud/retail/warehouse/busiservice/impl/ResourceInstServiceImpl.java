@@ -325,7 +325,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         List<String> existNbrs = qryEnableInsertNbr(req);
         mktResInstNbrs.removeAll(existNbrs);
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
-            return ResultVO.error("全部是重复串码");
+            return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
         // 二校验：
         // A) 绿色通道不需要校验

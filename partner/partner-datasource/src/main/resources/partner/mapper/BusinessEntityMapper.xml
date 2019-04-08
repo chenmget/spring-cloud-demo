@@ -21,21 +21,30 @@
     ,t.USERID
 </sql>
 
-    <!--<select id="pageBusinessEntity" resultType="com.iwhalecloud.retail.partner.dto.BusinessEntityDTO"-->
-            <!--parameterType="com.iwhalecloud.retail.partner.dto.req.BusinessEntityPageReq">-->
-        <!--select t.*-->
-        <!--from par_business_entity t where 1=1-->
-        <!--<if test="req.businessEntityCode != null and req.businessEntityCode != ''">-->
-            <!--and t.BUSINESS_ENTITY_CODE like CONCAT(CONCAT('%', #{req.businessEntityCode }), '%')-->
-        <!--</if>-->
-        <!--<if test="req.businessEntityName != null and req.businessEntityName != ''">-->
-            <!--and lower(t.BUSINESS_ENTITY_NAME) like lower(CONCAT(CONCAT('%', #{req.businessEntityName }), '%'))-->
-        <!--</if>-->
-        <!--<if test="req.status != null and req.status != ''">-->
-            <!--and t.STATUS = #{req.status }-->
-        <!--</if>-->
-        <!--order by t.BUSINESS_ENTITY_ID desc-->
-    <!--</select>-->
+    <select id="pageBusinessEntity" resultType="com.iwhalecloud.retail.partner.dto.BusinessEntityDTO"
+            parameterType="com.iwhalecloud.retail.partner.dto.req.BusinessEntityPageReq">
+        select t.*,count(t.BUSINESS_ENTITY_CODE) as sum
+        from par_business_entity t ,par_merchant b where 1=1
+        and t.BUSINESS_ENTITY_CODE = b.BUSINESS_ENTITY_CODE
+        <if test="req.businessEntityCode != null and req.businessEntityCode != ''">
+            and t.BUSINESS_ENTITY_CODE like CONCAT(CONCAT('%', #{req.businessEntityCode }), '%')
+        </if>
+        <if test="req.businessEntityName != null and req.businessEntityName != ''">
+            and lower(t.BUSINESS_ENTITY_NAME) like lower(CONCAT(CONCAT('%', #{req.businessEntityName }), '%'))
+        </if>
+        <if test="req.status != null and req.status != ''">
+            and t.STATUS = #{req.status }
+        </if>
+        <if test="req.lanId != null and req.lanId != ''">
+            and t.LAN_ID = #{req.lanId }
+        </if>
+        <if test="req.regionId != null and req.regionId != ''">
+            and t.REGION_ID = #{req.regionId }
+        </if>
+       <!-- order by t.BUSINESS_ENTITY_ID desc -->
+        group by t.BUSINESS_ENTITY_CODE
+        HAVING sum > 1
+    </select>
 
     <!-- 权限过滤查询-->
     <select id="pageBusinessEntityByRight" resultType="com.iwhalecloud.retail.partner.dto.BusinessEntityDTO"

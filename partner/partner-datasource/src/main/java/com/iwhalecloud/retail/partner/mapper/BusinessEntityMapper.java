@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.req.BusinessEntityPageByRightsReq;
+import com.iwhalecloud.retail.partner.dto.req.BusinessEntityPageReq;
 import com.iwhalecloud.retail.partner.entity.BusinessEntity;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -16,7 +17,7 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface BusinessEntityMapper extends BaseMapper<BusinessEntity>{
 
-//    Page<BusinessEntityDTO> pageBusinessEntity(Page<BusinessEntityDTO> page, @Param("req") BusinessEntityPageReq req);
+    Page<BusinessEntityDTO> pageBusinessEntity(Page<BusinessEntityDTO> page, @Param("req") BusinessEntityPageReq req);
 
     /**
      * 查询有权限的经营主体

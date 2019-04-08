@@ -219,7 +219,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         // 更新库存
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
-        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
+        resourceInstStoreDTO.setMktResStoreId(mktResStoreId);
         resourceInstStoreDTO.setQuantity(Long.valueOf(num));
         resourceInstStoreDTO.setQuantityAddFlag(false);
         resourceInstStoreDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
@@ -228,6 +228,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
         }
         log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(restInstStoreCnt));
+        req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        req.setDestStoreId(mktResStoreId);
         resourceInstLogService.delResourceInstLog(req, resourceInsts);
         return ResultVO.success(num);
     }

@@ -14,11 +14,15 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.ArithUtil;
+import com.iwhalecloud.retail.promo.common.RebateConst;
 import com.iwhalecloud.retail.promo.dto.req.GetMerchantIdListReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalancePayoutReq;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalancePayoutResp;
 import com.iwhalecloud.retail.promo.manager.AccountBalancePayoutManager;
+import com.iwhalecloud.retail.promo.manager.AccountManager;
+import com.iwhalecloud.retail.promo.service.AccountBalanceLogService;
 import com.iwhalecloud.retail.promo.service.AccountBalancePayoutService;
+import com.iwhalecloud.retail.promo.service.AccountService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -45,14 +49,17 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
     @Reference
     private ProductService productService;
 
+
+    @Autowired
+    private AccountManager accountManager;
+
     @Autowired
     private AccountBalancePayoutManager accountBalancePayoutManager;
 
     @Override
     public ResultVO<Page<QueryAccountBalancePayoutResp>> queryAccountBalancePayoutForPage(QueryAccountBalancePayoutReq req) {
-        log.info(AccountBalancePayoutServiceImpl.class.getName()+" queryAccountBalancePayoutForPage, req={}", req == null ? "" : JSON.toJSON(req));
-
         this.initQueryAccountBalancePayoutReq(req);
+        log.info(AccountBalancePayoutServiceImpl.class.getName()+" queryAccountBalancePayoutForPage, req={}", req == null ? "" : JSON.toJSON(req));
         Page<QueryAccountBalancePayoutResp> page = accountBalancePayoutManager.queryAccountBalancePayoutForPage(req);
 
         if (page != null && page.getRecords() != null) {
@@ -111,11 +118,19 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
     }
 
     private void initQueryAccountBalancePayoutReq(QueryAccountBalancePayoutReq req) {
+        String acctId = this.accountManager.getAccountId(req.getCustId(),req.getAcctType());
+        req.setAcctId(acctId);
+        boolean istMerchant = false;
+        if(StringUtils.isNotEmpty(req.getSupplierName())||StringUtils.isNotEmpty(req.getSupplierLoginName())){
+            istMerchant = true;
+        }
+        List<String> supplierIdList = new ArrayList<String>();
 
         GetMerchantIdListReq getMerchantIdListReq = new GetMerchantIdListReq();
         getMerchantIdListReq.setMerchantName(req.getSupplierName());
         getMerchantIdListReq.setMerchantLoginName(req.getSupplierLoginName());
-        req.setSupplierIdList(this.getMerchantIdList(getMerchantIdListReq));
+        supplierIdList = this.getMerchantIdList(getMerchantIdListReq);
+
 
         List<String> productIdList = new ArrayList<String>();
         String productName = req.getProductName();
@@ -144,8 +159,13 @@ public class AccountBalancePayoutServiceImpl implements AccountBalancePayoutServ
                 }
             }
         }
-
-
+        if(istMerchant&&supplierIdList.isEmpty()){
+            supplierIdList.add(RebateConst.QUERY_NULL);
+        }
+        if(isProduct&&productIdList.isEmpty()){
+            productIdList.add(RebateConst.QUERY_NULL);
+        }
+        req.setSupplierIdList(supplierIdList);
         req.setProductIdList(productIdList);
     }
 

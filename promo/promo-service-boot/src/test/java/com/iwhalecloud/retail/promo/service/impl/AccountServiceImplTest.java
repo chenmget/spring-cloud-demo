@@ -73,6 +73,7 @@ public class AccountServiceImplTest {
 
     @Test
     public void queryTotalAccount(){
+        //测试通过
         QueryTotalAccountReq req = new QueryTotalAccountReq();
         req.setCustId("4300001063072");
         req.setAcctType("20");
@@ -83,12 +84,15 @@ public class AccountServiceImplTest {
     }
     @Test
     public void queryAccountBalanceDetailAllForPage(){
+        //测试通过
         QueryAccountBalanceDetailAllReq req = new QueryAccountBalanceDetailAllReq();
 //        req.setAcctId("1");
         req.setAcctType("20");
         req.setCustId("4300001063072");
         req.setPageNo(1);
         req.setPageSize(10);
+//        req.setActName("优惠券");
+//        req.setSupplierName("三星投资有限公司");
 //        req.setEffDateEnd("2019-10-12");
 
         ResultVO<Page<QueryAccountBalanceDetailAllResp>> pageResultVO = accountBalanceDetailService.queryAccountBalanceDetailAllForPage(req);
@@ -96,8 +100,10 @@ public class AccountServiceImplTest {
     }
     @Test
     public void queryAccountBalanceAllForPage(){
+        //已改未测试
         QueryAccountBalanceAllReq req = new QueryAccountBalanceAllReq();
-        req.setAcctId("1");
+        req.setCustId("4300001063072");
+        req.setAcctType("20");
         req.setPageNo(1);
         req.setPageSize(10);
         req.setEffDateEnd("2019-10-12");
@@ -111,11 +117,12 @@ public class AccountServiceImplTest {
         req.setPageNo(1);
         req.setPageSize(10);
         req.setCustId("4300001063072");
+        req.setAcctType("20");
 //        req.setBrandName("华为");
 //        req.setSupplierLoginName("111");
 //        req.setSupplierName("ly");
-        req.setOperDateStart("1987-10-10");
-        req.setOperDateEnd("2020-10-10");
+//        req.setOperDateStart("1987-10-10");
+//        req.setOperDateEnd("2020-10-10");
         ResultVO<Page<QueryAccountBalancePayoutResp>> pageResultVO = accountBalancePayoutService.queryAccountBalancePayoutForPage(req);
 
         System.out.println(pageResultVO);
@@ -127,6 +134,7 @@ public class AccountServiceImplTest {
      */
     @Test
     public void calculation(){
+        //测试通过，需要改造
         AccountBalanceCalculationReq req = new AccountBalanceCalculationReq();
         req.setBalanceSourceType(RebateConst.Const.ACCOUNT_BALANCE_DETAIL_BALANCE_SOURCE_TYPE_ID.getValue());
         req.setCustId("4300001063072");
@@ -134,12 +142,14 @@ public class AccountServiceImplTest {
         List<AccountBalanceCalculationOrderItemReq> orderItemList = new ArrayList<AccountBalanceCalculationOrderItemReq>();
         AccountBalanceCalculationOrderItemReq itemReq = new AccountBalanceCalculationOrderItemReq();
         itemReq.setActId("10008987");
-        itemReq.setActName("111");
-        itemReq.setActNum("20");
-        itemReq.setOrderId("1");
-        itemReq.setProductId("123456");
-        itemReq.setSupplierId("1111");
-        itemReq.setOrderItemId("123121");
+        itemReq.setActName("20190402lytest1");
+        itemReq.setActNum("30");
+        itemReq.setOrderId("201903223810003591");
+        itemReq.setProductId("100000092");
+//        itemReq.setProductId("11111");
+        itemReq.setSupplierId("10000578");
+//        itemReq.setOrderItemId("201903210910000050");
+        itemReq.setOrderItemId("201903223810003592");
         orderItemList.add(itemReq);
 
         req.setOrderItemList(orderItemList);

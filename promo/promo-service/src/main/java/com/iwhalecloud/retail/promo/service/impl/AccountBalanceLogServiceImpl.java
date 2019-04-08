@@ -20,16 +20,15 @@ public class AccountBalanceLogServiceImpl implements AccountBalanceLogService {
     private AccountBalanceLogManager accountBalanceLogManager;
 
 
-
     @Override
     public String addAccountBalanceLog(AccountBalanceLogDTO accountBalanceLogDTO) {
         AccountBalanceLog log = new AccountBalanceLog();
-        BeanUtils.copyProperties(accountBalanceLogDTO,log);
+        BeanUtils.copyProperties(accountBalanceLogDTO, log);
 
         log.setStatusCd(String.valueOf(RebateConst.Const.STATUS_USE.getValue()));
         log.setStatusDate(new Date());
         boolean isSuc = accountBalanceLogManager.save(log);
-        if(isSuc){
+        if (isSuc) {
             return log.getBalanceLogId();
         }
 
@@ -37,12 +36,12 @@ public class AccountBalanceLogServiceImpl implements AccountBalanceLogService {
     }
 
     @Override
-    public Long getAccountBalanceAddSum(AccountBalanceLogStReq req ) {
+    public Long getAccountBalanceAddSum(AccountBalanceLogStReq req) {
         return accountBalanceLogManager.getAccountBalanceAddSum(req);
     }
 
     @Override
-    public Long getAccountBalanceReduceSum(AccountBalanceLogStReq req ) {
+    public Long getAccountBalanceReduceSum(AccountBalanceLogStReq req) {
         return accountBalanceLogManager.getAccountBalanceReduceSum(req);
     }
 

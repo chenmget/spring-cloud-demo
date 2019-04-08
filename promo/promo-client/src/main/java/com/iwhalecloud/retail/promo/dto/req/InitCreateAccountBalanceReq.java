@@ -32,4 +32,6 @@ public class InitCreateAccountBalanceReq  implements Serializable {
     @NotNull(message = "订单项信息不能为空")
     @ApiModelProperty(value = "订单项信息")
     private List<AccountBalanceCalculationOrderItemReq> orderItemReqList;
+    @ApiModelProperty(value = "账户余额类型")
+    private String balanceTypeId;
 }

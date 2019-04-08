@@ -4,8 +4,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.req.GoodsAddReq;
-import com.iwhalecloud.retail.goods2b.dto.resp.GoodsAddResp;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
@@ -197,8 +195,8 @@ public class TaskB2BController extends BaseController {
     public ResultVO getTaskByFormId(@RequestParam String formId){
         log.info("TaskB2BController getTaskByFormId formId={} ", formId);
         QueryTaskByFormIdResp queryTaskByFormIdResp = new QueryTaskByFormIdResp();
-        TaskDTO taskDTO = taskService.getTaskByFormId(formId).get(0);
-        TaskItemDTO taskItemDTO = taskItemService.queryTaskItemByTaskId(taskDTO.getTaskId());
+        TaskDTO taskDTO = taskService.getTaskByFormId(formId).getResultData().get(0);
+        TaskItemDTO taskItemDTO = taskItemService.queryTaskItemByTaskId(taskDTO.getTaskId()).getResultData();
         queryTaskByFormIdResp.setTaskDTO(taskDTO);
         queryTaskByFormIdResp.setTaskItemDTO(taskItemDTO);
         queryTaskByFormIdResp.setFormId(formId);

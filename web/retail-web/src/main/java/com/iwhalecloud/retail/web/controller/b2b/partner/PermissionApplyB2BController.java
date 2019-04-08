@@ -29,7 +29,7 @@ public class PermissionApplyB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/save")
-    public ResultVO<String> save(@RequestBody @ApiParam(value = "商家权限申请新建入参", required = true) PermissionApplySaveDTO req){
+    public ResultVO<String> save(@RequestBody @ApiParam(value = "商家权限申请新建入参", required = true) PermissionApplySaveDTO req)throws Exception{
         log.info("PermissionApplyB2BController.save(), input: PermissionApplySaveDTO={} ", JSON.toJSONString(req));
         ResultVO resp = permissionApplyService.savePermissionApply(req);
         log.info("PermissionApplyB2BController.save(), output: resp={} ", JSON.toJSONString(resp));

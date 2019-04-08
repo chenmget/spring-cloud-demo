@@ -84,5 +84,19 @@ public class AccountManager extends ServiceImpl<AccountMapper, Account> {
         return accountMapper.getRebateNextId();
     }
 
+    /**
+     * 获取accountId
+     * @param custId
+     * @param acctType
+     * @return
+     */
+    public String  getAccountId(String custId,String acctType){
+        String acctId = RebateConst.QUERY_NULL;
+        Account account = this.getAccountByCustId(custId,acctType);
+        if(account!=null){
+            acctId =  account.getAcctId();
+        }
+        return acctId;
+    }
 
 }

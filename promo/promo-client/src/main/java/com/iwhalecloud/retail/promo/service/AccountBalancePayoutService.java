@@ -17,5 +17,10 @@ public interface AccountBalancePayoutService{
      */
     ResultVO<Page<QueryAccountBalancePayoutResp>> queryAccountBalancePayoutForPage(QueryAccountBalancePayoutReq req);
 
+    /**
+     * 根据商家登录名、商家名等获取商家ID集合
+     * @param req
+     * @return
+     */
     List<String> getMerchantIdList(GetMerchantIdListReq req);
 }

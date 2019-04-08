@@ -12,8 +12,5 @@ public class AccountBalanceItemPayedServiceImpl implements AccountBalanceItemPay
     @Autowired
     private AccountBalanceItemPayedManager accountBalanceItemPayedManager;
 
-    
-    
-    
-    
+
 }

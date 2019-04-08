@@ -17,7 +17,7 @@
     <select id="getAccountBalanceAddSum"  resultType="java.lang.Long"
             parameterType="com.iwhalecloud.retail.promo.dto.req.AccountBalanceLogStReq">
         select sum(IFNULL(SRC_AMOUNT,0)) addSum from ACCOUNT_BALANCE_LOG t inner join ACCOUNT_BALANCE t2
-         on t.ACCOUNT_BALANCE_ID=t2.ACCOUNT_BALANCE_ID inner join ACCOUNT t3 on t2.acct_id=t3.acct_id
+         on t.ACCOUNT_BALANCE_ID=t2.ACCOUNT_BALANCE_ID AND T.ACCT_ID=T2.ACCT_ID inner join ACCOUNT t3 on t2.acct_id=t3.acct_id
          where t.STATUS_CD='1000' and t2.STATUS_CD='1000' AND t2.EFF_DATE&lt;=SYSDATE() AND t2.EXP_DATE&gt;=SYSDATE()
         and t3.ACCT_ID=#{req.acctId}
     </select>

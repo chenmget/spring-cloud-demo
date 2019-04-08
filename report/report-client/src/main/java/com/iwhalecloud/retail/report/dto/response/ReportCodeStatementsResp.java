@@ -39,5 +39,5 @@ public class ReportCodeStatementsResp implements Serializable  {
 	private String destCityId;//串码流向所属地市
 	private String destCountyId;//串码流向所属区县
 	private String selfRegStatus;//自注册状态
-
+	private	String typeId;	//产品类型
 }

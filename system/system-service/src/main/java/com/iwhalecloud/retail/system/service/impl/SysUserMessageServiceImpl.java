@@ -91,11 +91,11 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
                 periodToDeliverEndTime = Period.between(LocalDate.now(),sysUserMessageDTO.getEndTime().toInstant().atZone(zoneId).toLocalDate());
                 sysUserMessageDTO.setContent(sysUserMessageDTO.getContent() + String.format(SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT,periodToDeliverEndTime.getDays()));
             }
-            taskItemDTO = taskItemService.queryTaskItemByTaskId(sysUserMessageDTO.getTaskId());
+            taskItemDTO = taskItemService.queryTaskItemByTaskId(sysUserMessageDTO.getTaskId()).getResultData();
             if (Objects.nonNull(taskItemDTO)) {
                 sysUserMessageDTO.setTaskItemId(taskItemDTO.getTaskItemId());
             }
-            taskDTO =  taskService.getTaskById(sysUserMessageDTO.getTaskId());
+            taskDTO =  taskService.getTaskById(sysUserMessageDTO.getTaskId()).getResultData();
             if (Objects.nonNull(taskDTO)) {
                 sysUserMessageDTO.setOrderId(taskDTO.getFormId());
             }
@@ -133,7 +133,7 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
             if (StringUtils.isEmpty(sysUserMessage.getTaskId())) {
                 continue;
             }
-            TaskDTO taskDTO =  taskService.getTaskById(sysUserMessage.getTaskId());
+            TaskDTO taskDTO =  taskService.getTaskById(sysUserMessage.getTaskId()).getResultData();
             // 用户消息关联的工单已办结则设置用户消息告警无效
             if (Objects.nonNull(taskDTO) && StringUtils.equals(WorkFlowConst.TaskState.FINISH.getCode(),taskDTO.getTaskStatus())) {
                 sysUserMessage.setStatus(SysUserMessageConst.MessageStatusEnum.INVALID.getCode());

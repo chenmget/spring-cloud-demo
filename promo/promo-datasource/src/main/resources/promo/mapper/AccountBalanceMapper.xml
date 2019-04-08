@@ -27,25 +27,19 @@
 </sql>
     <select id="queryAccountBalanceList" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceReq"
             resultType="com.iwhalecloud.retail.promo.dto.AccountBalanceDTO">
-        select <include refid="allFields" /> from ACCOUNT_BALANCE t inner join ACCOUNT_BALANCE_TYPE t1
-        on t.BALANCE_TYPE_ID=t1.BALANCE_TYPE_ID inner join ACCOUNT_BALANCE_RULE t2 on t1.BALANCE_TYPE_ID=t2.BALANCE_TYPE_ID
-        where 1=1
+        select <include refid="allFields" /> from ACCOUNT_BALANCE t inner JOIN ACCOUNT b
+        on t.acct_id=b.acct_id
+        WHERE B.STATUS_CD='1000' AND B.EFF_DATE&lt;=SYSDATE() AND B.EXP_DATE&gt;=SYSDATE()
+        and t.STATUS_CD='1000' AND t.EFF_DATE&lt;=SYSDATE() AND t.EXP_DATE&gt;=SYSDATE()
+        and t.acct_id=#{req.acctId}
         <if test="req.custId != null and req.custId != ''">
             and t.CUST_ID = #{req.custId}
         </if>
-        <if test="req.actId != null and req.actId != ''">
-            and t1.ACT_ID = #{req.actId}
+
+        <if test="req.balanceTypeId != null and req.balanceTypeId != ''">
+            and t.balance_Type_Id = #{req.balanceTypeId}
         </if>
 
-        <if test="req.ruleType != null and req.ruleType != ''">
-            and t2.RULE_TYPE = #{req.ruleType}
-        </if>
-        <if test="req.objType != null and req.objType != ''">
-            and t2.OBJ_TYPE = #{req.objType}
-        </if>
-        <if test="req.objId != null and req.objId != ''">
-            and t2.OBJ_ID = #{req.objId}
-        </if>
 
     </select>
     <select id="getBalanceSt" parameterType="com.iwhalecloud.retail.promo.dto.req.AccountBalanceStReq"
@@ -54,36 +48,31 @@
         SUM(A.INVALID_AMOUNT) TOTAL_INVAILD_AMOUNT FROM ACCOUNT_BALANCE A
         INNER JOIN ACCOUNT B ON A.ACCT_ID=B.ACCT_ID WHERE B.STATUS_CD='1000'
         AND B.EFF_DATE&lt;=SYSDATE() AND B.EXP_DATE&gt;=SYSDATE()
-        AND  A.STATUS_CD='1000' AND A.EFF_DATE&lt;=SYSDATE() AND A.EXP_DATE&gt;=SYSDATE()
+        AND  A.STATUS_CD='1000' AND A.EFF_DATE&lt;=SYSDATE() AND A.EXP_DATE&gt;=SYSDATE() and B.ACCT_ID = #{req.acctId}
         <if test="req.acctType != null and req.acctType != ''">
             and B.ACCT_TYPE = #{req.acctType}
         </if>
-        <if test="req.acctId != null and req.acctId != ''">
-            and B.ACCT_ID = #{req.acctId}
-        </if>
+
     </select>
     <select id="getAccountBalanceSum" parameterType="com.iwhalecloud.retail.promo.dto.req.AccountBalanceStReq"
             resultType="java.lang.Integer">
         SELECT count(A.ACCOUNT_BALANCE_ID)  FROM ACCOUNT_BALANCE A
         INNER JOIN ACCOUNT B ON A.ACCT_ID=B.ACCT_ID WHERE
-          A.STATUS_CD='1000' AND A.EFF_DATE&lt;=SYSDATE() AND A.EXP_DATE&gt;=SYSDATE()
+          A.STATUS_CD='1000' AND A.EFF_DATE&lt;=SYSDATE() AND A.EXP_DATE&gt;=SYSDATE() and B.ACCT_ID = #{req.acctId}
         <if test="req.acctType != null and req.acctType != ''">
             and B.ACCT_TYPE = #{req.acctType}
         </if>
-        <if test="req.acctId != null and req.acctId != ''">
-            and B.ACCT_ID = #{req.acctId}
-        </if>
+
     </select>
     <select id="queryAccountBalanceAllForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceAllReq"
             resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceAllResp">
-        select a.ACCT_ID,a.ACCOUNT_BALANCE_ID,a.AMOUNT,a.UNEFFECTIVE_AMOUNT,
-            a.INVALID_AMOUNT,a.CYCLE_LOWER,a.CYCLE_UPPER,a.EFF_DATE,a.EXP_DATE,a.STATUS_CD,a.CYCLE_TYPE,
-            a.AMOUNT as total_Amount,d.OBJ_ID as supplier_Id
-            ,b.CUST_ID,c.BALANCE_TYPE_ID,c.BALANCE_TYPE_NAME
-             from account_balance a inner join account b on a.ACCT_ID=b.ACCT_ID
-            inner join ACCOUNT_BALANCE_TYPE c on a.BALANCE_TYPE_ID=c.BALANCE_TYPE_ID
-            inner join ACCOUNT_BALANCE_RULE d on c.BALANCE_TYPE_ID=d.BALANCE_TYPE_ID
-            where b.STATUS_CD='1000' AND b.EFF_DATE&lt;=SYSDATE() AND b.EXP_DATE&gt;=SYSDATE()
+        select a.ACCT_ID,a.ACCOUNT_BALANCE_ID,a.AMOUNT,a.UNEFFECTIVE_AMOUNT,a.BALANCE_TYPE_ID,
+        a.INVALID_AMOUNT,a.CYCLE_LOWER,a.CYCLE_UPPER,a.EFF_DATE,a.EXP_DATE,a.STATUS_CD,a.CYCLE_TYPE,
+        a.AMOUNT as total_Amount
+        ,b.CUST_ID
+        from account_balance a inner join account b on a.ACCT_ID=b.ACCT_ID
+
+            where b.STATUS_CD='1000' AND b.EFF_DATE&lt;=SYSDATE() AND b.EXP_DATE&gt;=SYSDATE() and a.acct_id=#{req.acctId}
             <if test="req.custId != null and req.custId != ''">
                 and B.CUST_ID = #{req.custId}
             </if>
@@ -102,6 +91,13 @@
           <if test="req.effDateEnd != null and req.effDateEnd != ''">
                 <![CDATA[   and DATE_FORMAT(a.EFF_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.effDateEnd}, '%Y-%m-%d')   ]]>
           </if>
+        <if test="req.balanceTypeIdList != null and req.balanceTypeIdList.size>0">
+            and a.BALANCE_TYPE_ID in
+            <foreach collection="req.balanceTypeIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
     </select>
 
 </mapper>

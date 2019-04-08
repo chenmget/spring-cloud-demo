@@ -50,7 +50,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@Service(timeout = 20000)
 @Component("merchantService")
 public class MerchantServiceImpl implements MerchantService {
 

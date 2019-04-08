@@ -12,8 +12,6 @@ import java.io.Serializable;
 @Data
 public class QueryAccountBalanceReq extends AbstractRequest implements Serializable {
     private String custId;
-    private String actId;
-    private String objType;
-    private String objId;
-    private String ruleType;
+    private String acctId;
+    private String balanceTypeId;
 }

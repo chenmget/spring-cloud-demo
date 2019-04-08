@@ -18,7 +18,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @Data
 @TableName("ACCOUNT_BALANCE_RULE")
 @ApiModel(value = "对应模型ACCOUNT_BALANCE_RULE, 对应实体AccountBalanceRule类")
-@KeySequence(value="seq_retail_all_tables",clazz = String.class)
+
 
 public class AccountBalanceRule implements Serializable {
     /**表名常量*/
@@ -30,7 +30,7 @@ public class AccountBalanceRule implements Serializable {
   	/**
   	 * 规则标识
   	 */
-	@TableId
+	@TableId(type = IdType.INPUT)
 	@ApiModelProperty(value = "规则标识")
   	private String ruleId;
   	

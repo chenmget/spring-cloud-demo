@@ -155,6 +155,7 @@ public class OrderManager {
 
     public Page<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req){
         Page<FtpOrderDataResp> page = new Page<FtpOrderDataResp>(req.getPageNo(), req.getPageSize());
+        page.setSearchCount(false);
         return orderMapper.queryFtpOrderDataRespList(page,req);
     }
     public String getFstTransDate(){

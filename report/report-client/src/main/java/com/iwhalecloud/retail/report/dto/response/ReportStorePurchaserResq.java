@@ -34,4 +34,6 @@ public class ReportStorePurchaserResq implements Serializable{
 	  private String relCode;
 	  private String userId;
 	  private String brandId;
+	  private String typeId;	//产品类型
+
 }

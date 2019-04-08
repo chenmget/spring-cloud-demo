@@ -32,4 +32,6 @@ public class ReportDeSaleDaoResq implements Serializable {
 	  private String redStatus;//库存预警
 	  private String userType;
 	  private String userId;
+	  private String typeId;//产品类型
+
 }

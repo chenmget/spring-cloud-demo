@@ -11,6 +11,8 @@ import com.iwhalecloud.retail.promo.dto.resp.AccountBalanceStResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountForPageResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryTotalAccountResp;
 import com.iwhalecloud.retail.promo.entity.Account;
+import com.iwhalecloud.retail.promo.manager.AccountBalanceLogManager;
+import com.iwhalecloud.retail.promo.manager.AccountBalanceManager;
 import com.iwhalecloud.retail.promo.manager.AccountManager;
 import com.iwhalecloud.retail.promo.service.AccountBalanceLogService;
 import com.iwhalecloud.retail.promo.service.AccountBalanceService;
@@ -33,9 +35,9 @@ public class AccountServiceImpl implements AccountService {
     private AccountManager accountManager;
 
     @Autowired
-    private AccountBalanceService accountBalanceService;
-    @Reference
-    private AccountBalanceLogService accountBalanceLogService;
+    private AccountBalanceManager accountBalanceManager;
+    @Autowired
+    private AccountBalanceLogManager accountBalanceLogManager;
 
 
     @Override
@@ -135,8 +137,8 @@ public class AccountServiceImpl implements AccountService {
         stReq.setAcctId(queryAccountForPageResp.getAcctId());
         stReq.setAcctType(queryAccountForPageResp.getAcctType());
         //获取账本统计信息
-        AccountBalanceStResp stResp = accountBalanceService.getBalanceSt(stReq);
-        int accountBalanceSum = accountBalanceService.getAccountBalanceSum(stReq);
+        AccountBalanceStResp stResp = accountBalanceManager.getBalanceSt(stReq);
+        int accountBalanceSum = accountBalanceManager.getAccountBalanceSum(stReq);
         totalAccountResp.setBalanceNum(String.valueOf(accountBalanceSum));
         totalAccountResp.setTotalAmount("0");
         totalAccountResp.setTotalUneffAmount("0");
@@ -148,9 +150,9 @@ public class AccountServiceImpl implements AccountService {
             //统计收支情况
             AccountBalanceLogStReq logStReq = new AccountBalanceLogStReq();
             logStReq.setAcctId(queryAccountForPageResp.getAcctId());
-            Long addSum = accountBalanceLogService.getAccountBalanceAddSum(logStReq);
+            Long addSum = accountBalanceLogManager.getAccountBalanceAddSum(logStReq);
             totalAccountResp.setTotalIncome(addSum == null ? "0" : String.valueOf(addSum));
-            Long reduceSum = accountBalanceLogService.getAccountBalanceReduceSum(logStReq);
+            Long reduceSum = accountBalanceLogManager.getAccountBalanceReduceSum(logStReq);
             totalAccountResp.setTotalExpenses(reduceSum == null ? "0" : String.valueOf(reduceSum));
         }
     }

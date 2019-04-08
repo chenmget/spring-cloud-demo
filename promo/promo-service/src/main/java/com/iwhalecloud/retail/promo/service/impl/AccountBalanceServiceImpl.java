@@ -50,11 +50,9 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
 
     @Reference
     private MerchantService merchantService;
-    @Reference
-    private AccountBalanceTypeService accountBalanceTypeService;
 
-    @Reference
-    private AccountBalanceRuleService accountBalanceRuleService;
+    @Autowired
+    private AccountBalanceRuleManager accountBalanceRuleManager;
 
     @Reference
     private ActivityRuleService activityRuleService;
@@ -175,14 +173,15 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         AccountBalanceRuleReq ruleReq = new AccountBalanceRuleReq();
         ruleReq.setActId(orderItemReqList.get(0).getActId());
         ruleReq.setRuleType(RebateConst.Const.RULE_TYPE_REBATE.getValue());
-        ResultVO<List<AccountBalanceRuleResp>> ruleList = accountBalanceRuleService.queryAccountBalanceRuleList(ruleReq);
-        if (ruleList == null || ruleList.getResultData() == null || ruleList.getResultData().isEmpty()) {
+        List<AccountBalanceRuleResp> ruleList = accountBalanceRuleManager.queryAccountBalanceRuleList(ruleReq);
+
+        if (ruleList == null || ruleList.isEmpty()) {
             throw new BusinessException("活动规则配置错误,未找到账户余额类型");
         }
         //b.根据商家ID和余额账户类型获取账本
         QueryAccountBalanceReq queryAccountBalanceReq = new QueryAccountBalanceReq();
         queryAccountBalanceReq.setCustId(req.getCustId());
-        queryAccountBalanceReq.setBalanceTypeId(ruleList.getResultData().get(0).getBalanceTypeId());
+        queryAccountBalanceReq.setBalanceTypeId(ruleList.get(0).getBalanceTypeId());
         queryAccountBalanceReq.setAcctId(req.getAcctId());
         List<AccountBalanceDTO> accountBalanceDTOList = this.queryAccountBalanceList(queryAccountBalanceReq);
         boolean isAddBalance = false;
@@ -230,7 +229,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
                 detail.setOrderId(orderItemReq.getOrderId());
                 detail.setProductId(orderItemReq.getProductId());
                 detail.setRewardPrice(calculationOrderItemResp.getRewardPrice());
-                String operIncomeId = this.accountService.getRebateNextId();
+                String operIncomeId = this.accountManager.getRebateNextId();
                 detail.setOperIncomeId(operIncomeId);
                 detail.setCurStatusDate(date);
                 detail.setCreateDate(date);
@@ -242,7 +241,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
                 detailList.add(detail);
 
                 AccountBalanceLog log = new AccountBalanceLog();
-                log.setBalanceLogId(this.accountService.getRebateNextId());
+                log.setBalanceLogId(this.accountManager.getRebateNextId());
                 log.setAcctId(req.getAcctId());
                 //余额账本标识
                 log.setAccountBalanceId(currentAccountBalance.getAccountBalanceId());
@@ -299,7 +298,7 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
         String actName = orderItemReqList.get(0).getActName();
 
         currentAccountBalance = new AccountBalanceDTO();
-        currentAccountBalance.setAccountBalanceId(accountService.getRebateNextId());
+        currentAccountBalance.setAccountBalanceId(accountManager.getRebateNextId());
         currentAccountBalance.setAcctId(req.getAcctId());
         currentAccountBalance.setCustId(req.getCustId());
         currentAccountBalance.setBalanceTypeId(req.getBalanceTypeId());
@@ -420,10 +419,9 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
             for (QueryAccountBalanceAllResp queryAccountBalanceAllResp : dataList) {
                 AccountBalanceRuleReq ruleReq = new AccountBalanceRuleReq();
                 ruleReq.setBalanceTypeId(queryAccountBalanceAllResp.getBalanceTypeId());
-                ResultVO<List<AccountBalanceRuleResp>> listResultVO = accountBalanceRuleService.queryAccountBalanceRuleList(ruleReq);
-
-                if (listResultVO != null && listResultVO.getResultData() != null && !listResultVO.getResultData().isEmpty()) {
-                    AccountBalanceRuleResp rule = listResultVO.getResultData().get(0);
+                List<AccountBalanceRuleResp> ruleList = accountBalanceRuleManager.queryAccountBalanceRuleList(ruleReq);
+                if (ruleList != null && !ruleList.isEmpty()) {
+                    AccountBalanceRuleResp rule = ruleList.get(0);
                     queryAccountBalanceAllResp.setSupplierId(rule.getObjId());
                     queryAccountBalanceAllResp.setBalanceTypeName(rule.getBalanceTypeName());
                 }
@@ -455,9 +453,8 @@ public class AccountBalanceServiceImpl implements AccountBalanceService {
             AccountBalanceRuleReq ruleReq = new AccountBalanceRuleReq();
             ruleReq.setObjId(supplierId);
             ruleReq.setRuleType(RebateConst.Const.RULE_TYPE_REBATE.getValue());
-            ResultVO<List<AccountBalanceRuleResp>> ruleListResult = accountBalanceRuleService.queryAccountBalanceRuleList(ruleReq);
-            if (ruleListResult != null && ruleListResult.getResultData() != null && !ruleListResult.getResultData().isEmpty()) {
-                List<AccountBalanceRuleResp> ruleList = ruleListResult.getResultData();
+            List<AccountBalanceRuleResp> ruleList = accountBalanceRuleManager.queryAccountBalanceRuleList(ruleReq);
+            if (ruleList != null && !ruleList.isEmpty()) {
                 for (AccountBalanceRuleResp accountBalanceRuleResp : ruleList) {
                     balanceTypeIdList.add(accountBalanceRuleResp.getBalanceTypeId());
                 }

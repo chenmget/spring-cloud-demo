@@ -21,6 +21,7 @@ import com.iwhalecloud.retail.promo.dto.resp.MarketingGoodsActivityQueryResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceDetail;
 import com.iwhalecloud.retail.promo.manager.AccountBalanceDetailManager;
+import com.iwhalecloud.retail.promo.manager.AccountBalanceRuleManager;
 import com.iwhalecloud.retail.promo.manager.AccountManager;
 import com.iwhalecloud.retail.promo.service.*;
 import com.iwhalecloud.retail.system.common.DateUtils;
@@ -45,6 +46,9 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
     @Autowired
     private AccountBalanceDetailManager accountBalanceDetailManager;
+
+    @Autowired
+    private AccountBalanceRuleManager accountBalanceRuleManager;
 
     @Reference
     private UserService userService;
@@ -71,7 +75,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
     @Override
     public String addAccountBalanceDetail(AccountBalanceDetailDTO accountBalanceDetailDTO) {
         AccountBalanceDetail detail = new AccountBalanceDetail();
-        BeanUtils.copyProperties(accountBalanceDetailDTO,detail);
+        BeanUtils.copyProperties(accountBalanceDetailDTO, detail);
         Date date = new Date();
         detail.setCurStatusDate(date);
         detail.setCreateDate(date);
@@ -82,7 +86,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
         detail.setStatusDate(date);
 
         boolean isSuc = accountBalanceDetailManager.save(detail);
-        if(isSuc){
+        if (isSuc) {
             return detail.getOperIncomeId();
         }
         return null;
@@ -93,44 +97,45 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
     public ResultVO<Page<AccountBalanceDetailDTO>> queryAccountBalanceDetailForPage(QueryAccountBalanceDetailForPageReq req) {
         return ResultVO.success(accountBalanceDetailManager.queryAccountBalanceDetailForPage(req));
     }
+
     @Override
-    public ResultVO<Page<QueryAccountBalanceDetailAllResp>> queryAccountBalanceDetailAllForPage(QueryAccountBalanceDetailAllReq req){
+    public ResultVO<Page<QueryAccountBalanceDetailAllResp>> queryAccountBalanceDetailAllForPage(QueryAccountBalanceDetailAllReq req) {
         this.initQueryAccountBalanceDetailAll(req);
-        log.info(AccountBalanceDetailServiceImpl.class.getName()+" queryAccountBalanceDetailAllForPage, req={}", req == null ? "" : JSON.toJSON(req));
+        log.info(AccountBalanceDetailServiceImpl.class.getName() + " queryAccountBalanceDetailAllForPage, req={}", req == null ? "" : JSON.toJSON(req));
         Page<QueryAccountBalanceDetailAllResp> page = accountBalanceDetailManager.queryAccountBalanceDetailAllForPage(req);
-        if(page!=null&&page.getRecords()!=null){
+        if (page != null && page.getRecords() != null) {
             List<QueryAccountBalanceDetailAllResp> dataList = page.getRecords();
             for (QueryAccountBalanceDetailAllResp queryAccountBalanceDetailAllResp : dataList) {
                 AccountBalanceRuleReq ruleReq = new AccountBalanceRuleReq();
                 ruleReq.setActId(queryAccountBalanceDetailAllResp.getActId());
                 ruleReq.setRuleType(RebateConst.Const.RULE_TYPE_REBATE.getValue());
                 //获取供应商与活动信息
-                ResultVO<List<AccountBalanceRuleResp>> ruleResult = accountBalanceRuleService.queryAccountBalanceRuleList(ruleReq);
-                if(ruleResult!=null&&ruleResult.getResultData()!=null&&!ruleResult.getResultData().isEmpty()){
-                    String supplierId = ruleResult.getResultData().get(0).getObjId();
+                List<AccountBalanceRuleResp> accountBalanceRuleList = accountBalanceRuleManager.queryAccountBalanceRuleList(ruleReq);
+                if (accountBalanceRuleList != null && !accountBalanceRuleList.isEmpty()) {
+                    String supplierId = accountBalanceRuleList.get(0).getObjId();
                     queryAccountBalanceDetailAllResp.setSupplierId(supplierId);
-                    String actId = ruleResult.getResultData().get(0).getActId();
+                    String actId = accountBalanceRuleList.get(0).getActId();
                     queryAccountBalanceDetailAllResp.setActId(actId);
                 }
 
                 //供应商
                 String supplierId = queryAccountBalanceDetailAllResp.getSupplierId();
                 String statusCdDesc = RebateConst.Const.STATUS_UN_USE.getName();
-                if(RebateConst.Const.STATUS_USE.getValue().equals(queryAccountBalanceDetailAllResp.getStatusCd())){
+                if (RebateConst.Const.STATUS_USE.getValue().equals(queryAccountBalanceDetailAllResp.getStatusCd())) {
                     statusCdDesc = RebateConst.Const.STATUS_USE.getName();
                 }
                 queryAccountBalanceDetailAllResp.setStatusCdDesc(statusCdDesc);
-                if(StringUtils.isNotEmpty(queryAccountBalanceDetailAllResp.getAmount())){
+                if (StringUtils.isNotEmpty(queryAccountBalanceDetailAllResp.getAmount())) {
                     queryAccountBalanceDetailAllResp.setAmountYuan(ArithUtil.fenToYuan(queryAccountBalanceDetailAllResp.getAmount()));
                 }
-                if(StringUtils.isNotEmpty(queryAccountBalanceDetailAllResp.getRewardPrice())){
+                if (StringUtils.isNotEmpty(queryAccountBalanceDetailAllResp.getRewardPrice())) {
                     queryAccountBalanceDetailAllResp.setRewardPrice(ArithUtil.fenToYuan(queryAccountBalanceDetailAllResp.getRewardPrice()));
                 }
 
 
-                if(StringUtils.isNotEmpty(supplierId)){
-                    ResultVO<MerchantDTO>  supplier = merchantService.getMerchantById(supplierId);
-                    if(supplier!=null&&supplier.isSuccess()&&supplier.getResultData()!=null){
+                if (StringUtils.isNotEmpty(supplierId)) {
+                    ResultVO<MerchantDTO> supplier = merchantService.getMerchantById(supplierId);
+                    if (supplier != null && supplier.isSuccess() && supplier.getResultData() != null) {
                         queryAccountBalanceDetailAllResp.setLanId(supplier.getResultData().getLanId());
                         queryAccountBalanceDetailAllResp.setLanName(supplier.getResultData().getLanName());
                         queryAccountBalanceDetailAllResp.setSupplierName(supplier.getResultData().getMerchantName());
@@ -145,12 +150,12 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                 }
                 //产品
                 String productId = queryAccountBalanceDetailAllResp.getProductId();
-                if(StringUtils.isNotEmpty(productId)){
+                if (StringUtils.isNotEmpty(productId)) {
                     QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();
                     queryProductInfoReqDTO.setProductId(productId);
 
-                    ResultVO<QueryProductInfoResqDTO>  respResultVO = productService.getProductInfo(queryProductInfoReqDTO);
-                    if(respResultVO!=null&&respResultVO.isSuccess()&&respResultVO.getResultData()!=null){
+                    ResultVO<QueryProductInfoResqDTO> respResultVO = productService.getProductInfo(queryProductInfoReqDTO);
+                    if (respResultVO != null && respResultVO.isSuccess() && respResultVO.getResultData() != null) {
                         queryAccountBalanceDetailAllResp.setProductName(respResultVO.getResultData().getProductName());
                         queryAccountBalanceDetailAllResp.setSpecName(respResultVO.getResultData().getSpecName());
                         queryAccountBalanceDetailAllResp.setProductSn(respResultVO.getResultData().getSn());
@@ -159,9 +164,9 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
                     }
                 }
                 //活动
-                if(StringUtils.isNotEmpty(queryAccountBalanceDetailAllResp.getActId())){
+                if (StringUtils.isNotEmpty(queryAccountBalanceDetailAllResp.getActId())) {
                     ResultVO<MarketingGoodsActivityQueryResp> activity = marketingActivityService.getMarketingActivity(queryAccountBalanceDetailAllResp.getActId());
-                    if(activity!=null&&activity.getResultData()!=null){
+                    if (activity != null && activity.getResultData() != null) {
                         queryAccountBalanceDetailAllResp.setAcctName(activity.getResultData().getName());
                     }
 
@@ -170,7 +175,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
             }
         }
         ResultVO resultVO = ResultVO.success(page);
-        log.info(AccountBalanceDetailServiceImpl.class.getName()+" queryAccountBalanceDetailAllForPage, rsp={}", resultVO == null ? "" : JSON.toJSON(resultVO));
+        log.info(AccountBalanceDetailServiceImpl.class.getName() + " queryAccountBalanceDetailAllForPage, rsp={}", resultVO == null ? "" : JSON.toJSON(resultVO));
 
         return resultVO;
 
@@ -178,17 +183,18 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
     /**
      * 初始化查询条件
+     *
      * @param req
      */
-    private void initQueryAccountBalanceDetailAll(QueryAccountBalanceDetailAllReq req){
-        String acctId = this.accountManager.getAccountId(req.getCustId(),req.getAcctType());
+    private void initQueryAccountBalanceDetailAll(QueryAccountBalanceDetailAllReq req) {
+        String acctId = this.accountManager.getAccountId(req.getCustId(), req.getAcctType());
         req.setAcctId(acctId);
         List<String> actIdList = new ArrayList<String>();
         List<String> balanceTypeIdList = new ArrayList<String>();
         List<String> objIdList = new ArrayList<String>();
         boolean isQueryBalanceTypeId = false;
-        if(StringUtils.isNotEmpty(req.getSupplierName())||StringUtils.isNotEmpty(req.getSupplierLoginName())
-                ||StringUtils.isNotEmpty(req.getActName())){
+        if (StringUtils.isNotEmpty(req.getSupplierName()) || StringUtils.isNotEmpty(req.getSupplierLoginName())
+                || StringUtils.isNotEmpty(req.getActName())) {
             isQueryBalanceTypeId = true;
         }
 
@@ -200,7 +206,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
 
         //活动的处理
 
-        if(StringUtils.isNotEmpty(req.getActName())){
+        if (StringUtils.isNotEmpty(req.getActName())) {
             MarketingActivityListReq activityListReq = new MarketingActivityListReq();
             activityListReq.setActivityName(req.getActName());
             //只查询返利活动
@@ -208,7 +214,7 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
             activityListReq.setPageNo(1);
             activityListReq.setPageSize(Integer.MAX_VALUE);
             ResultVO<Page<MarketingActivityListResp>> page = marketingActivityService.listMarketingActivity(activityListReq);
-            if(page!=null&&page.getResultData()!=null&&page.getResultData().getRecords()!=null){
+            if (page != null && page.getResultData() != null && page.getResultData().getRecords() != null) {
                 List<MarketingActivityListResp> actList = page.getResultData().getRecords();
                 for (MarketingActivityListResp marketingActivityListResp : actList) {
                     actIdList.add(marketingActivityListResp.getId());
@@ -218,16 +224,15 @@ public class AccountBalanceDetailServiceImpl implements AccountBalanceDetailServ
         AccountBalanceRuleReq balanceRuleReq = new AccountBalanceRuleReq();
         balanceRuleReq.setActIdList(actIdList);
         balanceRuleReq.setObjIdList(objIdList);
-        ResultVO<List<AccountBalanceRuleResp>> ruleList = accountBalanceRuleService.queryAccountBalanceRuleList(balanceRuleReq);
+        List<AccountBalanceRuleResp> ruleRespList = accountBalanceRuleManager.queryAccountBalanceRuleList(balanceRuleReq);
 
-        if(ruleList!=null&&ruleList.getResultData()!=null&&!ruleList.getResultData().isEmpty()){
-            List<AccountBalanceRuleResp> ruleRespList = ruleList.getResultData();
+        if (ruleRespList != null && !ruleRespList.isEmpty()) {
             for (AccountBalanceRuleResp accountBalanceRuleResp : ruleRespList) {
                 balanceTypeIdList.add(accountBalanceRuleResp.getBalanceTypeId());
             }
         }
         //有查询，但是查询不到
-        if(isQueryBalanceTypeId&&balanceTypeIdList.isEmpty()){
+        if (isQueryBalanceTypeId && balanceTypeIdList.isEmpty()) {
             balanceTypeIdList.add(RebateConst.QUERY_NULL);
         }
         req.setBalanceTypeIdList(balanceTypeIdList);

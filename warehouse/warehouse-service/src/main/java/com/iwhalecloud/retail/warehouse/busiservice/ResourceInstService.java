@@ -85,13 +85,6 @@ public interface ResourceInstService {
     ResultVO<Boolean> updateInstState(ResourceInstUpdateReq req);
 
     /**
-     * 厂商删除串码
-     * @param req
-     * @return
-     */
-    public ResultVO<List<String>> delResourceInstForMerchant(ResourceInstUpdateReq req);
-
-    /**
      * 根据查询主键集合串码实列
      * @param idList
      * @return

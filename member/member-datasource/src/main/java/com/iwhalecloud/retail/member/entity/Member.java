@@ -1,7 +1,6 @@
 package com.iwhalecloud.retail.member.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -18,7 +17,7 @@ import java.io.Serializable;
  */
 @Data
 @TableName("mem_member")
-@KeySequence(value = "seq_mem_member_id")
+//@KeySequence(value = "seq_mem_member_id")
 @ApiModel(value = "对应模型mem_member, 对应实体Member类")
 public class Member implements Serializable {
 	/**表名常量*/

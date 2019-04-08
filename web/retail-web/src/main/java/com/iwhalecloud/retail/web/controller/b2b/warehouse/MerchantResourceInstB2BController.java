@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
-import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.PageProductReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
@@ -79,7 +78,6 @@ public class MerchantResourceInstB2BController {
     public ResultVO delResourceInst(@RequestBody ResourceInstUpdateReqDTO dto) {
 
         String userId = UserContext.getUserId();
-        Integer userFounder = UserContext.getUser().getUserFounder();
         ResourceInstUpdateReq req = new ResourceInstUpdateReq();
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
@@ -93,9 +91,6 @@ public class MerchantResourceInstB2BController {
                 ResourceConst.STATUSCD.RESTORAGED.getCode(),
                 ResourceConst.STATUSCD.SALED.getCode()));
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
-        if(SystemConst.USER_FOUNDER_8 == userFounder){
-            return resourceInstService.delResourceInstForMerchant(req);
-        }
         return resourceInstService.delResourceInst(req);
     }
 

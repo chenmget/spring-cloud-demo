@@ -42,12 +42,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     }
 
     @Override
-    public ResultVO delResourceInstForMerchant(ResourceInstUpdateReq req) {
-        log.info("MerchantResourceInstServiceImpl.delResourceInstForMerchant req={}", JSON.toJSONString(req));
-        return resourceInstService.delResourceInstForMerchant(req);
-    }
-
-    @Override
     public ResultVO delResourceInst(ResourceInstUpdateReq req) {
         log.info("MerchantResourceInstServiceImpl.delResourceInst req={}", JSON.toJSONString(req));
         // 获取仓库

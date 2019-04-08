@@ -353,6 +353,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 merchantListReq.setLanId(req.getLanId());
                 merchantListReq.setCity(req.getCity());
                 merchantListReq.setTagId(req.getTagId());
+                merchantListReq.setLoginName(req.getLoginName());
                 merchantListReq.setMerchantIdList(targetIdList);
                 detailList = merchantService.listMerchant(merchantListReq).getResultData();
                 fieldName = "merchantId";
@@ -420,6 +421,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 merchantListReq.setLanId(req.getLanId());
                 merchantListReq.setCity(req.getCity());
                 merchantListReq.setTagId(req.getTagId());
+                merchantListReq.setLoginName(req.getLoginName());
                 merchantListReq.setMerchantIdList(targetIdList);
                 detailList = merchantService.listMerchant(merchantListReq).getResultData();
                 fieldName = "merchantId";

@@ -293,7 +293,7 @@
                 and c.CAT_ID=#{req.goodsCatId}
             </if>
             <if test="null!=req.goodsName and req.goodsName!=''">
-                and g.GOODS_NAME like CONCAT(CONCAT('%', #{req.goodsName}), '%')
+                and upper(g.GOODS_NAME) like CONCAT(CONCAT('%', upper(#{req.goodsName})), '%')
             </if>
             <if test="null!=req.marketEnable">
                 and g.MARKET_ENABLE=#{req.marketEnable}

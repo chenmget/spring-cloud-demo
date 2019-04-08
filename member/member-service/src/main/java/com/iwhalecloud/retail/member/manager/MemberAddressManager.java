@@ -110,7 +110,7 @@ public class MemberAddressManager {
         }
         if(!StringUtils.isEmpty(req.getAddrId())){
             hasParam = true;
-            queryWrapper.eq(MemberAddress.FieldNames.addr.getTableFieldName(), req.getAddrId());
+            queryWrapper.eq(MemberAddress.FieldNames.addrId.getTableFieldName(), req.getAddrId());
         }
         if(!StringUtils.isEmpty(req.getIsDefault())){
             queryWrapper.eq(MemberAddress.FieldNames.isDefault.getTableFieldName(), req.getIsDefault());

@@ -161,13 +161,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     UserDTO userDTO = (UserDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER);
                     UserOtherMsgDTO otherMsgDTO = (UserOtherMsgDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER_OTHER_MSG);
 
-                    log.info("token 里面的用户ID= {}", id);
-                    if (userDTO != null) {
-                        log.info("session里面的用户信息的用户ID=  {}", userDTO.getUserId());
-                    }
+//                    log.info("token 里面的用户ID= {}", id);
+//                    if (userDTO != null) {
+//                        log.info("session里面的用户信息的用户ID=  {}", userDTO.getUserId());
+//                    }
 
                     if(userDTO == null || !StringUtils.equals(id, userDTO.getUserId())){
-                        log.info("session里面的用户信息为空，或者 toke里面的用户ID和session里面的用户ID 不一样，重新获取用户信息");
+//                        log.info("session里面的用户信息为空，或者 toke里面的用户ID和session里面的用户ID 不一样，重新获取用户信息");
                         userDTO = userService.getUserByUserId(id);
                         if(userDTO != null){
                             otherMsgDTO = saveUserOtherMsg(userDTO);

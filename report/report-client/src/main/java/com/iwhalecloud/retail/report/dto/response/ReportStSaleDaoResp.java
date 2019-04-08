@@ -38,7 +38,7 @@ public class ReportStSaleDaoResp implements Serializable {
 		private String stockAmount;//库存金额
 	//private String sumStockAmoutDay;//库存金额
 	private String stockTurnover;//库存周转率
-	private String InventoryWarning;//库存预警
+	private String redStatus;//库存预警
 	private String returnNum;//退库量
 	private String transOutNum;//调拨出库量 
 	private String userType;

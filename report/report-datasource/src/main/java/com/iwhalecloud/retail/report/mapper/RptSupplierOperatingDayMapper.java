@@ -16,6 +16,8 @@ import com.iwhalecloud.retail.report.dto.response.ParMerchantResp;
 @Mapper
 public interface RptSupplierOperatingDayMapper extends BaseMapper<RptSupplierOperatingDayReq> {
 
+	public String hqmaxItemId();
+
 	public void getDataForRptSupplierOperatingDay(@Param("req") RptSupplierOperatingDayReq rptSupplierOperatingDayReq);
 
 	public List<ParMerchantResp> hqParMerchant();

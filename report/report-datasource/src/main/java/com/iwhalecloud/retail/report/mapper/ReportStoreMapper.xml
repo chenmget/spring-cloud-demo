@@ -5,9 +5,7 @@
             resultType="com.iwhalecloud.retail.report.dto.response.ReportStSaleDaoResp">
        select * from (
        SELECT j.* FROM (
-            SELECT h.*,(CASE WHEN h.StockTurnover &gt;= 10 THEN 1
-		WHEN h.StockTurnover &gt;= 5 AND h.StockTurnover &lt; 10 THEN 2
-		ELSE 3 END ) InventoryWarning FROM (
+            SELECT h.* FROM (
   SELECT g.*,g.stockNum/g.AverageDailySales StockTurnover FROM (
 	SELECT 
 	a.PARTNER_NAME partnerName,
@@ -31,6 +29,8 @@
 	SUM(a.REGISTER_NUM) registerNum,
 	SUM(a.TRANS_OUT_NUM) transOutNum, 
 	SUM(a.RETURN_NUM) returnNum, 
+	a.type_id typeId,
+	a.stock_warning redStatus,
 	(SELECT (SUM(b.CONTRACT_NUM)+SUM(b.REGISTER_NUM))/7 FROM RPT_PARTNER_OPERATING_DAY b WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(b.DATE) AND a.partner_id=b.partner_id GROUP BY b.partner_id) AverageDailySales,
 	(SELECT SUM(c.STOCK_NUM) FROM RPT_PARTNER_OPERATING_DAY c WHERE c.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY) AND a.partner_id=c.partner_id GROUP BY c.partner_id) stockNum,
 	(SELECT SUM(d.STOCK_AMOUNT) FROM RPT_PARTNER_OPERATING_DAY d WHERE d.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY) AND a.partner_id=d.partner_id GROUP BY d.partner_id) stockAmount
@@ -51,9 +51,15 @@
 	<if test="req.brand!=null and req.brand!=''">
 		and a.brand_id=#{req.brand}
 	</if>
-		<if test="req.productType!=null and req.productType!=''">
-			and a.PRODUCT_BASE_ID=#{req.productType}
-		</if>
+	<if test="req.typeId!=null and req.typeId!=''">  
+		and a.TYPE_ID=#{req.typeId}
+	</if>
+	<if test="req.warningStatus!=null and req.warningStatus!='' ">
+    	and a.redStatus=#{req.warningStatus}
+   	</if>
+	<if test="req.productType!=null and req.productType!=''">
+		and a.PRODUCT_BASE_ID=#{req.productType}
+	</if>
 	<if test="req.businessEntityName!=null and req.businessEntityName!=''">
 		and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')
 	</if>
@@ -74,10 +80,6 @@
 	) g
 		)h
 			)j
-   	<if test="req.warningStatus!=null and req.warningStatus!='' ">
-   
-    where 1=1 and j.InventoryWarning=#{req.warningStatus}
-   	</if>
    limit 1000) z
   </select>
 </mapper>

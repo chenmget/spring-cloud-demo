@@ -54,7 +54,7 @@
 	sum(PURCHASE_AMOUNT) amoutPurcchase,sum(MANUAL_NUM) sumMANUAL,
 	sum(TRANS_IN_NUM) sumTransIn,sum(SELL_NUM) sumSellNum,
 	sum(SELL_AMOUNT) sumSellAmout,sum(TRANS_OUT_NUM)
-	sumTransOut,sum(RETURN_NUM) sumReturn
+	sumTransOut,sum(RETURN_NUM) sumReturn,type_id typeId
 	from rpt_supplier_operating_day
 	where 1=1
 	<if test="req.createTimeStart!=null and req.createTimeStart!=''">
@@ -68,6 +68,9 @@
 	</if>
 	<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
 			and item_date &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+	</if>
+	<if test="req.typeId!=null and req.typeId!=''">
+			and type_id = #{req.typeId}
 	</if>
 	group by supplier_name,
 	SUPPLIER_CODE,PRODUCT_BASE_ID ,BRAND_ID,PRICE_LEVEL)

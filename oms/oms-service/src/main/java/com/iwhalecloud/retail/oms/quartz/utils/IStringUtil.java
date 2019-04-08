@@ -16,9 +16,9 @@ public class IStringUtil {
 	 * @return
 	 */
 	public static boolean isEmptyWithOnlyBlank(String str) {
-		if (str == null || "".equals(str))
+		if (str == null || "".equals(str)) {
 			return true;
-
+		}
 		String pattern = "\\S";
 		Pattern p = Pattern.compile(pattern, 2 | Pattern.DOTALL);
 		Matcher m = p.matcher(str);
@@ -96,7 +96,9 @@ public class IStringUtil {
         
         int start=line.indexOf(str1,lastAppendIndex);
         
-        if(start==-1)return line;
+        if(start==-1) {
+        	return line;
+		}
         
         while(start>-1){
             newStr.append(line.subSequence(lastAppendIndex, start));
@@ -116,8 +118,9 @@ public class IStringUtil {
 
 		int start = line.indexOf(separator, index);
 
-		if (start == -1)
+		if (start == -1) {
 			return new String[] { line.toString() };
+		}
 
 		while (start > -1) {
 			String match = line.subSequence(index, start).toString();
@@ -130,8 +133,9 @@ public class IStringUtil {
 
 		int resultSize = matchList.size();
 
-		while (resultSize > 0 && matchList.get(resultSize - 1).equals(""))
+		while (resultSize > 0 && matchList.get(resultSize - 1).equals("")) {
 			resultSize--;
+		}
 
 		String[] result = new String[resultSize];
 		return (String[]) matchList.subList(0, resultSize).toArray(result);

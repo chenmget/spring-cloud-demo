@@ -582,7 +582,9 @@ public class DateUtil {
 	 */
 	public static java.sql.Timestamp parseDate2Timestamp(String date, String format) {
 		try {
-			if (StringUtils.isEmpty(format)) format = DateUtil.DATE_FORMAT_2;
+			if (StringUtils.isEmpty(format)) {
+				format = DateUtil.DATE_FORMAT_2;
+			}
 			java.sql.Timestamp ts = new java.sql.Timestamp(System.currentTimeMillis());
 			return ts.valueOf(date);
 		} catch (Exception e) {
@@ -740,8 +742,9 @@ public class DateUtil {
         cal.setTime(dt);
 
         int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
-        if (w < 0)
+        if (w < 0) {
             w = 0;
+		}
 
         return weekDays[w];
     }

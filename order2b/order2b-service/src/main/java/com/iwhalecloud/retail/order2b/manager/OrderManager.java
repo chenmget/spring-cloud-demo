@@ -125,7 +125,7 @@ public class OrderManager {
     }
 
 
-    public int insertOrderItemDetailByList(List<OrderItemDetail> list) {
+    public int insertOrzderItemDetailByList(List<OrderItemDetail> list) {
         return orderItemDetailMapper.insertByList(list);
     }
 

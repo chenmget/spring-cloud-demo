@@ -104,8 +104,8 @@ public class MemberDockingAbilityServiceImpl implements MemberDockingAbilityServ
         resultMap.put("resultCode", "0");
         resultMap.put("resultMsg", "调用成功");
         if (params instanceof String) {
-//            MemberAddressAddReq req = JSON.parseObject(params, new TypeReference<MemberAddressAddReq>() {});
-            ResultVO<Integer> resultVO = memberAddressService.deleteAddressById(params);
+            MemberAddressDeleteReq req = JSON.parseObject(params, new TypeReference<MemberAddressDeleteReq>() {});
+            ResultVO<Integer> resultVO = memberAddressService.deleteAddressById(req.getAddrId());
             if (successResultMap(resultMap, resultVO)) {
                 return resultMap;
             }
@@ -554,7 +554,8 @@ public class MemberDockingAbilityServiceImpl implements MemberDockingAbilityServ
      * @return 接口返回结果
      */
     private boolean successResultMap(HashMap<String, Object> resultMap, ResultVO resultVO) {
-        if (resultVO.isSuccess() && null != resultVO.getResultData()) {
+//        if (resultVO.isSuccess() && null != resultVO.getResultData()) {
+        if (resultVO.isSuccess()) {
             resultMap.put("resultData", resultVO.getResultData());
             resultMap.put("resultCode", resultVO.getResultCode());
             resultMap.put("resultMsg", resultVO.getResultMsg());

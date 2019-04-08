@@ -52,7 +52,7 @@
         <if test="order.endTime !=null and order.endTime !=''">
             AND #{order.endTime} >= create_time
         </if>
-        and is_delete=0 order by create_time desc
+        order by create_time desc
     </select>
 
     <select id="selectManagerOrderList" resultType="com.iwhalecloud.retail.order.dto.model.OrderModel"

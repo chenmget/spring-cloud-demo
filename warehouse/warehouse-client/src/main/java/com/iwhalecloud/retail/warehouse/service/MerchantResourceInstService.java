@@ -29,14 +29,6 @@ public interface MerchantResourceInstService {
      * @param req
      * @return
      */
-    ResultVO delResourceInstForMerchant(ResourceInstUpdateReq req);
-
-    /**
-     * 商家删除串码
-     *
-     * @param req
-     * @return
-     */
     ResultVO delResourceInst(ResourceInstUpdateReq req);
 
     /**

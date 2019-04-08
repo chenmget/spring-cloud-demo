@@ -4,20 +4,14 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
-import com.iwhalecloud.retail.warehouse.common.ResourceConst;
-import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
-import com.iwhalecloud.retail.warehouse.dto.request.DeliveryResourceInstReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = WarehouseServiceApplication.class)
@@ -27,21 +21,6 @@ public class MerchantResourceInstOpenServiceImplTest {
     @Reference
     private MerchantResourceInstService merchantResourceInstService;
 
-    @Test
-    public void delResourceInstForMerchant() {
-        ResourceInstUpdateReq req = new ResourceInstUpdateReq();
-        req.setMktResInstNbrs(Lists.newArrayList("20190313002","20190313003"));
-        req.setCheckStatusCd(Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
-                ResourceConst.STATUSCD.AUDITING.getCode(),
-                ResourceConst.STATUSCD.ALLOCATIONED.getCode(),
-                ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
-                ResourceConst.STATUSCD.RESTORAGEING.getCode(),
-                ResourceConst.STATUSCD.RESTORAGED.getCode(),
-                ResourceConst.STATUSCD.SALED.getCode()));
-        req.setMerchantId("4306241024815");
-        req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
-        merchantResourceInstService.delResourceInstForMerchant(req);
-    }
 
     @Test
     public void delResourceInst() {

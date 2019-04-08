@@ -32,14 +32,6 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     }
 
     @Override
-    public ResultVO delResourceInstForMerchant(ResourceInstUpdateReq req) {
-        log.info("MerchantResourceInstOpenServiceImpl.delResourceInstForMerchant req={}", JSON.toJSONString(req));
-        ResultVO resp = merchantResourceInstService.delResourceInstForMerchant(req);
-        resouceInstTrackService.asynUpdateTrackForMerchant(req, resp);
-        return resp;
-    }
-
-    @Override
     public ResultVO delResourceInst(ResourceInstUpdateReq req) {
         log.info("MerchantResourceInstOpenServiceImpl.delResourceInst req={}", JSON.toJSONString(req));
         ResultVO resp = merchantResourceInstService.delResourceInst(req);

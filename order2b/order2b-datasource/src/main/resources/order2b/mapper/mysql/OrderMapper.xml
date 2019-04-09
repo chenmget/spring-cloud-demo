@@ -19,8 +19,8 @@
                     select="com.iwhalecloud.retail.order2b.mapper.OrderItemMapper.selectOrderItemByOrderId"
                     column="order_id"/>
     </resultMap>
-    <select id="selectOrderListByOrder" resultType="com.iwhalecloud.retail.order2b.model.OrderInfoModel">
-        SELECT * FROM ord_order
+
+    <sql id="selectOrderWhere">
         <where>
             <if test="req.statusAll !=null and req.statusAll.size()>0">
                 AND status IN
@@ -89,9 +89,6 @@
             <if test="req.orderId !=null and req.orderId !=''">
                 AND #{req.orderId} = order_id
             </if>
-            <if test="req.isDelete !=null and req.isDelete !=''">
-                and is_delete = #{req.isDelete}
-            </if>
 
             <if test="req.paymentType!=null and req.paymentType!=''">
                 and pay_type = #{req.paymentType}
@@ -105,7 +102,17 @@
             <if test="req.lanId !=null and req.lanId !=''">
                 and lan_id=#{req.lanId}
             </if>
+            <if test="req.lanIdList !=null and req.lanIdList.size()>0">
+                and lan_id IN
+                <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
+    </sql>
+    <select id="selectOrderListByOrder" resultType="com.iwhalecloud.retail.order2b.model.OrderInfoModel">
+        SELECT * FROM ord_order
+        <include refid="selectOrderWhere"/>
     </select>
 
     <resultMap id="advanceOrderInfoList" type="com.iwhalecloud.retail.order2b.model.AdvanceOrderInfoModel">
@@ -120,55 +127,8 @@
 
     <select id="queryAdvanceOrderList"
             resultType="com.iwhalecloud.retail.order2b.model.AdvanceOrderInfoModel">
-      SELECT * from ord_order where 1 = 1
-        <if test="req.userName !=null and req.userName !=''">
-            AND user_name like #{req.userName}
-        </if>
-        <if test="req.paymentType!=null and req.paymentType!=''">
-            and pay_type = #{req.paymentType}
-        </if>
-        <if test="req.orderTimeStart !=null and req.orderTimeStart !=''">
-            AND create_time >= #{req.orderTimeStart}
-        </if>
-        <if test="req.orderTimeEnd !=null and req.orderTimeEnd !=''">
-            AND #{req.orderTimeEnd} >= create_time
-        </if>
-
-        <if test="req.shipTimeStart !=null and req.shipTimeStart !=''">
-            AND ship_time >= #{req.shipTimeStart}
-        </if>
-        <if test="req.shipTimeEnd !=null and req.shipTimeEnd !=''">
-            AND #{req.shipTimeEnd} >= ship_time
-        </if>
-        <if test="req.supplierName !=null and req.supplierName !=''">
-            AND supplier_name like #{req.supplierName}
-        </if>
-        <if test="req.statusAll !=null and req.statusAll.size()>0">
-            AND status IN
-            <foreach collection="req.statusAll" open="(" close=")" item="item" index="index" separator=",">
-                #{item}
-            </foreach>
-        </if>
-        <if test="req.orderList !=null and req.orderList.size()>0">
-            AND order_id IN
-            <foreach collection="req.orderList" open="(" close=")" item="item" index="index" separator=",">
-                #{item}
-            </foreach>
-        </if>
-        <if test="req.merchantId !=null and req.merchantId != ''">
-            AND merchant_id = #{req.merchantId}
-        </if>
-        <if test="req.userId !=null and req.userId != ''">
-            AND USER_ID = #{req.userId}
-        </if>
-        <if test="req.orderId !=null and req.orderId !=''">
-            AND  order_id = #{req.orderId}
-        </if>
-        and SOURCE_FROM=#{req.sourceFrom}
-        and ORDER_CAT = #{req.orderCat}
-        <if test="req.lanId !=null and req.lanId !=''">
-            and lan_id=#{req.lanId}
-        </if>
+      SELECT * from ord_order
+        <include refid="selectOrderWhere"/>
     </select>
     <update id="updateOrderAttr" parameterType="com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel">
         UPDATE ord_order

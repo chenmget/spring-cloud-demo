@@ -112,7 +112,7 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
         boolean check = bpepPayLogService.checkNotifyData(req);
         if (check) {
             String orderStatus = req.getORDERSTATUS();
-            if (orderStatus.equals("1")) {
+            if ("1".equals(orderStatus)) {
                 // 支付成功
                 OrderPayInfoResp orderPayInfoResp = this.bpepPayLogService.qryOrderPayInfoById(req.getORDERID());
                 // 已通知过，幂等操作
@@ -137,7 +137,7 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
                 saveLogModel.setPayStatus(PayConsts.PAY_STATUS_2);
                 saveLogModel.setOperationType(orderPayInfoResp.getOperationType());
                 int i = bpepPayLogService.updateLog(saveLogModel);
-            }else if (orderStatus.equals("0")) {
+            }else if ("0".equals(orderStatus)) {
                 OrderPayInfoResp orderPayInfoResp = this.bpepPayLogService.qryOrderPayInfoById(req.getORDERID());
                 // 已通知过，幂等操作
                 if (orderPayInfoResp.getPayStatus().equals(PayConsts.PAY_STATUS_0)) {

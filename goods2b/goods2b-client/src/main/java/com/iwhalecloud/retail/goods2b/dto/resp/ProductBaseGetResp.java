@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.goods2b.dto.resp;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -18,7 +16,6 @@ public class ProductBaseGetResp implements Serializable {
     /**
      * productBaseId
      */
-    @TableId(type = IdType.ID_WORKER)
     @ApiModelProperty(value = "productBaseId")
     private String productBaseId;
 

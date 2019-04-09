@@ -12,7 +12,7 @@ import com.iwhalecloud.retail.order2b.mapper.AdvanceOrderMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderItemMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.model.AdvanceOrderInfoModel;
-import com.iwhalecloud.retail.order2b.model.OrderInfoModel;
+import com.iwhalecloud.retail.order2b.model.OrderItemModel;
 import com.iwhalecloud.retail.order2b.model.SelectOrderDetailModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -46,7 +46,7 @@ public class AdvanceOrderManager {
      * @param req
      * @return
      */
-    public IPage<AdvanceOrderInfoModel> queryAdvanceOrderList(AdvanceOrderReq req) {
+    public IPage<AdvanceOrderInfoModel> queryAdvanceOrderList(SelectOrderDetailModel req) {
         Page page = new Page();
         page.setSize(req.getPageSize());
         page.setCurrent(req.getPageNo());
@@ -54,8 +54,9 @@ public class AdvanceOrderManager {
         IPage<AdvanceOrderInfoModel> list = orderMapper.queryAdvanceOrderList(page, req);
         if (!CollectionUtils.isEmpty(list.getRecords())) {
             for (AdvanceOrderInfoModel model : list.getRecords()) {
-                OrderItem orderItem = new OrderItem();
+                OrderItemModel orderItem = new OrderItemModel();
                 orderItem.setOrderId(model.getOrderId());
+                orderItem.setLanIdList(req.getLanIdList());
                 model.setOrderItems(orderItemMapper.selectOrderItem(orderItem));
                 model.setAdvanceOrder(getAdvanceOrderByOrderId(model.getOrderId()));
             }

@@ -106,7 +106,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             UserLoginToken userLoginToken = method.getAnnotation(UserLoginToken.class);
             if (userLoginToken.required()) {
                 // 执行认证
-                if (token == null || token.equals("")) {
+                if (token == null || "".equals(token)) {
                     throw new UserNotLoginException("token为空，无效token，请重新登录");
                 }
 

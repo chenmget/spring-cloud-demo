@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.order2b.model;
 
-import com.iwhalecloud.retail.order2b.entity.Promotion;
+import com.iwhalecloud.retail.order2b.entity.OrderItem;
 import lombok.Data;
 
 import java.util.List;
 
 @Data
-public class PromotionModel extends Promotion{
+public class OrderItemModel extends OrderItem {
 
     private List<String> lanIdList;
 }

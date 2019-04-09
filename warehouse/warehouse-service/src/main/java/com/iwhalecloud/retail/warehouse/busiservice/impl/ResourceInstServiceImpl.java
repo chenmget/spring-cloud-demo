@@ -27,14 +27,19 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstLogService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
-import com.iwhalecloud.retail.warehouse.dto.*;
+import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalItemSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
-import com.iwhalecloud.retail.warehouse.manager.*;
+import com.iwhalecloud.retail.warehouse.manager.ResouceEventManager;
+import com.iwhalecloud.retail.warehouse.manager.ResouceStoreManager;
+import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
+import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
 import com.iwhalecloud.retail.warehouse.model.MerchantInfByNbrModel;
 import com.iwhalecloud.retail.warehouse.service.MarketingResStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
@@ -118,7 +123,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             log.info("ResourceInstServiceImpl.getResourceInstList  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
             MerchantDTO merchantDTO = merchantResultVO.getResultData();
             if (null != merchantDTO) {
-                resp.setCity(merchantDTO.getCity());
+                resp.setRegionName(merchantDTO.getCityName());
+                resp.setLanName(merchantDTO.getLanName());
                 resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
             }
             String productId = resp.getMktResId();
@@ -325,7 +331,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         List<String> existNbrs = qryEnableInsertNbr(req);
         mktResInstNbrs.removeAll(existNbrs);
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
-            return ResultVO.error("全部是重复串码");
+            return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
         // 二校验：
         // A) 绿色通道不需要校验
@@ -457,6 +463,15 @@ public class ResourceInstServiceImpl implements ResourceInstService {
      */
     private List<String> qryEnableInsertNbr(ResourceInstAddReq req){
         List<String> existNbrs = new ArrayList<>();
+        ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+        productGetByIdReq.setProductId(req.getMktResId());
+        ResultVO<ProductResp> producttVO = productService.getProduct(productGetByIdReq);
+        log.info("ResourceInstServiceImpl.qryEnableInsertNbr productService.getProduct mktResId={} resp={}", req.getMktResId(), JSON.toJSONString(producttVO));
+        String typeId = "";
+        if (producttVO.isSuccess() && null != producttVO.getResultData()) {
+            typeId = producttVO.getResultData().getTypeId();
+            req.setTypeId(typeId);
+        }
         // 一去重：串码存在且状态可用不再导入
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         List<String> mktResInstNbrs = Lists.newArrayList(req.getMktResInstNbrs());
@@ -474,6 +489,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         resourceInstsGetReq.setMerchantTypes(merchantTypes);
         resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
+        resourceInstsGetReq.setTypeId(typeId);
         List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
         if (CollectionUtils.isNotEmpty(inst)) {
@@ -968,7 +984,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             log.info("RetailerResourceInstB2BController.nbrExportAll  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
             MerchantDTO merchantDTO = merchantResultVO.getResultData();
             if (null != merchantDTO) {
-                resp.setCity(merchantDTO.getCity());
+                resp.setRegionName(merchantDTO.getCity());
+                resp.setLanName(merchantDTO.getLanName());
                 resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
             }
             String productId = resp.getMktResId();

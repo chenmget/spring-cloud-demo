@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
+import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.consts.OrderManagerConsts;
 import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
 import com.iwhalecloud.retail.order2b.dto.model.order.CouponInsDTO;
@@ -114,7 +115,7 @@ public class SelectOrderServiceImpl implements SelectOrderService {
                 || !StringUtils.isEmpty(req.getBrandName())//类别
                 ) {
             goodsOrderLsit.add("-1");
-            OrderItem orderItem = new OrderItem();
+            OrderItemModel orderItem = new OrderItemModel();
             if (!StringUtils.isEmpty(req.getGoodsName())) {
                 orderItem.setGoodsName("%" + req.getGoodsName() + "%");
             }
@@ -125,6 +126,7 @@ public class SelectOrderServiceImpl implements SelectOrderService {
                 orderItem.setBrandName("%" + req.getBrandName() + "%");
             }
             orderItem.setSourceFrom(req.getSourceFrom());
+            orderItem.setLanIdList(req.getLanIdList());
             List<OrderItem> gList = orderManager.selectOrderItem(orderItem);
             for (OrderItem i : gList) {
                 goodsOrderLsit.add(i.getItemId());
@@ -139,6 +141,7 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             resBerLsit.add("-1");
             OrderItemDetailModel orderItemDetail = new OrderItemDetailModel();
             orderItemDetail.setResNbr(req.getResNbr());
+            orderItemDetail.setLanIdList(req.getLanIdList());
             List<OrderItemDetail> dList = orderManager.selectOrderItemDetail(orderItemDetail);
             for (OrderItemDetail orderItemDetail1 : dList) {
                 resBerLsit.add(orderItemDetail1.getItemId());
@@ -311,6 +314,11 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     private void getPromotion(OrderInfoModel model) {
         PromotionModel promotionModel = new PromotionModel();
         promotionModel.setOrderId(model.getOrderId());
+        if(StringUtils.isEmpty(Order2bContext.getDubboRequest().getLanId())){
+            List<String> lanIds=new ArrayList<>(1);
+            lanIds.add(model.getLanId());
+            promotionModel.setLanIdList(lanIds);
+        }
         List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);
         model.setPromotionList(promotions);
 
@@ -366,7 +374,7 @@ public class SelectOrderServiceImpl implements SelectOrderService {
         List<String> goodsOrderLsit = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getGoodsName()) || !StringUtils.isEmpty(req.getGoodsSn()) || !StringUtils.isEmpty(req.getBrandName())) {
             goodsOrderLsit.add("-1");
-            OrderItem orderItem = new OrderItem();
+            OrderItemModel orderItem = new OrderItemModel();
             if (!StringUtils.isEmpty(req.getGoodsName())) {
                 orderItem.setGoodsName("%" + req.getGoodsName() + "%");
             }
@@ -376,7 +384,7 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             if (!StringUtils.isEmpty(req.getBrandName())) {
                 orderItem.setBrandName("%" + req.getBrandName() + "%");
             }
-            orderItem.setSourceFrom(req.getSourceFrom());
+            orderItem.setLanIdList(req.getLanIdList());
             List<OrderItem> gList = orderManager.selectOrderItem(orderItem);
             for (OrderItem i : gList) {
                 goodsOrderLsit.add(i.getOrderId());
@@ -389,7 +397,10 @@ public class SelectOrderServiceImpl implements SelectOrderService {
         List<String> resBerLsit = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getResNbr())) {
             resBerLsit.add("-1");
-            resBerLsit.addAll(orderManager.selectOrderIdByresNbr(req.getResNbr()));
+            OrderItemDetailModel model=new OrderItemDetailModel();
+            model.setLanIdList(req.getLanIdList());
+            model.setResNbr(req.getResNbr());
+            resBerLsit.addAll(orderManager.selectOrderIdByresNbr(model));
 
             orderList.addAll(resBerLsit);
             orderList.retainAll(resBerLsit);
@@ -401,6 +412,7 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             promotionList.add("-1");
             PromotionModel promotionModel = new PromotionModel();
             promotionModel.setMktActName("%" + req.getActivityPromoName() + "%");
+            promotionModel.setLanIdList(req.getLanIdList());
             List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);
             for (Promotion promotion : promotions) {
                 promotionList.add(promotion.getOrderId());

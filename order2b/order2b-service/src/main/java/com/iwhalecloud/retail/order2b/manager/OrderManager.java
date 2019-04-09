@@ -72,7 +72,7 @@ public class OrderManager {
 
 
     public List<OrderItem> selectOrderItemsList(String order) {
-        OrderItem orderItem=new OrderItem();
+        OrderItemModel orderItem=new OrderItemModel();
         orderItem.setOrderId(order);
         List<OrderItem> orderItems = orderItemMapper.selectOrderItem(orderItem);
         return orderItems;
@@ -91,8 +91,9 @@ public class OrderManager {
             return list;
         }
         for (OrderInfoModel model:list.getRecords()){
-            OrderItem orderItem=new OrderItem();
+            OrderItemModel orderItem=new OrderItemModel();
             orderItem.setOrderId(model.getOrderId());
+            orderItem.setLanIdList(req.getLanIdList());
             model.setOrderItems(orderItemMapper.selectOrderItem(orderItem));
         }
         return list;
@@ -130,10 +131,8 @@ public class OrderManager {
     }
 
 
-    public List<String> selectOrderIdByresNbr(String resNbr) {
-        OrderItemDetail orderItemDetail=new OrderItemDetail();
-        orderItemDetail.setResNbr(resNbr);
-        return orderItemMapper.selectOrderIdByresNbr(orderItemDetail);
+    public List<String> selectOrderIdByresNbr(OrderItemDetailModel orderItemDetail) {
+        return orderItemDetailMapper.selectOrderIdByresNbr(orderItemDetail);
     }
 
     public int updateResNbr(OrderItemDetailModel list){
@@ -151,7 +150,7 @@ public class OrderManager {
     }
 
     //查询订单项
-    public List<OrderItem> selectOrderItem(OrderItem item){
+    public List<OrderItem> selectOrderItem(OrderItemModel item){
         return orderItemMapper.selectOrderItem(item);
     }
 

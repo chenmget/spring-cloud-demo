@@ -39,7 +39,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Field;
 import java.util.Date;
 import java.util.List;
 
@@ -265,7 +264,8 @@ public class ProductServiceImpl implements ProductService {
                 String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
                 List<ProdFileDTO> fileList = fileManager.getFile(productId, targetType, null);
                 product.setProdFiles(fileList);
-                testReflect(product);
+                String specName = this.getSpecName(product);
+                product.setSpecName(specName);
             }
         }
         log.info("ProductServiceImpl.selectProduct req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
@@ -356,27 +356,6 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(productDTOList);
     }
 
-    private void testReflect(ProductDTO dto){
-        try {
-            StringBuilder specName = new StringBuilder();
-            for (Field field : dto.getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                String fieldName = field.getName();
-                // 只组装attrValue开头属性名的属性值
-                if (!fieldName.startsWith("attrValue")) {
-                    continue;
-                }
-                Object value =  field.get(dto);
-                if (null != value) {
-                    specName.append(value).append(" ");
-                }
-                dto.setSpecName(specName.toString());
-            }
-        }catch (Exception e){
-            log.error("获取产品规格值异常", e);
-        }
-    }
-
     @Override
     public ResultVO<QueryProductInfoResqDTO> getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO) {
         QueryProductInfoResqDTO queryProductInfoResqDTO = new QueryProductInfoResqDTO();
@@ -428,16 +407,6 @@ public class ProductServiceImpl implements ProductService {
 
         return ResultVO.error("审核失败");
     }
-//    @Override
-//    @Transactional(rollbackFor = Exception.class)
-//    public ResultVO<ProductOperateResp> auditPass(UpdateProductAuditStateReq updateAuditStateReq)throws BusinessException {
-//        ProductAuditStateUpdateReq req = new ProductAuditStateUpdateReq();
-//        req.setProductBaseId(updateAuditStateReq.getProductBaseId());
-//        req.setAuditState(ProductConst.AuditStateType.AUDIT_PASS.getCode());
-//        req.setUpdateStaff(updateAuditStateReq.getUpdateStaff());
-//        ResultVO<ProductOperateResp> result = updateAuditState(req);
-//        return result;
-//    }
 
     @Override
     public ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req){

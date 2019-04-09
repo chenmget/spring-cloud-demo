@@ -52,10 +52,8 @@ public class RetailerResourceInstB2BController {
     private RetailerResourceInstService retailerResourceInstService;
 	@Reference
     private MerchantRulesService merchantRulesService;
-
     @Reference
     private MerchantService merchantService;
-
     @Reference
     private ProductService productService;
 
@@ -185,7 +183,8 @@ public class RetailerResourceInstB2BController {
     @PostMapping(value="allocateResourceInst")
     public ResultVO allocateResourceInst(@RequestBody ResourceInstAllocateReqDTO dto) {
         String userId = UserContext.getUserId();
-        if (CollectionUtils.isEmpty(dto.getMktResInstNbrs()) || dto.getMktResInstNbrs().size() > 5) {
+        Integer maxAllocateNumber = 5;
+        if (CollectionUtils.isEmpty(dto.getMktResInstNbrs()) || dto.getMktResInstNbrs().size() > maxAllocateNumber) {
             return ResultVO.error("调拨数目不对");
         }
         RetailerResourceInstAllocateReq req = new RetailerResourceInstAllocateReq();
@@ -303,12 +302,6 @@ public class RetailerResourceInstB2BController {
     @GetMapping(value="greenChannelValid")
     @UserLoginToken
     public ResultVO greenChannelValid(@RequestParam String mktResId) {
-        Boolean noMerchant = UserContext.getUserOtherMsg() == null || UserContext.getUserOtherMsg().getMerchant() == null;
-        if (!UserContext.isUserLogin() || noMerchant) {
-            // 没有登陆，返回false
-            return ResultVO.success(false);
-        }
-
         String  merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
         ResultVO<List<String>> transferPermissionVO = merchantRulesService.getGreenChannelPermission(merchantId);
         log.info("RetailerResourceInstB2BController.greenChannelValid merchantRulesService.getGreenChannelPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));

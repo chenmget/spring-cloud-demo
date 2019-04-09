@@ -34,14 +34,20 @@ public class ServiceLogManagerAop {
     @Around("execution(* com.iwhalecloud.retail.order2b.busiservice.*.*(..))")
     public Object aroundExecuteService(ProceedingJoinPoint point) throws Throwable {
 
-        long time = Order2bContext.getDubboRequest().getHttpId();
-        log.info("interface=({}),gs_start={},url={},request{}",
-                JSON.toJSONString(point.getSignature().getDeclaringType().getSimpleName()), time, point.getSignature().getName(),
+        long time = System.currentTimeMillis();
+        log.info("interface=({}),dubboTime={},gs_start={},url={},request{}",
+                JSON.toJSONString(point.getSignature().getDeclaringType()),
+                Order2bContext.getDubboRequest().getHttpId(),
+                time,
+                point.getSignature().getName(),
                 JSON.toJSONString(point.getArgs()));
 
         Object result = point.proceed();
-        log.info("interface=({}),gs_close={},timeConsuming={},result={}",
-                JSON.toJSONString(point.getSignature().getDeclaringType().getSimpleName()), time, (System.currentTimeMillis() - time),
+        log.info("interfaceMethod=({}),dubboTime={},gs_close={},timeConsuming={},result={}",
+                point.getSignature().getDeclaringType().getSimpleName().concat("#").concat(point.getSignature().getName()),
+                Order2bContext.getDubboRequest().getHttpId(),
+                time,
+                (System.currentTimeMillis() - time),
                 JSON.toJSONString(result));
 
         return result;

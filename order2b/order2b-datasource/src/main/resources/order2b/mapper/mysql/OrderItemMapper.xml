@@ -49,13 +49,6 @@
     </select>
 
 
-    <select id="selectOrderIdByresNbr" resultType="java.lang.String">
-        SELECT  order_id FROM  ord_order_item_detail WHERE  res_nbr= #{resNbr}
-        <if test="lanId !=null and lanId !=''">
-            and lan_id=#{lanId}
-        </if>
-    </select>
-
     <resultMap id="orderItemInfo" type="com.iwhalecloud.retail.order2b.model.OrderItemInfoModel">
         <id column="item_id" property="itemId"/>
         <collection property="detailList"
@@ -105,6 +98,12 @@
         </if>
         <if test="sourceFrom !=null and sourceFrom !=''">
             and source_from=#{sourceFrom}
+        </if>
+        <if test="lanIdList !=null and lanIdList.size()>0">
+            and lan_id IN
+            <foreach collection="lanIdList" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
         </if>
     </select>
 

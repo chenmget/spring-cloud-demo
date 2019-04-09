@@ -7,7 +7,7 @@
 		select * from (
   SELECT g.*,g.StockNum/g.AverageDailySales StockTurnover FROM (
 	SELECT PRODUCT_BASE_NAME ProductBaseName,  
-		BRAND_NAME BrandName,	
+		BRAND_NAME BrandName,
 		SUM(PURCHASE_NUM)+SUM(MANUAL_NUM)+SUM(TRANS_IN_NUM) TheTotalInventory,	
 		SUM(TRANS_OUT_NUM)+SUM(RETURN_NUM)+SUM(CONTRACT_NUM)+SUM(REGISTER_NUM) TheTotalOutbound,		
 		SUM(PURCHASE_NUM) PurchaseNum,

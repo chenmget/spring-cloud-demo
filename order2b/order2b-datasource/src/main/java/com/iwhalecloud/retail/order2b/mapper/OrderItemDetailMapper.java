@@ -17,9 +17,14 @@ public interface OrderItemDetailMapper extends BaseMapper<OrderItemDetail> {
     int updateResNbr(OrderItemDetailModel model);
 
     /**
-     * @return
+     * return(通过detailId 查询串码)
      */
     List<String> selectResNbrListByIds(OrderItemDetailModel req);
+
+    /**
+     * return(通过串码 查询订单号)
+     */
+    List<String> selectOrderIdByresNbr(OrderItemDetailModel resNbr);
 
     List<OrderItemDetail> selectOrderItemDetail(OrderItemDetailModel orderItemDetail);
 

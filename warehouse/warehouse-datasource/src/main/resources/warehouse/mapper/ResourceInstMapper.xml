@@ -175,7 +175,7 @@
         and t.mkt_res_store_id = #{mktResStoreId}
     </select>
 
-    <select id="getResourceInsts" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstGetReq"
+    <select id="getResourceInsts" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO">
         select <include refid="allFields" />
         from mkt_res_inst t
@@ -194,6 +194,9 @@
         </if>
         <if test="null!=mktResId and ''!=mktResId">
             and t.mkt_res_id = #{mktResId}
+        </if>
+        <if test="null!=typeId and ''!=typeId">
+            and t.type_id = #{typeId}
         </if>
         <if test="null!=merchantTypes and merchantTypes.size>0">
             and t.merchant_type in

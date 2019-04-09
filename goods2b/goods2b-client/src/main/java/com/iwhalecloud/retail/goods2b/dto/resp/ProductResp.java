@@ -234,4 +234,9 @@ public class ProductResp implements Serializable {
      */
     @ApiModelProperty(value = "采购类型")
     private String purchaseType;
+    /**
+     * 产品类型
+     */
+    @ApiModelProperty(value = "产品类型")
+    private String typeId;
 }

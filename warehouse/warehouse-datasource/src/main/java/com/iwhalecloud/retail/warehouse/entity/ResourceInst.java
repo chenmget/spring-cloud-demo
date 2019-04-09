@@ -217,7 +217,13 @@ public class ResourceInst implements Serializable {
   	 */
 	@ApiModelProperty(value = "记录自注册状态")
   	private java.lang.String selfRegStatus;
-  	
+
+  	/**
+  	 * 产品类型
+  	 */
+	@ApiModelProperty(value = "产品类型")
+  	private java.lang.String typeId;
+
   	
   	//属性 end
 	

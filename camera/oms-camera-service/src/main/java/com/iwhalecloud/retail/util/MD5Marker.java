@@ -46,7 +46,7 @@ public class MD5Marker {
 		TreeMap<String, String> treeMap=new TreeMap<String, String>(paramMap);
 		StringBuffer buffer=new StringBuffer();
 		for(Map.Entry<String, String> entry : treeMap.entrySet()) {//把传过来的参数(除去key)进行按照字母排序 进行签名
-			if(!entry.getKey().equals("key")&&!entry.getKey().equals("imgTagContents")&&!entry.getKey().equals("tagContents")){
+			if(!"key".equals(entry.getKey())&&!"imgTagContents".equals(entry.getKey())&&!"tagContents".equals(entry.getKey())){
 					buffer.append(entry.getKey()+"="+entry.getValue()+"&");
 			}
 		}		

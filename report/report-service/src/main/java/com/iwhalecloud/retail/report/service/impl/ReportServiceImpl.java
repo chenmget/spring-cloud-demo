@@ -53,7 +53,7 @@ public class ReportServiceImpl implements ReportService {
 					rr.setPriceLevel("1000-2000");
 				} else if ("5".equals(priceLevel)) {
 					rr.setPriceLevel("2000-3000");
-				} else if (priceLevel.equals("6")) {
+				} else if ("6".equals(priceLevel)) {
 					rr.setPriceLevel("3000以上");
 				}
 			}

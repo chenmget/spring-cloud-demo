@@ -133,7 +133,7 @@ public class IStringUtil {
 
 		int resultSize = matchList.size();
 
-		while (resultSize > 0 && matchList.get(resultSize - 1).equals("")) {
+		while (resultSize > 0 && "".equals(matchList.get(resultSize - 1))) {
 			resultSize--;
 		}
 

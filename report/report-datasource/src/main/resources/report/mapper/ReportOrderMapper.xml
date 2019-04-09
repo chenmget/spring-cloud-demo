@@ -18,7 +18,7 @@
 	       a.order_type,
 	       a.payment_type,
 	       a.pay_type,
-	       h.cat_name CAT_ID,
+	       h.type_name CAT_ID,
 	       g.name BRAND_ID,
 	       c.product_name unitName,
 	       c.UNIT_TYPE,
@@ -44,7 +44,7 @@
 	       par_merchant      e,
 	       par_merchant      f,
 	       prod_brand        g,
-	       PROD_CAT			 h
+	       prod_type		h
   where 1=1
   <if test="req.createTimeStart!=null and req.createTimeStart!=''">
     and a.CREATE_TIME &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
@@ -113,7 +113,7 @@
 	AND a.supplier_id = e.MERCHANT_ID
  	 AND a.user_id = f.MERCHANT_ID
  	 AND c.brand_id = g.brand_id
- 	 AND c.CAT_ID = h.cat_id
+ 	 AND c.type_id = h.type_id
  	 ) j
  	 LEFT OUTER JOIN ORD_PROMOTION k ON j.order_id =k.order_id
  	 LEFT OUTER JOIN act_marketing_activity l ON k.MKT_ACT_ID = l.id

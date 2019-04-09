@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @ApiModel("根据条件查找 商家账号 列表")
@@ -31,6 +32,12 @@ public class MerchantAccountListReq implements Serializable {
     @ApiModelProperty(value = "商家ID")
     @NotEmpty(message = "商家ID不能为空")
     private String merchantId;
+
+    /**
+     * 商家ID
+     */
+    @ApiModelProperty(value = "商家ID集合")
+    private List<String> merchantIdList;
 
     /**
      * 账号

@@ -36,14 +36,18 @@ public class ServiceLogManagerAop {
 
         long time = System.currentTimeMillis();
         log.info("interface=({}),dubboTime={},gs_start={},url={},request{}",
-                JSON.toJSONString(point.getSignature().getDeclaringType().getSimpleName()), Order2bContext.getDubboRequest().getHttpId(),
-                time, point.getSignature().getName(),
+                JSON.toJSONString(point.getSignature().getDeclaringType()),
+                Order2bContext.getDubboRequest().getHttpId(),
+                time,
+                point.getSignature().getName(),
                 JSON.toJSONString(point.getArgs()));
 
         Object result = point.proceed();
-        log.info("interface=({}),dubboTime={},gs_close={},timeConsuming={},result={}",
-                JSON.toJSONString(point.getSignature().getDeclaringType().getSimpleName()), Order2bContext.getDubboRequest().getHttpId(),
-                time, (System.currentTimeMillis() - time),
+        log.info("interfaceMethod=({}),dubboTime={},gs_close={},timeConsuming={},result={}",
+                point.getSignature().getDeclaringType().getSimpleName().concat(point.getSignature().getName()),
+                Order2bContext.getDubboRequest().getHttpId(),
+                time,
+                (System.currentTimeMillis() - time),
                 JSON.toJSONString(result));
 
         return result;

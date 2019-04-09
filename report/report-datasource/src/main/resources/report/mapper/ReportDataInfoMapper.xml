@@ -4,7 +4,7 @@
   
     <select id="getStorePurchaserReport" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq">
-		select * from (
+		select * from ( 
   SELECT g.*,g.StockNum/g.AverageDailySales StockTurnover FROM (
 	SELECT PRODUCT_BASE_NAME ProductBaseName,  
 		BRAND_NAME BrandName,

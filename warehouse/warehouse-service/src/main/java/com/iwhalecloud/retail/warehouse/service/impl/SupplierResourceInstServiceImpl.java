@@ -313,6 +313,15 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
         // 添加产品信息
         for (ResourceInstListResp resp : list) {
+            ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
+            log.info("SupplierResourceInstServiceImpl.listResourceInst  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
+            MerchantDTO merchantDTO = merchantResultVO.getResultData();
+            if (null != merchantDTO) {
+                resp.setRegionName(merchantDTO.getCityName());
+                resp.setLanName(merchantDTO.getLanName());
+                resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+            }
+
             String productId = resp.getMktResId();
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
             queryReq.setProductId(productId);

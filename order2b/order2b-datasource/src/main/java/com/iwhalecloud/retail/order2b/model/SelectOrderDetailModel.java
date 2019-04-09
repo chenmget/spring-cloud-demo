@@ -17,6 +17,8 @@ public class SelectOrderDetailModel extends AdvanceOrderReq {
 
     private List<String> userIds;
 
+    private List<String> lanIdList;
+
 
     private String createUserId;
 

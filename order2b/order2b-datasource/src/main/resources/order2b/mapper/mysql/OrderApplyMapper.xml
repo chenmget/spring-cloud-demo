@@ -101,6 +101,12 @@
             <if test="req.lanId !=null and req.lanId !=''">
                 and lan_id=#{req.lanId}
             </if>
+            <if test="req.lanIdList !=null and req.lanIdList.size()>0">
+                and lan_id IN
+                <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
     </select>
 

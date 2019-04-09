@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
+import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.consts.OrderManagerConsts;
+import com.iwhalecloud.retail.order2b.dto.base.OrderRequest;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderApplyDTO;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderItemDetailDTO;
@@ -28,8 +30,10 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -66,6 +70,16 @@ public class SelectAfterSaleOpenServiceImpl implements SelectAfterSaleOpenServic
         SelectAfterModel selectAfterModel = new SelectAfterModel();
         BeanUtils.copyProperties(req, selectAfterModel);
         selectAfterModel.setHandlerCode(req.getUserCode());
+
+        /**
+         * 多个lanId查询
+         */
+        OrderRequest bContext= Order2bContext.getDubboRequest();
+        if(!StringUtils.isEmpty(bContext.getLanId()) && bContext.getLanId().contains(",")){
+            selectAfterModel.setLanIdList(Arrays.asList(bContext.getLanId().split(",")));
+            bContext.setLanId(null);
+        }
+
         IPage list = selectOrderService.selectAfterSale(selectAfterModel);
         List<AfterSaleResp> afterSaleRespList = JSON.parseArray(JSON.toJSONString(list.getRecords()), AfterSaleResp.class);
         list.setRecords(afterSaleRespList);

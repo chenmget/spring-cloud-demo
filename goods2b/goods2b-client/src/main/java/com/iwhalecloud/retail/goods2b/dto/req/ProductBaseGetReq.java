@@ -17,6 +17,12 @@ public class ProductBaseGetReq extends AbstractRequest implements Serializable {
     private String productBaseId;
 
     /**
+     * 产品ID
+     */
+    @ApiModelProperty(value = "产品ID")
+    private String productId;
+
+    /**
      * 产品类别
      */
     @ApiModelProperty(value = "产品类别")

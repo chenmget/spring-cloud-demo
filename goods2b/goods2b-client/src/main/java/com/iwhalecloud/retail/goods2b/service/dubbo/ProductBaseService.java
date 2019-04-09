@@ -30,7 +30,6 @@ public interface ProductBaseService {
      * 添加产品基本信息列表
      * @param req
      * @return
-     * @throws ProductException
      */
     public ResultVO<String> addProductBase (ProductBaseAddReq req);
 
@@ -65,7 +64,6 @@ public interface ProductBaseService {
      * 获取产品详情
      * @param req
      * @return
-     * @throws ProductException
      */
     public ResultVO<ProductDetailResp> getProductDetail(ProductDetailGetByBaseIdReq req);
 

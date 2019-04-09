@@ -45,6 +45,7 @@ public class ResourceInstAddReqDTO implements java.io.Serializable {
   	 * 营销资源标识，记录product_id
   	 */
 	@ApiModelProperty(value = "营销资源标识，记录product_id")
+	@NotBlank(message = "产品id不能为空")
   	private String mktResId;
 
 	/**

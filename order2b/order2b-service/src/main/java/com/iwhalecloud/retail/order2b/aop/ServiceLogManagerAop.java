@@ -44,7 +44,7 @@ public class ServiceLogManagerAop {
 
         Object result = point.proceed();
         log.info("interfaceMethod=({}),dubboTime={},gs_close={},timeConsuming={},result={}",
-                point.getSignature().getDeclaringType().getSimpleName().concat(point.getSignature().getName()),
+                point.getSignature().getDeclaringType().getSimpleName().concat("#").concat(point.getSignature().getName()),
                 Order2bContext.getDubboRequest().getHttpId(),
                 time,
                 (System.currentTimeMillis() - time),

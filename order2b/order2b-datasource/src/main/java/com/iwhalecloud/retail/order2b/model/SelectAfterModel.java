@@ -18,6 +18,8 @@ public class SelectAfterModel extends SelectAfterSalesReq {
 
     private List<String> statusList;
 
+    private List<String> lanIdList;
+
     private List<String> itemList;
 
     private List<String> serviceTypeList;

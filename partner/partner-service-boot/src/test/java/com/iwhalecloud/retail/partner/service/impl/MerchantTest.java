@@ -75,13 +75,14 @@ public class MerchantTest {
     @Test
     public void page() {
         MerchantPageReq req = new MerchantPageReq();
-        req.setMerchantTypeList(Lists.newArrayList("1", "2"));
+        req.setMerchantTypeList(Lists.newArrayList( "2"));
 //        req.setLanIdList(Lists.newArrayList("730", "731"));
 //        req.setCityList(Lists.newArrayList("73001", "73101"));
-        req.setLanIdList(Lists.newArrayList());
-        req.setCityList(Lists.newArrayList());
+//        req.setLanIdList(Lists.newArrayList());
+//        req.setCityList(Lists.newArrayList());
 //        req.setTagId("11222");
 //        req.setMerchantCode("12345");
+        req.setPageSize(1000);
         ResultVO resultVO = merchantService.pageMerchant(req);
         System.out.print("结果：" + resultVO.toString());
     }

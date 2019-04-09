@@ -625,7 +625,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                     ResourceConst.STATUSCD.ALLOCATIONED.getCode(),
                     ResourceConst.STATUSCD.ALLOCATIONING.getCode());
             adminResourceInstDelReq.setCheckStatusCd(checkStatusCd);
-            adminResourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.RESTORAGED.getCode());
+            // 2019-04-09 退换货原串码改为可用
+            adminResourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             adminResourceInstDelReq.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
             adminResourceInstDelReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
             adminResourceInstDelReq.setObjId(req.getOrderId());

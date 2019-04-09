@@ -59,8 +59,9 @@ public final class StrTools {
 
 	public static String join(String seperator, Iterator objects) {
 		StringBuffer buf = new StringBuffer();
-		if (objects.hasNext())
+		if (objects.hasNext()) {
 			buf.append(objects.next());
+		}
 		while (objects.hasNext()) {
 			buf.append(seperator).append(objects.next());
 		}
@@ -75,8 +76,9 @@ public final class StrTools {
 
 	public static String joinWithQMarks(String seperator, Iterator objects) {
 		StringBuffer buf = new StringBuffer();
-		if (objects.hasNext())
+		if (objects.hasNext()) {
 			buf.append("'").append(objects.next()).append("'");
+		}
 		while (objects.hasNext()) {
 			buf.append(seperator).append("'").append(objects.next())
 					.append("'");
@@ -86,13 +88,14 @@ public final class StrTools {
 
 	public static boolean booleanValue(String tfString) {
 		String trimmed = tfString.trim().toLowerCase();
-		return trimmed.equals("true") || trimmed.equals("t");
+		return "true".equals(trimmed) || "t".equals(trimmed);
 	}
 
 	public static boolean isEqual(String o, boolean c) {
 
-		if (o == null || "".equals(o))
+		if (o == null || "".equals(o)) {
 			return false;
+		}
 		return o.equals(String.valueOf(c).toLowerCase());
 
 	}
@@ -109,8 +112,9 @@ public final class StrTools {
 
 	public static String toString(Object[] array) {
 		int len = array.length;
-		if (len == 0)
+		if (len == 0) {
 			return "";
+		}
 		StringBuffer buf = new StringBuffer(len * 12);
 		for (int i = 0; i < len - 1; i++) {
 			buf.append(array[i]).append(", ");
@@ -120,8 +124,9 @@ public final class StrTools {
 
 	public static String[] toArray(List list) {
 		int len = list.size();
-		if (len == 0)
+		if (len == 0) {
 			return null;
+		}
 		String[] array = new String[len];
 		for (int i = 0; i < len; i++) {
 			array[i] = list.get(i).toString();
@@ -147,8 +152,9 @@ public final class StrTools {
 
 	public static String getStrValue(Map m, String name) {
 		Object t = m.get(name);
-		if (t == null)
+		if (t == null) {
 			return "";
+		}
 		return ((String) m.get(name)).trim();
 	}
 
@@ -162,12 +168,14 @@ public final class StrTools {
 
 	public static HashMap toMap(String[] array) {
 
-		if (array == null)
+		if (array == null) {
 			return null;
+		}
 		int len = array.length;
 
-		if (len == 0)
+		if (len == 0) {
 			return null;
+		}
 
 		HashMap map = new HashMap();
 
@@ -239,8 +247,9 @@ public final class StrTools {
 	 * */
 	public static boolean isNum(String num) {
 
-		if (num == null || num.equals(""))
+		if (num == null || "".equals(num)) {
 			return false;
+		}
 
 		if (num.startsWith("-")) {
 			return isNum(num.substring(1));
@@ -256,8 +265,9 @@ public final class StrTools {
 	 * */
 	public static boolean isMatche(String checkStr, String regex) {
 
-		if (checkStr == null || checkStr.equals(""))
+		if (checkStr == null || "".equals(checkStr)) {
 			return false;
+		}
 
 		Pattern pattern = Pattern.compile(regex);
 		Matcher isMathe = pattern.matcher(checkStr);
@@ -266,12 +276,14 @@ public final class StrTools {
 
 	//浮点数
 	public static boolean isFloat(String num) {
-		if (isNum(num))
+		if (isNum(num)) {
 			return true;
+		}
 		String reg = "^[1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*$";
 
-		if (num == null || num.equals(""))
+		if (num == null || "".equals(num)) {
 			return false;
+		}
 
 		if (num.startsWith("-")) {
 			return isMatche(num.substring(1), reg);
@@ -373,9 +385,9 @@ public final class StrTools {
 	//把一个HashMap拼凑成key:val|..的格式
 	public static String hashMapToString(HashMap sqlGetKeyVals) {
 		StringBuffer data = new StringBuffer("");
-		if (sqlGetKeyVals != null)
+		if (sqlGetKeyVals != null) {
 			for (Iterator it = sqlGetKeyVals.entrySet().iterator(); it
-					.hasNext();) {
+					.hasNext(); ) {
 				Map.Entry map = (Map.Entry) it.next();
 				String key = (String) map.getKey();
 				String val = (String) map.getValue();
@@ -384,28 +396,34 @@ public final class StrTools {
 				data.append(val);
 				data.append("|");
 			}
+		}
 		return data.toString();
 	}
 
 	//把一个key:val|..格式的String拼凑成HashMap
 	public static HashMap StringToHashMap(String str) {
-		if (str == null || str.equals(""))
+		if (str == null || "".equals(str)) {
 			return null;
+		}
 		String[] _hashmap = str.split("\\|");
-		if (_hashmap == null || _hashmap.length == 0)
+		if (_hashmap == null || _hashmap.length == 0) {
 			return null;
+		}
 		HashMap ret = new HashMap();
 		for (int i = 0; i < _hashmap.length; i++) {
 			String it = _hashmap[i];
-			if (it == null || it.equals(""))
+			if (it == null || "".equals(it)) {
 				continue;
+			}
 			String[] _maps = it.split(":");
-			if (_maps == null || _maps.length < 1)
+			if (_maps == null || _maps.length < 1) {
 				continue;
+			}
 			String key = _maps[0];
 			String val = "";
-			if (_maps.length == 2)
+			if (_maps.length == 2) {
 				val = _maps[1];
+			}
 			ret.put(key, val);
 		}
 		return ret;

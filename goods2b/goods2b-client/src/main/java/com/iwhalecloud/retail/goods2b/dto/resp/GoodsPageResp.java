@@ -82,4 +82,10 @@ public class GoodsPageResp implements Serializable {
      */
     @ApiModelProperty(value = "支付方式")
     private String payments;
+
+    /**
+     * 市场价
+     */
+    @ApiModelProperty(value = "市场价")
+    private Double mktprice;
 }

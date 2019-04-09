@@ -1,13 +1,14 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDetailDTO;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceInstTrackDetail;
+import com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackDetailMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackDetailMapper;
 
-import java.util.Date;
+import javax.annotation.Resource;
+import java.util.List;
 
 
 @Component
@@ -19,10 +20,15 @@ public class ResouceInstTrackDetailManager {
     public int saveResouceInstTrackDetail(ResouceInstTrackDetailDTO resouceInstTrackDTO){
         ResouceInstTrackDetail resouceInstTrackDetail = new ResouceInstTrackDetail();
         BeanUtils.copyProperties(resouceInstTrackDTO, resouceInstTrackDetail);
-        Date now = new Date();
-        resouceInstTrackDetail.setStatusDate(now);
-        resouceInstTrackDetail.setUpdateDate(now);
         return resouceInstTrackDetailMapper.insert(resouceInstTrackDetail);
     }
 
+    /**
+     * 通过串码查轨迹明细
+     * @param nbr
+     * @return
+     */
+    public List<ResourceInstTrackDetailListResp> getResourceInstTrackDetailByNbr(String nbr){
+        return resouceInstTrackDetailMapper.getResourceInstTrackDetailByNbr(nbr);
+    }
 }

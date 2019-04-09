@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.system.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.MenuDTO;
+import com.iwhalecloud.retail.system.dto.request.MenuListReq;
 import com.iwhalecloud.retail.system.entity.Menu;
 import com.iwhalecloud.retail.system.entity.RoleMenu;
 import com.iwhalecloud.retail.system.mapper.MenuMapper;
@@ -31,15 +32,14 @@ public class MenuManager {
         return  menuMapper.insert(menu);
     }
 
-    public List<Menu> listMenu(String platform, String menuName){
+    public List<Menu> listMenu(MenuListReq req){
         QueryWrapper<Menu> queryWrapper = new QueryWrapper<>();
-        if (!StringUtils.isEmpty(platform)) {
-            queryWrapper.eq("PLATFORM", platform);
+        if (!StringUtils.isEmpty(req.getPlatform())) {
+            queryWrapper.eq("PLATFORM", req.getPlatform());
         }
-        if (!StringUtils.isEmpty(menuName)) {
-            queryWrapper.like("menu_name", menuName);
+        if (!StringUtils.isEmpty(req.getMenuName())) {
+            queryWrapper.like("MENU_NAME", req.getMenuName());
         }
-//        queryWrapper.eq("deleteflag", "0"); // 有效的
         queryWrapper.orderByAsc("menu_name");
         return menuMapper.selectList(queryWrapper);
     }

@@ -47,7 +47,7 @@ public class ChannelViewSyncServiceImpl implements ChannelViewSyncService {
     private static final String UN_DEAL = "0";
     private static final String DEAL_SUCCESS = "1";
     private static final String DEAL_ERROR = "2";
-    private static final String DICT_TYPE = "FTP_MSG";
+    private static final String DICT_TYPE = "FTP";
     private static final String IP = "IP";
     private static final String PORT = "PORT";
     private static final String USERNAME = "USERNAME";
@@ -309,19 +309,13 @@ public class ChannelViewSyncServiceImpl implements ChannelViewSyncService {
         if (CollectionUtils.isEmpty(publicDictDTOS)) {
             return ftpDTO;
         }
-        for (PublicDictDTO publicDictDTO: publicDictDTOS) {
-            if (IP.equals(publicDictDTO.getPkey())) {
-                ftpDTO.setIp(publicDictDTO.getPname());
-            } else if (PORT.equals(publicDictDTO.getPkey())) {
-                ftpDTO.setPort(Integer.valueOf(publicDictDTO.getPname()));
-            } else if (USERNAME.equals(publicDictDTO.getPkey())) {
-                ftpDTO.setUserName(publicDictDTO.getPname());
-            } else if (PASSWORD.equals(publicDictDTO.getPkey())) {
-                ftpDTO.setPassword(publicDictDTO.getPname());
-            } else if (FILEPATH.equals(publicDictDTO.getPkey())) {
-                ftpDTO.setFilePath(publicDictDTO.getPname());
-            }
-        }
+        PublicDictDTO publicDictDTO = publicDictDTOS.get(0);
+        ftpDTO.setIp(publicDictDTO.getPname());
+        ftpDTO.setPort(publicDictDTO.getCodea());
+        ftpDTO.setUserName(publicDictDTO.getCodeb());
+        ftpDTO.setPassword(publicDictDTO.getCodec());
+        ftpDTO.setFilePath(publicDictDTO.getCoded());
+
         String fixName = DateUtils.getYesterdayTimeForStr();
         String fileName = preFileName + fixName + ".txt";
         ftpDTO.setFileName(fileName);

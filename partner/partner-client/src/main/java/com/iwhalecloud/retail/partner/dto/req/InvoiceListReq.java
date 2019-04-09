@@ -22,8 +22,14 @@ public class InvoiceListReq implements Serializable {
     @ApiModelProperty(value = "营业执照号")
     private String busiLicenceCode;
 
-    @ApiModelProperty(value = "营业执照到期日期")
+    @ApiModelProperty(value = "营业执照到期日期（只传这个会查出 到期日期  大于此日期的 数据）")
     private Date busiLicenceExpDate;
+
+    @ApiModelProperty(value = "营业执照到期日期 开始时间 （跟结束时间一起 查 营业执照到期日期 在这个区间的")
+    private Date startExpireDate;
+
+    @ApiModelProperty(value = "营业执照到期日期 结束时间")
+    private Date endExpireDate;
 
     @ApiModelProperty(value = "银行账号（公司账号）")
     private String registerBankAcct;

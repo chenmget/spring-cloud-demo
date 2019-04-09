@@ -87,10 +87,12 @@ public class DesensitizedUtils {
             return "";
         }
         int index = StringUtils.indexOf(email, "@");
-        if (index <= 1)
+        if (index <= 1) {
             return email;
-        else
+        }
+        else {
             return StringUtils.rightPad(StringUtils.left(email, 1), index, "*").concat(StringUtils.mid(email, index, StringUtils.length(email)));
+        }
     }
 
     /**

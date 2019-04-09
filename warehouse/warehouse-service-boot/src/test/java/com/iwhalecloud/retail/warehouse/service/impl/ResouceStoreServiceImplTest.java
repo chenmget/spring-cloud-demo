@@ -1,9 +1,7 @@
 package com.iwhalecloud.retail.warehouse.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.req.MerchantPageReq;
@@ -89,7 +87,7 @@ public class ResouceStoreServiceImplTest {
                     resouceStoreDTO.setMerchantCode(dto.getMerchantId());
                     resouceStoreDTO.setMerchantName(dto.getMerchantName());
 
-                    resouceStoreDTO.setMktResStoreName(dto.getMerchantName() + "-" + ResourceConst.STORE_SUB_TYPE.getName(lib));
+                    resouceStoreDTO.setMktResStoreName(dto.getMerchantName() + "-" + ResourceConst.STORE_SUB_TYPE.getStoreSubTypeName(lib));
                     resouceStoreDTO.setMktResStoreNbr("NBR_" + mktResStoreId);
 
                     resouceStoreDTO.setMerchantId(dto.getMerchantId());

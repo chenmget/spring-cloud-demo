@@ -2,15 +2,15 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
+import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
 import com.iwhalecloud.retail.goods2b.entity.Product;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.mapper.ProductMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -35,7 +34,7 @@ public class ProductManager {
      * @return
      */
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public Integer insert(Product req) throws ProductException {
+    public Integer insert(Product req) {
         // 产品编码
         if (StringUtils.isNotBlank(req.getSn()) || StringUtils.isNotBlank(req.getUnitName())) {
             Boolean bothNotNull = StringUtils.isNotBlank(req.getSn()) && StringUtils.isNotBlank(req.getUnitName());
@@ -45,9 +44,7 @@ public class ProductManager {
             dto.setBothNotNull(bothNotNull);
             Integer num = productMapper.getDuplicate(dto);
             if(null != num && num > 0){
-                List<String> errors = new ArrayList<String>(1);
-                errors.add("产品编码、营销资源名称不能重复");
-                throw new ProductException(errors);
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "产品编码、营销资源名称不能重复");
             }
         }
         return productMapper.insert(req);

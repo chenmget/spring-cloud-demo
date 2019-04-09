@@ -119,6 +119,27 @@
         <if test="lanId !=null and lanId !=''">
             and lan_id=#{lanId}
         </if>
+        <if test="lanIdList !=null and lanIdList.size()>0">
+            and lan_id IN
+            <foreach collection="lanIdList" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+
+
+    <select id="selectOrderIdByresNbr" resultType="java.lang.String">
+        SELECT  order_id FROM  ord_order_item_detail WHERE  res_nbr= #{resNbr}
+        <if test="lanId !=null and lanId !=''">
+            and lan_id=#{lanId}
+        </if>
+        <if test="lanIdList !=null and lanIdList.size()>0">
+            and lan_id IN
+            <foreach collection="lanIdList" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
 
     <select id="queryOrderItemDetailByOrderId" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.promo.ReBateOrderInDetailReq"

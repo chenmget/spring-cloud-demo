@@ -71,14 +71,12 @@ public abstract class RsaCipher
 
             var21 = outputStream.toByteArray();
         } finally {
-            if (outputStream != null)
+            if (outputStream != null) {
                 try {
                     outputStream.close();
+                } catch (IOException var18) {
                 }
-                catch (IOException var18)
-                {
-                }
-
+            }
         }
 
         return var21;
@@ -118,8 +116,9 @@ public abstract class RsaCipher
         if (bouncyCastleProvider == null) {
             Object var0 = LOCK;
             synchronized (LOCK) {
-                if (bouncyCastleProvider == null)
+                if (bouncyCastleProvider == null) {
                     bouncyCastleProvider = new BouncyCastleProvider();
+                }
             }
 
         }

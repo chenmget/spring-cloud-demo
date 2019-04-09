@@ -1,0 +1,110 @@
+!SESSION 2019-04-03 11:46:54.387 -----------------------------------------------
+eclipse.buildId=4.6.3.M20170301-0400
+java.version=1.8.0_121
+java.vendor=Oracle Corporation
+BootLoader constants: OS=win32, ARCH=x86_64, WS=win32, NL=zh_CN
+Framework arguments:  -product org.eclipse.epp.package.java.product
+Command-line arguments:  -os win32 -ws win32 -arch x86_64 -product org.eclipse.epp.package.java.product
+
+!ENTRY org.eclipse.jface 2 0 2019-04-03 11:47:42.852
+!MESSAGE Keybinding conflicts occurred.  They may interfere with normal accelerator operation.
+!SUBENTRY 1 org.eclipse.jface 2 0 2019-04-03 11:47:42.852
+!MESSAGE A conflict occurred for ALT+SHIFT+X R:
+Binding(ALT+SHIFT+X R,
+	ParameterizedCommand(Command(org.eclipse.rap.tools.launch.RAPLaunchShortcut.run,Run RAP Application,
+		Run RAP Application,
+		Category(org.eclipse.debug.ui.category.run,Run/Debug,Run/Debug command category,true),
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@565983f3,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(ALT+SHIFT+X R,
+	ParameterizedCommand(Command(org.eclipse.wst.server.launchShortcut.run,Run on Server,
+		Run the current selection on a server,
+		Category(org.eclipse.debug.ui.category.run,Run/Debug,Run/Debug command category,true),
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@68024e57,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+!SUBENTRY 1 org.eclipse.jface 2 0 2019-04-03 11:47:42.852
+!MESSAGE A conflict occurred for ALT+SHIFT+D R:
+Binding(ALT+SHIFT+D R,
+	ParameterizedCommand(Command(org.eclipse.rap.tools.launch.RAPLaunchShortcut.debug,Debug RAP Application,
+		Debug RAP Application,
+		Category(org.eclipse.debug.ui.category.run,Run/Debug,Run/Debug command category,true),
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@72321701,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+Binding(ALT+SHIFT+D R,
+	ParameterizedCommand(Command(org.eclipse.wst.server.launchShortcut.debug,Debug on Server,
+		Debug the current selection on a server,
+		Category(org.eclipse.debug.ui.category.run,Run/Debug,Run/Debug command category,true),
+		org.eclipse.ui.internal.WorkbenchHandlerServiceHandler@2f83467,
+		,,true),null),
+	org.eclipse.ui.defaultAcceleratorConfiguration,
+	org.eclipse.ui.contexts.window,,,system)
+
+!ENTRY org.eclipse.egit.ui 2 0 2019-04-03 11:47:55.015
+!MESSAGE Warning: The environment variable HOME is not set. The following directory will be used to store the Git
+user global configuration and to define the default location to store repositories: 'C:\Users\Administrator'. If this is
+not correct please set the HOME environment variable and restart Eclipse. Otherwise Git for Windows and
+EGit might behave differently since they see different configuration options.
+This warning can be switched off on the Team > Git > Confirmations and Warnings preference page.
+
+!ENTRY org.eclipse.php.debug.core 4 4 2019-04-03 11:48:05.024
+!MESSAGE The debug port 9000 is in use. Please select a different port for the debugger.
+
+!ENTRY org.eclipse.php.debug.core 4 4 2019-04-03 11:48:05.056
+!MESSAGE Could not open a broadcast port on: 20080 (port might be in use). Please select a different port number
+
+!ENTRY org.eclipse.php.debug.core 4 4 2019-04-03 11:48:05.061
+!MESSAGE The debug port 10137 is in use. Please select a different port for the debugger.
+
+!ENTRY org.eclipse.jsch.core 4 0 2019-04-03 11:53:43.294
+!MESSAGE An error occurred loading the SSH2 private keys
+!STACK 0
+com.jcraft.jsch.JSchException: invalid privatekey: [B@61408a4b
+	at com.jcraft.jsch.KeyPair.load(KeyPair.java:664)
+	at com.jcraft.jsch.KeyPair.load(KeyPair.java:561)
+	at com.jcraft.jsch.IdentityFile.newInstance(IdentityFile.java:40)
+	at com.jcraft.jsch.JSch.addIdentity(JSch.java:407)
+	at com.jcraft.jsch.JSch.addIdentity(JSch.java:367)
+	at org.eclipse.jsch.internal.core.Utils.loadPrivateKeys(Utils.java:105)
+	at org.eclipse.jsch.internal.core.JSchCorePlugin.loadPrivateKeys(JSchCorePlugin.java:226)
+	at org.eclipse.jsch.internal.core.JSchProvider.createSession(JSchProvider.java:45)
+	at org.eclipse.egit.core.EclipseSshSessionFactory.createDefaultJSch(EclipseSshSessionFactory.java:38)
+	at org.eclipse.jgit.transport.JschConfigSessionFactory.getJSch(JschConfigSessionFactory.java:261)
+	at org.eclipse.egit.core.EclipseSshSessionFactory.createSession(EclipseSshSessionFactory.java:46)
+	at org.eclipse.jgit.transport.JschConfigSessionFactory.createSession(JschConfigSessionFactory.java:176)
+	at org.eclipse.jgit.transport.JschConfigSessionFactory.getSession(JschConfigSessionFactory.java:110)
+	at org.eclipse.jgit.transport.SshTransport.getSession(SshTransport.java:137)
+	at org.eclipse.jgit.transport.TransportGitSsh$SshFetchConnection.<init>(TransportGitSsh.java:264)
+	at org.eclipse.jgit.transport.TransportGitSsh.openFetch(TransportGitSsh.java:162)
+	at org.eclipse.jgit.api.LsRemoteCommand.execute(LsRemoteCommand.java:198)
+	at org.eclipse.jgit.api.LsRemoteCommand.call(LsRemoteCommand.java:159)
+	at org.eclipse.egit.core.op.ListRemoteOperation.run(ListRemoteOperation.java:100)
+	at org.eclipse.egit.ui.internal.clone.SourceBranchPage$8.run(SourceBranchPage.java:341)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)
+
+!ENTRY org.eclipse.egit.ui 4 0 2019-04-03 11:53:45.685
+!MESSAGE Preference node "ssh:\2f\2fgitlab.iwhalecloud.com:22" has been removed.
+!STACK 0
+java.lang.IllegalStateException: Preference node "ssh:\2f\2fgitlab.iwhalecloud.com:22" has been removed.
+	at org.eclipse.equinox.internal.security.storage.SecurePreferences.checkRemoved(SecurePreferences.java:354)
+	at org.eclipse.equinox.internal.security.storage.SecurePreferences.parent(SecurePreferences.java:74)
+	at org.eclipse.equinox.internal.security.storage.SecurePreferences.getRoot(SecurePreferences.java:136)
+	at org.eclipse.equinox.internal.security.storage.SecurePreferences.flush(SecurePreferences.java:180)
+	at org.eclipse.equinox.internal.security.storage.SecurePreferencesWrapper.flush(SecurePreferencesWrapper.java:50)
+	at org.eclipse.egit.core.securestorage.EGitSecureStore.clearCredentials(EGitSecureStore.java:112)
+	at org.eclipse.egit.ui.internal.SecureStoreUtils.clearCredentials(SecureStoreUtils.java:83)
+	at org.eclipse.egit.ui.internal.credentials.EGitCredentialsProvider.reset(EGitCredentialsProvider.java:139)
+	at org.eclipse.jgit.transport.JschConfigSessionFactory.getSession(JschConfigSessionFactory.java:131)
+	at org.eclipse.jgit.transport.SshTransport.getSession(SshTransport.java:137)
+	at org.eclipse.jgit.transport.TransportGitSsh$SshFetchConnection.<init>(TransportGitSsh.java:264)
+	at org.eclipse.jgit.transport.TransportGitSsh.openFetch(TransportGitSsh.java:162)
+	at org.eclipse.jgit.api.LsRemoteCommand.execute(LsRemoteCommand.java:198)
+	at org.eclipse.jgit.api.LsRemoteCommand.call(LsRemoteCommand.java:159)
+	at org.eclipse.egit.core.op.ListRemoteOperation.run(ListRemoteOperation.java:100)
+	at org.eclipse.egit.ui.internal.clone.SourceBranchPage$8.run(SourceBranchPage.java:341)
+	at org.eclipse.jface.operation.ModalContext$ModalContextThread.run(ModalContext.java:119)

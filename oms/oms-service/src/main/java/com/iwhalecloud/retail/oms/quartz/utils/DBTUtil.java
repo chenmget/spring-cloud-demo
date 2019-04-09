@@ -403,7 +403,7 @@ public class DBTUtil {
 		}else {
 			sql.append("if(").append(field) ;	
 			
-			if(cond1.equalsIgnoreCase("null")){
+			if("null".equalsIgnoreCase(cond1)){
 				sql.append(" is null ").append(",").append(v1) ;
 			}else{
 				sql.append("=").append(cond1).append(",").append(v1) ;
@@ -419,7 +419,7 @@ public class DBTUtil {
 						cond1 = strings[i] ;
 						i++ ;
 						v1 = strings[i] ;
-						if(cond1.equalsIgnoreCase("null")){
+						if("null".equalsIgnoreCase(cond1)){
 							sql.append(" is null ").append(",").append(v1) ;
 						}else{
 							sql.append("=").append(cond1).append(",").append(v1) ;

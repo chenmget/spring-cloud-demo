@@ -1,9 +1,6 @@
 package com.iwhalecloud.retail.report.dto.request;
 
-import java.io.Serializable;
-
 import com.iwhalecloud.retail.dto.PageVO;
-
 import lombok.Data;
 
 @Data

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.warehouse.dto.request;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.Date;
@@ -57,6 +58,7 @@ public class ResourceInstAddReq implements java.io.Serializable {
   	 * 营销资源仓库标识
   	 */
 	@ApiModelProperty(value = "营销资源仓库标识")
+	@NotBlank(message = "仓库不能为空")
   	private String mktResStoreId;
 
 	/**

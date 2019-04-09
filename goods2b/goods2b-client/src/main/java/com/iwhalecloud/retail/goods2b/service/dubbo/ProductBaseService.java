@@ -7,7 +7,6 @@ import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ExchangeObjectGetResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductDetailResp;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 
 import java.util.List;
 
@@ -31,16 +30,15 @@ public interface ProductBaseService {
      * 添加产品基本信息列表
      * @param req
      * @return
-     * @throws ProductException
      */
-    public ResultVO<String> addProductBase (ProductBaseAddReq req) throws ProductException;
+    public ResultVO<String> addProductBase (ProductBaseAddReq req);
 
     /**
      * 更新
      * @param req
      * @return
      */
-    public ResultVO<Integer> updateProductBase(ProductBaseUpdateReq req)throws ProductException ;
+    public ResultVO<Integer> updateProductBase(ProductBaseUpdateReq req);
 
     /**
      * 删除
@@ -66,7 +64,6 @@ public interface ProductBaseService {
      * 获取产品详情
      * @param req
      * @return
-     * @throws ProductException
      */
     public ResultVO<ProductDetailResp> getProductDetail(ProductDetailGetByBaseIdReq req);
 

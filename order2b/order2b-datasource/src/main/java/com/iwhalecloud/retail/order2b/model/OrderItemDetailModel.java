@@ -23,5 +23,7 @@ public class OrderItemDetailModel extends OrderItemDetail implements Serializabl
 
     private List<String> applyIdList;
 
+    private List<String> lanIdList;
+
 
 }

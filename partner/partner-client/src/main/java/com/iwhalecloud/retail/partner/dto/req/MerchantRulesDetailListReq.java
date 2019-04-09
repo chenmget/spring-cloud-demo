@@ -88,6 +88,13 @@ public class MerchantRulesDetailListReq implements Serializable {
     @ApiModelProperty(value = "标签")
     private java.lang.String tagId;
 
+
+    /**
+     * sys_user表字段
+     */
+    @ApiModelProperty(value = "系统账号")
+    private java.lang.String loginName;
+
     /****** 查 商家 用到的字段   ******/
 
 }

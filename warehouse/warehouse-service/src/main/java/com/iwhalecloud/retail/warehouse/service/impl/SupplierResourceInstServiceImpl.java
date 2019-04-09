@@ -15,11 +15,13 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstLogService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.*;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.manager.*;
@@ -103,9 +105,11 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     @Autowired
     private Constant constant;
 
+    @Autowired
+    private ResourceInstLogService resourceInstLogService;
+
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
 //    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO addResourceInst(ResourceInstAddReq req) {
         log.info("SupplierResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
@@ -151,23 +155,45 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
         req.setDestStoreId(mktResStoreId);
-        return resourceInstService.addResourceInst(req);
+        ResultVO<ResourceInstAddResp> addRespResultVO = resourceInstService.addResourceInst(req);
+        if (!addRespResultVO.isSuccess()) {
+            return addRespResultVO;
+        }
+
+        List<String> nbrList = req.getMktResInstNbrs();
+        nbrList.removeAll(addRespResultVO.getResultData().getExistNbrs());
+        nbrList.removeAll(addRespResultVO.getResultData().getPutInFailNbrs());
+        ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
+        resourceInstUpdateReq.setDestStoreId(manuResStoreId);
+        resourceInstUpdateReq.setMktResInstNbrs(nbrList);
+        resourceInstUpdateReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        resourceInstUpdateReq.setMerchantId(sourceStoreMerchantId);
+        resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());
+        resourceInstUpdateReq.setCheckStatusCd(Lists.newArrayList(
+                ResourceConst.STATUSCD.AUDITING.getCode(),
+                ResourceConst.STATUSCD.ALLOCATIONED.getCode(),
+                ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
+                ResourceConst.STATUSCD.RESTORAGEING.getCode(),
+                ResourceConst.STATUSCD.RESTORAGED.getCode(),
+                ResourceConst.STATUSCD.DELETED.getCode()));
+        resourceInstUpdateReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
+        ResultVO updateResourceresultVO = resourceInstService.updateResourceInst(resourceInstUpdateReq);
+        if (!updateResourceresultVO.isSuccess()) {
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), updateResourceresultVO.getResultMsg());
+        }
+        return addRespResultVO;
     }
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO delResourceInst(ResourceInstUpdateReq req) {
         List<String> nbrs = Lists.newArrayList(req.getMktResInstNbrs().stream().distinct().collect(Collectors.toList()));
-        List<String> productList = new ArrayList<>();
-
         // 获取仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storeGetStoreIdReq.setMerchantId(req.getMerchantId());
         String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
         log.info("SupplierResourceInstServiceImpl.delResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
-
         // 串码实列状态更新为删除,现在支持导入删除，前端传不了主键
         Integer num = 0;
         if (null != nbrs && !nbrs.isEmpty()) {
@@ -175,59 +201,37 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             num = resourceInstManager.updateResourceInst(req);
         }
 
+        List<ResourceInstDTO> resourceInsts = new ArrayList<>(nbrs.size());
         for (String nbr : nbrs) {
             String changeStatusCd = req.getStatusCd();
             ResourceInstGetReq queryReq = new ResourceInstGetReq();
             queryReq.setMktResInstNbr(nbr);
             queryReq.setMerchantId(req.getMerchantId());
+            queryReq.setMktResStoreId(mktResStoreId);
             ResourceInstDTO inst = resourceInstManager.getResourceInst(queryReq);
             log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstManager.getResourceInst req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(inst));
-            String statusCd = inst.getStatusCd();
             // 没删除成功的，不加日志及更新库存
             if (null == inst || !changeStatusCd.equals(inst.getStatusCd())) {
                 continue;
             }
-            String productId = inst.getMktResId();
-            Double salePrice = inst.getSalesPrice() == null ? 0D : inst.getSalesPrice();
-            String eventId = "";
-
-            if (!productList.contains(productId)) {
-                // 增加事件
-                ResouceEventDTO eventDTO = new ResouceEventDTO();
-                BeanUtils.copyProperties(inst, eventDTO);
-                eventDTO.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-                eventDTO.setDestStoreId(mktResStoreId);
-                eventDTO.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-                eventId = resouceEventManager.insertResouceEvent(eventDTO);
-                log.info("SupplierResourceInstServiceImpl.delResourceInst resouceEventManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
-                // DOWN 增加批次，不同的产品Id不同的事件、批次
-                ResourceBatchRecDTO batchRecDTO = new ResourceBatchRecDTO();
-                BeanUtils.copyProperties(inst, batchRecDTO);
-                batchRecDTO.setCostPrice(salePrice);
-                String size = String.valueOf(nbrs.size());
-                batchRecDTO.setQuantity(Long.parseLong(size));
-                String batchId = batchRecManager.insertResourceBatchRec(batchRecDTO);
-                log.info("SupplierResourceInstServiceImpl.delResourceInst batchRecManager.insertResourceBatchRec req={},resp={}", JSON.toJSONString(batchRecDTO), JSON.toJSONString(batchId));
-                productList.add(productId);
-            }
-            // 增加日志
-            ResourceChngEvtDetailDTO detailDTO = new ResourceChngEvtDetailDTO();
-            BeanUtils.copyProperties(inst, detailDTO);
-            detailDTO.setChngType(ResourceConst.OUT_PUT_STOAGE);
-            detailDTO.setMktResInstId(inst.getMktResInstId());
-            detailDTO.setMktResInstNbr(nbr);
-            detailDTO.setMktResEventId(eventId);
-            int chngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
-            log.info("SupplierResourceInstServiceImpl.delResourceInst  detailManager.insertChngEvtDetail req={},resp={}", JSON.toJSONString(detailDTO), JSON.toJSONString(chngEvtDetailCnt));
-            // 更新库存 可能是不同仓库的串码,所以一个串码更新一次
+            resourceInsts.add(inst);
+            // 更新库存,可能是不同产品，不能一起更新
             ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
-            BeanUtils.copyProperties(inst, resourceInstStoreDTO);
-            resourceInstStoreDTO.setQuantity(1L);
+            BeanUtils.copyProperties(req, resourceInstStoreDTO);
+            resourceInstStoreDTO.setMktResId(inst.getMktResId());
+            resourceInstStoreDTO.setMktResStoreId(mktResStoreId);
+            resourceInstStoreDTO.setQuantity(Long.valueOf(num));
             resourceInstStoreDTO.setQuantityAddFlag(false);
             resourceInstStoreDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             int restInstStoreCnt = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+            if (restInstStoreCnt < 1) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            }
             log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(restInstStoreCnt));
         }
+        req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        req.setDestStoreId(mktResStoreId);
+        resourceInstLogService.delResourceInstLog(req, resourceInsts);
         return ResultVO.success(num);
     }
 
@@ -235,8 +239,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     public ResultVO resetResourceInst(ResourceInstUpdateReq req) {
         List<String> nbrs = Lists.newArrayList(req.getMktResInstNbrs().stream().distinct().collect(Collectors.toList()));
         List<String> unavailbaleNbrs = new ArrayList<>();
-        List<String> productList = new ArrayList<>();
-
         // 串码实列状态更新为删除
         ResouceStoreDTO store = resouceStoreManager.getStore(req.getMerchantId(), ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         log.info("ResourceInstServiceImpl.resetResourceInst resouceStoreManager.getStore merchantId={},resp={}", req.getMerchantId(), JSON.toJSONString(store));
@@ -248,6 +250,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         Integer num = resourceInstManager.updateResourceInst(req);
         log.info("ResourceInstServiceImpl.resetResourceInst resourceInstManager.updateResourceInst merchantId={},resp={}", JSON.toJSONString(store), num);
 
+        List<ResourceInstDTO> instDTOList = new ArrayList<>(nbrs.size());
         for (String nbr : nbrs) {
             ResourceInstGetReq queryReq = new ResourceInstGetReq();
             queryReq.setMktResInstNbr(nbr);
@@ -255,56 +258,26 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             ResourceInstDTO inst = resourceInstManager.getResourceInst(queryReq);
             log.info("SupplierResourceInstServiceImpl.resetResourceInst resourceInstManager.getResourceInst req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(inst));
             String statusCd = inst.getStatusCd();
-            String productId = inst.getMktResId();
-            Double salePrice = inst.getSalesPrice() == null ? 0D : inst.getSalesPrice();
-            String eventId = "";
             if (!req.getStatusCd().equals(statusCd)) {
                 unavailbaleNbrs.add(nbr);
                 continue;
             }
-            if (!productList.contains(productId)) {
-                // 增加事件
-                ResouceEventDTO eventDTO = new ResouceEventDTO();
-                BeanUtils.copyProperties(inst, eventDTO);
-                eventDTO.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-                eventDTO.setDestStoreId(mktResStroeId);
-                eventDTO.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-                eventId = resouceEventManager.insertResouceEvent(eventDTO);
-                log.info("SupplierResourceInstServiceImpl.resetResourceInst resouceEventManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
-                // DOWN 增加批次，不同的产品Id不同的事件、批次
-                ResourceBatchRecDTO batchRecDTO = new ResourceBatchRecDTO();
-                BeanUtils.copyProperties(inst, batchRecDTO);
-                batchRecDTO.setCostPrice(salePrice);
-                String size = String.valueOf(nbrs.size());
-                batchRecDTO.setQuantity(Long.parseLong(size));
-                String batchId = batchRecManager.insertResourceBatchRec(batchRecDTO);
-                log.info("SupplierResourceInstServiceImpl.resetResourceInst batchRecManager.insertResourceBatchRec req={},resp={}", JSON.toJSONString(batchRecDTO), JSON.toJSONString(batchId));
-                productList.add(productId);
-            }
-            // 增加日志
-            ResourceChngEvtDetailDTO detailDTO = new ResourceChngEvtDetailDTO();
-            BeanUtils.copyProperties(inst, detailDTO);
-            detailDTO.setChngType(ResourceConst.OUT_PUT_STOAGE);
-            detailDTO.setMktResInstId(inst.getMktResInstId());
-            detailDTO.setMktResInstNbr(nbr);
-            detailDTO.setMktResEventId(eventId);
-            int chngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
-            log.info("SupplierResourceInstServiceImpl.resetResourceInst  detailManager.insertChngEvtDetail req={},resp={}", JSON.toJSONString(detailDTO), JSON.toJSONString(chngEvtDetailCnt));
-            // 更新库存 可能是不同仓库的串码,所以一个串码更新一次
+            instDTOList.add(inst);
+            // 更新库存 可能是不同产品,所以一个串码更新一次
             ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
-            BeanUtils.copyProperties(inst, resourceInstStoreDTO);
-            resourceInstStoreDTO.setQuantity(1L);
+            BeanUtils.copyProperties(req, resourceInstStoreDTO);
+            resourceInstStoreDTO.setQuantity(Long.valueOf(num));
             resourceInstStoreDTO.setMktResStoreId(mktResStroeId);
             Boolean quantityAddFlag = false;
             if (ResourceConst.STATUSCD.AVAILABLE.equals(req.getStatusCd())) {
                 quantityAddFlag = true;
             }
             resourceInstStoreDTO.setQuantityAddFlag(quantityAddFlag);
+            resourceInstStoreDTO.setMktResId(inst.getMktResId());
             int restInstStoreCnt = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
             log.info("SupplierResourceInstServiceImpl.resetResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(restInstStoreCnt));
         }
-        // 去除库中不存在串码及状态不可用串码
-        nbrs.removeAll(unavailbaleNbrs);
+        resourceInstLogService.delResourceInstLog(req, instDTOList);
         // 不能删除的串码返回
         if (!unavailbaleNbrs.isEmpty()) {
             return ResultVO.success(unavailbaleNbrs);
@@ -332,7 +305,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
 
         Page<ResourceInstListResp> page = resourceInstManager.getResourceInstList(req);
-        log.info("SupplierResourceInstServiceImpl.listResourceInst resourceInstManager.getResourceInstList req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(page));
+        log.info("SupplierResourceInstServiceImpl.listResourceInst resourceInstManager.getResourceInstList req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(page.getRecords()));
         List<ResourceInstListResp> list = page.getRecords();
         if (CollectionUtils.isEmpty(list)) {
             return ResultVO.success(page);
@@ -563,7 +536,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             String destStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
             log.info("ResourceInstServiceImpl.deliveryInResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), destStoreId);
             resourceInstAddReq.setDestStoreId(destStoreId);
-            ResultVO addRS = this.resourceInstService.addResourceInst(resourceInstAddReq);
+            ResultVO addRS = this.resourceInstService.addResourceInstForTransaction(resourceInstAddReq);
             log.info("ResourceInstServiceImpl.deliveryInResourceInst resourceInstService.addResourceInst req={},resp={}", JSON.toJSONString(resourceInstAddReq), JSON.toJSONString(addRS));
             if (addRS == null || !addRS.isSuccess()) {
                 return ResultVO.error(addRS.getResultMsg());
@@ -582,15 +555,14 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
         // 源仓库
         StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
+        storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storePageReq.setMerchantId(req.getBuyerMerchantId());
         String mktResStoreId = resouceStoreService.getStoreId(storePageReq);
         log.info("ResourceInstServiceImpl.deliveryInResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storePageReq), mktResStoreId);
         // 目标仓库
-        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-        storeGetStoreIdReq.setMerchantId(req.getSellerMerchantId());
-        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        String destStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService  destStoreId{}",destStoreId);
+        storePageReq.setMerchantId(req.getSellerMerchantId());
+        String destStoreId = resouceStoreService.getStoreId(storePageReq);
+        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService  destStoreId={}",destStoreId);
         for (DeliveryResourceInstItem item : req.getDeliveryResourceInstItemList()) {
             ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
             resourceInstsGetReq.setMktResInstNbrs(item.getMktResInstNbrs());
@@ -606,9 +578,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                     ResourceConst.STATUSCD.AUDITING.getCode(),
                     ResourceConst.STATUSCD.ALLOCATIONED.getCode(),
                     ResourceConst.STATUSCD.ALLOCATIONING.getCode());
-            //退库中的不过滤
-            //       ResourceConst.STATUSCD.RESTORAGEING.getCode()
-
             adminResourceInstDelReq.setCheckStatusCd(checkStatusCd);
             adminResourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
             adminResourceInstDelReq.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
@@ -633,16 +602,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (null == merchantResultVO || !merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
             return ResultVO.error("查无该商家");
         }
-        // 源仓库
+        // 仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-        storeGetStoreIdReq.setMerchantId(req.getBuyerMerchantId());
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService req={} mktResStoreId={}",JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
-        // 目标仓库
         storeGetStoreIdReq.setMerchantId(req.getSellerMerchantId());
-        String destStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService req={} destStoreId={}",JSON.toJSONString(storeGetStoreIdReq), destStoreId);
+        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+        log.info("ResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService req={} destStoreId={}",JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
         for (DeliveryResourceInstItem item : req.getDeliveryResourceInstItemList()) {
             ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
             resourceInstsGetReq.setMktResInstNbrs(item.getMktResInstNbrs());
@@ -659,17 +624,13 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                     ResourceConst.STATUSCD.AUDITING.getCode(),
                     ResourceConst.STATUSCD.ALLOCATIONED.getCode(),
                     ResourceConst.STATUSCD.ALLOCATIONING.getCode());
-            // 不用校验1306-已退库条件 1305-退库中
-            //ResourceConst.STATUSCD.RESTORAGEING.getCode()
-            //ResourceConst.STATUSCD.RESTORAGED.getCode()
-
             adminResourceInstDelReq.setCheckStatusCd(checkStatusCd);
-            adminResourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.RESTORAGED.getCode());
+            // 2019-04-09 退换货原串码改为可用
+            adminResourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             adminResourceInstDelReq.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
             adminResourceInstDelReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
             adminResourceInstDelReq.setObjId(req.getOrderId());
             //目标仓库
-            adminResourceInstDelReq.setDestStoreId(destStoreId);
             adminResourceInstDelReq.setMktResStoreId(mktResStoreId);
             ResultVO updateResultVO = resourceInstService.updateResourceInstByIdsForTransaction(adminResourceInstDelReq);
             log.info("ResourceInstServiceImpl.backDeliveryInResourceInst resourceInstService.updateResultVO req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(updateResultVO));

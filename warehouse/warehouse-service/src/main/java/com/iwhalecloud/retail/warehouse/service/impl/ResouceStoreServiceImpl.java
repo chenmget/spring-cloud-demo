@@ -14,6 +14,7 @@ import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
@@ -27,13 +28,12 @@ import com.iwhalecloud.retail.warehouse.manager.ResouceStoreObjRelManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -66,29 +66,25 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
     public Page<ResouceStoreDTO> pageStore(StorePageReq req) {
         List<String> merchantIds = req.getMerchantIds();
 
-        if (!StringUtils.isEmpty(req.getMerchantCode())
-                || !StringUtils.isEmpty(req.getMerchantName())
-                || !StringUtils.isEmpty(req.getMerchantType())) {
+        if (!StringUtils.isEmpty(req.getMerchantCode()) || !StringUtils.isEmpty(req.getMerchantName()) || !StringUtils.isEmpty(req.getMerchantType())) {
             MerchantListReq merchantListReq = new MerchantListReq();
             merchantListReq.setMerchantCode(req.getMerchantCode());
             merchantListReq.setMerchantName(req.getMerchantName());
             merchantListReq.setMerchantType(req.getMerchantType());
-            ResultVO<List<MerchantDTO>> merchantDTOs = merchantService.listMerchant(merchantListReq);
-            log.info("ResouceStoreServiceImpl.pageStore merchantService.pageMerchant req={},resp={}", JSON.toJSONString(merchantListReq), JSON.toJSONString(merchantDTOs));
-            if (null != merchantDTOs && merchantDTOs.isSuccess()) {
-                if (null != merchantDTOs.getResultData() && !CollectionUtils.isEmpty(merchantDTOs.getResultData())) {
-                    List<MerchantDTO> list = merchantDTOs.getResultData();
-                    if (CollectionUtils.isEmpty(merchantIds)) {
-                        merchantIds = list.stream().map(MerchantDTO::getMerchantId).collect(toList());
-                    } else {
-                        merchantIds.addAll(list.stream().map(MerchantDTO::getMerchantId).collect(toList()));
-                    }
-                } else {
-                    return new Page<ResouceStoreDTO>();
-                }
+            ResultVO<List<MerchantDTO>> merchantDTOVO = merchantService.listMerchant(merchantListReq);
+            log.info("ResouceStoreServiceImpl.pageStore merchantService.pageMerchant req={},resp={}", JSON.toJSONString(merchantListReq), JSON.toJSONString(merchantDTOVO));
+            if (!merchantDTOVO.isSuccess() || CollectionUtils.isEmpty(merchantDTOVO.getResultData())) {
+                return new Page<ResouceStoreDTO>();
+            }
+            List<MerchantDTO> list = merchantDTOVO.getResultData();
+            if (CollectionUtils.isEmpty(merchantIds)) {
+                merchantIds = list.stream().map(MerchantDTO::getMerchantId).collect(toList());
+            } else {
+                merchantIds.addAll(list.stream().map(MerchantDTO::getMerchantId).collect(toList()));
             }
         }
         req.setMerchantIds(merchantIds);
+        req.setLanIdList(getLanIdList(req.getLanIdName()));
         log.info("ResouceStoreServiceImpl.pageStore resouceStoreManager.pageStore req={}", JSON.toJSONString(req));
         Page<ResouceStoreDTO> resouceStoreDTOPage = resouceStoreManager.pageStore(req);
         for (ResouceStoreDTO dto : resouceStoreDTOPage.getRecords()) {
@@ -132,7 +128,6 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
     @Override
     public ResultVO<Page<ResouceStoreDTO>> pageMerchantAllocateStore(AllocateStorePageReq req) {
         String merchantId = req.getMerchantId();
-        String storeType = req.getStoryType();
         MerchantRulesCommonReq commonReq = new MerchantRulesCommonReq();
         commonReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType());
         commonReq.setMerchantId(req.getMerchantId());
@@ -143,8 +138,6 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
             // 权限过滤接口已整合区域和商家对象，返回商家id集合
             req.setMerchantIdList(permissionMerchantIdList);
         }
-
-
         // 根据商家编码和名称查询商家，获取商家ID后作为查询添加去查询仓库
         if (!StringUtils.isEmpty(req.getMerchantCode()) || !StringUtils.isEmpty(req.getMerchantName()) || !StringUtils.isEmpty(req.getMerchantType())) {
             MerchantListReq merchantReq = new MerchantListReq();
@@ -170,7 +163,7 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
                 req.setMerchantIdList(merchantIds);
             }
         }
-
+        req.setLanIdList(getLanIdList(req.getLanIdName()));
         log.info("ResouceStoreServiceImpl.pageMerchantAllocateStore merchantService.pageAllocateStore req={}", JSON.toJSONString(req));
         Page<ResouceStoreDTO> resouceStoreDTOPage = resouceStoreManager.pageAllocateStore(req);
         for (ResouceStoreDTO dto : resouceStoreDTOPage.getRecords()) {
@@ -180,20 +173,9 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
             if (resultVO.isSuccess() && resultVO.getResultData() != null) {
                 MerchantDetailDTO merchantDetailDTO = resultVO.getResultData();
                 BeanUtils.copyProperties(merchantDetailDTO, dto);
+                dto.setRegionName(merchantDetailDTO.getCityName());
             } else {
                 log.warn("ResouceStoreServiceImpl.pageMerchantAllocateStore merchantService.getMerchantById merchantId={} merchant is null", merchantId);
-            }
-            ResultVO<CommonRegionDTO> regionResultVO = commonRegionService.getCommonRegionById(dto.getRegionId());
-            if (regionResultVO != null && regionResultVO.isSuccess() && regionResultVO.getResultData() != null) {
-                dto.setRegionName(regionResultVO.getResultData().getRegionName());
-            } else {
-                log.warn("ResouceStoreServiceImpl.pageStore commonRegionService.getCommonRegionById regionId={} regionResultVO is null", dto.getRegionId());
-            }
-            ResultVO<CommonRegionDTO> landResultVO = commonRegionService.getCommonRegionById(dto.getLanId());
-            if (landResultVO != null && landResultVO.isSuccess() && landResultVO.getResultData() != null) {
-                dto.setLanName(landResultVO.getResultData().getRegionName());
-            } else {
-                log.warn("ResouceStoreServiceImpl.pageStore commonRegionService.getCommonRegionById landId={} landResultVO is null", dto.getLanId());
             }
         }
         return ResultVO.success(resouceStoreDTOPage);
@@ -357,5 +339,28 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
         resouceStoreObjRelDTO.setIsDefault("1");
         resouceStoreObjRelManager.saveStoreRel(resouceStoreObjRelDTO);
         return mktResStoreId;
+    }
+
+    /**
+     * 本地网名查询
+     * @param lanName
+     * @return
+     */
+    private List<String> getLanIdList(String lanName){
+        List<String> list = null;
+        if (StringUtils.isBlank(lanName)) {
+            return list;
+        }
+        CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
+        commonRegionListReq.setRegionName(lanName);
+        ResultVO<List<CommonRegionDTO>> commonRegionDTOVO = commonRegionService.listCommonRegion(commonRegionListReq);
+        if (commonRegionDTOVO.isSuccess() && !CollectionUtils.isEmpty(commonRegionDTOVO.getResultData())) {
+            List<CommonRegionDTO> regionDTOList = commonRegionDTOVO.getResultData();
+            list = regionDTOList.stream().map(CommonRegionDTO::getRegionId).collect(Collectors.toList());
+        } else{
+            String nullValue = "null";
+            list = Lists.newArrayList(nullValue);
+        }
+        return list;
     }
 }

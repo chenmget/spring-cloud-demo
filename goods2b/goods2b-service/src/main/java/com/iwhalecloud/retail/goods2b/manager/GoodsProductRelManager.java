@@ -117,4 +117,7 @@ public class GoodsProductRelManager{
         wrapper.in(GoodsProductRel.FieldNames.productId.getTableFieldName(), productIds);
         return goodsProductRelMapper.selectList(wrapper);
     }
+    public List<String> listGoodsBySupplierId(String supplierId, String productId) {
+        return goodsProductRelMapper.listGoodsBySupplierId(supplierId, productId);
+    }
 }

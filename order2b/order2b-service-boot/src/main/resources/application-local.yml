@@ -28,12 +28,6 @@ fdfs.show.url: https://gy.ztesoft.com/
 #  username: oms
 #  password: oms
 
-#用来后去主键生成策略
-#TelDB
-#Oracle
-#MySql
-db-type: TelDB
-
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
   url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
@@ -84,6 +78,7 @@ spring.datasource:
     filters: config,stat,wall,log4j
     #设置public key
     connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJptiLaauFuYuwkmQ2S0NSsvjdka34BLnbG5zFcuRqFi7RJowXs7P/dSmQWmlrx5RekyriyBUzgAgSbTFt1NpMsCAwEAAQ==
+
 
 #翼支付企业支付配置文件及相关配置参数
 pay:

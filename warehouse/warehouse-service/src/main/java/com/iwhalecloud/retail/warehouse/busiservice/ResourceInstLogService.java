@@ -42,4 +42,11 @@ public interface ResourceInstLogService {
      * @param batchId
      */
     void pickupResourceInstLog(ResourceInstPutInReq req, List<ResourceInstDTO> resourceList, String batchId);
+
+    /**
+     * 供应商删除串码写事件、事件明细
+     * @param req
+     * @param resourceInsts
+     */
+    void delResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstDTO> resourceInsts);
 }

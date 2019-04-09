@@ -12,11 +12,13 @@ import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.*;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
 import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductManager;
 import com.iwhalecloud.retail.goods2b.manager.TagTelManager;
@@ -37,11 +39,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -79,7 +78,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public ResultVO<Integer> addProduct(ProductAddReq req) throws ProductException {
+    public ResultVO<Integer> addProduct(ProductAddReq req){
         Product t = new Product();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -115,7 +114,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResultVO<String> addProductByZT(ProductAddReq req) throws ProductException {
+    public ResultVO<String> addProductByZT(ProductAddReq req){
         Product t = new Product();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -265,7 +264,8 @@ public class ProductServiceImpl implements ProductService {
                 String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
                 List<ProdFileDTO> fileList = fileManager.getFile(productId, targetType, null);
                 product.setProdFiles(fileList);
-                testReflect(product);
+                String specName = this.getSpecName(product);
+                product.setSpecName(specName);
             }
         }
         log.info("ProductServiceImpl.selectProduct req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
@@ -274,23 +274,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req) {
-
-        // 产品名称不为空取productBase表查询并把productBaseId作为查询条件
-        if (StringUtils.isNotEmpty(req.getProductName())) {
-            ProductBaseGetReq productBaseReq = new ProductBaseGetReq();
-            productBaseReq.setProductName(req.getProductName());
-            ResultVO<List<ProductBaseGetResp>> productBaseVO = productBaseService.selectProductBase(productBaseReq);
-            List<ProductBaseGetResp> productBaseList = productBaseVO.getResultData();
-            if (null != productBaseList && !productBaseList.isEmpty()) {
-                List<String> productBaseIdList = productBaseList.stream().map(ProductBaseGetResp::getProductBaseId).collect(Collectors.toList());
-                List<String> productBaseIds = req.getProductBaseIdList();
-                productBaseIds = productBaseIds == null ? new ArrayList<String>() : productBaseIds;
-                productBaseIds.addAll(productBaseIdList);
-                req.setProductBaseIdList(productBaseIds);
-            }else{
-                return ResultVO.success(new Page<ProductPageResp>());
-            }
-        }
         Page<ProductPageResp> page = productManager.selectPageProductAdmin(req);
         List<ProductPageResp> respList = page.getRecords();
         for (ProductPageResp resp : respList){
@@ -373,27 +356,6 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(productDTOList);
     }
 
-    private void testReflect(ProductDTO dto){
-        try {
-            StringBuilder specName = new StringBuilder();
-            for (Field field : dto.getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                String fieldName = field.getName();
-                // 只组装attrValue开头属性名的属性值
-                if (!fieldName.startsWith("attrValue")) {
-                    continue;
-                }
-                Object value =  field.get(dto);
-                if (null != value) {
-                    specName.append(value).append(" ");
-                }
-                dto.setSpecName(specName.toString());
-            }
-        }catch (Exception e){
-            log.error("获取产品规格值异常", e);
-        }
-    }
-
     @Override
     public ResultVO<QueryProductInfoResqDTO> getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO) {
         QueryProductInfoResqDTO queryProductInfoResqDTO = new QueryProductInfoResqDTO();
@@ -445,16 +407,6 @@ public class ProductServiceImpl implements ProductService {
 
         return ResultVO.error("审核失败");
     }
-//    @Override
-//    @Transactional(rollbackFor = Exception.class)
-//    public ResultVO<ProductOperateResp> auditPass(UpdateProductAuditStateReq updateAuditStateReq)throws BusinessException {
-//        ProductAuditStateUpdateReq req = new ProductAuditStateUpdateReq();
-//        req.setProductBaseId(updateAuditStateReq.getProductBaseId());
-//        req.setAuditState(ProductConst.AuditStateType.AUDIT_PASS.getCode());
-//        req.setUpdateStaff(updateAuditStateReq.getUpdateStaff());
-//        ResultVO<ProductOperateResp> result = updateAuditState(req);
-//        return result;
-//    }
 
     @Override
     public ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req){

@@ -66,8 +66,8 @@ public class MemberGroupServiceTest {
     @Test
     public void queryGroupByMemberForPageTest(){
         MemberGroupQueryGroupReq req = new MemberGroupQueryGroupReq();
-        req.setPageNo(1);
-        req.setPageSize(10);
+        req.setPageNo("1");
+        req.setPageSize("10");
         req.setMemId("150714920000161980");
         ResultVO<Page<GroupQueryResp>> resultVO = memberGroupService.queryGroupByMemberForPage(req);
         log.info("queryGroupByMemberForPageTest result={}",resultVO.getResultData());
@@ -76,8 +76,8 @@ public class MemberGroupServiceTest {
     @Test
     public void queryMemberByGroupForPageTest(){
         MemberGroupQueryMemberReq req = new MemberGroupQueryMemberReq();
-        req.setPageNo(1);
-        req.setPageSize(10);
+        req.setPageNo("1");
+        req.setPageSize("10");
         req.setGroupId("1102849388210343937");
         ResultVO<Page<MemberGroupQueryResp>> resultVO = memberGroupService.queryMemberByGroupForPage(req);
         log.info("queryMemberByGroupForPageTest result={}",resultVO.getResultData().getRecords());

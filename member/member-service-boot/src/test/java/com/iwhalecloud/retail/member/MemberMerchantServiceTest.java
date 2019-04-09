@@ -65,8 +65,8 @@ public class MemberMerchantServiceTest {
     @Test
     public void queryGroupByMemberForPageTest(){
         MemberMerchantQueryForPageReq req = new MemberMerchantQueryForPageReq();
-        req.setPageNo(1);
-        req.setPageSize(10);
+        req.setPageNo("1");
+        req.setPageSize("10");
         req.setMerchId("");
         req.setMemId("");
         req.setLvId(1);

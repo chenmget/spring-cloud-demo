@@ -41,6 +41,13 @@ public class MemberAddressServiceTest {
         req.setMemberId("1212");
         ResultVO resultVO = memberAddressService.listMemberAddress(req);
     }
+
+    @Test
+    public void queryMemberAddressById(){
+        MemberAddressRespDTO dto = memberAddressService.queryAddress("10002251");
+        System.out.print(JSON.toJSONString(dto));
+    }
+
     @Test
     public void deleteMemberAddress(){
         String addrId = "1068743167017533441";

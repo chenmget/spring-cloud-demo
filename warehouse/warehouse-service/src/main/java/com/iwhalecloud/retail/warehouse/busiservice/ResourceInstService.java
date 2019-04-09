@@ -15,11 +15,18 @@ import java.util.Map;
 public interface ResourceInstService {
 
     /**
-     * 添加串码
+     * 添加串码（手动）
      * @param req
      * @return
      */
     public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req);
+
+    /**
+     * 添加串码（交易）
+     * @param req
+     * @return
+     */
+    public ResultVO<ResourceInstAddResp> addResourceInstForTransaction(ResourceInstAddReq req);
 
     /**
      * 手工删除串码
@@ -76,13 +83,6 @@ public interface ResourceInstService {
      * @return
      */
     ResultVO<Boolean> updateInstState(ResourceInstUpdateReq req);
-
-    /**
-     * 厂商删除串码
-     * @param req
-     * @return
-     */
-    public ResultVO<List<String>> delResourceInstForMerchant(ResourceInstUpdateReq req);
 
     /**
      * 根据查询主键集合串码实列

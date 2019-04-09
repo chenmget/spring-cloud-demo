@@ -7,8 +7,6 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
-import com.iwhalecloud.retail.system.common.SystemConst;
-import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceAllocateResp;
@@ -65,7 +63,7 @@ public class SupplierResourceInstB2BController {
     @PostMapping(value="getResourceInstList")
     public ResultVO<Page<ResourceInstListResp>> getResourceInstList(@RequestBody ResourceInstListReq req) {
         if (StringUtils.isEmpty(req.getMktResStoreIds())) {
-            ResultVO.error("仓库为空");
+            return ResultVO.error("仓库为空");
         }
         return supplierResourceInstService.getResourceInstList(req);
     }
@@ -149,7 +147,7 @@ public class SupplierResourceInstB2BController {
     }
 
 
-    @ApiOperation(value = "调拨串码查询", notes = "查询")
+    @ApiOperation(value = "调拨串码查询列表", notes = "查询")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
@@ -199,7 +197,6 @@ public class SupplierResourceInstB2BController {
         return ResultVO.success(resourceAllocateResp);
     }
 
-
     @ApiOperation(value = "导出", notes = "导出串码数据")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
@@ -208,42 +205,18 @@ public class SupplierResourceInstB2BController {
     @PostMapping(value="nbrExport")
     @UserLoginToken
     public void nbrExport(@RequestBody ResourceInstListReq req, HttpServletResponse response) {
-        if (StringUtils.isEmpty(req.getMktResStoreIds())) {
-            ResultVO.error("仓库为空");
-        }
-        ResultVO result = new ResultVO();
-
-        UserDTO userDTO = UserContext.getUser();
-        if (userDTO == null) {
-            return;
-        }
         ResultVO<Page<ResourceInstListResp>> dataVO = supplierResourceInstService.listResourceInst(req);
         if (!dataVO.isSuccess()) {
             return;
         }
         List<ResourceInstListResp> list = dataVO.getResultData().getRecords();
         log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
-
-        List<Integer> supplierList = Lists.newArrayList(
-                SystemConst.USER_FOUNDER_4,
-                SystemConst.USER_FOUNDER_5,
-                SystemConst.USER_FOUNDER_1,
-                SystemConst.USER_FOUNDER_12,
-                SystemConst.USER_FOUNDER_24
-        );
-        Boolean supplierExcel = supplierList.contains(userDTO.getUserFounder());
-        List<ExcelTitleName> excelTitleNames = null;
-        if (supplierExcel) {
-            excelTitleNames = ResourceInstColum.supplierColumn();
-        }else{
-            excelTitleNames = ResourceInstColum.retailerColumn();
-        }
-
+        List<ExcelTitleName> excelTitleNames = ResourceInstColum.supplierColumn();
         try{
             //创建Excel
             Workbook workbook = new HSSFWorkbook();
             String fileName = "串码列表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames);
+            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames, false);
 
             OutputStream output = response.getOutputStream();
             response.reset();
@@ -276,5 +249,4 @@ public class SupplierResourceInstB2BController {
             return supplierResourceInstService.confirmRefuseNbr(req);
         }
     }
-
 }

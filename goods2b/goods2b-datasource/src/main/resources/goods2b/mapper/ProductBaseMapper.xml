@@ -214,6 +214,7 @@
         AND t3.PRODUCT_BASE_ID = t4.PRODUCT_BASE_ID
         AND t1.MERCHANT_TYPE = '3'
         AND t1.MARKET_ENABLE = '1'
+        AND t1.IS_DELETED = 0
         AND t4.PRODUCT_BASE_ID=#{productBaseId}
         GROUP BY
         t1.GOODS_ID,

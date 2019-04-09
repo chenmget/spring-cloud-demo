@@ -108,9 +108,13 @@ public class ExcelToNbrUtils {
 	}
 
 	/**
-	 * data 转化为Excel
+	 *
+	 * @param book
+	 * @param list 导出数据
+	 * @param map  导出数据对应字段
+	 * @param isRetailer 是否零售商 true是；false否
 	 */
-	public static void builderOrderExcel(Workbook book, List list,List<ExcelTitleName> map) {
+	public static void builderOrderExcel(Workbook book, List list,List<ExcelTitleName> map, Boolean isRetailer) {
 		if(CollectionUtils.isEmpty(list)){
 			return;
 		}
@@ -137,7 +141,7 @@ public class ExcelToNbrUtils {
 					//设置内容
 					Object originalValue = jsonArray.getJSONObject(rowi).get(map.get(contentj).getValue());
 					String filedName = (String)map.get(contentj).getValue();
-					String finalValue = transferValue(filedName, String.valueOf(originalValue));
+					String finalValue = transferValue(filedName, String.valueOf(originalValue), isRetailer);
 					cell.setCellValue(finalValue);
 				}
 			}
@@ -146,56 +150,33 @@ public class ExcelToNbrUtils {
 	}
 
 
-	private static String transferValue(String filedName, String value) {
+	private static String transferValue(String filedName, String value, Boolean isRetailer) {
 		final String MKT_RES_INST_TYPE = "mktResInstType";
 		final String STORAGE_TYPE = "storageType";
 		final String STATUS_CD = "statusCd";
 		final String SOURCE_TYPE = "sourceType";
 		final String CREATE_TIME = "createTime";
 		final String CREATE_DATE = "createDate";
+		final String CRM_STATUS = "statusCd";
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
-		if (filedName.equals(MKT_RES_INST_TYPE) && ResourceConst.MKTResInstType.TRANSACTION.getCode().equals(value)) {
-			return ResourceConst.MKTResInstType.TRANSACTION.getName();
-		}else if(filedName.equals(MKT_RES_INST_TYPE) && ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(value)){
-			return ResourceConst.MKTResInstType.NONTRANSACTION.getName();
-		}else if(filedName.equals(MKT_RES_INST_TYPE) && ResourceConst.MKTResInstType.STANDBYMACHINE.getCode().equals(value)){
-			return ResourceConst.MKTResInstType.STANDBYMACHINE.getName();
+		if (filedName.equals(MKT_RES_INST_TYPE)) {
+			return ResourceConst.MKTResInstType.getMKTResInstTypeName(value);
 		}
 
-		if (filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.TRANSACTION_WAREHOUSING.getCode().equals(value)) {
-			return ResourceConst.STORAGETYPE.TRANSACTION_WAREHOUSING.getName();
-		}else if(filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode().equals(value)){
-			return ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getName();
-		}else if(filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.LEADING_INTO_STORAGE.getCode().equals(value)){
-			return ResourceConst.STORAGETYPE.LEADING_INTO_STORAGE.getName();
-		}else if(filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.GREEN_CHANNEL.getCode().equals(value)){
-			return ResourceConst.STORAGETYPE.GREEN_CHANNEL.getName();
-		}else if(filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.MANUAL_ENTRY.getCode().equals(value)){
-			return ResourceConst.STORAGETYPE.MANUAL_ENTRY.getName();
+		if (filedName.equals(STORAGE_TYPE)) {
+			return ResourceConst.STORAGETYPE.getStorageTypeName(value);
 		}
 
-		if (filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.AUDITING.getCode().equals(value)) {
-			return ResourceConst.STATUSCD.AUDITING.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.AVAILABLE.getCode().equals(value)){
-			return ResourceConst.STATUSCD.AVAILABLE.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.ALLOCATIONING.getCode().equals(value)){
-			return ResourceConst.STATUSCD.ALLOCATIONING.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.RESTORAGEING.getCode().equals(value)){
-			return ResourceConst.STATUSCD.RESTORAGEING.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.RESTORAGED.getCode().equals(value)){
-			return ResourceConst.STATUSCD.RESTORAGED.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.SALED.getCode().equals(value)){
-			return ResourceConst.STATUSCD.SALED.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.DELETED.getCode().equals(value)){
-			return ResourceConst.STATUSCD.DELETED.getName();
+		if (filedName.equals(STATUS_CD)) {
+			log.info("STATUS_CD={}", value);
+			if (isRetailer) {
+				return ResourceConst.CRM_STATUS.getCrmStatusName(value);
+			}
+			return ResourceConst.STATUSCD.getName(value);
 		}
 
-		if (filedName.equals(SOURCE_TYPE) && ResourceConst.SOURCE_TYPE.MERCHANT.getCode().equals(value)) {
-			return ResourceConst.SOURCE_TYPE.MERCHANT.getName();
-		}else if(filedName.equals(SOURCE_TYPE) && ResourceConst.SOURCE_TYPE.SUPPLIER.getCode().equals(value)){
-			return ResourceConst.SOURCE_TYPE.SUPPLIER.getName();
-		}else if(filedName.equals(SOURCE_TYPE) && ResourceConst.SOURCE_TYPE.RETAILER.getCode().equals(value)){
-			return ResourceConst.SOURCE_TYPE.RETAILER.getName();
+		if (filedName.equals(SOURCE_TYPE)) {
+			return ResourceConst.SOURCE_TYPE.getName(value);
 		}
 
 		if (filedName.equals(CREATE_TIME) || filedName.equals(CREATE_DATE)) {

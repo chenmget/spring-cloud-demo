@@ -175,7 +175,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             return;
         }
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
+        resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynUpdateTrackForMerchant resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         int count = 0;
@@ -208,8 +208,8 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-        req.setMktResInstNbrs(distinctList);
-        req.setStatusCd("");
+        resourceInstsGetReq.setMktResInstNbrs(distinctList);
+        resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynSaveTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         int count = 0;
@@ -240,7 +240,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
+        resourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
@@ -273,7 +273,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
+        resourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
@@ -307,7 +307,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
@@ -371,6 +370,10 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (!resp.isSuccess()) {
             return;
         }
+        StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
+        storePageReq.setMerchantId(req.getSellerMerchantId());
+        storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        String storeId = resouceStoreService.getStoreId(storePageReq);
         List<String> distinctList = Lists.newArrayList();
         List<DeliveryResourceInstItem> deliveryResourceInstItemList = req.getDeliveryResourceInstItemList();
         for (DeliveryResourceInstItem deliveryResourceInstItem : deliveryResourceInstItemList) {
@@ -381,7 +384,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-        resourceInstsGetReq.setStatusCd("");
+        resourceInstsGetReq.setMktResStoreId(storeId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynShipTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         int count = 0;
@@ -427,7 +430,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-
         // 是否省内直供：在零售商收货确认时更新，是省包商交易到零售商的情况下
         String ifDirectSuppLy = ResourceConst.CONSTANT_NO;
         // 是否地包供货：地包商交易给零售商时填是
@@ -448,7 +450,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
                 }
             }
         }
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(storeId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
@@ -496,7 +497,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(storeId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         int count = 0;
@@ -539,7 +539,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-        resourceInstsGetReq.setStatusCd("");
         resourceInstsGetReq.setMktResStoreId(storeId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynBackAcceptTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
@@ -611,7 +610,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
@@ -646,7 +644,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResInstNbrs(distinctList);
-        resourceInstsGetReq.setStatusCd("");
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }

@@ -113,7 +113,7 @@
     </select>
 
     <update id="updateResourceInst"  parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq">
-        update mkt_res_inst t set t.status_cd = #{statusCd},t.update_date = #{updateDate}
+        update mkt_res_inst t set t.status_cd = #{statusCd},t.status_date = #{statusDate},t.update_date = #{updateDate}
         where t.MKT_RES_STORE_ID = #{mktResStoreId}
         and mkt_res_inst_nbr in
         <if test="null!=mktResInstNbrs and mktResInstNbrs.size>0">
@@ -123,9 +123,9 @@
         </if>
     </update>
 
-    <update id="updateResourceInstByIds"  parameterType="com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq">
+    <update id="updateResourceInstByIds" parameterType="com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq">
         update MKT_RES_INST t
-        set t.STATUS_CD = #{statusCd},t.UPDATE_DATE = #{updateDate},t.UPDATE_STAFF = #{updateStaff}
+        set t.STATUS_CD = #{statusCd},t.UPDATE_DATE = #{updateDate},t.STATUS_DATE = #{statusDate},t.UPDATE_STAFF = #{updateStaff}
         where MKT_RES_INST_ID in
             <if test="null!=mktResInstIds and mktResInstIds.size>0">
                 <foreach collection="mktResInstIds" index="index" item="item" open="(" separator="," close=")">
@@ -244,11 +244,14 @@
                 #{item}
             </foreach>
         </if>
-        and t.mkt_res_store_id = #{mktResStoreId}
+        <if test="null!=mktResStoreId and ''!=mktResStoreId">
+            and t.mkt_res_store_id = #{mktResStoreId}
+        </if>
+
     </select>
 
     <update id="batchUpdateInstState" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq">
-        update mkt_res_inst t set t.STATUS_CD =#{req.statusCd}
+        update mkt_res_inst t set t.STATUS_CD =#{req.statusCd}, t.UPDATE_DATE = #{req.updateDate}, t.STATUS_DATE = #{req.statusDate}
         where 1 = 1
         and t.MKT_RES_STORE_ID =#{req.mktResStoreId}
         and t.MKT_RES_INST_NBR in

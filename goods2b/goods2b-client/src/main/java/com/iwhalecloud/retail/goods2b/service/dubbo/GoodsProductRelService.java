@@ -61,4 +61,7 @@ public interface GoodsProductRelService{
      * @return 商品ID列表
      */
     ResultVO<GoodsQueryByProductIdsResp> queryGoodsIdsByProductIds(GoodsQueryByProductIdsReq req);
+
+    ResultVO<List<GoodsProductRelDTO>> listGoodsProductRel(String goodsId);
+
 }

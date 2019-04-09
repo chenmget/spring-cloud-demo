@@ -131,6 +131,10 @@ public class ProductBaseManager {
             hasParam = true;
             queryWrapper.eq("PRODUCT_BASE_ID", req.getProductBaseId());
         }
+        if(StringUtils.isNotBlank(req.getProductId())){
+            hasParam = true;
+            queryWrapper.eq("PRODUCT_ID", req.getProductId());
+        }
         if(StringUtils.isNotBlank(req.getTypeId())){
             hasParam = true;
             queryWrapper.eq("TYPE_ID", req.getTypeId());

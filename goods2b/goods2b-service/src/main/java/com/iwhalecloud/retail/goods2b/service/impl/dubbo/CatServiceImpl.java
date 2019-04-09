@@ -109,13 +109,16 @@ public class CatServiceImpl implements CatService {
         if (StringUtils.isEmpty(catId)) {
             return ResultVO.error("新增类别失败");
         }
-        int num = prodFileManager.addGoodsImage(catId, FileConst.SubType.CAT_SUB, req.getCatImgPath());
-        log.info("CatServiceImpl addProdCatByZT addGoodsImage num={}", num);
+        if(!StringUtils.isEmpty(req.getCatImgPath())){
+            int num = prodFileManager.addGoodsImage(catId, FileConst.SubType.CAT_SUB, req.getCatImgPath());
+            log.info("CatServiceImpl addProdCatByZT addGoodsImage num={}", num);
+            if (num < 1) {
+                return ResultVO.error("新增类别图片失败");
+            }
+        }
+
         //批量新增关联商品和品牌
         batchAddCatComplex("add",catId, req.getBrandIds(), req.getGoodsIds());
-        if (num < 1) {
-            return ResultVO.error("新增类别图片失败");
-        }
         return ResultVO.success(catId);
     }
 

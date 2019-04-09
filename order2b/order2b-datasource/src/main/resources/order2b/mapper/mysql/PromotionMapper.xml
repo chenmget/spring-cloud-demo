@@ -34,5 +34,11 @@
         <if test="lanId !=null and lanId !=''">
             and lan_id=#{lanId}
         </if>
+        <if test="lanIdList !=null and lanIdList.size()>0">
+            and lan_id IN
+            <foreach collection="lanIdList" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
 </mapper>

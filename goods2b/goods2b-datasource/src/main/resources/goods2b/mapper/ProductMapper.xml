@@ -110,7 +110,7 @@
         <if test="null!=pageReq.typeId and ''!=pageReq.typeId">
           and t.TYPE_ID = #{pageReq.typeId}
         </if>
-        <if test="null!=pageReq.statusList">
+        <if test="null!=pageReq.statusList and pageReq.statusList.size > 0">
           and p.STATUS in
           <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.statusList">
             #{item}
@@ -128,19 +128,19 @@
         <if test="null!=pageReq.manufacturerId and ''!=pageReq.manufacturerId">
           and p.MANUFACTURER_ID = #{pageReq.manufacturerId}
         </if>
-        <if test="null!=pageReq.productIdList">
+        <if test="null!=pageReq.productIdList and pageReq.productIdList.size > 0">
           and p.PRODUCT_ID in
           <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productIdList">
             #{item}
           </foreach>
         </if>
-        <if test="null!=pageReq.productBaseIdList">
+        <if test="null!=pageReq.productBaseIdList and pageReq.productBaseIdList.size > 0">
           and b.PRODUCT_BASE_ID in
           <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productBaseIdList">
             #{item}
           </foreach>
         </if>
-        <if test="null!=pageReq.brandIdList">
+        <if test="null!=pageReq.brandIdList and pageReq.brandIdList.size > 0">
           and pb.BRAND_ID in
           <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.brandIdList">
             #{item}
@@ -169,7 +169,7 @@
     from prod_product t
     left join prod_product_base ppb on ppb.product_base_id = t.product_base_id
     where 1 = 1 and t.IS_DELETED = '0' and ppb.IS_DELETED = '0'
-    <if test="null!=req.productIdList">
+    <if test="null!=req.productIdList and req.productIdList.size>0" >
       and t.product_id in
       <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">
         #{item}

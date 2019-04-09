@@ -123,33 +123,33 @@ public class BusinessEntityManager{
      * @param req
      * @return
      */
-    public Page<BusinessEntity> pageBusinessEntity(BusinessEntityPageReq req) {
+    public Page<BusinessEntityDTO> pageBusinessEntity(BusinessEntityPageReq req) {
         // 条件过滤
-        QueryWrapper<BusinessEntity> queryWrapper = new QueryWrapper<>();
+//        QueryWrapper<BusinessEntity> queryWrapper = new QueryWrapper<>();
+//
+//        if(!StringUtils.isEmpty(req.getStatus())) {
+//            queryWrapper.eq(BusinessEntity.FieldNames.status.getTableFieldName(), req.getStatus());
+//        }
+//        if(!StringUtils.isEmpty(req.getLanId())) {
+//            queryWrapper.eq(BusinessEntity.FieldNames.lanId.getTableFieldName(), req.getLanId());
+//        }
+//        if(!StringUtils.isEmpty(req.getRegionId())) {
+//            queryWrapper.eq(BusinessEntity.FieldNames.regionId.getTableFieldName(), req.getRegionId());
+//        }
+//        if(!StringUtils.isEmpty(req.getBusinessEntityCode())){
+//            queryWrapper.like(BusinessEntity.FieldNames.businessEntityCode.getTableFieldName(), req.getBusinessEntityCode());
+//        }
+//        if(!StringUtils.isEmpty(req.getBusinessEntityName())){
+//            queryWrapper.like(BusinessEntity.FieldNames.businessEntityName.getTableFieldName(), req.getBusinessEntityName());
+//        }
+//
+//        Page<BusinessEntity> resultPage =  new Page<BusinessEntity>(req.getPageNo(), req.getPageSize());
+//        resultPage =  (Page)businessEntityMapper.selectPage(resultPage, queryWrapper);
+//        return resultPage;
 
-        if(!StringUtils.isEmpty(req.getStatus())) {
-            queryWrapper.eq(BusinessEntity.FieldNames.status.getTableFieldName(), req.getStatus());
-        }
-        if(!StringUtils.isEmpty(req.getLanId())) {
-            queryWrapper.eq(BusinessEntity.FieldNames.lanId.getTableFieldName(), req.getLanId());
-        }
-        if(!StringUtils.isEmpty(req.getRegionId())) {
-            queryWrapper.eq(BusinessEntity.FieldNames.regionId.getTableFieldName(), req.getRegionId());
-        }
-        if(!StringUtils.isEmpty(req.getBusinessEntityCode())){
-            queryWrapper.like(BusinessEntity.FieldNames.businessEntityCode.getTableFieldName(), req.getBusinessEntityCode());
-        }
-        if(!StringUtils.isEmpty(req.getBusinessEntityName())){
-            queryWrapper.like(BusinessEntity.FieldNames.businessEntityName.getTableFieldName(), req.getBusinessEntityName());
-        }
-
-        Page<BusinessEntity> resultPage =  new Page<BusinessEntity>(req.getPageNo(), req.getPageSize());
-        resultPage =  (Page)businessEntityMapper.selectPage(resultPage, queryWrapper);
-        return resultPage;
-
-//        Page<BusinessEntityDTO> page = new Page<>(req.getPageNo(), req.getPageSize());
-//        Page<BusinessEntityDTO> businessEntityDTOPage = businessEntityMapper.pageBusinessEntity(page, req);
-//        return businessEntityDTOPage;
+        Page<BusinessEntityDTO> page = new Page<>(req.getPageNo(), req.getPageSize());
+        Page<BusinessEntityDTO> businessEntityDTOPage = businessEntityMapper.pageBusinessEntity(page, req);
+        return businessEntityDTOPage;
     }
 
     /**

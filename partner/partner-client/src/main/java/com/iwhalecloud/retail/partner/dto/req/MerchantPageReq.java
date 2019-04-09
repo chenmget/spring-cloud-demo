@@ -21,6 +21,12 @@ public class MerchantPageReq extends PageVO {
     @ApiModelProperty(value = "商家对应系统状态:   1有效、 0 禁用   2：失效(删除)  3:锁住（密码错误次数超限 等等）")
     private Integer userStatus;
 
+    // par_invoice表字段
+    @ApiModelProperty(value = "营业执照到期日期 开始时间 （跟结束时间一起 查 营业执照到期日期 在这个区间的")
+    private Date startExpireDate;
+
+    @ApiModelProperty(value = "营业执照到期日期 结束时间")
+    private Date endExpireDate;
 
     // prod_merchant_tag_rel表字段
     @ApiModelProperty(value = "标签ID")

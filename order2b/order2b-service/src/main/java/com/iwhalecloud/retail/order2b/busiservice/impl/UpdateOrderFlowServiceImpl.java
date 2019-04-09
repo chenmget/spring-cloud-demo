@@ -20,7 +20,6 @@ import com.iwhalecloud.retail.order2b.manager.AfterSaleManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.manager.OrderZFlowManager;
 import com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,13 +50,13 @@ public class UpdateOrderFlowServiceImpl implements UpdateOrderFlowService {
 
         CommonResultResp resp=new CommonResultResp();
         if(StringUtils.isEmpty(order.getStatus())){
-            Order ordera = orderManager.getOrderById(request.getOrderId());
-            if (ordera == null) {
+            Order orderById = orderManager.getOrderById(request.getOrderId());
+            if (orderById == null) {
                 resp.setResultMsg("未查询到订单");
                 resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
                 return resp;
             }
-            BeanUtils.copyProperties(ordera,order);
+            BeanUtils.copyProperties(orderById,order);
         }
 
         if(OrderAllStatus.ORDER_STATUS_10_.getCode().equals(order.getStatus())){
@@ -80,13 +79,13 @@ public class UpdateOrderFlowServiceImpl implements UpdateOrderFlowService {
     public CommonResultResp checkFlowTypeApply(UpdateApplyStatusRequest request, OrderApply apply) {
         CommonResultResp resp=new CommonResultResp();
         if(StringUtils.isEmpty(apply.getApplyState())){
-           OrderApply applyById=afterSaleManager.selectOrderApplyById(request.getOrderApplyId());
-            if (applyById == null) {
+            OrderApply orderApply=afterSaleManager.selectOrderApplyById(request.getOrderApplyId());
+            if (orderApply == null) {
                 resp.setResultMsg("未找到申请单");
                 resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
                 return resp;
             }
-            BeanUtils.copyProperties(applyById,apply);
+            BeanUtils.copyProperties(orderApply,apply);
         }
 
         if(OrderAllStatus.ORDER_STATUS_10_.getCode().equals(apply.getApplyState())){

@@ -253,7 +253,7 @@ public class CloudShelfServiceImpl implements CloudShelfService {
                 List<DefaultCategoryDTO> defaultCategorys = cloudShelfRequestDTO.getShelfCategory();
                 if(defaultCategorys!=null){
                     for (int i = 0; i < defaultCategorys.size(); i++) {
-                        if(defaultCategorys.get(i).getAction().equals("add")){
+                        if("add".equals(defaultCategorys.get(i).getAction())){
                             CloudShelfDetailDTO cloudShelfDetail = new CloudShelfDetailDTO();
                             String shelfCategoryId  = String.valueOf(defaultCategorys.get(i).getId());
                             List<DefaultOperatingDTO> defaultOperations = defaultOperatingManager.qryDefaultOperation(shelfCategoryId);
@@ -283,7 +283,7 @@ public class CloudShelfServiceImpl implements CloudShelfService {
                                 OperatingPositionBindDTO operatingPositionBindDTO = operationPositionManager.createOperatingPositionBindDTO(cloudShelfDetail.getOperatingPositionId(), contentBaseDTO.getContentId().toString(), "",objIdStr,cloudShelfDTO.getAdscriptionShopId());
                             }
                         }
-                        if(defaultCategorys.get(i).getAction().equals("delete")){
+                        if("delete".equals(defaultCategorys.get(i).getAction())){
                             ShelfDetailDTO shelfDetailDTO = new ShelfDetailDTO();
                             shelfDetailDTO.setCloudShelfNumber(num);
                             shelfDetailDTO.setShelfCategoryId(String.valueOf(defaultCategorys.get(i).getId()));
@@ -381,7 +381,7 @@ public class CloudShelfServiceImpl implements CloudShelfService {
                     if(String.valueOf(OmsConst.ContentObjType.GOODS.getCode()).equals(String.valueOf(contentVideosDTOS.get(i).getObjtype()))){
 //                        objIdStr += contentVideosDTOS.get(i).getObjid()+",";
                         objIdStrSet.add(contentVideosDTOS.get(i).getObjid());
-                        if(String.valueOf(contentVideosDTOS.get(i).getHavelv2mat()).equals("1")){
+                        if("1".equals(String.valueOf(contentVideosDTOS.get(i).getHavelv2mat()))){
                             upmatids.add(contentVideosDTOS.get(i).getMatid());
                         }
                     }

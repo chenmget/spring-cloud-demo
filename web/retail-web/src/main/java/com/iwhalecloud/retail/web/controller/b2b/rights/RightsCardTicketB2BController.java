@@ -167,7 +167,7 @@ public class RightsCardTicketB2BController {
             //创建Excel
             Workbook workbook = new HSSFWorkbook();
             String fileName = "优惠券列表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, resultData, CouponExportUtil.getCoupon());
+            ExcelToNbrUtils.builderOrderExcel(workbook, resultData, CouponExportUtil.getCoupon(), false);
 
             output = response.getOutputStream();
             response.reset();
@@ -177,7 +177,7 @@ public class RightsCardTicketB2BController {
             workbook.write(output);
 
         } catch (Exception e) {
-            log.error("串码导出失败", e);
+            log.error("优惠券列表导出失败", e);
         } finally {
             try {
                 if (null != output) {

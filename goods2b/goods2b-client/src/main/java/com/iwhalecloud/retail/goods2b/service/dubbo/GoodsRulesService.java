@@ -2,13 +2,10 @@ package com.iwhalecloud.retail.goods2b.service.dubbo;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsRulePurchaseDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsRulesOperateDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleByExcelFileReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsRulesExcelResp;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 
 import java.util.List;
 
@@ -16,9 +13,9 @@ public interface GoodsRulesService {
 
     ResultVO<GoodsRulesExcelResp> addProdGoodsRuleByExcelFile(ProdGoodsRuleByExcelFileReq prodGoodsRuleByExcelFileReq) throws Exception;
 
-    ResultVO<GoodsRulesExcelResp> addProdGoodsRuleBatch(ProdGoodsRuleEditReq prodGoodsRuleEditReq)throws ProductException;
+    ResultVO<GoodsRulesExcelResp> addProdGoodsRuleBatch(ProdGoodsRuleEditReq prodGoodsRuleEditReq);
 
-    ResultVO addProdGoodsRule(GoodsRulesDTO entity)throws ProductException;
+    ResultVO addProdGoodsRule(GoodsRulesDTO entity);
 
     ResultVO deleteProdGoodsRuleBatch(ProdGoodsRuleEditReq prodGoodsRuleEditReq);
 
@@ -26,9 +23,9 @@ public interface GoodsRulesService {
 
     ResultVO deleteProdGoodsRuleByCondition(GoodsRulesDTO condition);
 
-    ResultVO updateProdGoodsRuleByCondition(GoodsRulesDTO condition)throws ProductException;
+    ResultVO updateProdGoodsRuleByCondition(GoodsRulesDTO condition);
 
-    ResultVO updateProdGoodsRuleById(GoodsRulesDTO dto) throws ProductException;
+    ResultVO updateProdGoodsRuleById(GoodsRulesDTO dto);
 
     ResultVO<GoodsRulesDTO> queryProdGoodsRuleById(ProdGoodsRuleEditReq prodGoodsRuleEditReq);
 

@@ -6,9 +6,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
+import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.consts.OrderManagerConsts;
-import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
+import com.iwhalecloud.retail.order2b.dto.base.OrderRequest;
 import com.iwhalecloud.retail.order2b.dto.model.order.*;
 import com.iwhalecloud.retail.order2b.dto.response.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.AdvanceOrderReq;
@@ -162,6 +163,16 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
 //            }
         }
         req.setStatusAll(statusList);
+
+        /**
+         * 多个lanId查询
+         */
+        OrderRequest bContext=Order2bContext.getDubboRequest();
+        if(!StringUtils.isEmpty(bContext.getLanId()) && bContext.getLanId().contains(",")){
+            req.setLanIdList(Arrays.asList(bContext.getLanId().split(",")));
+            bContext.setLanId(null);
+        }
+
         IPage list = selectOrderService.selectOrderListByOrder(req);
         respResultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         List<OrderSelectResp> orderSelectResp = JSON.parseArray(JSON.toJSONString(list.getRecords()), OrderSelectResp.class);
@@ -399,6 +410,16 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         req.setStatusAll(statusList);
         // 订单类型为预售
         req.setOrderCat(OrderManagerConsts.ORDER_CAT_1);
+
+        /**
+         * 多个lanId查询
+         */
+        OrderRequest bContext=Order2bContext.getDubboRequest();
+        if(!StringUtils.isEmpty(bContext.getLanId()) && bContext.getLanId().contains(",")){
+            req.setLanIdList(Arrays.asList(bContext.getLanId().split(",")));
+            bContext.setLanId(null);
+        }
+
         IPage list = selectOrderService.queryadvanceOrderList(req);
         respResultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         List<AdvanceOrderResp> advanceOrderResp = JSON.parseArray(JSON.toJSONString(list.getRecords()), AdvanceOrderResp.class);

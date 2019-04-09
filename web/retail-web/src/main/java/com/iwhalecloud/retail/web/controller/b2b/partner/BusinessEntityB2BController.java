@@ -139,10 +139,6 @@ public class BusinessEntityB2BController {
     @UserLoginToken
     public ResultVO pageBusinessEntityByRight(@RequestBody @ApiParam(value = "经营主体信息分页入参", required = true) BusinessEntityPageByRightsReq req){
 
-        if (!UserContext.isUserLogin()) {
-            // 没有登陆，直接返回不能查到数据
-            return ResultVO.success(new Page<BusinessEntityDTO>());
-        }
         Boolean isAdminType = UserContext.isAdminType();
         MerchantRulesCommonReq commonReq = new MerchantRulesCommonReq();
         commonReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());

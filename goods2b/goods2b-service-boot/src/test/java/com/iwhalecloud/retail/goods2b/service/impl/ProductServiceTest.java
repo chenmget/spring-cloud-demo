@@ -10,7 +10,6 @@ import com.iwhalecloud.retail.goods2b.dto.req.ProductTagsAddReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -52,7 +51,7 @@ public class ProductServiceTest {
     }
 
     @Test
-    public void addProduct() throws ProductException {
+    public void addProduct(){
         ProductAddReq req = new ProductAddReq();
 //        req.setSn("1000");
         req.setUnitName("锤子火爆款 坚果T1 灰色 16G");

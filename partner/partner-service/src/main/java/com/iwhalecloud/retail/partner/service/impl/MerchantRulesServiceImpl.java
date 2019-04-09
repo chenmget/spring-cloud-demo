@@ -78,7 +78,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     @Autowired
     private MerchantManager merchantManager;
 
-
     /**
      * 添加一个 商家 权限规则
      *
@@ -356,6 +355,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 merchantListReq.setLanId(req.getLanId());
                 merchantListReq.setCity(req.getCity());
                 merchantListReq.setTagId(req.getTagId());
+                merchantListReq.setLoginName(req.getLoginName());
                 merchantListReq.setMerchantIdList(targetIdList);
                 detailList = merchantService.listMerchant(merchantListReq).getResultData();
                 fieldName = "merchantId";
@@ -423,6 +423,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 merchantListReq.setLanId(req.getLanId());
                 merchantListReq.setCity(req.getCity());
                 merchantListReq.setTagId(req.getTagId());
+                merchantListReq.setLoginName(req.getLoginName());
                 merchantListReq.setMerchantIdList(targetIdList);
                 detailList = merchantService.listMerchant(merchantListReq).getResultData();
                 fieldName = "merchantId";

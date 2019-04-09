@@ -1,11 +1,11 @@
 package com.iwhalecloud.retail.web.controller.b2b.warehouse;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
-import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.PageProductReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
@@ -15,22 +15,28 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
+import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstUpdateReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ResourceInstColum;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 /**
@@ -57,7 +63,7 @@ public class MerchantResourceInstB2BController {
     @UserLoginToken
     public ResultVO<Page<ResourceInstListResp>> getResourceInstList(@RequestBody ResourceInstListReq req) {
         if (StringUtils.isEmpty(req.getMktResStoreIds())) {
-            ResultVO.error("仓库为空");
+            return ResultVO.error("仓库为空");
         }
         return resourceInstService.getResourceInstList(req);
     }
@@ -72,7 +78,6 @@ public class MerchantResourceInstB2BController {
     public ResultVO delResourceInst(@RequestBody ResourceInstUpdateReqDTO dto) {
 
         String userId = UserContext.getUserId();
-        Integer userFounder = UserContext.getUser().getUserFounder();
         ResourceInstUpdateReq req = new ResourceInstUpdateReq();
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
@@ -86,9 +91,6 @@ public class MerchantResourceInstB2BController {
                 ResourceConst.STATUSCD.RESTORAGED.getCode(),
                 ResourceConst.STATUSCD.SALED.getCode()));
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
-        if(SystemConst.USER_FOUNDER_8 == userFounder){
-            return resourceInstService.delResourceInstForMerchant(req);
-        }
         return resourceInstService.delResourceInst(req);
     }
 
@@ -163,4 +165,38 @@ public class MerchantResourceInstB2BController {
         }
         return resultVO;
     }
+
+    @ApiOperation(value = "导出", notes = "导出串码数据")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="nbrExport")
+    @UserLoginToken
+    public void nbrExport(@RequestBody ResourceInstListReq req, HttpServletResponse response) {
+        ResultVO<Page<ResourceInstListResp>> dataVO = resourceInstService.getResourceInstList(req);
+        if (!dataVO.isSuccess()) {
+            return;
+        }
+        List<ResourceInstListResp> list = dataVO.getResultData().getRecords();
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
+        List<ExcelTitleName> excelTitleNames = ResourceInstColum.merchantColumn();
+        try{
+            //创建Excel
+            Workbook workbook = new HSSFWorkbook();
+            String fileName = "串码列表";
+            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames, false);
+
+            OutputStream output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+            response.setContentType("application/msexcel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            workbook.write(output);
+            output.close();
+        }catch (Exception e){
+            log.error("串码导出失败",e);
+        }
+    }
+
 }

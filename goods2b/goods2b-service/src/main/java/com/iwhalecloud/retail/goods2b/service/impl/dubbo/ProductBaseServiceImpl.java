@@ -6,12 +6,12 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.ProductBase;
-import com.iwhalecloud.retail.goods2b.exception.ProductException;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
@@ -90,7 +90,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     @Override
-    public ResultVO<String> addProductBase(ProductBaseAddReq req)throws ProductException {
+    public ResultVO<String> addProductBase(ProductBaseAddReq req){
         log.info("ProductBaseServiceImpl.addProductBase,req={}", JSON.toJSONString(req));
         List<String> errorList = new ArrayList<String>();
         ProductBase t = new ProductBase();
@@ -151,11 +151,10 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             startProductFlowReq.setProductBaseId(productBaseId);
             startProductFlowReq.setDealer(t.getCreateStaff());
             startProductFlowReq.setProductName(req.getProductName());
+            startProductFlowReq.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
             ResultVO flowResltVO = productFlowService.startProductFlow(startProductFlowReq);
             if(!flowResltVO.isSuccess()){
-
-                errorList.add(flowResltVO.getResultMsg());
-                throw new ProductException(errorList);
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());
             }
         }
 
@@ -164,15 +163,16 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public ResultVO<Integer> updateProductBase(ProductBaseUpdateReq req)throws ProductException {
+    public ResultVO<Integer> updateProductBase(ProductBaseUpdateReq req) {
         log.info("ProductBaseServiceImpl.updateProductBase,req={}", JSON.toJSONString(req));
+
+        final long startTime = System.currentTimeMillis();
         ProductBaseGetByIdReq req1 = new ProductBaseGetByIdReq();
         req1.setProductBaseId(req.getProductBaseId());
         ResultVO<ProductBaseGetResp> product = this.getProductBase(req1);
         List<String> errorList = new ArrayList<String>();
         if (product==null||product.getResultData() == null) {
-            errorList.add("产品不存在");
-            throw new ProductException(errorList);
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "产品不存在");
         }
 
         List<String> tagList = req.getTagList();
@@ -212,26 +212,19 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         ResultVO<Page<ProductDTO>> productListResult =  productService.selectProduct(productGetReq);
 
         if(productListResult==null||!productListResult.isSuccess()||productListResult.getResultData()==null){
-            errorList.add("原产品为空无法获取审核状态");
-            throw new ProductException(errorList);
-
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "原产品为空无法获取审核状态");
         }
+
         Page<ProductDTO> page = productListResult.getResultData();
         if(page==null||page.getRecords()==null||page.getRecords().isEmpty()){
-
-            errorList.add("原产品为空无法获取审核状态");
-            throw new ProductException(errorList);
-
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "原产品为空无法获取审核状态");
         }
         oldAuditState = page.getRecords().get(0).getAuditState();
         if(StringUtils.isEmpty(oldAuditState)){
             oldAuditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();
         }
 
-
         String newState = "";
-
-
         for (ProductUpdateReq productUpdateReq : productUpdateReqs) {
             String productId = productUpdateReq.getProductId();
             String isDeleted = productUpdateReq.getIsDeleted();
@@ -285,30 +278,27 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                      startProductFlowReq.setDealer(req.getUpdateStaff());
                      ResultVO flowResltVO =productFlowService.reStartProductFlow(startProductFlowReq);
                      if(!flowResltVO.isSuccess()){
-
-                         errorList.add(flowResltVO.getResultMsg());
-                         throw new ProductException(errorList);
+                         throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());
                      }
                  }else if(ProductConst.AuditStateType.UN_SUBMIT.getCode().equals(oldAuditState)
                          || ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
                      //原审核状态为待提交，且新状态为非待提交
+                     String processId =ProductConst.APP_PRODUCT_FLOW_PROCESS_ID;
+                     if(ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
+                         processId =ProductConst.UPDATE_PRODUCT_FLOW_PROCESS_ID;
+                     }
                      StartProductFlowReq startProductFlowReq = new StartProductFlowReq();
                      startProductFlowReq.setProductBaseId(req.getProductBaseId());
                      startProductFlowReq.setDealer(req.getUpdateStaff());
                      startProductFlowReq.setProductName(product.getResultData().getProductName());
+                     startProductFlowReq.setProcessId(processId);
                      ResultVO flowResltVO =productFlowService.startProductFlow(startProductFlowReq);
                      if(!flowResltVO.isSuccess()){
-                         errorList.add(flowResltVO.getResultMsg());
-                         throw new ProductException(errorList);
-
+                         throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());
                      }
                  }
-
-
              }
-
         }
-
         return  ResultVO.success(index);
     }
 

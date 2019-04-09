@@ -115,9 +115,9 @@ public class TaskServiceImplTest {
     @Test
     public void nextRouteAndReceiveTask() {
         NextRouteAndReceiveTaskReq req = new NextRouteAndReceiveTaskReq();
-        req.setFormId("11003880785593794566");
-        req.setHandlerUserId("1");
-        req.setHandlerUserName("管理员");
+        req.setFormId("1106188514131267585");
+        req.setHandlerUserId("1079205153170591745");
+        req.setHandlerUserName("汤烛@东港农村信息化服务站");
         req.setHandlerMsg("测试");
         ResultVO<RouteNextReq> reqResultVO = taskService.nextRouteAndReceiveTask(req);
         System.out.println(reqResultVO.isSuccess());

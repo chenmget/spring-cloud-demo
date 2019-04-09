@@ -85,14 +85,14 @@ public class BusinessEntityServiceImpl implements BusinessEntityService {
     @Override
     public ResultVO<Page<BusinessEntityDTO>> pageBusinessEntity(BusinessEntityPageReq pageReq) {
         log.info("BusinessEntityServiceImpl.pageBusinessEntity(), 入参BusinessEntityPageReq={} ", pageReq);
-//        Page<BusinessEntityDTO> page = businessEntityManager.pageBusinessEntity(pageReq);
+        Page<BusinessEntityDTO> page = businessEntityManager.pageBusinessEntity(pageReq);
 
-        Page<BusinessEntity> businessEntityPage = businessEntityManager.pageBusinessEntity(pageReq);
+//        Page<BusinessEntity> businessEntityPage = businessEntityManager.pageBusinessEntity(pageReq);
         // 转换成 对应的 dto
         Page<BusinessEntityDTO> targetPage = new Page<>();
-        BeanUtils.copyProperties(businessEntityPage, targetPage);
+        BeanUtils.copyProperties(page, targetPage);
         List<BusinessEntityDTO> targetList = Lists.newArrayList();
-        for (BusinessEntity businessEntity : businessEntityPage.getRecords()){
+        for (BusinessEntityDTO businessEntity : page.getRecords()){
             BusinessEntityDTO targetDTO = new BusinessEntityDTO();
             BeanUtils.copyProperties(businessEntity, targetDTO);
 

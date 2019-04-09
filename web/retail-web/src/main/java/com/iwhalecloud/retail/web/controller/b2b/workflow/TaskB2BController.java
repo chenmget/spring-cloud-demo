@@ -124,7 +124,13 @@ public class TaskB2BController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/receiveTask")
+    @UserLoginToken
     public ResultVO receiveTask(@RequestBody FlowTaskClaimReq req){
+
+        req.setUserId(UserContext.getUserId());
+        if (UserContext.getUser() != null) {
+            req.setUserName(UserContext.getUser().getUserName());
+        }
         log.info("TaskB2BController receiveTask req={} ", JSON.toJSON(req));
         return taskService.receiveTask(req);
     }

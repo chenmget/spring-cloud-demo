@@ -38,6 +38,6 @@ public class NoticeAuditNotPassServiceImpl implements NoticeAuditNotPassService 
         //审核不通过
         req.setStatus(SystemConst.NoticeStatusEnum.AUDIT_FAILED.getCode());
 
-        return noticeService.updateNotice(req);
+        return noticeService.updateNoticeStatus(req);
     }
 }

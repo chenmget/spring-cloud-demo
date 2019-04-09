@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.report.mapper.ReportDataInfoMapper">
@@ -80,3 +81,85 @@
 
   </select>
 </mapper>
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.report.mapper.ReportDataInfoMapper">
+  
+    <select id="getStorePurchaserReport" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"
+            resultType="com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq">
+		select * from (
+  SELECT g.*,g.StockNum/g.AverageDailySales StockTurnover FROM (
+	SELECT PRODUCT_BASE_NAME ProductBaseName,  
+		BRAND_NAME BrandName,	
+		SUM(PURCHASE_NUM)+SUM(MANUAL_NUM)+SUM(TRANS_IN_NUM) TheTotalInventory,	
+		SUM(TRANS_OUT_NUM)+SUM(RETURN_NUM)+SUM(CONTRACT_NUM)+SUM(REGISTER_NUM) TheTotalOutbound,		
+		SUM(PURCHASE_NUM) PurchaseNum,
+		SUM(MANUAL_NUM) ManualNum,     
+		SUM(CONTRACT_NUM)+SUM(REGISTER_NUM) TotalSalesNum,
+		SUM(UNCONTRACT_NUM) ManualSalesNum, 
+		SUM(CONTRACT_NUM) CRMContractNum, 
+		SUM(REGISTER_NUM) RegisterNum,  
+		SUM(RETURN_NUM) ReturnNum ,
+		a.type_id typeId,
+		a.stock_warning InventoryWarning,
+		(SELECT (SUM(b.CONTRACT_NUM)+SUM(b.REGISTER_NUM))/7 FROM RPT_PARTNER_OPERATING_DAY b WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(b.DATE) AND a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID GROUP BY b.PRODUCT_BASE_ID) AverageDailySales,
+		(SELECT SUM(c.STOCK_NUM) FROM RPT_PARTNER_OPERATING_DAY c WHERE c.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY)  AND  a.PRODUCT_BASE_ID=c.PRODUCT_BASE_ID GROUP BY c.PRODUCT_BASE_ID) StockNum
+		FROM RPT_PARTNER_OPERATING_DAY a
+		WHERE 1=1
+		<if test="req.retailerName!=null and req.retailerName!=''">
+			and a.PARTNER_NAME like CONCAT(CONCAT('%',#{req.retailerName}),'%')	
+		</if>
+		<if test="req.retailerCode!=null and req.retailerCode!=''">
+			and a.PARTNER_CODE  like CONCAT(CONCAT('%',#{req.retailerCode}),'%')		
+		</if>
+		<if test="req.brand!=null and req.brand!=''">  
+			and a.BRAND_ID=#{req.brand}
+		</if>
+		<if test="req.typeId!=null and req.typeId!=''">  
+			and a.TYPE_ID=#{req.typeId}
+		</if>
+		<if test="req.businessEntityName!=null and req.businessEntityName!=''">  
+			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')	
+		</if>
+		<if test="req.createTimeStart!=null and req.createTimeStart!=''">
+			and a.CREATE_DATE &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+		</if>
+		<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
+			and a.CREATE_DATE &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+		</if>
+		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
+			and a.DATE &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+		</if>
+		<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
+			and a.DATE &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+		</if>
+		<if test="req.productType!=null and req.productType!=''">				
+			and a.PRODUCT_BASE_ID like CONCAT(CONCAT('%',#{req.productType}),'%')   
+		</if>
+		<if test="req.lanId!=null and req.lanId!=''">
+			and a.CITY_ID = #{req.lanId}
+		</if>
+		<if test="req.city!=null and req.city!=''">
+			and a.COUNTY_ID = #{req.city}
+		</if>
+			GROUP BY a.PRODUCT_BASE_ID
+		) g
+		 limit 1000) z
+  </select>
+  
+  <select id="getUerRoleForView" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"
+            resultType="com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq">
+	  select b.lan_id regionId,b.rel_code relCode,a.user_id userId,(
+	 case when a.role_id in ('1087891202715070466','1087891300077449217') then '1' 	
+	 when a.role_id in ('10000002') then '2' 	
+	 when a.role_id in ('1087891525680672770') then '3'			
+	 when a.role_id in ('1068415942698213378','1087890525473386497','1087890602434670594') then '4'		
+	 when a.role_id in ('1085091905942462465') then '5' 
+	 else '6' END) userType
+	from sys_user_role a,sys_user b where 1=1 and a.user_id = b.user_id and a.user_id = #{req.userId}
+	order by userType limit 1   
+
+  </select>
+</mapper>
+>>>>>>> release

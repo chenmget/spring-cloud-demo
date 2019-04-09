@@ -30,6 +30,7 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.dto.request.UserEditReq;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
@@ -46,7 +47,10 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -374,12 +378,29 @@ public class MerchantServiceImpl implements MerchantService {
     public ResultVO<Page<MerchantPageResp>> pageMerchant(MerchantPageReq pageReq) {
         log.info("MerchantServiceImpl.pageMerchant(), input: MerchantPageReq={} ", JSON.toJSONString(pageReq));
         Page<MerchantPageResp> page = merchantManager.pageMerchant(pageReq);
+
+        // 取本地网  市县  ID集合
+        HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
+        for (MerchantPageResp merchantDTO : page.getRecords()) {
+            regionIdHashSet.add(merchantDTO.getLanId());
+            regionIdHashSet.add(merchantDTO.getCity());
+        }
+
+        Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
+
         // 取本地网名称  市县名称
         for (MerchantPageResp merchantDTO : page.getRecords()) {
             // 取本地网名称  市县名称
-            merchantDTO.setLanName(getRegionNameByRegionId(merchantDTO.getLanId()));
-            merchantDTO.setCityName(getRegionNameByRegionId(merchantDTO.getCity()));
+            merchantDTO.setLanName(regionNamesMap.get(merchantDTO.getLanId()));
+            merchantDTO.setCityName(regionNamesMap.get(merchantDTO.getCity()));
         }
+
+//        // 取本地网名称  市县名称
+//        for (MerchantPageResp merchantDTO : page.getRecords()) {
+//            // 取本地网名称  市县名称
+//            merchantDTO.setLanName(getRegionNameByRegionId(merchantDTO.getLanId()));
+//            merchantDTO.setCityName(getRegionNameByRegionId(merchantDTO.getCity()));
+//        }
         log.info("MerchantServiceImpl.pageMerchant() output: list<MerchantPageResp>={} ", JSON.toJSONString(page.getRecords()));
         return ResultVO.success(page);
     }
@@ -595,6 +616,27 @@ public class MerchantServiceImpl implements MerchantService {
 
         log.info("MerchantServiceImpl.pageFactoryMerchant() output：list<FactoryMerchantDTO>={}", JSON.toJSONString(targetPage.getRecords()));
         return ResultVO.success(targetPage);
+    }
+
+    /**
+     * 根据regionId集合获取所有的  区域名称
+     * @param regionIdHashSet
+     * @return
+     */
+    private Map<String, String> getRegionNamesMap(HashSet<String> regionIdHashSet) {
+        // 去重
+//        HashSet<String> resultHashSet = new HashSet<>(regionIdList);
+
+        CommonRegionListReq req = new CommonRegionListReq();
+        req.setRegionIdList(Lists.newArrayList(regionIdHashSet));
+        List<CommonRegionDTO> dtoList = commonRegionService.listCommonRegion(req).getResultData();
+        Map resultMap = new HashMap();
+        if (!CollectionUtils.isEmpty(dtoList)) {
+            dtoList.forEach(commonRegionDTO -> {
+                resultMap.put(commonRegionDTO.getRegionId(), commonRegionDTO.getRegionName());
+            });
+        }
+        return resultMap;
     }
 
 

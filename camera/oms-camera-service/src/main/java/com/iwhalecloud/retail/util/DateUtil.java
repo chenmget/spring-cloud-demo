@@ -461,7 +461,7 @@ public class DateUtil {
 
 	public static long calendarDayPlus(String dateStr1, String dateStr2) throws Exception {
 
-		if (dateStr1 == null || dateStr2 == null || dateStr1.equals("") || dateStr2.equals("")) {
+		if (dateStr1 == null || dateStr2 == null || "".equals(dateStr1) || "".equals(dateStr2)) {
 			return 0;
 		}
 		Date date1 = DateUtil.parseStrToDate(dateStr1);
@@ -483,7 +483,7 @@ public class DateUtil {
 	 */
 	public static int calendarPlus(String dateStr1, String dateStr2) throws Exception {
 
-		if (dateStr1 == null || dateStr2 == null || dateStr1.equals("") || dateStr2.equals("")) {
+		if (dateStr1 == null || dateStr2 == null || "".equals(dateStr1) || "".equals(dateStr2)) {
 			return 0;
 		}
 

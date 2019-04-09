@@ -22,4 +22,8 @@
     ,t.ORDER_TIME 
 </sql>
 
+    <select id="getResourceInstTrackDetailByNbr" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp">
+        SELECT <include refid="allFields" /> from mkt_res_inst_track_detail t where MKT_RES_INST_NBR=#{nbr}
+    </select>
 </mapper>

@@ -88,7 +88,7 @@ public final class StrTools {
 
 	public static boolean booleanValue(String tfString) {
 		String trimmed = tfString.trim().toLowerCase();
-		return trimmed.equals("true") || trimmed.equals("t");
+		return "true".equals(trimmed) || "t".equals(trimmed);
 	}
 
 	public static boolean isEqual(String o, boolean c) {
@@ -247,7 +247,7 @@ public final class StrTools {
 	 * */
 	public static boolean isNum(String num) {
 
-		if (num == null || num.equals("")) {
+		if (num == null || "".equals(num)) {
 			return false;
 		}
 
@@ -265,7 +265,7 @@ public final class StrTools {
 	 * */
 	public static boolean isMatche(String checkStr, String regex) {
 
-		if (checkStr == null || checkStr.equals("")) {
+		if (checkStr == null || "".equals(checkStr)) {
 			return false;
 		}
 
@@ -281,7 +281,7 @@ public final class StrTools {
 		}
 		String reg = "^[1-9]\\d*\\.\\d*|0\\.\\d*[1-9]\\d*$";
 
-		if (num == null || num.equals("")) {
+		if (num == null || "".equals(num)) {
 			return false;
 		}
 
@@ -402,7 +402,7 @@ public final class StrTools {
 
 	//把一个key:val|..格式的String拼凑成HashMap
 	public static HashMap StringToHashMap(String str) {
-		if (str == null || str.equals("")) {
+		if (str == null || "".equals(str)) {
 			return null;
 		}
 		String[] _hashmap = str.split("\\|");
@@ -412,7 +412,7 @@ public final class StrTools {
 		HashMap ret = new HashMap();
 		for (int i = 0; i < _hashmap.length; i++) {
 			String it = _hashmap[i];
-			if (it == null || it.equals("")) {
+			if (it == null || "".equals(it)) {
 				continue;
 			}
 			String[] _maps = it.split(":");

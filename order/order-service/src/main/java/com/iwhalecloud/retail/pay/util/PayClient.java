@@ -31,7 +31,7 @@ public class PayClient {
      * [1550525]【安全漏洞修复】明文密码、日志记录、硬编码、密钥明文存储、敏感信息泄露等
      * 1234567890XXXXXTESTXXX
      */
-    public static String key = "";
+    public static String key = "IYyP1HnS5q6ozeg8TpXh/nZYqYyP3PQZlnmEo/HzoWmW41/Q3QzHt2fPntKBMcbiWlpM2T3ADb93T7K4JlIssA==";
     public static String notifyUrl = "http://10.45.108.41:8083/api/pay/notifyUrl";
 
 //    private static String payUrl="http://134.175.22.23:1081/gateway.do";

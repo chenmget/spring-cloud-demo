@@ -123,7 +123,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             log.info("ResourceInstServiceImpl.getResourceInstList  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
             MerchantDTO merchantDTO = merchantResultVO.getResultData();
             if (null != merchantDTO) {
-                resp.setCity(merchantDTO.getCity());
+                resp.setRegionName(merchantDTO.getCityName());
+                resp.setLanName(merchantDTO.getLanName());
                 resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
             }
             String productId = resp.getMktResId();
@@ -983,7 +984,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             log.info("RetailerResourceInstB2BController.nbrExportAll  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
             MerchantDTO merchantDTO = merchantResultVO.getResultData();
             if (null != merchantDTO) {
-                resp.setCity(merchantDTO.getCity());
+                resp.setRegionName(merchantDTO.getCity());
+                resp.setLanName(merchantDTO.getLanName());
                 resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
             }
             String productId = resp.getMktResId();

@@ -117,7 +117,7 @@ public class ResouceInstTrack implements Serializable {
 	 * 是否省内直供
 	 */
 	@ApiModelProperty(value = "是否省内直供")
-	private java.lang.String ifDirectSuppLy;
+	private java.lang.String ifDirectSupply;
 
 	/**
 	 * 是否地包供货

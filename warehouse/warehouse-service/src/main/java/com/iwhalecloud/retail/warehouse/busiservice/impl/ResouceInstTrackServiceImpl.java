@@ -438,7 +438,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
                 ifGroundSupply = ResourceConst.CONSTANT_YES;
             }
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
-            resouceInstTrackDTO.setIfDirectSuppLy(ifDirectSuppLy);
+            resouceInstTrackDTO.setIfDirectSupply(ifDirectSuppLy);
             resouceInstTrackDTO.setIfGroundSupply(ifGroundSupply);
             resouceInstTrackDTO.setMerchantId(buyerMerchantId);
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);

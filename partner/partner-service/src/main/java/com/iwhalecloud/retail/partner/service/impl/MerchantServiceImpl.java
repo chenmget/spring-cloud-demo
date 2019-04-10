@@ -397,20 +397,23 @@ public class MerchantServiceImpl implements MerchantService {
 
         /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
 
-        // 取本地网  市县  ID集合
-        HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
-        for (MerchantPageResp merchantDTO : page.getRecords()) {
-            regionIdHashSet.add(merchantDTO.getLanId());
-            regionIdHashSet.add(merchantDTO.getCity());
-        }
+        if (!CollectionUtils.isEmpty(page.getRecords())) {
 
-        Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
+            // 取本地网  市县  ID集合
+            HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
+            for (MerchantPageResp merchantDTO : page.getRecords()) {
+                regionIdHashSet.add(merchantDTO.getLanId());
+                regionIdHashSet.add(merchantDTO.getCity());
+            }
 
-        // 取本地网名称  市县名称
-        for (MerchantPageResp merchantDTO : page.getRecords()) {
+            Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
+
             // 取本地网名称  市县名称
-            merchantDTO.setLanName(regionNamesMap.get(merchantDTO.getLanId()));
-            merchantDTO.setCityName(regionNamesMap.get(merchantDTO.getCity()));
+            for (MerchantPageResp merchantDTO : page.getRecords()) {
+                // 取本地网名称  市县名称
+                merchantDTO.setLanName(regionNamesMap.get(merchantDTO.getLanId()));
+                merchantDTO.setCityName(regionNamesMap.get(merchantDTO.getCity()));
+            }
         }
 
 //        // 取本地网名称  市县名称
@@ -535,47 +538,48 @@ public class MerchantServiceImpl implements MerchantService {
 
 
         /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
+        if (!CollectionUtils.isEmpty(merchantPage.getRecords())) {
 
-        HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
-        HashSet<String> merchantIdHashSet = new HashSet<>(); // 去重
-        for (Merchant entity : merchantPage.getRecords()) {
+            HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
+            HashSet<String> merchantIdHashSet = new HashSet<>(); // 去重
+            for (Merchant entity : merchantPage.getRecords()) {
 
-            RetailMerchantDTO targetDTO = new RetailMerchantDTO();
-            BeanUtils.copyProperties(entity, targetDTO);
-            targetList.add(targetDTO);
+                RetailMerchantDTO targetDTO = new RetailMerchantDTO();
+                BeanUtils.copyProperties(entity, targetDTO);
+                targetList.add(targetDTO);
 
-            // 取本地网  市县  ID集合
-            regionIdHashSet.add(entity.getLanId());
-            regionIdHashSet.add(entity.getCity());
+                // 取本地网  市县  ID集合
+                regionIdHashSet.add(entity.getLanId());
+                regionIdHashSet.add(entity.getCity());
 
-            // 取merchantId集合
-            merchantIdHashSet.add(entity.getMerchantId());
-        }
-
-        Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
-        Map<String, Invoice> invoiceMap = getInvoiceMap(merchantIdHashSet);
-        Map<String, String> tagNamesMap = getTagNamesMap(merchantIdHashSet);
-
-        // 取本地网名称  市县名称
-        for (RetailMerchantDTO dto : targetList) {
-
-            // 设置 本地网名称  市县名称
-            dto.setLanName(regionNamesMap.get(dto.getLanId()));
-            dto.setCityName(regionNamesMap.get(dto.getCity()));
-
-            // 设置 发票里面的相关信息
-            Invoice invoice = invoiceMap.get(dto.getMerchantId());
-            if (Objects.nonNull(invoice)) {
-                dto.setBusiLicenceCode(invoice.getBusiLicenceCode());
-                dto.setBusiLicenceExpDate(invoice.getBusiLicenceExpDate());
-                dto.setTaxCode(invoice.getTaxCode());
-                dto.setRegisterBankAcct(invoice.getRegisterBankAcct());
-                // 不要用copyProperties  有可能两个表的数据不一样 覆盖商家名称
-//                BeanUtils.copyProperties(invoice, dto);
+                // 取merchantId集合
+                merchantIdHashSet.add(entity.getMerchantId());
             }
 
-            // 设置标签
-            dto.setTagNames(tagNamesMap.get(dto.getMerchantId()));
+            Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
+            Map<String, Invoice> invoiceMap = getInvoiceMap(merchantIdHashSet);
+            Map<String, String> tagNamesMap = getTagNamesMap(merchantIdHashSet);
+
+            // 取本地网名称  市县名称
+            for (RetailMerchantDTO dto : targetList) {
+
+                // 设置 本地网名称  市县名称
+                dto.setLanName(regionNamesMap.get(dto.getLanId()));
+                dto.setCityName(regionNamesMap.get(dto.getCity()));
+
+                // 设置 发票里面的相关信息
+                Invoice invoice = invoiceMap.get(dto.getMerchantId());
+                if (Objects.nonNull(invoice)) {
+                    dto.setBusiLicenceCode(invoice.getBusiLicenceCode());
+                    dto.setBusiLicenceExpDate(invoice.getBusiLicenceExpDate());
+                    dto.setTaxCode(invoice.getTaxCode());
+                    dto.setRegisterBankAcct(invoice.getRegisterBankAcct());
+                    // 不要用copyProperties  有可能两个表的数据不一样 覆盖商家名称
+    //                BeanUtils.copyProperties(invoice, dto);
+                }
+                // 设置标签
+                dto.setTagNames(tagNamesMap.get(dto.getMerchantId()));
+            }
         }
 
         targetPage.setRecords(targetList);
@@ -645,47 +649,48 @@ public class MerchantServiceImpl implements MerchantService {
 
 
         /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
-        HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
-        HashSet<String> merchantIdHashSet = new HashSet<>(); // 去重
-        for (Merchant entity : merchantPage.getRecords()) {
+        if (!CollectionUtils.isEmpty(merchantPage.getRecords())) {
+            HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
+            HashSet<String> merchantIdHashSet = new HashSet<>(); // 去重
+            for (Merchant entity : merchantPage.getRecords()) {
 
-            SupplyMerchantDTO targetDTO = new SupplyMerchantDTO();
-            BeanUtils.copyProperties(entity, targetDTO);
-            targetList.add(targetDTO);
+                SupplyMerchantDTO targetDTO = new SupplyMerchantDTO();
+                BeanUtils.copyProperties(entity, targetDTO);
+                targetList.add(targetDTO);
 
-            // 取本地网  市县  ID集合
-            regionIdHashSet.add(entity.getLanId());
-            regionIdHashSet.add(entity.getCity());
+                // 取本地网  市县  ID集合
+                regionIdHashSet.add(entity.getLanId());
+                regionIdHashSet.add(entity.getCity());
 
-            // 取merchantId集合
-            merchantIdHashSet.add(entity.getMerchantId());
-        }
-
-        Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
-        Map<String, Invoice> invoiceMap = getInvoiceMap(merchantIdHashSet);
-        Map<String, String> merchantAccountMap = getMerchantAccountMap(merchantIdHashSet);
-
-        // 取本地网名称  市县名称
-        for (SupplyMerchantDTO dto : targetList) {
-
-            // 设置 本地网名称  市县名称
-            dto.setLanName(regionNamesMap.get(dto.getLanId()));
-            dto.setCityName(regionNamesMap.get(dto.getCity()));
-
-            // 设置 发票里面的相关信息
-            Invoice invoice = invoiceMap.get(dto.getMerchantId());
-            if (Objects.nonNull(invoice)) {
-                dto.setBusiLicenceCode(invoice.getBusiLicenceCode());
-                dto.setBusiLicenceExpDate(invoice.getBusiLicenceExpDate());
-                dto.setTaxCode(invoice.getTaxCode());
-                dto.setRegisterBankAcct(invoice.getRegisterBankAcct());
-                // 不要用copyProperties  有可能两个表的数据不一样 覆盖商家名称
-//                BeanUtils.copyProperties(invoice, dto);
+                // 取merchantId集合
+                merchantIdHashSet.add(entity.getMerchantId());
             }
 
-            // 设置 账户名称
-            dto.setAccount(merchantAccountMap.get(dto.getMerchantId()));
+            Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
+            Map<String, Invoice> invoiceMap = getInvoiceMap(merchantIdHashSet);
+            Map<String, String> merchantAccountMap = getMerchantAccountMap(merchantIdHashSet);
 
+            // 取本地网名称  市县名称
+            for (SupplyMerchantDTO dto : targetList) {
+
+                // 设置 本地网名称  市县名称
+                dto.setLanName(regionNamesMap.get(dto.getLanId()));
+                dto.setCityName(regionNamesMap.get(dto.getCity()));
+
+                // 设置 发票里面的相关信息
+                Invoice invoice = invoiceMap.get(dto.getMerchantId());
+                if (Objects.nonNull(invoice)) {
+                    dto.setBusiLicenceCode(invoice.getBusiLicenceCode());
+                    dto.setBusiLicenceExpDate(invoice.getBusiLicenceExpDate());
+                    dto.setTaxCode(invoice.getTaxCode());
+                    dto.setRegisterBankAcct(invoice.getRegisterBankAcct());
+                    // 不要用copyProperties  有可能两个表的数据不一样 覆盖商家名称
+//                BeanUtils.copyProperties(invoice, dto);
+                }
+
+                // 设置 账户名称
+                dto.setAccount(merchantAccountMap.get(dto.getMerchantId()));
+            }
         }
 
         targetPage.setRecords(targetList);
@@ -703,8 +708,6 @@ public class MerchantServiceImpl implements MerchantService {
     public ResultVO<Page<FactoryMerchantDTO>> pageFactoryMerchant(FactoryMerchantPageReq pageReq) {
         log.info("MerchantServiceImpl.pageFactoryMerchant() input：FactoryMerchantPageReq={}", JSON.toJSONString(pageReq));
         Page<Merchant> merchantPage = merchantManager.pageFactoryMerchant(pageReq);
-
-//        Page<MerchantDTO> merchantDTOPage = handleResultPage(merchantPage);
 
         // 厂商列表字段：商家编码、商家名称、分公司、市县、渠道视图状态
         // 转换成 对应的 dto
@@ -724,29 +727,31 @@ public class MerchantServiceImpl implements MerchantService {
 //        }
 
         /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
+        if (!CollectionUtils.isEmpty(merchantPage.getRecords())) {
 
-        HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
-        for (Merchant entity : merchantPage.getRecords()) {
+            HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
+            for (Merchant entity : merchantPage.getRecords()) {
 
-            FactoryMerchantDTO targetDTO = new FactoryMerchantDTO();
-            BeanUtils.copyProperties(entity, targetDTO);
-            targetList.add(targetDTO);
+                FactoryMerchantDTO targetDTO = new FactoryMerchantDTO();
+                BeanUtils.copyProperties(entity, targetDTO);
+                targetList.add(targetDTO);
 
-            // 取本地网  市县  ID集合
-            regionIdHashSet.add(entity.getLanId());
-            regionIdHashSet.add(entity.getCity());
+                // 取本地网  市县  ID集合
+                regionIdHashSet.add(entity.getLanId());
+                regionIdHashSet.add(entity.getCity());
 
-        }
+            }
 
-        Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
+            Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
 
-        // 取本地网名称  市县名称
-        for (FactoryMerchantDTO dto : targetList) {
+            // 取本地网名称  市县名称
+            for (FactoryMerchantDTO dto : targetList) {
 
-            // 设置 本地网名称  市县名称
-            dto.setLanName(regionNamesMap.get(dto.getLanId()));
-            dto.setCityName(regionNamesMap.get(dto.getCity()));
+                // 设置 本地网名称  市县名称
+                dto.setLanName(regionNamesMap.get(dto.getLanId()));
+                dto.setCityName(regionNamesMap.get(dto.getCity()));
 
+            }
         }
 
         targetPage.setRecords(targetList);

@@ -178,7 +178,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO updateResourceInst(ResourceInstUpdateReq req) {
         log.info("ResourceInstServiceImpl.updateResourceInst req={},resp={}", JSON.toJSONString(req));
-        Map<String, Object> data = assembleData(req);
+        Map<String, Object> data = assembleData(req, req.getDestStoreId());
         Map<String, List<ResourceInstListResp>> insts = (HashMap<String, List<ResourceInstListResp>>)data.get("productNbr");
         List<String> unavailbaleNbrs = (List<String>)data.get("unavailbaleNbrs");
         List<String> availbaleNbrs = (List<String>)data.get("availbaleNbrs");
@@ -251,7 +251,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Override
     public ResultVO<List<String>> updateResourceInstForTransaction(ResourceInstUpdateReq req) {
         log.info("ResourceInstServiceImpl.updateResourceInstForTransaction req={}", JSON.toJSONString(req));
-        Map<String, Object> data = assembleData(req);
+        Map<String, Object> data = assembleData(req, req.getMktResStoreId());
         Map<String, List<ResourceInstListResp>> insts = (HashMap<String, List<ResourceInstListResp>>)data.get("productNbr");
         List<String> unavailbaleNbrs = (List<String>)data.get("unavailbaleNbrs");
         List<String> availbaleNbrs = (List<String>)data.get("availbaleNbrs");
@@ -524,13 +524,12 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     /**
      * 无效的串码主键集合,串码实列按产品维度组装成map，再设置到请求参数
      * @param req
+     * @param mktResStoreId 删除更新的是目标仓库的串码;发货更新的是源仓库的串码
      * @return
      */
-    private Map<String, Object> assembleData(ResourceInstUpdateReq req){
+    private Map<String, Object> assembleData(ResourceInstUpdateReq req, String mktResStoreId){
         List<String> nbrs = Lists.newArrayList(req.getMktResInstNbrs());
         List<String> checkStatusCd = req.getCheckStatusCd();
-        // 更新的是目标仓库的串码 2019-04-08
-        String mktResStoreId = req.getDestStoreId();
         Map<String, Object> data = new HashMap<String, Object>(8);
         // 去重
         List<String> distinctList = nbrs.stream().distinct().collect(Collectors.toList());
@@ -812,77 +811,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Override
     public List<ResourceInstDTO> selectByIds(List<String> idList) {
         return resourceInstManager.selectByIds(idList);
-    }
-
-    private Map<String, Object> assembleDataForMerchant(ResourceInstUpdateReq req){
-        List<String> nbrs = req.getMktResInstNbrs();
-        List<String> checkStatusCd = req.getCheckStatusCd();
-        String mktResStoreId = req.getMktResStoreId();
-        Map<String, Object> data = new HashMap<String, Object>(8);
-        // 去重
-        List<String> distinctList = nbrs.stream().distinct().collect(Collectors.toList());
-        // 找出串码实列
-        ResourceInstBatchReq queryReq = new ResourceInstBatchReq();
-        queryReq.setMktResInstNbrs(distinctList);
-//        queryReq.setMktResStoreId(mktResStoreId);
-        List<ResourceInstListResp> instsTemp = resourceInstManager.getBatch(queryReq);
-        log.info("ResourceInstServiceImpl.assembleData resourceInstManager.getResourceInst req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(instsTemp));
-        //统计数:串码-个数
-        Map<String,Integer> unStoreCountMap = new HashMap<String,Integer>();
-        Set<String> error = new HashSet<String>();
-        List<ResourceInstListResp> unStatusCdinsts = new ArrayList<ResourceInstListResp>();
-        List<ResourceInstListResp> insts = new ArrayList<ResourceInstListResp>();
-        for (ResourceInstListResp inst : instsTemp) {
-            String key = inst.getMktResInstNbr();
-            //状态
-            String statusCd = inst.getStatusCd();
-
-            //属于自己的库
-            if(mktResStoreId.equals(inst.getMktResStoreId())){
-                insts.add(inst);
-            }else{
-                //其他库的数据
-                if(!unStoreCountMap.containsKey(key)){
-                    unStoreCountMap.put(key,!ResourceConst.STATUSCD.DELETED.getCode().equals(statusCd)?1:0);
-                }else{
-                    unStoreCountMap.put(key,unStoreCountMap.get(key)+(!ResourceConst.STATUSCD.DELETED.getCode().equals(statusCd)?1:0));
-                }
-            }
-
-        }
-        //循环需要处理的串码
-        for (ResourceInstListResp inst : insts) {
-            String key = inst.getMktResInstNbr();
-            Integer count =unStoreCountMap.get(key);
-            //在其他库被使用过
-            if(count!=null&&count.intValue()>0){
-                unStatusCdinsts.add(inst);
-                error.add(key);
-            }else if(!error.contains(key)&&checkStatusCd.contains(inst.getStatusCd())){
-                //其他库未被使用，但是状态过滤
-                unStatusCdinsts.add(inst);
-                error.add(key);
-            }
-        }
-        if(!error.isEmpty()){
-            data.put("errors",error);
-            return data;
-        }
-        // 去除状态不正确的串码实列
-        insts.removeAll(unStatusCdinsts);
-        // 查出来的实列对应的串码
-        List<String> useNbrs = insts.stream().map(ResourceInstListResp::getMktResInstNbr).collect(Collectors.toList());
-        // 全部串码减去筛选出来的串码为不可用串码
-        nbrs.removeAll(useNbrs);
-        // 按产品维度组装数据
-        Map<String, List<ResourceInstListResp>> map = insts.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
-        // 不可修改的串码
-        data.put("unavailbaleNbrs", nbrs);
-        // 可修改的串码
-        data.put("availbaleNbrs", useNbrs);
-        // 按产品分组的串码
-        data.put("productNbr", map);
-        return data;
     }
 
     /**

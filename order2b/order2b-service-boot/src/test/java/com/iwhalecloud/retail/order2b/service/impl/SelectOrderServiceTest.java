@@ -20,13 +20,13 @@ public class SelectOrderServiceTest extends TestBase {
 
     @Test
     public void selectOrderTest(){
-        SelectOrderReq selectOrderReq=new SelectOrderReq();
+        AdvanceOrderReq selectOrderReq=new AdvanceOrderReq();
 //        selectOrderReq.setOrderId("20190116173541220867919");
 //        selectOrderReq.setStatus("2,4");
 //        selectOrderReq.setUserId("11");
         selectOrderReq.setUserCode("4301811022885");
         selectOrderReq.setUserId("1077839559879852033");
-        orderSelectService.purchaseOrderList(selectOrderReq);
+        orderSelectService.queryAdvanceOrderList(selectOrderReq);
     }
 
     @Test

@@ -243,8 +243,9 @@ public class SelectOrderServiceImpl implements SelectOrderService {
 
         //营销活动
         this.getPromotion(list.getRecords());
-        Page<AdvanceOrderInfoModel> respPage= JSON.parseObject(JSON.toJSONString(list),Page.class);
-
+        Page<AdvanceOrderInfoModel> respPage= new Page<>();
+        BeanUtils.copyProperties(list,respPage);
+        respPage.setRecords(JSON.parseArray(JSON.toJSONString(list.getRecords()),AdvanceOrderInfoModel.class));
         for (AdvanceOrderInfoModel model : respPage.getRecords()) {
             // 预售订单
             model.setAdvanceOrder(advanceOrderManager.getAdvanceOrderByOrderId(model.getOrderId()));

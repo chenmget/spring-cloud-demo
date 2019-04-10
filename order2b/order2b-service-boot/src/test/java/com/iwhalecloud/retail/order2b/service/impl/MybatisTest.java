@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.order2b.manager.AdvanceOrderManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.mapper.OrderItemMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderZFlowMapper;
+import com.iwhalecloud.retail.order2b.model.OrderItemModel;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -65,7 +66,7 @@ public class MybatisTest extends TestBase {
     @Test
     public void selectOrdrByGoodsName(){
 
-        OrderItem orderItem=new OrderItem();
+        OrderItemModel orderItem=new OrderItemModel();
         orderItem.setGoodsName("%yy手机%");
         List or=orderItemMapper.selectOrderItem(orderItem);
         System.out.println(JSON.toJSONString(or));

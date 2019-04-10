@@ -97,12 +97,11 @@
 		  and b.order_id = c.order_id
 		  and c.order_id =d.order_id
 		  and c.is_delete='0'
+		  and c.lan_id = #{lanId}
 		  and b.order_id in
-		<foreach collection="req.ids" index="index" item="item" open="(" separator="," close=")">
+		<foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
 			#{item}
 		</foreach>
-		<if test="req.lanId !=null and req.lanId !=''">
-			and c.lan_id=#{req.lanId}
-		</if>
+
 	</select>
 </mapper>

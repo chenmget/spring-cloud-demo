@@ -30,7 +30,7 @@ public class AccountBalanceType implements Serializable {
   	/**
   	 * 余额账本所属的余额类型。ACC-C-0009
   	 */
-	@TableId(type = IdType.INPUT)
+	//@TableId(type = IdType.INPUT)
 	@ApiModelProperty(value = "余额账本所属的余额类型。ACC-C-0009")
   	private String balanceTypeId;
   	

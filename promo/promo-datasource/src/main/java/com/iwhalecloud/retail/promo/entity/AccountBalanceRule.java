@@ -30,7 +30,7 @@ public class AccountBalanceRule implements Serializable {
   	/**
   	 * 规则标识
   	 */
-	@TableId(type = IdType.INPUT)
+	//@TableId(type = IdType.INPUT)
 	@ApiModelProperty(value = "规则标识")
   	private String ruleId;
   	

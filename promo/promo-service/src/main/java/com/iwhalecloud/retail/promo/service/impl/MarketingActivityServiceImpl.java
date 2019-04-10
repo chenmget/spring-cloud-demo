@@ -13,7 +13,6 @@ import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
 import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListLanCityReq;
-import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.constant.Constant;
@@ -1144,12 +1143,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
             // 根据ordeId查询任务信息获取任务Id
             for (OrderDTO orderDTO:orderDTOList) {
-                ResultVO<List<TaskDTO>> taskDTOs = taskService.getTaskByFormId(orderDTO.getOrderId());
-                if (CollectionUtils.isEmpty(taskDTOs.getResultData())){
+                List<TaskDTO> taskDTOs = taskService.getTaskByFormId(orderDTO.getOrderId()).getResultData();
+                if (CollectionUtils.isEmpty(taskDTOs)){
                     continue;
                 }
                 // 组装用户消息准备入库
-                for (TaskDTO taskDTO:taskDTOs.getResultData()) {
+                for (TaskDTO taskDTO:taskDTOs) {
                     SysUserMessageDTO sysUserMessageDTO = new SysUserMessageDTO();
                     sysUserMessageDTO.setTaskId(taskDTO.getTaskId());
                     sysUserMessageDTO.setEndTime(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).deliverEndItme);

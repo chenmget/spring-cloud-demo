@@ -20,5 +20,5 @@ public interface DeliveryMapper extends BaseMapper<Delivery>{
 
     List<Delivery> selectDeliveryListByOrderIdAndBatchId(DeliveryReq deliveryReq);
 
-    List<SettleRecordOrderDTO> getSettleRecordOrder(@Param("req")SettleRecordOrderDTO req);
+    List<SettleRecordOrderDTO> getSettleRecordOrder(@Param("ids")List<String> orderIds,@Param("lanId")String lanId);
 }

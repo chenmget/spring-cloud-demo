@@ -51,10 +51,10 @@ public class DeliveryManager {
 
     public List<SettleRecordOrderDTO> getSettleRecordOrder(List<String> orderIds,String lanId){
         if(!CollectionUtils.isEmpty(orderIds) && StringUtils.isNotEmpty(lanId)){
-            SettleRecordOrderDTO settleRecordOrderDTO = new SettleRecordOrderDTO();
-            settleRecordOrderDTO.setIds(orderIds);
-            settleRecordOrderDTO.setLanId(Integer.valueOf(lanId));
-            return deliveryMapper.getSettleRecordOrder(settleRecordOrderDTO);
+//            SettleRecordOrderDTO settleRecordOrderDTO = new SettleRecordOrderDTO();
+//            settleRecordOrderDTO.setIds(orderIds);
+//            settleRecordOrderDTO.setLanId(lanId);
+            return deliveryMapper.getSettleRecordOrder(orderIds,lanId);
         }
         return new ArrayList<>();
     }

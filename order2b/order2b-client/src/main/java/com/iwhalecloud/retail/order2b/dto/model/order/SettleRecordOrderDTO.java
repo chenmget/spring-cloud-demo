@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.dto.model.order;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,6 +12,8 @@ import java.util.List;
  */
 @Data
 public class SettleRecordOrderDTO implements Serializable {
+
+    private static final long serialVersionUID = 1L;
 
     private String resNbr;
 
@@ -28,6 +31,7 @@ public class SettleRecordOrderDTO implements Serializable {
 
     private Date deliveryTime;
 
+    @ApiModelProperty(value = "lanId")
     private Integer lanId;
 
     private Date orderCreateTime;
@@ -38,5 +42,6 @@ public class SettleRecordOrderDTO implements Serializable {
 
     private String merchantAccountId;
 
+    @ApiModelProperty(value = "ids")
     private List<String> ids;
 }

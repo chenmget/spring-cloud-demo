@@ -35,9 +35,9 @@ import java.util.List;
 @Component
 @Slf4j
 public class SettleRecordJob implements SimpleJob {
-    @Reference(timeout = 10000)
+    @Reference(timeout = 60000)
     private SettleRecordService settleRecordService;
-    @Reference(timeout = 10000)
+    @Reference
     private CommonRegionService commonRegionService;
 
     @Override
@@ -56,8 +56,10 @@ public class SettleRecordJob implements SimpleJob {
             if(!CollectionUtils.isEmpty(commonRegionDTOs)){
                 for(CommonRegionDTO commonRegionDTO:commonRegionDTOs){
                     String lanId = commonRegionDTO.getRegionId();
+                    log.info("SettleRecordJob lanId .....{}", lanId);
                     List<SettleRecordDTO> settleRecordDTOs = settleRecordService.getSettleRecord(lanId);
                     if(!CollectionUtils.isEmpty(settleRecordDTOs)){
+                        log.info("SettleRecordJob batchAddSettleRecord .....{}", settleRecordDTOs.size());
                         settleRecordService.batchAddSettleRecord(settleRecordDTOs);
                     }
                 }

@@ -55,4 +55,10 @@ public class ResourceInstsGetReq {
 	@ApiModelProperty(value = "记录营销资源实例编码。")
 	private List<String> mktResInstNbrs;
 
+	/**
+	 * 产品类型
+	 */
+	@ApiModelProperty(value = "产品类型")
+	private String typeId;
+
 }

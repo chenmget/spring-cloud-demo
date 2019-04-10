@@ -91,6 +91,10 @@ public class MerchantAccountManager{
             hasParam = true;
             queryWrapper.eq(MerchantAccount.FieldNames.merchantId.getTableFieldName(), req.getMerchantId());
         }
+        if(!CollectionUtils.isEmpty(req.getMerchantIdList())){
+            hasParam = true;
+            queryWrapper.in(MerchantAccount.FieldNames.merchantId.getTableFieldName(), req.getMerchantIdList());
+        }
         if(!StringUtils.isEmpty(req.getAccount())){
             hasParam = true;
             queryWrapper.eq(MerchantAccount.FieldNames.account.getTableFieldName(), req.getAccount());

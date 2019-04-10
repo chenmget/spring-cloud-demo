@@ -4,10 +4,10 @@
   
     <select id="getStorePurchaserReport" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq">
-		select * from (
+		select * from ( 
   SELECT g.*,g.StockNum/g.AverageDailySales StockTurnover FROM (
 	SELECT PRODUCT_BASE_NAME ProductBaseName,  
-		BRAND_NAME BrandName,	
+		BRAND_NAME BrandName,
 		SUM(PURCHASE_NUM)+SUM(MANUAL_NUM)+SUM(TRANS_IN_NUM) TheTotalInventory,	
 		SUM(TRANS_OUT_NUM)+SUM(RETURN_NUM)+SUM(CONTRACT_NUM)+SUM(REGISTER_NUM) TheTotalOutbound,		
 		SUM(PURCHASE_NUM) PurchaseNum,
@@ -18,7 +18,12 @@
 		SUM(REGISTER_NUM) RegisterNum,  
 		SUM(RETURN_NUM) ReturnNum ,
 		a.type_id typeId,
-		a.stock_warning InventoryWarning,
+		a.stock_warning redStatus,
+		a.PARTNER_NAME partnerName,
+		a.PARTNER_CODE partnerCode,
+		a.BUSINESS_ENTITY_NAME businessEntityName,
+		a.CITY_ID cityId,
+		(SELECT region_name FROM sys_common_region WHERE region_id =a.COUNTY_ID)  countryId,
 		(SELECT (SUM(b.CONTRACT_NUM)+SUM(b.REGISTER_NUM))/7 FROM RPT_PARTNER_OPERATING_DAY b WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(b.DATE) AND a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID GROUP BY b.PRODUCT_BASE_ID) AverageDailySales,
 		(SELECT SUM(c.STOCK_NUM) FROM RPT_PARTNER_OPERATING_DAY c WHERE c.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY)  AND  a.PRODUCT_BASE_ID=c.PRODUCT_BASE_ID GROUP BY c.PRODUCT_BASE_ID) StockNum
 		FROM RPT_PARTNER_OPERATING_DAY a

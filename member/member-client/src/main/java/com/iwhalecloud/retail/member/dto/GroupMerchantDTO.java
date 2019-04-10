@@ -19,6 +19,8 @@ public class GroupMerchantDTO implements java.io.Serializable {
   
   	
   	//属性 begin
+	@ApiModelProperty(value = "ID")
+	private String id;
 	/**
   	 * 商家ID
   	 */

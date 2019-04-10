@@ -17,7 +17,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  */
 @Data
 @TableName("mem_group_merchant")
-@KeySequence(value = "seq_mem_group_merchantid", clazz = String.class)
+@KeySequence(value = "seq_mem_group_merchant_id", clazz = String.class)
 @ApiModel(value = "对应模型mem_group_merchant, 对应实体GroupMerchant  类")
 public class GroupMerchant implements Serializable {
     /**表名常量*/
@@ -30,6 +30,9 @@ public class GroupMerchant implements Serializable {
   	 * 商家ID
   	 */
 	@TableId
+	@ApiModelProperty(value = "ID")
+	private String id;
+
 	@ApiModelProperty(value = "商家ID")
   	private String merchId;
   	
@@ -63,6 +66,8 @@ public class GroupMerchant implements Serializable {
     /** 字段名称枚举. */
     public enum FieldNames {
 		/** 商家ID. */
+		id("id","ID"),
+
 		merchId("merchId","MERCH_ID"),
 		
 		/** 会员群ID. */

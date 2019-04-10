@@ -33,23 +33,13 @@ public class IReportDataInfoServiceImpl implements IReportDataInfoService {
 	@Override
 	public ResultVO<List<ReportStorePurchaserResq>> getStorePurchaserReportdc(ReportStorePurchaserReq req) {
 		List<ReportStorePurchaserResq> list = (List<ReportStorePurchaserResq>) reportDataInfoManager.getStorePurchaserReportdc(req);
-		List<ReportStorePurchaserResq> list2 = new ArrayList<ReportStorePurchaserResq>();
-		for(ReportStorePurchaserResq rr : list){
-			String inventoryWarning = rr.getInventoryWarning();
-			if(inventoryWarning != null){
-				if("1".equals(inventoryWarning)){
-					rr.setInventoryWarning("充裕");
-				}else if("2".equals(inventoryWarning)){
-					rr.setInventoryWarning("缺货");
-				}else if("3".equals(inventoryWarning)){
-					rr.setInventoryWarning("严重缺货");
-				}
-			}
-			
-			list2.add(rr);
-		}
+//		List<ReportStorePurchaserResq> list2 = new ArrayList<ReportStorePurchaserResq>();
+//		for(ReportStorePurchaserResq rr : list){
+//			
+//			list2.add(rr);
+//		}
 		
-        return ResultVO.success(list2);	
+        return ResultVO.success(list);	
 	}
 	
 	@Override

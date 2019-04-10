@@ -171,13 +171,19 @@ public class ReportDataInfoController extends BaseController {
         List<ReportStorePurchaserResq> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
-        
+        //机型的导出
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("productBaseName", "机型"));
+        orderMap.add(new ExcelTitleName("partnerCode", "零售商编码"));
+        orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
+        orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
+        orderMap.add(new ExcelTitleName("typeId", "产品类型"));
+        orderMap.add(new ExcelTitleName("cityId", "所属城市"));
+        orderMap.add(new ExcelTitleName("countryId", "所属区县"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
+        orderMap.add(new ExcelTitleName("redStatus", "库存预警"));
         orderMap.add(new ExcelTitleName("theTotalInventory", "入库总量"));
         orderMap.add(new ExcelTitleName("theTotalOutbound", "出库总量"));
-        orderMap.add(new ExcelTitleName("stockTotalNum", "库存总量"));
         orderMap.add(new ExcelTitleName("purchaseNum", "交易入库量"));
         orderMap.add(new ExcelTitleName("manualNum", "手工入库量"));
         orderMap.add(new ExcelTitleName("totalSalesNum", "总销售量"));
@@ -188,7 +194,6 @@ public class ReportDataInfoController extends BaseController {
         orderMap.add(new ExcelTitleName("averageDailySales", "近7天日均销量"));
         orderMap.add(new ExcelTitleName("stockNum", "库存量"));
         orderMap.add(new ExcelTitleName("stockTurnover", "库存周转率"));
-        orderMap.add(new ExcelTitleName("inventoryWarning", "库存预警"));
         
         //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,

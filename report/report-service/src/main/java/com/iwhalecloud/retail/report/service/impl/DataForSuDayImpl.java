@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.report.dto.request.MktResInstEventReq;
 import com.iwhalecloud.retail.report.dto.request.RptSupplierOperatingDayReq;
+import com.iwhalecloud.retail.report.dto.response.MktIdStatusResp;
 import com.iwhalecloud.retail.report.dto.response.MktResEventruchu;
 import com.iwhalecloud.retail.report.dto.response.MktResInstResq;
 import com.iwhalecloud.retail.report.dto.response.ParMerchantResp;
@@ -51,6 +52,7 @@ public class DataForSuDayImpl implements DataForSuDay {
 				String brand_name = mktResInst.getBrandName();//品牌名称
 				String price_level = mktResInst.getPriceLevel();//档位
 				String product_base_id = mktResInst.getProductBaseId();//型号id
+				String type_id = mktResInst.getTypeId();//产品类型
 				mktreq.setProductBaseId(product_base_id);
 				//每一个机型的入库：
 				int manual_num = 0;
@@ -70,7 +72,10 @@ public class DataForSuDayImpl implements DataForSuDay {
 					MktResEventruchu mktResEventru = mktResEventlistru.get(k);
 					String event_type = mktResEventru.getEventType();
 					goods_id = mktResEventru.getGoodsId();//商品id
-					price = Integer.parseInt(mktResEventru.getPrice());
+					mktResEventru.getPrice();
+					if(mktResEventru.getPrice() != null){
+						price = Integer.parseInt(mktResEventru.getPrice());
+					}
 					if("1001".equals(event_type)){
 						manual_num ++;
 					}else if("1002".equals(event_type)){
@@ -96,7 +101,9 @@ public class DataForSuDayImpl implements DataForSuDay {
 					sell_amount = 0;//销售额
 					MktResEventruchu mktResEventchu = mktResEventlistchu.get(m);
 					String event_type = mktResEventchu.getEventType();
-					price = Integer.parseInt(mktResEventchu.getPrice());
+					if(mktResEventchu.getPrice() != null){
+						price = Integer.parseInt(mktResEventchu.getPrice());
+					}
 					if("1002".equals(event_type)){
 						trans_out_num ++;
 					}else if("1009".equals(event_type)){
@@ -117,7 +124,9 @@ public class DataForSuDayImpl implements DataForSuDay {
 				SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd"); 
 				String nowTime = sf.format(date);
 				RptSupplierOperatingDayReq req = new RptSupplierOperatingDayReq();
-				req.setItemId(null);
+				int item_id = Integer.parseInt(rptSupplierOperatingDayManager.hqmaxItemId());
+				String itemId = ++item_id +"";
+				req.setItemId(itemId);
 				req.setItemDate(nowTime);
 				req.setSupplierId(merchant_id);//供应商id
 				req.setSupplierCode(merchant_code);//供应商编码
@@ -143,12 +152,11 @@ public class DataForSuDayImpl implements DataForSuDay {
 				req.setStockNum(Integer.toString(stock_num));//库存总量=入库总量—出库总量
 				req.setStockAmount(Double.toString(stock_amount));//库存金额
 				req.setCreateDate(nowTime);//创建时间
+				req.setTypeId(type_id);
 				 rptSupplierOperatingDayManager.getDataForRptSupplierOperatingDay(req);
-			
 			}
-				
 		}
-		
 	}
+
 
 }

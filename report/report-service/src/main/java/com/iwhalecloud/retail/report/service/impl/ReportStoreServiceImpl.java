@@ -38,7 +38,7 @@ public class ReportStoreServiceImpl implements ReportStoreService{
 	    List<ReportStSaleDaoResp> list2 = new ArrayList<ReportStSaleDaoResp>();
 	    for(ReportStSaleDaoResp rr : list){
 	    	String cityId = rr.getCityId();//所属城市
-	    	String inventoryWarning = rr.getInventoryWarning();//库存预警
+	    	//String inventoryWarning = rr.getInventoryWarning();//库存预警
 	    	if(cityId != null){
 				if("730".equals(cityId)){
 					rr.setCityId("岳阳市");
@@ -67,15 +67,15 @@ public class ReportStoreServiceImpl implements ReportStoreService{
 				}
 			}
 	    	
-	    	if(inventoryWarning != null){
-	    		if("1".equals(inventoryWarning)){
-		    		rr.setInventoryWarning("充裕");
-		    	}else if("2".equals(inventoryWarning)){
-		    		rr.setInventoryWarning("缺货");
-		    	}else if("3".equals(inventoryWarning)){
-		    		rr.setInventoryWarning("严重缺货");
-		    	}
-	    	}
+//	    	if(inventoryWarning != null){
+//	    		if("1".equals(inventoryWarning)){
+//		    		rr.setInventoryWarning("充裕");
+//		    	}else if("2".equals(inventoryWarning)){
+//		    		rr.setInventoryWarning("缺货");
+//		    	}else if("3".equals(inventoryWarning)){
+//		    		rr.setInventoryWarning("严重缺货");
+//		    	}
+//	    	}
 	    	
 	    	list2.add(rr);
 	    }

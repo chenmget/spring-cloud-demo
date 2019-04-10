@@ -826,7 +826,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_0.getCode();
             }
             ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOVO.getResultData();
-            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfDirectSuppLy())) {
+            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfDirectSupply())) {
                 hasDirectSuppLy = true;
             }
             if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGroundSupply())) {

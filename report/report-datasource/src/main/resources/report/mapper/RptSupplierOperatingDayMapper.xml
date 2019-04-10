@@ -130,13 +130,4 @@
   </select>
   
   
-  <select id="getMktResEventId" resultType="com.iwhalecloud.retail.report.dto.response.MktIdStatusResp">
-             SELECT mkt_res_event_id,status_date FROM mkt_res_event GROUP BY mkt_res_event_id
- </select>
-  
-  <select id="updateMktResEvent" parameterType="com.iwhalecloud.retail.report.dto.response.MktIdStatusResp">
-             UPDATE MKT_RES_CHNG_EVT_DETAIL SET status_date = #{req.statusDate}
-             where 1=1 and mkt_res_event_id=#{req.mktResEventId}
-  </select>
-  
 </mapper>

@@ -20,6 +20,10 @@ public class RptSupplierOperatingDayManager {
 	@Resource
     private RptSupplierOperatingDayMapper rptSupplierOperatingDayMapper;
 	
+	public String hqmaxItemId(){
+		return rptSupplierOperatingDayMapper.hqmaxItemId();
+	}
+	
 	public void getDataForRptSupplierOperatingDay(RptSupplierOperatingDayReq req){
 		rptSupplierOperatingDayMapper.getDataForRptSupplierOperatingDay(req);
 	}

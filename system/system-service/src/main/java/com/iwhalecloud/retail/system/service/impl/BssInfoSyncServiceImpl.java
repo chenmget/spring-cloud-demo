@@ -76,7 +76,7 @@ public class BssInfoSyncServiceImpl implements BssInfoSyncService {
             UserDTO userDTO = userManager.addAdminUser(user);
             log.info("BssInfoSyncServiceImpl.userInfoSync addAdminUser userDTO:{}", JSON.toJSONString(userDTO));
             if (userDTO != null) {
-                result = assembleResult("", "0", "处理成功");
+                result = assembleResult("新增成功", "0", "处理成功");
             } else {
                 result = assembleResult("新增失败", "1", "处理失败");
             }
@@ -88,7 +88,7 @@ public class BssInfoSyncServiceImpl implements BssInfoSyncService {
             num = userManager.updateUser(user);
             log.info("BssInfoSyncServiceImpl.userInfoSync updateUser num:{}", num);
             if (num > 0) {
-                result = assembleResult("", "0", "处理成功");
+                result = assembleResult("修改成功", "0", "处理成功");
             } else {
                 result = assembleResult("修改失败", "1", "处理失败");
             }
@@ -165,10 +165,10 @@ public class BssInfoSyncServiceImpl implements BssInfoSyncService {
         String resultMsg1 = "{\n" +
                 "\t\"key\": \"svcCont\",\n" +
                 "\t\"svcContContext\": {\n" +
-                "\t\t\"context\": " + result + "\n" +
+                "\t\t\"context\": \"" + result + "\"\n" +
                 "\t},\n" +
-                "\t\"resultCode\": " + resultCode + ",\n" +
-                "\t\"resultMsg\": " + resultMsg + "\n" +
+                "\t\"resultCode\": \"" + resultCode + "\",\n" +
+                "\t\"resultMsg\": \"" + resultMsg + "\"\n" +
                 "}\n";
         return resultMsg1;
     }

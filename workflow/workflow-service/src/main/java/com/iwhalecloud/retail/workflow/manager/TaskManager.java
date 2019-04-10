@@ -7,7 +7,9 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
@@ -115,22 +117,25 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         String taskSubType = processStartDTO.getTaskSubType();
         Task task = addTask(formId,title,processId,applyUserId,applyUserName, taskType, taskStatus
                 , taskSubType,nextNodeId,route.getNextNodeName(),processStartDTO.getExtends1());
-        //@todo 补全route_id,serviceList日志
         //如果serviceList为空，忽略第6部
         log.info("4、根据路由信息查询路由服务（wf_route_service）表，获取需要执行的服务");
         List<RouteService> routeServiceList = routeServiceManager.listRouteService(routeId);
         log.info("TaskManager.startProcess route_id={},routeServiceList={}", routeId, JSON.toJSONString(routeServiceList));
         log.info("5、构造服务运行的容器对象，调用配置的服务");
         invokeRouteService(formId,applyUserId,applyUserName,routeServiceList);
-        log.info("6、根据路由信息的下一环节ID查询环节权限表（wf_node_rights）,获取允许处理当前环节的用户列表");
-        List<NodeRights> nodeRightsList = nodeRightsManager.listNodeRights(nextNodeId);
-        if (CollectionUtils.isEmpty(nodeRightsList)) {
-            log.error("TaskManager.startProcess NOTE_RIGHTS_IS_EMPTY formId = {}", formId);
-            throw new RuntimeException(ResultCodeEnum.NOTE_RIGHTS_IS_EMPTY.getDesc());
+
+        log.info("6、如果下一个节点为结束节点，修改任务实例表的状态、办结时间，忽略后面的步骤");
+        if (WorkFlowConst.WF_NODE.NODE_END.getId().equals(nextNodeId)) {
+            nodeEndHandle(applyUserId, applyUserName, task.getTaskId(), route);
+            return ResultVO.success();
         }
-        // 添加任务项
-        List<HandlerUser> handlerUserList = processStartDTO.getNextHandlerUser();
-        addNextTaskItem(route, task, nodeRightsList, handlerUserList);
+
+        log.info("7、根据路由信息的下一环节ID查询环节权限表（wf_node_rights）,获取允许处理当前环节的用户列表");
+        List<HandlerUser> handlerUserList = getHandlerUsers(task,nextNodeId,processStartDTO.getNextHandlerUser());
+
+        log.info("8、添加下个环节处理");
+        addNextTaskItem(route, task,handlerUserList);
+
         return ResultVO.success();
     }
 
@@ -138,19 +143,13 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      * 添加任务项
      * @return
      */
-    private void addNextTaskItem(Route route, Task task, List<NodeRights> nodeRightsList,List<HandlerUser> handlerUserList) {
-        Boolean handlerUserListEmpty = handlerUserList == null || handlerUserList.isEmpty();
-        TaskItem taskItem = new TaskItem();
-        if (handlerUserListEmpty && nodeRightsList.size() == 1 && WorkFlowConst.RightsType.User.getId().
-            equals(nodeRightsList.get(0).getRightsType())) {
-            NodeRights nodeRights = nodeRightsList.get(0);
-            String handlerUserId = nodeRights.getUserId();
-            UserDTO userDTO = userService.getUserByUserId(handlerUserId);
-            String handlerUserName = userDTO.getUserName();
-            taskItem.setHandlerUserId(handlerUserId);
-            taskItem.setHandlerUserName(handlerUserName);
+    private void addNextTaskItem(Route route, Task task, List<HandlerUser> handlerUserList) {
+        if (CollectionUtils.isEmpty(handlerUserList)) {
+            log.error("TaskManager.addNextTaskItem get handler user is empty，task={}",JSON.toJSON(task));
+            throw new RetailTipException(ResultCodeEnum.NEXT_HADNLE_USER_IS_EMPTY);
         }
 
+        TaskItem taskItem = new TaskItem();
         final String taskId = task.getTaskId();
         taskItem.setRouteId(route.getRouteId());
         taskItem.setRouteName(route.getRouteName());
@@ -160,24 +159,50 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         taskItem.setCurNodeName(route.getNextNodeName());
         taskItem.setTaskId(taskId);
         taskItem.setTaskType(WorkFlowConst.TaskType.FLOW.getCode());
-        taskItem.setItemStatus(WorkFlowConst.TaskItemState.WAITING.getCode());
-        String taskItemId = taskItemManager.addTaskItem(taskItem);
-        if (handlerUserListEmpty) {
-            for (NodeRights nodeRights : nodeRightsList) {
-                List<HandlerUser> handlerUsers = nodeRightsManager.listUserByRightsType(nodeRights, task);
-                log.info("TaskManager.addNextTaskItem taskItemId={},handlerUsers={}", taskItemId, JSON.toJSONString(handlerUsers));
-                for (HandlerUser user : handlerUsers) {
-                    log.info("7、添加流程实例任务池数据（wf_task_pool）");
-                    taskPoolManager.addTaskPool(taskItemId, taskId, user.getHandlerUserId(), user.getHandlerUserName());
-                }
-            }
+
+        if (handlerUserList.size() == 1) {
+            HandlerUser handlerUser = handlerUserList.get(0);
+            taskItem.setHandlerUserId(handlerUser.getHandlerUserId());
+            taskItem.setHandlerUserName(handlerUser.getHandlerUserName());
+            taskItem.setItemStatus(WorkFlowConst.TaskItemState.PENDING.getCode());
+            String taskItemId = taskItemManager.addTaskItem(taskItem);
+
+            log.info("TaskManager.addNextTaskItem only one handleUser,taskItemId={},handlerUsers={}", taskItemId, JSON.toJSONString(handlerUserList));
         } else {
+            taskItem.setItemStatus(WorkFlowConst.TaskItemState.WAITING.getCode());
+            String taskItemId = taskItemManager.addTaskItem(taskItem);
+
             for (HandlerUser item : handlerUserList) {
                 log.info("TaskManager.addNextTaskItem taskItemId={},handlerUsers={}", taskItemId, JSON.toJSONString(handlerUserList));
-                log.info("7、添加流程实例任务池数据（wf_task_pool）");
+                log.info("添加流程实例任务池数据（wf_task_pool）");
                 taskPoolManager.addTaskPool(taskItemId, taskId, item.getHandlerUserId(), item.getHandlerUserName());
             }
         }
+    }
+
+    /**
+     * 获取处理人
+     * @param task 任务实例
+     * @param nextNodeId 下个节点ID
+     * @param handlerUserList 指定的处理人列表（由调用方传入）
+     * @return 处理人列表
+     */
+    private List<HandlerUser> getHandlerUsers(Task task, String nextNodeId,List<HandlerUser> handlerUserList) {
+        // 已经指定处理人
+        if (CollectionUtils.isNotEmpty(handlerUserList)) {
+            return handlerUserList;
+        }
+
+        //获取处理人
+        List<HandlerUser> allHandlerUsers = Lists.newArrayList();
+        List<NodeRights> nodeRightsList = nodeRightsManager.listNodeRights(nextNodeId);
+        for (NodeRights nodeRights : nodeRightsList) {
+            List<HandlerUser> configUsers = nodeRightsManager.listUserByRightsType(nodeRights, task);
+            if (CollectionUtils.isNotEmpty(configUsers)) {
+                allHandlerUsers.addAll(configUsers);
+            }
+        }
+        return allHandlerUsers;
     }
 
     /**
@@ -330,14 +355,13 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
             //将最新的环节信息冗余到任务实例表
             updateTaskStatusById(taskId, WorkFlowConst.TASK_STATUS_PROCESSING,route.getNextNodeId(),route.getNextNodeName());
         }
-        List<NodeRights> nodeRightsList = nodeRightsManager.listNodeRights(noteNextId);
-        if (CollectionUtils.isEmpty(nodeRightsList)) {
-            log.error("TaskManager.nextRoute NOTE_RIGHTS_IS_EMPTY taskItemId = {}", routeNextDTO.getTaskItemId());
-            throw new RuntimeException(ResultCodeEnum.NOTE_RIGHTS_IS_EMPTY.getDesc());
-        }
-        //如果第2点只查询出一个用户，直接填写任务分配时间和处理人信息，忽略第7步
-        log.info("6、根据第1点和第2点和入参信息，添加路由实例表数据（wf_task_item）");
-        addNextTaskItem(route,task,nodeRightsList,routeNextDTO.getNextHandlerUser());
+
+        log.info("6、根据路由信息的下一环节ID查询环节权限表（wf_node_rights）,获取允许处理当前环节的用户列表");
+        List<HandlerUser> handlerUserList = getHandlerUsers(task,noteNextId,routeNextDTO.getNextHandlerUser());
+
+        log.info("7、添加下个环节处理");
+        addNextTaskItem(route, task,handlerUserList);
+
         return ResultVO.success();
     }
 

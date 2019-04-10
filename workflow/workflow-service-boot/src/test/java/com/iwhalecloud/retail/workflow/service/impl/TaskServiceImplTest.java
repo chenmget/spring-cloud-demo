@@ -71,13 +71,13 @@ public class TaskServiceImplTest {
     @Test
     public void nextRoute() {
         RouteNextReq req = new RouteNextReq();
-        req.setTaskId("100016587");
-        req.setTaskItemId("100016588");
-        req.setHandlerUserId("1");
-        req.setHandlerUserName("管理员");
+        req.setTaskId("10135143");
+        req.setTaskItemId("10135146");
+        req.setHandlerUserId("100163600");
+        req.setHandlerUserName("陈德");
         req.setHandlerMsg("处理完成");
-        req.setRouteId("17");
-        req.setNextNodeId("1");
+        req.setRouteId("19");
+        req.setNextNodeId("1007");
 //        List<HandlerUser> userList = Lists.newArrayList();
 //        HandlerUser user = new HandlerUser();
 //        user.setHandlerUserId("1079205258011422722");

@@ -5,6 +5,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.member.dto.request.MemberAddressAddReq;
 import com.iwhalecloud.retail.member.dto.request.MemberAddressListReq;
 import com.iwhalecloud.retail.member.dto.request.MemberAddressUpdateReq;
+import com.iwhalecloud.retail.member.dto.response.MemberAddressRespDTO;
 import com.iwhalecloud.retail.member.service.MemberAddressService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;

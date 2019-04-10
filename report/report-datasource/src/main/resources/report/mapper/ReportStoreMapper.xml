@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.report.mapper.ReportStoreMapper">
@@ -85,3 +86,90 @@
    limit 1000) z
   </select>
 </mapper>
+=======
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.report.mapper.ReportStoreMapper">
+    <select id="ListReportStSale" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStSaleDaoReq"
+            resultType="com.iwhalecloud.retail.report.dto.response.ReportStSaleDaoResp">
+       select * from (
+       SELECT j.* FROM (
+            SELECT h.* FROM (
+  SELECT g.*,g.stockNum/g.AverageDailySales StockTurnover FROM (
+	SELECT 
+	a.PARTNER_NAME partnerName,
+	a.PARTNER_CODE partnerCode,
+	a.BUSINESS_ENTITY_NAME businessEntityName,
+	a.CITY_ID cityId,
+	(SELECT region_name FROM sys_common_region WHERE region_id =a.COUNTY_ID)  countryId,
+	a.PRODUCT_BASE_NAME productBaseName,
+	a.BRAND_NAME brandName,
+	a.PRICE_LEVEL priceLevel,
+	SUM(a.TOTAL_IN_NUM) TheTotalInventory,
+	SUM(a.TOTAL_OUT_NUM) TheTotalOutbound,
+	SUM(a.PURCHASE_NUM) purchaseNum,
+	SUM(a.MANUAL_NUM) manualNum,
+	SUM(a.TRANS_IN_NUM) transInNum,
+	SUM(a.PURCHASE_AMOUNT) purchaseAmount,
+	SUM(a.SELL_NUM) TotalSalesNum,
+	SUM(a.SELL_AMOUNT) sellAmount,
+	SUM(a.UNCONTRACT_NUM) ManualSalesNum,
+	SUM(a.CONTRACT_NUM) CRMContractNum,
+	SUM(a.REGISTER_NUM) registerNum,
+	SUM(a.TRANS_OUT_NUM) transOutNum, 
+	SUM(a.RETURN_NUM) returnNum, 
+	a.type_id typeId,
+	a.stock_warning redStatus,
+	(SELECT (SUM(b.CONTRACT_NUM)+SUM(b.REGISTER_NUM))/7 FROM RPT_PARTNER_OPERATING_DAY b WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(b.DATE) AND a.partner_id=b.partner_id GROUP BY b.partner_id) AverageDailySales,
+	(SELECT SUM(c.STOCK_NUM) FROM RPT_PARTNER_OPERATING_DAY c WHERE c.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY) AND a.partner_id=c.partner_id GROUP BY c.partner_id) stockNum,
+	(SELECT SUM(d.STOCK_AMOUNT) FROM RPT_PARTNER_OPERATING_DAY d WHERE d.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY) AND a.partner_id=d.partner_id GROUP BY d.partner_id) stockAmount
+	FROM rpt_partner_operating_day a
+	where 1=1
+    <if test="req.lanId!=null and req.lanId!=''">
+		and a.CITY_ID =#{req.lanId}
+	</if>
+	<if test="req.city!=null and req.city!=''">
+		and a.COUNTY_ID =#{req.city}
+	</if>
+	<if test="req.retailerName!=null and req.retailerName!=''">
+		and a.PARTNER_NAME like CONCAT(CONCAT('%',#{req.retailerName}),'%')
+	</if>
+	<if test="req.retailerCode!=null and req.retailerCode!=''">
+		and a.PARTNER_CODE  like CONCAT(CONCAT('%',#{req.retailerCode}),'%')
+	</if>
+	<if test="req.brand!=null and req.brand!=''">
+		and a.brand_id=#{req.brand}
+	</if>
+	<if test="req.typeId!=null and req.typeId!=''">  
+		and a.TYPE_ID=#{req.typeId}
+	</if>
+	<if test="req.warningStatus!=null and req.warningStatus!='' ">
+    	and a.redStatus=#{req.warningStatus}
+   	</if>
+	<if test="req.productType!=null and req.productType!=''">
+		and a.PRODUCT_BASE_ID=#{req.productType}
+	</if>
+	<if test="req.businessEntityName!=null and req.businessEntityName!=''">
+		and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')
+	</if>
+	<if test="req.createTimeStart!=null and req.createTimeStart!=''">
+		and a.DATE &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+	</if>
+	<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
+			and a.DATE &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+	</if>
+	<if test="req.outTimeStart!=null and req.outTimeStart!=''">
+		and a.DATE &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+	</if>
+	<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
+			and a.DATE &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+	</if>
+
+      GROUP BY a.partner_id
+	) g
+		)h
+			)j
+   limit 1000) z
+  </select>
+</mapper>
+>>>>>>> release

@@ -73,7 +73,7 @@ public class AccountBalancePayoutController {
         try {
             Workbook workbook = new HSSFWorkbook();
             String fileName = "返利使用明细";
-            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames);
+            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames,false);
             OutputStream output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");

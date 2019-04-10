@@ -75,7 +75,7 @@ public class AccountBalanceDetailController {
         try {
             Workbook workbook = new HSSFWorkbook();
             String fileName = "返利活动明细";
-            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames);
+            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames,false);
             OutputStream output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");

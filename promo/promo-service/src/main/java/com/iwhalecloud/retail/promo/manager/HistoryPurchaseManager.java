@@ -48,10 +48,7 @@ public class HistoryPurchaseManager extends ServiceImpl<HistoryPurchaseMapper, H
         return historyPurchaseMapper.updateHistroyPurchase(historyPurchase);
     }
 
-    /**
-     * 根据营销活动Id查询活动购买记录
-     * @return
-     */
+
     public List<HistoryPurchase> queryHistoryPurchaseByMarketingActivityId(List<String> marketingActivityIds) {
         QueryWrapper<HistoryPurchase> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(HistoryPurchase.FieldNames.isDeleted.getTableFieldName(), PromoConst.IsDelete.IS_DELETE_CD_0.getCode());

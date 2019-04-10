@@ -69,9 +69,10 @@ public class SelectOrderServiceTest extends TestBase {
         AdvanceOrderReq req=new AdvanceOrderReq();
         req.setUserExportType("3");
         req.setOrderCat("0");
+        req.setUserCode("4301811022885");
+        req.setUserId("1077839559879852033");
         req.setSourceFrom("YHJ");
         SourceFromContext.setSourceFrom("YHJ");
-        req.setOrderId("201903129710000440");
         orderSelectService.orderExport(req);
     }
 

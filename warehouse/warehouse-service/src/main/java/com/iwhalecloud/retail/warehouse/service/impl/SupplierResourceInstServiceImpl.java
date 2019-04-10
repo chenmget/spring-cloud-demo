@@ -316,13 +316,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         List<String> nbrList = resourceInstDTOList.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
 
         Boolean sameLanId = sourceMerchantDTO.getLanId() != null && destMerchantDTO.getLanId() != null && sourceMerchantDTO.getLanId().equals(destMerchantDTO.getLanId());
-        Boolean twoNbrType = twoNbrType(nbrList, sourceMerchantDTO.getMerchantId());
-        // step1 如果跨地市、调拨两种不同的串码不允许调拨
+        // step1 如果跨地市不允许调拨(地包调货不考虑串码类型)
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
         String reqCode = resourceInstManager.getPrimaryKey();
-        if (twoNbrType) {
-            return ResultVO.error("不能调拨，请检查调拨串码和目标仓库");
-        }
 
         String processId = ResourceConst.ALLOCATE_WORK_FLOW_INST;
         String taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType();
@@ -747,24 +743,24 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
      * @param nbrList
      * @return
      */
-    private Boolean twoNbrType(List<String> nbrList, String merchantId){
-        Boolean hasDirectSuppLy = false;
-        Boolean hasGroundSupply = false;
-        for (String nbr : nbrList) {
-            ResultVO<ResouceInstTrackDTO> resouceInstTrackDTOVO = resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId(nbr, merchantId);
-            log.info("SupplierResourceInstServiceImpl.twoNbrType resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId nbr={}, resp={}", nbr, JSON.toJSONString(resouceInstTrackDTOVO));
-            if (!resouceInstTrackDTOVO.isSuccess() || null == resouceInstTrackDTOVO.getResultData()) {
-                return true;
-            }
-            ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOVO.getResultData();
-            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfDirectSuppLy())) {
-                hasDirectSuppLy = true;
-            }
-            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGroundSupply())) {
-                hasGroundSupply = true;
-            }
-        }
-        return hasDirectSuppLy && hasGroundSupply;
-
-    }
+//    private Boolean twoNbrType(List<String> nbrList, String merchantId){
+//        Boolean hasDirectSuppLy = false;
+//        Boolean hasGroundSupply = false;
+//        for (String nbr : nbrList) {
+//            ResultVO<ResouceInstTrackDTO> resouceInstTrackDTOVO = resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId(nbr, merchantId);
+//            log.info("SupplierResourceInstServiceImpl.twoNbrType resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId nbr={}, resp={}", nbr, JSON.toJSONString(resouceInstTrackDTOVO));
+//            if (!resouceInstTrackDTOVO.isSuccess() || null == resouceInstTrackDTOVO.getResultData()) {
+//                return true;
+//            }
+//            ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOVO.getResultData();
+//            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfDirectSuppLy())) {
+//                hasDirectSuppLy = true;
+//            }
+//            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGroundSupply())) {
+//                hasGroundSupply = true;
+//            }
+//        }
+//        return hasDirectSuppLy && hasGroundSupply;
+//
+//    }
 }

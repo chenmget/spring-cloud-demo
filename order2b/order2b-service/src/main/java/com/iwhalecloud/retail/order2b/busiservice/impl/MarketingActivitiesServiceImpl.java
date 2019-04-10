@@ -32,6 +32,11 @@ public class MarketingActivitiesServiceImpl implements MarketingActivitiesServic
     public CommonResultResp orderActivityAmount(PreCreateOrderReq request, BuilderOrderModel model) {
         CommonResultResp resp = new CommonResultResp();
 
+        if(true){
+            resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+            return resp;
+        }
+
         /**
          * 优惠券
          */
@@ -128,6 +133,11 @@ public class MarketingActivitiesServiceImpl implements MarketingActivitiesServic
     @Override
     public CommonResultResp marketingActivities(PreCreateOrderReq request, BuilderOrderModel model, CreateOrderLogModel logModel) {
         CommonResultResp resp = new CommonResultResp();
+
+        if(true){
+            resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+            return resp;
+        }
 
         /**
          * 优惠券活动

@@ -1,18 +1,10 @@
 package com.iwhalecloud.retail.order2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.dto.model.order.AdvanceOrderDTO;
-import com.iwhalecloud.retail.order2b.dto.resquest.order.AdvanceOrderReq;
 import com.iwhalecloud.retail.order2b.entity.AdvanceOrder;
-import com.iwhalecloud.retail.order2b.entity.OrderItem;
 import com.iwhalecloud.retail.order2b.mapper.AdvanceOrderMapper;
-import com.iwhalecloud.retail.order2b.mapper.OrderItemMapper;
-import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
-import com.iwhalecloud.retail.order2b.model.AdvanceOrderInfoModel;
-import com.iwhalecloud.retail.order2b.model.OrderItemModel;
 import com.iwhalecloud.retail.order2b.model.SelectOrderDetailModel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -31,39 +23,10 @@ public class AdvanceOrderManager {
     @Resource
     private AdvanceOrderMapper advanceOrderMapper;
 
-    @Resource
-    private OrderItemMapper orderItemMapper;
-
-    @Resource
-    private OrderMapper orderMapper;
-
     public int insertInto(AdvanceOrder advanceOrder){
        return advanceOrderMapper.insert(advanceOrder);
     }
 
-    /**
-     * 查询预售订单列表
-     * @param req
-     * @return
-     */
-    public IPage<AdvanceOrderInfoModel> queryAdvanceOrderList(SelectOrderDetailModel req) {
-        Page page = new Page();
-        page.setSize(req.getPageSize());
-        page.setCurrent(req.getPageNo());
-        page.setDesc("create_time");
-        IPage<AdvanceOrderInfoModel> list = orderMapper.queryAdvanceOrderList(page, req);
-        if (!CollectionUtils.isEmpty(list.getRecords())) {
-            for (AdvanceOrderInfoModel model : list.getRecords()) {
-                OrderItemModel orderItem = new OrderItemModel();
-                orderItem.setOrderId(model.getOrderId());
-                orderItem.setLanIdList(req.getLanIdList());
-                model.setOrderItems(orderItemMapper.selectOrderItem(orderItem));
-                model.setAdvanceOrder(getAdvanceOrderByOrderId(model.getOrderId()));
-            }
-        }
-
-        return list;
-    }
 
     /**
      * 按条件查询预售订单信息

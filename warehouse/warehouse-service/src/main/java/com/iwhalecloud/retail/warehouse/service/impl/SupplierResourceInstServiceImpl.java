@@ -313,6 +313,15 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
         // 添加产品信息
         for (ResourceInstListResp resp : list) {
+            ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
+            log.info("SupplierResourceInstServiceImpl.listResourceInst  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
+            MerchantDTO merchantDTO = merchantResultVO.getResultData();
+            if (null != merchantDTO) {
+                resp.setRegionName(merchantDTO.getCityName());
+                resp.setLanName(merchantDTO.getLanName());
+                resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+            }
+
             String productId = resp.getMktResId();
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
             queryReq.setProductId(productId);
@@ -362,7 +371,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
         String reqCode = resourceInstManager.getPrimaryKey();
         if (twoNbrType) {
-            return ResultVO.error("不支持同时调拨不同类型");
+            return ResultVO.error("不能调拨，请检查调拨串码和目标仓库");
         }
 
         String processId = ResourceConst.ALLOCATE_WORK_FLOW_INST;

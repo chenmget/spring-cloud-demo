@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.report.mapper.RptSupplierOperatingDayMapper">
+
+	<select id="hqmaxItemId" resultType="String">
+		 SELECT MAX(item_id) FROM rpt_supplier_operating_day
+	 </select>
+	 
 	 <select id="hqParMerchant" 
 	 	resultType="com.iwhalecloud.retail.report.dto.response.ParMerchantResp">
 		 SELECT 
@@ -11,8 +16,8 @@
 		 city 
 		 FROM par_merchant 
 		 WHERE 1=1 AND STATUS='1000' 
-		 AND merchant_type = '02' 
-		 AND DATE_FORMAT(LAST_UPDATE_DATE,'%Y-%m-%d')=DATE_SUB(CURDATE(),INTERVAL 1 DAY)
+		 AND merchant_type = '2' 
+		# AND DATE_FORMAT(LAST_UPDATE_DATE,'%Y-%m-%d')=DATE_SUB(CURDATE(),INTERVAL 1 DAY)
 	 </select>
 
  	<select id="hqMktResStore" parameterType="com.iwhalecloud.retail.report.dto.request.MktResInstEventReq"
@@ -24,9 +29,9 @@
       
     <select id="hqMktResInst" parameterType="com.iwhalecloud.retail.report.dto.request.MktResInstEventReq"
             resultType="com.iwhalecloud.retail.report.dto.response.MktResInstResq">
-	            SELECT b.product_id,p.unit_name product_base_name,base.product_name,base.brand_id,pb.name brand_name,base.param1 price_level,base.product_base_id FROM(
+	            SELECT base.type_id,b.product_id,p.unit_name product_base_name,base.product_name,base.brand_id,pb.name brand_name,base.param1 price_level,base.product_base_id FROM(
 				SELECT a.mkt_res_id product_id FROM mkt_res_inst a WHERE a.mkt_res_store_id =#{req.mktResStoreId} AND a.status_cd='1202' 
-				 AND DATE_FORMAT(STATUS_DATE,'%Y-%m-%d')=DATE_SUB(CURDATE(),INTERVAL 1 DAY) 
+				# AND DATE_FORMAT(STATUS_DATE,'%Y-%m-%d')=DATE_SUB(CURDATE(),INTERVAL 1 DAY) 
 				 GROUP BY product_id) b
 				LEFT JOIN prod_product p ON b.product_id = p.product_id
 				LEFT JOIN prod_product_base base ON base.product_base_id = p.product_base_id
@@ -37,11 +42,11 @@
      <select id="hqmktResEventru" parameterType="com.iwhalecloud.retail.report.dto.request.MktResInstEventReq"
             resultType="com.iwhalecloud.retail.report.dto.response.MktResEventruchu">
              SELECT * FROM (
-				SELECT base.product_base_id,b.*,n.goods_id,n.price FROM (
+				SELECT base.type_id,base.product_base_id,b.*,n.goods_id,n.price FROM (
 					SELECT a.mkt_res_event_id,a.event_type,a.obj_id,a.mkt_res_id product_id 
 					FROM mkt_res_event a 
 				    WHERE a.dest_store_id = #{req.mktResStoreId}  AND a.status_cd='1003'
-				     AND DATE_FORMAT(STATUS_DATE,'%Y-%m-%d')=DATE_SUB(CURDATE(),INTERVAL 1 DAY) 
+				 #    AND DATE_FORMAT(STATUS_DATE,'%Y-%m-%d')=DATE_SUB(CURDATE(),INTERVAL 1 DAY) 
 				     GROUP BY product_id) b
 				    LEFT JOIN  prod_product p ON b.product_id=p.product_id
 				    LEFT JOIN prod_product_base base ON base.product_base_id = p.product_base_id
@@ -52,11 +57,11 @@
      <select id="hqmktResEventchu" parameterType="com.iwhalecloud.retail.report.dto.request.MktResInstEventReq"
             resultType="com.iwhalecloud.retail.report.dto.response.MktResEventruchu">
 	             SELECT * FROM (
-				SELECT base.product_base_id,b.*,n.goods_id,n.price FROM (
+				SELECT base.type_id,base.product_base_id,b.*,n.goods_id,n.price FROM (
 					SELECT a.mkt_res_event_id,a.event_type,a.obj_id,a.mkt_res_id product_id 
 					FROM mkt_res_event a 
 				    WHERE a.mkt_res_store_id = #{req.mktResStoreId}  AND a.status_cd='1003' 
-				     AND DATE_FORMAT(STATUS_DATE,'%Y-%m-%d')=DATE_SUB(CURDATE(),INTERVAL 1 DAY) 
+				 #    AND DATE_FORMAT(STATUS_DATE,'%Y-%m-%d')=DATE_SUB(CURDATE(),INTERVAL 1 DAY) 
 				     GROUP BY product_id) b
 				    LEFT JOIN  prod_product p ON b.product_id=p.product_id
 				    LEFT JOIN prod_product_base base ON base.product_base_id = p.product_base_id
@@ -91,9 +96,10 @@
 	`RETURN_NUM`,
 	`STOCK_NUM`,
 	`STOCK_AMOUNT`,
-	`CREATE_DATE`
+	`CREATE_DATE`,
+	`TYPE_ID`
 	) VALUES(
-	NULL,
+	#{req.itemId},
 	#{req.itemDate},
 	#{req.supplierId},
 	#{req.supplierCode},
@@ -118,7 +124,19 @@
 	#{req.returnNum},
 	#{req.stockNum},
 	#{req.stockAmount},
-	NOW())
+	NOW(),
+	#{req.typeId})
    
   </select>
+  
+  
+  <select id="getMktResEventId" resultType="com.iwhalecloud.retail.report.dto.response.MktIdStatusResp">
+             SELECT mkt_res_event_id,status_date FROM mkt_res_event GROUP BY mkt_res_event_id
+ </select>
+  
+  <select id="updateMktResEvent" parameterType="com.iwhalecloud.retail.report.dto.response.MktIdStatusResp">
+             UPDATE MKT_RES_CHNG_EVT_DETAIL SET status_date = #{req.statusDate}
+             where 1=1 and mkt_res_event_id=#{req.mktResEventId}
+  </select>
+  
 </mapper>

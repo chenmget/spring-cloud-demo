@@ -555,7 +555,9 @@ public class MerchantManager {
 
         // 营业执照号、税号、公司账号、营业执照失效期、营业执照失效期开始时间、营业执照失效期 结束时间 转换成 merchant_id
         if (!StringUtils.isEmpty(req.getBusiLicenceCode()) || !StringUtils.isEmpty(req.getTaxCode())
-                || !StringUtils.isEmpty(req.getRegisterBankAcct()) || Objects.nonNull(req.getEndExpireDate()) || Objects.nonNull(req.getStartExpireDate())) {
+                || !StringUtils.isEmpty(req.getRegisterBankAcct())
+                || Objects.nonNull(req.getEndExpireDate()) || Objects.nonNull(req.getStartExpireDate())) {
+
             InvoiceListReq invoiceListReq = new InvoiceListReq();
             BeanUtils.copyProperties(req, invoiceListReq);
             invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());

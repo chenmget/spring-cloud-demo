@@ -261,12 +261,6 @@ public class ResourceInstListResp implements java.io.Serializable {
 	private java.lang.String lanName;
 
 	/**
-	 * 市县
-	 */
-	@ApiModelProperty(value = "市县")
-	private java.lang.String city;
-
-	/**
 	 * 公共管理区域标识
 	 */
 	@ApiModelProperty(value = "公共管理区域标识")

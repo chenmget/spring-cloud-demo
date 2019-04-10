@@ -28,8 +28,8 @@ public class ResourceInstColum {
         orderMap.add(new ExcelTitleName("supplierCode", "供应商编码"));
         orderMap.add(new ExcelTitleName("merchantName", "商家名称"));
         orderMap.add(new ExcelTitleName("merchantCode", "商家编码"));
-        orderMap.add(new ExcelTitleName("lanId", "商家所属地市"));
-        orderMap.add(new ExcelTitleName("city", "商家所属区县"));
+        orderMap.add(new ExcelTitleName("lanName", "商家所属地市"));
+        orderMap.add(new ExcelTitleName("regionName", "商家所属区县"));
         orderMap.add(new ExcelTitleName("businessEntityName", "商家所属经营主体名称"));
         orderMap.add(new ExcelTitleName("createDate", "入库时间"));
         return orderMap;

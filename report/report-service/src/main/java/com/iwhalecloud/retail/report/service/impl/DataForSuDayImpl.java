@@ -21,7 +21,7 @@ public class DataForSuDayImpl implements DataForSuDay {
 
 	@Autowired
 	private RptSupplierOperatingDayManager rptSupplierOperatingDayManager;
-	
+
 	@Override
 	public void hqDataForRptSupplierOperatingDay() {
 		//第一步：获取获取供应商列表,循环处理每一个商家ID
@@ -29,7 +29,7 @@ public class DataForSuDayImpl implements DataForSuDay {
 		for(int i=0;i<parMerchantlist.size();i++){
 			MktResInstEventReq mktreq = new MktResInstEventReq();
 			ParMerchantResp parMerchant = parMerchantlist.get(i);
-			
+
 			String merchant_id = parMerchant.getMerchantId();//供应商id
 			String merchant_code = parMerchant.getMerchantCode();//供应商编码
 			String merchant_name = parMerchant.getMerchantName();//供应商名称
@@ -82,8 +82,8 @@ public class DataForSuDayImpl implements DataForSuDay {
 					}
 					purchase_amount = (manual_num+trans_in_num+purchase_num)*price;
 				}
-				
-				
+
+
 				//每一个机型的出库：
 				int trans_out_num = 0;
 				int return_num = 0;
@@ -111,12 +111,12 @@ public class DataForSuDayImpl implements DataForSuDay {
 				}
 				int stock_num = manual_num +trans_in_num +purchase_num-trans_out_num-return_num-sell_num;//入库总量-出库总量
 				double stock_amount = stock_num*price;
-				//写表	
-				Calendar ca = Calendar.getInstance();//得到一个Calendar的实例 
-				ca.setTime(new Date()); //设置时间为当前时间 
+				//写表
+				Calendar ca = Calendar.getInstance();//得到一个Calendar的实例
+				ca.setTime(new Date()); //设置时间为当前时间
 				ca.add(Calendar.DATE, -1);
 				Date date = ca.getTime();
-				SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd"); 
+				SimpleDateFormat sf = new SimpleDateFormat("yyyy-MM-dd");
 				String nowTime = sf.format(date);
 				RptSupplierOperatingDayReq req = new RptSupplierOperatingDayReq();
 				req.setItemId(null);

@@ -22,6 +22,12 @@
         <if test="req.tagId != null and req.tagId != ''">
             and t.TAG_ID = #{req.tagId}
         </if>
+        <if test="null!=req.merchantIdList">
+            and t.MERCHANT_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIdList">
+                #{item}
+            </foreach>
+        </if>
     </select>
 
 </mapper>

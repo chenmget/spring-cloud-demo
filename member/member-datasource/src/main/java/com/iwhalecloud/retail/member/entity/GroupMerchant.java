@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.member.entity;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import lombok.Data;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * GroupMerchant  
@@ -17,7 +17,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
  */
 @Data
 @TableName("mem_group_merchant")
-@KeySequence(value = "seq_mem_group_merchantid", clazz = String.class)
+@KeySequence(value = "seq_mem_group_merchant_id", clazz = String.class)
 @ApiModel(value = "对应模型mem_group_merchant, 对应实体GroupMerchant  类")
 public class GroupMerchant implements Serializable {
     /**表名常量*/
@@ -69,6 +69,8 @@ public class GroupMerchant implements Serializable {
     /** 字段名称枚举. */
     public enum FieldNames {
 		/** 商家ID. */
+		id("id","ID"),
+
 		merchId("merchId","MERCH_ID"),
 		
 		/** 会员群ID. */

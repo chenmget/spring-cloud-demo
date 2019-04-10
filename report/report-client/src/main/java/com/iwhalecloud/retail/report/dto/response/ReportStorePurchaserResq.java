@@ -23,7 +23,7 @@ public class ReportStorePurchaserResq implements Serializable{
 	  private String AverageDailySales;//近7天日均销量
 	  	private String StockNum;//库存量
 	  private String StockTurnover;//库存周转率
-	  private String InventoryWarning;//库存预警
+	  private String redStatus;//库存预警
 	  private String DATE;
 	  private String STOCK_NUM;
 	  private String PRODUCT_BASE_ID;
@@ -35,5 +35,10 @@ public class ReportStorePurchaserResq implements Serializable{
 	  private String userId;
 	  private String brandId;
 	  private String typeId;	//产品类型
+	  private String partnerName;
+	  private String partnerCode;
+	  private String businessEntityName;
+	  private String cityId;
+	  private String countryId;
 
 }

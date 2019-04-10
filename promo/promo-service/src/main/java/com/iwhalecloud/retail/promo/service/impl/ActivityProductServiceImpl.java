@@ -149,7 +149,7 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         ActivityProduct activityProduct = new ActivityProduct();
         BeanUtils.copyProperties(activityProductReq, activityProduct);
         if (PromoConst.ProductNumFlg.ProductNumFlg_0.getCode().equals(activityProductReq.getNumLimitFlg())) {
-            activityProduct.setNum(Long.getLong("-1"));
+            activityProduct.setNum(Long.valueOf("-1"));
         }
         activityProduct.setGmtCreate(new Date());
         activityProduct.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());

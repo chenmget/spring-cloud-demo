@@ -18,8 +18,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 @Data
 @TableName("ACCOUNT_BALANCE_RULE")
 @ApiModel(value = "对应模型ACCOUNT_BALANCE_RULE, 对应实体AccountBalanceRule类")
-
-
+@KeySequence(value="seq_rule_id",clazz = String.class)
 public class AccountBalanceRule implements Serializable {
     /**表名常量*/
     public static final String TNAME = "ACCOUNT_BALANCE_RULE";
@@ -30,9 +29,9 @@ public class AccountBalanceRule implements Serializable {
   	/**
   	 * 规则标识
   	 */
-	//@TableId(type = IdType.INPUT)
+	@TableId
 	@ApiModelProperty(value = "规则标识")
-  	private String ruleId;
+  	private java.lang.String ruleId;
   	
   	/**
   	 * 余额账本所属的余额类型。ACC-C-0009

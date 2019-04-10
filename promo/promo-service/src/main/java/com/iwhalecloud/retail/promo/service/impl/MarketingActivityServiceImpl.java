@@ -200,7 +200,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
             //添加账户余额类型
             AccountBalanceType balanceType = new AccountBalanceType();
-            balanceType.setBalanceTypeName(req.getName()+"返利");
+            balanceType.setBalanceTypeName(req.getName());
             balanceType.setActId(marketingActivityId);
             balanceType.setCreateStaff(req.getCreator());
             balanceType.setUpdateStaff(req.getModifier());

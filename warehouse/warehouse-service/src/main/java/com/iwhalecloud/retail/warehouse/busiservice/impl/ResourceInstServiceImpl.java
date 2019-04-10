@@ -620,7 +620,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
 
     @Override
     public ResultVO updateResourceInstByIdsForTransaction(AdminResourceInstDelReq req) {
-        log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction req={},resp={}", JSON.toJSONString(req));
+        log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction req={}", JSON.toJSONString(req));
         // 组装数据
         assembleData(req);
         Map<String, List<ResourceInstDTO>> insts = req.getInsts();
@@ -639,7 +639,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 mktResInstList.add(dto.getMktResInstId());
                 adminResourceInstDelReq.setMktResInstIds(mktResInstList);
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
-                log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(sucessNum));
+                log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(num));
                 if(num < 1){
                     unavailbaleNbrs.add(dto.getMktResInstId());
                     continue;

@@ -205,7 +205,7 @@ public class SupplierResourceInstB2BController {
     @PostMapping(value="nbrExport")
     @UserLoginToken
     public void nbrExport(@RequestBody ResourceInstListReq req, HttpServletResponse response) {
-        ResultVO<Page<ResourceInstListResp>> dataVO = supplierResourceInstService.listResourceInst(req);
+        ResultVO<Page<ResourceInstListResp>> dataVO = supplierResourceInstService.getResourceInstList(req);
         if (!dataVO.isSuccess()) {
             return;
         }

@@ -73,13 +73,7 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     @Override
     public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req) {
         log.info("SupplierResourceInstOpenServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
-        return supplierResourceInstService.listResourceInst(req);
-    }
-
-    @Override
-    public ResultVO<Page<ResourceInstListResp>> listResourceInst(ResourceInstListReq req) {
-        log.info("SupplierResourceInstOpenServiceImpl.listResourceInst req={}", JSON.toJSONString(req));
-        return supplierResourceInstService.listResourceInst(req);
+        return supplierResourceInstService.getResourceInstList(req);
     }
 
     @Override

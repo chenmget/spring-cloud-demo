@@ -481,7 +481,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         qryMktInstInfoByConditionReq.setPageIndex(String.valueOf(req.getPageNo()));
         qryMktInstInfoByConditionReq.setPageSize(String.valueOf(req.getPageSize()));
         ResultVO<QueryMarkResQueryResultsSwapResp<QryMktInstInfoByConditionItemSwapResp>> queryMarkResQueryResultsRespResultVO = marketingResStoreService.qryMktInstInfoByCondition(qryMktInstInfoByConditionReq);
-        log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr marketingResStoreService.qryMktInstInfoByCondition req={}, resp={}", JSON.toJSONString(qryMktInstInfoByConditionReq), JSON.toJSONString(queryMarkResQueryResultsRespResultVO));
+        log.info("RetailerResourceInstMarketServiceImpl.listResourceInst marketingResStoreService.qryMktInstInfoByCondition req={}, resp={}", JSON.toJSONString(qryMktInstInfoByConditionReq), JSON.toJSONString(queryMarkResQueryResultsRespResultVO));
         if (!queryMarkResQueryResultsRespResultVO.isSuccess() || queryMarkResQueryResultsRespResultVO.getResultData() == null || CollectionUtils.isEmpty(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo())) {
             return ResultVO.success(new Page<ResourceInstListResp>());
         }

@@ -9,4 +9,5 @@ import java.util.List;
 public class OrderItemModel extends OrderItem {
 
     private List<String> lanIdList;
+    private List<String> orderIdList;
 }

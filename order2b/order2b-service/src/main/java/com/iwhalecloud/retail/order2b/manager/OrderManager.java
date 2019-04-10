@@ -13,12 +13,16 @@ import com.iwhalecloud.retail.order2b.mapper.OrderItemDetailMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderItemMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.model.*;
-import com.iwhalecloud.retail.warehouse.dto.MktResStoreTempDTO;
+import com.iwhalecloud.retail.order2b.util.Utils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -41,22 +45,22 @@ public class OrderManager {
     }
 
     public Order getOrderById(String orderId) {
-        Order order=new Order();
+        Order order = new Order();
         order.setOrderId(orderId);
         return orderMapper.getOrderById(order);
     }
 
     public OrderItem getOrderItemById(String itemId) {
-        OrderItem orderItem=new OrderItem();
+        OrderItem orderItem = new OrderItem();
         orderItem.setItemId(itemId);
         return orderItemMapper.selectOrderItemByItemId(orderItem);
     }
 
     public List<OrderItemInfoModel> getOrderItemInfoListById(OrderItem orderItem) {
-        List<OrderItemInfoModel> list=orderItemMapper.selectOrderItemInfoListById(orderItem);
-        if(!CollectionUtils.isEmpty(list)){
-            for (OrderItemInfoModel infoModel:list){
-                OrderItemDetailModel model=new OrderItemDetailModel();
+        List<OrderItemInfoModel> list = orderItemMapper.selectOrderItemInfoListById(orderItem);
+        if (!CollectionUtils.isEmpty(list)) {
+            for (OrderItemInfoModel infoModel : list) {
+                OrderItemDetailModel model = new OrderItemDetailModel();
                 model.setItemId(infoModel.getItemId());
                 model.setState(OrderAllStatus.ORDER_STATUS_5.getCode());
                 infoModel.setDetailList(orderItemDetailMapper.selectOrderItemDetail(model));
@@ -67,17 +71,19 @@ public class OrderManager {
     }
 
 
-
-
     public List<OrderItem> selectOrderItemsList(String order) {
-        OrderItemModel orderItem=new OrderItemModel();
+        OrderItemModel orderItem = new OrderItemModel();
         orderItem.setOrderId(order);
         List<OrderItem> orderItems = orderItemMapper.selectOrderItem(orderItem);
         return orderItems;
     }
 
+    @Value("${fdfs.show.url}")
+    private String showUrl;
+
+
     /**
-     * 查询订单（管理员）
+     * 查询订单,订单项
      */
     public IPage<OrderInfoModel> selectOrderListByOrder(SelectOrderDetailModel req) {
         Page page = new Page();
@@ -85,14 +91,36 @@ public class OrderManager {
         page.setCurrent(req.getPageNo());
         page.setDesc("create_time");
         IPage<OrderInfoModel> list = orderMapper.selectOrderListByOrder(page, req);
-        if(CollectionUtils.isEmpty(list.getRecords())){
+        if (CollectionUtils.isEmpty(list.getRecords())) {
             return list;
         }
-        for (OrderInfoModel model:list.getRecords()){
-            OrderItemModel orderItem=new OrderItemModel();
-            orderItem.setOrderId(model.getOrderId());
-            orderItem.setLanIdList(req.getLanIdList());
-            model.setOrderItems(orderItemMapper.selectOrderItem(orderItem));
+        List<String> orderIds = new ArrayList<>(list.getRecords().size());
+        for (OrderInfoModel model : list.getRecords()) {
+            orderIds.add(model.getOrderId());
+        }
+        OrderItemModel orderItemModel = new OrderItemModel();
+        orderItemModel.setOrderIdList(orderIds);
+        orderItemModel.setLanIdList(req.getLanIdList());
+        List<OrderItem> orderItems = orderItemMapper.selectOrderItem(orderItemModel);
+        Map<String, List<OrderItem>> orderItemMaps = orderItems.stream().collect(Collectors.groupingBy(OrderItem::getOrderId));
+
+        for (OrderInfoModel model : list.getRecords()) {
+            model.setOrderItems(orderItemMaps.get(model.getOrderId()));
+            int receiveNum = 0;
+            int deliveryNum = 0;
+            for (OrderItem orderItem : model.getOrderItems()) {
+                if (orderItem.getReceiveNum() != null) {
+                    receiveNum += orderItem.getReceiveNum();
+                }
+                if (orderItem.getDeliveryNum() != null) {
+                    deliveryNum += orderItem.getDeliveryNum();
+                }
+                if (!org.springframework.util.StringUtils.isEmpty(orderItem.getImage())) {
+                    orderItem.setImage(Utils.attacheUrlPrefix(showUrl, orderItem.getImage()));
+                }
+            }
+            model.setReceiveNum(receiveNum);
+            model.setDeliveryNum(deliveryNum);
         }
         return list;
     }
@@ -109,8 +137,8 @@ public class OrderManager {
     }
 
     public double getOrderAmountByCondition(OrderStatisticsRawReq req) {
-        Double doub=orderMapper.getOrderAmountByCondition(req);
-        if(doub == null){
+        Double doub = orderMapper.getOrderAmountByCondition(req);
+        if (doub == null) {
             return 0.0;
         }
         return doub;
@@ -133,22 +161,22 @@ public class OrderManager {
         return orderItemDetailMapper.selectOrderIdByresNbr(orderItemDetail);
     }
 
-    public int updateResNbr(OrderItemDetailModel list){
-        return  orderItemDetailMapper.updateResNbr(list);
+    public int updateResNbr(OrderItemDetailModel list) {
+        return orderItemDetailMapper.updateResNbr(list);
     }
 
-    public List<String> selectResNbrListByIds(List<String> ids){
-        OrderItemDetailModel model=new OrderItemDetailModel();
+    public List<String> selectResNbrListByIds(List<String> ids) {
+        OrderItemDetailModel model = new OrderItemDetailModel();
         model.setDetailList(ids);
-       return orderItemDetailMapper.selectResNbrListByIds(model);
+        return orderItemDetailMapper.selectResNbrListByIds(model);
     }
 
-    public List<OrderItemDetail> selectOrderItemDetail(OrderItemDetailModel detail){
+    public List<OrderItemDetail> selectOrderItemDetail(OrderItemDetailModel detail) {
         return orderItemDetailMapper.selectOrderItemDetail(detail);
     }
 
     //查询订单项
-    public List<OrderItem> selectOrderItem(OrderItemModel item){
+    public List<OrderItem> selectOrderItem(OrderItemModel item) {
         return orderItemMapper.selectOrderItem(item);
     }
 

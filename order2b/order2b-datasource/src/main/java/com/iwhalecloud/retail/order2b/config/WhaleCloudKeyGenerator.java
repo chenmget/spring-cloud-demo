@@ -24,20 +24,20 @@ public class WhaleCloudKeyGenerator{
 
 
     public String tableKeySeq(String seqName) {
-        seqName="seq_retail_all_tables.nextval";
-        return builderKeySeq().concat(selectSeqMapper.getSeq(seqName));
-//        if (StringUtils.isEmpty(seqName)) {
-//            return builderKeySeqD();
-//        }
-//        if (DB_TYPE_TEL.equals(dataSourceType)) {
-//            DBTableSequence dbTableSequence = DBTableSequence.matchOpCode(seqName);
-//            if (StringUtils.isEmpty(dbTableSequence.getCode())) {
-//                return builderKeySeqD();
-//            }
-//            return builderKeySeq().concat(selectSeqMapper.getSeq(seqName.concat(".nextval")));
-//        } else {
-//            return builderKeySeqD();
-//        }
+//        seqName="seq_retail_all_tables.nextval";
+//        return builderKeySeq().concat(selectSeqMapper.getSeq(seqName));
+        if (StringUtils.isEmpty(seqName)) {
+            return builderKeySeqD();
+        }
+        if (DB_TYPE_TEL.equals(dataSourceType)) {
+            DBTableSequence dbTableSequence = DBTableSequence.matchOpCode(seqName);
+            if (StringUtils.isEmpty(dbTableSequence.getCode())) {
+                return builderKeySeqD();
+            }
+            return builderKeySeq().concat(selectSeqMapper.getSeq(seqName));
+        } else {
+            return builderKeySeqD();
+        }
     }
 
     private static String builderKeySeq() {

@@ -237,10 +237,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         }
         ResultVO<IPage<AdvanceOrderResp>> pageResultVO=new ResultVO<>();
         BeanUtils.copyProperties(resultVO,pageResultVO);
-        pageResultVO.setResultData(new Page<>());
 
-        Page<AdvanceOrderResp> respPage=JSON.parseObject(JSON.toJSONString(resultVO.getResultData()),Page.class);
-        pageResultVO.setResultData(respPage);
         if (pageResultVO.getResultData() == null || CollectionUtils.isEmpty(pageResultVO.getResultData().getRecords())) {
             result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             result.setResultMsg("导出失败，未查询到订单数据");

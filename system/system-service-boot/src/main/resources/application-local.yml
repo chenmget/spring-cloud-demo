@@ -14,6 +14,7 @@ spring:
     protocol:
       name: dubbo
       port: 20884
+      threads: 200
     scan: com.iwhalecloud.retail
 
   redis:
@@ -31,7 +32,7 @@ spring:
       max-idle: 300
       max-wait: 1000
       min-idle: 5
-    password:
+#    password:
 
   #i18n国际化配置
   messages:

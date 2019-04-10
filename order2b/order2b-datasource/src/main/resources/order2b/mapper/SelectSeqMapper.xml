@@ -4,6 +4,36 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.order2b.mapper.SelectSeqMapper">
     <select id="getSeq" resultType="java.lang.String" useCache="false">
-        select seq_retail_all_tables.nextval;
+          SELECT
+          <choose>
+              <when test="seqName == 'seq_ord_order_order_id'">
+                  seq_ord_order_order_id.nextval
+              </when>
+              <when test="seqName == 'seq_ord_order_items_item_id'">
+                  seq_ord_order_items_item_id.nextval
+              </when>
+              <when test="seqName == 'seq_ord_order_items_item_id'">
+                  seq_ord_order_items_item_id.nextval
+              </when>
+              <when test="seqName == 'seq_ord_order_z_flow_flow_id'">
+                  seq_ord_order_z_flow_flow_id.nextval
+              </when>
+              <when test="seqName == 'seq_ord_delivery_delivery_id'">
+                  seq_ord_delivery_delivery_id.nextval
+              </when>
+              <when test="seqName == 'seq_ord_order_item_detail_id'">
+                  seq_ord_order_item_detail_id.nextval
+              </when>
+              <when test="seqName == 'seq_ord_advance_order_id'">
+                  seq_ord_advance_order_id.nextval
+              </when>
+              <when test="seqName == 'seq_ord_promotion_promotio_id'">
+                  seq_ord_promotion_promotio_id.nextval
+              </when>
+              <otherwise>
+                  seq_retail_all_tables.nextval
+              </otherwise>
+          </choose>
+           ;
     </select>
 </mapper>

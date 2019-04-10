@@ -46,14 +46,6 @@ public interface OrderMapper extends BaseMapper<Order> {
      Double getOrderAmountByCondition(@Param("req")OrderStatisticsRawReq req);
 
     /**
-     * 查询预售订单列表
-     * @param page
-     * @param req
-     * @return
-     */
-     IPage<AdvanceOrderInfoModel> queryAdvanceOrderList(Page page, @Param("req")AdvanceOrderReq req);
-
-    /**
      * 根据条件查询需要传送的订单数据
      * @param req
      * @return
@@ -79,5 +71,4 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @return
      */
     List<OrderInfoModel> selectNotDeliveryOrderByIds(List<String> orderIds);
-
 }

@@ -40,5 +40,11 @@
                 #{item}
             </foreach>
         </if>
+        <if test="orderIdList !=null and orderIdList.size()>0">
+            and order_id IN
+            <foreach collection="orderIdList" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
     </select>
 </mapper>

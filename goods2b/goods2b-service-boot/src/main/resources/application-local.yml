@@ -31,7 +31,7 @@ spring:
       max-idle: 300
       max-wait: 1000
       min-idle: 5
-    password:
+#    password:
 
 jmx:
   enabled: false

@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.order2b.busiservice.impl;
 
-import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.iwhalecloud.retail.dto.ResultVO;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
 import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.consts.OrderManagerConsts;
@@ -14,11 +14,8 @@ import com.iwhalecloud.retail.order2b.manager.AfterSaleManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.manager.PromotionManager;
 import com.iwhalecloud.retail.order2b.model.*;
-import com.iwhalecloud.retail.order2b.reference.MemberInfoReference;
 import com.iwhalecloud.retail.order2b.util.CurrencyUtil;
 import com.iwhalecloud.retail.order2b.util.Utils;
-import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.service.MerchantService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,10 +23,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SelectOrderServiceImpl implements SelectOrderService {
@@ -50,12 +45,6 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     @Value("${fdfs.show.url}")
     private String showUrl;
 
-    @Autowired
-    private MemberInfoReference memberInfoReference;
-
-    @Reference
-    private MerchantService merchantService;
-
     @Override
     public IPage<OrderInfoModel> selectOrderListByOrder(SelectOrderDetailModel req) {
 
@@ -75,26 +64,13 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             }
         }
         IPage<OrderInfoModel> list = orderManager.selectOrderListByOrder(req);
-        if (!CollectionUtils.isEmpty(list.getRecords())) {
-            for (OrderInfoModel orderInfoModel : list.getRecords()) {
-                ResultVO<MerchantDTO> resultVO = merchantService.getMerchantById(orderInfoModel.getMerchantId());
-                if (resultVO.isSuccess() && null != resultVO.getResultData() && org.apache.commons.lang3.StringUtils.isNotEmpty(resultVO.getResultData().getMerchantCode())) {
-                    MerchantDTO merchantDTO = resultVO.getResultData();
-                    orderInfoModel.setMerchantCode(merchantDTO.getMerchantCode());
-                }
-            }
-        }
         if (CollectionUtils.isEmpty(list.getRecords())) {
             return list;
         }
-
-        //图片拼接:ip+port
-        for (OrderInfoModel model : list.getRecords()) {
-            /**
-             * 营销活动
-             */
-            this.getPromotion(model);
-        }
+        /**
+         * 营销活动
+         */
+        this.getPromotion(list.getRecords());
         return list;
     }
 
@@ -260,13 +236,21 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             req.setOrderList(new ArrayList<>(orderList));
         }
 
-        IPage<AdvanceOrderInfoModel> list = advanceOrderManager.queryAdvanceOrderList(req);
-        //图片拼接:ip+port
-        for (AdvanceOrderInfoModel model : list.getRecords()) {
-            // 营销活动
-            this.getPromotion(model);
+        IPage<OrderInfoModel> list = orderManager.selectOrderListByOrder(req);
+        if (CollectionUtils.isEmpty(list.getRecords())) {
+            return new Page<>();
         }
-        return list;
+
+        //营销活动
+        this.getPromotion(list.getRecords());
+        Page<AdvanceOrderInfoModel> respPage= new Page<>();
+        BeanUtils.copyProperties(list,respPage);
+        respPage.setRecords(JSON.parseArray(JSON.toJSONString(list.getRecords()),AdvanceOrderInfoModel.class));
+        for (AdvanceOrderInfoModel model : respPage.getRecords()) {
+            // 预售订单
+            model.setAdvanceOrder(advanceOrderManager.getAdvanceOrderByOrderId(model.getOrderId()));
+        }
+        return respPage;
     }
 
     @Override
@@ -309,22 +293,37 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     }
 
     /**
-     * 获取营销活动
-     *
-     * @param model
+     * 获取参与的营销活动
+     * param orderList
      */
-    private void getPromotion(OrderInfoModel model) {
+    private void getPromotion(List<OrderInfoModel> modelList) {
         PromotionModel promotionModel = new PromotionModel();
-        promotionModel.setOrderId(model.getOrderId());
-        if(StringUtils.isEmpty(Order2bContext.getDubboRequest().getLanId())){
-            List<String> lanIds=new ArrayList<>(1);
-            lanIds.add(model.getLanId());
-            promotionModel.setLanIdList(lanIds);
-        }
-        List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);
-        model.setPromotionList(promotions);
 
-        if (!CollectionUtils.isEmpty(model.getPromotionList())) {
+        /**
+         * 组装订单id
+         */
+        promotionModel.setOrderIdList(new ArrayList<>(modelList.size()));
+        for (OrderInfoModel orderInfoModel:modelList){
+            promotionModel.getOrderIdList().add(orderInfoModel.getOrderId());
+
+            if(StringUtils.isEmpty(Order2bContext.getDubboRequest().getLanId())){
+                List<String> lanIds=new ArrayList<>(1);
+                lanIds.add(orderInfoModel.getLanId());
+                promotionModel.setLanIdList(lanIds);
+            }
+        }
+
+        List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);
+        if(CollectionUtils.isEmpty(promotions)){
+            return;
+        }
+        Map<String, List<Promotion>> orderItemMaps = promotions.stream().collect(Collectors.groupingBy(Promotion::getOrderId));
+
+        for (OrderInfoModel model:modelList){
+            model.setPromotionList(orderItemMaps.get(model.getOrderId()));
+            if (CollectionUtils.isEmpty(model.getPromotionList())) {
+                continue;
+            }
             for (Promotion promotion : model.getPromotionList()) {
 
                 if (promotion.getDiscount() == null) {
@@ -341,22 +340,6 @@ public class SelectOrderServiceImpl implements SelectOrderService {
                 }
             }
         }
-
-        int receiveNum = 0;
-        int deliveryNum = 0;
-        for (OrderItem orderItem : model.getOrderItems()) {
-            if (orderItem.getReceiveNum() != null) {
-                receiveNum += orderItem.getReceiveNum();
-            }
-            if (orderItem.getDeliveryNum() != null) {
-                deliveryNum += orderItem.getDeliveryNum();
-            }
-            if (!StringUtils.isEmpty(orderItem.getImage())) {
-                orderItem.setImage(Utils.attacheUrlPrefix(showUrl, orderItem.getImage()));
-            }
-        }
-        model.setReceiveNum(receiveNum);
-        model.setDeliveryNum(deliveryNum);
     }
 
     /**

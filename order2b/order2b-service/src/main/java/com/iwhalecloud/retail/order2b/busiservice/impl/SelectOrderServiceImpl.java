@@ -350,15 +350,15 @@ public class SelectOrderServiceImpl implements SelectOrderService {
      */
     private List<String> getOrderListByCondition(SelectOrderDetailModel req) {
         List<String> orderList = new ArrayList<>();
+        List<List<String>> selectList=new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(req.getReqOrderList())) {
-            orderList.addAll(req.getReqOrderList());
+            selectList.add(req.getReqOrderList());
         }
 
         //商品、品牌、商品编码查询
-        List<String> goodsOrderLsit = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getGoodsName()) || !StringUtils.isEmpty(req.getGoodsSn()) || !StringUtils.isEmpty(req.getBrandName())) {
-            goodsOrderLsit.add("-1");
+            List<String> goodsOrderLsit = new ArrayList<>();
             OrderItemModel orderItem = new OrderItemModel();
             if (!StringUtils.isEmpty(req.getGoodsName())) {
                 orderItem.setGoodsName("%" + req.getGoodsName() + "%");
@@ -374,27 +374,22 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             for (OrderItem i : gList) {
                 goodsOrderLsit.add(i.getOrderId());
             }
-            orderList.addAll(goodsOrderLsit);
-            orderList.retainAll(goodsOrderLsit);
+            selectList.add(goodsOrderLsit);
         }
 
         //串码查询
-        List<String> resBerLsit = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getResNbr())) {
-            resBerLsit.add("-1");
+            List<String> resBerLsit = new ArrayList<>();
             OrderItemDetailModel model=new OrderItemDetailModel();
             model.setLanIdList(req.getLanIdList());
             model.setResNbr(req.getResNbr());
             resBerLsit.addAll(orderManager.selectOrderIdByresNbr(model));
-
-            orderList.addAll(resBerLsit);
-            orderList.retainAll(resBerLsit);
+            selectList.add(resBerLsit);
         }
 
         //营销活动查询
-        List<String> promotionList = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getActivityPromoName())) {
-            promotionList.add("-1");
+            List<String> promotionList = new ArrayList<>();
             PromotionModel promotionModel = new PromotionModel();
             promotionModel.setMktActName("%" + req.getActivityPromoName() + "%");
             promotionModel.setLanIdList(req.getLanIdList());
@@ -402,8 +397,14 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             for (Promotion promotion : promotions) {
                 promotionList.add(promotion.getOrderId());
             }
-            orderList.addAll(promotionList);
-            orderList.retainAll(promotionList);
+            selectList.add(promotionList);
+        }
+        if(CollectionUtils.isEmpty(selectList)){
+            return orderList;
+        }
+        orderList.addAll(selectList.get(0));
+        for (int i=1;i<selectList.size();i++){
+            orderList.retainAll(selectList.get(i));
         }
         return orderList;
     }

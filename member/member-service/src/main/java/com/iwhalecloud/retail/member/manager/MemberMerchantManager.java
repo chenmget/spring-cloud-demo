@@ -48,6 +48,7 @@ public class MemberMerchantManager{
         BeanUtils.copyProperties(memberMerchantDTO, memberMerchant);
         memberMerchant.setStatus(MemberConst.CommonState.INVALID.getCode());
         memberMerchant.setUpdateDate(new Date());
+        memberMerchant.setMemId(null);
         return memberMerchantMapper.update(memberMerchant, updateWrapper);
     }
 

@@ -157,6 +157,7 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
         if (StringUtils.isNotEmpty(req.getCatId())) {
             ProductsPageReq productsPageReq = new ProductsPageReq();
             productsPageReq.setCatId(req.getCatId());
+            productsPageReq.setPageSize(100000);
             ResultVO<Page<ProductPageResp>> productPage = productService.selectPageProductAdmin(productsPageReq);
             if (productPage.isSuccess() && !CollectionUtils.isEmpty(productPage.getResultData().getRecords())){
                 List<String> productList = productPage.getResultData().getRecords().stream().map(ProductPageResp::getProductId).collect(Collectors.toList());

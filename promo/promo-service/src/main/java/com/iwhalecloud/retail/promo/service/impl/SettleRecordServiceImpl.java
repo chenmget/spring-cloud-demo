@@ -95,24 +95,20 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                 orderIds.add(settleRecordDTO.getOrderId());
             }
         }
-        //补录的订单id List
-        if(!CollectionUtils.isEmpty(settleRecords2)){
-            for(SettleRecordDTO settleRecordDTO:settleRecords2){
-                if(!orderIds.contains(settleRecordDTO.getOrderId())){
-                    supplementaryOrderIds.add(settleRecordDTO.getOrderId());
-                }
-            }
-        }
+
         List<SettleRecordOrderDTO> settleRecordOrderDTOs = new ArrayList<>();
         if(!CollectionUtils.isEmpty(orderIds)){
             settleRecordOrderDTOs = settleRecordOrderService.getSettleRecordOrder(orderIds,lanId);
         }
+        //目标时间是否在起始时间和结束时间范围内的orders
+        List<String> orderList = new ArrayList<>();
         if(!CollectionUtils.isEmpty(settleRecordOrderDTOs) && !CollectionUtils.isEmpty(settleRecords1)){
             for(SettleRecordDTO settleRecordDTO:settleRecords1){
                 String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
                 String deliverStartTime = DateUtil.formatDate(settleRecordDTO.getDeliverStartTime(), DATE_FORMAT);
                 String deliverEndTime = DateUtil.formatDate(settleRecordDTO.getDeliverEndTime(), DATE_FORMAT);
                 String orderId = settleRecordDTO.getOrderId();
+                orderList.add(orderId);
                 //校验目标时间是否在起始时间和结束时间范围内
                 for(SettleRecordOrderDTO settleRecordOrderDTO: settleRecordOrderDTOs){
                     if(StringUtils.isNotEmpty(orderId) && orderId.equals(settleRecordOrderDTO.getOrderId())){
@@ -121,26 +117,20 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                         if(DateUtil.compare(deliverStartTime, deliverEndTime, DeliveryTime)
                                 && lanId.equals(String.valueOf(lanid))){
                             this.addList(settleRecordDTOs,settleRecordDTO,settleRecordOrderDTO);
-//                            SettleRecordDTO settleRecord = new SettleRecordDTO();
-//                            BeanUtils.copyProperties(settleRecordDTO, settleRecord);
-//                            settleRecord.setLanId(settleRecordOrderDTO.getLanId());
-//                            settleRecord.setResNbr(settleRecordOrderDTO.getResNbr());
-//                            settleRecord.setSupplierId(settleRecordOrderDTO.getSupplierId());
-//                            settleRecord.setMerchantId(settleRecordOrderDTO.getMerchantId());
-//                            settleRecord.setPrice(settleRecordOrderDTO.getPrice());
-//                            settleRecord.setSubsidyAmount(settleRecordOrderDTO.getCouponPrice());
-//                            settleRecord.setOrderCreateTime(settleRecordOrderDTO.getOrderCreateTime());
-//                            settleRecord.setOperationType(PromoConst.OperationType.OPERATION_TYPE_1.getCode());
-//                            settleRecord.setSupplierAccountId(settleRecordOrderDTO.getSupplierAccountId());
-//                            settleRecord.setMerchantAccountId(settleRecordOrderDTO.getMerchantAccountId());
-//                            settleRecord.setCreateUserId("system_user");
-//                            settleRecord.setSettleMode(PromoConst.SettleMode.SETTLE_MODE_1.getCode());
-//                            settleRecordDTOs.add(settleRecord);
                         }
                     }
                 }
             }
 
+        }
+        //补录的订单id List
+        if(!CollectionUtils.isEmpty(settleRecords2)){
+            for(SettleRecordDTO settleRecordDTO:settleRecords2){
+                if(!CollectionUtils.isEmpty(orderList) &&
+                        !orderList.contains(settleRecordDTO.getOrderId())){
+                    supplementaryOrderIds.add(settleRecordDTO.getOrderId());
+                }
+            }
         }
         List<SettleRecordOrderDTO> settleRecordOrderDTOs2 = new ArrayList<>();
         if(!CollectionUtils.isEmpty(supplementaryOrderIds)){

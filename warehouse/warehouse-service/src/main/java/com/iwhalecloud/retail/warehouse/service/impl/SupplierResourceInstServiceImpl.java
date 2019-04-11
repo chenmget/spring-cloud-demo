@@ -629,7 +629,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     }
 
     @Override
-    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO confirmReciveNbr(ConfirmReciveNbrReq req) {
         // step1 申请单状态改为完成
         String resReqId = req.getResReqId();

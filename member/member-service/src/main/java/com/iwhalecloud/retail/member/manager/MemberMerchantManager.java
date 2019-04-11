@@ -5,15 +5,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.member.common.MemberConst;
 import com.iwhalecloud.retail.member.dto.MemberMerchantDTO;
 import com.iwhalecloud.retail.member.dto.request.MemberMerchantQueryForPageReq;
-import com.iwhalecloud.retail.member.dto.response.GroupQueryResp;
 import com.iwhalecloud.retail.member.dto.response.MemberMerchantQueryForPageResp;
-import com.iwhalecloud.retail.member.entity.MemberGroup;
 import com.iwhalecloud.retail.member.entity.MemberMerchant;
+import com.iwhalecloud.retail.member.mapper.MemberMerchantMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.member.mapper.MemberMerchantMapper;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 
@@ -38,6 +36,7 @@ public class MemberMerchantManager{
         MemberMerchant memberMerchant = new MemberMerchant();
         BeanUtils.copyProperties(memberMerchantDTO, memberMerchant);
         memberMerchant.setUpdateDate(new Date());
+        memberMerchant.setMemId(null);
         return memberMerchantMapper.update(memberMerchant, updateWrapper);
     }
 

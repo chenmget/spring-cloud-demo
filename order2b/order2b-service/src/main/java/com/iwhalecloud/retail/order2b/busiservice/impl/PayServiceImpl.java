@@ -101,7 +101,7 @@ public class PayServiceImpl implements PayService {
         switch (orderPayType) {
             case PAY_TYPE_1: //翼支付
                 break;
-            case PAY_TYPE_3: //线下支付
+            case PAY_TYPE_4: //线下支付
                 OffLinePayReq offLinePayReq = new OffLinePayReq();
                 offLinePayReq.setOrderId(order.getOrderId());
                 offLinePayReq.setOrderAmount(String.valueOf(order.getOrderAmount()));
@@ -174,7 +174,7 @@ public class PayServiceImpl implements PayService {
             case PAY_TYPE_1:
                 break;
             //线下支付
-            case PAY_TYPE_3:
+            case PAY_TYPE_4:
                 request.setPayStatus(TypeStatus.TYPE_01.getCode());
                 OffLinePayReq offLinePayReq = new OffLinePayReq();
                 offLinePayReq.setOrderId(order.getOrderId());
@@ -261,7 +261,7 @@ public class PayServiceImpl implements PayService {
             case PAY_TYPE_1:
                 break;
             //线下支付
-            case PAY_TYPE_3:
+            case PAY_TYPE_4:
                 request.setPayStatus(TypeStatus.TYPE_01.getCode());
                 OffLinePayReq offLinePayReq = new OffLinePayReq();
                 offLinePayReq.setOrderId(order.getOrderId());

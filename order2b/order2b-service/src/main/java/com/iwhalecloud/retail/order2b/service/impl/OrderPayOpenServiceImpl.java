@@ -51,7 +51,7 @@ public class OrderPayOpenServiceImpl implements OrderPayOpenService {
         }
         List<String> payTypeList = new ArrayList<>();
         payTypeList.add(OrderPayType.PAY_TYPE_1.getCode());
-        payTypeList.add(OrderPayType.PAY_TYPE_3.getCode());
+        payTypeList.add(OrderPayType.PAY_TYPE_4.getCode());
 
         if(!CollectionUtils.isEmpty(resp.getResultData())){
             payTypeList.retainAll(resp.getResultData());

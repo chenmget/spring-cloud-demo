@@ -126,8 +126,7 @@ public class SettleRecordServiceImpl implements SettleRecordService {
         //补录的订单id List
         if(!CollectionUtils.isEmpty(settleRecords2)){
             for(SettleRecordDTO settleRecordDTO:settleRecords2){
-                if(!CollectionUtils.isEmpty(orderList) &&
-                        !orderList.contains(settleRecordDTO.getOrderId())){
+                if(!orderList.contains(settleRecordDTO.getOrderId())){
                     supplementaryOrderIds.add(settleRecordDTO.getOrderId());
                 }
             }

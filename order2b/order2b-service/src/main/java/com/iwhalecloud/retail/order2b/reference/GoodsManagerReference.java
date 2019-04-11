@@ -23,6 +23,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Component
@@ -46,6 +47,40 @@ public class GoodsManagerReference {
 
     @Reference
     private ProductBaseService productBaseService;
+
+    public CommonResultResp<List<String>> getGoodsPayTypeList(List<OrderItem> orderItems) {
+        CommonResultResp resp = new CommonResultResp();
+        GoodsIdListReq req = new GoodsIdListReq();
+        req.setGoodsIdList(new ArrayList<>(orderItems.size()));
+        for (OrderItem orderITEM : orderItems) {
+            req.getGoodsIdList().add(orderITEM.getGoodsId());
+        }
+        List<GoodsDTO> goodsDTOS = goodsService.listGoods(req).getResultData();
+        if (CollectionUtils.isEmpty(goodsDTOS)) {
+            resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resp.setResultMsg("获取商品失败");
+            return resp;
+        }
+
+        List<String> payList = new ArrayList<>();
+        List<List<String>> selectList = new ArrayList<>();
+        for (GoodsDTO goods : goodsDTOS) {
+            if (StringUtils.isEmpty(goods.getPayments())) {
+                continue;
+            }
+            List<String> goodsPay = Arrays.asList(goods.getPayments().split(","));
+            selectList.add(goodsPay);
+        }
+        if (!CollectionUtils.isEmpty(selectList)) {
+            payList.addAll(selectList.get(0));
+            for (int i = 1; i < selectList.size(); i++) {
+                payList.retainAll(selectList.get(i));
+            }
+        }
+        resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+        resp.setResultData(payList);
+        return resp;
+    }
 
 
     public CommonResultResp checkGoodsProdRule(String userCode, String tagerType, List<CartItemModel> cartItemModels) {
@@ -77,7 +112,7 @@ public class GoodsManagerReference {
 
     public CartItemModel builderCart(PreCreateOrderReq request, OrderGoodsItemDTO req) {
         //查询产品信息
-        ProductGetByIdReq prodectReq=new ProductGetByIdReq();
+        ProductGetByIdReq prodectReq = new ProductGetByIdReq();
         prodectReq.setProductId(req.getProductId());
         prodectReq.setSourceFrom(request.getSourceFrom());
         ResultVO<ProductResp> proVo = productService.getProduct(prodectReq);
@@ -98,12 +133,12 @@ public class GoodsManagerReference {
         }
         GoodsDetailDTO detail = resultVO.getResultData();
 
-        if(StringUtils.isEmpty(request.getActivityId())){
+        if (StringUtils.isEmpty(request.getActivityId())) {
             request.setOrderCat(OrderManagerConsts.ORDER_CAT_0);
-        }else{
-            if(StringUtils.isEmpty(detail.getIsAdvanceSale())){
+        } else {
+            if (StringUtils.isEmpty(detail.getIsAdvanceSale())) {
                 request.setOrderCat(OrderManagerConsts.ORDER_CAT_0);
-            }else{
+            } else {
                 request.setOrderCat(detail.getIsAdvanceSale());
             }
         }
@@ -144,7 +179,7 @@ public class GoodsManagerReference {
     /**
      * 购买数量，校验
      */
-    public boolean checkBuyCount(List<CartItemModel> cartItemModelList,PreCreateOrderReq request) {
+    public boolean checkBuyCount(List<CartItemModel> cartItemModelList, PreCreateOrderReq request) {
         List<BuyCountCheckDTO> buyCountCheckDTOS = new ArrayList<>();
         for (CartItemModel cartItemModel : cartItemModelList) {
             BuyCountCheckDTO buyCountCheckDTO = new BuyCountCheckDTO();
@@ -171,7 +206,7 @@ public class GoodsManagerReference {
      * 是否需要商家确认
      */
     public boolean isMerchantConfirm(List<CartItemModel> list) {
-        GoodsIdListReq req=new GoodsIdListReq();
+        GoodsIdListReq req = new GoodsIdListReq();
         List<String> goodsIds = new ArrayList<>();
         for (CartItemModel cartItemModel : list) {
             goodsIds.add(cartItemModel.getGoodsId());
@@ -217,16 +252,16 @@ public class GoodsManagerReference {
     /**
      * 更新商品购买量
      */
-    public ResultVO updateBuyCountById(List<OrderItem> list,int state) {
+    public ResultVO updateBuyCountById(List<OrderItem> list, int state) {
         List<UpdateBuyCountByIdReq> countByIdReqs = new ArrayList<>();
         for (OrderItem orderItemModel : list) {
             UpdateBuyCountByIdReq goods = new UpdateBuyCountByIdReq();
             goods.setProductId(orderItemModel.getProductId());
             goods.setGoodsId(orderItemModel.getGoodsId());
-            goods.setBuyCount(orderItemModel.getNum()*state);
+            goods.setBuyCount(orderItemModel.getNum() * state);
             countByIdReqs.add(goods);
         }
-        GoodsBuyCountByIdReq req=new GoodsBuyCountByIdReq();
+        GoodsBuyCountByIdReq req = new GoodsBuyCountByIdReq();
         req.setUpdateBuyCountByIdReqList(countByIdReqs);
         ResultVO resultVO = goodsService.updateBuyCountById(req);
         log.info("gs_10010_updateBuyCountById,req{}.resp{}", JSON.toJSONString(req), JSON.toJSONString(resultVO));
@@ -236,31 +271,32 @@ public class GoodsManagerReference {
     /**
      * 换货对象获取
      */
-    public CommonResultResp<String> getHHObject(String productID,String handlerId){
-        CommonResultResp<String> resp=new CommonResultResp<>();
+    public CommonResultResp<String> getHHObject(String productID, String handlerId) {
+        CommonResultResp<String> resp = new CommonResultResp<>();
 //        1是厂商，2是供应商
-        ProductExchangeObjectGetReq req=new ProductExchangeObjectGetReq();
+        ProductExchangeObjectGetReq req = new ProductExchangeObjectGetReq();
         req.setProductId(productID);
-        ResultVO<ExchangeObjectGetResp> resultVO=productBaseService.getExchangeObject(req);
-        log.info("gs_10010_getHHObject,req{},resp{}",JSON.toJSONString(req),JSON.toJSONString(resultVO));
-        if(resultVO.getResultData()!=null){
+        ResultVO<ExchangeObjectGetResp> resultVO = productBaseService.getExchangeObject(req);
+        log.info("gs_10010_getHHObject,req{},resp{}", JSON.toJSONString(req), JSON.toJSONString(resultVO));
+        if (resultVO.getResultData() != null) {
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
-            if("1".equals(resultVO.getResultData().getExchangeObject())){
-                if(StringUtils.isEmpty(resultVO.getResultData().getManufacturerId())){
+            if ("1".equals(resultVO.getResultData().getExchangeObject())) {
+                if (StringUtils.isEmpty(resultVO.getResultData().getManufacturerId())) {
                     resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
                     resp.setResultMsg("获取换货对象为空");
                     return resp;
                 }
                 resp.setResultData(resultVO.getResultData().getManufacturerId());
-            }else{
+            } else {
                 resp.setResultData(handlerId);
             }
-        }else{
+        } else {
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             resp.setResultMsg("获取换货对象失败");
         }
         return resp;
     }
+
 
 
 }

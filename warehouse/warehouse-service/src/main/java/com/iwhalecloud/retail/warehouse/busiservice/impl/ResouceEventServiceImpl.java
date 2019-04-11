@@ -7,16 +7,13 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceEventDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceChngEvtDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.EventAndDetailReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResouceEventUpdateReq;
 import com.iwhalecloud.retail.warehouse.manager.ResouceEventManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceChngEvtDetailManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
@@ -47,7 +44,7 @@ public class ResouceEventServiceImpl implements ResouceEventService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Async
     public ResultVO saveResouceEventAndDetail(EventAndDetailReq req){
         Map<String, List<String>> mktResIdAndNbrMap = req.getMktResIdAndNbrMap();
         List<String> mktResIdList = new ArrayList<>();

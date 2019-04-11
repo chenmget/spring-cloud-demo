@@ -339,7 +339,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         resourceRequestAddReq.setMktResStoreId(req.getMktResStoreId());
         resourceRequestAddReq.setCreateStaff(req.getCreateStaff());
         resourceRequestAddReq.setDestStoreId(req.getDestStoreId());
-        resourceRequestAddReq.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
+        resourceRequestAddReq.setStatusCd(ResourceConst.MKTRESSTATE.PROCESSING.getCode());
         resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
         resourceRequestAddReq.setInstList(resourceRequestInsts);
         resourceRequestAddReq.setLanId(sourceMerchantDTO.getLanId());

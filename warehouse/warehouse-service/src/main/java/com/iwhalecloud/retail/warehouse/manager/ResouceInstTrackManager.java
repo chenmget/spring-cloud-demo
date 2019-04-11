@@ -24,7 +24,9 @@ public class ResouceInstTrackManager{
             BeanUtils.copyProperties(resouceInstTrackDTO, t);
             return resouceInstTrackMapper.insert(t);
         } else {
-            return 0;
+            // 2019-04-10 轨迹表只有一条数据，不断更新，所以这里应该是有则更新没有则添加
+            BeanUtils.copyProperties(resouceInstTrackDTO, resouceInstTrack);
+            return resouceInstTrackMapper.updateById(resouceInstTrack);
         }
 
     }

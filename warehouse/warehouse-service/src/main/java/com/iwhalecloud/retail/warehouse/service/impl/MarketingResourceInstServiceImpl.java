@@ -81,11 +81,6 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     }
 
     @Override
-    public ResultVO<Page<ResourceInstListResp>> listResourceInst(ResourceInstListReq req) {
-        return null;
-    }
-
-    @Override
     public ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req) {
         return null;
     }

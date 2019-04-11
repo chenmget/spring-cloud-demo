@@ -476,7 +476,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         List<String> mktResInstNbrs = Lists.newArrayList(req.getMktResInstNbrs());
         resourceInstsGetReq.setMktResInstNbrs(mktResInstNbrs);
-        resourceInstsGetReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         List<String> merchantTypes = null;
         if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(req.getMerchantType())) {
             // 厂商增加：只校验厂商库
@@ -620,7 +619,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
 
     @Override
     public ResultVO updateResourceInstByIdsForTransaction(AdminResourceInstDelReq req) {
-        log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction req={},resp={}", JSON.toJSONString(req));
+        log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction req={}", JSON.toJSONString(req));
         // 组装数据
         assembleData(req);
         Map<String, List<ResourceInstDTO>> insts = req.getInsts();
@@ -639,7 +638,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 mktResInstList.add(dto.getMktResInstId());
                 adminResourceInstDelReq.setMktResInstIds(mktResInstList);
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
-                log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(sucessNum));
+                log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(num));
                 if(num < 1){
                     unavailbaleNbrs.add(dto.getMktResInstId());
                     continue;

@@ -30,6 +30,9 @@ public class MemberGroup implements Serializable {
   	 * 会员群ID
   	 */
 	@TableId
+	@ApiModelProperty(value = "ID")
+	private String id;
+
 	@ApiModelProperty(value = "会员群ID")
   	private String groupId;
   	
@@ -74,6 +77,7 @@ public class MemberGroup implements Serializable {
 	
     /** 字段名称枚举. */
     public enum FieldNames {
+		id("id","ID"),
 		/** 会员群ID. */
 		groupId("groupId","GROUP_ID"),
 		

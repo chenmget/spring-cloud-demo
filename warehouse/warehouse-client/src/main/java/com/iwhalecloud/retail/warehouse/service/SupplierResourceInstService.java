@@ -43,14 +43,6 @@ public interface SupplierResourceInstService {
     ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req);
 
     /**
-     * 根据查询条件串码实列
-     *
-     * @param req
-     * @return
-     */
-    ResultVO<Page<ResourceInstListResp>> listResourceInst(ResourceInstListReq req);
-
-    /**
      * 调拨串码
      *
      * @param req

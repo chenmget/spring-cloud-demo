@@ -18,7 +18,6 @@ spring.datasource:
     # 配置一个连接在池中最小生存的时间，单位是毫秒
     min-evictable-idle-time-millis: 30000
     validation-query: SELECT 1
-    #建议配置为true，不影响性能，并且保证安全性。申请连接的时候检测，如果空闲时间大于timeBetweenEvictionRunsMillis，执行validationQuery检测连接是否有效。
     test-while-idle: true
     test-on-borrow: true
     test-on-return: false

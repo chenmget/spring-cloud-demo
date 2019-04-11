@@ -120,7 +120,7 @@ public class GoodsManagerReference {
         cartItemModel.setPrice(detail.getDeliveryPrice());
         cartItemModel.setSpecs(detail.getSpecName());
 
-        cartItemModel.setSn(detail.getSn());
+        cartItemModel.setSn(product.getSn());
         cartItemModel.setBrandName(detail.getBrandName());
         cartItemModel.setNum(req.getNum());
 

@@ -15,6 +15,11 @@ spring.dubbo:
       name: dubbo
       port: 20880
     scan: com.iwhalecloud.retail
+    consumer:
+      check: false
+      timeout: 5000
+      retries: 0
+      filter: sourceFromConsumerfilter,sourceFromProviderfilter
 
 spring.redis:
 #    database: 0
@@ -43,10 +48,10 @@ logging.level.com.iwhalecloud.retail.workflow.mapper: debug
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
-  username: szxtest
+  url: jdbc:mysql://127.0.0.1/test?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: root
   #password: szxtest.2019
-  password: kw0KpgWfOpAVqO4sdMTlLIcXrbbZOIXl4gwhUZqqNehmasEh/58907TPY7kguZ91Ke7rGLUVEkX5YpOBemm18g==
+  password: ZNmIRY6McMPtPusgP40HmKfy8AqHRDe/mtmrVgyMtNaOMmV86vPN2AtRZkOCppuEttR8oyOfSd5ZOOo/++imKw==
 
   druid:
     #2.连接池配置
@@ -54,6 +59,8 @@ spring.datasource:
     initial-size: 5
     min-idle: 5
     max-active: 5
+    keep-alive: true
+    removeAbandoned: true
     #配置获取连接等待超时的时间.
     max-wait: 60000
     #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
@@ -92,4 +99,4 @@ spring.datasource:
       allow: 127.0.0.1
     filters: config,stat,log4j,wall
     #设置public key
-    connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJptiLaauFuYuwkmQ2S0NSsvjdka34BLnbG5zFcuRqFi7RJowXs7P/dSmQWmlrx5RekyriyBUzgAgSbTFt1NpMsCAwEAAQ==
+    connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAMJjq0F7UAdcJZbgqvv/Gciy0omnugNn+nHkd0vw6scOeoZu+KASJr8G6lmy1FJ1S5wc6yj0YSUH1FwOxo/NwLcCAwEAAQ==

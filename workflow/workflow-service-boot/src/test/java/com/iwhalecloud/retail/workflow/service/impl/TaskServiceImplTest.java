@@ -124,13 +124,94 @@ public class TaskServiceImplTest {
     }
 
     @Test
-    public void queryTaskCnt(){
-        TaskPageReq taskPageReq = new TaskPageReq();
-        taskPageReq.setHandlerUserId("1");  //待处理的条件
-        taskPageReq.setCreateUserId("1");   //我的申请条件
+    public void queryTaskCnt() throws InterruptedException {
 
-        ResultVO<Long> rv =  taskService.queryTaskCnt(taskPageReq);
-        System.out.println(JSON.toJSONString(rv));
+//        new Thread(
+//                new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        for (int i = 0; i < 1000; i++) {
+//                            TaskPageReq taskPageReq = new TaskPageReq();
+//                            taskPageReq.setHandlerUserId("1");  //待处理的条件
+//                            taskPageReq.setCreateUserId("1");   //我的申请条件
+//
+//                            ResultVO<Long> rv = taskService.queryTaskCnt(taskPageReq);
+//                            System.out.println(JSON.toJSONString(rv));
+//                        }
+//                    }
+//                }
+//        ).start();
+//
+//        new Thread(
+//                new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        for (int i = 0; i < 1000; i++) {
+//                            TaskPageReq taskPageReq = new TaskPageReq();
+//                            taskPageReq.setHandlerUserId("1");  //待处理的条件
+//                            taskPageReq.setCreateUserId("1");   //我的申请条件
+//
+//                            ResultVO<Long> rv = taskService.queryTaskCnt(taskPageReq);
+//                            System.out.println(JSON.toJSONString(rv));
+//                        }
+//                    }
+//                }
+//        ).start();
+//
+//        new Thread(
+//                new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        for (int i = 0; i < 1000; i++) {
+//                            TaskPageReq taskPageReq = new TaskPageReq();
+//                            taskPageReq.setHandlerUserId("1");  //待处理的条件
+//                            taskPageReq.setCreateUserId("1");   //我的申请条件
+//
+//                            ResultVO<Long> rv = taskService.queryTaskCnt(taskPageReq);
+//                            System.out.println(JSON.toJSONString(rv));
+//                        }
+//                    }
+//                }
+//        ).start();
+//
+//        new Thread(
+//                new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        for (int i = 0; i < 1000; i++) {
+//                            TaskPageReq taskPageReq = new TaskPageReq();
+//                            taskPageReq.setHandlerUserId("1");  //待处理的条件
+//                            taskPageReq.setCreateUserId("1");   //我的申请条件
+//
+//                            ResultVO<Long> rv = taskService.queryTaskCnt(taskPageReq);
+//                            System.out.println(JSON.toJSONString(rv));
+//                        }
+//                    }
+//                }
+//        ).start();
+
+        new Thread(
+                new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < 1000; i++) {
+                            TaskPageReq taskPageReq = new TaskPageReq();
+                            taskPageReq.setHandlerUserId("1");  //待处理的条件
+                            taskPageReq.setCreateUserId("1");   //我的申请条件
+
+                            ResultVO<Long> rv = taskService.queryTaskCnt(taskPageReq);
+                            System.out.println(JSON.toJSONString(rv));
+                            try {
+                                Thread.sleep(3000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+        ).start();
+
+        Thread.sleep(1000 * 20000);
     }
 
     @Test

@@ -54,7 +54,7 @@
         LEFT JOIN PAR_MERCHANT MERCHANT ON RULES.MERCHANT_ID = MERCHANT.MERCHANT_ID
         WHERE 1 = 1
         <if test="null != req.merchantName and '' != req.merchantName">
-            AND MERCHANT.MERCHANT_NAME like #{req.merchantName}
+            AND lower(MERCHANT.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{req.merchantName }), '%'))
         </if>
         <if test="null != req.merchantCode and '' != req.merchantCode">
             AND MERCHANT.MERCHANT_CODE = #{req.merchantCode}
@@ -75,7 +75,7 @@
             AND MERCHANT.STATUS = #{req.status}
         </if>
         <if test="null != req.businessEntityName and '' != req.businessEntityName">
-            AND MERCHANT.BUSINESS_ENTITY_NAME like #{req.businessEntityName}
+            AND lower(MERCHANT.BUSINESS_ENTITY_NAME) like lower(CONCAT(CONCAT('%', #{req.businessEntityName }), '%'))
         </if>
         <if test="null != req.businessEntityCode and '' != req.businessEntityCode">
             AND MERCHANT.BUSINESS_ENTITY_CODE = #{req.businessEntityCode}

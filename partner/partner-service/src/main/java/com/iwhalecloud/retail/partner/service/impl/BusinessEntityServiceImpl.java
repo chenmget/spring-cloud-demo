@@ -6,6 +6,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq;
+import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
 import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.entity.BusinessEntity;
@@ -17,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -30,6 +34,9 @@ public class BusinessEntityServiceImpl implements BusinessEntityService {
 
     @Reference
     private CommonRegionService commonRegionService;
+
+    @Reference
+    private MerchantTagRelService merchantTagRelService;
 
     @Override
     public ResultVO<BusinessEntityDTO> saveBusinessEntity(BusinessEntitySaveReq req) {
@@ -141,6 +148,26 @@ public class BusinessEntityServiceImpl implements BusinessEntityService {
     @Override
     public ResultVO<Page<BusinessEntityDTO>> pageBusinessEntityByRight(BusinessEntityPageByRightsReq pageReq) {
         log.info("BusinessEntityServiceImpl.pageBusinessEntity(), 入参BusinessEntityPageReq={} ", pageReq);
+
+        List<String> merchantIdList = pageReq.getMerchantIdList();
+        if (StringUtils.isNotBlank(pageReq.getTagId())) {
+            MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
+            merchantTagRelListReq.setTagId(pageReq.getTagId());
+            List<String> tagIdMerchantIdList = Lists.newArrayList();
+            List<MerchantTagRelDTO> merchantTagRelDTOList = merchantTagRelService.listMerchantTagRel(merchantTagRelListReq).getResultData();
+            if (!CollectionUtils.isEmpty(merchantTagRelDTOList)) {
+                merchantTagRelDTOList.forEach(merchantTagRelDTO -> {
+                    tagIdMerchantIdList.add(merchantTagRelDTO.getMerchantId());
+                });
+            }
+            // 入参有商家id就取他们的交集，反之则把tagId关联的商家id传进去
+            if (!CollectionUtils.isEmpty(merchantIdList)) {
+                merchantIdList.retainAll(tagIdMerchantIdList);
+                pageReq.setMerchantIdList(merchantIdList);
+            }else {
+                pageReq.setMerchantIdList(tagIdMerchantIdList);
+            }
+        }
         Page<BusinessEntityDTO> page = businessEntityManager.pageBusinessEntityByRight(pageReq);
         log.info("BusinessEntityServiceImpl.pageBusinessEntity(), 出参page={} ", page);
         return ResultVO.success(page);

@@ -223,8 +223,10 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         if(ruleList != null && ruleList.size() > 0){
             for (int i = 0; i < ruleList.size(); i++) {
                 MerchantRulesDetailPageResp rule = ruleList.get(i);
-                rule.setLanName(commonRegionService.getCommonRegionById(rule.getLanId()).getResultData().getRegionName());
-                rule.setCityName(commonRegionService.getCommonRegionById(rule.getCity()).getResultData().getRegionName());
+//                rule.setLanName(commonRegionService.getCommonRegionById(rule.getLanId()).getResultData().getRegionName());
+//                rule.setCityName(commonRegionService.getCommonRegionById(rule.getCity()).getResultData().getRegionName());
+                rule.setLanName(getRegionNameByRegionId(rule.getLanId()));
+                rule.setCityName(getRegionNameByRegionId(rule.getCity()));
                 if(StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType())){
                     //经营权限
                     if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
@@ -236,7 +238,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                         rule.setTargetCode(productResp.getSn());
                     } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())){
                         //区域权限
-                        rule.setTargetName(commonRegionService.getCommonRegionById(rule.getTargetId()).getResultData().getRegionName());
+                        rule.setTargetName(getRegionNameByRegionId(rule.getTargetId()));
+//                        rule.setTargetName(commonRegionService.getCommonRegionById(rule.getTargetId()).getResultData().getRegionName());
                         rule.setTargetCode(rule.getTargetId());
                     } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())){
                         //商家权限
@@ -271,7 +274,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                         rule.setTargetCode(productResp.getSn());
                     } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())){
                         //区域权限
-                        rule.setTargetName(commonRegionService.getCommonRegionById(rule.getTargetId()).getResultData().getRegionName());
+                        rule.setTargetName(getRegionNameByRegionId(rule.getTargetId()));
+//                        rule.setTargetName(commonRegionService.getCommonRegionById(rule.getTargetId()).getResultData().getRegionName());
                         rule.setTargetCode(rule.getTargetId());
                     } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MERCHANT.getType())){
                         //商家权限
@@ -285,6 +289,24 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
 
         return ResultVO.success(merchantRulesDetailPageRespPage);
+    }
+
+
+    /**
+     * 根据regionId获取 regionName
+     *
+     * @param regionId
+     * @return
+     */
+    private String getRegionNameByRegionId(String regionId) {
+        if (StringUtils.isEmpty(regionId)) {
+            return "";
+        }
+        CommonRegionDTO commonRegionDTO = commonRegionService.getCommonRegionById(regionId).getResultData();
+        if (commonRegionDTO != null) {
+            return commonRegionDTO.getRegionName();
+        }
+        return "";
     }
 
     /**

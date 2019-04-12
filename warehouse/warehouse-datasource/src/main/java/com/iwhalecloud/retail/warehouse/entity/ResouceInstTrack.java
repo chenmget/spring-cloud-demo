@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.warehouse.entity;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -26,6 +27,7 @@ public class ResouceInstTrack implements Serializable {
   	/**
   	 * 记录营销资源实例编码。
   	 */
+	@TableId
 	@ApiModelProperty(value = "记录营销资源实例编码。")
   	private java.lang.String mktResInstNbr;
   	

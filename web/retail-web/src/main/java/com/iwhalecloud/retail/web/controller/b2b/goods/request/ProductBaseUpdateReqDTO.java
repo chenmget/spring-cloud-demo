@@ -208,6 +208,10 @@ public class ProductBaseUpdateReqDTO implements Serializable {
     private String typeId;
 
 
-
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
 
 }

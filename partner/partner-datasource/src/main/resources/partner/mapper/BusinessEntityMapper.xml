@@ -72,7 +72,7 @@
             and lower(pm.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{req.merchantName}), '%'))
         </if>
         <if test="req.merchantId != null and req.merchantId != ''">
-            and lower(pm.MERCHANT_ID) like lower(CONCAT(CONCAT('%', #{req.merchantId}), '%'))
+            and pm.MERCHANT_ID =  #{req.merchantId}
         </if>
         <if test="req.shopCode != null and req.shopCode != ''">
             and lower(pm.SHOP_CODE) like lower(CONCAT(CONCAT('%', #{req.shopCode}), '%'))

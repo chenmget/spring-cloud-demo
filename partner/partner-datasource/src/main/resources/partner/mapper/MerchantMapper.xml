@@ -95,6 +95,7 @@
     ,t.PHONE_NO
     ,t.EFF_DATE
     ,t.EXP_DATE
+    ,t.CHANNEL_TYPE
 </sql>
 
     <select id="pageMerchant" resultType="com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp"
@@ -160,6 +161,10 @@
                     #{item}
                 </foreach>
             </if>
+            <if test="req.channelType != null and req.channelType != ''">
+                and t.CHANNEL_TYPE =  #{req.channelType}
+            </if>
+
         order by t.MERCHANT_ID desc
     </select>
 

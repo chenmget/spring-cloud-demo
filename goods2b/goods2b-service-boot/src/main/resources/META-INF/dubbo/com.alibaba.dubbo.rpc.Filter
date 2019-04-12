@@ -1,2 +1,4 @@
-sourceFromProviderfilter=com.iwhalecloud.retail.goods2b.interceptor.SourceFromProviderFilter
-sourceFromConsumerfilter=com.iwhalecloud.retail.goods2b.interceptor.SourceFromConsumerFilter
+sourceFromProviderFilter=com.iwhalecloud.retail.goods2b.interceptor.SourceFromProviderFilter
+sourceFromConsumerFilter=com.iwhalecloud.retail.goods2b.interceptor.SourceFromConsumerFilter
+localeProviderFilter=com.iwhalecloud.retail.goods2b.interceptor.LocaleProviderFilter
+localeConsumerFilter=com.iwhalecloud.retail.goods2b.interceptor.LocaleConsumerFilter

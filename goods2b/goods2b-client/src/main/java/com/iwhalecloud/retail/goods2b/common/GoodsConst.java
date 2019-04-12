@@ -77,6 +77,11 @@ public class GoodsConst {
     public static final Double GOODS_MKT_PRICE = 159900D;
 
     public static final Double AVG_SUPPLY_PRICE = 0.03;
+
+    /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
     /**
      * 状态常量
      */

@@ -326,6 +326,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Override
     public ResultVO<ProductDetailResp> getProductDetail(ProductDetailGetByBaseIdReq req){
         ProductDetailResp productDetail = productBaseManager.getProductDetail(req.getProductBaseId());
+        log.info("ProductBaseServiceImpl.getProductDetail ProductDetailResp={}",productDetail);
         if (null == productDetail){
             return ResultVO.success(productDetail);
         }

@@ -247,8 +247,10 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                     } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())){
                         //商家权限
                         MerchantDTO merchantDTO = merchantService.getMerchantById(rule.getMerchantId()).getResultData();
-                        rule.setTargetName(merchantDTO.getMerchantName());
-                        rule.setTargetCode(merchantDTO.getMerchantCode());
+                        if (Objects.nonNull(merchantDTO)) {
+                            rule.setTargetName(merchantDTO.getMerchantName());
+                            rule.setTargetCode(merchantDTO.getMerchantCode());
+                        }
                     }
                 } else if(StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.GREEN_CHANNEL.getType())){
                     //绿色通道权限

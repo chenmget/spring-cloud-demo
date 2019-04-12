@@ -1,26 +1,29 @@
 package com.iwhalecloud.retail.web.aop;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import com.iwhalecloud.retail.web.exception.ParamInvalidException;
+import com.iwhalecloud.retail.web.utils.MessageSourceHandler;
+import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
-
-import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.springframework.stereotype.Component;
-
-import com.iwhalecloud.retail.web.exception.ParamInvalidException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Aspect
 @Component
 public class ParamterValidAop {
 
 	private static ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
+
+	@Autowired
+	private MessageSourceHandler messageSourceHandler;
 	
     @Before("execution(* com.iwhalecloud.retail.web.controller..*.*(..))")
     public void doBefore(JoinPoint point) throws ParamInvalidException {
@@ -29,7 +32,7 @@ public class ParamterValidAop {
         //校验参数是否合法
         List<String> errors = this.validate(params);
         if (errors != null && !errors.isEmpty()) {
-        	throw new ParamInvalidException(errors);
+        	throw new ParamInvalidException(errors, messageSourceHandler);
         }
     }
     

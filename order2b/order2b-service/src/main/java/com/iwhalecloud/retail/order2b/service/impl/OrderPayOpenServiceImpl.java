@@ -59,6 +59,7 @@ public class OrderPayOpenServiceImpl implements OrderPayOpenService {
         checkPayResp.setOrderId(request.getOrderId());
         checkPayResp.setPayTypeList(payTypeList);
         resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+        resultVO.setResultData(checkPayResp);
         return resultVO;
     }
 }

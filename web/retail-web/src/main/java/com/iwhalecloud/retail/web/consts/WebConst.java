@@ -50,6 +50,11 @@ public class WebConst {
     public static final String SOURCE_FROM = "YHJ";
 
     /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
+
+    /**
      * 登录类型枚举
      */
     public enum LoginTypeEnum{

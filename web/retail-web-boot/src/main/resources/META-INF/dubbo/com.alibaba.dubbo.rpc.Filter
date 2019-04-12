@@ -1,1 +1,2 @@
-sourceFromfilter=com.iwhalecloud.retail.web.interceptor.SourceFromFilter
+sourceFromFilter=com.iwhalecloud.retail.web.interceptor.SourceFromFilter
+localeFilter=com.iwhalecloud.retail.web.interceptor.LocaleFilter

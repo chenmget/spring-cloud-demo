@@ -1,11 +1,9 @@
-package com.iwhalecloud.retail.system.utils;
+package com.iwhalecloud.retail.web.utils;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
-
-import java.util.Locale;
 
 /**
  * 国际化工具类.系统需根据要展示的编码做拦截，设置Locale<br>

@@ -32,4 +32,16 @@ public class BusinessEntityPageByRightsReq extends PageVO {
 
     @ApiModelProperty(value = "商家主键,管理员调用的时候传，如果没传查看所有")
     private String merchantId;
+
+    @ApiModelProperty(value = "商家名称")
+    private String merchantName;
+
+    @ApiModelProperty(value = "销售点编码")
+    private String shopCode;
+
+    @ApiModelProperty(value = "渠道大类")
+    private String channelType;
+
+    @ApiModelProperty(value = "标签")
+    private String tagId;
 }

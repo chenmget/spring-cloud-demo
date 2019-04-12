@@ -10,22 +10,19 @@
     ,t.RULE_TYPE 
     ,t.TARGET_TYPE 
     ,t.TARGET_ID
---     ,t.MAX_SERIAL_NUM
---     ,t.SERIAL_NUM_USED
 </sql>
     <sql id="pageMerchantRulesFields">
-	MERCHANT.MERCHANT_ID,
 	MERCHANT.MERCHANT_CODE,
 	MERCHANT.MERCHANT_NAME,
 	MERCHANT.LAN_ID,
 	MERCHANT.CITY,
 	MERCHANT.MERCHANT_TYPE,
 	MERCHANT. STATUS,
+	RULES.MERCHANT_RULE_ID
+	RULES.MERCHANT_ID
 	RULES.RULE_TYPE,
 	RULES.TARGET_TYPE,
-	RULES.TARGET_ID,
-	RULES.RULE_TYPE,
-	RULES.TARGET_TYPE
+	RULES.TARGET_ID
 </sql>
 
     <select id="queryMerchantRuleByCondition" parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantRuleGetReq"

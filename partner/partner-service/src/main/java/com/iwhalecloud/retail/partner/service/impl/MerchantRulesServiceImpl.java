@@ -246,7 +246,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                         rule.setTargetCode(rule.getTargetId());
                     } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())){
                         //商家权限
-                        MerchantDTO merchantDTO = merchantService.getMerchantById(rule.getMerchantId()).getResultData();
+                        MerchantDTO merchantDTO = merchantService.getMerchantById(rule.getTargetId()).getResultData();
                         if (Objects.nonNull(merchantDTO)) {
                             rule.setTargetName(merchantDTO.getMerchantName());
                             rule.setTargetCode(merchantDTO.getMerchantCode());
@@ -290,7 +290,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                         rule.setTargetCode(rule.getTargetId());
                     } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MERCHANT.getType())){
                         //商家权限
-                        MerchantDTO merchantDTO = merchantService.getMerchantById(rule.getMerchantId()).getResultData();
+                        MerchantDTO merchantDTO = merchantService.getMerchantById(rule.getTargetId()).getResultData();
                         if (Objects.nonNull(merchantDTO)) {
                             rule.setTargetName(merchantDTO.getMerchantName());
                             rule.setTargetCode(merchantDTO.getMerchantCode());

@@ -112,20 +112,25 @@ public class TypeServiceImpl implements TypeService {
 
     private void saveAttrSpec(TypeDTO typeDTO, String typeId) {
         List<AttrSpecDTO> attrDTOS = typeDTO.getSpecDTOS();
-        for (AttrSpecDTO dto : attrDTOS) {
-            dto.setTypeId(typeId);
-            dto.setAttrType(AttrSpecConst.SPEC_TYPE);
-            dto.setStatusCd("1000");
-            attrSpecManager.addAttrSpec(dto);
+        if(!CollectionUtils.isEmpty(attrDTOS)){
+            for (AttrSpecDTO dto : attrDTOS) {
+                dto.setTypeId(typeId);
+                dto.setAttrType(AttrSpecConst.SPEC_TYPE);
+                dto.setStatusCd("1000");
+                attrSpecManager.addAttrSpec(dto);
+            }
+        }
+        
+        List<AttrSpecDTO> specDTOS = typeDTO.getAttrDTOS();
+        if(!CollectionUtils.isEmpty(specDTOS)){
+            for (AttrSpecDTO dto : specDTOS) {
+                dto.setTypeId(typeId);
+                dto.setAttrType(AttrSpecConst.ATTR_TYPE);
+                dto.setStatusCd("1000");
+                attrSpecManager.addAttrSpec(dto);
+            }
         }
 
-        List<AttrSpecDTO> specDTOS = typeDTO.getAttrDTOS();
-        for (AttrSpecDTO dto : specDTOS) {
-            dto.setTypeId(typeId);
-            dto.setAttrType(AttrSpecConst.ATTR_TYPE);
-            dto.setStatusCd("1000");
-            attrSpecManager.addAttrSpec(dto);
-        }
 
         List<TypeDTO.BrandReq> brandReqS = typeDTO.getBrandIds();
         if(!CollectionUtils.isEmpty(brandReqS)){

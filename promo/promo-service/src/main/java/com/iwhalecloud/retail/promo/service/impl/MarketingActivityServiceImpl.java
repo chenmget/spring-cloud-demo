@@ -600,6 +600,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryRespList = Lists.newArrayList();
         ResultVO<List<MarketingGoodsActivityQueryResp>> listResultVO = this.listGoodsMarketingActivitys(req);
         List<MarketingGoodsActivityQueryResp> activityList = listResultVO.getResultData();
+        VerifyProductPurchasesLimitReq verifyProductPurchasesLimitReq = new VerifyProductPurchasesLimitReq();
         if (!CollectionUtils.isEmpty(activityList)) {
             List<String> marketingActivityIdList = Lists.newArrayList();
             activityList.forEach(item -> {
@@ -610,10 +611,20 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             if (!CollectionUtils.isEmpty(productList)) {
                 productList.forEach(item -> {
                     if (null != item.getDiscountAmount()) {
-                        MarketingReliefActivityQueryResp marketingReliefActivityQueryResp = new MarketingReliefActivityQueryResp();
-                        marketingReliefActivityQueryResp.setMarketingActivityId(item.getMarketingActivityId());
-                        marketingReliefActivityQueryResp.setPromotionPrice(String.valueOf(item.getDiscountAmount()));
-                        marketingReliefActivityQueryRespList.add(marketingReliefActivityQueryResp);
+                        if (PromoConst.ProductNumFlg.ProductNumFlg_1.getCode().equals(item.getNumLimitFlg())) {
+                            verifyProductPurchasesLimitReq.setPurchaseCount(1);
+                            verifyProductPurchasesLimitReq.setActivityId(item.getMarketingActivityId());
+                            verifyProductPurchasesLimitReq.setProductId(item.getProductId());
+                            Long buyCount = historyPurchaseManager.queryActProductPurchasedSum(verifyProductPurchasesLimitReq);
+                            if (buyCount != null) {
+                                if (item.getNum() < buyCount) {
+                                    MarketingReliefActivityQueryResp marketingReliefActivityQueryResp = new MarketingReliefActivityQueryResp();
+                                    marketingReliefActivityQueryResp.setMarketingActivityId(item.getMarketingActivityId());
+                                    marketingReliefActivityQueryResp.setPromotionPrice(String.valueOf(item.getDiscountAmount()));
+                                    marketingReliefActivityQueryRespList.add(marketingReliefActivityQueryResp);
+                                }
+                            }
+                        }
                     }
                 });
             }

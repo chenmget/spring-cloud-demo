@@ -7,7 +7,10 @@ import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
-import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstPickupReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
+import com.iwhalecloud.retail.warehouse.dto.request.RetailerResourceInstAllocateReq;
 import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
@@ -15,8 +18,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = WarehouseServiceApplication.class)
@@ -62,7 +63,7 @@ public class RetailerResourceInstOpenServiceImplTest {
         ResourceInstPickupReq req = new ResourceInstPickupReq();
         req.setMktResInstNbrs(Lists.newArrayList("20190314180402","20190314180402"));
         req.setMerchantId("4300001063072");
-        req.setMktResInstIds(Lists.newArrayList("100001498"));
+        req.setLanId("735");
         ResultVO resultVO = retailerResourceInstService.pickResourceInst(req);
     }
 

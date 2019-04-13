@@ -109,8 +109,7 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             addRespResultVO = resourceInstService.syncTerminal(addReq);
             log.info("GreenChannelProcessingPassActionImpl.run resourceInstService.syncTerminal addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addRespResultVO));
         } else {
-            addRespResultVO = resourceInstService.addResourceInst(addReq);
-            log.info("GreenChannelProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addRespResultVO));
+            addRespResultVO = ResultVO.success();
         }
 
         if (addRespResultVO.isSuccess()) {
@@ -126,7 +125,7 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             batchAndEventAddReq.setMerchantId(merchantId);
             batchAndEventAddReq.setCreateStaff(merchantId);
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-            log.info("ResourceInstServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
+            log.info("GreenChannelProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         }
         return ResultVO.success();
     }

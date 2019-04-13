@@ -8,6 +8,7 @@ import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -106,7 +107,7 @@ public class ResourceInstServiceImplTest {
         json = "{\"mktResInstNbrs\":[\"20190315012\",\"20190315011\"]}";
 
         Gson gson = new Gson();
-        ResourceInstListReq req  = gson.fromJson(json, new TypeToken<ResourceInstListReq>(){}.getType());
+        ResourceInstListPageReq req  = gson.fromJson(json, new TypeToken<ResourceInstListPageReq>(){}.getType());
         resourceInstService.getResourceInstList(req);
     }
 
@@ -132,6 +133,19 @@ public class ResourceInstServiceImplTest {
         mktResInstNbrs.add("0066");
         req.setMktResInstNbrs(mktResInstNbrs);
         resourceInstService.updateInstState(req);
+    }
+
+    @Test
+    public void listResourceInst(){
+        ResourceInstListReq req = new ResourceInstListReq();
+        req.setMktResStoreId("21");
+//        req.setMerchantId("4301811025392");
+//        List<String> mktResInstNbrs = Lists.newArrayList();
+//        mktResInstNbrs.add("123");
+//        mktResInstNbrs.add("456");
+//        mktResInstNbrs.add("0066");
+//        req.setMktResInstNbrs(mktResInstNbrs);
+        ResultVO<List<ResourceInstListResp>> listResultVO = resourceInstService.listResourceInst(req);
     }
 
 }

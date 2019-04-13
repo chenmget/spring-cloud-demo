@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
 import org.apache.ibatis.annotations.Mapper;
@@ -39,7 +40,7 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst>{
      * @param req
      * @return
      */
-    public Page<ResourceInstListResp> getResourceInstList(Page<ResourceInstListResp> page, @Param("req")ResourceInstListReq req);
+    public Page<ResourceInstListPageResp> getResourceInstList(Page<ResourceInstListPageResp> page, @Param("req")ResourceInstListPageReq req);
 
     /**
      * 根据查询条件串码实列
@@ -74,7 +75,7 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst>{
      * @param req
      * @return
      */
-    public List<ResourceInstListResp> getBatch(ResourceInstBatchReq req);
+    public List<ResourceInstListPageResp> getBatch(ResourceInstBatchReq req);
 
     /**
      * 批量修改状态
@@ -84,11 +85,11 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst>{
     int batchUpdateInstState(@Param("req") ResourceInstUpdateReq req);
 
     /**
-     * 根据条件查询全量的串码实例
+     * 根据条件查询串码实例
      * @param req
      * @return
      */
-    List<ResourceInstListResp> getResourceInstList(@Param("req")ResourceInstListReq req);
+    List<ResourceInstListResp> listResourceInst(@Param("req")ResourceInstListReq req);
 
     /**
      * 获取主键

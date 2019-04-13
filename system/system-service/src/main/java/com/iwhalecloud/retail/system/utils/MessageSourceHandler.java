@@ -30,7 +30,7 @@ public class MessageSourceHandler {
      */
     public String getMessage(String messageKey) {
 
-        String message = messageSource.getMessage(messageKey, null, LocaleContextHolder.getLocale());
+        String message = messageSource.getMessage(messageKey, null, messageKey, LocaleContextHolder.getLocale());
         return message;
     }
 

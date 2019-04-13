@@ -31,6 +31,12 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	@ApiModelProperty(value = "记录营销资源实例编码。")
 	@NotEmpty(message = "串码不能为空")
   	private List<String> mktResInstNbrs;
+
+	/**
+	 * 抽检串码列表
+	 */
+	@ApiModelProperty(value = "抽检串码列表")
+	private List<String> checkMktResInstNbrs;
 	
 	/**
   	 * 固网终端需要CT码管理时，记录CT码

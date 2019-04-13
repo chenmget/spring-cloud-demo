@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.request.PageProductReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 
 /**
  * 厂家串码操作
@@ -21,7 +21,7 @@ public interface MerchantResourceInstService {
      * @param req
      * @return
      */
-    ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req);
+    ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req);
 
     /**
      * 商家删除串码

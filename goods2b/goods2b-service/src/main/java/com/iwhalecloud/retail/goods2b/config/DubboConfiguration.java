@@ -18,7 +18,7 @@ public class DubboConfiguration {
 		consumerConfig.setCheck(false);
 		consumerConfig.setTimeout(5000);
 		consumerConfig.setRetries(0); 	//不重发请求
-		consumerConfig.setFilter("sourceFromConsumerfilter,sourceFromProviderfilter");
+		consumerConfig.setFilter("sourceFromConsumerFilter,sourceFromProviderFilter,localeProviderFilter,localeConsumerFilter");
 		return consumerConfig;
 	}
 }

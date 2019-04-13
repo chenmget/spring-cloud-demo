@@ -6,11 +6,11 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.model.MerchantInfByNbrModel;
 
 import java.util.List;
-import java.util.Map;
 
 public interface ResourceInstService {
 
@@ -19,7 +19,7 @@ public interface ResourceInstService {
      * @param req
      * @return
      */
-    public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req);
+    Boolean addResourceInst(ResourceInstAddReq req);
 
     /**
      * 添加串码（交易）
@@ -61,7 +61,7 @@ public interface ResourceInstService {
      * @param req
      * @return
      */
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req);
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req);
 
     /**
      * 查询机型
@@ -109,12 +109,24 @@ public interface ResourceInstService {
      * @param req
      * @return
      */
-     ResultVO<List<ResourceInstListResp>> getExportResourceInstList(ResourceInstListReq req);
+     ResultVO<List<ResourceInstListResp>> listResourceInst(ResourceInstListReq req);
 
     /**
-     * 查询串码是否参与补贴
-     * @param nbrAndProductId
+     * 入库串码校验，原库中存在的串码不再入库
+     * @param req
      * @return
      */
-    ResultVO<Boolean> nbrHasActivity(Map<String, String> nbrAndProductId);
+    List<String> vaildOwnStore(ResourceInstValidReq req);
+    /**
+     * 入库串码校验，厂商库存在才能入库
+     * @param req
+     * @return
+     */
+    List<String> validMerchantStore(ResourceInstValidReq req);
+
+    /**
+     * 获取主键
+     * @return
+     */
+    String getPrimaryKey();
 }

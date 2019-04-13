@@ -38,8 +38,8 @@
     ,t.STORAGE_TYPE
 </sql>
 
-    <select id="getResourceInstList" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListReq"
-            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp">
+    <select id="getResourceInstList" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp">
         select <include refid="allFields" />
         from mkt_res_inst t
         where 1 = 1
@@ -50,19 +50,19 @@
             and t.create_time &lt;= #{req.createTimeEnd}
         </if>
         <if test="null!=req.instInDateStart and ''!=req.instInDateStart">
-            and t.status_cd = '1302'
+            and t.status_cd = '1202'
             and t.create_date &gt;= #{req.instInDateStart}
         </if>
         <if test="null!=req.instInDateEnd and ''!=req.instInDateEnd">
-            and t.status_cd = '1302'
+            and t.status_cd = '1202'
             and t.create_date &lt;= #{req.instInDateEnd}
         </if>
         <if test="null!=req.instOutDateStart and ''!=req.instOutDateStart">
-            and t.status_cd = '1304'
+            and t.status_cd = '1211'
             and t.update_date &gt;= #{req.instOutDateStart}
         </if>
         <if test="null!=req.instOutDateEnd and ''!=req.instOutDateEnd">
-            and t.status_cd = '1304'
+            and t.status_cd = '1211'
             and t.update_date &lt;= #{req.instOutDateEnd}
         </if>
 
@@ -229,7 +229,7 @@
 
     <!-- 调拨页面批量查询-->
     <select id="getBatch" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstBatchReq"
-            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp">
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp">
         select <include refid="allFields" />
         from mkt_res_inst t
         where t.mkt_res_inst_nbr in
@@ -269,4 +269,36 @@
     <select id="getPrimaryKey" resultType="java.lang.String">
         select seq_retail_all_tables.nextval
     </select>
+
+
+    <select id="listResourceInst" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp">
+        select <include refid="allFields" />
+        from mkt_res_inst t
+        where 1 = 1
+        <if test="null!=req.mktResInstType and ''!=req.mktResInstType">
+            and t.mkt_res_inst_type = #{req.mktResInstType}
+        </if>
+        <if test="null!=req.sourceType and ''!=req.sourceType">
+            and t.source_type = #{req.sourceType}
+        </if>
+        <if test="null!=req.statusCd and ''!=req.statusCd">
+            and t.status_cd = #{req.statusCd}
+        </if>
+        <if test="null!=req.merchantId and ''!=req.merchantId">
+            and t.merchant_id = #{req.merchantId}
+        </if>
+        <if test="null!=req.storageType and ''!=req.storageType">
+            and t.storage_type = #{req.storageType}
+        </if>
+        <if test="null!=req.mktResInstNbrs and req.mktResInstNbrs.size>0">
+            and t.mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResInstNbrs">
+                #{item}
+            </foreach>
+        </if>
+        and t.mkt_res_store_id = #{req.mktResStoreId}
+        order by create_date desc
+    </select>
+
 </mapper>

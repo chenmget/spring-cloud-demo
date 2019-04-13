@@ -11,7 +11,7 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceAllocateResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -61,7 +61,7 @@ public class SupplierResourceInstB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="getResourceInstList")
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(@RequestBody ResourceInstListReq req) {
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(@RequestBody ResourceInstListPageReq req) {
         if (StringUtils.isEmpty(req.getMktResStoreIds())) {
             return ResultVO.error("仓库为空");
         }
@@ -126,7 +126,7 @@ public class SupplierResourceInstB2BController {
         req.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
         BeanUtils.copyProperties(dto, req);
         req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
-        req.setMktResInstType(ResourceConst.MKTResInstType.NONTRANSACTION.getCode());
+        req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
         req.setMerchantId(UserContext.getMerchantId());
         return supplierResourceInstService.addResourceInst(req);
     }
@@ -175,15 +175,15 @@ public class SupplierResourceInstB2BController {
 
         TransferPermissionGetResp resp = transferPermissionVO.getResultData();
         List mktResIdList = CollectionUtils.isEmpty(resp.getProductIdList()) ? Lists.newArrayList("-1") : resp.getProductIdList();
-        ResultVO<List<ResourceInstListResp>> respListVO = supplierResourceInstService.getBatch(req);
+        ResultVO<List<ResourceInstListPageResp>> respListVO = supplierResourceInstService.getBatch(req);
         log.info("RetailerResourceInstB2BController.getBatch retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respListVO));
-        List<ResourceInstListResp> respList = respListVO.getResultData();
+        List<ResourceInstListPageResp> respList = respListVO.getResultData();
         // 有机型权限的串码
-        List<ResourceInstListResp> resourceInstRespList = respList.stream().filter(s -> mktResIdList.contains(s.getMktResId())).collect(Collectors.toList());
-        List<String> resourceInstNbrList = resourceInstRespList.stream().map(ResourceInstListResp::getMktResInstNbr).collect(Collectors.toList());
+        List<ResourceInstListPageResp> resourceInstRespList = respList.stream().filter(s -> mktResIdList.contains(s.getMktResId())).collect(Collectors.toList());
+        List<String> resourceInstNbrList = resourceInstRespList.stream().map(ResourceInstListPageResp::getMktResInstNbr).collect(Collectors.toList());
 
         // 无机型权限的串码
-        List<String> getBatchNbrList = respList.stream().map(ResourceInstListResp::getMktResInstNbr).collect(Collectors.toList());
+        List<String> getBatchNbrList = respList.stream().map(ResourceInstListPageResp::getMktResInstNbr).collect(Collectors.toList());
         getBatchNbrList.removeAll(resourceInstNbrList);
 
         // 状态不对的串码,传进来的串码去掉有权限的，去掉没权限的
@@ -191,7 +191,7 @@ public class SupplierResourceInstB2BController {
         nbrs.removeAll(resourceInstNbrList);
         nbrs.removeAll(getBatchNbrList);
 
-        resourceAllocateResp.setResourceInstListRespList(resourceInstRespList);
+        resourceAllocateResp.setResourceInstListRespListPage(resourceInstRespList);
         resourceAllocateResp.setStatusWrongNbrs(nbrs);
         resourceAllocateResp.setNoRightsNbrs(getBatchNbrList);
         return ResultVO.success(resourceAllocateResp);
@@ -204,12 +204,12 @@ public class SupplierResourceInstB2BController {
     })
     @PostMapping(value="nbrExport")
     @UserLoginToken
-    public void nbrExport(@RequestBody ResourceInstListReq req, HttpServletResponse response) {
-        ResultVO<Page<ResourceInstListResp>> dataVO = supplierResourceInstService.getResourceInstList(req);
+    public void nbrExport(@RequestBody ResourceInstListPageReq req, HttpServletResponse response) {
+        ResultVO<Page<ResourceInstListPageResp>> dataVO = supplierResourceInstService.getResourceInstList(req);
         if (!dataVO.isSuccess()) {
             return;
         }
-        List<ResourceInstListResp> list = dataVO.getResultData().getRecords();
+        List<ResourceInstListPageResp> list = dataVO.getResultData().getRecords();
         log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.supplierColumn();
         try{

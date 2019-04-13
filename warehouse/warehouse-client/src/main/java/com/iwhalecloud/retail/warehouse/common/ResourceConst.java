@@ -54,6 +54,10 @@ public class ResourceConst {
      * 调拨两端都要审核流程实例ID
      */
     public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
+    /**
+     * 厂商串码入库审批流程实例ID
+     */
+    public final static String  ADD_NBR_WORK_FLOW_INST = "13";
 
     /**
      * 调拨返回成功的消息
@@ -346,7 +350,7 @@ public class ResourceConst {
         // 交易
         TRANSACTION("1","交易"),
         // 非交易
-        NONTRANSACTION("2","非交易"),
+        NONTRANSACTION("2","集采"),
         // 备机
         STANDBYMACHINE("3","备机");
 

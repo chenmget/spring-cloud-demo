@@ -5,11 +5,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ValidResourceInstItemResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ValidResourceInstResp;
@@ -79,8 +79,8 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
      * @param req
      * @return
      */
-    public Page<ResourceInstListResp> getResourceInstList(ResourceInstListReq req) {
-        Page<ResourceInstListResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+    public Page<ResourceInstListPageResp> getResourceInstList(ResourceInstListPageReq req) {
+        Page<ResourceInstListPageResp> page = new Page<>(req.getPageNo(), req.getPageSize());
         return resourceInstMapper.getResourceInstList(page, req);
     }
 
@@ -260,7 +260,7 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
      * @param req
      * @return
      */
-    public List<ResourceInstListResp> getBatch(ResourceInstBatchReq req) {
+    public List<ResourceInstListPageResp> getBatch(ResourceInstBatchReq req) {
         return resourceInstMapper.getBatch(req);
     }
 
@@ -285,12 +285,12 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
     }
 
     /**
-     * 根据条件查询出全量的串码实例
+     * 根据条件查询串码实例
      * @param req
      * @return
      */
-    public List<ResourceInstListResp> getExportResourceInstList(ResourceInstListReq req){
-        return resourceInstMapper.getResourceInstList(req);
+    public List<ResourceInstListResp> listResourceInst(ResourceInstListReq req){
+        return resourceInstMapper.listResourceInst(req);
     }
 
     /**

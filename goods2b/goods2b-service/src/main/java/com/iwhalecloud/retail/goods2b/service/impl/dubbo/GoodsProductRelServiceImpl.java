@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.resp.ActivityProductRespDTO;
 import com.iwhalecloud.retail.promo.dto.resp.PreSubsidyProductRespDTO;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
@@ -244,10 +245,14 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
             for(PreSubsidyProductRespDTO preSubsidyProductRespDTO:preSubsidyProductRespDTOs){
                 ActivityProductRespDTO activityProductRespDTO =preSubsidyProductRespDTO.getActivityProductResqDTO();
                 String productId1 = activityProductRespDTO.getProductId();
-                if(productId1.equals(productId)){
-                    long num = activityProductRespDTO.getNum();
-                    long reachAmount = activityProductRespDTO.getReachAmount();
-                    if(num - reachAmount < buyCount){
+                if (productId1.equals(productId)) {
+                    if (PromoConst.ProductNumFlg.ProductNumFlg_1.getCode().equals(activityProductRespDTO.getNumLimitFlg())) {
+                        long num = activityProductRespDTO.getNum();
+                        long reachAmount = activityProductRespDTO.getReachAmount();
+                        if (num - reachAmount < buyCount) {
+                            return true;
+                        }
+                    }else{
                         return true;
                     }
                 }

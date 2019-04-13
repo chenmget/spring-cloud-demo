@@ -24,7 +24,7 @@ public class ResourceAllocateResp implements java.io.Serializable {
   	 * 查询可用串码实例集合
   	 */
 	@ApiModelProperty(value = "查询可用串码实例集合")
-  	private List<ResourceInstListResp> resourceInstListRespList;
+  	private List<ResourceInstListPageResp> resourceInstListRespListPage;
 
 	/**
   	 * 状态不对的串码列表。

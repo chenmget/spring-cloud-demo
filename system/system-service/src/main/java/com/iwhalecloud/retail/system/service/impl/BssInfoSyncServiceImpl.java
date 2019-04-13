@@ -162,14 +162,14 @@ public class BssInfoSyncServiceImpl implements BssInfoSyncService {
      * @return
      */
     private String assembleResult(String result, String resultCode, String resultMsg) {
-        String resultMsg1 = "{\n" +
-                "\t\"key\": \"svcCont\",\n" +
-                "\t\"svcContContext\": {\n" +
-                "\t\t\"context\": \"" + result + "\"\n" +
-                "\t},\n" +
-                "\t\"resultCode\": \"" + resultCode + "\",\n" +
-                "\t\"resultMsg\": \"" + resultMsg + "\"\n" +
-                "}\n";
+        String resultMsg1 = "{" +
+                "\"key\": \"svcCont\"," +
+                "\"svcContContext\": {" +
+                "\"context\": \"" + result + "\"" +
+                "}," +
+                "\"resultCode\": \"" + resultCode + "\"," +
+                "\"resultMsg\": \"" + resultMsg + "\"" +
+                "}";
         return resultMsg1;
     }
 

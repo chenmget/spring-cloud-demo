@@ -4,7 +4,7 @@ package com.iwhalecloud.retail.warehouse.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 
 import java.util.List;
 
@@ -32,7 +32,7 @@ public interface RetailerResourceInstService {
      * @param req
      * @return
      */
-    ResultVO<Page<ResourceInstListResp>> listResourceInst(ResourceInstListReq req);
+    ResultVO<Page<ResourceInstListPageResp>> listResourceInst(ResourceInstListPageReq req);
 
     /**
      * 领用串码
@@ -56,7 +56,7 @@ public interface RetailerResourceInstService {
      * @param req
      * @return
      */
-    ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req);
+    ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req);
 
     /**
      * 零售商调拨串码
@@ -82,11 +82,4 @@ public interface RetailerResourceInstService {
      */
     public ResultVO confirmRefuseNbr(ConfirmReciveNbrReq req);
 
-    /**
-     * 根据条件查询全量的串码实例
-     *
-     * @param req
-     * @return
-     */
-    ResultVO<List<ResourceInstListResp>> getExportResourceInstList(ResourceInstListReq req);
 }

@@ -150,6 +150,11 @@ public class ResourceRequestAddReq implements Serializable {
          */
         @ApiModelProperty(value = "营销资源标识，记录product_id")
         private String mktResId;
+        /**
+         * 抽检标识
+         */
+        @ApiModelProperty(value = "抽检标识")
+        private String isInspection;
 
     }
 }

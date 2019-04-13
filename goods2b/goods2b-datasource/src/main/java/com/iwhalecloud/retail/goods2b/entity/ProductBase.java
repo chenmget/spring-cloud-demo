@@ -98,7 +98,13 @@ public class ProductBase implements Serializable {
   	 */
 	@ApiModelProperty(value = "是否需要CT码")
   	private String isCtCode;
-  	
+	
+  	/**
+  	 * 是否需要抽检
+  	 */
+	@ApiModelProperty(value = "是否需要抽检")
+  	private String isInspection;
+
   	/**
   	 * 产品编码
   	 */

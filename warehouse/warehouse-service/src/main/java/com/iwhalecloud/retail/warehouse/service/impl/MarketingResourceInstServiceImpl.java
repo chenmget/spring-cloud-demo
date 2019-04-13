@@ -18,7 +18,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SynMktInstStatusSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalItemSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalSwapReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.model.MerchantInfByNbrModel;
 import com.iwhalecloud.retail.warehouse.service.MarketingResStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
@@ -76,7 +76,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     }
 
     @Override
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq dto) {
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq dto) {
         return null;
     }
 
@@ -200,7 +200,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     }
 
     @Override
-    public ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req) {
+    public ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req) {
         return null;
     }
 

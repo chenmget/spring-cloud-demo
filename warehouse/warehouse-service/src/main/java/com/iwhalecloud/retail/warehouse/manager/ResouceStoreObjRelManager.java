@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.warehouse.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreObjRelDTO;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceStoreObjRel;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceStoreObjRelMapper;
 import org.springframework.beans.BeanUtils;

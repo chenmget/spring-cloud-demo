@@ -103,4 +103,10 @@ public class ResourceReqDetailAddReq implements Serializable {
      */
     @ApiModelProperty(value = "备注")
     private java.lang.String remark;
+
+    /**
+     * 抽检标识
+     */
+    @ApiModelProperty(value = "抽检标识")
+    private String isInspection;
 }

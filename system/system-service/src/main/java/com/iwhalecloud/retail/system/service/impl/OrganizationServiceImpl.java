@@ -1,16 +1,17 @@
 package com.iwhalecloud.retail.system.service.impl;
 
-import com.iwhalecloud.retail.dto.ResultCodeEnum;
-import com.iwhalecloud.retail.system.dto.OrganizationDTO;
-import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.system.dto.request.OrganizationsQueryReq;
-import com.iwhalecloud.retail.system.entity.Organization;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
+import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
+import com.iwhalecloud.retail.system.dto.request.OrganizationsQueryReq;
+import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
+import com.iwhalecloud.retail.system.entity.Organization;
 import com.iwhalecloud.retail.system.manager.OrganizationManager;
 import com.iwhalecloud.retail.system.service.OrganizationService;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -83,5 +84,10 @@ public class OrganizationServiceImpl implements OrganizationService {
         }else{
             return ResultVO.errorEnum(ResultCodeEnum.ERROR);
         }
+    }
+
+    @Override
+    public ResultVO<List<OrganizationRegionResp>> queryRegionOrganizationId(){
+        return ResultVO.success(organizationManager.queryRegionOrganizationId());
     }
 }

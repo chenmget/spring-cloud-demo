@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.warehouse.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -125,6 +124,12 @@ public class ResourceReqDetail implements Serializable {
   	 */
 	@ApiModelProperty(value = "备注")
   	private java.lang.String remark;
+
+	/**
+	 * 抽检标识
+	 */
+	@ApiModelProperty(value = "抽检标识")
+	private String isInspection;
   	
   	
   	//属性 end
@@ -173,6 +178,9 @@ public class ResourceReqDetail implements Serializable {
 		/** 记录出入库类型,LOVB=RES-C-0012. */
 		chngType("chngType","CHNG_TYPE"),
 		
+		/** 抽检标识. */
+		isInspection("isInspection","IS_INSPECTION"),
+
 		/** 备注. */
 		remark("remark","REMARK");
 

@@ -12,7 +12,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.warehouse.util.ProfileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -71,7 +71,7 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     }
 
     @Override
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req) {
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("SupplierResourceInstOpenServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
         return supplierResourceInstService.getResourceInstList(req);
     }
@@ -148,7 +148,7 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     }
 
     @Override
-    public ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req){
+    public ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req){
         log.info("SupplierResourceInstOpenServiceImpl.getBatch req={}", JSON.toJSONString(req));
         req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         return supplierResourceInstService.getBatch(req);

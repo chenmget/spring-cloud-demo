@@ -10,21 +10,16 @@ import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstBatchReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.lang.reflect.Type;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = WarehouseServiceApplication.class)
@@ -57,9 +52,9 @@ public class RetailerResourceInstServiceImplTest {
 
     @Test
     public void listResourceInst() {
-        ResourceInstListReq req = new ResourceInstListReq();
+        ResourceInstListPageReq req = new ResourceInstListPageReq();
         req.setMktResInstNbrs(Lists.newArrayList("A000008E25F8CA"));
-        ResultVO<Page<ResourceInstListResp>> pageResultVO = retailerResourceInstService.listResourceInst(req);
+        ResultVO<Page<ResourceInstListPageResp>> pageResultVO = retailerResourceInstService.listResourceInst(req);
         System.out.println("RetailerResourceInstServiceImplTest.listResourceInst "+pageResultVO);
     }
     /**

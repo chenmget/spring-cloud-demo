@@ -127,5 +127,17 @@ public class ProductPageResp implements Serializable {
     @ApiModelProperty(value = "审核状态")
     private String auditState;
 
+    @ApiModelProperty(value = "是否有串码")
+    private String isImei;
+
+    @ApiModelProperty(value = "是否推送ITMS")
+    private String isItms;
+
+    @ApiModelProperty(value = "是否需要CT码")
+    private String isCtCode;
+
+    @ApiModelProperty(value = "是否需要抽检")
+    private String isInspection;
+
 
 }

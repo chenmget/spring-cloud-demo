@@ -22,7 +22,7 @@ import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.*;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.manager.*;
 import com.iwhalecloud.retail.warehouse.service.*;
@@ -110,7 +110,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
 
     @Override
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO addResourceInst(ResourceInstAddReq req) {
         log.info("SupplierResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         // 获取产品归属厂商
@@ -155,17 +154,33 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
         req.setDestStoreId(mktResStoreId);
-        ResultVO<ResourceInstAddResp> addRespResultVO = resourceInstService.addResourceInst(req);
-        if (!addRespResultVO.isSuccess()) {
-            return addRespResultVO;
+        ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
+        ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
+        BeanUtils.copyProperties(req, resourceInstValidReq);
+        resourceInstValidReq.setMktResStoreId(mktResStoreId);
+        List<String> existNbrs = resourceInstService.vaildOwnStore(resourceInstValidReq);
+        List<String> mktResInstNbrs = req.getMktResInstNbrs();
+        resourceInstAddResp.setExistNbrs(existNbrs);
+        mktResInstNbrs.removeAll(existNbrs);
+        if(CollectionUtils.isEmpty(mktResInstNbrs)){
+            return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
-
-        List<String> nbrList = req.getMktResInstNbrs();
-        nbrList.removeAll(addRespResultVO.getResultData().getExistNbrs());
-        nbrList.removeAll(addRespResultVO.getResultData().getPutInFailNbrs());
+        List<String> merchantExixtsNbrs = resourceInstService.validMerchantStore(resourceInstValidReq);
+        req.setMktResInstNbrs(merchantExixtsNbrs);
+        req.setDestStoreId(mktResStoreId);
+        req.setSourceType(merchantDTOResultVO.getResultData().getMerchantType());
+        mktResInstNbrs.removeAll(merchantExixtsNbrs);
+        resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);
+        if(CollectionUtils.isEmpty(merchantExixtsNbrs)){
+            return ResultVO.error("厂商库该机型串码不存在！");
+        }
+        Boolean addNum = resourceInstService.addResourceInst(req);
+        if (!addNum) {
+            return ResultVO.error("串码入库失败");
+        }
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
         resourceInstUpdateReq.setDestStoreId(manuResStoreId);
-        resourceInstUpdateReq.setMktResInstNbrs(nbrList);
+        resourceInstUpdateReq.setMktResInstNbrs(merchantExixtsNbrs);
         resourceInstUpdateReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceInstUpdateReq.setMerchantId(sourceStoreMerchantId);
         resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());
@@ -181,7 +196,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (!updateResourceresultVO.isSuccess()) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), updateResourceresultVO.getResultMsg());
         }
-        return addRespResultVO;
+        return ResultVO.success("串码入库完成", resourceInstAddResp);
     }
 
     @Override
@@ -286,7 +301,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     }
 
     @Override
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req) {
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("SupplierResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
         return this.resourceInstService.getResourceInstList(req);
     }
@@ -362,7 +377,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         processStartDTO.setTaskSubType(taskSubType);
         processStartDTO.setExtends1(sourceMerchantDTO.getCityName());
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
+        log.info("SupplierResourceInstServiceImpl.allocateResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
         if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
@@ -597,11 +612,11 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     }
 
     @Override
-    public ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req) {
-        List<ResourceInstListResp> list = resourceInstManager.getBatch(req);
+    public ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req) {
+        List<ResourceInstListPageResp> list = resourceInstManager.getBatch(req);
         log.info("SupplierResourceInstServiceImpl.getBatch req={}", JSON.toJSONString(req));
         // 添加产品信息
-        for (ResourceInstListResp resp : list) {
+        for (ResourceInstListPageResp resp : list) {
             String productId = resp.getMktResId();
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
             queryReq.setProductId(productId);

@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
-import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -16,7 +15,7 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackDetailManager;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
@@ -34,8 +33,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static com.iwhalecloud.retail.warehouse.common.ResourceConst.CONSTANT_NO;
 
 @Service("asyncTaskService")
 @Slf4j
@@ -570,12 +567,12 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         BeanUtils.copyProperties(req, resourceInstsGetReq);
         resourceInstsGetReq.setMktResStoreId(mktResStoreId);
 
-        ResultVO<List<ResourceInstListResp>> listResultVO = retailerResourceInstService.getBatch(resourceInstsGetReq);
+        ResultVO<List<ResourceInstListPageResp>> listResultVO = retailerResourceInstService.getBatch(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(listResultVO));
-        List<ResourceInstListResp> insts = listResultVO.getResultData();
+        List<ResourceInstListPageResp> insts = listResultVO.getResultData();
         int count = 0;
         for (int i = 0; i < insts.size(); i++) {
-            ResourceInstListResp resourceInstDTO = insts.get(i);
+            ResourceInstListPageResp resourceInstDTO = insts.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
             resouceInstTrackDTO.setIfGreenChannel(ResourceConst.CONSTANT_YES);

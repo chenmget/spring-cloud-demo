@@ -13,10 +13,12 @@ import lombok.Data;
  */
 @Data
 @ApiModel(value = "对应模型mkt_res_inst, 对应实体ResourceInst类")
-public class ResourceInstListResp implements java.io.Serializable {
+public class ResourceInstListPageResp implements java.io.Serializable {
 
   	private static final long serialVersionUID = 1L;
 
+
+  	//属性 begin
 	/**
   	 * 营销资源实例的标识，主键
   	 */
@@ -151,31 +153,43 @@ public class ResourceInstListResp implements java.io.Serializable {
 	 * 省级供应商编码
 	 */
 	@ApiModelProperty(value = "省级供应商编码")
-	private String supplierCode;
+	private java.lang.String supplierCode;
 
 	/**
 	 * 省级供应商名称
 	 */
 	@ApiModelProperty(value = "省级供应商名称")
-	private String supplierName;
+	private java.lang.String supplierName;
 
 	/**
 	 * 记录供应商编码
 	 */
 	@ApiModelProperty(value = "地市级供应商编码")
-	private String citySupplyId;
+	private java.lang.String citySupplyId;
 
 	/**
 	 * 记录供应商名称
 	 */
 	@ApiModelProperty(value = "地市级供应商名称")
-	private String citySupplyName;
+	private java.lang.String citySupplyName;
 
 	/**
 	 * 商家标识
 	 */
 	@ApiModelProperty(value = "商家标识")
-	private String merchantId;
+	private java.lang.String merchantId;
+
+	/**
+	 * 商家名称
+	 */
+	@ApiModelProperty(value = "商家名称")
+	private java.lang.String merchantName;
+
+	/**
+	 * 商家编码
+	 */
+	@ApiModelProperty(value = "商家编码")
+	private java.lang.String merchantCode;
 
 	/**
   	 * 记录CRM状态
@@ -190,10 +204,97 @@ public class ResourceInstListResp implements java.io.Serializable {
   	private String selfRegStatus;
 
 	/**
+	 * 产品类别
+	 */
+	@ApiModelProperty(value = "产品类别名称")
+	private String catName;
+
+	/**
+	 * 产品分类
+	 */
+	@ApiModelProperty(value = "产品类型名称")
+	private String typeName;
+	/**
+	 * 品牌
+	 */
+	@ApiModelProperty(value = "品牌名称")
+	private String brandName;
+
+	/**
+	 * 产品基本表产品名称
+	 */
+	@ApiModelProperty(value = "产品基本表产品名称")
+	private String productName;
+	/**
+	 * 产品表产品名称
+	 */
+	@ApiModelProperty(value = "产品表产品名称")
+	private String unitName;
+
+	/**
+	 * 产品编码
+	 */
+	@ApiModelProperty(value = "产品编码")
+	private String sn;
+
+	/**
+	 * 产品型号
+	 */
+	@ApiModelProperty(value = "产品型号")
+	private String unitType;
+
+	/**
+	 * 型号名称
+	 */
+	@ApiModelProperty(value = "型号名称")
+	private String unitTypeName;
+
+	/**
+	 * 地市
+	 */
+	@ApiModelProperty(value = "地市")
+	private java.lang.String lanId;
+	/**
+	 * 地市名称
+	 */
+	@ApiModelProperty(value = "地市名称")
+	private java.lang.String lanName;
+
+	/**
+	 * 公共管理区域标识
+	 */
+	@ApiModelProperty(value = "公共管理区域标识")
+	private java.lang.String regionId;
+	/**
+	 * 公共管理区域名称
+	 */
+	@ApiModelProperty(value = "公共管理区域名称")
+	private java.lang.String regionName;
+
+	/**
+	 * 商家所属经营主体
+	 */
+	@ApiModelProperty(value = "商家所属经营主体")
+	private java.lang.String businessEntityName;
+
+	/**
+	 * 入库时间。
+	 */
+	@ApiModelProperty(value = "入库时间。")
+	private String instInDate;
+
+	/**
 	 * 入库类型，
 	 * 1000交易入库、1001调拨入库、1002领用入库、1003绿色通道
 	 */
 	@ApiModelProperty(value = "入库类型")
-	private String storageType;
+	private java.lang.String storageType;
+
+	/**
+	 * 规格
+	 */
+	@ApiModelProperty(value = "规格")
+	private String specName;
+
 
 }

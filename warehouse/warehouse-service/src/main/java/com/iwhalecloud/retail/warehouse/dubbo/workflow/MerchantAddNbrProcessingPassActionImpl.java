@@ -18,7 +18,6 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
 import com.iwhalecloud.retail.warehouse.service.GreenChannelProcessingPassActionService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
-import com.iwhalecloud.retail.warehouse.util.ProfileUtil;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +34,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class GreenChannelProcessingPassActionImpl implements GreenChannelProcessingPassActionService {
+public class MerchantAddNbrProcessingPassActionImpl implements GreenChannelProcessingPassActionService {
 
     @Autowired
     private ResourceInstService resourceInstService;
@@ -53,9 +52,6 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
     private ResourceRequestService requestService;
 
     @Autowired
-    private ProfileUtil profileUtil;
-
-    @Autowired
     private ResourceBatchRecService resourceBatchRecService;
     
     @Override
@@ -67,13 +63,13 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
         reqUpdate.setMktResReqId(businessId);
         reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
         ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
-        log.info("GreenChannelProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
+        log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
         // 申请单ID->明细
         //根据申请单表保存的源仓库和申请单明细找到对应的串码
         ResourceReqDetailQueryReq detailQueryReq = new ResourceReqDetailQueryReq();
         detailQueryReq.setMktResReqId(businessId);
         List<ResourceReqDetailDTO> reqDetailDTOS = detailManager.listDetail(detailQueryReq);
-        log.info("GreenChannelProcessingPassActionImpl.run detailManager.listDetail detailQueryReq={}, resp={}", JSON.toJSONString(detailQueryReq), JSON.toJSONString(reqDetailDTOS));
+        log.info("MerchantAddNbrProcessingPassActionImpl.run detailManager.listDetail detailQueryReq={}, resp={}", JSON.toJSONString(detailQueryReq), JSON.toJSONString(reqDetailDTOS));
         List<String> mktResInstNbrs = reqDetailDTOS.stream().map(ResourceReqDetailDTO::getMktResInstNbr).collect(Collectors.toList());
         ResourceReqDetailDTO detailDTO = reqDetailDTOS.get(0);
 
@@ -82,8 +78,8 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
         ResourceInstAddReq addReq = new ResourceInstAddReq();
         addReq.setMktResInstNbrs(mktResInstNbrs);
         addReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        addReq.setSourceType(ResourceConst.SOURCE_TYPE.RETAILER.getCode());
-        addReq.setStorageType(ResourceConst.STORAGETYPE.GREEN_CHANNEL.getCode());
+        addReq.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
+        addReq.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
         addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         addReq.setDestStoreId(detailDTO.getMktResStoreId());
@@ -92,8 +88,8 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
         ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getMktResStoreId());
         String merchantId = null;
         if(null == resultVO || null == resultVO.getResultData()){
-            log.warn("GreenChannelProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
-            return ResultVO.error("GreenChannelProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
+            log.warn("MerchantAddNbrProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
+            return ResultVO.error("MerchantAddNbrProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
         } else {
             MerchantDTO merchantDTO = resultVO.getResultData();
             merchantId = merchantDTO.getMerchantId();
@@ -104,15 +100,11 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             addReq.setLanId(merchantDTO.getLanId());
             addReq.setRegionId(merchantDTO.getCity());
         }
-        ResultVO addRespResultVO = null;
-        if (profileUtil.isLocal()) {
-            addRespResultVO = resourceInstService.syncTerminal(addReq);
-            log.info("GreenChannelProcessingPassActionImpl.run resourceInstService.syncTerminal addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addRespResultVO));
-        } else {
-            addRespResultVO = ResultVO.success();
-        }
+            Boolean addResp = resourceInstService.addResourceInst(addReq);
+            log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.syncTerminal addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addResp));
 
-        if (addRespResultVO.isSuccess()) {
+
+        if (addResp) {
             // step3 增加事件和批次
             Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);
             BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
@@ -125,7 +117,7 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             batchAndEventAddReq.setMerchantId(merchantId);
             batchAndEventAddReq.setCreateStaff(merchantId);
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-            log.info("GreenChannelProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
+            log.info("MerchantAddNbrProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         }
         return ResultVO.success();
     }

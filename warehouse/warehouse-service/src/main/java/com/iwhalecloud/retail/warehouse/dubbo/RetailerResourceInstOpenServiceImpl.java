@@ -8,7 +8,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.MarketingResStoreService;
 import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import com.iwhalecloud.retail.warehouse.util.ProfileUtil;
@@ -70,7 +70,7 @@ public class RetailerResourceInstOpenServiceImpl implements RetailerResourceInst
     }
 
     @Override
-    public ResultVO<Page<ResourceInstListResp>> listResourceInst(ResourceInstListReq req) {
+    public ResultVO<Page<ResourceInstListPageResp>> listResourceInst(ResourceInstListPageReq req) {
         log.info("RetailerResourceInstOpenServiceImpl.listResourceInst req={}", JSON.toJSONString(req));
         if (profileUtil.isLocal()) {
             return retailerResourceInstMarketService.listResourceInst(req);
@@ -100,7 +100,7 @@ public class RetailerResourceInstOpenServiceImpl implements RetailerResourceInst
     }
 
     @Override
-    public ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req) {
+    public ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req) {
         log.info("RetailerResourceInstOpenServiceImpl.getBatch req={}", JSON.toJSONString(req));
         req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         if (profileUtil.isLocal()) {
@@ -149,9 +149,5 @@ public class RetailerResourceInstOpenServiceImpl implements RetailerResourceInst
             return resp;
         }
     }
-
-    @Override
-    public ResultVO<List<ResourceInstListResp>> getExportResourceInstList(ResourceInstListReq req) {
-        return retailerResourceInstService.getExportResourceInstList(req);
-    }
+    
 }

@@ -9,10 +9,10 @@ import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.PageProductReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -61,7 +61,7 @@ public class MerchantResourceInstB2BController {
     })
     @PostMapping(value="getResourceInstList")
     @UserLoginToken
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(@RequestBody ResourceInstListReq req) {
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(@RequestBody ResourceInstListPageReq req) {
         if (StringUtils.isEmpty(req.getMktResStoreIds())) {
             return ResultVO.error("仓库为空");
         }
@@ -109,7 +109,6 @@ public class MerchantResourceInstB2BController {
         req.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         req.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
-        req.setMktResInstType(ResourceConst.MKTResInstType.NONTRANSACTION.getCode());
         BeanUtils.copyProperties(dto, req);
         req.setMerchantId(UserContext.getMerchantId());
         return resourceInstService.addResourceInst(req);
@@ -173,12 +172,12 @@ public class MerchantResourceInstB2BController {
     })
     @PostMapping(value="nbrExport")
     @UserLoginToken
-    public void nbrExport(@RequestBody ResourceInstListReq req, HttpServletResponse response) {
-        ResultVO<Page<ResourceInstListResp>> dataVO = resourceInstService.getResourceInstList(req);
+    public void nbrExport(@RequestBody ResourceInstListPageReq req, HttpServletResponse response) {
+        ResultVO<Page<ResourceInstListPageResp>> dataVO = resourceInstService.getResourceInstList(req);
         if (!dataVO.isSuccess()) {
             return;
         }
-        List<ResourceInstListResp> list = dataVO.getResultData().getRecords();
+        List<ResourceInstListPageResp> list = dataVO.getResultData().getRecords();
         log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.merchantColumn();
         try{

@@ -3,7 +3,10 @@ package com.iwhalecloud.retail.warehouse.service.impl;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
@@ -11,13 +14,21 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
+import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
+import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
+import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -25,18 +36,19 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
 
     @Autowired
     private ResourceInstService resourceInstService;
-
     @Reference
     private MerchantService merchantService;
-
     @Reference
     private ResouceStoreService resouceStoreService;
-
+    @Reference
+    private ResourceRequestService requestService;
+    @Reference
+    private TaskService taskService;
     @Autowired
     private Constant constant;
 
     @Override
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req) {
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("MerchantResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
         return resourceInstService.getResourceInstList(req);
     }
@@ -85,7 +97,66 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         req.setDestStoreId(mktResStoreId);
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        return resourceInstService.addResourceInst(req);
+
+        ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
+        ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
+        BeanUtils.copyProperties(req, resourceInstValidReq);
+        resourceInstValidReq.setMktResStoreId(mktResStoreId);
+        List<String> existNbrs = resourceInstService.vaildOwnStore(resourceInstValidReq);
+        List<String> mktResInstNbrs = req.getMktResInstNbrs();
+        resourceInstAddResp.setExistNbrs(existNbrs);
+        mktResInstNbrs.removeAll(existNbrs);
+        if(CollectionUtils.isEmpty(mktResInstNbrs)){
+            return ResultVO.error("该产品串码已在库，请不要重复录入！");
+        }
+        // step2 新增申请单
+        ResourceRequestAddReq resourceRequestAddReq = new ResourceRequestAddReq();
+        List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = Lists.newLinkedList();
+        for (String str : mktResInstNbrs) {
+            ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
+            instDTO.setMktResInstNbr(str);
+            instDTO.setMktResId(req.getMktResId());
+            instDTOList.add(instDTO);
+        }
+        List<String> checkMktResInstNbrs = req.getCheckMktResInstNbrs();
+        mktResInstNbrs.removeAll(checkMktResInstNbrs);
+        for (String str : mktResInstNbrs) {
+            ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
+            instDTO.setMktResInstNbr(str);
+            instDTO.setMktResId(req.getMktResId());
+            instDTO.setIsInspection(ResourceConst.CONSTANT_YES);
+            instDTOList.add(instDTO);
+        }
+        String reqCode = resourceInstService.getPrimaryKey();
+        resourceRequestAddReq.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
+        BeanUtils.copyProperties(req, resourceRequestAddReq);
+        resourceRequestAddReq.setInstList(instDTOList);
+        resourceRequestAddReq.setReqCode(reqCode);
+        resourceRequestAddReq.setReqName("串码入库申请单");
+        resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
+        resourceRequestAddReq.setLanId(merchantDTOResultVO.getResultData().getLanId());
+        resourceRequestAddReq.setRegionId(merchantDTOResultVO.getResultData().getCity());
+        resourceRequestAddReq.setExtend1(merchantId);
+        resourceRequestAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        resourceRequestAddReq.setDestStoreId(mktResStoreId);
+        ResultVO<String> resultVO = requestService.insertResourceRequest(resourceRequestAddReq);
+        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel() resourceRequestService.insertResourceRequest req={}, resultVO={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVO));
+        // step3 启动工作流
+        ProcessStartReq processStartDTO = new ProcessStartReq();
+        processStartDTO.setTitle("串码入库审批流程");
+        processStartDTO.setApplyUserId(req.getCreateStaff());
+        processStartDTO.setProcessId(ResourceConst.ADD_NBR_WORK_FLOW_INST);
+        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1020.getTaskSubType());
+        processStartDTO.setApplyUserName(req.getApplyUserName());
+        if (resultVO != null && resultVO.getResultData() != null) {
+            processStartDTO.setFormId(resultVO.getResultData());
+        }
+        ResultVO startResultVO = taskService.startProcess(processStartDTO);
+        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
+        if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
+        }
+        return ResultVO.success("串码入库提交申请单", resourceInstAddResp);
     }
 
     @Override

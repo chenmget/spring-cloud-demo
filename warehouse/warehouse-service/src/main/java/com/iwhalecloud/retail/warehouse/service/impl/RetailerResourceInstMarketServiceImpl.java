@@ -18,6 +18,8 @@ import com.iwhalecloud.retail.partner.dto.MerchantLimitDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantLimitUpdateReq;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
+import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceEventService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
@@ -29,6 +31,8 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.request.markres.EBuyTerminalItemReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.QryMktInstInfoByConditionItemSwapResp;
@@ -96,6 +100,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     private ResouceEventService resouceEventService;
     @Autowired
     private ResouceInstTrackService resouceInstTrackService;
+    @Reference
+    private OrganizationService organizationService;
 
 
     /**
@@ -238,8 +244,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ResourceInstBatchReq resourceInstBatchReq = new ResourceInstBatchReq();
         resourceInstBatchReq.setMktResStoreId(mktResStoreId);
         resourceInstBatchReq.setMktResInstNbrs(nbrList);
-        ResultVO<List<ResourceInstListResp>> instListVO = getBatch(resourceInstBatchReq);
-        List<ResourceInstListResp> instList = instListVO.getResultData();
+        ResultVO<List<ResourceInstListPageResp>> instListVO = getBatch(resourceInstBatchReq);
+        List<ResourceInstListPageResp> instList = instListVO.getResultData();
         Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(instList, true);
 
         synMktInstStatusReq.setLanId(merchantDTOResultVO.getResultData().getLanId());
@@ -456,17 +462,15 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     }
 
     @Override
-    public ResultVO<Page<ResourceInstListResp>> listResourceInst(ResourceInstListReq req) {
-        DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
+    public ResultVO<Page<ResourceInstListPageResp>> listResourceInst(ResourceInstListPageReq req) {
+        Page<ResourceInstListPageResp> page = new Page<ResourceInstListPageResp>();
+        List<QryMktInstInfoByConditionItemSwapResp> qryMktInstInfoList = new ArrayList<>();
         // 组装请求参数,参数为空传空字符串(接口要求)
         QryMktInstInfoByConditionSwapReq qryMktInstInfoByConditionReq = new QryMktInstInfoByConditionSwapReq();
         qryMktInstInfoByConditionReq.setInstoreBeginTime(req.getCreateTimeStart());
         qryMktInstInfoByConditionReq.setInstoreEndTime(req.getCreateTimeEnd());
         String mktResId = CollectionUtils.isEmpty(req.getMktResIds()) ? null : req.getMktResIds().get(0);
         qryMktInstInfoByConditionReq.setMktResId(mktResId);
-        String mktResInstNbr = CollectionUtils.isEmpty(req.getMktResInstNbrs()) ? null : req.getMktResInstNbrs().get(0);
-        qryMktInstInfoByConditionReq.setBarCode(mktResInstNbr);
         qryMktInstInfoByConditionReq.setMktResName(req.getUnitName());
         qryMktInstInfoByConditionReq.setMktResNbr(req.getSn());
         String mktResStoreId = CollectionUtils.isEmpty(req.getMktResStoreIds()) ? null : req.getMktResStoreIds().get(0);
@@ -476,19 +480,32 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         qryMktInstInfoByConditionReq.setPageIndex(String.valueOf(pageNo));
         Integer pageSize = req.getPageSize() == null ? 5 : req.getPageSize();
         qryMktInstInfoByConditionReq.setPageSize(String.valueOf(pageSize));
-
-        Page<ResourceInstListResp> page = new Page<ResourceInstListResp>();
         qryMktInstInfoByConditionReq.setPageIndex(String.valueOf(req.getPageNo()));
         qryMktInstInfoByConditionReq.setPageSize(String.valueOf(req.getPageSize()));
-        ResultVO<QueryMarkResQueryResultsSwapResp<QryMktInstInfoByConditionItemSwapResp>> queryMarkResQueryResultsRespResultVO = marketingResStoreService.qryMktInstInfoByCondition(qryMktInstInfoByConditionReq);
-        log.info("RetailerResourceInstMarketServiceImpl.listResourceInst marketingResStoreService.qryMktInstInfoByCondition req={}, resp={}", JSON.toJSONString(qryMktInstInfoByConditionReq), JSON.toJSONString(queryMarkResQueryResultsRespResultVO));
-        if (!queryMarkResQueryResultsRespResultVO.isSuccess() || queryMarkResQueryResultsRespResultVO.getResultData() == null || CollectionUtils.isEmpty(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo())) {
-            return ResultVO.success(new Page<ResourceInstListResp>());
+        // 不支持多串码查询，只能多次查询组装返回
+        if (CollectionUtils.isEmpty(req.getMktResInstNbrs())) {
+            for (String nbr : req.getMktResInstNbrs()) {
+                qryMktInstInfoByConditionReq.setBarCode(nbr);
+                ResultVO<QueryMarkResQueryResultsSwapResp<QryMktInstInfoByConditionItemSwapResp>> queryMarkResQueryResultsRespResultVO = marketingResStoreService.qryMktInstInfoByCondition(qryMktInstInfoByConditionReq);
+                log.info("RetailerResourceInstMarketServiceImpl.listResourceInst marketingResStoreService.qryMktInstInfoByCondition req={}, resp={}", JSON.toJSONString(qryMktInstInfoByConditionReq), JSON.toJSONString(queryMarkResQueryResultsRespResultVO));
+                if (!queryMarkResQueryResultsRespResultVO.isSuccess() || queryMarkResQueryResultsRespResultVO.getResultData() == null || CollectionUtils.isEmpty(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo())) {
+                    return ResultVO.success(new Page<ResourceInstListPageResp>());
+                }
+                qryMktInstInfoList.addAll(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo());
+            }
+        }else{
+            ResultVO<QueryMarkResQueryResultsSwapResp<QryMktInstInfoByConditionItemSwapResp>> queryMarkResQueryResultsRespResultVO = marketingResStoreService.qryMktInstInfoByCondition(qryMktInstInfoByConditionReq);
+            log.info("RetailerResourceInstMarketServiceImpl.listResourceInst marketingResStoreService.qryMktInstInfoByCondition req={}, resp={}", JSON.toJSONString(qryMktInstInfoByConditionReq), JSON.toJSONString(queryMarkResQueryResultsRespResultVO));
+            if (!queryMarkResQueryResultsRespResultVO.isSuccess() || queryMarkResQueryResultsRespResultVO.getResultData() == null || CollectionUtils.isEmpty(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo())) {
+                return ResultVO.success(new Page<ResourceInstListPageResp>());
+            }
+            qryMktInstInfoList = queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo();
         }
+
+
         // 组装返回数据
-        List<QryMktInstInfoByConditionItemSwapResp> qryMktInstInfoList = queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo();
-        List<ResourceInstListResp> resourceInstListRespList = translateNbrInst(qryMktInstInfoList);
-        page.setRecords(resourceInstListRespList);
+        List<ResourceInstListPageResp> resourceInstListRespListPage = translateNbrInst(qryMktInstInfoList);
+        page.setRecords(resourceInstListRespListPage);
         return ResultVO.success(page);
     }
 
@@ -499,43 +516,37 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     }
 
     @Override
-    public ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req) {
-        List<ResourceInstListResp> resourceInstListRespList = new ArrayList<ResourceInstListResp>(5);
+    public ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req) {
+        List<ResourceInstListPageResp> resourceInstListRespListPage = new ArrayList<ResourceInstListPageResp>(5);
         List<String> nbrs = req.getMktResInstNbrs();
-        for (String nbr : nbrs){
-            // 参数类型不支持串码列表，每次一条查询组装返回
-            ResourceInstListReq resourceInstListReq = new ResourceInstListReq();
-            List<String> mktResStoreIds = Lists.newArrayList(req.getMktResStoreId());
-            resourceInstListReq.setMktResStoreIds(mktResStoreIds);
-            List<String> mktResNbrs = Lists.newArrayList(nbr);
-            resourceInstListReq.setMktResInstNbrs(mktResNbrs);
-            ResultVO<Page<ResourceInstListResp>> listRespVO = this.listResourceInst(resourceInstListReq);
-            log.info("RetailerResourceInstMarketServiceImpl.getBatch listResourceInst req={}, resp={}", JSON.toJSONString(resourceInstListReq), JSON.toJSONString(listRespVO.getResultData().getRecords()));
+        ResourceInstListPageReq resourceInstListPageReq = new ResourceInstListPageReq();
+        List<String> mktResStoreIds = Lists.newArrayList(req.getMktResStoreId());
+        resourceInstListPageReq.setMktResStoreIds(mktResStoreIds);
+        resourceInstListPageReq.setMktResInstNbrs(nbrs);
+        ResultVO<Page<ResourceInstListPageResp>> listRespVO = this.listResourceInst(resourceInstListPageReq);
+        log.info("RetailerResourceInstMarketServiceImpl.getBatch listResourceInst req={}, resp={}", JSON.toJSONString(resourceInstListPageReq), JSON.toJSONString(listRespVO.getResultData().getRecords()));
 
-            if (!listRespVO.isSuccess() || listRespVO.getResultData() == null || CollectionUtils.isEmpty(listRespVO.getResultData().getRecords())){
-                return ResultVO.success(new ArrayList<ResourceInstListResp>());
-            }
-
-            List<ResourceInstListResp> listResp = listRespVO.getResultData().getRecords();
-            for(ResourceInstListResp resp : listResp){
-                ResourceInstListResp dto = new ResourceInstListResp();
-                BeanUtils.copyProperties(resp, dto);
-                ProductResourceInstGetReq productResourceInstGetReq = new ProductResourceInstGetReq();
-                String sn = StringUtils.isBlank(resp.getSn()) ? "" : resp.getSn();
-                productResourceInstGetReq.setSn(sn);
-                // BSS3.0没有返回产品id，只返回了sn，根据sn查出productId用于权限校验
-                String productId = "";
-                ResultVO<List<ProductResourceResp>> getProductResourceVO = productService.getProductResource(productResourceInstGetReq);
-                log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst productService.getBatch sn={},resp={}", sn, JSON.toJSONString(getProductResourceVO));
-                if (getProductResourceVO.isSuccess() && !CollectionUtils.isEmpty(getProductResourceVO.getResultData())) {
-                    productId = getProductResourceVO.getResultData().get(0).getProductId();
-                }
-                dto.setMktResId(productId);
-                resourceInstListRespList.add(dto);
-            }
+        if (!listRespVO.isSuccess() || listRespVO.getResultData() == null || CollectionUtils.isEmpty(listRespVO.getResultData().getRecords())){
+            return ResultVO.success(new ArrayList<ResourceInstListPageResp>());
         }
-
-        return ResultVO.success(resourceInstListRespList);
+        List<ResourceInstListPageResp> listResp = listRespVO.getResultData().getRecords();
+        for(ResourceInstListPageResp resp : listResp){
+            ResourceInstListPageResp dto = new ResourceInstListPageResp();
+            BeanUtils.copyProperties(resp, dto);
+            ProductResourceInstGetReq productResourceInstGetReq = new ProductResourceInstGetReq();
+            String sn = StringUtils.isBlank(resp.getSn()) ? "" : resp.getSn();
+            productResourceInstGetReq.setSn(sn);
+            // BSS3.0没有返回产品id，只返回了sn，根据sn查出productId用于权限校验
+            String productId = "";
+            ResultVO<List<ProductResourceResp>> getProductResourceVO = productService.getProductResource(productResourceInstGetReq);
+            log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst productService.getBatch sn={},resp={}", sn, JSON.toJSONString(getProductResourceVO));
+            if (getProductResourceVO.isSuccess() && !CollectionUtils.isEmpty(getProductResourceVO.getResultData())) {
+                productId = getProductResourceVO.getResultData().get(0).getProductId();
+            }
+            dto.setMktResId(productId);
+            resourceInstListRespListPage.add(dto);
+        }
+        return ResultVO.success(resourceInstListRespListPage);
     }
 
     /**
@@ -588,13 +599,13 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         String mktResStoreId = req.getMktResStoreId();
         String destStoreId = req.getDestStoreId();
         resourceInstBatchReq.setMktResStoreId(mktResStoreId);
-        ResultVO<List<ResourceInstListResp>> resourceInstListRespVO = this.getBatch(resourceInstBatchReq);
+        ResultVO<List<ResourceInstListPageResp>> resourceInstListRespVO = this.getBatch(resourceInstBatchReq);
         if (!resourceInstListRespVO.isSuccess() || CollectionUtils.isEmpty(resourceInstListRespVO.getResultData())) {
             return resourceInstListRespVO;
         }
-        List<ResourceInstListResp> resourceInstDTOList = resourceInstListRespVO.getResultData();
+        List<ResourceInstListPageResp> resourceInstDTOList = resourceInstListRespVO.getResultData();
         List<ResourceRequestAddReq.ResourceRequestInst> resourceRequestInsts = new ArrayList<>(resourceInstDTOList.size());
-        for (ResourceInstListResp resourceInstDTO : resourceInstDTOList) {
+        for (ResourceInstListPageResp resourceInstDTO : resourceInstDTOList) {
             ResourceRequestAddReq.ResourceRequestInst resourceRequestInst = new ResourceRequestAddReq.ResourceRequestInst();
             BeanUtils.copyProperties(resourceInstDTO, resourceRequestInst);
             resourceRequestInsts.add(resourceRequestInst);
@@ -688,19 +699,58 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO pickResourceInst(ResourceInstPickupReq req) {
+        ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
+        // 先检查零售商所属十四个地市中的一个是否存在
+        ResultVO<List<OrganizationRegionResp>> organizationIdVO = organizationService.queryRegionOrganizationId();
+        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst organizationService.getStoreId queryRegionOrganizationId={}", JSON.toJSONString(organizationIdVO));
+        if (!organizationIdVO.isSuccess() || CollectionUtils.isEmpty(organizationIdVO.getResultData())) {
+            return organizationIdVO;
+        }
+        String lanId = req.getLanId();
+        List<OrganizationRegionResp> sameLanIdOrganization = organizationIdVO.getResultData().stream().filter(t -> lanId.equals(t.getLanId())).collect(Collectors.toList());
+        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+        storeGetStoreIdReq.setMerchantId(sameLanIdOrganization.get(0).getOrgId());
+        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        String merchantStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resouceStoreService.getStoreId merchantStoreId={}", merchantStoreId);
 
+        ResourceInstListReq resourceInstListReq = new ResourceInstListReq();
+        resourceInstListReq.setMktResStoreId(merchantStoreId);
+        resourceInstListReq.setMktResInstNbrs(req.getMktResInstNbrs());
+        ResultVO<List<ResourceInstListResp>> merchantNbrInstVO = resourceInstService.listResourceInst(resourceInstListReq);
+        if (!merchantNbrInstVO.isSuccess() || CollectionUtils.isEmpty(merchantNbrInstVO.getResultData())) {
+            resourceInstAddResp.setPutInFailNbrs(req.getMktResInstNbrs());
+            return ResultVO.success("领取成功", resourceInstAddResp);
+        }
+        List<ResourceInstListResp> merchantNbrInst = merchantNbrInstVO.getResultData();
+        List<String> merchantNbrList = merchantNbrInst.stream().map(ResourceInstListResp::getMktResInstNbr).collect(Collectors.toList());
+
+        // step2 再检查自己库是否存在
+        storeGetStoreIdReq.setMerchantId(req.getMerchantId());
+        String storeId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resouceStoreService.getStoreId storeId={}", storeId);
+        ResourceInstListPageReq resourceInstListPageReq = new ResourceInstListPageReq();
+        resourceInstListPageReq.setMktResStoreIds(Lists.newArrayList());
+        resourceInstListPageReq.setMktResInstNbrs(merchantNbrList);
+        ResultVO<Page<ResourceInstListPageResp>> pageResultVO = this.listResourceInst(resourceInstListPageReq);
+        if (pageResultVO.isSuccess() || pageResultVO.getResultData() != null || !CollectionUtils.isEmpty(pageResultVO.getResultData().getRecords())){
+            List<ResourceInstListPageResp> nbrInstList = pageResultVO.getResultData().getRecords();
+            List<String> existNbrs = nbrInstList.stream().map(ResourceInstListPageResp::getMktResInstNbr).collect(Collectors.toList());
+            merchantNbrInst = merchantNbrInst.stream().filter(t -> !existNbrs.contains(t)).collect(Collectors.toList());
+            resourceInstAddResp.setExistNbrs(existNbrs);
+        }
         EBuyTerminalSwapReq eBuyTerminalReq = new EBuyTerminalSwapReq();
         List<EBuyTerminalItemSwapReq> mktResList = new ArrayList<>();
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
-        for (String mktResInstNbr : mktResInstNbrs) {
+        for (ResourceInstListResp mktResInst : merchantNbrInst) {
             EBuyTerminalItemReq eBuyTerminalItemReq = new EBuyTerminalItemReq();
-            eBuyTerminalItemReq.setBarcode(mktResInstNbr);
+            eBuyTerminalItemReq.setBarcode(mktResInst.getMktResInstNbr());
             eBuyTerminalItemReq.setLanid(req.getLanId());
-            eBuyTerminalItemReq.setMktid(req.getMktResId());
+            eBuyTerminalItemReq.setMktid(mktResInst.getMktResId());
             eBuyTerminalItemReq.setPurchasetype(ResourceConst.PURCHASE_TYPE.PURCHASE_TYPE_12.getCode());
-            eBuyTerminalItemReq.setSalesprice(String.valueOf(req.getCostPrice()));
-            eBuyTerminalItemReq.setSupplycode(req.getSupplycode());
-            eBuyTerminalItemReq.setSupplyname(req.getSupplyname());
+            eBuyTerminalItemReq.setSalesprice(String.valueOf(mktResInst.getSalesPrice()));
+            eBuyTerminalItemReq.setSupplycode(mktResInst.getSupplierCode());
+            eBuyTerminalItemReq.setSupplyname(mktResInst.getSupplierName());
         }
         eBuyTerminalReq.setMktResList(mktResList);
         ResultVO ebuyTerminalVO = marketingResStoreService.ebuyTerminal(eBuyTerminalReq);
@@ -714,19 +764,14 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resourceBatchRecService.saveEventAndBatch req={}", JSON.toJSONString(batchAndEventAddReq));
         }
-        return ebuyTerminalVO;
+        return ResultVO.success("领取成功", resourceInstAddResp);
     }
 
-    @Override
-    public ResultVO<List<ResourceInstListResp>> getExportResourceInstList(ResourceInstListReq req) {
-        return resourceInstService.getExportResourceInstList(req);
-    }
-
-    private List<ResourceInstListResp> translateNbrInst(List<QryMktInstInfoByConditionItemSwapResp> qryMktInstInfoList){
+    private List<ResourceInstListPageResp> translateNbrInst(List<QryMktInstInfoByConditionItemSwapResp> qryMktInstInfoList){
         DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<ResourceInstListResp> resourceInstListRespList = new ArrayList<>(qryMktInstInfoList.size());
+        List<ResourceInstListPageResp> resourceInstListRespListPage = new ArrayList<>(qryMktInstInfoList.size());
         for (QryMktInstInfoByConditionItemSwapResp resp : qryMktInstInfoList) {
-            ResourceInstListResp dto = new ResourceInstListResp();
+            ResourceInstListPageResp dto = new ResourceInstListPageResp();
             dto.setMktResInstNbr(resp.getBarCode());
             dto.setUnitName(resp.getMktResName());
             dto.setMktResStoreId(resp.getStoreId());
@@ -764,17 +809,17 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             }
             dto.setSn(sn);
             BeanUtils.copyProperties(resp, dto);
-            resourceInstListRespList.add(dto);
+            resourceInstListRespListPage.add(dto);
         }
 
-        return resourceInstListRespList;
+        return resourceInstListRespListPage;
     }
 
     private Map<String, List<String>> getMktResIdAndNbrMap(List instList, Boolean isNbrInst){
         Map<String, List<String>> mktResIdAndNbrMap = new HashMap<>();
         if (isNbrInst) {
-            List<ResourceInstListResp> resourceInstList = instList;
-            for (ResourceInstListResp resp : resourceInstList){
+            List<ResourceInstListPageResp> resourceInstList = instList;
+            for (ResourceInstListPageResp resp : resourceInstList){
                 if(mktResIdAndNbrMap.containsKey(resp.getMktResId())){
                     List<String> mktResIdList = mktResIdAndNbrMap.get(resp.getMktResId());
                     mktResIdList.add(resp.getMktResInstNbr());

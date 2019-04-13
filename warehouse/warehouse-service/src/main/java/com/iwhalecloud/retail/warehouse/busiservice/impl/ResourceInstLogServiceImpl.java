@@ -11,7 +11,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstPutInReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
 import com.iwhalecloud.retail.warehouse.manager.ResouceEventManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceBatchRecManager;
@@ -78,16 +78,16 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
 
     @Async
     @Override
-    public void updateResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstListResp> resourceInsts) {
+    public void updateResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstListPageResp> resourceInsts) {
         log.info("ResourceInstLogServiceImpl.updateResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
-        ResourceInstListResp inst = resourceInsts.get(0);
+        ResourceInstListPageResp inst = resourceInsts.get(0);
         // step2 记录事件(根据产品维度)
         ResouceEventDTO eventDTO = new ResouceEventDTO();
         BeanUtils.copyProperties(inst, eventDTO);
         eventDTO.setEventType(req.getEventType());
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
         log.info("ResourceInstLogServiceImpl.updateResourceInstLog resourceInstManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
-        for (ResourceInstListResp resourceInst : resourceInsts) {
+        for (ResourceInstListPageResp resourceInst : resourceInsts) {
             String chngType = ResourceConst.STATUSCD.AVAILABLE.getCode().equals(req.getStatusCd()) ? ResourceConst.PUT_IN_STOAGE : ResourceConst.OUT_PUT_STOAGE;
             String eventStatusCd = ResourceConst.STATUSCD.AVAILABLE.getCode().equals(req.getStatusCd()) ? ResourceConst.StatusCdEnum.STATUS_CD_VALD.getCode() : ResourceConst.StatusCdEnum.STATUS_CD_INVALD.getCode();
             // 增加事件明细

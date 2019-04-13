@@ -4,7 +4,7 @@ package com.iwhalecloud.retail.warehouse.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 
 import java.util.List;
 
@@ -40,7 +40,7 @@ public interface SupplierResourceInstService {
      * @param req
      * @return
      */
-    ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req);
+    ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req);
 
     /**
      * 调拨串码
@@ -97,7 +97,7 @@ public interface SupplierResourceInstService {
      * @param req
      * @return
      */
-    ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req);
+    ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req);
 
     /**
      * 冻结/解冻

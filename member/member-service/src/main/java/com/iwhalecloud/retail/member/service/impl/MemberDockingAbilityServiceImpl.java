@@ -57,6 +57,7 @@ public class MemberDockingAbilityServiceImpl implements MemberDockingAbilityServ
                 resultMap.put("resultData", resultVO.getResultData());
                 resultMap.put("resultCode", resultVO.getResultCode());
                 resultMap.put("resultMsg", resultVO.getResultMsg());
+                return resultMap;
             }
         }
         resultMap.put("resultCode", "9999");

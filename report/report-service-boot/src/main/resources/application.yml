@@ -5,7 +5,7 @@ spring:
 logging.level.com.iwhalecloud.retail.report.mapper: debug
 
 mybatis-plus:
-  mapperLocations: classpath:report/mapper/*.xml,report/mapper/mysql/*.xml
+  mapperLocations: classpath:report/mapper/*.xml
   
   
 #用来后去主键生成策略

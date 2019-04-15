@@ -802,6 +802,7 @@ public class GoodsServiceImpl implements GoodsService {
         }
         Double supplyNum = goodsManager.listSupplierGroundSupplyNum(productBaseId);
         if (supplyNum != null && supplyNum > 0) {
+            log.info("GoodsServiceImpl.isSupplierGroundHaveStock productBaseId={}, supplyNum={}", productBaseId, supplyNum);
             return true;
         }
         List<ProductQuantityItem> itemList = Lists.newArrayList();

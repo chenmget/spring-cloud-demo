@@ -101,4 +101,8 @@ public class GoodsManager{
     public List<String> listSupplierGroundId(String productBaseId) {
         return goodsMapper.listSupplierGroundId(productBaseId);
     }
+
+    public List<Double> listSupplierGroundDeliveryPrice(String productBaseId) {
+        return goodsMapper.listSupplierGroundDeliveryPrice(productBaseId);
+    }
 }

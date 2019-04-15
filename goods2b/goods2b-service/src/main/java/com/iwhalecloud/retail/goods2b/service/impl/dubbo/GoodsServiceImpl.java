@@ -1032,9 +1032,6 @@ public class GoodsServiceImpl implements GoodsService {
             if (productBaseId == null) {
                 return ResultVO.error("产品基本信息为空");
             }
-            ProductBaseUpdateReq productBaseUpdateReq = new ProductBaseUpdateReq();
-            productBaseUpdateReq.setProductBaseId(productBaseId);
-            productBaseService.updateAvgApplyPrice(productBaseUpdateReq);
         }
         int result = goodsManager.updateMarketEnableGoodsId(goodsId, marketEnable);
         GoodsOperateResp resp = new GoodsOperateResp();

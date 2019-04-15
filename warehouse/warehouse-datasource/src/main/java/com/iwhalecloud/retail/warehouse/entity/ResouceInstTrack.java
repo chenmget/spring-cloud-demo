@@ -133,6 +133,7 @@ public class ResouceInstTrack implements Serializable {
 	@ApiModelProperty(value = "是否绿色通道")
 	private java.lang.String ifGreenChannel;
 
+	//属性 end
     /** 字段名称枚举. */
     public enum FieldNames {
 		/** 记录营销资源实例编码。. */

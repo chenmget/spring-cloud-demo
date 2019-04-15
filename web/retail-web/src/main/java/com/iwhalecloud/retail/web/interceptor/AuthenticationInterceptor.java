@@ -26,6 +26,7 @@ import com.twmacinta.util.MD5;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -33,6 +34,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 
@@ -73,6 +75,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         //每次请求清除线程变量中的用户信息
         MemberContext.removeMemberSession();
         UserContext.removeUserSession();
+        // 国际化
+        LocaleContextHolder.resetLocaleContext();
 
 
         // 从 session中获取，自动登录的时候会重置session中的 token
@@ -83,6 +87,15 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         if (StringUtils.isEmpty(token)) {
         	token = httpServletRequest.getHeader("token");
         	log.info("header token = {}",token);
+        }
+
+        // 国际化
+        String language = httpServletRequest.getHeader(WebConst.SESSION_LANGUAGE);
+        // 保存语言
+        if (StringUtils.equals(WebConst.LanguageEnum.CHINESE.getCode(), language)) {
+            LocaleContextHolder.setLocale(Locale.CHINESE);
+        } else if (StringUtils.equals(WebConst.LanguageEnum.ENGLISH.getCode(), language)) {
+            LocaleContextHolder.setLocale(Locale.ENGLISH);
         }
 
         // 如果不是映射到方法直接通过

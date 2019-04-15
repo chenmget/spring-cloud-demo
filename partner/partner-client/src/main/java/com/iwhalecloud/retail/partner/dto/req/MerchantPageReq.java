@@ -112,7 +112,6 @@ public class MerchantPageReq extends PageVO {
     @ApiModelProperty(value = "销售点编码")
     private java.lang.String shopCode;
 
-
     @ApiModelProperty(value = "营业执照到期日期")
     private Date busiLicenceExpDate;
 

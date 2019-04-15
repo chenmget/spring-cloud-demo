@@ -80,6 +80,7 @@ public class MemberGroup implements Serializable {
 	
     /** 字段名称枚举. */
     public enum FieldNames {
+		id("id","ID"),
 		/** 会员群ID. */
 		groupId("groupId","GROUP_ID"),
 		

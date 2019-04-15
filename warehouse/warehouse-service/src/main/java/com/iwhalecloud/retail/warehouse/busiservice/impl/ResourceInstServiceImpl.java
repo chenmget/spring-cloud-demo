@@ -444,7 +444,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         List<String> mktResInstNbrs = Lists.newArrayList(req.getMktResInstNbrs());
         resourceInstsGetReq.setMktResInstNbrs(mktResInstNbrs);
-        resourceInstsGetReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         List<String> merchantTypes = null;
         if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(req.getMerchantType())) {
             // 厂商增加：只校验厂商库

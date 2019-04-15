@@ -379,4 +379,5 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
         List<String> objIdList = organizationRegionResp.stream().map(OrganizationRegionResp::getOrgId).collect(Collectors.toList());
         return ResultVO.success(resouceStoreManager.listGivenStore(objIdList));
     }
+
 }

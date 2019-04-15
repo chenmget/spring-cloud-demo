@@ -56,7 +56,7 @@ public  class ResouceStoreOpenServiceImpl implements ResouceStoreService {
     }
 
     @Override
-    public ResultVO<List<String>>  listGivenStore() {
+    public ResultVO<List<ResouceStoreDTO>>  listGivenStore() {
         return resouceStoreService.listGivenStore();
     }
 }

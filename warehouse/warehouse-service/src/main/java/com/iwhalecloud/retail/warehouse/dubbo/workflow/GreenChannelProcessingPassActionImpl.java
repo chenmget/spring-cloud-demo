@@ -62,13 +62,6 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
     public ResultVO run(InvokeRouteServiceRequest params) {
         //对应申请单ID
         String businessId = params.getBusinessId();
-        //修改申请单状态变为审核通过
-        ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
-        reqUpdate.setMktResReqId(businessId);
-        reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
-        ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
-        log.info("GreenChannelProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
-        // 申请单ID->明细
         //根据申请单表保存的源仓库和申请单明细找到对应的串码
         ResourceReqDetailQueryReq detailQueryReq = new ResourceReqDetailQueryReq();
         detailQueryReq.setMktResReqId(businessId);
@@ -76,8 +69,6 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
         log.info("GreenChannelProcessingPassActionImpl.run detailManager.listDetail detailQueryReq={}, resp={}", JSON.toJSONString(detailQueryReq), JSON.toJSONString(reqDetailDTOS));
         List<String> mktResInstNbrs = reqDetailDTOS.stream().map(ResourceReqDetailDTO::getMktResInstNbr).collect(Collectors.toList());
         ResourceReqDetailDTO detailDTO = reqDetailDTOS.get(0);
-
-        // 明细->入库
         //根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
         ResourceInstAddReq addReq = new ResourceInstAddReq();
         addReq.setMktResInstNbrs(mktResInstNbrs);
@@ -111,8 +102,14 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
         } else {
             addRespResultVO = ResultVO.success();
         }
-
         if (addRespResultVO.isSuccess()) {
+            //修改申请单状态变为审核通过
+            ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
+            reqUpdate.setMktResReqId(businessId);
+            reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
+            ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
+            log.info("GreenChannelProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
+
             // step3 增加事件和批次
             Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);
             BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();

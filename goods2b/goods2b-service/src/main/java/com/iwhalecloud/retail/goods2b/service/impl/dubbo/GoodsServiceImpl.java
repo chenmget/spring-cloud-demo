@@ -800,6 +800,10 @@ public class GoodsServiceImpl implements GoodsService {
         if (CollectionUtils.isEmpty(supplierIdList) || CollectionUtils.isEmpty(productIdList)) {
             return false;
         }
+        Double supplyNum = goodsManager.listSupplierGroundSupplyNum(productBaseId);
+        if (supplyNum != null && supplyNum > 0) {
+            return true;
+        }
         List<ProductQuantityItem> itemList = Lists.newArrayList();
         for (String productId : productIdList) {
             ProductQuantityItem item = new ProductQuantityItem();

@@ -711,6 +711,7 @@ public class GoodsServiceImpl implements GoodsService {
                     ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
                     // 获取平均供货价
                     Double avgSupplyPrice = productBaseGetResp.getAvgSupplyPrice();
+                    log.info("GoodsServiceImpl.filterGoods goodsId={} avgSupplyPrice={}",goodsId, avgSupplyPrice);
                     // 如果地包供货价高于省包平均供货价的3%，则不展示该地包商品
                     if (isAbove3Per(deliveryPrice, avgSupplyPrice)) {
                         log.info("GoodsServiceImpl.filterGoods filter avgSupplyPrice goodsId={}",goodsId);
@@ -754,12 +755,14 @@ public class GoodsServiceImpl implements GoodsService {
         ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
         // 获取平均供货价
         Double avgSupplyPrice = productBaseGetResp.getAvgSupplyPrice();
+        log.info("GoodsServiceImpl.checkIsAbove3Per productBaseId={} avgSupplyPrice={}",productBaseId, avgSupplyPrice);
         // 获取该机型的所有地包供货价
         List<Double> deliveryPriceList = goodsManager.listSupplierGroundDeliveryPrice(productBaseId);
         if (CollectionUtils.isNotEmpty(deliveryPriceList)) {
             for (Double deliveryPrice : deliveryPriceList) {
                 if (isAbove3Per(deliveryPrice, avgSupplyPrice)) {
                     above3PerFlag = true;
+                    log.info("GoodsServiceImpl.checkIsAbove3Per productBaseId={} deliveryPrice={}",productBaseId, deliveryPrice);
                     break;
                 }
             }

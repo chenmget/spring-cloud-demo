@@ -63,6 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -692,8 +693,9 @@ public class GoodsServiceImpl implements GoodsService {
     private void filterGoods(GoodsForPageQueryReq req, Page<GoodsForPageQueryResp> goodsForPageQueryRespPage) {
         List<GoodsForPageQueryResp> goodsForPageQueryRespList = goodsForPageQueryRespPage.getRecords();
         // 按零售商商品展示规则过滤
-        for (int i = 0; i < goodsForPageQueryRespList.size(); i++) {
-            GoodsForPageQueryResp item = goodsForPageQueryRespList.get(i);
+        Iterator<GoodsForPageQueryResp> it = goodsForPageQueryRespList.iterator();
+        while(it.hasNext()) {
+            GoodsForPageQueryResp item = it.next();
             String goodsId = item.getGoodsId();
             Integer userFounder = req.getUserFounder();
             // 非零售商用户不进行商品过滤
@@ -715,7 +717,7 @@ public class GoodsServiceImpl implements GoodsService {
                     // 如果地包供货价高于省包平均供货价的3%，则不展示该地包商品
                     if (isAbove3Per(deliveryPrice, avgSupplyPrice)) {
                         log.info("GoodsServiceImpl.filterGoods filter avgSupplyPrice goodsId={}",goodsId);
-                        goodsForPageQueryRespList.remove(i);
+                        it.remove();
                     }
                 }
                 // 零售价1599以上的省包商品，地包供货价高于省包平均供货价的3%或者该机型的地包有库存则不展示该机型的省包供货
@@ -725,27 +727,27 @@ public class GoodsServiceImpl implements GoodsService {
                     Boolean isHaveStock = isSupplierGroundHaveStock(productBaseId);
                     if (isHaveStock) {
                         log.info("GoodsServiceImpl.filterGoods filter isHaveStock goodsId={},isHaveStock={}", goodsId, isHaveStock);
-                        goodsForPageQueryRespList.remove(i);
+                        it.remove();
                         continue;
                     }
                     // 该机型地包供货价是否高于省包平均供货价
                     Boolean above3PerFlag = checkIsAbove3Per(productBaseId);
                     if (above3PerFlag) {
                         log.info("GoodsServiceImpl.filterGoods filter above3PerFlag goodsId={},above3PerFlag={}", goodsId, above3PerFlag);
-                        goodsForPageQueryRespList.remove(i);
+                        it.remove();
                         continue;
                     }
                 }
             } else {
                 // 零售价1599及以下机型只展示地包供货
                 if (supplierProvinceFlag) {
-                    goodsForPageQueryRespList.remove(i);
+                    it.remove();
                     continue;
                 }
             }
             // 有前置补贴的机型优先地包供货，即使地包无库存，也不展示省包
             if (supplierProvinceFlag) {
-                filterPresubsidyGoods(goodsForPageQueryRespList, i, item);
+                filterPresubsidyGoods(it, item);
             }
         }
     }
@@ -775,8 +777,7 @@ public class GoodsServiceImpl implements GoodsService {
             GoodsConst.AVG_SUPPLY_PRICE;
     }
 
-    private void filterPresubsidyGoods(List<GoodsForPageQueryResp> goodsForPageQueryRespList, int i,
-                                       GoodsForPageQueryResp item) {
+    private void filterPresubsidyGoods(Iterator<GoodsForPageQueryResp> it, GoodsForPageQueryResp item) {
         String productBaseId = item.getProductBaseId();
         List<String> productIdList = productManager.listProduct(productBaseId);
         if (!CollectionUtils.isEmpty(productIdList)) {
@@ -784,8 +785,8 @@ public class GoodsServiceImpl implements GoodsService {
                 String code = PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode();
                 ResultVO<List<MarketingActivityDTO>> resultVO = marketingActivityService.queryActivityByProductId(productId, code);
                 if (resultVO.isSuccess() && resultVO.getResultData().size() > 0) {
-                    log.info("GoodsServiceImpl.filterGoods filter activity goodsId={}",goodsForPageQueryRespList.get(i).getGoodsId());
-                    goodsForPageQueryRespList.remove(i);
+                    log.info("GoodsServiceImpl.filterGoods filter activity goodsId={}",it.next().getGoodsId());
+                    it.remove();
                     break;
                 }
             }

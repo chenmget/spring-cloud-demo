@@ -12,7 +12,10 @@ public class PartnerConst {
     // 经营主体表par_business_entity使用的缓存名称
     public static final String CACHE_NAME_PAR_BUSINESS_ENTITY = "par_business_entity";
 
-
+    /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
 
     /**
      * 返回结果正常

@@ -93,6 +93,11 @@ public class SystemConst {
     public static final Integer ERROR_CODE = 1;
 
     /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
+
+    /**
      * 审核状态枚举
      */
     public enum UserFounderEnum{

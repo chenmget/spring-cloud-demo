@@ -83,6 +83,10 @@ public class ResourceConst {
      */
     public final static String NULL_STORE_ID = "-1";
 
+    /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
 
     /**
      * 串码实列状态

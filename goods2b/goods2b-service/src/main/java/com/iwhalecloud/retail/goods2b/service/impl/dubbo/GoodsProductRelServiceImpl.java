@@ -252,8 +252,6 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
                         if (num - reachAmount < buyCount) {
                             return true;
                         }
-                    }else{
-                        return true;
                     }
                 }
             }

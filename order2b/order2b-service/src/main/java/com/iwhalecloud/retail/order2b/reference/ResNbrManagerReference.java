@@ -227,25 +227,25 @@ public class ResNbrManagerReference {
      */
     public CommonResultResp returnGoodsIn(OrderApply apply, SendGoodsItemDTO goodsItemDTO) {
         CommonResultResp resp = new CommonResultResp();
-//        DeliveryResourceInstReq validResourceInstReq = new DeliveryResourceInstReq();
-//        validResourceInstReq.setSellerMerchantId(apply.getHandlerId());
-//        List<DeliveryResourceInstItem> list = new ArrayList<>();
-//        DeliveryResourceInstItem instItem = new DeliveryResourceInstItem();
-//        instItem.setOrderItemId(goodsItemDTO.getItemId());
-//        instItem.setProductId(goodsItemDTO.getProductId());
-//        instItem.setMktResInstNbrs(goodsItemDTO.getResNbrList());
-//        list.add(instItem);
-//
-//        validResourceInstReq.setDeliveryResourceInstItemList(list);
-//        ResultVO<Boolean> resultVO = supplierResourceInstService.backDeliveryInResourceInst(validResourceInstReq);
-//        log.info("gs_10010_backDeliveryOutResourceInst req{},resp{}", JSON.toJSONString(validResourceInstReq), JSON.toJSONString(resultVO));
-//
-//        if (resultVO.isSuccess() && resultVO.getResultData()) {
-//            resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
-//        } else {
-//            resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-//            resp.setResultMsg("退货调用库存失败：" + resultVO.getResultMsg());
-//        }
+        DeliveryResourceInstReq validResourceInstReq = new DeliveryResourceInstReq();
+        validResourceInstReq.setSellerMerchantId(apply.getHandlerId());
+        List<DeliveryResourceInstItem> list = new ArrayList<>();
+        DeliveryResourceInstItem instItem = new DeliveryResourceInstItem();
+        instItem.setOrderItemId(goodsItemDTO.getItemId());
+        instItem.setProductId(goodsItemDTO.getProductId());
+        instItem.setMktResInstNbrs(goodsItemDTO.getResNbrList());
+        list.add(instItem);
+
+        validResourceInstReq.setDeliveryResourceInstItemList(list);
+        ResultVO<Boolean> resultVO = supplierResourceInstService.backDeliveryInResourceInst(validResourceInstReq);
+        log.info("gs_10010_backDeliveryOutResourceInst req{},resp{}", JSON.toJSONString(validResourceInstReq), JSON.toJSONString(resultVO));
+
+        if (resultVO.isSuccess() && resultVO.getResultData()) {
+            resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+        } else {
+            resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resp.setResultMsg("退货调用库存失败：" + resultVO.getResultMsg());
+        }
         resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         return resp;
     }

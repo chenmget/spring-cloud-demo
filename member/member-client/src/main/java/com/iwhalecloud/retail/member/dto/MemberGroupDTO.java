@@ -19,6 +19,8 @@ public class MemberGroupDTO implements java.io.Serializable {
   
   	
   	//属性 begin
+	@ApiModelProperty(value = "ID")
+	private String id;
 	/**
   	 * 会员群ID
   	 */

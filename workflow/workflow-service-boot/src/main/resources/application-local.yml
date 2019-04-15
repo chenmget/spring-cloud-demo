@@ -31,7 +31,7 @@ spring.redis:
       max-idle: 300
       max-wait: 1000
       min-idle: 5
-    password:
+#    password:
 
 logging.level.com.iwhalecloud.retail.workflow.mapper: debug
  
@@ -53,7 +53,7 @@ spring.datasource:
     #初始化连接池的连接数量 大小，最小，最大
     initial-size: 5
     min-idle: 5
-    max-active: 50
+    max-active: 5
     #配置获取连接等待超时的时间.
     max-wait: 60000
     #配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒

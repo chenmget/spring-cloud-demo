@@ -65,6 +65,10 @@ public class MerchantRulesDetailPageResp implements Serializable {
     @ApiModelProperty(value = "渠道状态")
     private String status;
 
+
+    @ApiModelProperty(value = "关联ID")
+    private java.lang.String merchantRuleId;
+
     /**
      * 规则类型:  1 经营权限   2 绿色通道权限   3 调拨权限
      */
@@ -103,12 +107,12 @@ public class MerchantRulesDetailPageResp implements Serializable {
     /**
      * 限额
      */
-    @ApiModelProperty(value = "限额")
-    private Long maxSerialNum;
+//    @ApiModelProperty(value = "限额")
+//    private Long maxSerialNum;
 
     /**
      * 本月已使用
      */
-    @ApiModelProperty(value = "本月已使用")
-    private Long serialNumUsed;
+//    @ApiModelProperty(value = "本月已使用")
+//    private Long serialNumUsed;
 }

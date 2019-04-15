@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.warehouse.entity;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import lombok.Data;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * ResouceInstTrack
@@ -27,6 +27,7 @@ public class ResouceInstTrack implements Serializable {
   	/**
   	 * 记录营销资源实例编码。
   	 */
+	@TableId
 	@ApiModelProperty(value = "记录营销资源实例编码。")
   	private java.lang.String mktResInstNbr;
   	
@@ -113,9 +114,27 @@ public class ResouceInstTrack implements Serializable {
   	 */
 	@ApiModelProperty(value = "是/否")
   	private java.lang.String ifPreSubsidy;
-  	
-  	
-  	//属性 end
+
+	/**
+	 * 是否省内直供
+	 */
+	@ApiModelProperty(value = "是否省内直供")
+	private java.lang.String ifDirectSupply;
+
+	/**
+	 * 是否地包供货
+	 */
+	@ApiModelProperty(value = "是否地包供货")
+	private java.lang.String ifGroundSupply;
+
+	/**
+	 * 是否绿色通道
+	 */
+	@ApiModelProperty(value = "是否绿色通道")
+	private java.lang.String ifGreenChannel;
+
+
+	//属性 end
 	
     /** 字段名称枚举. */
     public enum FieldNames {

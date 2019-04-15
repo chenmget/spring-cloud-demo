@@ -33,6 +33,14 @@ public class MarketingActivitiesServiceImpl implements MarketingActivitiesServic
         CommonResultResp resp = new CommonResultResp();
 
         /**
+         *  压测开启
+         */
+//        if(true){
+//            resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+//            return resp;
+//        }
+
+        /**
          * 优惠券
          */
         if (!CollectionUtils.isEmpty(request.getCouponInsList())) {
@@ -128,6 +136,14 @@ public class MarketingActivitiesServiceImpl implements MarketingActivitiesServic
     @Override
     public CommonResultResp marketingActivities(PreCreateOrderReq request, BuilderOrderModel model, CreateOrderLogModel logModel) {
         CommonResultResp resp = new CommonResultResp();
+
+        /**
+         *  压测开启
+         */
+//        if(true){
+//            resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+//            return resp;
+//        }
 
         /**
          * 优惠券活动

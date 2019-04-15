@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.interceptor.KeyGenerator;
@@ -28,6 +29,7 @@ import java.util.Map;
  */
 @Configuration
 @EnableCaching
+@ConfigurationProperties(prefix = "spring.redis")
 public class RedisClusterConfig extends CachingConfigurerSupport {
 
     @Value("${spring.redis.cluster.nodes}")
@@ -36,7 +38,6 @@ public class RedisClusterConfig extends CachingConfigurerSupport {
     private Long timeout;
     @Value("${spring.redis.cluster.max-redirects}")
     private String maxRedirects;
-    @Value("${spring.redis.password}")
     private String password;
 
     /**
@@ -119,6 +120,14 @@ public class RedisClusterConfig extends CachingConfigurerSupport {
                 return sb.toString();
             }
         };
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return this.password;
     }
 
 

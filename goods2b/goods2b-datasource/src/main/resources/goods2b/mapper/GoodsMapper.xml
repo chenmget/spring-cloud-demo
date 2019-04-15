@@ -369,10 +369,27 @@
             prod_goods_product_rel t2,
             prod_product_base t3
         WHERE
-            t1.IS_DELETED = '0'
+            t1.IS_DELETED = 0
+        AND t1.MARKET_ENABLE = 1
         AND t1.GOODS_ID = t2.GOODS_ID
         AND t2.PRODUCT_BASE_ID = t3.PRODUCT_BASE_ID
         AND t1.MERCHANT_TYPE = '2'
         AND t3.PRODUCT_BASE_ID = #{productBaseId}
+    </select>
+
+    <select id="listSupplierGroundDeliveryPrice" parameterType="java.lang.String" resultType="java.lang.Double">
+        SELECT
+            MIN(t2.DELIVERY_PRICE)
+        FROM
+            prod_goods t1,
+            prod_goods_product_rel t2
+        WHERE
+            t1.IS_DELETED = 0
+        AND t1.MARKET_ENABLE = 1
+        AND t1.MERCHANT_TYPE = 2
+        AND t1.GOODS_ID = t2.GOODS_ID
+        AND t2.PRODUCT_BASE_ID = #{productBaseId}
+        GROUP BY
+            t2.PRODUCT_BASE_ID
     </select>
 </mapper>

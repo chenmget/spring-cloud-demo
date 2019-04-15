@@ -9,4 +9,5 @@ import java.util.List;
 public class PromotionModel extends Promotion{
 
     private List<String> lanIdList;
+    private List<String> orderIdList;
 }

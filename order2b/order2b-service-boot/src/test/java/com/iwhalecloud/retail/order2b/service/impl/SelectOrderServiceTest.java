@@ -20,13 +20,13 @@ public class SelectOrderServiceTest extends TestBase {
 
     @Test
     public void selectOrderTest(){
-        SelectOrderReq selectOrderReq=new SelectOrderReq();
-        selectOrderReq.setOrderId("20190116173541220867919");
+        AdvanceOrderReq selectOrderReq=new AdvanceOrderReq();
+//        selectOrderReq.setOrderId("20190116173541220867919");
 //        selectOrderReq.setStatus("2,4");
 //        selectOrderReq.setUserId("11");
-        selectOrderReq.setUserCode("4301811025392");
+        selectOrderReq.setUserCode("4301811022885");
         selectOrderReq.setUserId("1077839559879852033");
-        orderSelectService.purchaseOrderList(selectOrderReq);
+        orderSelectService.queryAdvanceOrderList(selectOrderReq);
     }
 
     @Test
@@ -69,9 +69,10 @@ public class SelectOrderServiceTest extends TestBase {
         AdvanceOrderReq req=new AdvanceOrderReq();
         req.setUserExportType("3");
         req.setOrderCat("0");
+        req.setUserCode("4301811022885");
+        req.setUserId("1077839559879852033");
         req.setSourceFrom("YHJ");
         SourceFromContext.setSourceFrom("YHJ");
-        req.setOrderId("201903129710000440");
         orderSelectService.orderExport(req);
     }
 

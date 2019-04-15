@@ -59,10 +59,6 @@
             <if test="req.supplierName !=null and req.supplierName !=''">
                 AND supplier_name like #{req.supplierName}
             </if>
-
-            <if test="req.lanId !=null and req.lanId !=''">
-                AND lan_id = #{req.lanId}
-            </if>
             <if test="req.merchantId !=null and req.merchantId !=''">
                 AND merchant_id = #{req.merchantId}
             </if>
@@ -96,9 +92,9 @@
             <if test="req.orderCat !=null and req.orderCat !=''">
                 and ORDER_CAT =#{req.orderCat}
             </if>
-
-            and SOURCE_FROM=#{req.sourceFrom}
-
+            <if test="req.sourceFrom !=null and req.sourceFrom !=''">
+                and SOURCE_FROM=#{req.sourceFrom}
+            </if>
             <if test="req.lanId !=null and req.lanId !=''">
                 and lan_id=#{req.lanId}
             </if>
@@ -115,21 +111,6 @@
         <include refid="selectOrderWhere"/>
     </select>
 
-    <resultMap id="advanceOrderInfoList" type="com.iwhalecloud.retail.order2b.model.AdvanceOrderInfoModel">
-        <id column="order_id" property="orderId"/>
-        <association property="advanceOrder" javaType="com.iwhalecloud.retail.order2b.entity.AdvanceOrder"
-                     select="com.iwhalecloud.retail.order2b.mapper.AdvanceOrderMapper.selectAdvanceOrderByOrderId"
-                     column="order_id"/>
-        <collection property="orderItems"
-                    select="com.iwhalecloud.retail.order2b.mapper.OrderItemMapper.selectOrderItemByOrderId"
-                    column="order_id"/>
-    </resultMap>
-
-    <select id="queryAdvanceOrderList"
-            resultType="com.iwhalecloud.retail.order2b.model.AdvanceOrderInfoModel">
-      SELECT * from ord_order
-        <include refid="selectOrderWhere"/>
-    </select>
     <update id="updateOrderAttr" parameterType="com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel">
         UPDATE ord_order
         SET

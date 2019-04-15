@@ -381,6 +381,8 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         taskItem.setCurNodeId(route.getNextNodeId());
         taskItem.setCurNodeName(route.getNextNodeName());
         taskItem.setTaskId(taskId);
+        taskItem.setAssignTime(new Date());
+        taskItem.setHandlerTime(new Date());
         taskItem.setTaskType(WorkFlowConst.TaskType.FLOW.getCode());
         taskItem.setItemStatus(WorkFlowConst.TaskItemState.HANDLED.getCode());
         taskItemManager.addTaskItem(taskItem);

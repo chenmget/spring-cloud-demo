@@ -28,7 +28,7 @@ spring:
       max-wait: 1000
       min-idle: 5
     # 如果需要密码支持则填写password参数
-    password:
+#    password:
   http:
     multipart:
       enabled: true

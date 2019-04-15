@@ -9,11 +9,15 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.UserLoginResp;
+import com.iwhalecloud.retail.system.entity.CommonRegion;
 import com.iwhalecloud.retail.system.entity.User;
+import com.iwhalecloud.retail.system.manager.CommonRegionManager;
+import com.iwhalecloud.retail.system.manager.OrganizationManager;
 import com.iwhalecloud.retail.system.manager.UserManager;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.twmacinta.util.MD5;
@@ -24,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -31,6 +36,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserManager userManager;
+
+    @Autowired
+    private CommonRegionManager commonRegionManager;
+
+    @Autowired
+    private OrganizationManager organizationManager;
 
     @Reference
     private MerchantService merchantService;
@@ -82,9 +93,6 @@ public class UserServiceImpl implements UserService {
             log.info("UserServiceImpl.login 出参：UserLoginResp-{}", JSON.toJSON(resp));
 
             // 锁住 用户账号   清空登录失败次数
-//            user.setStatusCd(SystemConst.USER_STATUS_LOCK);
-//            user.setFailLoginCnt(0);
-//            userManager.updateUser(user);
             // 只更部分字段
             User updateUser = new User();
             updateUser.setUserId(user.getUserId());
@@ -99,8 +107,6 @@ public class UserServiceImpl implements UserService {
                 || !StringUtils.equals(user.getLoginPwd(), new MD5(req.getLoginPwd()).asHex() )) {
             // 密码错误 登录失败次数 failLoginCnt +1
             Integer failLoginCnt = user.getFailLoginCnt() != null ? user.getFailLoginCnt() : 0;
-//            user.setFailLoginCnt(failLoginCnt + 1);
-//            userManager.updateUser(user);
             // 只更部分字段
             User updateUser = new User();
             updateUser.setUserId(user.getUserId());
@@ -115,17 +121,16 @@ public class UserServiceImpl implements UserService {
         //操作成功后的逻辑，修改当前登录时间，和上次登录时间 ，登录次数1+  将 failLoginCnt 清零
         user.setFailLoginCnt(0);
         Integer successCnt = user.getSuccessLoginCnt() != null ? user.getSuccessLoginCnt() : 0;
-//        user.setSuccessLoginCnt(successCnt + 1);
-//        user.setLastLoginTime(user.getCurLoginTime());
-//        user.setCurLoginTime(new Date());
-//        userManager.updateUser(user);
-        // 只更部分字段
-        User updateUser = new User();
-        updateUser.setUserId(user.getUserId());
-        updateUser.setSuccessLoginCnt(successCnt + 1);
-        updateUser.setLastLoginTime(user.getCurLoginTime());
-        updateUser.setCurLoginTime(new Date());
-        userManager.updateUser(updateUser);
+        // 登录失败次数大于0 才更新  不用每次成功都更新
+        if (user.getFailLoginCnt() > 0) {
+            User updateUser = new User();
+            updateUser.setUserId(user.getUserId());
+            updateUser.setSuccessLoginCnt(successCnt + 1);
+            updateUser.setFailLoginCnt(0);
+            updateUser.setLastLoginTime(user.getCurLoginTime());
+            updateUser.setCurLoginTime(new Date());
+            userManager.updateUser(updateUser);
+        }
 
         resp.setErrorMessage("登录成功");
         resp.setIsLoginSuccess(true);
@@ -291,9 +296,34 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public ResultVO<UserDetailDTO> getUserDetailByUserId(String userId) {
-        UserDetailDTO userDetailDTO = userManager.getUserDetail(userId);
-        if (userDetailDTO != null
-                && !StringUtils.isEmpty(userDetailDTO.getRelCode())) {
+        // 原先逻辑
+//        UserDetailDTO userDetailDTO = userManager.getUserDetail(userId);
+//        if (userDetailDTO != null
+//                && !StringUtils.isEmpty(userDetailDTO.getRelCode())) {
+//            // 取商家名称
+//            MerchantDTO merchantDTO = merchantService.getMerchantById(userDetailDTO.getRelCode()).getResultData();
+//            userDetailDTO.setMerchantName(merchantDTO != null ? merchantDTO.getMerchantName() : null);
+//        }
+
+        // 改为单表查询
+        User user = userManager.getUserByUserId(userId);
+        if (Objects.isNull(user)) {
+            return ResultVO.successMessage("没有userId为" + userId + "的用户");
+        }
+        UserDetailDTO userDetailDTO = new UserDetailDTO();
+        BeanUtils.copyProperties(user, userDetailDTO);
+        if (!StringUtils.isEmpty(userDetailDTO.getRelCode())) {
+            // 取lanName  regionName
+            userDetailDTO.setLanName(getRegionNameByRegionId(userDetailDTO.getLanId()));
+            userDetailDTO.setRegionName(getRegionNameByRegionId(userDetailDTO.getRegionId()));
+        }
+        if (!StringUtils.isEmpty(userDetailDTO.getRelCode())) {
+            // 取组织名称
+            OrganizationDTO organizationDTO = organizationManager.getOrganization(userDetailDTO.getOrgId());
+            userDetailDTO.setOrgName(organizationDTO != null ? organizationDTO.getOrgName() : null);
+        }
+
+        if (!StringUtils.isEmpty(userDetailDTO.getRelCode())) {
             // 取商家名称
             MerchantDTO merchantDTO = merchantService.getMerchantById(userDetailDTO.getRelCode()).getResultData();
             userDetailDTO.setMerchantName(merchantDTO != null ? merchantDTO.getMerchantName() : null);
@@ -301,6 +331,22 @@ public class UserServiceImpl implements UserService {
         return ResultVO.success(userDetailDTO);
     }
 
+    /**
+     * 根据regionId获取 regionName
+     *
+     * @param regionId
+     * @return
+     */
+    private String getRegionNameByRegionId(String regionId) {
+        if (StringUtils.isEmpty(regionId)) {
+            return "";
+        }
+        CommonRegion commonRegion = commonRegionManager.getCommonRegionById(regionId);
+        if (commonRegion != null) {
+            return commonRegion.getRegionName();
+        }
+        return "";
+    }
 
     @Override
     public int setUserStatus(UserSetStatusReq req) {

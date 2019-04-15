@@ -48,7 +48,7 @@
 
     <!-- 权限过滤查询-->
     <select id="pageBusinessEntityByRight" resultType="com.iwhalecloud.retail.partner.dto.BusinessEntityDTO"
-            parameterType="com.iwhalecloud.retail.partner.dto.req.BusinessEntityPageReq">
+            parameterType="com.iwhalecloud.retail.partner.dto.req.BusinessEntityPageByRightsReq">
         select <include refid="allFields" />
         from par_business_entity t left join par_merchant pm on t.BUSINESS_ENTITY_CODE = pm.BUSINESS_ENTITY_CODE
         WHERE 1 = 1
@@ -61,11 +61,24 @@
         <if test="req.status != null and req.status != ''">
             and t.STATUS = #{req.status }
         </if>
-        <if test="null!=req.merchantIdList">
+        <if test="null!=req.merchantIdList and req.merchantIdList.size>0">
             and pm.MERCHANT_ID in
             <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIdList">
                 #{item}
             </foreach>
+        </if>
+
+        <if test="req.merchantName != null and req.merchantName != ''">
+            and lower(pm.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{req.MERCHANT_NAME}), '%'))
+        </if>
+        <if test="req.merchantId != null and req.merchantId != ''">
+            and lower(pm.MERCHANT_ID) like lower(CONCAT(CONCAT('%', #{req.MERCHANT_ID}), '%'))
+        </if>
+        <if test="req.shopCode != null and req.shopCode != ''">
+            and lower(pm.SHOP_CODE) like lower(CONCAT(CONCAT('%', #{req.shopCode}), '%'))
+        </if>
+        <if test="req.channelType != null and req.channelType != ''">
+            and pm.CHANNEL_TYPE =  #{req.channelType}
         </if>
         order by t.BUSINESS_ENTITY_ID desc
     </select>

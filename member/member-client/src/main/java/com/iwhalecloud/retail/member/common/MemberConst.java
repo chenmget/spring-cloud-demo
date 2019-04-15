@@ -1,6 +1,12 @@
 package com.iwhalecloud.retail.member.common;
 
 public class MemberConst {
+
+    /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
+
     /**
      *  通用状态 1 有效、0失效
      */

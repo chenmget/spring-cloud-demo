@@ -12,9 +12,11 @@ import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @Service
 @Slf4j
-public class ResouceStoreOpenServiceImpl implements ResouceStoreService {
+public  class ResouceStoreOpenServiceImpl implements ResouceStoreService {
 
     @Autowired
     private ResouceStoreService resouceStoreService;
@@ -51,5 +53,10 @@ public class ResouceStoreOpenServiceImpl implements ResouceStoreService {
     public void initStoredata() {
         log.info("ResouceStoreOpenServiceImpl.initStoredata");
         resouceStoreService.initStoredata();
+    }
+
+    @Override
+    public ResultVO<List<ResouceStoreDTO>>  listGivenStore() {
+        return resouceStoreService.listGivenStore();
     }
 }

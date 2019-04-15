@@ -33,6 +33,15 @@ spring.redis:
       min-idle: 5
 #    password:
 
+  #i18n国际化配置
+  messages:
+    #指定message的basename，多个以逗号分隔，如果不加包名的话，默认从classpath路径开始，默认: messages
+    basename: i18n/workflow
+    #设定加载的资源文件缓存失效时间，-1的话为永不过期，默认为-1
+    cache-seconds: 3600
+    #设定Message bundles的编码，默认: UTF-8
+    encoding: UTF-8
+
 logging.level.com.iwhalecloud.retail.workflow.mapper: debug
  
 #spring.datasource:

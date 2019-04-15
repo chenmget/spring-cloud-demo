@@ -41,7 +41,7 @@
     </select>
 
     <select id="queryRegionOrganizationId" resultType="com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp">
-        select org_id, lan_id from sys_organization WHERE ORG_LEVEL = '2' and lan_id != '10000000' GROUP BY lan_id
+        select org_id, org_name, lan_id, region_id from sys_organization WHERE ORG_LEVEL = '2' and lan_id != '10000000' GROUP BY lan_id
     </select>
 
 </mapper>

@@ -8,6 +8,8 @@ import com.iwhalecloud.retail.warehouse.dto.request.AllocateStorePageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.StoreGetStoreIdReq;
 import com.iwhalecloud.retail.warehouse.dto.request.StorePageReq;
 
+import java.util.List;
+
 public interface ResouceStoreService{
 
     /**
@@ -56,5 +58,11 @@ public interface ResouceStoreService{
      * @return
      */
     void initStoredata();
+
+    /**
+     * 查询14个地市级仓库ID列表
+     * @return
+     */
+    ResultVO<List<ResouceStoreDTO>> listGivenStore();
 
 }

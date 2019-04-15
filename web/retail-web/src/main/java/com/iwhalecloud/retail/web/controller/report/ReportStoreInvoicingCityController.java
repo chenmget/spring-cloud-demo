@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.report.dto.request.ReportStInvCityDaoReq;
+import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
 import com.iwhalecloud.retail.report.dto.request.RptPartnerOperatingDay;
+import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
+import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportStInvCityService;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -39,6 +42,9 @@ public class ReportStoreInvoicingCityController extends BaseController {
     @Reference
     private ReportStInvCityService reportStInvCityService;
 
+    @Reference
+    private IReportDataInfoService iReportDataInfoService;
+
     @Autowired
     private DeliveryGoodsResNberExcel deliveryGoodsResNberExcel;
 
@@ -49,6 +55,14 @@ public class ReportStoreInvoicingCityController extends BaseController {
     })
     @PostMapping("/getStoreInvoicingCityList")
     public ResultVO<Page<RptPartnerOperatingDay>> getReportStSaleList(@RequestBody ReportStInvCityDaoReq req) {
+
+        ReportStorePurchaserReq req1 = new ReportStorePurchaserReq();
+        String userId = UserContext.getUser().getUserId();
+        req1.setUserId(userId);
+        ResultVO<List<ReportStorePurchaserResq>> result = iReportDataInfoService.getUerRoleForView(req1);
+        if("2".equals(result.getResultData().get(0).getUserType()) || "".equals(req.getCity())){
+            req.setCity(UserContext.getUser().getLanId());
+        }
         return reportStInvCityService.getReportStInvCityList(req);
     }
 
@@ -62,6 +76,14 @@ public class ReportStoreInvoicingCityController extends BaseController {
     })
     @PostMapping(value = "/storeInvoicingCityReportExport")
     public ResultVO storeInvoicingCityReportExport(@RequestBody ReportStInvCityDaoReq req) {
+
+        ReportStorePurchaserReq req1 = new ReportStorePurchaserReq();
+        String userId = UserContext.getUser().getUserId();
+        req1.setUserId(userId);
+        ResultVO<List<ReportStorePurchaserResq>> result0 = iReportDataInfoService.getUerRoleForView(req1);
+        if("2".equals(result0.getResultData().get(0).getUserType()) || "".equals(req.getCity())){
+            req.setCity(UserContext.getUser().getLanId());
+        }
 
         ResultVO result = new ResultVO();
         ResultVO<List<RptPartnerOperatingDay>> resultVO = reportStInvCityService.getReportStInvCityListExport(req);

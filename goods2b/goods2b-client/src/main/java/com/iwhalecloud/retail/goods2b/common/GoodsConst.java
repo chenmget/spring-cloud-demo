@@ -10,6 +10,11 @@ public class GoodsConst {
     // 文件上传表prod_file使用的缓存名称
     public static final String CACHE_NAME_PROD_FILE = "prod_file";
 
+    public static final String CACHE_NAME_GOODS_SALE_ORDER = "goods_sale_order";
+
+    public static final String CACHE_KEY_GOODS_SALE_ORDER_7 = "goods_sale_order_7";
+
+    public static final String CACHE_KEY_GOODS_SALE_ORDER_15 = "goods_sale_order_15";
     /**
      * 关联类型
      */

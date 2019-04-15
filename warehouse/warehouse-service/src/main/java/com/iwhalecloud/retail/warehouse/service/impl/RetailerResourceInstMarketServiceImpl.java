@@ -717,6 +717,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ResourceInstListReq resourceInstListReq = new ResourceInstListReq();
         resourceInstListReq.setMktResStoreId(merchantStoreId);
         resourceInstListReq.setMktResInstNbrs(req.getMktResInstNbrs());
+        resourceInstListReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         ResultVO<List<ResourceInstListResp>> merchantNbrInstVO = resourceInstService.listResourceInst(resourceInstListReq);
         if (!merchantNbrInstVO.isSuccess() || CollectionUtils.isEmpty(merchantNbrInstVO.getResultData())) {
             resourceInstAddResp.setPutInFailNbrs(req.getMktResInstNbrs());

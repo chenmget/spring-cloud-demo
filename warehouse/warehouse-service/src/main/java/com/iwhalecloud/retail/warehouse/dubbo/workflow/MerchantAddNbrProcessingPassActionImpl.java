@@ -15,7 +15,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
 import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
-import com.iwhalecloud.retail.warehouse.service.GreenChannelProcessingPassActionService;
+import com.iwhalecloud.retail.warehouse.service.MerchantAddNbrProcessingPassActionService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class MerchantAddNbrProcessingPassActionImpl implements GreenChannelProcessingPassActionService {
+public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrProcessingPassActionService {
 
     @Autowired
     private ResourceInstService resourceInstService;

@@ -82,7 +82,7 @@ public class MerchantAddNbrProcessingPassActionImpl implements GreenChannelProce
         addReq.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
         addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        addReq.setDestStoreId(detailDTO.getMktResStoreId());
+        addReq.setDestStoreId(detailDTO.getDestStoreId());
         addReq.setMktResId(detailDTO.getMktResId());
 
         ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getMktResStoreId());
@@ -100,10 +100,8 @@ public class MerchantAddNbrProcessingPassActionImpl implements GreenChannelProce
             addReq.setLanId(merchantDTO.getLanId());
             addReq.setRegionId(merchantDTO.getCity());
         }
-            Boolean addResp = resourceInstService.addResourceInst(addReq);
-            log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.syncTerminal addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addResp));
-
-
+        Boolean addResp = resourceInstService.addResourceInst(addReq);
+        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.syncTerminal addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addResp));
         if (addResp) {
             // step3 增加事件和批次
             Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);

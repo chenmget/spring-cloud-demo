@@ -86,18 +86,21 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             req.setLanId(merchantDTO.getLanId());
             req.setRegionId(merchantDTO.getCity());
         }
-        // 获取仓库
-        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        storeGetStoreIdReq.setMerchantId(merchantId);
-        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
-        if (StringUtils.isBlank(mktResStoreId)) {
-            return ResultVO.error(constant.getCannotGetStoreMsg());
-        }
-        req.setDestStoreId(mktResStoreId);
-        req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
 
+        // 集采前端会传入库仓库id,其他类型根据当前登陆用户去获取仓库
+        String mktResStoreId = req.getDestStoreId();
+        if (!ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
+            StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+            storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+            storeGetStoreIdReq.setMerchantId(merchantId);
+            mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+            log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+            if (StringUtils.isBlank(mktResStoreId)) {
+                return ResultVO.error(constant.getCannotGetStoreMsg());
+            }
+            req.setDestStoreId(mktResStoreId);
+        }
+        req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);

@@ -15,7 +15,9 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
+import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreObjRelDTO;
@@ -61,6 +63,9 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
 
     @Autowired
     private ResourceInstManager resourceInstManager;
+
+    @Reference
+    private OrganizationService organizationService;
 
     @Override
     public Page<ResouceStoreDTO> pageStore(StorePageReq req) {
@@ -362,5 +367,16 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
             list = Lists.newArrayList(nullValue);
         }
         return list;
+    }
+
+    @Override
+    public ResultVO<List<ResouceStoreDTO>> listGivenStore(){
+        ResultVO<List<OrganizationRegionResp>> organizationRegionRespVO = organizationService.queryRegionOrganizationId();
+        if (!organizationRegionRespVO.isSuccess() || CollectionUtils.isEmpty(organizationRegionRespVO.getResultData())) {
+            return ResultVO.error("获取地市级对象失败");
+        }
+        List<OrganizationRegionResp> organizationRegionResp = organizationRegionRespVO.getResultData();
+        List<String> objIdList = organizationRegionResp.stream().map(OrganizationRegionResp::getOrgId).collect(Collectors.toList());
+        return ResultVO.success(resouceStoreManager.listGivenStore(objIdList));
     }
 }

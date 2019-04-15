@@ -32,7 +32,7 @@ import java.util.List;
 @Slf4j
 public class ResouceStoreServiceImplTest {
 
-    @Reference
+    @Autowired
     private ResouceStoreService resouceStoreService;
 
     @Reference
@@ -154,5 +154,11 @@ public class ResouceStoreServiceImplTest {
     @Test
     public void initStoredata() {
         resouceStoreService.initStoredata();
+    }
+
+    @Test
+    public void listGivenStore() {
+        ResultVO<List<ResouceStoreDTO>> resultVO = resouceStoreService.listGivenStore();
+        System.out.print("result="+ resultVO.toString());
     }
 }

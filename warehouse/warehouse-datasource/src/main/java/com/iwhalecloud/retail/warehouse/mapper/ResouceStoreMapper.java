@@ -11,6 +11,8 @@ import com.iwhalecloud.retail.warehouse.entity.ResouceStore;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @Class: ResouceStoreMapper
  * @author autoCreate
@@ -24,7 +26,6 @@ public interface ResouceStoreMapper extends BaseMapper<ResouceStore>{
 
     Page<ResouceStoreDTO> pageAllocateStore(Page<ResouceStoreDTO> page, @Param("req") AllocateStorePageReq req);
 
-
     int updateStore(ResouceStore resouceStore);
 
     /**
@@ -34,4 +35,11 @@ public interface ResouceStoreMapper extends BaseMapper<ResouceStore>{
      * @return
      */
     String getStoreId(StoreGetStoreIdReq req);
+
+    /**
+     * 查询仓库ID列表
+     * @param objIdList
+     * @return
+     */
+    List<ResouceStoreDTO> listGivenStore(@Param("objIdList") List<String> objIdList);
 }

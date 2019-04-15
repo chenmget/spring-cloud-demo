@@ -13,6 +13,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * @author my
  */
@@ -96,4 +98,9 @@ public class ResouceStoreB2BController {
         return ResultVO.success();
     }
 
+    @ApiOperation(value = "营销资源仓库查询", notes = "查询十四个地市级仓库")
+    @GetMapping(value = "/listGivenStore")
+    public ResultVO<List<ResouceStoreDTO>> listGivenStore(){
+        return resouceStoreService.listGivenStore();
+    }
 }

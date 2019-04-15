@@ -122,13 +122,15 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             instDTOList.add(instDTO);
         }
         List<String> checkMktResInstNbrs = req.getCheckMktResInstNbrs();
-        mktResInstNbrs.removeAll(checkMktResInstNbrs);
-        for (String str : mktResInstNbrs) {
-            ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
-            instDTO.setMktResInstNbr(str);
-            instDTO.setMktResId(req.getMktResId());
-            instDTO.setIsInspection(ResourceConst.CONSTANT_YES);
-            instDTOList.add(instDTO);
+        if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
+            mktResInstNbrs.removeAll(checkMktResInstNbrs);
+            for (String str : mktResInstNbrs) {
+                ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
+                instDTO.setMktResInstNbr(str);
+                instDTO.setMktResId(req.getMktResId());
+                instDTO.setIsInspection(ResourceConst.CONSTANT_YES);
+                instDTOList.add(instDTO);
+            }
         }
         String reqCode = resourceInstService.getPrimaryKey();
         resourceRequestAddReq.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());

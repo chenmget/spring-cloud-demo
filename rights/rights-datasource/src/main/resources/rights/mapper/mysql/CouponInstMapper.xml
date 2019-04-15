@@ -130,10 +130,10 @@
 	<select id="listCouponInstDetail" parameterType="com.iwhalecloud.retail.rights.dto.request.QueryCouponInstReqDTO"
 			resultType="com.iwhalecloud.retail.rights.dto.response.CouponInstDetailDTO">
 		SELECT t.COUPON_INST_ID, t.COUPON_INST_NBR, t.MKT_RES_ID, t.COUPON_AMOUNT, t.CUST_ACCT_ID, t.EFF_DATE, t.EXP_DATE, t.STATUS_CD
-		       , mrc.MKT_RES_NAME, mrc.DISCOUNT_TYPE, mrc.COUPON_TYPE
+		       , mrc.MKT_RES_NAME, mrc.DISCOUNT_TYPE, mrc.COUPON_TYPE, mrc.marketing_activity_id
                , cdr.DISCOUNT_RULE_ID, cdr.DISCOUNT_VALUE, cdr.MAX_VALUE, cdr.MIN_VALUE, cdr.RULE_AMOUNT, cdr.USE_TYPE, cdr.REUSE_FLAG, cdr.MIX_USE_FLAG, cdr.RECYCLE_FLAG, cdr.DISCOUNT_RULE_DESC
-        FROM               coupon_inst t
-        LEFT JOIN       mkt_res_coupon mrc ON   t.MKT_RES_ID = mrc.MKT_RES_ID
+        FROM coupon_inst t
+        LEFT JOIN mkt_res_coupon mrc ON t.MKT_RES_ID = mrc.MKT_RES_ID
         LEFT JOIN coupon_discount_rule cdr ON mrc.MKT_RES_ID = cdr.MKT_RES_ID
 		WHERE
             t.eff_date &lt;= now()

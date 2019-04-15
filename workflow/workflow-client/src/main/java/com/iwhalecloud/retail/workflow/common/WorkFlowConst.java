@@ -75,6 +75,10 @@ public class WorkFlowConst {
     /**任务项状态：已处理*/
     public static final String TASK_ITEM_STATE_FINISH = "3";
 
+    /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
 
     /**
      * 是否被删除

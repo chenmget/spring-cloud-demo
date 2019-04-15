@@ -7,6 +7,11 @@ package com.iwhalecloud.retail.rights.common;
 public class RightsConst {
 
     /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
+
+    /**
      * 通用 是否 枚举
      */
     public enum CommonYesOrNo {

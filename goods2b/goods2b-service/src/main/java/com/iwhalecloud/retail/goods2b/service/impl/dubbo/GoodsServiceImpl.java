@@ -686,7 +686,7 @@ public class GoodsServiceImpl implements GoodsService {
     /**
      * 1、零售价1599以上机型地包供货价不高于省包平均供货价的3%时，只显示地包供货商品，如果地包供货价高于省包平均供货价的3%，则不展示该地包商品；
      * 2、零售价1599以上机型地包无货时，展示省包供货；
-     * （第1点和第2点等同于零售价1599以上机型地包供货价高于省包平均供货价的3%或者该机型的地包库存则不展示该机型的省包供货，同时不展示该地包商品）
+     * （第1点和第2点等同于零售价1599以上机型地包供货价不高于省包平均供货价的3%或者该机型的地包有库存则不展示该机型的省包供货，同时不展示该地包商品）
      * 3、1599及以下机型只展示地包供货；
      * 4、有前置补贴的机型优先地包供货，即使地包无库存，也不展示省包
     */
@@ -730,9 +730,9 @@ public class GoodsServiceImpl implements GoodsService {
                         it.remove();
                         continue;
                     }
-                    // 该机型地包供货价是否高于省包平均供货价
+                    // 该机型地包供货价是否高于省包平均供货价，不高于3%不展示省包商品
                     Boolean above3PerFlag = checkIsAbove3Per(productBaseId);
-                    if (above3PerFlag) {
+                    if (!above3PerFlag) {
                         log.info("GoodsServiceImpl.filterGoods filter above3PerFlag goodsId={},above3PerFlag={}", goodsId, above3PerFlag);
                         it.remove();
                         continue;

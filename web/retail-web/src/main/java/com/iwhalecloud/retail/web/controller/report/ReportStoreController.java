@@ -61,12 +61,41 @@ public class ReportStoreController extends BaseController {
     })
     @PostMapping("/getReportStSaleList")
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
-		String userId = UserContext.getUser().getUserId();
-		ReportStorePurchaserReq req2 = new ReportStorePurchaserReq();
-		req2.setUserId(userId);
-		ResultVO<List<ReportStorePurchaserResq>> brandview = iReportDataInfoService.getUerRoleForView(req2);
-		String brandId = brandview.getResultData().get(0).getBrandId();
-		//req.setBrand(brandId);
+		String userType=req.getUserType();
+		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
+			String regionId = UserContext.getUser().getRegionId();
+			req.setLanId(regionId);
+		}
+		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
+			String retailerCode=UserContext.getUser().getRelCode();
+			req.setRetailerCode(retailerCode);
+		}
+		String lanId = req.getLanId();
+		if("430100".equals(lanId)){
+			req.setLanId("731");
+		}else if("430200".equals(lanId)){
+			req.setLanId("733");
+		}else if("430300".equals(lanId)){
+			req.setLanId("732");
+		}else if("430400".equals(lanId)){
+			req.setLanId("734");
+		}else if("430500".equals(lanId)){
+			req.setLanId("739");
+		}else if("430600".equals(lanId)){
+			req.setLanId("730");
+		}else if("430700".equals(lanId)){
+			req.setLanId("736");
+		}else if("430800".equals(lanId)){
+			req.setLanId("744");
+		}else if("430900".equals(lanId)){
+			req.setLanId("737");
+		}else if("431000".equals(lanId)){
+			req.setLanId("735");
+		}else if("431300".equals(lanId)){//娄底
+			req.setLanId("738");
+		}else if("433100".equals(lanId)){//湘西土家族苗族自治州
+			req.setLanId("743");
+		}
         return reportStoreService.getReportStSaleList(req);
     }
 	
@@ -80,7 +109,41 @@ public class ReportStoreController extends BaseController {
     })
     @PostMapping(value="/cjStorePurchaserReportExport")
     public ResultVO cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req) {
-		//userType==5 厂家视图的导出
+    	String userType=req.getUserType();
+		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
+			String regionId = UserContext.getUser().getRegionId();
+			req.setLanId(regionId);
+		}
+		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
+			String retailerCode=UserContext.getUser().getRelCode();
+			req.setRetailerCode(retailerCode);
+		}
+		String lanId = req.getLanId();
+		if("430100".equals(lanId)){
+			req.setLanId("731");
+		}else if("430200".equals(lanId)){
+			req.setLanId("733");
+		}else if("430300".equals(lanId)){
+			req.setLanId("732");
+		}else if("430400".equals(lanId)){
+			req.setLanId("734");
+		}else if("430500".equals(lanId)){
+			req.setLanId("739");
+		}else if("430600".equals(lanId)){
+			req.setLanId("730");
+		}else if("430700".equals(lanId)){
+			req.setLanId("736");
+		}else if("430800".equals(lanId)){
+			req.setLanId("744");
+		}else if("430900".equals(lanId)){
+			req.setLanId("737");
+		}else if("431000".equals(lanId)){
+			req.setLanId("735");
+		}else if("431300".equals(lanId)){//娄底
+			req.setLanId("738");
+		}else if("433100".equals(lanId)){//湘西土家族苗族自治州
+			req.setLanId("743");
+		}
         ResultVO result = new ResultVO();
         ResultVO<List<ReportStSaleDaoResp>> resultVO = reportStoreService.getReportStSaleListdc(req);
         if (!resultVO.isSuccess()) {

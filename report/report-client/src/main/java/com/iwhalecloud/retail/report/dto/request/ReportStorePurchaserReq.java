@@ -19,7 +19,7 @@ public class ReportStorePurchaserReq extends PageVO {
 	  private String outTimeEnd;//出库起止时间
 	  private String outTimeStart;
 	  private String productType;//机型
-	  private String userType;//零售商标识
+	  private String userType;//商家标识
 	  private String regionGrade; //地市标识
 	  private String warningStatus;//库存预警状态
 	  private String typeId;	//产品类型

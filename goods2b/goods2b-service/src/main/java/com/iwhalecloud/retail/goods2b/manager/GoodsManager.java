@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
+import com.iwhalecloud.retail.goods2b.dto.SupplierGroundGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
@@ -98,12 +99,8 @@ public class GoodsManager{
         return goodsMapper.update(goods, updateWrapper);
     }
 
-    public List<String> listSupplierGroundId(String productBaseId) {
-        return goodsMapper.listSupplierGroundId(productBaseId);
-    }
-
-    public List<Double> listSupplierGroundDeliveryPrice(String productBaseId) {
-        return goodsMapper.listSupplierGroundDeliveryPrice(productBaseId);
+    public List<SupplierGroundGoodsDTO> listSupplierGroundRelative(String productBaseId) {
+        return goodsMapper.listSupplierGroundRelative(productBaseId);
     }
 
     public Double listSupplierGroundSupplyNum(String productBaseId) {

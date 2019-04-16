@@ -26,7 +26,6 @@ import com.iwhalecloud.retail.goods2b.utils.CurrencyUtil;
 import com.iwhalecloud.retail.goods2b.utils.ResultVOUtils;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.partner.service.SupplierService;
@@ -62,10 +61,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -685,8 +681,8 @@ public class GoodsServiceImpl implements GoodsService {
 
     /**
      * 1、零售价1599以上机型地包供货价不高于省包平均供货价的3%时，只显示地包供货商品，如果地包供货价高于省包平均供货价的3%，则不展示该地包商品；
-     * 2、零售价1599以上机型地包无货时，展示省包供货；
-     * （第1点和第2点等同于零售价1599以上机型地包供货价不高于省包平均供货价的3%或者该机型的地包有库存则不展示该机型的省包供货，同时不展示该地包商品）
+     * 2、零售价1599以上机型地包无货h货无上架数量时，展示省包供货；
+     * （第1点和第2点等同于零售价1599以上机型地包供货价不高于省包平均供货价的3%或者该机型的低于3%的地包有库存且有上架数量则不展示该机型的省包供货）
      * 3、1599及以下机型只展示地包供货；
      * 4、有前置补贴的机型优先地包供货，即使地包无库存，也不展示省包
     */
@@ -720,21 +716,10 @@ public class GoodsServiceImpl implements GoodsService {
                         it.remove();
                     }
                 }
-                // 零售价1599以上的省包商品，地包供货价高于省包平均供货价的3%或者该机型的地包有库存则不展示该机型的省包供货
+                // 如果是1599以上的省包商品，查询出所有地包商品：判断地包的供货价是否在省平均供货价3%以内，且有库存和上架数量则过滤省包商品
                 if (supplierProvinceFlag) {
-                    String productBaseId = item.getProductBaseId();
-                    // 该机型地包商品是否有库存
-                    Boolean isHaveStock = isSupplierGroundHaveStock(productBaseId);
-                    if (isHaveStock) {
-                        log.info("GoodsServiceImpl.filterGoods filter isHaveStock goodsId={},isHaveStock={}", goodsId, isHaveStock);
-                        it.remove();
-                        continue;
-                    }
-                    // 该机型地包供货价是否高于省包平均供货价，不高于3%不展示省包商品
-                    Boolean above3PerFlag = checkIsAbove3Per(productBaseId);
-                    if (!above3PerFlag) {
-                        log.info("GoodsServiceImpl.filterGoods filter above3PerFlag goodsId={},above3PerFlag={}", goodsId, above3PerFlag);
-                        it.remove();
+                    boolean flag = filterProvinceGoods(it, item, goodsId);
+                    if (flag) {
                         continue;
                     }
                 }
@@ -752,24 +737,53 @@ public class GoodsServiceImpl implements GoodsService {
         }
     }
 
-    private Boolean checkIsAbove3Per(String productBaseId) {
-        Boolean above3PerFlag = false;
+    private boolean filterProvinceGoods(Iterator<GoodsForPageQueryResp> it, GoodsForPageQueryResp item, String goodsId) {
+        String productBaseId = item.getProductBaseId();
+        List<SupplierGroundGoodsDTO> supplierGroundGoodsDTOList = goodsManager.listSupplierGroundRelative(productBaseId);
+        if (CollectionUtils.isEmpty(supplierGroundGoodsDTOList)) {
+            return true;
+        }
         ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
         // 获取平均供货价
         Double avgSupplyPrice = productBaseGetResp.getAvgSupplyPrice();
-        log.info("GoodsServiceImpl.checkIsAbove3Per productBaseId={} avgSupplyPrice={}",productBaseId, avgSupplyPrice);
-        // 获取该机型的所有地包供货价
-        List<Double> deliveryPriceList = goodsManager.listSupplierGroundDeliveryPrice(productBaseId);
-        if (CollectionUtils.isNotEmpty(deliveryPriceList)) {
-            for (Double deliveryPrice : deliveryPriceList) {
-                if (isAbove3Per(deliveryPrice, avgSupplyPrice)) {
-                    above3PerFlag = true;
-                    log.info("GoodsServiceImpl.checkIsAbove3Per productBaseId={} deliveryPrice={}",productBaseId, deliveryPrice);
-                    break;
+        // 通过goodsId进行分组
+        Map<String, List<SupplierGroundGoodsDTO>> map = supplierGroundGoodsDTOList.stream().collect(Collectors.groupingBy(
+        SupplierGroundGoodsDTO::getGoodsId));
+        for (Map.Entry<String, List<SupplierGroundGoodsDTO>> entry : map.entrySet()){
+            // 获取goodsId
+            String goodsIdKey = entry.getKey();
+            List<SupplierGroundGoodsDTO> supplierGroundGoodsDTOS = entry.getValue();
+            List<String> productIdList = Lists.newArrayList();
+            List<Long> supplyNumList = Lists.newArrayList();
+            List<Double> deliveryPriceList = Lists.newArrayList();
+            List<String> supplierIdList = Lists.newArrayList();
+            supplierGroundGoodsDTOS.forEach(s -> {
+                productIdList.add(s.getProductId());
+                supplyNumList.add(s.getSupplyNum());
+                deliveryPriceList.add(s.getDeliveryPrice());
+                supplierIdList.add(s.getSupplierId());
+            });
+            Double minDeliveryPrice = Collections.min(deliveryPriceList);
+            // 地包供货价低于省包平均供货价3%
+            if (!isAbove3Per(minDeliveryPrice, avgSupplyPrice)) {
+                boolean isSupplyNumAboveZero = false;
+                for (Long supplyNum : supplyNumList) {
+                    if (supplyNum > 0) {
+                        isSupplyNumAboveZero = true;
+                        break;
+                    }
+                }
+                String supplierId = supplierIdList.get(0);
+                boolean isHaveStock = isSupplierGroundHaveStock(supplierId,productIdList);
+                // 上架数量不为0而且有库存则不展示省包商品
+                if (isSupplyNumAboveZero && isHaveStock) {
+                    log.info("GoodsServiceImpl.filterGoods filter filterProvinceGoods filterGoodsId={},becauseGoodsId={}",goodsId, goodsIdKey);
+                    it.remove();
+                    return true;
                 }
             }
         }
-        return above3PerFlag;
+        return false;
     }
 
     private boolean isAbove3Per(Double deliveryPrice, Double avgSupplyPrice) {
@@ -793,18 +807,8 @@ public class GoodsServiceImpl implements GoodsService {
         }
     }
 
-    private Boolean isSupplierGroundHaveStock(String productBaseId) {
-        // 获取该机型对应的所有地包供应商id
-        List<String> supplierIdList = goodsManager.listSupplierGroundId(productBaseId);
-        List<String> productIdList = productManager.listProduct(productBaseId);
-        if (CollectionUtils.isEmpty(supplierIdList) || CollectionUtils.isEmpty(productIdList)) {
-            return false;
-        }
-        Double supplyNum = goodsManager.listSupplierGroundSupplyNum(productBaseId);
-        if (supplyNum != null && supplyNum > 0) {
-            log.info("GoodsServiceImpl.isSupplierGroundHaveStock productBaseId={}, supplyNum={}", productBaseId, supplyNum);
-            return true;
-        }
+    private boolean isSupplierGroundHaveStock(String supplierId, List<String> productIdList) {
+
         List<ProductQuantityItem> itemList = Lists.newArrayList();
         for (String productId : productIdList) {
             ProductQuantityItem item = new ProductQuantityItem();
@@ -812,22 +816,20 @@ public class GoodsServiceImpl implements GoodsService {
             item.setProductId(productId);
             itemList.add(item);
         }
-        for (String supplierId : supplierIdList) {
-            try {
-                GetProductQuantityByMerchantReq req = new GetProductQuantityByMerchantReq();
-                req.setMerchantId(supplierId);
-                req.setItemList(itemList);
-                log.info("GoodsServiceImpl.isSupplierGroundHaveStock GetProductQuantityByMerchantReq={}", JSON.toJSONString(req));
-                ResultVO<GetProductQuantityByMerchantResp> booleanResultVO = resourceInstStoreService.getProductQuantityByMerchant(req);
-                log.info("GoodsServiceImpl.isSupplierGroundHaveStock booleanResultVO={}", JSON.toJSONString(booleanResultVO));
-                GetProductQuantityByMerchantResp merchantResp = booleanResultVO.getResultData();
-                if (booleanResultVO.isSuccess() && merchantResp.getInStock()) {
-                    return true;
-                }
-            } catch (Exception ex) {
-                log.error("GoodsServiceImpl.isSupplierGroundHaveStock getProductQuantityByMerchant throw exception ex={}", ex);
-                return false;
+        try {
+            GetProductQuantityByMerchantReq req = new GetProductQuantityByMerchantReq();
+            req.setMerchantId(supplierId);
+            req.setItemList(itemList);
+            log.info("GoodsServiceImpl.isSupplierGroundHaveStock GetProductQuantityByMerchantReq={}", JSON.toJSONString(req));
+            ResultVO<GetProductQuantityByMerchantResp> booleanResultVO = resourceInstStoreService.getProductQuantityByMerchant(req);
+            log.info("GoodsServiceImpl.isSupplierGroundHaveStock booleanResultVO={}", JSON.toJSONString(booleanResultVO));
+            GetProductQuantityByMerchantResp merchantResp = booleanResultVO.getResultData();
+            if (booleanResultVO.isSuccess() && merchantResp.getInStock()) {
+                return true;
             }
+        } catch (Exception ex) {
+            log.error("GoodsServiceImpl.isSupplierGroundHaveStock getProductQuantityByMerchant throw exception ex={}", ex);
+            return false;
         }
         return false;
     }

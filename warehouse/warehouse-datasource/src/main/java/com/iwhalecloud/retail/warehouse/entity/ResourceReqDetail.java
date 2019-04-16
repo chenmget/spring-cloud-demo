@@ -130,9 +130,16 @@ public class ResourceReqDetail implements Serializable {
 	 */
 	@ApiModelProperty(value = "抽检标识")
 	private String isInspection;
-  	
-  	
-  	//属性 end
+
+	/**
+	 * CT码
+	 */
+	@ApiModelProperty(value = "CT码")
+	private String ctCode;
+
+
+
+	//属性 end
 	
     /** 字段名称枚举. */
     public enum FieldNames {
@@ -180,6 +187,9 @@ public class ResourceReqDetail implements Serializable {
 		
 		/** 抽检标识. */
 		isInspection("isInspection","IS_INSPECTION"),
+
+		/** CT码. */
+		ctCode("ctCode","CT_CODE"),
 
 		/** 备注. */
 		remark("remark","REMARK");

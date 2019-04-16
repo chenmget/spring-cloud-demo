@@ -155,6 +155,11 @@ public class ResourceRequestAddReq implements Serializable {
          */
         @ApiModelProperty(value = "抽检标识")
         private String isInspection;
+        /**
+         * CT码
+         */
+        @ApiModelProperty(value = "CT码")
+        private String ctCode;
 
     }
 }

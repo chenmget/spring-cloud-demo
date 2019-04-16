@@ -320,7 +320,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
 
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Boolean addResourceInst(ResourceInstAddReq req) {
+    public Boolean addResourceInstByMerchant(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         String batchId = resourceInstManager.getPrimaryKey();
         List<String> nbrList = req.getMktResInstNbrs();
@@ -356,6 +356,47 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         int num = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
         log.info("ResourceInstServiceImpl.addResourceInst resourceInstStoreManager.updateResourceInstStore req={} num={}", JSON.toJSONString(resourceInstStoreDTO), num);
+        if (num < 1) {
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+        }
+        return addResInstCnt;
+    }
+
+    @Override
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public Boolean addResourceInst(ResourceInstAddReq req, List<ResourceInstDTO> instDTOList) {
+        log.info("supplierAddResourceInst.addResourceInst req={}, instDTOList={}", JSON.toJSONString(req), JSON.toJSONString(instDTOList));
+        String batchId = resourceInstManager.getPrimaryKey();
+        List<String> nbrList = req.getMktResInstNbrs();
+        List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(nbrList.size());
+        Date now = new Date();
+        for (ResourceInstDTO inst : instDTOList) {
+            ResourceInst resourceInst = new ResourceInst();
+            BeanUtils.copyProperties(inst, resourceInst);
+            BeanUtils.copyProperties(req, resourceInst);
+            resourceInst.setMktResInstId(resourceInstManager.getPrimaryKey());
+            resourceInst.setMktResBatchId(batchId);
+            // 目标仓库是串码所属人的仓库
+            resourceInst.setMktResStoreId(req.getDestStoreId());
+            resourceInst.setCreateDate(now);
+            resourceInst.setCreateTime(now);
+            resourceInst.setSourceType(req.getSourceType());
+            resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+            resourceInsts.add(resourceInst);
+        }
+        Boolean addResInstCnt = resourceInstManager.saveBatch(resourceInsts);
+        log.info("supplierAddResourceInst.addResourceInst resourceInstManager.saveBatch req={} resp={}", JSON.toJSONString(resourceInsts), addResInstCnt);
+        if (!addResInstCnt) {
+            return false;
+        }
+        ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
+        BeanUtils.copyProperties(req, resourceInstStoreDTO);
+        resourceInstStoreDTO.setQuantity(Long.valueOf(nbrList.size()));
+        resourceInstStoreDTO.setQuantityAddFlag(true);
+        resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
+        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
+        int num = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+        log.info("supplierAddResourceInst.addResourceInst resourceInstStoreManager.updateResourceInstStore req={} num={}", JSON.toJSONString(resourceInstStoreDTO), num);
         if (num < 1) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
         }
@@ -472,9 +513,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
      * @return
      */
     @Override
-    public List<String> validMerchantStore(ResourceInstValidReq req){
+    public List<ResourceInstDTO> validMerchantStore(ResourceInstValidReq req){
         List<String> validNbrList = req.getMktResInstNbrs();
-        List<String> existsNbrList = new ArrayList<>(validNbrList.size());
         ResourceInstsGetReq manufacturerResourceInstsGetReq = new ResourceInstsGetReq();
         manufacturerResourceInstsGetReq.setMktResInstNbrs(validNbrList);
         manufacturerResourceInstsGetReq.setMktResId(req.getMktResId());
@@ -482,13 +522,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         manufacturerTypes.add(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
         manufacturerResourceInstsGetReq.setMerchantTypes(manufacturerTypes);
         manufacturerResourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
-        List<ResourceInstDTO> manufacturerInst = resourceInstManager.getResourceInsts(manufacturerResourceInstsGetReq);
-        log.info("ResourceInstServiceImpl.validMerchantStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(manufacturerResourceInstsGetReq), JSON.toJSONString(manufacturerInst));
-        if (CollectionUtils.isNotEmpty(manufacturerInst)) {
-            List<String> manufacturerNbrs = manufacturerInst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
-            existsNbrList = validNbrList.stream().filter(t -> manufacturerNbrs.contains(t)).collect(Collectors.toList());
-        }
-        return existsNbrList;
+        List<ResourceInstDTO> merchantInst = resourceInstManager.getResourceInsts(manufacturerResourceInstsGetReq);
+        log.info("ResourceInstServiceImpl.validMerchantStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(manufacturerResourceInstsGetReq), JSON.toJSONString(merchantInst));
+        return  merchantInst;
     }
 
     /**

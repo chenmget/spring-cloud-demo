@@ -77,16 +77,14 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
-        } else {
-            MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
-            req.setMerchantId(merchantDTO.getMerchantId());
-            req.setMerchantType(merchantDTO.getMerchantType());
-            req.setMerchantName(merchantDTO.getMerchantName());
-            req.setMerchantCode(merchantDTO.getMerchantCode());
-            req.setLanId(merchantDTO.getLanId());
-            req.setRegionId(merchantDTO.getCity());
         }
-
+        MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
+        req.setMerchantId(merchantDTO.getMerchantId());
+        req.setMerchantType(merchantDTO.getMerchantType());
+        req.setMerchantName(merchantDTO.getMerchantName());
+        req.setMerchantCode(merchantDTO.getMerchantCode());
+        req.setLanId(merchantDTO.getLanId());
+        req.setRegionId(merchantDTO.getCity());
         // 集采前端会传入库仓库id,其他类型根据当前登陆用户去获取仓库
         String mktResStoreId = req.getDestStoreId();
         if (!ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
@@ -115,20 +113,26 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         // step2 新增申请单
         ResourceRequestAddReq resourceRequestAddReq = new ResourceRequestAddReq();
         List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = Lists.newLinkedList();
-        for (String str : mktResInstNbrs) {
+        for (String nbr : mktResInstNbrs) {
             ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
-            instDTO.setMktResInstNbr(str);
+            instDTO.setMktResInstNbr(nbr);
             instDTO.setMktResId(req.getMktResId());
+            if (null != req.getCtCode()) {
+                instDTO.setCtCode(req.getCtCode().get(nbr));
+            }
             instDTOList.add(instDTO);
         }
         List<String> checkMktResInstNbrs = req.getCheckMktResInstNbrs();
         if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
             mktResInstNbrs.removeAll(checkMktResInstNbrs);
-            for (String str : mktResInstNbrs) {
+            for (String nbr : mktResInstNbrs) {
                 ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
-                instDTO.setMktResInstNbr(str);
+                instDTO.setMktResInstNbr(nbr);
                 instDTO.setMktResId(req.getMktResId());
                 instDTO.setIsInspection(ResourceConst.CONSTANT_YES);
+                if (null != req.getCtCode()) {
+                    instDTO.setCtCode(req.getCtCode().get(nbr));
+                }
                 instDTOList.add(instDTO);
             }
         }

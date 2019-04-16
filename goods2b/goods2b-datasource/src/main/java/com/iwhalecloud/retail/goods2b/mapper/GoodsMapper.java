@@ -42,4 +42,11 @@ public interface GoodsMapper extends BaseMapper<Goods>{
      */
     List<String> listSupplierGroundId(@Param("productBaseId") String productBaseId);
 
+    /**
+     * 根据产品基本信息id查询地包商品提货价
+     * @param productBaseId
+     * @return
+     */
+    List<Double> listSupplierGroundDeliveryPrice(@Param("productBaseId") String productBaseId);
+
 }

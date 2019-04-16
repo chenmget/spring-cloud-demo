@@ -4,6 +4,7 @@ package com.iwhalecloud.retail.order2b.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO;
 import com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.AdvanceOrderReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq;
@@ -16,6 +17,7 @@ import com.iwhalecloud.retail.order2b.model.SelectOrderDetailModel;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -71,4 +73,12 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @return
      */
     List<OrderInfoModel> selectNotDeliveryOrderByIds(List<String> orderIds);
+
+    /**
+     * 根据指定lanid和 时间到当前时间内销售的商品数量
+     * @param beginTime
+     * @param lanId
+     * @return
+     */
+    List<GoodsSaleOrderDTO> getGoodsSaleNumByTime(@Param("beginTime")Date beginTime,@Param("lanId")String lanId);
 }

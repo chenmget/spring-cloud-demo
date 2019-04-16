@@ -12,6 +12,11 @@ public class PromoConst {
     public static final String ROUTE_ID = "25";
 
     /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
+
+    /**
      * 营销活动状态
      */
     public enum STATUSCD {

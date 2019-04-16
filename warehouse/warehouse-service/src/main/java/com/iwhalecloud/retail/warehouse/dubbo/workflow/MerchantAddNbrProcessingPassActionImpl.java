@@ -15,7 +15,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
 import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
-import com.iwhalecloud.retail.warehouse.service.GreenChannelProcessingPassActionService;
+import com.iwhalecloud.retail.warehouse.service.MerchantAddNbrProcessingPassActionService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
-public class MerchantAddNbrProcessingPassActionImpl implements GreenChannelProcessingPassActionService {
+public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrProcessingPassActionService {
 
     @Autowired
     private ResourceInstService resourceInstService;
@@ -58,12 +58,6 @@ public class MerchantAddNbrProcessingPassActionImpl implements GreenChannelProce
     public ResultVO run(InvokeRouteServiceRequest params) {
         //对应申请单ID
         String businessId = params.getBusinessId();
-        //修改申请单状态变为审核通过
-        ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
-        reqUpdate.setMktResReqId(businessId);
-        reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
-        ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
-        log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
         // 申请单ID->明细
         //根据申请单表保存的源仓库和申请单明细找到对应的串码
         ResourceReqDetailQueryReq detailQueryReq = new ResourceReqDetailQueryReq();
@@ -82,10 +76,10 @@ public class MerchantAddNbrProcessingPassActionImpl implements GreenChannelProce
         addReq.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
         addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        addReq.setDestStoreId(detailDTO.getMktResStoreId());
+        addReq.setDestStoreId(detailDTO.getDestStoreId());
         addReq.setMktResId(detailDTO.getMktResId());
 
-        ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getMktResStoreId());
+        ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
         String merchantId = null;
         if(null == resultVO || null == resultVO.getResultData()){
             log.warn("MerchantAddNbrProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
@@ -100,11 +94,15 @@ public class MerchantAddNbrProcessingPassActionImpl implements GreenChannelProce
             addReq.setLanId(merchantDTO.getLanId());
             addReq.setRegionId(merchantDTO.getCity());
         }
-            Boolean addResp = resourceInstService.addResourceInst(addReq);
-            log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.syncTerminal addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addResp));
-
-
+        Boolean addResp = resourceInstService.addResourceInst(addReq);
+        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addResp));
         if (addResp) {
+            //修改申请单状态变为审核通过
+            ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
+            reqUpdate.setMktResReqId(businessId);
+            reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
+            ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
+            log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
             // step3 增加事件和批次
             Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);
             BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();

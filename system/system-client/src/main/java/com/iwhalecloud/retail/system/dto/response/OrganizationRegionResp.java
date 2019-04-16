@@ -16,4 +16,10 @@ public class OrganizationRegionResp implements Serializable {
     @ApiModelProperty(value = "lanId")
     private String lanId;
 
+    @ApiModelProperty(value = "orgName")
+    private String orgName;
+
+    @ApiModelProperty(value = "lanId")
+    private String regionId;
+
 }

@@ -717,6 +717,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ResourceInstListReq resourceInstListReq = new ResourceInstListReq();
         resourceInstListReq.setMktResStoreId(merchantStoreId);
         resourceInstListReq.setMktResInstNbrs(req.getMktResInstNbrs());
+        resourceInstListReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         ResultVO<List<ResourceInstListResp>> merchantNbrInstVO = resourceInstService.listResourceInst(resourceInstListReq);
         if (!merchantNbrInstVO.isSuccess() || CollectionUtils.isEmpty(merchantNbrInstVO.getResultData())) {
             resourceInstAddResp.setPutInFailNbrs(req.getMktResInstNbrs());
@@ -886,7 +887,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         // 全是绿色通道和省直供串码不跨商，跨地市  需要调出方和调入方审核
         Boolean directSuppLyAndSameMerchantAndNotSameLanId = hasDirectSuppLy && !hasGroundSupply && sameMerchant && !sameLanId;
         // 全是地堡供应串码，且不能跨地市（跨地市不让调拨，跨不跨商家都不需要审核）不需要审核
-        Boolean directSuppLyAndSameLanId = !hasDirectSuppLy && hasGroundSupply && !sameLanId;
+        Boolean directSuppLyAndSameLanId = !hasDirectSuppLy && hasGroundSupply && sameLanId;
 
         if (directSuppLyAndSameMerchantAndNotSameLanId) {
             return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode();

@@ -52,6 +52,7 @@ public class MemberGroupManager{
         memberGroup.setStatus(MemberConst.CommonState.INVALID.getCode());
         memberGroup.setUpdateDate(new Date());
         memberGroup.setUpdateStaff(memberGroupDTO.getUpdateStaff());
+        memberGroup.setMemId(null);
         return memberGroupMapper.update(memberGroup, updateWrapper);
     }
 

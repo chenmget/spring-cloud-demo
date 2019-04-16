@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.order2b.manager;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
+import com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO;
 import com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsRawReq;
@@ -20,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -199,6 +201,10 @@ public class OrderManager {
     public List<OrderInfoModel> selectNotDeliveryOrderByIds(List<String> orderIds) {
         return orderMapper.selectNotDeliveryOrderByIds(orderIds);
 
+    }
+
+    public List<GoodsSaleOrderDTO> getGoodsSaleNumByTime(Date begtime,String lanId){
+        return orderMapper.getGoodsSaleNumByTime(begtime,lanId);
     }
 
 }

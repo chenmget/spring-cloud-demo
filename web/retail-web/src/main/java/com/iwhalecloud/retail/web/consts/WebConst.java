@@ -20,6 +20,11 @@ public class WebConst {
     public static final String SESSION_USER = "USER";
 
     /**
+     * 国际化语言SESSION字符串定义
+     */
+    public static final String SESSION_LANGUAGE = "LANGUAGE";
+
+    /**
      * 系统用户其他信息SESSION字符串定义
      */
     public static final String SESSION_USER_OTHER_MSG = "USER_OTHER_MSG";
@@ -114,5 +119,25 @@ public class WebConst {
         }
     }
 
+    /**
+     * 语言类型枚举
+     */
+    public enum LanguageEnum{
+        CHINESE("CHINESE","中文"),
+        ENGLISH("ENGLISH","英文");
+        private String value;
+        private String code;
+        LanguageEnum(String code,String value){
+            this.code = code;
+            this.value = value;
+        }
 
+        public String getValue() {
+            return value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+    }
 }

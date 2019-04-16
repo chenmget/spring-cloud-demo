@@ -69,7 +69,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component("goodsService")
-@Service(parameters = {"queryGoodsForPage.timeout", "200000","queryPageByConditionAdmin.timeout", "200000"})
+@Service(parameters = {"queryGoodsForPage.timeout", "300000","queryPageByConditionAdmin.timeout", "200000"})
 public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
@@ -682,11 +682,19 @@ public class GoodsServiceImpl implements GoodsService {
         return ResultVO.success(goodsForPageQueryRespPage);
     }
 
+    /**
+     * 1、零售价1599以上机型地包供货价不高于省包平均供货价的3%时，只显示地包供货商品，如果地包供货价高于省包平均供货价的3%，则不展示该地包商品；
+     * 2、零售价1599以上机型地包无货时，展示省包供货；
+     * （第1点和第2点等同于零售价1599以上机型地包供货价高于省包平均供货价的3%或者该机型的地包库存则不展示该机型的省包供货，同时不展示该地包商品）
+     * 3、1599及以下机型只展示地包供货；
+     * 4、有前置补贴的机型优先地包供货，即使地包无库存，也不展示省包
+    */
     private void filterGoods(GoodsForPageQueryReq req, Page<GoodsForPageQueryResp> goodsForPageQueryRespPage) {
         List<GoodsForPageQueryResp> goodsForPageQueryRespList = goodsForPageQueryRespPage.getRecords();
         // 按零售商商品展示规则过滤
         for (int i = 0; i < goodsForPageQueryRespList.size(); i++) {
             GoodsForPageQueryResp item = goodsForPageQueryRespList.get(i);
+            String goodsId = item.getGoodsId();
             Integer userFounder = req.getUserFounder();
             // 非零售商用户不进行商品过滤
             if (userFounder == null || userFounder != SystemConst.USER_FOUNDER_3) {
@@ -694,39 +702,74 @@ public class GoodsServiceImpl implements GoodsService {
             }
             // 是否省包商品标识
             boolean supplierProvinceFlag = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(item.getMerchantType());
-            // 零售价1599以上机型按价格从低到高排序，如果地包价格高于省包平均供货价的3%，则不展示地包商品
-            boolean isRemoveFlag = false;
             if (item.getMktprice() > GoodsConst.GOODS_MKT_PRICE) {
                 boolean supplierGroundFlag = PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(item.getMerchantType());
-                // 是否地包商品标识
+                // 零售价1599以上的地包商品
                 if (supplierGroundFlag) {
-                    Double mktPrice = item.getMktprice();
+                    Double deliveryPrice = item.getDeliveryPrice();
                     String productBaseId = item.getProductBaseId();
                     ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
                     // 获取平均供货价
                     Double avgSupplyPrice = productBaseGetResp.getAvgSupplyPrice();
-                    if (avgSupplyPrice != null && mktPrice > avgSupplyPrice && (mktPrice - avgSupplyPrice) / avgSupplyPrice > GoodsConst.AVG_SUPPLY_PRICE) {
-                        log.info("GoodsServiceImpl.filterGoods filter avgSupplyPrice goodsId={}",goodsForPageQueryRespList.get(i).getGoodsId());
+                    // 如果地包供货价高于省包平均供货价的3%，则不展示该地包商品
+                    if (isAbove3Per(deliveryPrice, avgSupplyPrice)) {
+                        log.info("GoodsServiceImpl.filterGoods filter avgSupplyPrice goodsId={}",goodsId);
                         goodsForPageQueryRespList.remove(i);
+                    }
+                }
+                // 零售价1599以上的省包商品，地包供货价高于省包平均供货价的3%或者该机型的地包有库存则不展示该机型的省包供货
+                if (supplierProvinceFlag) {
+                    String productBaseId = item.getProductBaseId();
+                    // 该机型地包商品是否有库存
+                    Boolean isHaveStock = isSupplierGroundHaveStock(productBaseId);
+                    if (isHaveStock) {
+                        log.info("GoodsServiceImpl.filterGoods filter isHaveStock goodsId={},isHaveStock={}", goodsId, isHaveStock);
+                        goodsForPageQueryRespList.remove(i);
+                        continue;
+                    }
+                    // 该机型地包供货价是否高于省包平均供货价
+                    Boolean above3PerFlag = checkIsAbove3Per(productBaseId);
+                    if (above3PerFlag) {
+                        log.info("GoodsServiceImpl.filterGoods filter above3PerFlag goodsId={},above3PerFlag={}", goodsId, above3PerFlag);
+                        goodsForPageQueryRespList.remove(i);
+                        continue;
                     }
                 }
             } else {
-                // 1599及以下机型优先地包供货，如果地包无库存，则展示省包商品
+                // 零售价1599及以下机型只展示地包供货
                 if (supplierProvinceFlag) {
-                    String productBaseId = item.getProductBaseId();
-                    Boolean isHaveStock = isSupplierGroundHaveStock(productBaseId);
-                    if (isHaveStock) {
-                        log.info("GoodsServiceImpl.filterGoods filter notHaveStock goodsId={}",goodsForPageQueryRespList.get(i).getGoodsId());
-                        goodsForPageQueryRespList.remove(i);
-                        isRemoveFlag = true;
-                    }
+                    goodsForPageQueryRespList.remove(i);
+                    continue;
                 }
             }
             // 有前置补贴的机型优先地包供货，即使地包无库存，也不展示省包
-            if (!isRemoveFlag && supplierProvinceFlag) {
+            if (supplierProvinceFlag) {
                 filterPresubsidyGoods(goodsForPageQueryRespList, i, item);
             }
         }
+    }
+
+    private Boolean checkIsAbove3Per(String productBaseId) {
+        Boolean above3PerFlag = false;
+        ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
+        // 获取平均供货价
+        Double avgSupplyPrice = productBaseGetResp.getAvgSupplyPrice();
+        // 获取该机型的所有地包供货价
+        List<Double> deliveryPriceList = goodsManager.listSupplierGroundDeliveryPrice(productBaseId);
+        if (CollectionUtils.isNotEmpty(deliveryPriceList)) {
+            for (Double deliveryPrice : deliveryPriceList) {
+                if (isAbove3Per(deliveryPrice, avgSupplyPrice)) {
+                    above3PerFlag = true;
+                    break;
+                }
+            }
+        }
+        return above3PerFlag;
+    }
+
+    private boolean isAbove3Per(Double deliveryPrice, Double avgSupplyPrice) {
+        return avgSupplyPrice != null && deliveryPrice > avgSupplyPrice && (deliveryPrice - avgSupplyPrice) / avgSupplyPrice >
+            GoodsConst.AVG_SUPPLY_PRICE;
     }
 
     private void filterPresubsidyGoods(List<GoodsForPageQueryResp> goodsForPageQueryRespList, int i,

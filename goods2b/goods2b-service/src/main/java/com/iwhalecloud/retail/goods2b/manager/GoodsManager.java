@@ -103,16 +103,19 @@ public class GoodsManager{
         return goodsMapper.listSupplierGroundId(productBaseId);
     }
 
-    public int updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req){
+    public int updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req) {
         UpdateWrapper<Goods> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("GOODS_ID",req.getGoodsIds());
+        updateWrapper.in("GOODS_ID", req.getGoodsIds());
         Goods goods = new Goods();
-        if(null != req.getIsAdvanceSale()){
+        if (null != req.getIsAdvanceSale()) {
             goods.setIsAdvanceSale(req.getIsAdvanceSale());
         }
-        if(null != req.getIsSubsidy()){
+        if (null != req.getIsSubsidy()) {
             goods.setIsSubsidy(req.getIsSubsidy());
         }
         return goodsMapper.update(goods, updateWrapper);
+    }
+    public List<Double> listSupplierGroundDeliveryPrice(String productBaseId) {
+        return goodsMapper.listSupplierGroundDeliveryPrice(productBaseId);
     }
 }

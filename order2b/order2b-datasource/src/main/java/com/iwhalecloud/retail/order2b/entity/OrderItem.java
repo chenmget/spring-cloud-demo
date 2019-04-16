@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.order2b.entity;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
@@ -31,15 +30,5 @@ public class OrderItem {
 
     private String sn;
     private String brandName;
-
-    @ApiModelProperty(value = "商家编码")
-    private String merchantCode;
-
-    @ApiModelProperty(value = "商家名称")
-    private String merchantName;
-
-    @ApiModelProperty(value = "商家所属经营主体	")
-    private String businessEntityName;
-
 
 }

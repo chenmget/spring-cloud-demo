@@ -117,7 +117,7 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             itemList.add(goodsOrderLsit);
         }
 
-        if (!StringUtils.isEmpty(req.getGoodsName()) || !StringUtils.isEmpty(req.getGoodsSn()) || !StringUtils.isEmpty(req.getBrandName())) {
+        if (!StringUtils.isEmpty(req.getMerchantCode()) || !StringUtils.isEmpty(req.getMerchantName()) || !StringUtils.isEmpty(req.getBusinessEntityName())) {
             MerchantLigthReq merchantLigthReq = new MerchantLigthReq();
             BeanUtils.copyProperties(req, merchantLigthReq);
             List<String> merchantIdList = memberInfoReference.listMerchantIdList(merchantLigthReq);

@@ -483,7 +483,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         qryMktInstInfoByConditionReq.setPageIndex(String.valueOf(req.getPageNo()));
         qryMktInstInfoByConditionReq.setPageSize(String.valueOf(req.getPageSize()));
         // 不支持多串码查询，只能多次查询组装返回
-        if (CollectionUtils.isEmpty(req.getMktResInstNbrs())) {
+        if (!CollectionUtils.isEmpty(req.getMktResInstNbrs())) {
             for (String nbr : req.getMktResInstNbrs()) {
                 qryMktInstInfoByConditionReq.setBarCode(nbr);
                 ResultVO<QueryMarkResQueryResultsSwapResp<QryMktInstInfoByConditionItemSwapResp>> queryMarkResQueryResultsRespResultVO = marketingResStoreService.qryMktInstInfoByCondition(qryMktInstInfoByConditionReq);

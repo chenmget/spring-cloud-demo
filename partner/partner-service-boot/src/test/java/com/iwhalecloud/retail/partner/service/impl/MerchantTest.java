@@ -138,6 +138,21 @@ public class MerchantTest {
 //        list1.addAll(list2);
 
         System.out.print(list1.toString());
+    }
 
+    @Test
+    public void getMerchantForOrder() {
+        MerchantGetReq req = new MerchantGetReq();
+        req.setMerchantId("4300001063072");
+        ResultVO resultVO = merchantService.getMerchantForOrder(req);
+        System.out.print("结果：" + resultVO.toString());
+    }
+
+    @Test
+    public void listMerchantForOrder() {
+        MerchantLigthReq req = new MerchantLigthReq();
+        req.setMerchantName("廖");
+        ResultVO resultVO = merchantService.listMerchantForOrder(req);
+        System.out.print("结果：" + resultVO.toString());
     }
 }

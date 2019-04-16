@@ -169,4 +169,27 @@
     </select>
 
 
+    <select id="listMerchantForOrder" resultType="com.iwhalecloud.retail.partner.dto.resp.MerchantLigthResp"
+            parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantLigthReq">
+        select t.MERCHANT_ID, t.MERCHANT_CODE, t.MERCHANT_NAME, t.BUSINESS_ENTITY_NAME
+        from par_merchant t
+        where 1=1
+        <if test="merchantCode != null and merchantCode != ''">
+            and t.MERCHANT_CODE like CONCAT(CONCAT('%', #{merchantCode }), '%')
+        </if>
+        <if test="merchantName != null and merchantName != ''">
+            and lower(t.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{merchantName }), '%'))
+        </if>
+        <if test="businessEntityName != null and businessEntityName != ''">
+            and lower(t.BUSINESS_ENTITY_NAME) like lower(CONCAT(CONCAT('%', #{businessEntityName }), '%'))
+        </if>
+        order by t.MERCHANT_ID desc
+    </select>
+
+    <select id="getMerchantForOrder" resultType="com.iwhalecloud.retail.partner.dto.resp.MerchantLigthResp"
+            parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantGetReq">
+        select t.MERCHANT_ID, t.MERCHANT_CODE, t.MERCHANT_NAME, t.BUSINESS_ENTITY_NAME
+        from par_merchant t
+        where t.MERCHANT_ID =  #{merchantId}
+    </select>
 </mapper>

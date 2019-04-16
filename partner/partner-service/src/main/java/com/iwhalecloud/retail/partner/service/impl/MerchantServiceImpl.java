@@ -14,10 +14,7 @@ import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
-import com.iwhalecloud.retail.partner.dto.resp.FactoryMerchantDTO;
-import com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp;
-import com.iwhalecloud.retail.partner.dto.resp.RetailMerchantDTO;
-import com.iwhalecloud.retail.partner.dto.resp.SupplyMerchantDTO;
+import com.iwhalecloud.retail.partner.dto.resp.*;
 import com.iwhalecloud.retail.partner.entity.BusinessEntity;
 import com.iwhalecloud.retail.partner.entity.Invoice;
 import com.iwhalecloud.retail.partner.entity.Merchant;
@@ -896,5 +893,13 @@ public class MerchantServiceImpl implements MerchantService {
         return merchantDTO;
     }
 
+    @Override
+    public ResultVO<List<MerchantLigthResp>> listMerchantForOrder(MerchantLigthReq req){
+        return ResultVO.success(merchantManager.listMerchantForOrder(req));
+    }
 
+    @Override
+    public ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req){
+        return ResultVO.success(merchantManager.getMerchantForOrder(req));
+    }
 }

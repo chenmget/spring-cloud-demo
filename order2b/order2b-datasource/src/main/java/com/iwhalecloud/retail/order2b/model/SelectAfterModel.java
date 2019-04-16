@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.order2b.model;
 
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SelectAfterSalesReq;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.util.StringUtils;
 
@@ -23,6 +24,9 @@ public class SelectAfterModel extends SelectAfterSalesReq {
     private List<String> itemList;
 
     private List<String> serviceTypeList;
+
+    @ApiModelProperty("申请人id集合")
+    private List<String> applicantIdList;
 
     public List<String> getServiceTypeList() {
         if(StringUtils.isEmpty(super.getServiceType())){

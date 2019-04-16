@@ -83,14 +83,14 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     @Override
     public IPage<AfterSalesModel> selectAfterSale(SelectAfterModel req) {
 
-        List<String> itemList = new ArrayList<>();
+        List<List<String>> itemList = new ArrayList<>();
         //商品查询
-        List<String> goodsOrderLsit = new ArrayList<>();
+
         if (!StringUtils.isEmpty(req.getGoodsName())//商品名称
                 || !StringUtils.isEmpty(req.getGoodsSn())//编码
                 || !StringUtils.isEmpty(req.getBrandName())//类别
                 ) {
-            goodsOrderLsit.add("-1");
+            List<String> goodsOrderLsit = new ArrayList<>();
             OrderItemModel orderItem = new OrderItemModel();
             if (!StringUtils.isEmpty(req.getGoodsName())) {
                 orderItem.setGoodsName("%" + req.getGoodsName() + "%");
@@ -107,14 +107,12 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             for (OrderItem i : gList) {
                 goodsOrderLsit.add(i.getItemId());
             }
-            itemList.addAll(goodsOrderLsit);
-            itemList.retainAll(goodsOrderLsit);
+            itemList.add(goodsOrderLsit);
         }
 
         //串码查询
-        List<String> resBerLsit = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getResNbr())) {
-            resBerLsit.add("-1");
+            List<String> resBerLsit = new ArrayList<>();
             OrderItemDetailModel orderItemDetail = new OrderItemDetailModel();
             orderItemDetail.setResNbr(req.getResNbr());
             orderItemDetail.setLanIdList(req.getLanIdList());
@@ -122,11 +120,19 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             for (OrderItemDetail orderItemDetail1 : dList) {
                 resBerLsit.add(orderItemDetail1.getItemId());
             }
-            itemList.addAll(resBerLsit);
-            itemList.retainAll(resBerLsit);
+            itemList.add(resBerLsit);
         }
+
+        /**
+         * 查询出来的itemId,求交集
+         */
         if (!CollectionUtils.isEmpty(itemList)) {
-            req.setItemList(new ArrayList<>(itemList));
+            List<String> orderItemList=new ArrayList<>();
+            orderItemList.addAll(itemList.get(0));
+            for (int i=1;i<itemList.size();i++){
+                orderItemList.retainAll(itemList.get(i));
+            }
+            req.setItemList(orderItemList);
         }
 
         //供应商查询

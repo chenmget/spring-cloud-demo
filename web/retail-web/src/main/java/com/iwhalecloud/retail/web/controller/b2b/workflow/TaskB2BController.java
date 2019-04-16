@@ -198,15 +198,19 @@ public class TaskB2BController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/getTaskByFormId")
-    public ResultVO getTaskByFormId(@RequestParam String formId){
+    public ResultVO getTaskByFormId(@RequestParam String formId) {
         log.info("TaskB2BController getTaskByFormId formId={} ", formId);
         QueryTaskByFormIdResp queryTaskByFormIdResp = new QueryTaskByFormIdResp();
-        TaskDTO taskDTO = taskService.getTaskByFormId(formId).getResultData().get(0);
-        TaskItemDTO taskItemDTO = taskItemService.queryTaskItemByTaskId(taskDTO.getTaskId()).getResultData();
-        queryTaskByFormIdResp.setTaskDTO(taskDTO);
-        queryTaskByFormIdResp.setTaskItemDTO(taskItemDTO);
-        queryTaskByFormIdResp.setFormId(formId);
+        ResultVO<List<TaskDTO>> taskByFormId = taskService.getTaskByFormId(formId);
+        if (taskByFormId.getResultData().size() > 0 && null != taskByFormId.getResultData()) {
+            TaskDTO taskDTO = taskByFormId.getResultData().get(0);
+            TaskItemDTO taskItemDTO = taskItemService.queryTaskItemByTaskId(taskDTO.getTaskId()).getResultData();
+            if (null != taskItemDTO) {
+                queryTaskByFormIdResp.setTaskDTO(taskDTO);
+                queryTaskByFormIdResp.setTaskItemDTO(taskItemDTO);
+                queryTaskByFormIdResp.setFormId(formId);
+            }
+        }
         return ResultVO.success(queryTaskByFormIdResp);
     }
-
 }

@@ -106,6 +106,7 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
                 detailReq.setUnit("个");
                 detailReq.setRemark("库存管理");
                 detailReq.setIsInspection(instDTO.getIsInspection());
+                detailReq.setCtCode(instDTO.getCtCode());
                 int insertResReqDetailCnt = detailManager.insertResourceReqDetail(detailReq);
                 log.info("ResourceRequestServiceImpl.insertResourceRequest detailManager.insertResourceReqDetail req={}, resp={}",JSON.toJSONString(detailReq), JSON.toJSONString(insertResReqDetailCnt));
             }

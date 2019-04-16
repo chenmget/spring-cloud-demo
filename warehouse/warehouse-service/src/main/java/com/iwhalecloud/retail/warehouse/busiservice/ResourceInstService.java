@@ -15,11 +15,18 @@ import java.util.List;
 public interface ResourceInstService {
 
     /**
-     * 添加串码（手动）
+     * 厂商添加串码
      * @param req
      * @return
      */
-    Boolean addResourceInst(ResourceInstAddReq req);
+    Boolean addResourceInstByMerchant(ResourceInstAddReq req);
+    /**
+     * 非厂商添加串码
+     * @param req
+     * @param instDTOList 存在于厂商库的串码列表
+     * @return
+     */
+    Boolean addResourceInst(ResourceInstAddReq req, List<ResourceInstDTO> instDTOList);
 
     /**
      * 添加串码（交易）
@@ -122,7 +129,7 @@ public interface ResourceInstService {
      * @param req
      * @return
      */
-    List<String> validMerchantStore(ResourceInstValidReq req);
+    List<ResourceInstDTO> validMerchantStore(ResourceInstValidReq req);
 
     /**
      * 获取主键

@@ -797,7 +797,10 @@ public class GoodsServiceImpl implements GoodsService {
         if (!CollectionUtils.isEmpty(productIdList)) {
             for (String productId : productIdList) {
                 String code = PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode();
+                log.info("GoodsServiceImpl.filterPresubsidyGoods productId={}",productId);
                 ResultVO<List<MarketingActivityDTO>> resultVO = marketingActivityService.queryActivityByProductId(productId, code);
+                log.info("GoodsServiceImpl.filterPresubsidyGoods productId={}, resultVO={}",productId, JSON.toJSONString(resultVO));
+                log.info("GoodsServiceImpl.filterGoods filter activity goodsId={}",it.next().getGoodsId());
                 if (resultVO.isSuccess() && resultVO.getResultData().size() > 0) {
                     log.info("GoodsServiceImpl.filterGoods filter activity goodsId={}",it.next().getGoodsId());
                     it.remove();

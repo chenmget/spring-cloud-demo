@@ -136,5 +136,10 @@ public class ResourceReqDetailDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "ctCode")
   	private java.lang.String ctCode;
+	/**
+  	 * 串码类型
+  	 */
+	@ApiModelProperty(value = "mktResInstType")
+  	private java.lang.String mktResInstType;
 
 }

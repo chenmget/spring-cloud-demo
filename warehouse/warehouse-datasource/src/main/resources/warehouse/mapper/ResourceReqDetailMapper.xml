@@ -24,7 +24,9 @@
     <select id="listDetail" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO">
 
-        select rest.MKT_RES_STORE_ID,rest.DEST_STORE_ID,rest.LAN_ID,rest.REGION_ID,detail.*,item.MKT_RES_ID from MKT_RES_REQUEST rest,MKT_RES_REQ_ITEM item,MKT_RES_REQ_DETAIL detail where 1=1
+        select rest.MKT_RES_STORE_ID,rest.DEST_STORE_ID,rest.LAN_ID,rest.REGION_ID,rest.mkt_res_inst_type ,detail.*,item.MKT_RES_ID
+        from MKT_RES_REQUEST rest,MKT_RES_REQ_ITEM item,MKT_RES_REQ_DETAIL detail
+        where 1=1
         and rest.MKT_RES_REQ_ID = item.MKT_RES_REQ_ID and  item.MKT_RES_REQ_ITEM_ID = detail.MKT_RES_REQ_ITEM_ID
         and rest.MKT_RES_REQ_ID = #{req.mktResReqId}
 

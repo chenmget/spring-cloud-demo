@@ -69,7 +69,6 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
     private ResouceStoreObjRelManager resouceStoreObjRelManager;
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
 //    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public ResultVO<String> insertResourceRequest(ResourceRequestAddReq req) {
         if(CollectionUtils.isEmpty(req.getInstList())){
@@ -246,7 +245,7 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
         resp.setCreateDate(request.getCreateDate());
         resp.setMktResReqId(request.getMktResReqId());
         resp.setCreateStaff(request.getCreateStaff());
-        resp.setMerchantId(request.getExtend1());
+        resp.setMerchantId(request.getMerchantId());
 
         ResourceReqDetailQueryReq detailQueryReq = new ResourceReqDetailQueryReq();
         detailQueryReq.setMktResReqId(req.getMktResReqId());

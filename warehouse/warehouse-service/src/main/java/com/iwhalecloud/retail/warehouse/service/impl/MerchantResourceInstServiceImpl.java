@@ -145,7 +145,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
         resourceRequestAddReq.setLanId(merchantDTOResultVO.getResultData().getLanId());
         resourceRequestAddReq.setRegionId(merchantDTOResultVO.getResultData().getCity());
-        resourceRequestAddReq.setExtend1(merchantId);
         resourceRequestAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceRequestAddReq.setDestStoreId(mktResStoreId);
         ResultVO<String> resultVO = requestService.insertResourceRequest(resourceRequestAddReq);

@@ -28,6 +28,7 @@ import com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp;
 //import com.iwhalecloud.retail.report.dto.response.ReportDaoResp;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
 import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
+import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportOrderService;
 import com.iwhalecloud.retail.report.service.ReportService;
 import com.iwhalecloud.retail.web.controller.BaseController;
@@ -52,6 +53,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/reportOrder")
 public class ReportOrderController extends BaseController {
 
+	@Reference
+    private IReportDataInfoService iReportDataInfoService;
+	
     @Reference
     private ReportOrderService reportOrderService;
 
@@ -65,6 +69,12 @@ public class ReportOrderController extends BaseController {
     })
     @PostMapping("/getReportOrderList1")
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
+		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+		String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
+		if(legacyAccount=="2" || "2".equals(legacyAccount)){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(legacyAccount);
+			req.setMerchantCode(retailerCodes);
+		}
 		//userType 1省级管理员，2地市管理员，3供应商，4零售商，5厂家
 		String userType=req.getUserType();
 		if(userType!=null && !userType.equals("") && "4".equals(userType)){//零售商只看自己的

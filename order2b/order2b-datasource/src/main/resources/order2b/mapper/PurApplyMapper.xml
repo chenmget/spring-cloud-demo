@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.PurApplyMapper">
+  
+    <select id="getStorePurchaserReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+            resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">
+		SELECT 
+		a.APPLY_CODE as applyCode,
+		a.APPLY_NAME as projectName,
+		a.CREATE_DATE as applyTime,
+		a.LAN_ID as applyAddress,
+		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) as supplierName,
+		a.STATUS_CD as status,
+		'' as `option`
+		 FROM PUR_APPLY a
+		 where 1=1
+		 <if test='req.applyCode!=null and req.applyCode!=""'>  
+			and a.APPLY_CODE = #{req.applyCode}
+		</if>
+		<if test='req.projectName!=null and req.projectName!=""'>  
+			and a.APPLY_NAME = #{req.projectName}
+		</if>
+		<if test='req.projectName!=null and req.projectName!=""'>  
+			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.projectName}),'%')	
+		</if>
+		<if test='req.startDate!=null and req.startDate!=""'>
+			and a.CREATE_DATE &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
+		</if>
+		<if test='req.endDate!=null and req.endDate!=""'>
+			and a.CREATE_DATE &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
+		</if>
+		<if test='req.lanId!=null and req.lanId!=""'>  
+			and a.LAN_ID = #{req.lanId}
+		</if>
+  </select>
+  
+  <select id="crPurApplyFile" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
+	insert into PUR_APPLY_FILE(
+		FILE_ID,
+		APPLY_ID,
+		FILE_TYPE,
+		FILE_URL,
+		CREATE_STAFF,
+		CREATE_DATE,
+		UPDATE_STAFF,
+		UPDATE_DATE
+	) values (
+		#{req.fileId},
+		#{req.applyId},
+		#{req.fileType},
+		#{req.fileUrl},
+		#{req.createStaff},
+		#{req.createDate},
+		#{req.updateStaff},
+		#{req.updateDate}
+	)
+  </select>
+  
+  <select id="crPurApplyItem" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq">
+	insert into PUR_APPLY_ITEM(
+		APPLY_ITEM_ID,
+		APPLY_ID,
+		PRODUCT_ID,
+		PUR_NUM,
+		PUR_PRICE,
+		PUR_TYPE,
+		STATUS_CD,
+		CREATE_STAFF,
+		CREATE_DATE,
+		UPDATE_STAFF,
+		UPDATE_DATE,
+		STATUS_DATE
+	) values (
+		#{req.applyItemId},
+		#{req.applyId},
+		#{req.productName},
+		#{req.snCount},
+		#{req.priceInStore},
+		#{req.purchaseType},
+		#{req.statusCd},
+		#{req.createStaff},
+		#{req.createDate},
+		#{req.updateStaff},
+		#{req.updateDate},
+		#{req.statusDate}
+	)
+  </select>
+  
+  <select id="tcProcureApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
+	insert into PUR_APPLY(
+		APPLY_ID,
+		APPLY_CODE,
+		APPLY_NAME,
+		APPLY_TYPE,
+		CONTENT,
+		MERCHANT_ID,
+		MERCHANT_CODE,
+		APPLY_MERCHANT_ID,
+		APPLY_MERCHANT_CODE,
+		PHONE,
+		LAN_ID,
+		REGION_ID,
+		REL_APPLY_ID,
+		STATUS_CD,
+		CREATE_STAFF,
+		CREATE_DATE,
+		UPDATE_STAFF,
+		UPDATE_DATE,
+		STATUS_DATE
+	) values (
+		#{req.applyId},
+		#{req.applyCode},
+		#{req.applyName},
+		#{req.applyType},
+		#{req.content},
+		#{req.supplier},
+		#{req.merchantCode},
+		#{req.applyMerchantId},
+		#{req.applyMerchantCode},
+		#{req.applyContact},
+		#{req.applyAdress},
+		#{req.regionId},
+		#{req.relApplyId},
+		#{req.statusCd},
+		#{req.createStaff},
+		#{req.createDate},
+		#{req.updateStaff},
+		#{req.updateDate},
+		#{req.statusDate}
+	)
+  </select>
+  
+  <select id="delSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq">
+	update pur_apply_item set status_cd="1100" where 1=1 and apply_id = #{applyId}
+  </select>
+  
+</mapper>
+

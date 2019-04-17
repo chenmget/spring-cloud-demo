@@ -82,5 +82,10 @@
 	order by userType limit 1   
 
   </select>
+  
+  <select id="retailerCodeBylegacy" parameterType="String" resultType="String">
+	  SELECT merchant_code FROM par_merchant WHERE 1=1 and legacy_account=#{legacyAccount}
+  </select>
+  
 </mapper>
 

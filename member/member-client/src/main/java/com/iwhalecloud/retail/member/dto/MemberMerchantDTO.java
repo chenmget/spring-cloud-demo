@@ -22,6 +22,9 @@ public class MemberMerchantDTO implements java.io.Serializable {
 	/**
   	 * 商家ID
   	 */
+	@ApiModelProperty(value = "ID")
+	private String id;
+
 	@ApiModelProperty(value = "商家ID")
   	private String merchId;
 	

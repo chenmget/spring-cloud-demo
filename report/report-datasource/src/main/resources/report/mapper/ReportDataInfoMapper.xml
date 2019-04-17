@@ -66,7 +66,7 @@
 		</if>
 			GROUP BY a.PRODUCT_BASE_ID
 		) g
-		 limit 1000) z
+		 limit 60000) z
   </select>
   
   <select id="getUerRoleForView" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"

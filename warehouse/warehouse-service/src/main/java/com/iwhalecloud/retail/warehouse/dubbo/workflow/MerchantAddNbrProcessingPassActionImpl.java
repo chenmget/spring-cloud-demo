@@ -80,6 +80,7 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         addReq.setDestStoreId(detailDTO.getDestStoreId());
         addReq.setMktResId(detailDTO.getMktResId());
         addReq.setCtCode(ctCodeMap);
+        addReq.setCreateStaff(detailDTO.getCreateStaff());
 
         ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
         String merchantId = null;

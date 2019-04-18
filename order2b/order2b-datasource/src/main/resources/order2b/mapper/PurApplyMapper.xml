@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.order2b.mapper.PurApplyMapper">
   
-    <select id="getStorePurchaserReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+    <select id="cgSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
             resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">
 		SELECT 
 		a.APPLY_CODE as applyCode,

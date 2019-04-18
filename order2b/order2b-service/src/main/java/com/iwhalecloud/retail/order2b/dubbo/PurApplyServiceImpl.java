@@ -10,7 +10,6 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
-import com.iwhalecloud.retail.order2b.manager.CartManager;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 

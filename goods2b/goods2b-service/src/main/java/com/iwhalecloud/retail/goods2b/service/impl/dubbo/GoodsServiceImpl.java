@@ -866,7 +866,7 @@ public class GoodsServiceImpl implements GoodsService {
             goods.setDeliveryPrice(goods.getDeliveryPrice());
             goods.setIsPresubsidy(false);
             int isSubsidy = goods.getIsSubsidy();
-            if(1 == isSubsidy){
+            if(GoodsConst.IsSubsidy.IS_SUBSIDY.getCode() == isSubsidy){
                 this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
             }
         }

@@ -31,4 +31,13 @@
         ]]>
     </select>
 
+    <insert id="updateAdvanceTransId">
+        update ord_advance_order set advance_trans_id = #{reqSeq} where order_id = #{orderId}
+    </insert>
+
+    <insert id="updateRestTransId">
+        update ord_advance_order set rest_trans_id = #{reqSeq} where order_id = #{orderId}
+    </insert>
+
 </mapper>
+

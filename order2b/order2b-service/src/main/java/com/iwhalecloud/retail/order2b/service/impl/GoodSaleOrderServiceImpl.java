@@ -56,11 +56,11 @@ public class GoodSaleOrderServiceImpl implements GoodSaleOrderService {
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);
             beginTime = c.getTime();
-        }else if(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_15.equals(cacheKey)){
+        }else if(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_30.equals(cacheKey)){
             SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Calendar c = Calendar.getInstance();
             c.setTime(new Date());
-            c.add(Calendar.DATE, - 16);
+            c.add(Calendar.DATE, - 31);
             c.set(Calendar.HOUR_OF_DAY, 24);
             c.set(Calendar.MINUTE, 0);
             c.set(Calendar.SECOND, 0);

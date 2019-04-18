@@ -44,9 +44,9 @@ public class GoodsSaleOrderJob implements SimpleJob {
 
         try {
             //先清缓存再写入
-            ResultVO<Boolean> resultVO = goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_15);
+            ResultVO<Boolean> resultVO = goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_30);
             if(resultVO.isSuccess() && resultVO.getResultData()){
-                goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_15);
+                goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_30);
             }
 
         }catch (Exception ex) {

@@ -5,16 +5,16 @@
     <select id="cgSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
             resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">
 		SELECT 
-		a.APPLY_ID as applyId,
-		a.APPLY_CODE as applyCode,
-		a.APPLY_NAME as projectName,
-		a.CREATE_DATE as applyTime,
-		a.LAN_ID as applyAddress,
-		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) as supplierName,
-		a.STATUS_CD as status,
-		'' as `option`
-		 FROM PUR_APPLY a
-		 where 1=1
+			a.APPLY_ID AS applyId,
+			a.APPLY_CODE AS applyCode,
+			a.APPLY_NAME AS projectName,
+			a.CREATE_DATE AS applyTime,
+			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
+			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
+			a.STATUS_CD AS STATUS,
+			'' AS `option`
+			 FROM PUR_APPLY a
+			 WHERE 1=1
 		 <if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode}
 		</if>

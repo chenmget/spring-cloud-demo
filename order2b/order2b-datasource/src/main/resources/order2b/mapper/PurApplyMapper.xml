@@ -137,5 +137,10 @@
   	
   </select>
   
+  <select id="delSearchApplyItem" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq">
+  	update pur_apply_item set status_cd='1100' where 1=1 and apply_id = #{req.applyId}
+  	
+  </select>
+  
 </mapper>
 

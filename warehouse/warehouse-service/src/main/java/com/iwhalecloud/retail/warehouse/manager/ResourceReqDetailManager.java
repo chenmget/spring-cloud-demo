@@ -1,15 +1,18 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailAddReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceReqDetail;
+import com.iwhalecloud.retail.warehouse.mapper.ResourceReqDetailMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.warehouse.mapper.ResourceReqDetailMapper;
 
+import javax.annotation.Resource;
 import java.util.Calendar;
 import java.util.List;
 
@@ -41,5 +44,14 @@ public class ResourceReqDetailManager{
     public List<ResourceReqDetailDTO> listDetail(ResourceReqDetailQueryReq req){
         return resourceReqDetailMapper.listDetail(req);
     }
-    
+
+    /**
+     * 申请单详情分页
+     * @param req
+     * @return
+     */
+    public Page<ResourceReqDetailPageResp> resourceRequestPage(ResourceReqDetailPageReq req){
+        Page<ResourceReqDetailPageResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+        return resourceReqDetailMapper.resourceRequestPage(page, req);
+    }
 }

@@ -153,7 +153,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
             resourceRequestAddReq.setLanId(merchantDTOResultVO.getResultData().getLanId());
             resourceRequestAddReq.setRegionId(merchantDTOResultVO.getResultData().getCity());
-            resourceRequestAddReq.setExtend1(merchantId);
 
             resourceRequestAddReq.setMktResStoreId(mktResStoreId);
             ResultVO<String> resultVO = requestService.insertResourceRequest(resourceRequestAddReq);
@@ -581,7 +580,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (null == sourceMerchantDTO) {
             return ResultVO.error("商家获取失败");
         }
-
         String requestStatusCd = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
@@ -628,7 +626,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (!resultVOInsertResReq.isSuccess()) {
             return resultVOInsertResReq;
         }
-
         // step4 如果不需要审核则发起流程目标仓库处理人，由目标仓库处理人决定是否接受
         String uuid = resourceInstManager.getPrimaryKey();
         ProcessStartReq processStartDTO = new ProcessStartReq();
@@ -659,7 +656,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (!synMktInstStatusVO.isSuccess()) {
             return synMktInstStatusVO;
         }
-
         // 增加事件
         Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(resourceInstDTOList, true);
         EventAndDetailReq eventAndDetailReq = new EventAndDetailReq();
@@ -674,7 +670,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         eventAndDetailReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
         ResultVO saveEventAndBatchVO =  resouceEventService.saveResouceEventAndDetail(eventAndDetailReq);
         log.info("RetailerResourceInstMarketServiceImpl.syncTerminal resouceEventService.saveResouceEventAndDetail req={},resp={}", JSON.toJSONString(eventAndDetailReq), JSON.toJSONString(saveEventAndBatchVO));
-
         // step 4:修改库存(出库)
         for (Map.Entry<String, List<String>> entry : mktResIdAndNbrMap.entrySet()) {
             ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
@@ -687,12 +682,11 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceInstStoreDTO.setQuantityAddFlag(false);
             resourceInstStoreDTO.setQuantity(Long.valueOf(entry.getValue().size()));
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+            log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
             if (updateResInstStore < 1) {
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
             }
-            log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         }
-
         return ResultVO.success(successMessage);
     }
 
@@ -755,6 +749,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         }
         eBuyTerminalReq.setMktResList(mktResList);
         ResultVO ebuyTerminalVO = marketingResStoreService.ebuyTerminal(eBuyTerminalReq);
+        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst marketingResStoreService.ebuyTerminal req={}", JSON.toJSONString(ebuyTerminalVO));
 
         if (ebuyTerminalVO.isSuccess()) {
             // 增加事件和批次
@@ -764,8 +759,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resourceBatchRecService.saveEventAndBatch req={}", JSON.toJSONString(batchAndEventAddReq));
+            return ResultVO.success("领取成功", resourceInstAddResp);
         }
-        return ResultVO.success("领取成功", resourceInstAddResp);
+        return ebuyTerminalVO;
     }
 
     private List<ResourceInstListPageResp> translateNbrInst(List<QryMktInstInfoByConditionItemSwapResp> qryMktInstInfoList){
@@ -879,7 +875,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 hasGroundSupply = true;
             }
         }
-
         // 全是绿色通道和省直供串码且跨商 不让调拨
         Boolean directSuppLyAndNotSameMerchant = hasDirectSuppLy && !hasGroundSupply && !sameMerchant;
         // 全是绿色通道和省直供串码且不跨商，且不跨地市  不需审核

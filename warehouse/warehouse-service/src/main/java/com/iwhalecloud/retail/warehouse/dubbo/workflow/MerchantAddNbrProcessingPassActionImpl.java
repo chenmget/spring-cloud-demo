@@ -63,7 +63,10 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         List<ResourceReqDetailDTO> reqDetailDTOS = detailManager.listDetail(detailQueryReq);
         log.info("MerchantAddNbrProcessingPassActionImpl.run detailManager.listDetail detailQueryReq={}, resp={}", JSON.toJSONString(detailQueryReq), JSON.toJSONString(reqDetailDTOS));
         List<String> mktResInstNbrs = reqDetailDTOS.stream().map(ResourceReqDetailDTO::getMktResInstNbr).collect(Collectors.toList());
-        Map<String, String> ctCodeMap = reqDetailDTOS.stream().collect(Collectors.toMap(ResourceReqDetailDTO::getMktResInstNbr, ResourceReqDetailDTO::getCtCode));
+        Map<String, String> ctCodeMap = new HashMap<>();
+        reqDetailDTOS.forEach(item->{
+            ctCodeMap.put(item.getMktResInstNbr(), item.getCtCode());
+        });
         ResourceReqDetailDTO detailDTO = reqDetailDTOS.get(0);
 
         // step2 根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
@@ -74,9 +77,11 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         addReq.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
         addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        addReq.setMktResInstType(detailDTO.getMktResInstType());
         addReq.setDestStoreId(detailDTO.getDestStoreId());
         addReq.setMktResId(detailDTO.getMktResId());
         addReq.setCtCode(ctCodeMap);
+        addReq.setCreateStaff(detailDTO.getCreateStaff());
 
         ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
         String merchantId = null;

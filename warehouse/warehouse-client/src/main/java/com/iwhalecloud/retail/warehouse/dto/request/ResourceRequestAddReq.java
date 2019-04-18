@@ -127,10 +127,15 @@ public class ResourceRequestAddReq implements Serializable {
     @ApiModelProperty(value = "备注")
     private String remark;
     /**
-     * 拓展字段，存商家ID
+     * 商家ID
      */
-    @ApiModelProperty(value = "拓展字段，存商家ID")
-    private String extend1;
+    @ApiModelProperty(value = "商家ID")
+    private String merchantId;
+    /**
+     * 串码类型
+     */
+    @ApiModelProperty(value = "串码类型")
+    private String mktResInstType;
 
     @Data
     public static class ResourceRequestInst implements Serializable{

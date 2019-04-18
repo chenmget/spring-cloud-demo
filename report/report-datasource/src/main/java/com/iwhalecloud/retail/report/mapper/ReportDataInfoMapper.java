@@ -23,4 +23,7 @@ public interface ReportDataInfoMapper extends BaseMapper<RptPartnerOperatingDay>
 	public List<ReportStorePurchaserResq> getStorePurchaserReport(@Param("req") ReportStorePurchaserReq reportStorePurchaserReq);
 
 	public List<ReportStorePurchaserResq> getUerRoleForView(@Param("req") ReportStorePurchaserReq reportStorePurchaserReq);
+
+	public String retailerCodeBylegacy(@Param("legacyAccount") String legacyAccount);
+
 }

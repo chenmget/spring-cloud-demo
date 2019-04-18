@@ -24,5 +24,7 @@ public class ReportStSaleDaoReq extends PageVO {
 	  private String userType;
 	  private String userId;
 	  private String typeId;//产品类型
+	  private String legacyAccount;//零售商归属原系统还是云货架
+
 
 }

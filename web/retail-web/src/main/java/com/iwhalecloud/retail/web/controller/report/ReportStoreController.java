@@ -63,6 +63,13 @@ public class ReportStoreController extends BaseController {
     })
     @PostMapping("/getReportStSaleList")
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
+		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
+		if(legacyAccount=="2" || "2".equals(legacyAccount)){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(legacyAccount);
+			req.setRetailerCode(retailerCodes);
+		}
+		
 		String userId = UserContext.getUser().getUserId();
 		ReportStorePurchaserReq req2 = new ReportStorePurchaserReq();
 		req2.setUserId(userId);

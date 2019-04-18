@@ -4,6 +4,7 @@ import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
 import com.iwhalecloud.retail.order2b.consts.order.OrderServiceType;
 import com.iwhalecloud.retail.order2b.dto.base.SelectModel;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderItemDTO;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -58,6 +59,14 @@ public class AfterSaleResp extends SelectModel implements Serializable {
     private String handlerName;
     private String auditDesc;
 
+    @ApiModelProperty(value = "商家编码")
+    private String merchantCode;
+
+    @ApiModelProperty(value = "商家名称")
+    private String merchantName;
+
+    @ApiModelProperty(value = "商家所属经营主体	")
+    private String businessEntityName;
 
     OrderItemDTO orderItems;
 

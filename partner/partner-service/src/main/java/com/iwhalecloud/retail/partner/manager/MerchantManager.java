@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantLigthResp;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp;
 import com.iwhalecloud.retail.partner.entity.Invoice;
 import com.iwhalecloud.retail.partner.entity.Merchant;
@@ -824,4 +825,21 @@ public class MerchantManager {
         return merchantMapper.selectList(queryWrapper);
     }
 
+    /**
+     * 商家信息列表（只取部分必要字段）
+     * @param req
+     * @return
+     */
+    public List<MerchantLigthResp> listMerchantForOrder(MerchantLigthReq req){
+        return merchantMapper.listMerchantForOrder(req);
+    }
+
+    /**
+     * 商家信息列表（只取部分必要字段）
+     * @param req
+     * @return
+     */
+    public MerchantLigthResp getMerchantForOrder(MerchantGetReq req){
+        return merchantMapper.getMerchantForOrder(req);
+    }
 }

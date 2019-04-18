@@ -121,7 +121,7 @@
  		WHERE 1=1 AND l.name LIKE CONCAT(CONCAT('%',#{req.couponActive}),'%')
 </if>
  	 GROUP BY order_id
- 	 limit 1000) z
+ 	 limit 60000) z
  	 ORDER BY z.create_time DESC
  </select>
  

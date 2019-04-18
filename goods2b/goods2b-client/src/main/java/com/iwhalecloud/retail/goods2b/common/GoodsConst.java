@@ -14,7 +14,7 @@ public class GoodsConst {
 
     public static final String CACHE_KEY_GOODS_SALE_ORDER_7 = "goods_sale_order_7";
 
-    public static final String CACHE_KEY_GOODS_SALE_ORDER_15 = "goods_sale_order_15";
+    public static final String CACHE_KEY_GOODS_SALE_ORDER_30 = "goods_sale_order_30";
     /**
      * 关联类型
      */

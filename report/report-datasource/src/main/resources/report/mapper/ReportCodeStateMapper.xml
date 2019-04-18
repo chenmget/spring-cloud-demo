@@ -115,7 +115,7 @@
 		<if test="req.cpType!=null and req.cpType!=''">
 			and a.product_type = #{req.cpType}
 		</if>
-		limit 1000) c
+		limit 60000) c
   </select>
   
 </mapper>

@@ -61,7 +61,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storeGetStoreIdReq.setMerchantId(req.getMerchantId());
         String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+        log.info("MerchantResourceInstServiceImpl.delResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
         if (StringUtils.isBlank(mktResStoreId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
@@ -92,7 +92,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
             storeGetStoreIdReq.setMerchantId(merchantId);
             mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-            log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+            log.info("MerchantResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
             if (StringUtils.isBlank(mktResStoreId)) {
                 return ResultVO.error(constant.getCannotGetStoreMsg());
             }
@@ -148,7 +148,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         resourceRequestAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceRequestAddReq.setDestStoreId(mktResStoreId);
         ResultVO<String> resultVO = requestService.insertResourceRequest(resourceRequestAddReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel() resourceRequestService.insertResourceRequest req={}, resultVO={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVO));
+        log.info("MerchantResourceInstServiceImpl.addResourceInst requestService.insertResourceRequest req={}, resultVO={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVO));
         // step3 启动工作流
         ProcessStartReq processStartDTO = new ProcessStartReq();
         processStartDTO.setTitle("串码入库审批流程");
@@ -160,8 +160,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             processStartDTO.setFormId(resultVO.getResultData());
         }
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
-        if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
+        log.info("MerchantResourceInstServiceImpl.addResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
+        if (null != startResultVO && !startResultVO.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
         return ResultVO.success("串码入库提交申请单", resourceInstAddResp);

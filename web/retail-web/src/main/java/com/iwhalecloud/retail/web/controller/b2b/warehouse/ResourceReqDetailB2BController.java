@@ -56,10 +56,6 @@ public class ResourceReqDetailB2BController {
 
 
     @ApiOperation(value = "导出", notes = "导出串码数据")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "mktResReqId", value = "mktResReqId", paramType = "query", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "mktResInstNbr", value = "mktResInstNbr", paramType = "query", required = false, dataType = "String")
-    })
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")

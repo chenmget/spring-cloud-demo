@@ -73,10 +73,6 @@ public class GoodsConst {
      * 商品发布对象 按对象
      */
     public static final String TARGET_TYPE_TARGET = "2";
-
-    public static final Double GOODS_MKT_PRICE = 159900D;
-
-    public static final Double AVG_SUPPLY_PRICE = 0.03;
     /**
      * 状态常量
      */

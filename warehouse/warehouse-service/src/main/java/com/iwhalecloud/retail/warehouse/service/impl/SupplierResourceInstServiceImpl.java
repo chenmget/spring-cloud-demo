@@ -131,19 +131,17 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
         req.setMktResStoreId(manuResStoreId);
-
         String merchantId = req.getMerchantId();
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(req.getMerchantId());
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
-        } else {
-            MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
-            req.setMerchantType(merchantDTO.getMerchantType());
-            req.setMerchantName(merchantDTO.getMerchantName());
-            req.setMerchantCode(merchantDTO.getMerchantCode());
-            req.setLanId(merchantDTO.getLanId());
-            req.setRegionId(merchantDTO.getCity());
         }
+        MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
+        req.setMerchantType(merchantDTO.getMerchantType());
+        req.setMerchantName(merchantDTO.getMerchantName());
+        req.setMerchantCode(merchantDTO.getMerchantCode());
+        req.setLanId(merchantDTO.getLanId());
+        req.setRegionId(merchantDTO.getCity());
         // 获取仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
@@ -165,22 +163,23 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
-        List<String> merchantExixtsNbrs = resourceInstService.validMerchantStore(resourceInstValidReq);
-        req.setMktResInstNbrs(merchantExixtsNbrs);
-        req.setDestStoreId(mktResStoreId);
-        req.setSourceType(merchantDTOResultVO.getResultData().getMerchantType());
-        mktResInstNbrs.removeAll(merchantExixtsNbrs);
-        resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);
-        if(CollectionUtils.isEmpty(merchantExixtsNbrs)){
+        List<ResourceInstDTO> merchantInst = resourceInstService.validMerchantStore(resourceInstValidReq);
+        if(CollectionUtils.isEmpty(merchantInst)){
             return ResultVO.error("厂商库该机型串码不存在！");
         }
-        Boolean addNum = resourceInstService.addResourceInst(req);
+        List<String> merchantNbrList = merchantInst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
+        req.setMktResInstNbrs(merchantNbrList);
+        req.setDestStoreId(mktResStoreId);
+        req.setSourceType(merchantDTOResultVO.getResultData().getMerchantType());
+        mktResInstNbrs.removeAll(merchantNbrList);
+        resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);
+        Boolean addNum = resourceInstService.addResourceInst(req, merchantInst);
         if (!addNum) {
             return ResultVO.error("串码入库失败");
         }
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
         resourceInstUpdateReq.setDestStoreId(manuResStoreId);
-        resourceInstUpdateReq.setMktResInstNbrs(merchantExixtsNbrs);
+        resourceInstUpdateReq.setMktResInstNbrs(merchantNbrList);
         resourceInstUpdateReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceInstUpdateReq.setMerchantId(sourceStoreMerchantId);
         resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());

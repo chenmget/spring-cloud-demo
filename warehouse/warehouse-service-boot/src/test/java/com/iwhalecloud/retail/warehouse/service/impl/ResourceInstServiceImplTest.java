@@ -92,7 +92,7 @@ public class ResourceInstServiceImplTest {
         Gson gson = new Gson();
         ResourceInstAddReq req  = gson.fromJson(json, new TypeToken<ResourceInstAddReq>(){}.getType());
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        resourceInstService.addResourceInst(req);
+        resourceInstService.addResourceInstByMerchant(req);
     }
 
     /**

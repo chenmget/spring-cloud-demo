@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.report.dto.request.ReportCodeStatementsReq;
 import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
 import com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp;
 import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
+import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportCodeStateService;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -40,6 +41,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ReportCodeStatementsController extends BaseController  {
 
 	@Reference
+    private IReportDataInfoService iReportDataInfoService;
+	
+	@Reference
     private ReportCodeStateService reportCodeStateService;
 	
 	@Autowired
@@ -52,13 +56,20 @@ public class ReportCodeStatementsController extends BaseController  {
     })
     @PostMapping("/getCodeStatementsReport")
     public ResultVO<Page<ReportCodeStatementsResp>> getCodeStatementsReport(@RequestBody ReportCodeStatementsReq req) {
+		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+		String retailerCodes = req.getLssCode();//是否输入了零售商账号
 		String userType=req.getUserType();
+		if("2".equals(legacyAccount) && !"3".equals(userType)){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(legacyAccount);
+			req.setLssCode(retailerCodes);
+		}
 		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
 			String lanId=UserContext.getUser().getRegionId();
 			req.setLanId(lanId);
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
-			req.setLssCode(lssCode);
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(lssCode);
+			req.setLssCode(retailerCodes);
 		}else if("4".equals(userType)){
 			String gysCode = UserContext.getUser().getRelCode();
 			req.setGysCode(gysCode);

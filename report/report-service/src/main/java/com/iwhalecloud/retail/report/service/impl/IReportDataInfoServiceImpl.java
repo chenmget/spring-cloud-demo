@@ -49,4 +49,9 @@ public class IReportDataInfoServiceImpl implements IReportDataInfoService {
         return ResultVO.success(list);
 	}
 
+	@Override
+	public String retailerCodeBylegacy(String legacyAccount) {
+		return reportDataInfoManager.retailerCodeBylegacy(legacyAccount);
+	}
+
 }

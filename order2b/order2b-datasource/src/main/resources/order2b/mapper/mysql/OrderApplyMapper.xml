@@ -107,6 +107,12 @@
                     #{item}
                 </foreach>
             </if>
+            <if test="req.applicantIdList !=null and req.applicantIdList.size()>0">
+                and applicant_id IN
+                <foreach collection="req.applicantIdList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
         </where>
     </select>
 

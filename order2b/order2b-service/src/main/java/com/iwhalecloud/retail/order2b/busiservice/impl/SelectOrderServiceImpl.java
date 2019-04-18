@@ -14,8 +14,12 @@ import com.iwhalecloud.retail.order2b.manager.AfterSaleManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.manager.PromotionManager;
 import com.iwhalecloud.retail.order2b.model.*;
+import com.iwhalecloud.retail.order2b.reference.MemberInfoReference;
 import com.iwhalecloud.retail.order2b.util.CurrencyUtil;
 import com.iwhalecloud.retail.order2b.util.Utils;
+import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantLigthReq;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantLigthResp;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -40,6 +44,9 @@ public class SelectOrderServiceImpl implements SelectOrderService {
 
     @Autowired
     private AdvanceOrderManager advanceOrderManager;
+
+    @Autowired
+    private MemberInfoReference memberInfoReference;
 
 
     @Value("${fdfs.show.url}")
@@ -110,6 +117,13 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             itemList.add(goodsOrderLsit);
         }
 
+        if (!StringUtils.isEmpty(req.getMerchantCode()) || !StringUtils.isEmpty(req.getMerchantName()) || !StringUtils.isEmpty(req.getBusinessEntityName())) {
+            MerchantLigthReq merchantLigthReq = new MerchantLigthReq();
+            BeanUtils.copyProperties(req, merchantLigthReq);
+            List<String> merchantIdList = memberInfoReference.listMerchantIdList(merchantLigthReq);
+            req.setApplicantIdList(merchantIdList);
+        }
+
         //串码查询
         if (!StringUtils.isEmpty(req.getResNbr())) {
             List<String> resBerLsit = new ArrayList<>();
@@ -155,6 +169,16 @@ public class SelectOrderServiceImpl implements SelectOrderService {
 
             if (!StringUtils.isEmpty(model.getRefundImgUrl())) {
                 model.setRefundImgUrl(Utils.attacheUrlPrefix(showUrl, model.getRefundImgUrl()));
+            }
+
+            // 组装申请人信息
+            if (!StringUtils.isEmpty(model.getApplicantId())) {
+                MerchantGetReq merchantGetReq = new MerchantGetReq();
+                merchantGetReq.setMerchantId(model.getApplicantId());
+                MerchantLigthResp merchantLigthResp = memberInfoReference.getMerchantForOrder(merchantGetReq);
+                if (null != merchantGetReq) {
+                    BeanUtils.copyProperties(merchantLigthResp, model);
+                }
             }
         }
 

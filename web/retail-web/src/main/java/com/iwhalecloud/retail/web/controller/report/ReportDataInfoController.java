@@ -70,8 +70,14 @@ public class ReportDataInfoController extends BaseController {
     })
     @PostMapping("/getStorePurchaserReport")
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(@RequestBody ReportStorePurchaserReq req) {
+		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商
+		if("2".equals(legacyAccount) && !"3".equals(userType)){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(legacyAccount);
+			req.setRetailerCode(retailerCodes);
+		}
+		if(userType!=null && !userType.equals("") && "4".equals(userType)){//零售商
 			String retailerCode=UserContext.getUser().getRelCode();
 			req.setRetailerCode(retailerCode);
 		}

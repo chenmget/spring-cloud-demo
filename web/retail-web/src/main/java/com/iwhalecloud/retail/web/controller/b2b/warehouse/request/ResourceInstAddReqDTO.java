@@ -22,14 +22,18 @@ public class ResourceInstAddReqDTO implements java.io.Serializable {
 
   	private static final long serialVersionUID = 1L;
 
-
-  	//属性 begin
 	/**
   	 * 记录营销资源实例编码。
   	 */
 	@ApiModelProperty(value = "记录营销资源实例编码。")
 	@NotEmpty(message = "串码不能为空")
   	private List<String> mktResInstNbrs;
+
+	/**
+	 * 抽检串码列表
+	 */
+	@ApiModelProperty(value = "抽检串码列表")
+	private List<String> checkMktResInstNbrs;
 
 	/**
   	 * 固网终端需要CT码管理时，记录CT码
@@ -113,5 +117,16 @@ public class ResourceInstAddReqDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "对象标识")
   	private String objId;
+
+	/**
+	 * 目标营销资源仓库
+	 */
+	@ApiModelProperty(value = "目标营销资源仓库")
+	private java.lang.String destStoreId;
+	/**
+	 * 产品类型
+	 */
+	@ApiModelProperty(value = "产品类型")
+	private java.lang.String typeId;
 
 }

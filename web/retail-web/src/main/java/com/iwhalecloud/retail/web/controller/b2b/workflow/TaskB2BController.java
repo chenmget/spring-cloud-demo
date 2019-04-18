@@ -192,21 +192,28 @@ public class TaskB2BController extends BaseController {
         return taskService.queryNextNodeRights(nextNodeId,taskId);
     }
 
-    @ApiOperation(value = "根据业务ID获取处理中的工作流信息",notes = "获取工作流")
+    @ApiOperation(value = "根据业务ID获取处理中的工作流信息", notes = "获取工作流")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/getTaskByFormId")
-    public ResultVO getTaskByFormId(@RequestParam String formId){
+    @PostMapping(value = "/getTaskByFormId")
+    public ResultVO getTaskByFormId(@RequestParam String formId) {
         log.info("TaskB2BController getTaskByFormId formId={} ", formId);
         QueryTaskByFormIdResp queryTaskByFormIdResp = new QueryTaskByFormIdResp();
-        TaskDTO taskDTO = taskService.getTaskByFormId(formId).getResultData().get(0);
-        TaskItemDTO taskItemDTO = taskItemService.queryTaskItemByTaskId(taskDTO.getTaskId()).getResultData();
-        queryTaskByFormIdResp.setTaskDTO(taskDTO);
-        queryTaskByFormIdResp.setTaskItemDTO(taskItemDTO);
-        queryTaskByFormIdResp.setFormId(formId);
-        return ResultVO.success(queryTaskByFormIdResp);
+        ResultVO<List<TaskDTO>> taskByFormId = taskService.getTaskByFormId(formId);
+        if (taskByFormId.getResultData().size() > 0 && null != taskByFormId.getResultData()) {
+            TaskDTO taskDTO = taskByFormId.getResultData().get(0);
+            TaskItemDTO taskItemDTO = taskItemService.queryTaskItemByTaskId(taskDTO.getTaskId()).getResultData();
+            if (null != taskItemDTO) {
+                queryTaskByFormIdResp.setTaskDTO(taskDTO);
+                queryTaskByFormIdResp.setTaskItemDTO(taskItemDTO);
+                queryTaskByFormIdResp.setFormId(formId);
+                return ResultVO.success(queryTaskByFormIdResp);
+            }else{
+                return ResultVO.error("未查询到对应处理中的工作项信息");
+            }
+        }
+        return ResultVO.error("未查询到待处理的任务");
     }
-
 }

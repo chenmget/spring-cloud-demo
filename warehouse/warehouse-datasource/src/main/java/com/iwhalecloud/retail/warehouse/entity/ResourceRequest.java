@@ -134,10 +134,15 @@ public class ResourceRequest implements Serializable {
   	private java.lang.String remark;
   	
   	/**
-  	 * 备注
+  	 * 商家ID
   	 */
-	@ApiModelProperty(value = "拓展字段")
-  	private java.lang.String extend1;
+	@ApiModelProperty(value = "商家ID")
+  	private java.lang.String merchantId;
+  	/**
+  	 * 串码类型
+  	 */
+	@ApiModelProperty(value = "串码类型")
+  	private java.lang.String mktResInstType;
 
 
   	//属性 end

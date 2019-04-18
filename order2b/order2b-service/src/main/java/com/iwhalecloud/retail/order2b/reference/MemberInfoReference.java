@@ -1,7 +1,9 @@
 package com.iwhalecloud.retail.order2b.reference;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.member.dto.response.MemberAddressRespDTO;
 import com.iwhalecloud.retail.member.dto.response.MemberResp;
@@ -15,6 +17,9 @@ import com.iwhalecloud.retail.partner.dto.MerchantAccountDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.PartnerShopDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantAccountListReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantLigthReq;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantLigthResp;
 import com.iwhalecloud.retail.partner.service.MerchantAccountService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.partner.service.PartnerShopService;
@@ -27,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -134,4 +140,26 @@ public class MemberInfoReference {
         return merchantAccountService.listMerchantAccount(merchantAccountListReq);
     }
 
+
+    public List<String> listMerchantIdList(MerchantLigthReq req) {
+        ResultVO<List<MerchantLigthResp>> merchantRespVO = merchantService.listMerchantForOrder(req);
+        log.info("MemberInfoReference.listMerchantIdList merchantService.listMerchantForOrder req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(merchantRespVO));
+        if (!merchantRespVO.isSuccess() || CollectionUtils.isEmpty(merchantRespVO.getResultData())) {
+            String nullValue = "-1";
+            return Lists.newArrayList(nullValue);
+        }
+
+        List<MerchantLigthResp> merchantResp = merchantRespVO.getResultData();
+        List<String> merchantIdList = merchantResp.stream().map(MerchantLigthResp::getMerchantId).collect(Collectors.toList());
+        return merchantIdList;
+    }
+
+    public MerchantLigthResp getMerchantForOrder(MerchantGetReq req) {
+        ResultVO<MerchantLigthResp> merchantRespVO = merchantService.getMerchantForOrder(req);
+        log.info("MemberInfoReference.getMerchantForOrder merchantService.getMerchantForOrder req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(merchantRespVO));
+        if (!merchantRespVO.isSuccess() || null != merchantRespVO.getResultData()) {
+            return merchantRespVO.getResultData();
+        }
+        return null;
+    }
 }

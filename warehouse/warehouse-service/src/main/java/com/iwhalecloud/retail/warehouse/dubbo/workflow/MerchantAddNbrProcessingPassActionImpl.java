@@ -56,19 +56,20 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
     
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
-        //对应申请单ID
         String businessId = params.getBusinessId();
-        // 申请单ID->明细
-        //根据申请单表保存的源仓库和申请单明细找到对应的串码
+        // step1 根据申请单表保存的源仓库和申请单明细找到对应的串码
         ResourceReqDetailQueryReq detailQueryReq = new ResourceReqDetailQueryReq();
         detailQueryReq.setMktResReqId(businessId);
         List<ResourceReqDetailDTO> reqDetailDTOS = detailManager.listDetail(detailQueryReq);
         log.info("MerchantAddNbrProcessingPassActionImpl.run detailManager.listDetail detailQueryReq={}, resp={}", JSON.toJSONString(detailQueryReq), JSON.toJSONString(reqDetailDTOS));
         List<String> mktResInstNbrs = reqDetailDTOS.stream().map(ResourceReqDetailDTO::getMktResInstNbr).collect(Collectors.toList());
+        Map<String, String> ctCodeMap = new HashMap<>();
+        reqDetailDTOS.forEach(item->{
+            ctCodeMap.put(item.getMktResInstNbr(), item.getCtCode());
+        });
         ResourceReqDetailDTO detailDTO = reqDetailDTOS.get(0);
 
-        // 明细->入库
-        //根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
+        // step2 根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
         ResourceInstAddReq addReq = new ResourceInstAddReq();
         addReq.setMktResInstNbrs(mktResInstNbrs);
         addReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
@@ -76,8 +77,11 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         addReq.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
         addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        addReq.setMktResInstType(detailDTO.getMktResInstType());
         addReq.setDestStoreId(detailDTO.getDestStoreId());
         addReq.setMktResId(detailDTO.getMktResId());
+        addReq.setCtCode(ctCodeMap);
+        addReq.setCreateStaff(detailDTO.getCreateStaff());
 
         ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
         String merchantId = null;
@@ -94,16 +98,16 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
             addReq.setLanId(merchantDTO.getLanId());
             addReq.setRegionId(merchantDTO.getCity());
         }
-        Boolean addResp = resourceInstService.addResourceInst(addReq);
+        Boolean addResp = resourceInstService.addResourceInstByMerchant(addReq);
         log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addResp));
         if (addResp) {
-            //修改申请单状态变为审核通过
+            // step3 修改申请单状态变为审核通过
             ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
             reqUpdate.setMktResReqId(businessId);
             reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
             ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
             log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
-            // step3 增加事件和批次
+            // step4 增加事件和批次
             Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);
             BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
             batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());

@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.order2b.entity;
 
-import com.iwhalecloud.retail.order2b.config.TableTimeValidate;
-import com.iwhalecloud.retail.order2b.config.WhaleCloudDBKeySequence;
 import lombok.Data;
 
 @Data
@@ -32,6 +30,5 @@ public class OrderItem {
 
     private String sn;
     private String brandName;
-
 
 }

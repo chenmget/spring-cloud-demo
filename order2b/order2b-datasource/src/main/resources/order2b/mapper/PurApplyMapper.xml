@@ -5,6 +5,7 @@
     <select id="cgSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
             resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">
 		SELECT 
+		a.APPLY_ID as applyId,
 		a.APPLY_CODE as applyCode,
 		a.APPLY_NAME as projectName,
 		a.CREATE_DATE as applyTime,

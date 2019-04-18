@@ -27,17 +27,22 @@ public class ResourceReqDetailB2BController {
     @ApiOperation(value = "查询申请单详情串码分页列表", notes = "查询申请单详情串码分页列表")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "mktResReqId", value = "mktResReqId", paramType = "query", required = true, dataType = "String"),
-            @ApiImplicitParam(name = "mktResInstNbr", value = "mktResInstNbr", paramType = "query", required = false, dataType = "String")
+            @ApiImplicitParam(name = "mktResInstNbr", value = "mktResInstNbr", paramType = "query", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "pageNo", value = "pageNo", paramType = "query", required = false, dataType = "Integer"),
+            @ApiImplicitParam(name = "pageSize", value = "pageSize", paramType = "query", required = false, dataType = "Integer")
     })
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value="resourceRequestPage")
-    public ResultVO<Page<ResourceReqDetailPageResp>> resourceRequestPage(String mktResReqId, String mktResInstNbr) {
+    public ResultVO<Page<ResourceReqDetailPageResp>> resourceRequestPage(String mktResReqId, String mktResInstNbr,
+                                                                         Integer pageNo, Integer pageSize) {
         ResourceReqDetailPageReq req = new ResourceReqDetailPageReq();
         req.setMktResReqId(mktResReqId);
         req.setMktResInstNbr(mktResInstNbr);
+        req.setPageNo(pageNo);
+        req.setPageSize(pageSize);
         return resourceReqDetailService.resourceRequestPage(req);
     }
 

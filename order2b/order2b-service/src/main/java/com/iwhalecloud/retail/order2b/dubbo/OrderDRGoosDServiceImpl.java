@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.order2b.dubbo;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.consts.order.TypeStatus;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.ReceiveGoodsReq;
@@ -18,6 +19,9 @@ public class OrderDRGoosDServiceImpl implements OrderDRGoodsOpenService {
 
     @Autowired
     private OrderDRGoodsOpenService orderDRGoodsOpenService;
+
+    @Autowired
+    private PayAuthorizationService payAuthorizationService;
 
     @Reference
     private OrderAfterSaleOpenService orderAfterSaleOpenService;
@@ -51,7 +55,11 @@ public class OrderDRGoosDServiceImpl implements OrderDRGoodsOpenService {
             TypeStatus typeStatus = TypeStatus.matchOpCode(request.getType(), TypeStatus.APPLY_HH);
             switch (typeStatus) {
                 case TYPE_14: //正常收货
-                    return orderDRGoodsOpenService.receiveGoods(request);
+                    ResultVO rvo = orderDRGoodsOpenService.receiveGoods(request);
+                    if("0".equals(rvo.getResultCode())){
+                        payAuthorizationService.authorizationConfirmation(request.getOrderId());
+                    }
+                    return rvo;
                 case TYPE_34: //换货收货
                     return orderAfterSaleOpenService.userReceiveGoods(request);
                 default:

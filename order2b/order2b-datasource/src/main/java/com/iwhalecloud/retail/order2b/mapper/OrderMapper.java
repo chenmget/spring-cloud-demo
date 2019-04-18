@@ -19,6 +19,7 @@ import org.apache.ibatis.annotations.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author autoCreate
@@ -81,4 +82,12 @@ public interface OrderMapper extends BaseMapper<Order> {
      * @return
      */
     List<GoodsSaleOrderDTO> getGoodsSaleNumByTime(@Param("beginTime")Date beginTime,@Param("lanId")String lanId);
+
+
+    String findPayAccountByOrderId(@Param("orderId") String orderId);
+
+    Map<String, Object> findReptAccountAndMoneyByOrderId(@Param("orderId") String orderId);
+
+    public int updatePayTransId(@Param("orderId") String orderId, @Param("reqSeq") String reqSeq);
+
 }

@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.busiservice.impl;
 
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.CancelOrderService;
 import com.iwhalecloud.retail.order2b.busiservice.CreateOrderService;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
@@ -18,6 +19,7 @@ import com.iwhalecloud.retail.order2b.manager.OrderLogManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.model.BuilderOrderModel;
 import com.iwhalecloud.retail.order2b.model.CreateOrderLogModel;
+import jdk.nashorn.internal.ir.annotations.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,7 +27,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
 import java.util.List;
-
 
 @Service
 public class CancelOrderServiceImpl implements CancelOrderService {
@@ -48,6 +49,9 @@ public class CancelOrderServiceImpl implements CancelOrderService {
     @Autowired
     private WhaleCloudKeyGenerator whaleCloudKeyGenerator;
 
+    @Autowired
+    private PayAuthorizationService payAuthorizationService;
+
     @Override
     public CommonResultResp cancelOrder(UpdateOrderStatusRequest request) {
         CommonResultResp resp = new CommonResultResp();
@@ -63,6 +67,12 @@ public class CancelOrderServiceImpl implements CancelOrderService {
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             return resp;
         }
+
+        //  已付定金，未付尾款
+        if(!OrderAllStatus.ORDER_STATUS_13.getCode().equals(order.getStatus()) && OrderAllStatus.ORDER_STATUS_14.getCode().equals(order.getStatus())){
+            payAuthorizationService.authorizationConfirmation(order.getOrderId());
+        }
+
         updateOrderFlowService.cancelOrder(request);
 
         CreateOrderLogModel logModel = new CreateOrderLogModel();

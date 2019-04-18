@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.order2b.service.impl;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.CreateOrderService;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
 import com.iwhalecloud.retail.order2b.config.DBTableSequence;
@@ -59,6 +60,9 @@ public class CloseOrderOpenServiceImpl implements CloseOrderOpenService {
     private CreateOrderService createOrderService;
     @Reference
     private TaskService taskService;
+
+    @Autowired
+    private PayAuthorizationService payAuthorizationService;
 
     @Autowired
     public CloseOrderOpenServiceImpl(OrderManager orderManager, AfterSaleManager afterSaleManager, OrderLogManager orderLogManager, WhaleCloudKeyGenerator whaleCloudKeyGenerator, MemberInfoReference memberInfoReference, SelectOrderService selectOrderService, CreateOrderService createOrderService) {
@@ -176,6 +180,10 @@ public class CloseOrderOpenServiceImpl implements CloseOrderOpenService {
         log.info("----->> 开始关闭流程----");
         ResultVO resultVO = this.handleWorkTask(req, orderId);
         log.info("----->> 关闭流程结束，返参为: {}", resultVO);
+
+        // 翼支付取消预授权
+        payAuthorizationService.AuthorizationCancellation(orderId);
+
         return ResultVO.success();
     }
 

@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.goods2b.common.GoodsResultCodeEnum;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
@@ -291,6 +292,20 @@ public class GoodsProductB2BController {
         ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
         List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
         log.info("GoodsProductB2BController.selectPageProductAdminWithNoRight req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+        return productPageRespPage;
+    }
+
+
+    @ApiOperation(value = "查询产品(库存模块用)", notes = "查询,无需登陆")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="getProductResource")
+    public ResultVO<List<ProductResourceResp>> getProductResource(@RequestBody ProductResourceInstGetReq req) {
+        ResultVO<List<ProductResourceResp>> productPageRespPage = productService.getProductResource(req);
+        List<ProductResourceResp> list = productPageRespPage.getResultData();
+        log.info("GoodsProductB2BController.getProductResource req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         return productPageRespPage;
     }
 }

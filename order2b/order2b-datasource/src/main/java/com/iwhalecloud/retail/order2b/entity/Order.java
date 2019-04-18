@@ -76,4 +76,6 @@ public class Order implements Serializable {
     private String merchantCode;
     private String buyerCode;
 
+    private String payTransId;
+
 }

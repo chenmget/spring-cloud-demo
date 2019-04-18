@@ -15,6 +15,7 @@
 			'' AS `option`
 			 FROM PUR_APPLY a
 			 WHERE 1=1
+			 and a.STATUS_CD != '1100'
 		 <if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode}
 		</if>
@@ -132,7 +133,8 @@
   </select>
   
   <select id="delSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq">
-	update pur_apply_item set status_cd="1100" where 1=1 and apply_id = #{req.applyId}
+  	update pur_apply set status_cd="1100" where 1=1 and apply_id = #{req.applyId}
+	# update pur_apply_item set status_cd="1100" where 1=1 and apply_id = #{req.applyId};
   </select>
   
 </mapper>

@@ -43,7 +43,7 @@ public class SourceFromInterceptor implements Interceptor {
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-
+        long time=System.currentTimeMillis();
         MappedStatement mappedStatement = (MappedStatement) invocation
                 .getArgs()[0];
 
@@ -64,7 +64,7 @@ public class SourceFromInterceptor implements Interceptor {
         /**
          * 输出日志
          */
-//        outLog(mappedStatement, parameter);
+        outLog(time,mappedStatement, parameter);
         return returnObject;
     }
 
@@ -164,15 +164,18 @@ public class SourceFromInterceptor implements Interceptor {
 
     }
 
-    private void outLog(MappedStatement mappedStatement, Object parameterObject) {
+    private void outLog(long time,MappedStatement mappedStatement, Object parameterObject) {
         String statementId = mappedStatement.getId();
         BoundSql boundSql = mappedStatement.getBoundSql(parameterObject);
         Configuration configuration = mappedStatement.getConfiguration();
         String sql = getSql(boundSql, parameterObject, configuration);
         log.info("gs_10010_mapper_httpId={},req={}\n " +
-                        "------------------------mapper= {}\n" +
-                        "-------------------------- sql= {}", Order2bContext.getDubboRequest().getHttpId(),
-                JSON.toJSONString(parameterObject), statementId, sql);
+                        "------------------------mapper= {},timeConsuming={}\n" +
+                        "--------------------------sql = {}\n",
+
+                Order2bContext.getDubboRequest().getHttpId(),
+                JSON.toJSONString(parameterObject), statementId, (System.currentTimeMillis()-time),
+                sql);
     }
 
     private String getSql(BoundSql boundSql, Object parameterObject, Configuration configuration) {

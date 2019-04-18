@@ -31,13 +31,13 @@
         ]]>
     </select>
 
-    <insert id="updateAdvanceTransId">
+    <update id="updateAdvanceTransId">
         update ord_advance_order set advance_trans_id = #{reqSeq} where order_id = #{orderId}
-    </insert>
+    </update>
 
-    <insert id="updateRestTransId">
+    <update id="updateRestTransId">
         update ord_advance_order set rest_trans_id = #{reqSeq} where order_id = #{orderId}
-    </insert>
+    </update>
 
 </mapper>
 

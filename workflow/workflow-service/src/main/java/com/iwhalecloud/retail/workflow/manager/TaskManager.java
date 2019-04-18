@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.system.common.SystemConst;
-import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.bizservice.RunRouteService;
@@ -144,6 +143,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      * @return
      */
     private void addNextTaskItem(Route route, Task task, List<HandlerUser> handlerUserList) {
+        log.info("addNextTaskItem route={},task={}, handlerUserList={}", JSON.toJSON(route), JSON.toJSON(task), JSON.toJSON(handlerUserList));
         if (CollectionUtils.isEmpty(handlerUserList)) {
             log.error("TaskManager.addNextTaskItem get handler user is empty，task={}",JSON.toJSON(task));
             throw new RetailTipException(ResultCodeEnum.NEXT_HADNLE_USER_IS_EMPTY);
@@ -188,6 +188,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      * @return 处理人列表
      */
     private List<HandlerUser> getHandlerUsers(Task task, String nextNodeId,List<HandlerUser> handlerUserList) {
+        log.info("getHandlerUsers task={},curNodeId={}", JSON.toJSONString(task), nextNodeId, JSON.toJSONString(handlerUserList));
         // 已经指定处理人
         if (CollectionUtils.isNotEmpty(handlerUserList)) {
             return handlerUserList;
@@ -304,7 +305,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      * @return
      */
     public ResultVO nextRoute(RouteNextReq routeNextDTO) {
-
+        log.info("nextRoute routeNextDTO={}", JSON.toJSONString(routeNextDTO));
         String taskItemId = routeNextDTO.getTaskItemId();
         String taskId = routeNextDTO.getTaskId();
         if (StringUtils.isEmpty(taskItemId)) {
@@ -398,7 +399,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
 
         String taskItemId = taskClaimDTO.getTaskItemId();
         String taskId = taskClaimDTO.getTaskId();
-        log.info("1、根据任务项ID查询任务项（wf_task_item）表，task_item_id={},taskId={}", taskItemId,taskId);
+        log.info("1、根据任务项ID查询任务项（wf_task_item）表，task_item_id={},taskId={}", taskItemId, taskId);
         //1> 校验任务项的状态,如果状态不是待领取抛出异常
         TaskItem taskItem = taskItemManager.queryTaskItemById(taskItemId,taskId);
         if (taskItem == null || !WorkFlowConst.TaskItemState.WAITING.getCode().equals(taskItem.getItemStatus())) {
@@ -418,7 +419,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         taskItemManager.taskReceive(taskItemId, taskClaimDTO.getUserId(), taskClaimDTO.getUserName(), taskId);
         log.info("4、根据任务项ID删除任务池表（wf_task_pool）数据");
         //@todo如果是工单类的，路由ID、上一节点ID、当前节点ID为-1，上一节点名称和当前节点名称为空
-        taskPoolManager.delTaskPoolByTaskItemId(taskItemId,taskId);
+        taskPoolManager.delTaskPoolByTaskItemId(taskItemId, taskId);
         return ResultVO.success();
     }
 
@@ -597,6 +598,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      * @return
      */
     private Boolean updateTaskStatusById(String taskId, String taskStatus,String curNodeId,String curNodeName) {
+        log.info("updateTaskStatusById taskId={},curNodeId={}", taskId, curNodeId);
         Task task = new Task();
         //task.setTaskId(taskId);
         task.setTaskStatus(taskStatus);

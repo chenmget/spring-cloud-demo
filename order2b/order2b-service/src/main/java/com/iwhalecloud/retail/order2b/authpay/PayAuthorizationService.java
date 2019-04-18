@@ -7,7 +7,9 @@ import com.iwhalecloud.retail.order2b.authpay.util.CertificateUtil;
 import com.iwhalecloud.retail.order2b.busiservice.BPEPPayLogService;
 import com.iwhalecloud.retail.order2b.consts.PayConsts;
 import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
+import com.iwhalecloud.retail.order2b.entity.AdvanceOrder;
 import com.iwhalecloud.retail.order2b.entity.Order;
+import com.iwhalecloud.retail.order2b.mapper.AdvanceOrderMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.model.SaveLogModel;
 import lombok.extern.slf4j.Slf4j;
@@ -51,6 +53,9 @@ public class PayAuthorizationService {
     private OrderMapper orderMapper;
 
     @Autowired
+    private AdvanceOrderMapper advanceOrderMapper;
+
+    @Autowired
     private BPEPPayLogService bpepPayLogService;
 
     /**
@@ -58,15 +63,46 @@ public class PayAuthorizationService {
      */
     public String authorizationApplication(String orderId, String operationType) {
 
-        log.info("预授权申请qPayAuthorizationController authorizationApplication orderId = ", orderId);
+        Order order = new Order();
+        order.setOrderId(orderId);
+        Order resOrder = orderMapper.getOrderById(order);
+        if("1".equals(resOrder.getOrderCat())){ //预售
+            AdvanceOrder advanceOrder = new AdvanceOrder();
+            advanceOrder.setOrderId(orderId);
+            AdvanceOrder resAdvanceOrder = advanceOrderMapper.selectAdvanceOrderByOrderId(advanceOrder);
 
-        String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+            if("0".equals(resAdvanceOrder.getAdvancePayStatus())){ // 支付定金
+                String payAdvanceMoney = resAdvanceOrder.getAdvanceAmount().toString();
+                String payAdvMoney = payAdvanceMoney.substring(0, payAdvanceMoney.indexOf('.'));
+                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+                boolean advFlag = call(payAuthUrl, orderId, operationType, reqSeq, null, payAdvMoney);
+                if(advFlag){
+                    // 保存订单交易流水
+                    advanceOrderMapper.updateAdvanceTransId(orderId, reqSeq);
+                }
+            }
+            if("1".equals(resAdvanceOrder.getAdvancePayStatus()) && "0".equals(resAdvanceOrder.getRestPayStatus())){   // 支付尾款
+                String payRestMoney = resAdvanceOrder.getRestPayMoney().toString();
+                String payResMoney = payRestMoney.substring(0, payRestMoney.indexOf('.'));
+                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+                boolean resFlag = call(payAuthUrl, orderId, operationType, reqSeq, null, payResMoney);
+                if(resFlag){
+                    // 保存订单交易流水
+                    advanceOrderMapper.updateRestTransId(orderId, reqSeq);
+                }
+            }
+        }else { // 普通
+            String payMoney = resOrder.getPayMoney().toString();
+            String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
+            String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+            boolean advFlag = call(payAuthUrl, orderId, operationType, reqSeq, null, resPayMoney);
+            if(advFlag){
+                // 保存订单交易流水
+                orderMapper.updatePayTransId(orderId, reqSeq);
+            }
 
-        boolean flag = call(payAuthUrl, orderId, operationType, reqSeq, null);
-        if(flag){
-            // 保存订单交易流水
-            orderMapper.updatePayTransId(orderId, reqSeq);
         }
+
         return orderId;
     }
 
@@ -74,33 +110,63 @@ public class PayAuthorizationService {
      * 授权确认
      */
     public boolean authorizationConfirmation(String orderId){
-        Order order = new Order();
-        order.setOrderId(orderId);
-        Order resOrder = orderMapper.getOrderById(order);
-        String payTransId = resOrder.getPayTransId();
-        if(OrderAllStatus.ORDER_STATUS_6.equals(resOrder.getStatus()) && payTransId != null && !"".equals(payTransId)){
-            String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-            return call(payConfirmUrl, orderId, null, reqSeq, resOrder.getPayCode());
-        }
-        return false;
+        return this.AuthorizationConfAndCancellation(orderId, payConfirmUrl);
     }
 
     /**
      * 授权取消
      */
     public boolean AuthorizationCancellation(String orderId) {
+        return this.AuthorizationConfAndCancellation(orderId, payCancelUrl);
+    }
+
+    public boolean AuthorizationConfAndCancellation(String orderId, String callUrl) {
+
         Order order = new Order();
         order.setOrderId(orderId);
         Order resOrder = orderMapper.getOrderById(order);
-        String payTransId = resOrder.getPayTransId();
-        if(payTransId != null && !"".equals(payTransId)){
-            String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-            return call(payCancelUrl, orderId, null, reqSeq, resOrder.getPayCode());
+
+        if("1".equals(resOrder.getOrderCat())){ //预售
+            AdvanceOrder advanceOrder = new AdvanceOrder();
+            advanceOrder.setOrderId(orderId);
+            AdvanceOrder resAdvanceOrder = advanceOrderMapper.selectAdvanceOrderByOrderId(advanceOrder);
+
+            // 预售确认标识
+            boolean flag = true;
+
+            String advanceTransId = resAdvanceOrder.getAdvanceTransId();
+            if("1".equals(resAdvanceOrder.getAdvancePayStatus()) && advanceTransId != null && !"".equals(advanceTransId)){ // 已授权定金,确认／取消定金
+                String payAdvanceMoney = resAdvanceOrder.getAdvanceAmount().toString();
+                String payAdvMoney = payAdvanceMoney.substring(0, payAdvanceMoney.indexOf('.'));
+                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+                boolean advFlag = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getAdvanceTransId(), payAdvMoney);
+                flag = advFlag & flag;
+            }
+
+            String restTransId = resAdvanceOrder.getRestTransId();
+            if("1".equals(resAdvanceOrder.getRestPayStatus()) && restTransId != null && !"".equals(restTransId)){   // 已授权尾款,确认／取消尾款
+                String payRestMoney = resAdvanceOrder.getRestPayMoney().toString();
+                String payResMoney = payRestMoney.substring(0, payRestMoney.indexOf('.'));
+                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+                boolean resFlag = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getRestTransId(), payResMoney);
+                flag = resFlag & flag;
+            }
+            return flag;
+        }else { // 普通
+            String payMoney = resOrder.getPayMoney().toString();
+            String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
+            String payTransId = resOrder.getPayTransId();
+            if(payTransId != null && !"".equals(payTransId)){
+                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+                return call(callUrl, orderId, null, reqSeq, payTransId, resPayMoney);
+            }
         }
+
         return false;
+
     }
 
-    private boolean call(String callUrl, String orderId, String operationType, String reqSeq, String originalTransSeq){
+    private boolean call(String callUrl, String orderId, String operationType, String reqSeq, String originalTransSeq, String payMoney){
 
         TradeCertificate certificate = CertificateUtil.getTradeCertificate(CertificateUtil.KEYSTORETYPE_JKS, true);
         BestpayHandler bestpayHandler = new BestpayHandler(certificate);
@@ -122,8 +188,7 @@ public class PayAuthorizationService {
         preAuthorizationApplyRequest.setTrsMemo("memo");
         preAuthorizationApplyRequest.setExternalId("EXT_ORDER_ID_" + orderId); // 订单号
         preAuthorizationApplyRequest.setCurrencyCode("RMB");
-        String payMoney = result.get("pay_money").toString();
-        preAuthorizationApplyRequest.setTransactionAmount(payMoney.substring(0, payMoney.indexOf('.'))); // 交易金额
+        preAuthorizationApplyRequest.setTransactionAmount(payMoney); // 交易金额
         preAuthorizationApplyRequest.setPayeeLoginCode(result.get("account").toString()); //收款方登录号
         preAuthorizationApplyRequest.setOriginalTransSeq(originalTransSeq);
 

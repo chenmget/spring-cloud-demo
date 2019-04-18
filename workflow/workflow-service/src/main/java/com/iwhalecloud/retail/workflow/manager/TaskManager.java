@@ -348,6 +348,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         String formId = task.getFormId();
         invokeRouteService(formId,handleUserId,handleUserName,routeServiceList);
         Route route = routeManager.queryRouteById(routeId);
+        log.info("nextRoute routeManager.queryRouteById routeId={}, route={}", routeId, JSON.toJSONString(route));
         log.info("5、如果下一个节点为结束节点，修改任务实例表的状态、办结时间，忽略后面的步骤");
         if (WorkFlowConst.WF_NODE.NODE_END.getId().equals(noteNextId)) {
             nodeEndHandle(handleUserId, handleUserName, taskId, route);

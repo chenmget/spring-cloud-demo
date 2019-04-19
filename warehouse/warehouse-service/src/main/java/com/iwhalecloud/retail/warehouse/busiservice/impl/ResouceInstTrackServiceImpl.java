@@ -419,8 +419,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         for (DeliveryResourceInstItem deliveryResourceInstItem : deliveryResourceInstItemList) {
             distinctList.addAll(deliveryResourceInstItem.getMktResInstNbrs());
         }
-        ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
-        resourceInstsGetReq.setMktResInstNbrs(distinctList);
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
@@ -429,22 +427,27 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         // 是否地包供货：地包商交易给零售商时填是
         String ifGroundSupply = ResourceConst.CONSTANT_NO;
         String buyerMerchantId = req.getBuyerMerchantId();
-        ResultVO<MerchantDTO> sellerMerchantDTO = merchantService.getMerchantById(req.getSellerMerchantId());
-        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier merchantService.getMerchantById req={},resp={}", JSON.toJSONString(req.getBuyerMerchantId()), JSON.toJSONString(sellerMerchantDTO));
-        if(null != sellerMerchantDTO && sellerMerchantDTO.isSuccess() && null != sellerMerchantDTO.getResultData()){
-            if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.equals(sellerMerchantDTO.getResultData().getMerchantType())) {
+        ResourceInstBatchReq resourceInstsGetReq = new ResourceInstBatchReq();
+        BeanUtils.copyProperties(req, resourceInstsGetReq);
+        resourceInstsGetReq.setMktResStoreId(storeId);
+        ResultVO<List<ResourceInstListResp>> instsVO = retailerResourceInstService.getBatch(resourceInstsGetReq);
+        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(instsVO));
+        if (!instsVO.isSuccess() || CollectionUtils.isEmpty(instsVO.getResultData())) {
+            return;
+        }
+        ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(req.getSellerMerchantId());
+        if (merchantResultVO.isSuccess() && null != merchantResultVO.getResultData()) {
+            MerchantDTO merchantDTO = merchantResultVO.getResultData();
+            if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.equals(merchantDTO.getMerchantType())) {
                 ifDirectSuppLy = ResourceConst.CONSTANT_YES;
             }
-            if (PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.equals(sellerMerchantDTO.getResultData().getMerchantType())) {
+            if (PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.equals(merchantDTO.getMerchantType())) {
                 ifGroundSupply = ResourceConst.CONSTANT_YES;
             }
         }
-        resourceInstsGetReq.setMktResStoreId(storeId);
-        List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
-        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         int count = 0;
-        for (int i = 0; i < insts.size(); i++) {
-            ResourceInstDTO resourceInstDTO = insts.get(i);
+        for (int i = 0; i < instsVO.getResultData().size(); i++) {
+            ResourceInstListResp resourceInstDTO = instsVO.getResultData().get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
             resouceInstTrackDTO.setIfDirectSupply(ifDirectSuppLy);

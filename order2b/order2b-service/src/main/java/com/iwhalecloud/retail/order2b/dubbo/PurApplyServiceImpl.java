@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.dubbo;
 
 import java.util.List;
 
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,8 +52,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Override
 	@Transactional
-	public void delSearchApply(PurApplyReq req) {
+	public ResultVO<T> delSearchApply(PurApplyReq req) {
 		purApplyManager.delSearchApply(req);
+		return ResultVO.success();
 	}
 
 	@Override

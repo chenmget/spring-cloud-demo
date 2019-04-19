@@ -1,50 +1,29 @@
 package com.iwhalecloud.retail.web.controller.b2b.cgmanage;
 
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.lang.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.poi.ss.formula.functions.T;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
-import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
-import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
-import com.iwhalecloud.retail.report.dto.response.ProductListAllResp;
-import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
-import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
-import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.request.RegionsListReq;
-import com.iwhalecloud.retail.system.dto.response.RegionsGetResp;
-import com.iwhalecloud.retail.system.service.RegionsService;
 import com.iwhalecloud.retail.web.controller.BaseController;
-import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
-import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
-import com.iwhalecloud.retail.web.controller.system.RegionController;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -87,8 +66,14 @@ public class cgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
 	@GetMapping(value="/tcProcureApplybefore")
-    public ApplyHeadResp tcProcureApplybefore() {
+    public ResultVO<ApplyHeadResp> tcProcureApplybefore() {
 		UserDTO user = UserContext.getUser();
+//		UserDTO user = new UserDTO();
+//		user.setRelCode("CS00011001");
+//		user.setUserName("深圳市金立通信设备有限公司");
+//		user.setLanId("731");
+//		user.setRegionId("73101");
+		
 		ApplyHeadResp applyHeadResp = purApplyService.hqShenQingDaoHao();
 		String relCode = user.getRelCode();//申请人工号    写表的
 		String applyMerchantCode = user.getUserName();//申请人名称  展示的
@@ -103,7 +88,7 @@ public class cgSearchApplyController extends BaseController {
 		applyHeadResp.setLanId(lanId);
 		applyHeadResp.setRegionId(regionId);
 		applyHeadResp.setApplyId(applyHeadResp.getApplyCode());
-		return applyHeadResp;
+		return ResultVO.success(applyHeadResp);
     }
 	
 	@ApiOperation(value = "提出采购申请单", notes = "提出采购申请单")
@@ -112,7 +97,7 @@ public class cgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/tcProcureApply")
-    public void tcProcureApply(@RequestBody ProcureApplyReq req) {
+    public ResultVO tcProcureApply(@RequestBody ProcureApplyReq req) {
 		String isSave = req.getIsSave();
 		String statusCd = "10";
 		//情况一，默认是保存,状态就是10，待提交
@@ -122,7 +107,7 @@ public class cgSearchApplyController extends BaseController {
 			int isHaveSave = purApplyService.isHaveSave(applyId);
 			if(isHaveSave != 0){
 				purApplyService.updatePurApply(applyId);
-				return;
+				return ResultVO.success();
 			}
 			statusCd = "20";
 		}
@@ -164,7 +149,7 @@ public class cgSearchApplyController extends BaseController {
 		purApplyService.crPurApplyFile(req);
 		//写表PUR_APPLY(采购申请单)
 		purApplyService.tcProcureApply(req);
-		
+		return ResultVO.success();
     }
 	
 	@ApiOperation(value = "查询采购申请单报表的删除操作", notes = "查询采购申请单报表的删除操作")
@@ -173,8 +158,8 @@ public class cgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/delSearchApply")
-    public void delSearchApply(@RequestBody PurApplyReq req) {
-		purApplyService.delSearchApply(req);
+    public ResultVO delSearchApply(@RequestBody PurApplyReq req) {
+		return purApplyService.delSearchApply(req);
     }
 	
 	@ApiOperation(value = "查询采购申请单报表的查看操作", notes = "查询采购申请单报表的查看操作")
@@ -183,13 +168,13 @@ public class cgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/ckApplyData")
-	public ProcureApplyReq ckApplyData(@RequestBody PurApplyReq req){
+	public ResultVO<ProcureApplyReq> ckApplyData(@RequestBody PurApplyReq req){
 		//获取申请单跟附件
 		ProcureApplyReq procureApplyReq1 = purApplyService.ckApplyData1(req);
 		//获取添加的产品信息
 		List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
 		procureApplyReq1.setAddProductReq(procureApplyReq2);
-		return procureApplyReq1;
+		return ResultVO.success(procureApplyReq1);
 	}
 	
 }

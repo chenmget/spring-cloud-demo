@@ -27,7 +27,7 @@ public interface PurApplyService {
 	//采购申请的附件的写表
 	public void crPurApplyFile(ProcureApplyReq req);
 	//采购申请查询的删除操作
-	public void delSearchApply(PurApplyReq req);
+	public ResultVO delSearchApply(PurApplyReq req);
 	
 	public ProcureApplyReq ckApplyData1(PurApplyReq req);
 	public List<AddProductReq> ckApplyData2(PurApplyReq req);

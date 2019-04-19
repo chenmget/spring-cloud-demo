@@ -66,4 +66,16 @@ public class ResourceInstColum {
         orderMap.add(new ExcelTitleName("createDate", "入库时间"));
         return orderMap;
     }
+
+    public static List<ExcelTitleName> reqDetailColumn() {
+        List<ExcelTitleName> orderMap = new ArrayList<>();
+        orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
+        orderMap.add(new ExcelTitleName("typeName", "产品类型"));
+        orderMap.add(new ExcelTitleName("brandName", "品牌"));
+        orderMap.add(new ExcelTitleName("unitName", "产品名称"));
+        orderMap.add(new ExcelTitleName("unitType", "产品型号"));
+        orderMap.add(new ExcelTitleName("sn", "产品编码"));
+        orderMap.add(new ExcelTitleName("ctCode", "CT码"));
+        return orderMap;
+    }
 }

@@ -5,6 +5,7 @@ import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.web.controller.BaseController;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -141,6 +142,18 @@ public class CacheController extends BaseController {
     @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, allEntries = true, beforeInvocation = true)
     public ResultVO<Boolean> cleanCacheProdFile() {
         log.info("CacheController.cleanCacheProdFile clean prod_file table cache success!!!");
+        return ResultVO.success(true);
+    }
+
+    @ApiOperation(value = "清空wf_route表缓存", notes = "清空wf_route表缓存")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/cleanCacheNameWfRoute", method = RequestMethod.GET)
+    @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_ROUTE, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWfRoute() {
+        log.info("CacheController.cleanCacheNameWfRoute clean wf_route table cache success!!!");
         return ResultVO.success(true);
     }
 }

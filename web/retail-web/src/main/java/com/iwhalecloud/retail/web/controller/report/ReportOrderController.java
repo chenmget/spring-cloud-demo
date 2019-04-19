@@ -63,19 +63,23 @@ public class ReportOrderController extends BaseController {
     })
     @PostMapping("/getReportOrderList1")
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
-		//userType 1省级管理员，2地市管理员，3供应商，4零售商，5厂家
+		//userType 1省级管理员，2地市管理员，3零售商，4供应商，5厂家
 		String userType=req.getUserType();
-		if(userType!=null && !userType.equals("") && "4".equals(userType)){//零售商只看自己的
+		//省公司，地市，供应商，零售商
+		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的
 			String merchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(merchantCode);
 		}
-		if(userType!=null && !userType.equals("") && "3".equals(userType)){//供应商只看自己的
+		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商只看自己的
 			String suplierCode=UserContext.getUser().getRelCode();
 			req.setSuplierCode(suplierCode);
 		}
-		if(userType!=null && !userType.equals("") && "2".equals(userType)){
+		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
 			String regionId = UserContext.getUser().getRegionId();
 			req.setLanId(regionId);
+		}
+		if(!"1".equals(userType) && !"2".equals(userType) && !"3".equals(userType) && !"4".equals(userType)){
+			req.setLanId("999");
 		}
 		String lanId = req.getLanId();
 		if("430100".equals(lanId)){
@@ -127,18 +131,49 @@ public class ReportOrderController extends BaseController {
 	    })
 	    @PostMapping(value="/orderReportDataExport")
 	    public ResultVO orderReportDataExport(@RequestBody ReportOrderDaoReq req) {
+	    	//userType 1省级管理员，2地市管理员，3零售商，4供应商，5厂家
 			String userType=req.getUserType();
-			if(userType!=null && !userType.equals("") && "4".equals(userType)){
+			//省公司，地市，供应商，零售商
+			if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的
 				String merchantCode=UserContext.getUser().getRelCode();
 				req.setMerchantCode(merchantCode);
 			}
-			if(userType!=null && !userType.equals("") && "3".equals(userType)){
+			if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商只看自己的
 				String suplierCode=UserContext.getUser().getRelCode();
 				req.setSuplierCode(suplierCode);
 			}
-			if(userType!=null && !userType.equals("") && "2".equals(userType)){
+			if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
 				String regionId = UserContext.getUser().getRegionId();
 				req.setLanId(regionId);
+			}
+			if(!"1".equals(userType) && !"2".equals(userType) && !"3".equals(userType) && !"4".equals(userType)){
+				req.setLanId("999");
+			}
+			String lanId = req.getLanId();
+			if("430100".equals(lanId)){
+				req.setLanId("731");
+			}else if("430200".equals(lanId)){
+				req.setLanId("733");
+			}else if("430300".equals(lanId)){
+				req.setLanId("732");
+			}else if("430400".equals(lanId)){
+				req.setLanId("734");
+			}else if("430500".equals(lanId)){
+				req.setLanId("739");
+			}else if("430600".equals(lanId)){
+				req.setLanId("730");
+			}else if("430700".equals(lanId)){
+				req.setLanId("736");
+			}else if("430800".equals(lanId)){
+				req.setLanId("744");
+			}else if("430900".equals(lanId)){
+				req.setLanId("737");
+			}else if("431000".equals(lanId)){
+				req.setLanId("735");
+			}else if("431300".equals(lanId)){//娄底
+				req.setLanId("738");
+			}else if("433100".equals(lanId)){//湘西土家族苗族自治州
+				req.setLanId("743");
 			}
 	        ResultVO result = new ResultVO();
 	        ResultVO<List<ReportOrderResp>> resultVO = reportOrderService.getReportOrderList1dc(req);

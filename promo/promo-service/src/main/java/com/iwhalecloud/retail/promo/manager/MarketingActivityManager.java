@@ -274,6 +274,7 @@ public class MarketingActivityManager{
             queryWrapper.in(MarketingActivity.FieldNames.id.getTableFieldName(), activityIds);
             queryWrapper.eq(MarketingActivity.FieldNames.activityType.getTableFieldName(), activityType);
             queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(),PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+            queryWrapper.eq(MarketingActivity.FieldNames.status.getTableFieldName(),PromoConst.STATUSCD.STATUS_CD_20.getCode());
             marketingActivityList = marketingActivityMapper.selectList(queryWrapper);
         }
         return marketingActivityList;

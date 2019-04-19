@@ -558,10 +558,32 @@ public class GoodsB2BController extends GoodsBaseController {
                 return ResultVO.errorEnum(GoodsResultCodeEnum.INVOKE_PARTNER_SERVICE_EXCEPTION);
             }
         }
+        GoodsIdListReq goodsIdListReq = new GoodsIdListReq();
+        List<String> list = Lists.newArrayList();
+        list.add(req.getGoodsId());
+        goodsIdListReq.setGoodsIdList(list);
+        ResultVO<List<GoodsDTO>> listResultVO = goodsService.listGoods(goodsIdListReq);
+        if (!listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
+            return ResultVO.error("商品不存在");
+        }
+        GoodsDTO goodsDTO = listResultVO.getResultData().get(0);
+        String merchantType = goodsDTO.getMerchantType();
+        ResultVO<List<GoodsProductRelDTO>> resultVO = goodsProductRelService.listGoodsProductRel(req.getGoodsId());
+        if (!resultVO.isSuccess() || CollectionUtils.isEmpty(resultVO.getResultData())) {
+            return ResultVO.error("产商品关联不存在");
+        }
+        GoodsProductRelDTO goodsProductRelDTO = resultVO.getResultData().get(0);
         GoodsMarketEnableReq req1 = new GoodsMarketEnableReq();
         req1.setGoodsId(req.getGoodsId());
         req1.setMarketEnable(req.getMarketEnable());
-        return goodsService.updateMarketEnable(req1);
+        ResultVO<GoodsOperateResp> respResultVO = goodsService.updateMarketEnable(req1);
+        if (respResultVO.isSuccess() && respResultVO.getResultData() != null) {
+            List<GoodsProductRelDTO> goodsProductRelDTOList = Lists.newArrayList();
+            goodsProductRelDTOList.add(goodsProductRelDTO);
+            // 更新省包平均供货价
+            updateAvgSupplyPrice(merchantType, goodsProductRelDTOList);
+        }
+        return respResultVO;
     }
 
     @ApiOperation(value = "修改商品审核状态", notes = "修改商品审核状态")

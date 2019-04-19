@@ -75,7 +75,7 @@
             and pgrr.LAN_ID = #{req.lanId}
         </if>
         <if test="null!=req.regionId and ''!=req.regionId">
-            and (pgrr.REGION_ID = #{req.regionId} or pgrr.REGION_ID = '-1')
+            and (pgrr.REGION_ID = #{req.regionId} or pgrr.REGION_ID = pgrr.LAN_ID)
         </if>
         ) p
         LEFT JOIN (select pc.TARGET_ID,IF(LOCATE('://',FILE_URL) >0,pc.FILE_URL,CONCAT('https://gy.ztesoft.com/',pc.FILE_URL)) as FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'

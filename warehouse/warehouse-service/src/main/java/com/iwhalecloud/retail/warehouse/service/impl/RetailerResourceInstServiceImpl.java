@@ -142,7 +142,6 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
             resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
             resourceRequestAddReq.setLanId(merchantDTO.getLanId());
             resourceRequestAddReq.setRegionId(merchantDTO.getCity());
-            resourceRequestAddReq.setExtend1(merchantId);
 
             resourceRequestAddReq.setMktResStoreId(mktResStoreId);
             ResultVO<String> resultVO = resourceRequestService.insertResourceRequest(resourceRequestAddReq);

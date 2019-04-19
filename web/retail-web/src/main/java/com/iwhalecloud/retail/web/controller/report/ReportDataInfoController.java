@@ -71,13 +71,17 @@ public class ReportDataInfoController extends BaseController {
     @PostMapping("/getStorePurchaserReport")
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(@RequestBody ReportStorePurchaserReq req) {
 		String userType=req.getUserType();
-		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商
-			String retailerCode=UserContext.getUser().getRelCode();
-			req.setRetailerCode(retailerCode);
-		}
+		//省公司，地市，零售商三种权限
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
 			String regionId = UserContext.getUser().getRegionId();
 			req.setLanId(regionId);
+		}
+		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
+			String retailerCode=UserContext.getUser().getRelCode();
+			req.setRetailerCode(retailerCode);
+		}
+		if(!"1".equals(userType) && !"2".equals(userType) && !"3".equals(userType)){
+			req.setLanId("999");
 		}
 		String lanId = req.getLanId();
 		if("430100".equals(lanId)){
@@ -153,13 +157,42 @@ public class ReportDataInfoController extends BaseController {
     @PostMapping(value="/StorePurchaserReportExport")
     public ResultVO StorePurchaserReportExport(@RequestBody ReportStorePurchaserReq req) {
 		String userType=req.getUserType();
-		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商
+		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
 			String retailerCode=UserContext.getUser().getRelCode();
 			req.setRetailerCode(retailerCode);
 		}
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
 			String regionId = UserContext.getUser().getRegionId();
 			req.setLanId(regionId);
+		}
+		if(!"1".equals(userType) && !"2".equals(userType) && !"3".equals(userType)){
+			req.setLanId("999");
+		}
+		String lanId = req.getLanId();
+		if("430100".equals(lanId)){
+			req.setLanId("731");
+		}else if("430200".equals(lanId)){
+			req.setLanId("733");
+		}else if("430300".equals(lanId)){
+			req.setLanId("732");
+		}else if("430400".equals(lanId)){
+			req.setLanId("734");
+		}else if("430500".equals(lanId)){
+			req.setLanId("739");
+		}else if("430600".equals(lanId)){
+			req.setLanId("730");
+		}else if("430700".equals(lanId)){
+			req.setLanId("736");
+		}else if("430800".equals(lanId)){
+			req.setLanId("744");
+		}else if("430900".equals(lanId)){
+			req.setLanId("737");
+		}else if("431000".equals(lanId)){
+			req.setLanId("735");
+		}else if("431300".equals(lanId)){//娄底
+			req.setLanId("738");
+		}else if("433100".equals(lanId)){//湘西土家族苗族自治州
+			req.setLanId("743");
 		}
         ResultVO result = new ResultVO();
         ResultVO<List<ReportStorePurchaserResq>> resultVO = iReportDataInfoService.getStorePurchaserReportdc(req);

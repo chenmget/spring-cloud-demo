@@ -121,4 +121,7 @@ public class GoodsForPageQueryResp implements Serializable {
 
     @ApiModelProperty(value = "产品ID")
     private String productId;
+
+    @ApiModelProperty(value = "订购数量")
+    private String supplyNum;
 }

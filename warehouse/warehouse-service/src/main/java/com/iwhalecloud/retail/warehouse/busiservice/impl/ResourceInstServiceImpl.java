@@ -712,7 +712,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         // 去重
         List<String> distinctList = mktResInstIds.stream().distinct().collect(Collectors.toList());
         // 找出串码实列
-        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(distinctList);
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(distinctList);
+        selectReq.setMktResStoreId(req.getMktResStoreId());
+        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
         log.info("ResourceInstServiceImpl.assembleData resourceInstManager.selectByIds req={},resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         // 筛选出状态不正确的串码实列(状态在校验的状态集中的数据)
         List<ResourceInstDTO> unStatusCdinsts = insts.stream().filter(t -> checkStatusCd.contains(t.getStatusCd())).collect(Collectors.toList());
@@ -837,8 +840,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
-    public List<ResourceInstDTO> selectByIds(List<String> idList) {
-        return resourceInstManager.selectByIds(idList);
+    public List<ResourceInstDTO> selectByIds(ResourceInstsGetByIdListAndStoreIdReq req) {
+        return resourceInstManager.selectByIds(req);
     }
 
     /**

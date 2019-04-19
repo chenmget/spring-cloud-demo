@@ -325,8 +325,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (null == destMerchantDTO) {
             return ResultVO.error("商家获取失败");
         }
-        List<ResourceInstDTO> resourceInstDTOList = resourceInstService.selectByIds(req.getMktResInstIds());
-        List<String> nbrList = resourceInstDTOList.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(req.getMktResInstIds());
+        selectReq.setMktResStoreId(req.getDestStoreId());
+        List<ResourceInstDTO> resourceInstDTOList = resourceInstService.selectByIds(selectReq);
 
         Boolean sameLanId = sourceMerchantDTO.getLanId() != null && destMerchantDTO.getLanId() != null && sourceMerchantDTO.getLanId().equals(destMerchantDTO.getLanId());
         // step1 如果跨地市不允许调拨(地包调货不考虑串码类型)
@@ -642,7 +644,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     }
 
     @Override
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO confirmReciveNbr(ConfirmReciveNbrReq req) {
         // step1 申请单状态改为完成
         String resReqId = req.getResReqId();
@@ -669,14 +670,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (null == list || list.isEmpty()) {
             return ResultVO.error("没有查找到申请单");
         }
-
         List<String> mktResInstIds = list.stream().map(ResourceReqDetailDTO::getMktResInstId).collect(Collectors.toList());
         // step2 把状态改为已调拨
         AdminResourceInstDelReq updateReq = new AdminResourceInstDelReq();
         List<String> checkStatusCd = Lists.newArrayList(
                 ResourceConst.STATUSCD.AUDITING.getCode(),
                 ResourceConst.STATUSCD.AVAILABLE.getCode(),
-                /** 已调拨状态不过滤 ResourceConst.STATUSCD.ALLOCATIONED.getCode(),**/
                 ResourceConst.STATUSCD.RESTORAGEING.getCode(),
                 ResourceConst.STATUSCD.RESTORAGED.getCode(),
                 ResourceConst.STATUSCD.SALED.getCode(),
@@ -688,12 +687,16 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(resReqId);
         updateReq.setUpdateStaff(req.getUpdateStaff());
-
+        updateReq.setDestStoreId(resourceRequestResp.getDestStoreId());
+        updateReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         ResultVO<List<String>> updateVO = resourceInstService.updateResourceInstByIds(updateReq);
+        log.info("SupplierResourceInstServiceImpl.confirmReciveNbr resourceInstService.updateResourceInstByIds req={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updateVO));
 
         // step3 领用方入库
-        // 找出串码实列
-        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(mktResInstIds);
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(mktResInstIds);
+        selectReq.setMktResStoreId(resourceRequestResp.getDestStoreId());
+        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
         // 按产品维度组装数据
         Map<String, List<ResourceInstDTO>> map = insts.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
         ResourceInstPutInReq instPutInReq = new ResourceInstPutInReq();
@@ -745,7 +748,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         updateReq.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(req.getResReqId());
-        updateReq.setMktResStoreId(list.get(0).getMktResStoreId());
+        updateReq.setMktResStoreId(list.get(0).getDestStoreId());
+        updateReq.setDestStoreId(list.get(0).getMktResStoreId());
         ResultVO resp = resourceInstService.updateResourceInstByIds(updateReq);
         log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resourceInstService.resourceInstPutIn req={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(resp));
         return ResultVO.success();

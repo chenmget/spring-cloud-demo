@@ -246,12 +246,11 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
 
     /**
      * 根据查询主键集合串码实列
-     *
-     * @param idList
+     * @param req
      * @return
      */
-    public List<ResourceInstDTO> selectByIds(List<String> idList) {
-        return resourceInstMapper.selectByIds(idList);
+    public List<ResourceInstDTO> selectByIds(ResourceInstsGetByIdListAndStoreIdReq req) {
+        return resourceInstMapper.selectByIds(req);
     }
 
     /**

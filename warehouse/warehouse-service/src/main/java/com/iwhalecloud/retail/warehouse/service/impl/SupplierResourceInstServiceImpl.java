@@ -155,7 +155,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
-        resourceInstValidReq.setMktResStoreId(mktResStoreId);
         List<String> existNbrs = resourceInstService.vaildOwnStore(resourceInstValidReq);
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         resourceInstAddResp.setExistNbrs(existNbrs);

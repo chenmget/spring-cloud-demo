@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.BPEPPayLogService;
 import com.iwhalecloud.retail.order2b.busiservice.PayService;
 import com.iwhalecloud.retail.order2b.busiservice.UpdateOrderFlowService;
@@ -31,6 +32,7 @@ import com.iwhalecloud.retail.partner.dto.req.MerchantAccountListReq;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -56,10 +58,17 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
     private AdvanceOrderManager advanceOrderManager;
 
     @Autowired
-    private  UpdateOrderFlowService updateOrderFlowService;
+    private UpdateOrderFlowService updateOrderFlowService;
+
+    @Autowired
+    private PayAuthorizationService payAuthorizationService;
+
+    @Value("${pay.type}")
+    private String payType;
 
     @Override
     public ResultVO<ToPayResp> toPay(ToPayReq req) {
+
         log.info("BestPayEnterprisePaymentImpl.toPay req={}", JSON.toJSONString(req));
         Order order = orderManager.getOrderById(req.getOrderId());
         if (null == order) {
@@ -72,10 +81,10 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
         /**
          * 校验订单状态
          */
-        UpdateOrderStatusRequest statusRequest=new UpdateOrderStatusRequest();
-        BeanUtils.copyProperties(req,statusRequest);
+        UpdateOrderStatusRequest statusRequest = new UpdateOrderStatusRequest();
+        BeanUtils.copyProperties(req, statusRequest);
         statusRequest.setFlowType(req.getOperationType());
-        CommonResultResp  checkResp= updateOrderFlowService.checkFlowType(statusRequest,order);
+        CommonResultResp checkResp = updateOrderFlowService.checkFlowType(statusRequest, order);
         if (checkResp.isFailure()) {
             return ResultVO.error(checkResp.getResultMsg());
         }
@@ -102,8 +111,16 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
         }
         String orgLoginCode = merchantAccountList.getResultData().get(0).getAccount();
         String operationType = req.getOperationType();
-        ToPayResp resp = bpepPayLogService.handlePayData(order.getOrderId(), amount, orgLoginCode, operationType);
-        return ResultVO.success(resp);
+
+        // 预授权支付
+        if ("pay_auth".equals(payType)) {
+            payAuthorizationService.authorizationApplication(req.getOrderId(), operationType);
+            return ResultVO.success();
+        } else {
+            ToPayResp resp = bpepPayLogService.handlePayData(order.getOrderId(), amount, orgLoginCode, operationType);
+            return ResultVO.success(resp);
+        }
+
     }
 
     @Override
@@ -137,7 +154,7 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
                 saveLogModel.setPayStatus(PayConsts.PAY_STATUS_2);
                 saveLogModel.setOperationType(orderPayInfoResp.getOperationType());
                 int i = bpepPayLogService.updateLog(saveLogModel);
-            }else if ("0".equals(orderStatus)) {
+            } else if ("0".equals(orderStatus)) {
                 OrderPayInfoResp orderPayInfoResp = this.bpepPayLogService.qryOrderPayInfoById(req.getORDERID());
                 // 已通知过，幂等操作
                 if (orderPayInfoResp.getPayStatus().equals(PayConsts.PAY_STATUS_0)) {

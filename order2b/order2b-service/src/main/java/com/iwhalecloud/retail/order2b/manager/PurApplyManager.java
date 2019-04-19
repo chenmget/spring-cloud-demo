@@ -39,5 +39,6 @@ public class PurApplyManager {
 	
 	public void delSearchApply(PurApplyReq req){
 		purApplyMapper.delSearchApply(req);
+		purApplyMapper.delSearchApplyItem(req);
 	}
 }

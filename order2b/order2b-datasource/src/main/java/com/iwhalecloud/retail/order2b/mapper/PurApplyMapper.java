@@ -23,4 +23,6 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public void crPurApplyItem(@Param("req") AddProductReq addProductReq);
 	
 	public void delSearchApply(@Param("req") PurApplyReq purApplyReq);
+	
+	public void delSearchApplyItem(@Param("req") PurApplyReq purApplyReq);
 }

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.order2b.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.order2b.entity.AdvanceOrder;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -21,4 +22,9 @@ public interface AdvanceOrderMapper extends BaseMapper<AdvanceOrder> {
      * @return
      */
     List<AdvanceOrder> queryOverTimePayOrder();
+
+    int updateAdvanceTransId(@Param("orderId") String orderId, @Param("reqSeq") String reqSeq);
+
+    int updateRestTransId(@Param("orderId") String orderId, @Param("reqSeq") String reqSeq);
+
 }

@@ -107,8 +107,11 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
-        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(distinctList);
-        log.info("ResouceInstTrackServiceImpl.asynUpdateTrackForAddmin resourceInstManager.selectByIds req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(distinctList);
+        selectReq.setMktResStoreId(req.getMktResStoreId());
+        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
+        log.info("ResouceInstTrackServiceImpl.asynUpdateTrackForAddmin resourceInstManager.selectByIds req={}, resp={}", JSON.toJSONString(selectReq), JSON.toJSONString(insts));
         insts.removeAll(unavailbaleNbrs);
         int count = 0;
         for (int i = 0; i < insts.size(); i++) {
@@ -342,7 +345,10 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             return;
         }
         List<String> distinctList = req.getMktResInstIds().stream().distinct().collect(Collectors.toList());
-        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(distinctList);
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(distinctList);
+        selectReq.setMktResStoreId(req.getMktResStoreId());
+        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
         log.info("ResouceInstTrackServiceImpl.asynAllocateTrackForSupplier resourceInstManager.selectByIds req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         int count = 0;
         for (int i = 0; i < insts.size(); i++) {
@@ -667,7 +673,10 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             return;
         }
         List<String> distinctList = req.getMktResInstIds().stream().distinct().collect(Collectors.toList());
-        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(distinctList);
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(distinctList);
+        selectReq.setMktResStoreId(req.getMktResStoreId());
+        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
         log.info("ResouceInstTrackServiceImpl.allocateResourceInstForRetail resourceInstManager.selectByIds req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         int count = 0;
         for (int i = 0; i < insts.size(); i++) {

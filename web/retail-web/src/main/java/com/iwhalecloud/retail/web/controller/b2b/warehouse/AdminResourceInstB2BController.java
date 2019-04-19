@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetByIdListAndStoreIdReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
@@ -95,16 +96,15 @@ public class AdminResourceInstB2BController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PutMapping(value="delResourceInst")
+    @DeleteMapping(value="delResourceInst")
     @UserLoginToken
-    public ResultVO delResourceInst(@RequestParam(value = "idList") @ApiParam(value = "id列表") List<String> idList) {
-        if(CollectionUtils.isEmpty(idList)) {
-            return ResultVO.error("id can not be null");
-        }
+    public ResultVO delResourceInst(@RequestBody @Valid ResourceInstsGetByIdListAndStoreIdReq delReq) {
+
         String userId = UserContext.getUserId();
         AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         req.setUpdateStaff(userId);
-        req.setMktResInstIds(idList);
+        req.setMktResInstIds(delReq.getMktResInstIdList());
+        req.setDestStoreId(delReq.getMktResStoreId());
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
 

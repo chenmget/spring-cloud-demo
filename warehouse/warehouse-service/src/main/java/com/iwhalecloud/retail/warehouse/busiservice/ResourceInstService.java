@@ -93,10 +93,10 @@ public interface ResourceInstService {
 
     /**
      * 根据查询主键集合串码实列
-     * @param idList
+     * @param req
      * @return
      */
-    List<ResourceInstDTO> selectByIds(List<String> idList);
+    List<ResourceInstDTO> selectByIds(ResourceInstsGetByIdListAndStoreIdReq req);
 
     /**
      * 根据串码查商家信息

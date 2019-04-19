@@ -207,16 +207,15 @@
         and t.mkt_res_store_id = #{mktResStoreId}
     </select>
 
-    <select id="selectByIds" parameterType="java.util.List"
+    <select id="selectByIds" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetByIdListAndStoreIdReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO">
         select <include refid="allFields" />
         from mkt_res_inst t
         where t.mkt_res_inst_id in
-        <if test="null!=idList and idList.size>0">
-            <foreach item="item" index="index" open="(" separator="," close=")" collection="idList">
-                #{item}
-            </foreach>
-        </if>
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstIdList">
+            #{item}
+        </foreach>
+        and t.mkt_res_store_id = #{mktResStoreId}
     </select>
 
     <select id="listInstsByNbr" parameterType="java.util.List"
@@ -247,9 +246,7 @@
                 #{item}
             </foreach>
         </if>
-        <if test="null!=mktResStoreId and ''!=mktResStoreId">
-            and t.mkt_res_store_id = #{mktResStoreId}
-        </if>
+        and t.mkt_res_store_id = #{mktResStoreId}
 
     </select>
 

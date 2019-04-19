@@ -58,10 +58,10 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst>{
 
     /**
      * 根据查询主键集合串码实列
-     * @param idList
+     * @param req
      * @return
      */
-    public List<ResourceInstDTO> selectByIds(@Param("idList")List<String> idList);
+    public List<ResourceInstDTO> selectByIds(ResourceInstsGetByIdListAndStoreIdReq req);
 
     /**
      * 根据串码查询串码实列列表

@@ -247,16 +247,18 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         updateReq.setDestStoreId(resourceRequestResp.getDestStoreId());
         updateReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         ResultVO<List<String>> updateVO = resourceInstService.updateResourceInstByIds(updateReq);
+        log.info("RetailerResourceInstServiceImpl.pickResourceInst resourceInstService.updateResourceInstByIds req={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updateVO));
 
         // step3 领用方入库
-        // 找出串码实列
-        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(mktResInstIds);
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(mktResInstIds);
+        selectReq.setMktResStoreId(resourceRequestResp.getDestStoreId());
+        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
         // 筛选出状态不正确的串码实列,只有调拨中的可用
         String allocationedStatuscd = ResourceConst.STATUSCD.ALLOCATIONED.getCode();
         List<ResourceInstDTO> allocationedInsts = insts.stream().filter(t -> allocationedStatuscd.equals(t.getStatusCd())).collect(Collectors.toList());
         // 按产品维度组装数据
         Map<String, List<ResourceInstDTO>> map = allocationedInsts.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
-
         ResourceInstPutInReq instPutInReq = new ResourceInstPutInReq();
         instPutInReq.setMerchantId(req.getMerchantId());
         instPutInReq.setInsts(map);
@@ -267,7 +269,6 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         instPutInReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         ResultVO resultResourceInstPutIn = resourceInstService.resourceInstPutIn(instPutInReq);
         log.info("RetailerResourceInstServiceImpl.pickResourceInst resourceInstService.resourceInstPutIn req={}, resp={}", JSON.toJSONString(instPutInReq), JSON.toJSONString(resultResourceInstPutIn));
-
         return ResultVO.success(instPutInReq.getUnUse());
     }
 
@@ -421,7 +422,10 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
             successMessage = ResourceConst.ALLOCATE_AUDITING_MSG;
         }
         //新增申请单
-        List<ResourceInstDTO> resourceInstDTOList = resourceInstManager.selectByIds(req.getMktResInstIds());
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(req.getMktResInstIds());
+        selectReq.setMktResStoreId(req.getMktResStoreId());
+        List<ResourceInstDTO> resourceInstDTOList = resourceInstManager.selectByIds(selectReq);
         List<ResourceRequestAddReq.ResourceRequestInst> resourceRequestInsts = new ArrayList<>();
         for (ResourceInstDTO resourceInstDTO : resourceInstDTOList) {
             ResourceRequestAddReq.ResourceRequestInst resourceRequestInst = new ResourceRequestAddReq.ResourceRequestInst();

@@ -16,9 +16,17 @@ import lombok.Data;
 public class MemberMerchantQueryForPageResp implements java.io.Serializable {
     
   	private static final long serialVersionUID = -6100356224940509910L;
-  
-  	
-  	//属性 begin
+
+	/** 非当前表字段 **/
+	/**
+	 * 会员等级ID
+	 */
+	@ApiModelProperty(value = "会员等级名称")
+	private String lvName;
+	/** 非当前表字段 **/
+
+
+	//属性 begin
 	/**
   	 * 商家ID
   	 */

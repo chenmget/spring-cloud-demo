@@ -5,8 +5,9 @@
 <mapper namespace="com.iwhalecloud.retail.member.mapper.MemberMerchantMapper">
 
 <sql id="allFields">
-    t.MERCH_ID 
-    ,t.MEM_ID 
+    t.ID
+    ,t.MERCH_ID
+    ,t.MEM_ID
     ,t.LV_ID 
     ,t.STATUS 
     ,t.UPDATE_DATE 
@@ -14,8 +15,10 @@
 </sql>
     <select id="queryMemberMerchantForPage"
             resultType="com.iwhalecloud.retail.member.dto.response.MemberMerchantQueryForPageResp">
-        select <include refid="allFields"/>
+        select t.ID, t.MERCH_ID, t.MEM_ID, t.LV_ID, t.STATUS, t.UPDATE_DATE, t.UPDATE_STAFF,
+               l.LV_NAME
         from mem_member_merchant t
+        left join mem_member_level l on t.LV_ID = l.LV_ID
         where 1=1
         <if test="null != req.merchId and '' != req.merchId">
             and t.MERCH_ID = #{req.merchId}

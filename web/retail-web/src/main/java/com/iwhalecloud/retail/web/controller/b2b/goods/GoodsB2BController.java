@@ -9,18 +9,12 @@ import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsResultCodeEnum;
-import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsActRelDTO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsDTO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.*;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 import com.iwhalecloud.retail.goods2b.service.AttrSpecService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.CatService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantAccountDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -50,6 +44,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -96,6 +91,9 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @Reference
     private GoodsProductRelService goodsProductRelService;
+
+    @Reference
+    private GoodsSaleNumService goodsSaleNumService;
 
     @ApiOperation(value = "添加商品", notes = "添加商品")
     @ApiResponses({
@@ -661,6 +659,23 @@ public class GoodsB2BController extends GoodsBaseController {
             merchantDTO = merchantDTOResultVO.getResultData();
         }
         return ResultVO.success(merchantDTO);
+
+    }
+
+    @ApiOperation(value = "根据Key查询商品排行榜", notes = "根据Key查询商品排行榜")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/queryGoodsSaleOrder")
+    ResultVO<List<GoodsSaleNumDTO>> queryGoodsSaleOrder(@RequestParam( value = "cacheKey")String cacheKey){
+        log.info("GoodsController queryGoodsSaleOrder goodsId={}", cacheKey);
+        List<GoodsSaleNumDTO> list = new ArrayList<>();
+        ResultVO<List<GoodsSaleNumDTO>> listResultVO = goodsSaleNumService.getGoodsSaleOrder(cacheKey);
+        if(listResultVO.isSuccess()){
+            list = listResultVO.getResultData();
+        }
+        return ResultVO.success(list);
 
     }
 }

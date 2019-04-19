@@ -179,7 +179,7 @@ public class GoodsManagerReference {
     /**
      * 购买数量，校验
      */
-    public boolean checkBuyCount(List<CartItemModel> cartItemModelList, PreCreateOrderReq request) {
+    public ResultVO checkBuyCount(List<CartItemModel> cartItemModelList, PreCreateOrderReq request) {
         List<BuyCountCheckDTO> buyCountCheckDTOS = new ArrayList<>();
         for (CartItemModel cartItemModel : cartItemModelList) {
             BuyCountCheckDTO buyCountCheckDTO = new BuyCountCheckDTO();
@@ -196,10 +196,7 @@ public class GoodsManagerReference {
         goodsProductRelEditReq.setMarketingActivityId(request.getActivityId());
         ResultVO<Boolean> resultVO = goodsProductRelService.checkBuyCount(goodsProductRelEditReq);
         log.info("gs_10010_qryMinAndMaxNum req{},resp{}", JSON.toJSONString(goodsProductRelEditReq), JSON.toJSONString(resultVO));
-        if (resultVO.isSuccess() && resultVO.getResultData()) {
-            return true;
-        }
-        return false;
+       return resultVO;
     }
 
     /**

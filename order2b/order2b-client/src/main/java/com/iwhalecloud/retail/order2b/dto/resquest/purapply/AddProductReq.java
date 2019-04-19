@@ -16,6 +16,7 @@ public class AddProductReq extends PageVO implements Serializable {
 	private String brandName;	//品牌
 	private String unitType;	//产品型号
 	private String specName;	//规格
+	private String color;	//颜色
 	private String cost;	//零售价
 	private String snCount;	//数量(采购数量)
 	private String priceInStore;  //供货价(采购价格)

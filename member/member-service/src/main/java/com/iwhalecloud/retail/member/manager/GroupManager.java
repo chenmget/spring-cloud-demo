@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.member.manager;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.member.common.MemberConst;
@@ -51,9 +50,7 @@ public class GroupManager{
     }
 
     public GroupDTO queryGroupById(String groupId) {
-        QueryWrapper<Group> queryWrapper = new QueryWrapper<Group>();
-        queryWrapper.eq("GROUP_ID",groupId);
-        Group group = groupMapper.selectOne(queryWrapper);
+        Group group = groupMapper.selectById(groupId);
         GroupDTO groupDTO = new GroupDTO();
         BeanUtils.copyProperties(group, groupDTO);
         return groupDTO;

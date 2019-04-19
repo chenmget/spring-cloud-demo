@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-//import com.iwhalecloud.retail.report.entity.RptPartnerOperatingDay;
-
 /**
  * Created by jiyou on 2019/4/11.
  */
@@ -27,16 +25,7 @@ public class ReportStInvCityServiceImpl implements ReportStInvCityService {
         Page<RptPartnerOperatingDay> pageRptPartnerOperatingDay = reportStInvCityManager.listStInvCity(req);
         List<RptPartnerOperatingDay> listRptPartnerOperatingDay = pageRptPartnerOperatingDay.getRecords();
 
-        for (RptPartnerOperatingDay rsic : listRptPartnerOperatingDay) {
-            Double warnStatus = Double.valueOf(rsic.getWarnStatus());
-            if (warnStatus >= 10) {
-                rsic.setWarnStatus("充裕");
-            } else if (warnStatus <= 5) {
-                rsic.setWarnStatus("严重缺货");
-            } else {
-                rsic.setWarnStatus("缺货");
-            }
-        }
+        handleResult(listRptPartnerOperatingDay);
 
         return ResultVO.success(pageRptPartnerOperatingDay);
 
@@ -47,7 +36,17 @@ public class ReportStInvCityServiceImpl implements ReportStInvCityService {
         
         List<RptPartnerOperatingDay> listRptPartnerOperatingDay = reportStInvCityManager.listStInvCityExport(req);
 
+        handleResult(listRptPartnerOperatingDay);
+
+        return ResultVO.success(listRptPartnerOperatingDay);
+    }
+
+    private void handleResult(List<RptPartnerOperatingDay> listRptPartnerOperatingDay){
         for (RptPartnerOperatingDay rsic : listRptPartnerOperatingDay) {
+            if(rsic.getWarnStatus() == null){
+                rsic.setWarnStatus("严重缺货");
+                continue;
+            }
             Double warnStatus = Double.valueOf(rsic.getWarnStatus());
             if (warnStatus >= 10) {
                 rsic.setWarnStatus("充裕");
@@ -57,7 +56,6 @@ public class ReportStInvCityServiceImpl implements ReportStInvCityService {
                 rsic.setWarnStatus("缺货");
             }
         }
-
-        return ResultVO.success(listRptPartnerOperatingDay);
     }
+
 }

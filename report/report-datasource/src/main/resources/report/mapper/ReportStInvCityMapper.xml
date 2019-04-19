@@ -34,10 +34,10 @@
               sum(rpod.register_num) as register_num,
               sum(rpod.trans_out_num) as trans_out_num,
               sum(rpod.return_num) as return_num,
-              sum(rpod.sell_num/7) as avg7,
+              (select sum(sell_num/7) from rpt_partner_operating_day WHERE date &gt;= date_sub(curdate(),interval 7 day)) as avg7,
               sum(rpod.stock_num) as stock_num,
-              sum(stock_num/(rpod.sell_num/7)) as turnover_rate,
-              sum(stock_num/(rpod.sell_num/7)) as warnStatus
+              (select sum(stock_num/(sell_num/7)) from rpt_partner_operating_day WHERE date &gt;= date_sub(curdate(),interval 7 day)) as turnover_rate,
+              (select sum(stock_num/(sell_num/7)) from rpt_partner_operating_day WHERE date &gt;= date_sub(curdate(),interval 7 day)) as warnStatus
             from
               rpt_partner_operating_day as rpod
             where 1 = 1

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.workflow.config;
 import com.baomidou.mybatisplus.core.incrementer.IKeyGenerator;
 import com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import com.iwhalecloud.retail.workflow.incrementer.LogSqlInterceptor;
 import com.iwhalecloud.retail.workflow.incrementer.MysqlKeyGenerator;
 import com.iwhalecloud.retail.workflow.incrementer.TelDbKeyGenerator;
 import org.mybatis.spring.annotation.MapperScan;
@@ -33,6 +34,11 @@ public class MybatisPlusConfig {
         }
 
         return new MysqlKeyGenerator();
+    }
+
+    @Bean
+    public LogSqlInterceptor getLogSqlInterceptor(){
+       return new LogSqlInterceptor();
     }
 
     public static final String DB_TYPE_MYSQL = "MySql";

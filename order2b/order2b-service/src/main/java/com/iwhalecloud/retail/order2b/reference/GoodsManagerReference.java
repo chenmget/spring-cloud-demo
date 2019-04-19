@@ -194,7 +194,7 @@ public class GoodsManagerReference {
         goodsProductRelEditReq.setMerchantId(request.getUserCode());
         goodsProductRelEditReq.setIsAdvanceSale(request.getOrderCat());
         goodsProductRelEditReq.setMarketingActivityId(request.getActivityId());
-        ResultVO<Boolean> resultVO = goodsProductRelService.checkBuyCount(goodsProductRelEditReq);
+        ResultVO resultVO = goodsProductRelService.checkBuyCount(goodsProductRelEditReq);
         log.info("gs_10010_qryMinAndMaxNum req{},resp{}", JSON.toJSONString(goodsProductRelEditReq), JSON.toJSONString(resultVO));
        return resultVO;
     }

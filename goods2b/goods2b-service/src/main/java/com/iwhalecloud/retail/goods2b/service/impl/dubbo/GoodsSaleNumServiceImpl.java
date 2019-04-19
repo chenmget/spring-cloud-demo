@@ -3,15 +3,17 @@ package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.FileConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.GoodsSaleNumDTO;
+import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
+import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
 import com.iwhalecloud.retail.goods2b.entity.Goods;
 import com.iwhalecloud.retail.goods2b.manager.GoodsManager;
+import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsSaleNumService;
 import com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO;
 import com.iwhalecloud.retail.order2b.service.GoodSaleOrderService;
-import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +42,9 @@ public class GoodsSaleNumServiceImpl implements GoodsSaleNumService {
     @Autowired
     private GoodsManager goodsManager;
 
+    @Autowired
+    private ProdFileManager prodFileManager;
+
     @Override
     @Cacheable(value = GoodsConst.CACHE_NAME_GOODS_SALE_ORDER, key = "#cacheKey")
     public ResultVO<List<GoodsSaleNumDTO>> getGoodsSaleOrder(String cacheKey) {
@@ -67,6 +72,8 @@ public class GoodsSaleNumServiceImpl implements GoodsSaleNumService {
                     list.add(goodsSaleNumDTO);
                 }
             }
+
+            setGoodsImageUrl(list,goodsIds);
         }
 
         return ResultVO.success(list);
@@ -77,5 +84,22 @@ public class GoodsSaleNumServiceImpl implements GoodsSaleNumService {
     public ResultVO<Boolean> cleanCacheGoodSaleNum(String cacheKey) {
         log.info("GoodSaleOrderServiceImpl.cleanCacheGoodSaleNum clean cacheKey = {}!!!",cacheKey);
         return ResultVO.success(true);
+    }
+
+    private void setGoodsImageUrl(List<GoodsSaleNumDTO> goodsDTOList, List<String> goodsIdList) {
+        // 查询商品默认图片
+        List<ProdFileDTO> prodFileDTOList = prodFileManager.queryGoodsImage(goodsIdList, FileConst.SubType.THUMBNAILS_SUB);
+
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(prodFileDTOList)) {
+            for (GoodsSaleNumDTO goodsSaleNumDTO : goodsDTOList) {
+                // 设置缩略图
+                for (ProdFileDTO prodFileDTO : prodFileDTOList) {
+                    if (goodsSaleNumDTO.getGoodsId().equals(prodFileDTO.getTargetId())) {
+                        goodsSaleNumDTO.setImageUrl(prodFileDTO.getFileUrl());
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

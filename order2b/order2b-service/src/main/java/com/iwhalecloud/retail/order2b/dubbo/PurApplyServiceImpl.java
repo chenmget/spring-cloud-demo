@@ -1,11 +1,14 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
@@ -52,4 +55,39 @@ public class PurApplyServiceImpl implements PurApplyService {
 		purApplyManager.delSearchApply(req);
 	}
 
+	@Override
+	public ApplyHeadResp hqShenQingDaoHao() {
+		return purApplyManager.hqShenQingDaoHao();
+	}
+
+	@Override
+	public String hqDiShiBuMen(String dsbm) {
+		return purApplyManager.hqDiShiBuMen(dsbm);
+	}
+
+	@Override
+	public ProcureApplyReq ckApplyData1(PurApplyReq req) {
+		return purApplyManager.ckApplyData1(req);
+	}
+	
+	@Override
+	public List<AddProductReq> ckApplyData2(PurApplyReq req) {
+		return purApplyManager.ckApplyData2(req);
+	}
+
+	@Override
+	public int isHaveSave(String applyId){
+		return purApplyManager.isHaveSave(applyId);
+	}
+	
+	@Override
+	public void updatePurApply(String applyId){
+		purApplyManager.updatePurApply(applyId);
+	}
+	
+	@Override
+	public String getMerchantId(String merchantCode){
+		return purApplyManager.getMerchantId(merchantCode);
+	}
 }
+

@@ -25,11 +25,11 @@ public class GoodsSaleNumServiceImplTest {
     @Test
     public void test(){
 
-//        goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_15);
-//        goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_7);
+        goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_30);
+        goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_7);
 
-//        ResultVO<List<GoodsSaleNumDTO>> resultVO = goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_15);
-        ResultVO<List<GoodsSaleNumDTO>> resultVO = goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_7);
+        ResultVO<List<GoodsSaleNumDTO>> resultVO = goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_30);
+        ResultVO<List<GoodsSaleNumDTO>> resultVO1 = goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_7);
 
         System.out.println(resultVO.getResultData());
     }

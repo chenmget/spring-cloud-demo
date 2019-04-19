@@ -22,5 +22,4 @@ public class PurApplyReq extends PageVO implements Serializable {
 	private	String lanId;	//本地网
 	private String userType;	//看是地市管理员还是省管理员
 	
-	
 }

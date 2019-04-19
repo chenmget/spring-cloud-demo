@@ -865,9 +865,11 @@ public class GoodsServiceImpl implements GoodsService {
             // 设置前置补贴价格
             goods.setDeliveryPrice(goods.getDeliveryPrice());
             goods.setIsPresubsidy(false);
-            int isSubsidy = goods.getIsSubsidy();
-            if(GoodsConst.IsSubsidy.IS_SUBSIDY.getCode() == isSubsidy){
-                this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
+            if(null != goods.getIsSubsidy()){
+                int isSubsidy = goods.getIsSubsidy();
+                if(GoodsConst.IsSubsidy.IS_SUBSIDY.getCode() == isSubsidy){
+                    this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
+                }
             }
         }
         long endTime = System.currentTimeMillis();

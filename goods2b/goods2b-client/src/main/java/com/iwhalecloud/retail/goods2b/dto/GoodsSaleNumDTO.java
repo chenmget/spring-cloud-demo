@@ -20,4 +20,7 @@ public class GoodsSaleNumDTO implements Serializable {
 
     @ApiModelProperty(value = "销售数量")
     private Integer saleNum;
+
+    @ApiModelProperty(value = "缩略图")
+    private String imageUrl;
 }

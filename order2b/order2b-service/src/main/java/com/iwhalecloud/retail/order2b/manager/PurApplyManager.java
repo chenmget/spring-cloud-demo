@@ -1,11 +1,15 @@
 package com.iwhalecloud.retail.order2b.manager;
 
+import java.util.List;
+
 import javax.annotation.Resource;
 
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
@@ -39,6 +43,33 @@ public class PurApplyManager {
 	
 	public void delSearchApply(PurApplyReq req){
 		purApplyMapper.delSearchApply(req);
-		purApplyMapper.delSearchApplyItem(req);
+	}
+	
+	public ApplyHeadResp hqShenQingDaoHao() {
+		return purApplyMapper.hqShenQingDaoHao();
+	}
+	
+	public String hqDiShiBuMen(String dsbm) {
+		return purApplyMapper.hqDiShiBuMen(dsbm);
+	}
+	
+	public ProcureApplyReq ckApplyData1(PurApplyReq req) {
+		return purApplyMapper.ckApplyData1(req);
+	}
+	
+	public List<AddProductReq> ckApplyData2(PurApplyReq req) {
+		return purApplyMapper.ckApplyData2(req);
+	}
+	
+	public int isHaveSave(String applyId){
+		return purApplyMapper.isHaveSave(applyId);
+	}
+	
+	public void updatePurApply(String applyId){
+		purApplyMapper.updatePurApply(applyId);
+	}
+	
+	public String getMerchantId(String merchantCode){
+		return purApplyMapper.getMerchantId(merchantCode);
 	}
 }

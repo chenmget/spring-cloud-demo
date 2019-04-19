@@ -62,10 +62,10 @@ public class AdvanceSaleOrderBuilderServiceImpl implements AdvanceSaleOrderBuild
         /**
          * 购买数量校验（最大，最小）
          */
-        boolean b = goodsManagerReference.checkBuyCount(list,request);
-        if (!b) {
+        ResultVO b = goodsManagerReference.checkBuyCount(list,request);
+        if (!b.isSuccess()) {
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            resp.setResultMsg("购买数量校验失败，未达到规则要求");
+            resp.setResultMsg(b.getResultMsg());
             return resp;
         }
 

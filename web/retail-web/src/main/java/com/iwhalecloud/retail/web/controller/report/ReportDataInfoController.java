@@ -30,6 +30,7 @@ import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.RegionsListReq;
 import com.iwhalecloud.retail.system.dto.response.RegionsGetResp;
 import com.iwhalecloud.retail.system.service.RegionsService;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
@@ -138,10 +139,11 @@ public class ReportDataInfoController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
 	@GetMapping(value="/getUerRoleForView")
+	@UserLoginToken
     public ResultVO<List<ReportStorePurchaserResq>> getUerRoleForView() {
 		log.info("**************come in getUerRoleForView function()********");
 		ReportStorePurchaserReq req = new ReportStorePurchaserReq();
-		String userId = UserContext.getUser().getUserId();
+		String userId = UserContext.getUserId();
 		log.info("**************userId = "+userId+"********");
 		req.setUserId(userId);
 		return iReportDataInfoService.getUerRoleForView(req);

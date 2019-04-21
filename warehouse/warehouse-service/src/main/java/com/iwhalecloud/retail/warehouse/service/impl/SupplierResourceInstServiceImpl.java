@@ -298,7 +298,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
      */
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req) {
+    public synchronized ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req) {
         //根据仓库查使用对象
         ResultVO<MerchantDTO> sourceMerchantVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getMktResStoreId(), JSON.toJSONString(sourceMerchantVO));

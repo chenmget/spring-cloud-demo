@@ -41,4 +41,9 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public void updatePurApply(@Param("applyId") String applyId);
 	
 	public String getMerchantId(@Param("merchantCode") String merchantCode);
+	
+	public String hqSeqFileId();
+	
+	public String hqSeqItemId();
+	
 }

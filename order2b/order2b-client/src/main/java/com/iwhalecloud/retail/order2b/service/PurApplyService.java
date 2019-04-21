@@ -41,5 +41,10 @@ public interface PurApplyService {
 	public void updatePurApply(String applyId);
 	
 	public String getMerchantId(String merchantCode);
+	
+	public String hqSeqFileId();
+	
+	public String hqSeqItemId();
+
 
 }

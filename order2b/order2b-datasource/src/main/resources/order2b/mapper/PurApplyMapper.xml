@@ -137,7 +137,7 @@
   </select>
   
   <select id="hqShenQingDaoHao"  resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp">
-  	select (max(apply_code)+1) as applyCode from pur_apply
+  	select seq_pur_apply_id.nextval as applyId
   </select>
   
   <select id="hqDiShiBuMen" parameterType="String" resultType="String">
@@ -205,6 +205,12 @@
 	SELECT merchant_id FROM par_merchant WHERE 1=1 AND merchant_code=#{merchantCode}
   </select>
   
+  <select id="hqSeqFileId"  resultType="String">
+  	select seq_pur_apply_file_id.nextval as fileId
+  </select>
   
+  <select id="hqSeqItemId"  resultType="String">
+  	select seq_pur_apply_item_id.nextval as itemId
+  </select>
 </mapper>
 

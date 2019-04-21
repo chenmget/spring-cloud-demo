@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.poi.ss.formula.functions.T;
+import org.junit.Test;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,14 +68,16 @@ public class cgSearchApplyController extends BaseController {
     })
 	@GetMapping(value="/tcProcureApplybefore")
     public ResultVO<ApplyHeadResp> tcProcureApplybefore() {
-		UserDTO user = UserContext.getUser();
-//		UserDTO user = new UserDTO();
-//		user.setRelCode("CS00011001");
-//		user.setUserName("深圳市金立通信设备有限公司");
-//		user.setLanId("731");
-//		user.setRegionId("73101");
+//		UserDTO user = UserContext.getUser();
+		UserDTO user = new UserDTO();
+		user.setRelCode("CS00011001");
+		user.setUserName("深圳市金立通信设备有限公司");
+		user.setLanId("731");
+		user.setRegionId("73101");
 		
 		ApplyHeadResp applyHeadResp = purApplyService.hqShenQingDaoHao();
+		Date date = new Date();
+		String applyCode = date.getTime() + "";
 		String relCode = user.getRelCode();//申请人工号    写表的
 		String applyMerchantCode = user.getUserName();//申请人名称  展示的
 		String lanId = user.getLanId();//申请地市  写表的
@@ -87,7 +90,9 @@ public class cgSearchApplyController extends BaseController {
 		applyHeadResp.setRelCode(relCode);
 		applyHeadResp.setLanId(lanId);
 		applyHeadResp.setRegionId(regionId);
-		applyHeadResp.setApplyId(applyHeadResp.getApplyCode());
+		applyHeadResp.setApplyCode(applyCode);
+		//applyHeadResp.setApplyId(applyHeadResp.getApplyCode());
+		
 		return ResultVO.success(applyHeadResp);
     }
 	
@@ -111,7 +116,10 @@ public class cgSearchApplyController extends BaseController {
 			}
 			statusCd = "20";
 		}
-		String createStaff = UserContext.getUser().getUserId();
+		//String createStaff = UserContext.getUser().getUserId();
+		String createStaff = "1";
+		
+		
 		//获取供应商ID和申请商家ID
 		String merchantCode = req.getMerchantCode();
 		String applyMerchantCode = req.getApplyMerchantCode();
@@ -119,7 +127,9 @@ public class cgSearchApplyController extends BaseController {
 		String applyMerchantId = purApplyService.getMerchantId(applyMerchantCode);
 		Date date = new Date();
 		String createDate = date.toLocaleString();//创建时间
-		String updateStaff =UserContext.getUser().getUserId();
+		//String updateStaff =UserContext.getUser().getUserId();
+		String updateStaff ="1";
+		
 		String updateDate = date.toLocaleString();
 		String statusDate = date.toLocaleString();
 		req.setStatusCd(statusCd);
@@ -130,11 +140,11 @@ public class cgSearchApplyController extends BaseController {
 		req.setStatusDate(statusDate);
 		req.setSupplier(supplier);
 		req.setApplyMerchantId(applyMerchantId);
-		req.setFileId(req.getApplyId());
 		List<AddProductReq> list = req.getAddProductReq();
 		for(int i=0;i<list.size();i++){
 			AddProductReq addProductReq = list.get(i);
-			addProductReq.setApplyItemId(req.getApplyId());
+			String itemId = purApplyService.hqSeqItemId();
+			addProductReq.setApplyItemId(itemId);
 			addProductReq.setApplyId(req.getApplyId());
 			addProductReq.setStatusCd("1000");
 			addProductReq.setCreateStaff(createStaff);
@@ -146,7 +156,11 @@ public class cgSearchApplyController extends BaseController {
 			purApplyService.crPurApplyItem(addProductReq);
 		}
 		//写表PUR_APPLY_FILE(采购申请单附件表)
-		purApplyService.crPurApplyFile(req);
+		if(req.getFileUrl() != null){
+			String fileId = purApplyService.hqSeqFileId();
+			req.setFileId(fileId);
+			purApplyService.crPurApplyFile(req);
+		}
 		//写表PUR_APPLY(采购申请单)
 		purApplyService.tcProcureApply(req);
 		return ResultVO.success();
@@ -176,5 +190,6 @@ public class cgSearchApplyController extends BaseController {
 		procureApplyReq1.setAddProductReq(procureApplyReq2);
 		return ResultVO.success(procureApplyReq1);
 	}
+	
 	
 }

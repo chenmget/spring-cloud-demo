@@ -91,5 +91,16 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public String getMerchantId(String merchantCode){
 		return purApplyManager.getMerchantId(merchantCode);
 	}
+	
+	@Override
+	public String hqSeqFileId(){
+		return purApplyManager.hqSeqFileId();
+	}
+	
+	@Override
+	public String hqSeqItemId(){
+		return purApplyManager.hqSeqItemId();
+	}
+	
 }
 

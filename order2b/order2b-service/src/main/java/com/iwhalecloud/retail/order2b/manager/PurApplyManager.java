@@ -72,4 +72,13 @@ public class PurApplyManager {
 	public String getMerchantId(String merchantCode){
 		return purApplyMapper.getMerchantId(merchantCode);
 	}
+	
+	public String hqSeqFileId(){
+		return purApplyMapper.hqSeqFileId();
+	}
+	
+	public String hqSeqItemId(){
+		return purApplyMapper.hqSeqItemId();
+	}
+	
 }

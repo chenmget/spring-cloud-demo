@@ -267,6 +267,58 @@ public class GoodsProductB2BController {
     }
 
 
+    @ApiOperation(value = "分页查询产品(采购专用)", notes = "条件分页查询(采购专用)")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="selectPageProductAdmincg")
+    @UserLoginToken
+    public ResultVO<Page<ProductPageResp>> selectPageProductAdmincg(@RequestBody ProductsPageReq req) {
+        String merchantId = null ;
+        Boolean isAdminType = UserContext.isAdminType();
+        Integer userFounder = UserContext.getUser().getUserFounder();
+        if (UserContext.getUserOtherMsg() != null && UserContext.getUserOtherMsg().getMerchant() != null && !isAdminType && SystemConst.USER_FOUNDER_8 != userFounder) {
+            merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
+        }else if(isAdminType){
+            // 管理员查看所有
+            ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
+            List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
+            log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+            return productPageRespPage;
+        }else if(SystemConst.USER_FOUNDER_8 == userFounder){
+            // 厂商查看自己的产品
+            merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
+            req.setManufacturerId(merchantId);
+            ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
+            List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
+            log.info("GoodsProductB2BController.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+            return productPageRespPage;
+        }
+        merchantId = req.getManufacturerId();
+        // 供应商、零售商
+        ResultVO<List<String>> productIdListVO = merchantRulesService.getProductAndBrandPermission(merchantId);
+        log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, merchantId={}", merchantId, JSON.toJSONString(productIdListVO));
+        if (productIdListVO.isSuccess() && !CollectionUtils.isEmpty(productIdListVO.getResultData())) {
+            // // 设置机型权限
+            List<String> productIdList = productIdListVO.getResultData();
+            List<String> originProductList = req.getProductIdList();
+            if (!CollectionUtils.isEmpty(originProductList)) {
+                String nullListValue = "null";
+                originProductList = originProductList.stream().filter(t -> productIdList.contains(t)).collect(Collectors.toList());
+                originProductList = CollectionUtils.isEmpty(originProductList) ? Lists.newArrayList(nullListValue) : originProductList;
+                req.setProductIdList(originProductList);
+            }else {
+                req.setProductIdList(productIdList);
+            }
+        }
+
+        ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
+        List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
+        log.info("GoodsProductB2BController.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+        return productPageRespPage;
+
+    }
 
     @ApiOperation(value = "绿色通道添加串码查询产品", notes = "查询操作")
     @ApiResponses({

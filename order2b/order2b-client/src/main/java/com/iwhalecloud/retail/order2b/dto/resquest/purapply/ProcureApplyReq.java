@@ -17,6 +17,7 @@ public class ProcureApplyReq extends PageVO implements Serializable {
 	private String isSave;//如果是1就是保存，2就是提交
 	private String applyId;	//	申请单ID
 	private String applyCode;	//单号申请
+	private String applyName;	//..
 	private String applyMerchantCode;	//申请人
 	private String applyAdress;	//申请地市
 	private String applyDepartment;	//申请部门

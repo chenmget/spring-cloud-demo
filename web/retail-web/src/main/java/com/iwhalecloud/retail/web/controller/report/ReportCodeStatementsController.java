@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.report;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +28,7 @@ import com.iwhalecloud.retail.report.service.ReportCodeStateService;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
 import io.swagger.annotations.ApiOperation;
@@ -89,20 +91,14 @@ public class ReportCodeStatementsController extends BaseController  {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/codeStatementsReportExport")
-    public ResultVO StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
+    public void StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
 		String userType=req.getUserType();
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
 			String regionId = UserContext.getUser().getRegionId();
 			req.setLanId(regionId);
 		}
-        ResultVO result = new ResultVO();
         ResultVO<List<ReportCodeStatementsResp>> resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
-        if (!resultVO.isSuccess()) {
-            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            result.setResultData("失败：" + resultVO.getResultMsg());
-            deliveryGoodsResNberExcel.outputResponse(response, resultVO);
-            return result;
-        }
+        
         List<ReportCodeStatementsResp> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -137,12 +133,22 @@ public class ReportCodeStatementsController extends BaseController  {
         orderMap.add(new ExcelTitleName("destCountyId", "串码流向所属区县"));
         orderMap.add(new ExcelTitleName("selfRegStatus", "自注册状态"));
 
-        //创建orderItemDetail
-        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-        		orderMap, "串码");
-        deliveryGoodsResNberExcel.exportExcel("串码明细报表导出", workbook, response);
+        try{
+            //创建Excel
+            String fileName = "串码明细报表";
+            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+
+            OutputStream output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+            response.setContentType("application/msexcel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            workbook.write(output);
+            output.close();
+        }catch (Exception e){
+            log.error("串码明细报表导出失败",e);
+        }
         
-        return deliveryGoodsResNberExcel.uploadExcel(workbook);
     }
     
 }

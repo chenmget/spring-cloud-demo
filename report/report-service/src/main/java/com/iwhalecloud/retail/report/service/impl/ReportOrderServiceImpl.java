@@ -221,18 +221,25 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 					rr.setLanId("湘西本地网");
 				}else if("744".equals(lanId)){
 					rr.setLanId("张家界本地网");
+				}else if("745".equals(lanId)){
+					rr.setLanId("怀化本地网");
+				}else if("746".equals(lanId)){
+					rr.setLanId("永州本地网");
 				}
+				
 			}
 	    	
 	    	if(couponType != null){
-	    		if("1".equals(couponType)){
+	    		if("10".equals(couponType)){
+	    			rr.setCouponType("减免(直减)");
+	    		}else if("20".equals(couponType)){
 	    			rr.setCouponType("卡券");
-	    		}else if("2".equals(couponType)){
-	    			rr.setCouponType("红包");
-	    		}else if("3".equals(couponType)){
+	    		}else if("30".equals(couponType)){
 	    			rr.setCouponType("返利");
-	    		}else if("4".equals(couponType)){
-	    			rr.setCouponType("价保款");
+	    		}else if("40".equals(couponType)){
+	    			rr.setCouponType("赠送");
+	    		}else if("50".equals(couponType)){
+	    			rr.setCouponType("红包");
 	    		}
 	    	}
 	    	

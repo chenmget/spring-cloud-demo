@@ -1,8 +1,11 @@
 package com.iwhalecloud.retail.web.controller.report;
 
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -100,7 +103,7 @@ public class ReportDataController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/reportDeSaleExport")
-    public ResultVO reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req) {
+    public void reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req, HttpServletResponse response) {
 		String userType=req.getUserType();
 		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
 			String MerchantCode=UserContext.getUser().getRelCode();
@@ -111,13 +114,7 @@ public class ReportDataController extends BaseController {
 			req.setLanId(lanId);
 		}
 		
-        ResultVO result = new ResultVO();
         ResultVO<List<ReportDeSaleDaoResq>> resultVO = reportService.reportDeSaleExport(req);
-        if (!resultVO.isSuccess()) {
-            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            result.setResultData("失败：" + resultVO.getResultMsg());
-            return result;
-        }
         List<ReportDeSaleDaoResq> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -145,24 +142,22 @@ public class ReportDataController extends BaseController {
         orderMap.add(new ExcelTitleName("sevenDayLv", "库存周转率"));
         orderMap.add(new ExcelTitleName("redStatus", "库存预警"));
         
+        try{
+            //创建Excel
+            String fileName = "地包进销存明细报表";
+            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
 
-        InputStream is = null;
-//        try {
-//            ExcelToNbrUtils.builderOrderExcel(data, orderMap, "串码列表");
-//            resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
-//            resultVO.setResultMsg("导出成功");
-//        } catch (Exception e) {
-//            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
-//            resultVO.setResultMsg(e.getMessage());
-//            log.error("excel导出失败",e);
-//        }
-//        return resultVO;
-        //创建orderItemDetail
-        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-        		orderMap, "串码");
-        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+            OutputStream output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+            response.setContentType("application/msexcel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            workbook.write(output);
+            output.close();
+        }catch (Exception e){
+            log.error("地包进销存明细报表导出失败",e);
+        }
+       
     }
-
-	
 	
 }

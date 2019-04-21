@@ -117,11 +117,15 @@
  	 ) j
  	 LEFT OUTER JOIN ORD_PROMOTION k ON j.order_id =k.order_id
  	 LEFT OUTER JOIN act_marketing_activity l ON k.MKT_ACT_ID = l.id
-<if test="req.couponActive!=null and req.couponActive!=''">
- 		WHERE 1=1 AND l.name LIKE CONCAT(CONCAT('%',#{req.couponActive}),'%')
-</if>
+	<if test="req.couponActive!=null and req.couponActive!=''">
+	 		WHERE 1=1 AND l.name LIKE CONCAT(CONCAT('%',#{req.couponActive}),'%')
+	</if>
  	 GROUP BY order_id
  	 limit 60000) z
+ 	 <if test='req.couponType!=null and req.couponType!=""'>
+	 		WHERE 1=1 AND z.couponType =#{req.couponType}
+	</if>
+ 	 
  	 ORDER BY z.create_time DESC
  </select>
  

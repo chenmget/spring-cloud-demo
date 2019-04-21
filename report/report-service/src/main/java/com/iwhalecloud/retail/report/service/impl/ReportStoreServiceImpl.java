@@ -64,6 +64,10 @@ public class ReportStoreServiceImpl implements ReportStoreService{
 					rr.setCityId("湘西本地网");
 				}else if("744".equals(cityId)){
 					rr.setCityId("张家界本地网");
+				}else if("745".equals(cityId)){
+					rr.setCityId("怀化本地网");
+				}else if("746".equals(cityId)){
+					rr.setCityId("永州本地网");
 				}
 			}
 	    	

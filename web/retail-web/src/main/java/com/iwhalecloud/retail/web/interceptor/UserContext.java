@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.interceptor;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.UserDTO;
@@ -102,6 +103,8 @@ public class UserContext implements Serializable {
     public static final UserDTO getUser() {
 
         UserDTO userDTO = userThreadLocal.get();
+        log.info("userThreadLocal.get() resp={} ", JSON.toJSONString(userDTO));
+
         //优先从线程变量取，取到就返回
         if(userDTO != null){
             return userDTO;
@@ -111,6 +114,7 @@ public class UserContext implements Serializable {
         HttpSession httpSession = getSession();
         if (httpSession != null) {
             userDTO = (UserDTO) httpSession.getAttribute(WebConst.SESSION_USER);
+            log.info("httpSession.getAttribute(WebConst.SESSION_USER) resp={} ", JSON.toJSONString(userDTO));
             return userDTO;
         }
 

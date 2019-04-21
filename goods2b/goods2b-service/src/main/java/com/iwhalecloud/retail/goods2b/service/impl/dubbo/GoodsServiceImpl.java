@@ -1094,7 +1094,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public ResultVO<GoodsDetailResp> queryGoodsDetail(GoodsQueryReq req) {
-
+        log.info("GoodsServiceImpl.queryGoodsDetail GoodsQueryReq={}", req);
         String goodsId = req.getGoodsId();
         GoodsDetailResp resp = new GoodsDetailResp();
         //查询商品

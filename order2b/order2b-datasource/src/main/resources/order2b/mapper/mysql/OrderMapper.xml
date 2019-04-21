@@ -22,9 +22,9 @@
 
     <sql id="selectOrderWhere">
         <where>
-            <if test="req.statusAll !=null and req.statusAll.size()>0">
-                AND status IN
-                <foreach collection="req.statusAll" open="(" close=")" item="item" index="index" separator=",">
+            <if test="req.userIds !=null and req.userIds.size()>0">
+                AND user_id IN
+                <foreach collection="req.userIds" open="(" close=")" item="item" index="index" separator=",">
                     #{item}
                 </foreach>
             </if>
@@ -36,9 +36,23 @@
                 </foreach>
             </if>
 
-            <if test="req.userIds !=null and req.userIds.size()>0">
-                AND user_id IN
-                <foreach collection="req.userIds" open="(" close=")" item="item" index="index" separator=",">
+            <if test="req.merchantId !=null and req.merchantId !=''">
+                AND merchant_id = #{req.merchantId}
+            </if>
+
+            <if test="req.lanId !=null and req.lanId !=''">
+                and lan_id=#{req.lanId}
+            </if>
+            <if test="req.lanIdList !=null and req.lanIdList.size()>0">
+                and lan_id IN
+                <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+
+            <if test="req.statusAll !=null and req.statusAll.size()>0">
+                AND status IN
+                <foreach collection="req.statusAll" open="(" close=")" item="item" index="index" separator=",">
                     #{item}
                 </foreach>
             </if>
@@ -59,9 +73,7 @@
             <if test="req.supplierName !=null and req.supplierName !=''">
                 AND supplier_name like #{req.supplierName}
             </if>
-            <if test="req.merchantId !=null and req.merchantId !=''">
-                AND merchant_id = #{req.merchantId}
-            </if>
+
             <if test="req.orderTimeStart !=null and req.orderTimeStart !=''">
                 AND create_time >= #{req.orderTimeStart}
             </if>
@@ -95,15 +107,7 @@
             <if test="req.sourceFrom !=null and req.sourceFrom !=''">
                 and SOURCE_FROM=#{req.sourceFrom}
             </if>
-            <if test="req.lanId !=null and req.lanId !=''">
-                and lan_id=#{req.lanId}
-            </if>
-            <if test="req.lanIdList !=null and req.lanIdList.size()>0">
-                and lan_id IN
-                <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
+
         </where>
     </sql>
     <select id="selectOrderListByOrder" resultType="com.iwhalecloud.retail.order2b.model.OrderInfoModel">

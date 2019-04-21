@@ -139,8 +139,10 @@ public class ReportDataInfoController extends BaseController {
     })
 	@GetMapping(value="/getUerRoleForView")
     public ResultVO<List<ReportStorePurchaserResq>> getUerRoleForView() {
+		log.info("**************come in getUerRoleForView function()********");
 		ReportStorePurchaserReq req = new ReportStorePurchaserReq();
 		String userId = UserContext.getUser().getUserId();
+		log.info("**************userId = "+userId+"********");
 		req.setUserId(userId);
 		return iReportDataInfoService.getUerRoleForView(req);
     }

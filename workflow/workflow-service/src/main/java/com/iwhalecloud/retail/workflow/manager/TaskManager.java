@@ -400,9 +400,19 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         log.info("1、根据任务项ID查询任务项（wf_task_item）表，task_item_id={},taskId={}", taskItemId,taskId);
         //1> 校验任务项的状态,如果状态不是待领取抛出异常
         TaskItem taskItem = taskItemManager.queryTaskItemById(taskItemId,taskId);
-        if (taskItem == null || !WorkFlowConst.TaskItemState.WAITING.getCode().equals(taskItem.getItemStatus())) {
+        if (taskItem == null) {
+            return ResultVO.error(ResultCodeEnum.TASK_ITEM_IS_EMPTY);
+        }
+
+        // 如果任务项状态为已领取，而且领取人和处理人一致，直接返回成功
+        if (WorkFlowConst.TaskItemState.PENDING.getCode().equals(taskItem.getItemStatus())
+                && taskClaimDTO.getUserId().equals(taskItem.getHandlerUserId())) {
+            return ResultVO.success();
+        }
+        if (!WorkFlowConst.TaskItemState.WAITING.getCode().equals(taskItem.getItemStatus())) {
             return ResultVO.error(ResultCodeEnum.TASK_ITEM_STATE_NOT_IS_WAITING);
         }
+
         log.info("2、根据任务项ID查询任务池表（wf_task_pool）表，task_item_id={}", taskItemId);
         //1> 校验用户ID是否在任务池的列表中，如果不存在抛出异常
         List<TaskPool> taskPoolList = taskPoolManager.queryTaskPoolByTaskItemId(taskItemId,taskId);

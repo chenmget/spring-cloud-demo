@@ -34,7 +34,9 @@ public class BssInfoSyncAbilityServiceImpl implements BssInfoSyncAbilityService{
     public Map<String, Object> userInfoSync(String jsonString) {
         Map<String, Object> resultMap = new HashMap<>();
         String resultStr = bssInfoSyncService.userInfoSync(jsonString);
-        resultMap.put("result", resultStr);
+        resultMap.put("resultData", resultStr);
+        resultMap.put("resultCode", "0");
+        resultMap.put("resultMsg", "调用成功");
         return resultMap;
     }
 }

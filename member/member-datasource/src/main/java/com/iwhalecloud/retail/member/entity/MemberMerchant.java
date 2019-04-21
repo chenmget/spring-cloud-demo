@@ -30,6 +30,9 @@ public class MemberMerchant implements Serializable {
   	 * 商家ID
   	 */
 	@TableId
+	@ApiModelProperty(value = "ID")
+	private String id;
+
 	@ApiModelProperty(value = "商家ID")
   	private String merchId;
   	
@@ -69,6 +72,7 @@ public class MemberMerchant implements Serializable {
     /** 字段名称枚举. */
     public enum FieldNames {
 		/** 商家ID. */
+		id("id","ID"),
 		merchId("merchId","MERCH_ID"),
 		
 		/** 会员ID. */

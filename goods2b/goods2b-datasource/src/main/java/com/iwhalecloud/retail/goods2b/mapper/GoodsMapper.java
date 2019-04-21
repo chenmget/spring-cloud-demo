@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.goods2b.dto.SupplierGroundGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
@@ -36,17 +37,17 @@ public interface GoodsMapper extends BaseMapper<Goods>{
     Page<GoodsPageResp> queryPageByConditionAdmin(Page<GoodsPageResp> page, @Param("req") GoodsPageReq req);
 
     /**
-     * 根据产品基本信息id查询地包商Id
-     * @param productBaseId
-     * @return
-     */
-    List<String> listSupplierGroundId(@Param("productBaseId") String productBaseId);
-
-    /**
      * 根据产品基本信息id查询地包商品提货价
      * @param productBaseId
      * @return
      */
-    List<Double> listSupplierGroundDeliveryPrice(@Param("productBaseId") String productBaseId);
+    List<SupplierGroundGoodsDTO> listSupplierGroundRelative(@Param("productBaseId") String productBaseId);
+
+    /**
+     * 根据产品基本信息id查询地包商上架数量
+     * @param productBaseId
+     * @return
+     */
+    Double listSupplierGroundSupplyNum(@Param("productBaseId") String productBaseId);
 
 }

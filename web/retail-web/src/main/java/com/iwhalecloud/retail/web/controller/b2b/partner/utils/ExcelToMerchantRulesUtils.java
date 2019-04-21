@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.partner.response.MerchantRulesImportResp;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.Component;
@@ -20,22 +21,24 @@ import java.util.List;
 @Component
 public class ExcelToMerchantRulesUtils {
 
-	private static final String EXCEL_XLS = "xls";  
-    private static final String EXCEL_XLSX = "xlsx";
+	private static final String EXCEL_XLS = "xls";
+	private static final String EXCEL_XLSX = "xlsx";
 
-    /**
-     * 读取Excel并把数据返回，兼容 Excel 2003/2007/2010
-     * @throws Exception  
-     */  
-    public static List<MerchantRulesImportResp> getData(InputStream inputStream) throws Exception {
+	/**
+	 * 读取Excel并把数据返回，兼容 Excel 2003/2007/2010
+	 * @throws Exception
+	 */
+	public static List<MerchantRulesImportResp> getData(InputStream inputStream) throws Exception {
 		List<MerchantRulesImportResp> data = new ArrayList<MerchantRulesImportResp>();
-        try {
+		try {
 			// 这种方式 Excel2003/2007/2010都是可以处理的
-            Workbook workbook = WorkbookFactory.create(inputStream);
-            // 只读第一页
+			Workbook workbook = WorkbookFactory.create(inputStream);
+			// 只读第一页
 			Sheet sheet = workbook.getSheetAt(0);
 			//获得当前sheet的开始行
 			int firstRowNum  = sheet.getFirstRowNum();
+			//获取当前行
+			Row firstRow = sheet.getRow(firstRowNum);
 			//获得当前sheet的结束行
 			int lastRowNum = sheet.getLastRowNum();
 			//循环除了第一行的所有行
@@ -49,11 +52,21 @@ public class ExcelToMerchantRulesUtils {
 				int firstCellNum = row.getFirstCellNum();
 				//获得当前行的列数
 				int lastCellNum = row.getPhysicalNumberOfCells();
+				if(getCellValue(firstRow.getCell(firstCellNum + 1)) == null || "".equals(getCellValue(firstRow.getCell(firstCellNum + 1)))
+						|| getCellValue(firstRow.getCell(firstCellNum)) == null || "".equals(getCellValue(firstRow.getCell(firstCellNum)))){
+					continue;
+				}
 				MerchantRulesImportResp resp = new MerchantRulesImportResp();
-				resp.setMerchantId(getCellValue(row.getCell(firstCellNum)));
+				resp.setMerchantCode(getCellValue(row.getCell(firstCellNum)));
 				// 2种模板
 				if(lastCellNum > firstCellNum) {
-					resp.setBrandCode(getCellValue(row.getCell(firstCellNum + 1)));
+					if("区域编码".equals(getCellValue(firstRow.getCell(firstCellNum + 1)))) {
+						resp.setRegionId(getCellValue(row.getCell(firstCellNum + 1)));
+					}else if("机型编码".equals(getCellValue(firstRow.getCell(firstCellNum + 1)))){
+						resp.setSn(getCellValue(row.getCell(firstCellNum + 1)));
+					}else if("对象编码".equals(getCellValue(firstRow.getCell(firstCellNum + 1)))){
+						resp.setTargetMerchantCode(getCellValue(row.getCell(firstCellNum + 1)));
+					}
 				}
 				data.add(resp);
 			}
@@ -62,7 +75,7 @@ public class ExcelToMerchantRulesUtils {
 			throw new Exception(e);
 		}
 		return data;
-    }
+	}
 
 
 	public static String getCellValue(Cell cell){
@@ -107,109 +120,6 @@ public class ExcelToMerchantRulesUtils {
 		return cellValue;
 	}
 
-	/**
-	 * data 转化为Excel
-	 */
-	public static void builderOrderExcel(Workbook book, List list,List<ExcelTitleName> map) {
-		if(CollectionUtils.isEmpty(list)){
-			return;
-		}
-		String sheetName = "sheet";
-		JSONArray jsonArray = JSON.parseArray(JSON.toJSONString(list));
-		//标题占位
-		jsonArray.add(0, new Object());
-		Sheet sheet1 = book.createSheet(sheetName);
-		Row titleRow = sheet1.createRow(0);
-		for (int i = 0; i < map.size(); i++) {
-			Cell cell = titleRow.createCell(i);
-			cell.setCellValue(map.get(i).getName());
-		}
-
-		// 行数量根据数据条数设置
-		for (int rowi = 0; rowi < jsonArray.size(); rowi++) {
-			Row row = sheet1.createRow(rowi);
-			for (int contentj = 0; contentj < map.size(); contentj++) {
-				Cell cell = row.createCell(contentj);
-				if (rowi == 0) {
-					//设置标题
-					cell.setCellValue(map.get(contentj).getName());
-				} else {
-					//设置内容
-					Object originalValue = jsonArray.getJSONObject(rowi).get(map.get(contentj).getValue());
-					String filedName = (String)map.get(contentj).getValue();
-					String finalValue = transferValue(filedName, String.valueOf(originalValue));
-					cell.setCellValue(finalValue);
-				}
-			}
-		}
-
-	}
-
-
-	private static String transferValue(String filedName, String value) {
-		final String MKT_RES_INST_TYPE = "mktResInstType";
-		final String STORAGE_TYPE = "storageType";
-		final String STATUS_CD = "statusCd";
-		final String SOURCE_TYPE = "sourceType";
-		final String CREATE_TIME = "createTime";
-		final String CREATE_DATE = "createDate";
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
-		if (filedName.equals(MKT_RES_INST_TYPE) && ResourceConst.MKTResInstType.TRANSACTION.getCode().equals(value)) {
-			return ResourceConst.MKTResInstType.TRANSACTION.getName();
-		}else if(filedName.equals(MKT_RES_INST_TYPE) && ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(value)){
-			return ResourceConst.MKTResInstType.NONTRANSACTION.getName();
-		}else if(filedName.equals(MKT_RES_INST_TYPE) && ResourceConst.MKTResInstType.STANDBYMACHINE.getCode().equals(value)){
-			return ResourceConst.MKTResInstType.STANDBYMACHINE.getName();
-		}
-
-		if (filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.TRANSACTION_WAREHOUSING.getCode().equals(value)) {
-			return ResourceConst.STORAGETYPE.TRANSACTION_WAREHOUSING.getName();
-		}else if(filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode().equals(value)){
-			return ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getName();
-		}else if(filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.LEADING_INTO_STORAGE.getCode().equals(value)){
-			return ResourceConst.STORAGETYPE.LEADING_INTO_STORAGE.getName();
-		}else if(filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.GREEN_CHANNEL.getCode().equals(value)){
-			return ResourceConst.STORAGETYPE.GREEN_CHANNEL.getName();
-		}else if(filedName.equals(STORAGE_TYPE) && ResourceConst.STORAGETYPE.MANUAL_ENTRY.getCode().equals(value)){
-			return ResourceConst.STORAGETYPE.MANUAL_ENTRY.getName();
-		}
-
-		if (filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.AUDITING.getCode().equals(value)) {
-			return ResourceConst.STATUSCD.AUDITING.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.AVAILABLE.getCode().equals(value)){
-			return ResourceConst.STATUSCD.AVAILABLE.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.ALLOCATIONING.getCode().equals(value)){
-			return ResourceConst.STATUSCD.ALLOCATIONING.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.RESTORAGEING.getCode().equals(value)){
-			return ResourceConst.STATUSCD.RESTORAGEING.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.RESTORAGED.getCode().equals(value)){
-			return ResourceConst.STATUSCD.RESTORAGED.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.SALED.getCode().equals(value)){
-			return ResourceConst.STATUSCD.SALED.getName();
-		}else if(filedName.equals(STATUS_CD) && ResourceConst.STATUSCD.DELETED.getCode().equals(value)){
-			return ResourceConst.STATUSCD.DELETED.getName();
-		}
-
-		if (filedName.equals(SOURCE_TYPE) && ResourceConst.SOURCE_TYPE.MERCHANT.getCode().equals(value)) {
-			return ResourceConst.SOURCE_TYPE.MERCHANT.getName();
-		}else if(filedName.equals(SOURCE_TYPE) && ResourceConst.SOURCE_TYPE.SUPPLIER.getCode().equals(value)){
-			return ResourceConst.SOURCE_TYPE.SUPPLIER.getName();
-		}else if(filedName.equals(SOURCE_TYPE) && ResourceConst.SOURCE_TYPE.RETAILER.getCode().equals(value)){
-			return ResourceConst.SOURCE_TYPE.RETAILER.getName();
-		}
-
-		if (filedName.equals(CREATE_TIME) || filedName.equals(CREATE_DATE)) {
-			try {
-				Date date = new Date(Long.valueOf(value));
-				String StringDate = format.format(date);
-				return StringDate;
-			}catch (Exception e){
-				log.error("时间解析错误",e);
-			}
-		}
-		String finalValue = (value == null || "null".equals(value))? "" : value;
-		return finalValue;
-	}
 
 }
 

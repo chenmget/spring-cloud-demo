@@ -36,6 +36,7 @@ public class GroupMerchantManager{
         GroupMerchant groupMerchant = new GroupMerchant();
         BeanUtils.copyProperties(groupMerchantDTO, groupMerchant);
         groupMerchant.setUpdateDate(new Date());
+        groupMerchant.setMerchId(null);
         return groupMerchantMapper.update(groupMerchant, updateWrapper);
     }
 

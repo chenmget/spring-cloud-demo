@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.ActivityGoodsDTO;
@@ -10,7 +11,9 @@ import com.iwhalecloud.retail.goods2b.dto.req.BrandUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.BrandUrlResp;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.mapper.BrandMapper;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -22,7 +25,9 @@ import java.util.List;
 public class BrandManager {
     @Resource
     private BrandMapper brandMapper;
-    
+
+    @Value("${fdfs.showUrl}")
+    private String dfsShowIp;
     /**
      * 根据主键删除
      * @param brandId
@@ -100,7 +105,17 @@ public class BrandManager {
 
     public Page<ActivityGoodsDTO> listBrandActivityGoodsId(BrandActivityReq req){
         Page<BrandActivityReq> page = new Page<BrandActivityReq>(req.getPageNo(), req.getPageSize());
-        return brandMapper.listBrandActivityGoodsId(page, req);
+        Page<ActivityGoodsDTO> activityGoodsDTOPage = brandMapper.listBrandActivityGoodsId(page, req);
+        List<ActivityGoodsDTO> activityGoodsDTOs = activityGoodsDTOPage.getRecords();
+        if(CollectionUtils.isNotEmpty(activityGoodsDTOs)){
+            for(ActivityGoodsDTO activityGoodsDTO:activityGoodsDTOs){
+                String imageUrl = activityGoodsDTO.getImageUrl();
+                if(StringUtils.isNotEmpty(imageUrl)){
+                    activityGoodsDTO.setImageUrl(dfsShowIp+imageUrl);
+                }
+            }
+        }
+        return activityGoodsDTOPage;
     }
     
     public Brand getBrandByBrandId(String brandId){

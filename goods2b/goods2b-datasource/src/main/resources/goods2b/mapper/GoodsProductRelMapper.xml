@@ -78,7 +78,7 @@
             and (pgrr.REGION_ID = #{req.regionId} or pgrr.REGION_ID = pgrr.LAN_ID)
         </if>
         ) p
-        LEFT JOIN (select pc.TARGET_ID,IF(LOCATE('://',FILE_URL) >0,pc.FILE_URL,CONCAT('https://gy.ztesoft.com/',pc.FILE_URL)) as FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'
+        LEFT JOIN (select pc.TARGET_ID,pc.FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'
         and pc.TARGET_TYPE='1') t on t.TARGET_ID = p.GOODS_ID
         UNION ALL
         select DISTINCT p.GOODS_ID as goodsId,p.GOODS_NAME as goodsName,p.GOODS_CAT_ID as categoryId,p.CAT_PATH as parCategoryId,
@@ -101,7 +101,7 @@
             and pgtr.TARGET_ID = #{req.merchantId}
         </if>
         ) p
-        LEFT JOIN (select pc.TARGET_ID,IF(LOCATE('://',FILE_URL) >0,pc.FILE_URL,CONCAT('https://gy.ztesoft.com/',pc.FILE_URL)) as FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'
+        LEFT JOIN (select pc.TARGET_ID,pc.FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'
         and pc.TARGET_TYPE='1') t on t.TARGET_ID = p.GOODS_ID
     </select>
 

@@ -68,14 +68,17 @@ public class ReportOrderController extends BaseController {
 		//省公司，地市，供应商，零售商
 		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的
 			String merchantCode=UserContext.getUser().getRelCode();
+			log.info("*********************merchantCode = "+merchantCode);
 			req.setMerchantCode(merchantCode);
 		}
 		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商只看自己的
 			String suplierCode=UserContext.getUser().getRelCode();
+			log.info("*********************suplierCode = "+suplierCode);
 			req.setSuplierCode(suplierCode);
 		}
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
 			String regionId = UserContext.getUser().getRegionId();
+			log.info("");
 			req.setLanId(regionId);
 		}
 		if(!"1".equals(userType) && !"2".equals(userType) && !"3".equals(userType) && !"4".equals(userType)){

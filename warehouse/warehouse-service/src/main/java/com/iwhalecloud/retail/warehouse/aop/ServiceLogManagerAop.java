@@ -41,6 +41,7 @@ public class ServiceLogManagerAop {
                     JSON.toJSONString(point.getArgs()), JSON.toJSONString(result));
             return result;
         } catch (RetailTipException e) {
+            log.error("ServiceLogManagerAop.aroundExecuteService",e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return e.getTipResultVO();
         }
@@ -59,6 +60,7 @@ public class ServiceLogManagerAop {
                     JSON.toJSONString(point.getArgs()), JSON.toJSONString(result));
             return result;
         } catch (RetailTipException e) {
+            log.error("ServiceLogManagerAop.aroundExecuteService",e);
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return e.getTipResultVO();
         }

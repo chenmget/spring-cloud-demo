@@ -80,6 +80,6 @@
 	) g
 		)h
 			)j
-   limit 1000) z
+   limit 60000) z
   </select>
 </mapper>

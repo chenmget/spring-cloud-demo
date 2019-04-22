@@ -37,4 +37,7 @@ public class ReportDataInfoManager {
 	        return pageReport;
 	}
 	
+	public String retailerCodeBylegacy(String legacyAccount) {
+		return reportDataInfoMapper.retailerCodeBylegacy(legacyAccount);
+	}
 }

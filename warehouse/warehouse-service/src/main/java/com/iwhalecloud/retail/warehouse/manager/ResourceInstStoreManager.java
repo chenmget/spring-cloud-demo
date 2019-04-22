@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.warehouse.manager;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
@@ -151,11 +152,17 @@ public class ResourceInstStoreManager{
                 return 0;
             }
 
-            resourceInstStore.setQuantity(quantity);
-            resourceInstStore.setOnwayQuantity(onwayQuantity);
-            resourceInstStore.setStatusDate(new Date());
-            Integer sucessNum = resourceInstStoreMapper.updateById(resourceInstStore);
-            log.info("ResourceInstStoreManager.update req={}，resp={}", JSON.toJSONString(resourceInstStore), sucessNum);
+            ResourceInstStore updateResourceInstStore = new ResourceInstStore();
+            updateResourceInstStore.setQuantity(quantity);
+            updateResourceInstStore.setOnwayQuantity(onwayQuantity);
+            updateResourceInstStore.setStatusDate(new Date());
+            UpdateWrapper<ResourceInstStore> updateWrapper = new UpdateWrapper<>();
+            updateWrapper.eq(ResourceInstStore.FieldNames.mktResInstStoreId.getTableFieldName(), resourceInstStore.getMktResInstStoreId());
+            updateWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStore.getMktResStoreId());
+            updateWrapper.eq(ResourceInstStore.FieldNames.merchantId.getTableFieldName(), resourceInstStore.getMerchantId());
+            updateWrapper.eq(ResourceInstStore.FieldNames.mktResId.getTableFieldName(), resourceInstStore.getMktResId());
+            Integer sucessNum = resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
+            log.info("ResourceInstStoreManager.update req={}，resp={}", JSON.toJSONString(updateWrapper), sucessNum);
             return sucessNum;
         }else{
             Date now = new Date();

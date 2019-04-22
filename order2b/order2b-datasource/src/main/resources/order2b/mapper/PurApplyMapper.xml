@@ -36,7 +36,7 @@
 		</if>
   </select>
   
-  <select id="crPurApplyFile" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
+  <select id="crPurApplyFile" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq">
 	insert into PUR_APPLY_FILE(
 		FILE_ID,
 		APPLY_ID,

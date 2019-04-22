@@ -101,7 +101,7 @@
 	<if test="req.warningStatus!=null and req.warningStatus!=''">
  	and	redStatus=#{req.warningStatus}
 	</if>
-	limit 1000) z
+	limit 60000) z
 	</sql>
   
      <select id="listProductAll" parameterType="String"

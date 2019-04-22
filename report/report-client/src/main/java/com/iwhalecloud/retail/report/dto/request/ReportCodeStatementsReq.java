@@ -36,4 +36,8 @@ public class ReportCodeStatementsReq extends PageVO  {
     private String productCode; // 产品编码
     private String manufacturerCode;//厂家编码
     private String cpType; // 产品类别
+    private String typeId;//产品类型
+    private String legacyAccount;//零售商归属原系统还是云货架
+    private String mktResStoreId;//仓库ID
+
 }

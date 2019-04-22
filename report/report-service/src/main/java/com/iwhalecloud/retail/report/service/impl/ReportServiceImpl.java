@@ -53,7 +53,7 @@ public class ReportServiceImpl implements ReportService {
 					rr.setPriceLevel("1000-2000");
 				} else if ("5".equals(priceLevel)) {
 					rr.setPriceLevel("2000-3000");
-				} else if ("6".equals(priceLevel)) {
+				} else if (priceLevel.equals("6")) {
 					rr.setPriceLevel("3000以上");
 				}
 			}
@@ -65,6 +65,10 @@ public class ReportServiceImpl implements ReportService {
 				} else if ("3".equals(redStatus)) {
 					rr.setRedStatus("严重缺货");
 				}
+			}
+			String typeId = rr.getTypeId();
+			if("201903142030001".equals(typeId)){
+				rr.setTypeId("手机");
 			}
 			list2.add(rr);
 		}

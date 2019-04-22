@@ -70,9 +70,11 @@ public class RightsCardTicketB2BController {
         Page<CouponNotUsedResp> resultData = cardTicketService.queryAllBusinessCouponNotUsed(req);
         if (resultData.getRecords().size() > 0) {
             for (int i = 0; i < resultData.getRecords().size(); i++) {
-                if (!"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
+                if (null != resultData.getRecords().get(i).getPartnerId() && !"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
                     ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.getRecords().get(i).getPartnerId());
                     resultData.getRecords().get(i).setCouponResource(merchantDTO.getResultData().getMerchantName());
+                } else {
+                    return ResultVO.error("优惠券配置问题：partner_id不能为空");
                 }
             }
         }
@@ -95,10 +97,12 @@ public class RightsCardTicketB2BController {
         Page<CouponUsedResp> resultData = cardTicketService.queryAllBusinessCouponUsed(req);
         if (resultData.getRecords().size() > 0) {
             for (int i = 0; i < resultData.getRecords().size(); i++) {
-                if (!"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
+                if (null != resultData.getRecords().get(i).getPartnerId() && !"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
                     //查询商家名称
                     ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.getRecords().get(i).getPartnerId());
                     resultData.getRecords().get(i).setCouponResource("".equals(merchantDTO.getResultData().getMerchantName()) ? "" : merchantDTO.getResultData().getMerchantName());
+                } else {
+                    return ResultVO.error("优惠券配置问题：partner_id不能为空");
                 }
                 if (!"".equals(resultData.getRecords().get(i).getOrderNo())) {
                     selectOrderReq.setOrderId(resultData.getRecords().get(i).getOrderNo());
@@ -138,10 +142,12 @@ public class RightsCardTicketB2BController {
         List<CouponUsedResp> resultData = cardTicketService.queryAllBusinessCouponUsedNotPage(req);
         if (resultData.size() > 0) {
             for (int i = 0; i < resultData.size(); i++) {
-                if (!"-1".equals(resultData.get(i).getPartnerId())) {
+                if (null != resultData.get(i).getPartnerId() && !"-1".equals(resultData.get(i).getPartnerId())) {
                     //查询商家名称
                     ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.get(i).getPartnerId());
                     resultData.get(i).setCouponResource("".equals(merchantDTO.getResultData().getMerchantName()) ? "" : merchantDTO.getResultData().getMerchantName());
+                } else {
+                    return;
                 }
                 if (!"".equals(resultData.get(i).getOrderNo())) {
                     selectOrderReq.setOrderId(resultData.get(i).getOrderNo());
@@ -168,14 +174,12 @@ public class RightsCardTicketB2BController {
             Workbook workbook = new HSSFWorkbook();
             String fileName = "优惠券列表";
             ExcelToNbrUtils.builderOrderExcel(workbook, resultData, CouponExportUtil.getCoupon(), false);
-
             output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
             response.setContentType("application/msexcel;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             workbook.write(output);
-
         } catch (Exception e) {
             log.error("优惠券列表导出失败", e);
         } finally {

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.JyPurApplyService;
@@ -42,7 +43,7 @@ public class JySearchApplyControll extends BaseController  {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/jycgSearchApply")
-    public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
+    public ResultVO<Page<JyPurApplyResp>> jycgSearchApply(@RequestBody PurApplyReq req) {
 		String userType=req.getUserType();
 		String lanId = null ;
 		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商

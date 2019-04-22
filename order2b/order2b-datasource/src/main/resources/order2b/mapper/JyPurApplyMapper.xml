@@ -11,6 +11,7 @@
 		a.LAN_ID as lanId,
 		a.STATUS_CD as statusCd,
 		a.CREATE_DATE as createDate
+		where 1=1
 		<if test='req.startDate!=null and req.startDate!=""'>
 			and a.CREATE_DATE &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
 		</if>

@@ -26,27 +26,32 @@ public class IReportDataInfoServiceImpl implements IReportDataInfoService {
 	@Override
 	public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(ReportStorePurchaserReq req) {
 		Page<ReportStorePurchaserResq> list = (Page<ReportStorePurchaserResq>) reportDataInfoManager.getStorePurchaserReport(req);
-	    
-        return ResultVO.success(list);	
+
+        return ResultVO.success(list);
 	}
-	
+
 	@Override
 	public ResultVO<List<ReportStorePurchaserResq>> getStorePurchaserReportdc(ReportStorePurchaserReq req) {
 		List<ReportStorePurchaserResq> list = (List<ReportStorePurchaserResq>) reportDataInfoManager.getStorePurchaserReportdc(req);
 //		List<ReportStorePurchaserResq> list2 = new ArrayList<ReportStorePurchaserResq>();
 //		for(ReportStorePurchaserResq rr : list){
-//			
+//
 //			list2.add(rr);
 //		}
-		
-        return ResultVO.success(list);	
+
+        return ResultVO.success(list);
 	}
-	
+
 	@Override
 	public ResultVO<List<ReportStorePurchaserResq>> getUerRoleForView(ReportStorePurchaserReq req) {
 		List<ReportStorePurchaserResq> list = (List<ReportStorePurchaserResq>) reportDataInfoManager.getUerRoleForView(req);
-	    
-        return ResultVO.success(list);	
+
+        return ResultVO.success(list);
 	}
-	
+
+	@Override
+	public String retailerCodeBylegacy(String legacyAccount) {
+		return reportDataInfoManager.retailerCodeBylegacy(legacyAccount);
+	}
+
 }

@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
 
 public interface IReportDataInfoService {
 
+	public String retailerCodeBylegacy(String legacyAccount);
 	//门店进销存机型报表
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(ReportStorePurchaserReq req);
     //导出

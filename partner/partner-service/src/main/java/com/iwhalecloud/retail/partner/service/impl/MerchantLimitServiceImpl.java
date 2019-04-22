@@ -66,10 +66,13 @@ public class MerchantLimitServiceImpl implements MerchantLimitService {
         MerchantLimit merchantLimit = merchantLimitManager.getMerchantLimit(merchantId);
         log.info("MerchantLimitServiceImpl.getMerchantLimit(), output: merchantLimit= {} ", JSON.toJSONString(merchantLimit));
 
-        MerchantLimitDTO merchantLimitDTO = null;
+        MerchantLimitDTO merchantLimitDTO = new MerchantLimitDTO();
         if (Objects.nonNull(merchantLimit)) {
-            merchantLimitDTO = new MerchantLimitDTO();
             BeanUtils.copyProperties(merchantLimit, merchantLimitDTO);
+        }else {
+            merchantLimitDTO.setMerchantId(merchantId);
+            merchantLimitDTO.setMaxSerialNum(0L);
+            merchantLimitDTO.setSerialNumUsed(0L);
         }
         // 没有获取到数据  也返回成功 塞个 null 值
         return ResultVO.success(merchantLimitDTO);

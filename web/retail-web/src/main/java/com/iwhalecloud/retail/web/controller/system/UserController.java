@@ -756,6 +756,7 @@ public class UserController extends BaseController {
     })
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @Transactional
+    @UserLoginToken
     public ResultVO editUser(@RequestBody EditUserReq req) {
 
         if (StringUtils.isEmpty(req.getUserId())) {

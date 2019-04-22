@@ -168,7 +168,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
             }
-            return ResultVO.error(ResourceConst.SUCESS_MSG + reqCode);
+            return ResultVO.success(ResourceConst.SUCESS_MSG + reqCode);
         }else{
             ResultVO syncTerminalResultVO = resourceInstService.syncTerminal(req);
             if (syncTerminalResultVO.isSuccess()) {

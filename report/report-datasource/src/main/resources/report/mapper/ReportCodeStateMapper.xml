@@ -6,6 +6,7 @@
             resultType="com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp">
 	SELECT * FROM (	
 		SELECT a.mkt_res_inst_nbr,
+		a.mkt_res_store_id mktResStoreId,
 	a.status_cd storageType,
 	a.mkt_res_inst_type,
 	a.source_type,
@@ -57,6 +58,9 @@
 		</if>
 		<if test="req.lanId!=null and req.lanId!=''">
 			and a.CITY_ID = #{req.lanId}
+		</if>
+		<if test='req.mktResStoreId!=null and req.mktResStoreId!=""'>
+			and a.mkt_res_store_id = #{req.mktResStoreId}
 		</if>
 		<if test="req.city!=null and req.city!=''">
 			and a.COUNTY_ID = #{req.city}
@@ -112,7 +116,10 @@
 		<if test="req.manufacturerCode!=null and req.manufacturerCode!=''">
 			and a.MANUFACTURER_CODE = #{req.manufacturerCode}
 		</if>
-		limit 1000) c
+		<if test="req.cpType!=null and req.cpType!=''">
+			and a.product_type = #{req.cpType}
+		</if>
+		limit 60000) c
   </select>
   
 </mapper>

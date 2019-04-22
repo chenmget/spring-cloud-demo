@@ -8,9 +8,10 @@
 		a.APPLY_CODE as applyCode,
 		a.APPLY_NAME as applyName,
 		a.APPLY_MERCHANT_ID as applyMerchantId,
-		a.LAN_ID as lanId,
+		(SELECT b.region_name FROM sys_common_region b WHERE b.region_id=a.LAN_ID) as lanId,
 		a.STATUS_CD as statusCd,
 		a.CREATE_DATE as createDate
+		FROM pur_apply a
 		where 1=1
 		<if test='req.startDate!=null and req.startDate!=""'>
 			and a.CREATE_DATE &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')

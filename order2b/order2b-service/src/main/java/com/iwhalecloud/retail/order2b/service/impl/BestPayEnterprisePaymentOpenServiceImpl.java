@@ -114,8 +114,14 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
 
         // 预授权支付
         if ("pay_auth".equals(payType)) {
-            payAuthorizationService.authorizationApplication(req.getOrderId(), operationType);
-            return ResultVO.success();
+            boolean flag = payAuthorizationService.authorizationApplication(req.getOrderId(), operationType);
+            if(flag){
+                ToPayResp tpr = new ToPayResp();
+                tpr.setOrderId(req.getOrderId());
+                return ResultVO.success(tpr);
+            }else{
+                return ResultVO.error("支付失败");
+            }
         } else {
             ToPayResp resp = bpepPayLogService.handlePayData(order.getOrderId(), amount, orgLoginCode, operationType);
             return ResultVO.success(resp);

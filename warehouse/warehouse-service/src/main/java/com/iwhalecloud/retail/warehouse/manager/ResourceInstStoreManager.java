@@ -3,7 +3,7 @@ package com.iwhalecloud.retail.warehouse.manager;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -143,22 +143,20 @@ public class ResourceInstStoreManager{
                     goodsProductRelEditReq.setMerchantId(resourceInstStoreDTO.getMerchantId());
                     goodsProductRelEditReq.setProductId(resourceInstStoreDTO.getMktResId());
                     goodsProductRelEditReq.setIsHaveStock(false);
-                    goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
+                    ResultVO<Boolean> resultVO = goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
+                    log.info("ResourceInstStoreManager goodsProductRelService.updateIsHaveStock req={}", JSON.toJSONString(goodsProductRelEditReq), JSON.toJSONString(resultVO));
                 } catch (Exception ex) {
                     log.error("通知商品中心异常", ex);
                 }
-
                 return 0;
             }
 
-            ResourceInstStore updateResourceInstStore = new ResourceInstStore();
-            updateResourceInstStore.setQuantity(quantity);
-            updateResourceInstStore.setOnwayQuantity(onwayQuantity);
-            updateResourceInstStore.setStatusDate(new Date());
-            UpdateWrapper<ResourceInstStore> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq(ResourceInstStore.FieldNames.mktResInstStoreId.getTableFieldName(), resourceInstStore.getMktResInstStoreId());
-            updateWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStore.getMktResStoreId());
-            return resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
+            resourceInstStore.setQuantity(quantity);
+            resourceInstStore.setOnwayQuantity(onwayQuantity);
+            resourceInstStore.setStatusDate(new Date());
+            Integer sucessNum = resourceInstStoreMapper.updateById(resourceInstStore);
+            log.info("ResourceInstStoreManager.update req={}，resp={}", JSON.toJSONString(resourceInstStore), sucessNum);
+            return sucessNum;
         }else{
             Date now = new Date();
             ResourceInstStore addResourceInstStore = new ResourceInstStore();

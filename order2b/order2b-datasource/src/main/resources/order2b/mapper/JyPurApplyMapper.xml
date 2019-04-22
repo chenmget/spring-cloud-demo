@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.PurApplyMapper">
+  
+    <select id="jycgSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+            resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp">
+		SELECT a.APPLY_ID as applyId,
+		a.APPLY_CODE as applyCode,
+		a.APPLY_NAME as applyName,
+		a.APPLY_MERCHANT_ID as applyMerchantId,
+		a.LAN_ID as lanId,
+		a.STATUS_CD as statusCd,
+		a.CREATE_DATE as createDate
+		<if test='req.startDate!=null and req.startDate!=""'>
+			and a.CREATE_DATE &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
+		</if>
+		<if test='req.endDate!=null and req.endDate!=""'>
+			and a.CREATE_DATE &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
+		</if>
+		<if test='req.applyCode!=null and req.applyCode!=""'>  
+			and a.APPLY_CODE = #{req.applyCode}
+		</if>
+		<if test='req.projectName!=null and req.projectName!=""'>  
+			and a.APPLY_NAME = #{req.projectName}
+		</if>
+		<if test='req.applyMerchantId!=null and req.applyMerchantId!=""'>  
+			and a.APPLY_MERCHANT_ID = #{req.applyMerchantId}
+		</if>
+		
+  </select>
+</mapper>
+

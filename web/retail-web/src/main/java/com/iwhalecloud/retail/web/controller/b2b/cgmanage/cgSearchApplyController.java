@@ -17,6 +17,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
@@ -34,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * @author liweisong
  * @date 2019-04-16
- * 门店报表
+ * 采购申请管理平台
  */
 @Slf4j
 @RestController
@@ -54,9 +55,13 @@ public class cgSearchApplyController extends BaseController {
     @PostMapping("/cgSearchApply")
     public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
 		String userType=req.getUserType();
+		String lanId = null ;
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
-			String regionId = UserContext.getUser().getRegionId();
-			req.setLanId(regionId);
+			UserDTO user = UserContext.getUser();
+			if(user != null){
+				lanId = user.getLanId();
+			}
+			req.setLanId(lanId);
 		}
 		return purApplyService.cgSearchApply(req);
     }
@@ -116,8 +121,8 @@ public class cgSearchApplyController extends BaseController {
 			}
 			statusCd = "20";
 		}
-		//String createStaff = UserContext.getUser().getUserId();
-		String createStaff = "1";
+		String createStaff = UserContext.getUser().getUserId();
+//		String createStaff = "1";
 		
 		
 		//获取供应商ID和申请商家ID
@@ -127,8 +132,8 @@ public class cgSearchApplyController extends BaseController {
 		String applyMerchantId = purApplyService.getMerchantId(applyMerchantCode);
 		Date date = new Date();
 		String createDate = date.toLocaleString();//创建时间
-		//String updateStaff =UserContext.getUser().getUserId();
-		String updateStaff ="1";
+		String updateStaff =UserContext.getUser().getUserId();
+//		String updateStaff ="1";
 		
 		String updateDate = date.toLocaleString();
 		String statusDate = date.toLocaleString();
@@ -155,12 +160,28 @@ public class cgSearchApplyController extends BaseController {
 			//写表PUR_APPLY_ITEM(采购申请单项)
 			purApplyService.crPurApplyItem(addProductReq);
 		}
-		//写表PUR_APPLY_FILE(采购申请单附件表)
-		if(req.getFileUrl() != null){
-			String fileId = purApplyService.hqSeqFileId();
-			req.setFileId(fileId);
-			purApplyService.crPurApplyFile(req);
+		
+		List<AddFileReq> fileList = req.getAddFileReq();
+		if(fileList != null){
+			for(int i=0;i<fileList.size();i++){
+				AddFileReq addFileReq = fileList.get(i);
+				String fileId = purApplyService.hqSeqFileId();
+				addFileReq.setFileId(fileId);
+				addFileReq.setApplyId(req.getApplyId());
+				addFileReq.setCreateStaff(createStaff);
+				addFileReq.setCreateDate(createDate);
+				addFileReq.setUpdateStaff(updateStaff);
+				addFileReq.setUpdateDate(updateDate);
+				purApplyService.crPurApplyFile(req);
+			}
 		}
+//		
+//		//写表PUR_APPLY_FILE(采购申请单附件表)
+//		if(req.getFileUrl() != null){
+//			String fileId = purApplyService.hqSeqFileId();
+//			req.setFileId(fileId);
+//			purApplyService.crPurApplyFile(req);
+//		}
 		//写表PUR_APPLY(采购申请单)
 		purApplyService.tcProcureApply(req);
 		return ResultVO.success();
@@ -187,7 +208,9 @@ public class cgSearchApplyController extends BaseController {
 		ProcureApplyReq procureApplyReq1 = purApplyService.ckApplyData1(req);
 		//获取添加的产品信息
 		List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
+		List<AddFileReq> procureApplyReq3 = purApplyService.ckApplyData3(req);
 		procureApplyReq1.setAddProductReq(procureApplyReq2);
+		procureApplyReq1.setAddFileReq(procureApplyReq3);
 		return ResultVO.success(procureApplyReq1);
 	}
 	

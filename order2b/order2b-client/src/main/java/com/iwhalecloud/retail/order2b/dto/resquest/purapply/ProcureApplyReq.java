@@ -37,6 +37,8 @@ public class ProcureApplyReq extends PageVO implements Serializable {
 	
 	private List<AddProductReq> addProductReq;
 	
+	private List<AddFileReq> addFileReq;
+	
 	private String fileId;	//	附件ID
 	
 	private String fileType;	//附件类型

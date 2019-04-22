@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
@@ -76,7 +77,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public List<AddProductReq> ckApplyData2(PurApplyReq req) {
 		return purApplyManager.ckApplyData2(req);
 	}
-
+	
+	@Override
+	public List<AddFileReq> ckApplyData3(PurApplyReq req) {
+		return purApplyManager.ckApplyData3(req);
+	}
+	
 	@Override
 	public int isHaveSave(String applyId){
 		return purApplyManager.isHaveSave(applyId);

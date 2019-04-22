@@ -172,7 +172,7 @@ public class cgSearchApplyController extends BaseController {
 				addFileReq.setCreateDate(createDate);
 				addFileReq.setUpdateStaff(updateStaff);
 				addFileReq.setUpdateDate(updateDate);
-				purApplyService.crPurApplyFile(req);
+				purApplyService.crPurApplyFile(addFileReq);
 			}
 		}
 //		

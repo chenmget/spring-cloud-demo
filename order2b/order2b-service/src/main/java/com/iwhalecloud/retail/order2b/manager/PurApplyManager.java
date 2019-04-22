@@ -34,7 +34,7 @@ public class PurApplyManager {
 		purApplyMapper.tcProcureApply(req);
 	}
 	
-	public void crPurApplyFile(ProcureApplyReq req){
+	public void crPurApplyFile(AddFileReq req){
 		purApplyMapper.crPurApplyFile(req);
 	}
 	

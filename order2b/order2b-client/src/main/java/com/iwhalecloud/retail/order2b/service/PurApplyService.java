@@ -26,7 +26,7 @@ public interface PurApplyService {
 	////采购申请单单号写表
 	public void tcProcureApply(ProcureApplyReq req);
 	//采购申请的附件的写表
-	public void crPurApplyFile(ProcureApplyReq req);
+	public void crPurApplyFile(AddFileReq req);
 	//采购申请查询的删除操作
 	public ResultVO delSearchApply(PurApplyReq req);
 	

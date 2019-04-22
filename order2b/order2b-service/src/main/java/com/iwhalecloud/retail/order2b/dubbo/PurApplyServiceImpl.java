@@ -41,7 +41,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	
 	@Override
 	@Transactional
-	public void crPurApplyFile(ProcureApplyReq req) {
+	public void crPurApplyFile(AddFileReq req) {
 		purApplyManager.crPurApplyFile(req);
 	}
 

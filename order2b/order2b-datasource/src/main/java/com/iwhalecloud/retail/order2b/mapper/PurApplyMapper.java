@@ -22,7 +22,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public void tcProcureApply(@Param("req") ProcureApplyReq procureApplyReq);
 	
-	public void crPurApplyFile(@Param("req") ProcureApplyReq procureApplyReq);
+	public void crPurApplyFile(@Param("req") AddFileReq procureApplyReq);
 	
 	public void crPurApplyItem(@Param("req") AddProductReq addProductReq);
 	

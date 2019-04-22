@@ -121,7 +121,7 @@ public class cgSearchApplyController extends BaseController {
 			}
 			statusCd = "20";
 		}
-		String createStaff = UserContext.getUser().getUserId();
+		String createStaff = UserContext.getUserId();
 //		String createStaff = "1";
 		
 		
@@ -132,7 +132,7 @@ public class cgSearchApplyController extends BaseController {
 		String applyMerchantId = purApplyService.getMerchantId(applyMerchantCode);
 		Date date = new Date();
 		String createDate = date.toLocaleString();//创建时间
-		String updateStaff =UserContext.getUser().getUserId();
+		String updateStaff =UserContext.getUserId();
 //		String updateStaff ="1";
 		
 		String updateDate = date.toLocaleString();

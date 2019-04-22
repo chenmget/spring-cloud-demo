@@ -39,7 +39,7 @@
             and ci.COUPON_INST_NBR = #{req.couponNo}
         </if>
         <if test="req.couponName != null and req.couponName !=''">
-            and mrc.COUPON_TYPE = #{req.couponName}
+            and mrc.MKT_RES_NAME = #{req.couponName}
         </if>
         <if test="req.businessId != null and req.businessId !=''">
             and ci.CUST_ACCT_ID = #{req.businessId}

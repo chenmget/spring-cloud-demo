@@ -61,7 +61,7 @@ public class PayAuthorizationService {
     /**
      * 授权申请
      */
-    public String authorizationApplication(String orderId, String operationType) {
+    public boolean authorizationApplication(String orderId, String operationType) {
 
         Order order = new Order();
         order.setOrderId(orderId);
@@ -71,6 +71,7 @@ public class PayAuthorizationService {
             advanceOrder.setOrderId(orderId);
             AdvanceOrder resAdvanceOrder = advanceOrderMapper.selectAdvanceOrderByOrderId(advanceOrder);
 
+            boolean flag = true;
             if("0".equals(resAdvanceOrder.getAdvancePayStatus())){ // 支付定金
                 String payAdvanceMoney = resAdvanceOrder.getAdvanceAmount().toString();
                 String payAdvMoney = payAdvanceMoney.substring(0, payAdvanceMoney.indexOf('.'));
@@ -80,6 +81,7 @@ public class PayAuthorizationService {
                     // 保存订单交易流水
                     advanceOrderMapper.updateAdvanceTransId(orderId, reqSeq);
                 }
+                flag = flag & advFlag;
             }
             if("1".equals(resAdvanceOrder.getAdvancePayStatus()) && "0".equals(resAdvanceOrder.getRestPayStatus())){   // 支付尾款
                 String payRestMoney = resAdvanceOrder.getRestPayMoney().toString();
@@ -90,9 +92,11 @@ public class PayAuthorizationService {
                     // 保存订单交易流水
                     advanceOrderMapper.updateRestTransId(orderId, reqSeq);
                 }
+                flag = flag & resFlag;
             }
+            return flag;
         }else { // 普通
-            String payMoney = resOrder.getPayMoney().toString();
+            String payMoney = resOrder.getOrderAmount().toString();
             String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
             String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
             boolean advFlag = call(payAuthUrl, orderId, operationType, reqSeq, null, resPayMoney);
@@ -100,10 +104,9 @@ public class PayAuthorizationService {
                 // 保存订单交易流水
                 orderMapper.updatePayTransId(orderId, reqSeq);
             }
-
+            return advFlag;
         }
 
-        return orderId;
     }
 
     /**
@@ -153,7 +156,7 @@ public class PayAuthorizationService {
             }
             return flag;
         }else { // 普通
-            String payMoney = resOrder.getPayMoney().toString();
+            String payMoney = resOrder.getOrderAmount().toString();
             String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
             String payTransId = resOrder.getPayTransId();
             if(payTransId != null && !"".equals(payTransId)){
@@ -202,7 +205,7 @@ public class PayAuthorizationService {
         SaveLogModel saveLogModel = new SaveLogModel();
         saveLogModel.setPayId(reqSeq);
         saveLogModel.setOrderId(orderId);
-        saveLogModel.setOrderAmount(payMoney.substring(0, payMoney.indexOf('.')));
+        saveLogModel.setOrderAmount(payMoney);
         saveLogModel.setPayStatus(PayConsts.PAY_STATUS_0);
         saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1004);
         saveLogModel.setOperationType(operationType);

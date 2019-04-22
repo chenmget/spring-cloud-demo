@@ -3,6 +3,8 @@ package com.iwhalecloud.retail.order2b.authpay.service;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.order2b.authpay.handler.BestpayHandler;
 import lombok.extern.slf4j.Slf4j;
+import net.sf.json.JSONObject;
+import net.sf.json.JsonConfig;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
@@ -33,7 +35,14 @@ public abstract class BestpayServiceTemp {
         log.info("翼支付响应报文：" + response);
         boolean verifyResult = doVerify(response);
         log.info("验签结果:" + verifyResult);
-        return verifyResult && "000000".equals(JSON.parseObject(response).get("code"));
+
+        JsonConfig config = new JsonConfig();
+        config.setIgnoreDefaultExcludes(true);
+        JSONObject jsonObject = JSONObject.fromObject(response, config);
+        String sign = (String) jsonObject.get("sign");
+        String data = jsonObject.get("data").toString();
+
+        return verifyResult & "000000".equals(JSONObject.fromObject(data).get("code"));
     }
 
     protected abstract String doConvert(Object object, String platformCode, String iv) throws Exception;

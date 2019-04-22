@@ -24,12 +24,7 @@ public class JyPurApplyServiceImpl implements JyPurApplyService {
 	@Override
 	public ResultVO<Page<JyPurApplyResp>> jycgSearchApply(PurApplyReq req) {
 		String applyType = req.getApplyType();
-		Page<JyPurApplyResp> jypurApplyResp = null ;
-		if("10".equals(applyType)){
-			jypurApplyResp = jypurApplyManager.jycgSearchApplycgsqd(req);
-		}else{
-			jypurApplyResp = jypurApplyManager.jycgSearchApplycgd(req);
-		}
+		Page<JyPurApplyResp> jypurApplyResp = jypurApplyManager.jycgSearchApply(req);
 		return ResultVO.success(jypurApplyResp);
 	}
 

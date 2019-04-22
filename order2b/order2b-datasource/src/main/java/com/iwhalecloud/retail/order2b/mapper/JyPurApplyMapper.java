@@ -12,9 +12,6 @@ import com.iwhalecloud.retail.order2b.entity.PurApply;
 
 @Mapper
 public interface JyPurApplyMapper extends BaseMapper<PurApply>  {
-	//采购申请单
-	public Page<JyPurApplyResp> jycgSearchApplycgsqd(Page<JyPurApplyResp> page,@Param("req") PurApplyReq purApplyReq) ;
-	//采购单
-	public Page<JyPurApplyResp> jycgSearchApplycgd(Page<JyPurApplyResp> page,@Param("req") PurApplyReq purApplyReq) ;
 
+	public Page<JyPurApplyResp> jycgSearchApply(Page<JyPurApplyResp> page,@Param("req") PurApplyReq purApplyReq) ;
 }

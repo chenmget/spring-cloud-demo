@@ -15,16 +15,10 @@ public class JyPurApplyManager {
 
 	@Resource
     private JyPurApplyMapper jypurApplyMapper;
-	//采购申请单
-	public Page<JyPurApplyResp> jycgSearchApplycgsqd(PurApplyReq req) {
+	
+	public Page<JyPurApplyResp> jycgSearchApply(PurApplyReq req) {
 		Page<JyPurApplyResp> page=new Page<>(req.getPageNo(),req.getPageSize());
-		Page<JyPurApplyResp> pageReport =jypurApplyMapper.jycgSearchApplycgsqd(page,req);
-		return pageReport;
-	}
-	//采购单
-	public Page<JyPurApplyResp> jycgSearchApplycgd(PurApplyReq req) {
-		Page<JyPurApplyResp> page=new Page<>(req.getPageNo(),req.getPageSize());
-		Page<JyPurApplyResp> pageReport =jypurApplyMapper.jycgSearchApplycgd(page,req);
+		Page<JyPurApplyResp> pageReport =jypurApplyMapper.jycgSearchApply(page,req);
 		return pageReport;
 	}
 }

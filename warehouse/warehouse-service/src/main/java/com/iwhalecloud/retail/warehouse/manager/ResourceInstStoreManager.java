@@ -137,8 +137,8 @@ public class ResourceInstStoreManager{
                 onwayQuantity = exixtsOnwayQuantity - changeOnwayQuantity;
             }
 
-            // 无库存时通知商品中心
-            if (Long.compare(quantity, 0) < 1) {
+            // 无库存时通知商品中心,小于1的话最后一个库存更新不了
+            if (quantity.longValue() < 0) {
                 try {
                     GoodsProductRelEditReq goodsProductRelEditReq = new GoodsProductRelEditReq();
                     goodsProductRelEditReq.setMerchantId(resourceInstStoreDTO.getMerchantId());

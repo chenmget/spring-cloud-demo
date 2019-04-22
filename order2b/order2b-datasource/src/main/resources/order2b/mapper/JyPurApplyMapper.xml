@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.order2b.mapper.PurApplyMapper">
   
-    <select id="jycgSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+    <select id="jycgSearchApplycgsqd" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
             resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp">
 		SELECT a.APPLY_ID as applyId,
 		a.APPLY_CODE as applyCode,
@@ -26,7 +26,14 @@
 		<if test='req.applyMerchantId!=null and req.applyMerchantId!=""'>  
 			and a.APPLY_MERCHANT_ID = #{req.applyMerchantId}
 		</if>
+		<if test='req.statusCd!=null and req.statusCd!=""'>  
+			and a.STATUS_CD = #{req.statusCd}
+		</if>
+		<if test='req.applyType!=null and req.applyType!=""'>  
+			and a.APPLY_TYPE = #{req.applyType}
+		</if>
 		
   </select>
+  
 </mapper>
 

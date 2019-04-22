@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.manager.JyPurApplyManager;
@@ -21,8 +22,14 @@ public class JyPurApplyServiceImpl implements JyPurApplyService {
     private JyPurApplyManager jypurApplyManager;
 	
 	@Override
-	public ResultVO<Page<PurApplyResp>> jycgSearchApply(PurApplyReq req) {
-		Page<PurApplyResp> jypurApplyResp = jypurApplyManager.jycgSearchApply(req);
+	public ResultVO<Page<JyPurApplyResp>> jycgSearchApply(PurApplyReq req) {
+		String applyType = req.getApplyType();
+		Page<JyPurApplyResp> jypurApplyResp = null ;
+		if("10".equals(applyType)){
+			jypurApplyResp = jypurApplyManager.jycgSearchApplycgsqd(req);
+		}else{
+			jypurApplyResp = jypurApplyManager.jycgSearchApplycgd(req);
+		}
 		return ResultVO.success(jypurApplyResp);
 	}
 

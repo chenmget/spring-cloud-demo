@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.partner.dto.resp.SupplyMerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.system.dto.request.UserGetReq;
 import com.iwhalecloud.retail.system.dto.request.UserPageReq;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -36,6 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -72,7 +74,22 @@ public class MerchantController {
     @RequestMapping(value = "/page", method = RequestMethod.POST)
     public ResultVO<Page<MerchantPageResp>> pageMerchant(@RequestBody MerchantPageReq req) {
         log.info("MerchantController.pageMerchant() input: MerchantPageReq={}", JSON.toJSONString(req));
-        return merchantService.pageMerchant(req);
+        ResultVO<Page<MerchantPageResp>> pageResultVO = merchantService.pageMerchant(req);
+        UserGetReq userGetReq = new UserGetReq();
+        String userName = "";
+        String merchantCode = "";
+        if (pageResultVO.isSuccess()) {
+            for (int i = 0; i < pageResultVO.getResultData().getRecords().size(); i++) {
+                merchantCode = pageResultVO.getResultData().getRecords().get(i).getMerchantCode();
+                userGetReq.setRelCode(merchantCode);
+                UserDTO user = userService.getUser(userGetReq);
+                if (!Objects.isNull(user)) {
+                    userName = user.getUserName();
+                    pageResultVO.getResultData().getRecords().get(i).setLoginName(userName);
+                }
+            }
+        }
+        return pageResultVO;
     }
 
     @ApiOperation(value = "商家列表导出", notes = "商家列表导出")
@@ -124,7 +141,20 @@ public class MerchantController {
     @RequestMapping(value = "/pageRetailMerchant", method = RequestMethod.POST)
     public ResultVO<Page<RetailMerchantDTO>> pageRetailMerchant(@RequestBody @ApiParam(value = "分页参数", required = true) RetailMerchantPageReq req) {
         log.info("MerchantController.pageRetailMerchant() input: RetailMerchantPageReq={}", JSON.toJSONString(req));
-        return merchantService.pageRetailMerchant(req);
+        ResultVO<Page<RetailMerchantDTO>> pageResultVO = merchantService.pageRetailMerchant(req);
+        UserGetReq userGetReq = new UserGetReq();
+        String loginName = "";
+        String merchantCode = "";
+        for (int i = 0; i < pageResultVO.getResultData().getRecords().size(); i++) {
+            merchantCode = pageResultVO.getResultData().getRecords().get(i).getMerchantCode();
+            userGetReq.setRelCode(merchantCode);
+            UserDTO user = userService.getUser(userGetReq);
+            if (!Objects.isNull(user)) {
+                loginName = user.getUserName();
+                pageResultVO.getResultData().getRecords().get(i).setLoginName(loginName);
+            }
+        }
+        return pageResultVO;
     }
 
     @ApiOperation(value = "零售商列表导出", notes = "零售商类型的商家列表导出")
@@ -174,7 +204,20 @@ public class MerchantController {
     @RequestMapping(value = "/pageSupplyMerchant", method = RequestMethod.POST)
     public ResultVO<Page<SupplyMerchantDTO>> pageSupplyMerchant(@RequestBody @ApiParam(value = "分页参数", required = true) SupplyMerchantPageReq req) {
         log.info("MerchantController.pageSupplyMerchant() input: SupplyMerchantPageReq={}", JSON.toJSONString(req));
-        return merchantService.pageSupplyMerchant(req);
+        ResultVO<Page<SupplyMerchantDTO>> pageResultVO = merchantService.pageSupplyMerchant(req);
+        UserGetReq userGetReq = new UserGetReq();
+        String merchantCode = "";
+        String loginName = "";
+        for (int i = 0; i < pageResultVO.getResultData().getRecords().size(); i++) {
+            merchantCode = pageResultVO.getResultData().getRecords().get(i).getMerchantCode();
+            userGetReq.setRelCode(merchantCode);
+            UserDTO user = userService.getUser(userGetReq);
+            if (!Objects.isNull(user)) {
+                loginName = user.getUserName();
+                pageResultVO.getResultData().getRecords().get(i).setLoginName(loginName);
+            }
+        }
+        return pageResultVO;
     }
 
     @ApiOperation(value = "供应商列表导出", notes = "供应商列表导出")
@@ -223,7 +266,20 @@ public class MerchantController {
     @RequestMapping(value = "/pageFactoryMerchant", method = RequestMethod.POST)
     public ResultVO<Page<FactoryMerchantDTO>> pageFactoryMerchant(@RequestBody @ApiParam(value = "分页参数", required = true) FactoryMerchantPageReq req) {
         log.info("MerchantController.pageFactoryMerchant() input: FactoryMerchantPageReq={}", JSON.toJSONString(req));
-        return merchantService.pageFactoryMerchant(req);
+        ResultVO<Page<FactoryMerchantDTO>> pageResultVO = merchantService.pageFactoryMerchant(req);
+        UserGetReq userGetReq=new UserGetReq();
+        String merchantCode="";
+        String loginName="";
+        for(int i =0;i<pageResultVO.getResultData().getRecords().size();i++){
+            merchantCode = pageResultVO.getResultData().getRecords().get(i).getMerchantCode();
+            userGetReq.setRelCode(merchantCode);
+            UserDTO user = userService.getUser(userGetReq);
+            if (!Objects.isNull(user)) {
+                loginName = user.getUserName();
+                pageResultVO.getResultData().getRecords().get(i).setLoginName(loginName);
+            }
+        }
+        return pageResultVO;
     }
 
 

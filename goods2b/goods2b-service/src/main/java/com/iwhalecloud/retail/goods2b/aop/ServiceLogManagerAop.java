@@ -41,8 +41,14 @@ public class ServiceLogManagerAop {
             return result;
         } catch (RetailTipException e) {
             log.error("ServiceLogManagerAop.aroundExecuteService",e);
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return e.getTipResultVO();
+
+            //只有在事务开启的方法捕获异常，如果是传播事务则不捕获，在最外层统一捕获
+            if (TransactionAspectSupport.currentTransactionStatus().isNewTransaction()) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return e.getTipResultVO();
+            }
+
+            throw e;
         }
 
     }

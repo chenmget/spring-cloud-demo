@@ -128,10 +128,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setProductBaseId(productBaseId);
                 par.setCreateStaff(t.getCreateStaff());
                 par.setAuditState(auditState);
-                ResultVO<Integer> addResultVO = productService.addProduct(par);
-                if (!addResultVO.isSuccess() || addResultVO.getResultData() < 1) {
-                    throw new RetailTipException(addResultVO.getResultCode(), addResultVO.getResultMsg());
-                }
+                productService.addProduct(par);
             }
         }
 

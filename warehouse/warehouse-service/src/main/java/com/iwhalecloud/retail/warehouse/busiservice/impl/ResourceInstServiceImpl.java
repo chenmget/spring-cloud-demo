@@ -249,6 +249,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
+    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
     public ResultVO<List<String>> updateResourceInstForTransaction(ResourceInstUpdateReq req) {
         log.info("ResourceInstServiceImpl.updateResourceInstForTransaction req={}", JSON.toJSONString(req));
         Map<String, Object> data = assembleData(req, req.getMktResStoreId());
@@ -399,6 +400,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
+    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
     public ResultVO<ResourceInstAddResp> addResourceInstForTransaction(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInstForTransaction req={}", JSON.toJSONString(req));
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
@@ -618,6 +620,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
+    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
     public ResultVO updateResourceInstByIdsForTransaction(AdminResourceInstDelReq req) {
         log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction req={}", JSON.toJSONString(req));
         // 组装数据
@@ -770,6 +773,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
+    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
     public ResultVO<Boolean> updateInstState(ResourceInstUpdateReq req) {
         log.info("ResourceInstServiceImpl.updateInstState req={}", JSON.toJSONString(req));
         String storeSubType = req.getStoreType();

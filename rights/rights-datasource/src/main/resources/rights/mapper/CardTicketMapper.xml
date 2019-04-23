@@ -11,7 +11,7 @@
         ci.coupon_inst_id,
         ci.COUPON_INST_NBR AS couponNo,
         mrc.MKT_RES_NAME AS couponName,
-        mrt.MKT_RES_TYPE_NAME AS couponType,
+        mrc.COUPON_TYPE AS couponType,
         mrc.partner_id AS partnerId,
         mrc.SHOW_AMOUNT AS amount,
         CASE
@@ -24,13 +24,9 @@
         ci.EXP_DATE AS expiryDate
         FROM
         COUPON_INST ci,
-        MKT_RESOURCE mr,
-        MKT_RES_COUPON mrc,
-        MKT_RES_TYPE mrt
+        MKT_RES_COUPON mrc
         WHERE
-        ci.COUPON_INST_ID = mrc.MKT_RES_ID
-        AND mrc.MKT_RES_NBR = mr.MKT_RES_NBR
-        AND mrt.MKT_RES_TYPE_ID = mr.MKT_RES_TYPE_ID
+        ci.MKT_RES_ID = mrc.MKT_RES_ID
         <choose>
             <when test="req.couponStatus != null and req.couponStatus !=''">
                 and ci.STATUS_CD = #{req.couponStatus}
@@ -49,7 +45,7 @@
             and ci.CUST_ACCT_ID = #{req.businessId}
         </if>
         <if test="req.couponType != null and req.couponType !=''">
-            and mrt.MKT_RES_TYPE_ID = #{req.couponType}
+            and mrc.COUPON_TYPE = #{req.couponType}
         </if>
         <if test="req.startDate != null and req.startDate !=''">
             and ci.EXP_DATE &gt;= #{req.startDate}
@@ -57,7 +53,7 @@
         <if test="req.endDate != null and req.endDate !=''">
             and ci.EXP_DATE &lt;= #{req.endDate}
         </if>
-        order by ci.EXP_DATE desc
+        order by ci.STATUS_CD desc,ci.EXP_DATE desc
     </select>
 
     <select id="queryAllBusinessCouponUsed"
@@ -67,7 +63,7 @@
         ci.coupon_inst_id,
         ci.COUPON_INST_NBR as couponNo,
         mrc.MKT_RES_NAME AS couponName,
-        mrt.MKT_RES_TYPE_NAME AS couponType,
+        mrc.COUPON_TYPE AS couponType,
         mrc.partner_id as partnerId,
         mrc.SHOW_AMOUNT AS amount,
         ci.EFF_DATE,
@@ -76,14 +72,10 @@
         ciur.USE_ORDER_ID as orderNo
         FROM
         COUPON_INST ci,
-        MKT_RESOURCE mr,
         MKT_RES_COUPON mrc,
-        MKT_RES_TYPE mrt,
         COUPON_INST_USE_REC ciur
         WHERE
-        ci.COUPON_INST_ID = mrc.MKT_RES_ID
-        AND mrc.MKT_RES_NBR = mr.MKT_RES_NBR
-        AND mrt.MKT_RES_TYPE_ID = mr.MKT_RES_TYPE_ID
+        ci.MKT_RES_ID = mrc.mkt_res_id
         AND ciur.COUPON_INST_ID = ci.coupon_inst_id and ci.STATUS_CD = '1300'
         <if test="req.businessId != null and req.businessId !=''">
             and ci.CUST_ACCT_ID = #{req.businessId}
@@ -98,7 +90,7 @@
             and ci.COUPON_INST_NBR = #{req.couponNo}
         </if>
         <if test="req.couponType != null and req.couponType !=''">
-            and mrt.MKT_RES_TYPE_ID = #{req.couponType}
+            and mrc.COUPON_TYPE = #{req.couponType}
         </if>
     </select>
 
@@ -109,7 +101,7 @@
         ci.coupon_inst_id,
         ci.COUPON_INST_NBR as couponNo,
         mrc.MKT_RES_NAME AS couponName,
-        mrt.MKT_RES_TYPE_NAME AS couponType,
+        mrc.COUPON_TYPE AS couponType,
         mrc.partner_id as partnerId,
         mrc.SHOW_AMOUNT AS amount,
         ci.EFF_DATE,
@@ -118,14 +110,10 @@
         ciur.USE_ORDER_ID as orderNo
         FROM
         COUPON_INST ci,
-        MKT_RESOURCE mr,
         MKT_RES_COUPON mrc,
-        MKT_RES_TYPE mrt,
         COUPON_INST_USE_REC ciur
         WHERE
-        ci.COUPON_INST_ID = mrc.MKT_RES_ID
-        AND mrc.MKT_RES_NBR = mr.MKT_RES_NBR
-        AND mrt.MKT_RES_TYPE_ID = mr.MKT_RES_TYPE_ID
+        ci.MKT_RES_ID = mrc.mkt_res_id
         AND ciur.COUPON_INST_ID = ci.coupon_inst_id and ci.STATUS_CD = '1300'
         <if test="req.businessId != null and req.businessId !=''">
             and ci.CUST_ACCT_ID = #{req.businessId}
@@ -140,7 +128,7 @@
             and ci.COUPON_INST_NBR = #{req.couponNo}
         </if>
         <if test="req.couponType != null and req.couponType !=''">
-            and mrt.MKT_RES_TYPE_ID = #{req.couponType}
+            and mrc.COUPON_TYPE = #{req.couponType}
         </if>
     </select>
 

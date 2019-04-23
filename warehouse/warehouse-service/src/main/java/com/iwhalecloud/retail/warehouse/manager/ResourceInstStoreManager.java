@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -136,18 +137,18 @@ public class ResourceInstStoreManager{
                 onwayQuantity = exixtsOnwayQuantity - changeOnwayQuantity;
             }
 
-            // 无库存时通知商品中心
-            if (Long.compare(quantity, 0) < 1) {
+            // 无库存时通知商品中心,小于1的话最后一个库存更新不了
+            if (quantity.longValue() < 0) {
                 try {
                     GoodsProductRelEditReq goodsProductRelEditReq = new GoodsProductRelEditReq();
                     goodsProductRelEditReq.setMerchantId(resourceInstStoreDTO.getMerchantId());
                     goodsProductRelEditReq.setProductId(resourceInstStoreDTO.getMktResId());
                     goodsProductRelEditReq.setIsHaveStock(false);
-                    goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
+                    ResultVO<Boolean> resultVO = goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
+                    log.info("ResourceInstStoreManager goodsProductRelService.updateIsHaveStock req={}", JSON.toJSONString(goodsProductRelEditReq), JSON.toJSONString(resultVO));
                 } catch (Exception ex) {
                     log.error("通知商品中心异常", ex);
                 }
-
                 return 0;
             }
 
@@ -158,7 +159,11 @@ public class ResourceInstStoreManager{
             UpdateWrapper<ResourceInstStore> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq(ResourceInstStore.FieldNames.mktResInstStoreId.getTableFieldName(), resourceInstStore.getMktResInstStoreId());
             updateWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStore.getMktResStoreId());
-            return resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
+            updateWrapper.eq(ResourceInstStore.FieldNames.merchantId.getTableFieldName(), resourceInstStore.getMerchantId());
+            updateWrapper.eq(ResourceInstStore.FieldNames.mktResId.getTableFieldName(), resourceInstStore.getMktResId());
+            Integer sucessNum = resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
+            log.info("ResourceInstStoreManager.update req={}，resp={}", JSON.toJSONString(updateWrapper), sucessNum);
+            return sucessNum;
         }else{
             Date now = new Date();
             ResourceInstStore addResourceInstStore = new ResourceInstStore();

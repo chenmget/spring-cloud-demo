@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.MerchantDTO;
+import com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
@@ -111,4 +112,12 @@ public interface GoodsService{
      * @return 更新结果
      */
     ResultVO<Boolean> updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req);
+
+    /**
+     * 根据产品id查询省包商品
+     * @param goodsId
+     * @param productId
+     * @return
+     */
+    List<SupplierGoodsDTO> querySupplierGoods(String goodsId,String productId);
 }

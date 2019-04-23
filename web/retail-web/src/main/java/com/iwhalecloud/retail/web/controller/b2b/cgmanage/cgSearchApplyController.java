@@ -204,7 +204,7 @@ public class cgSearchApplyController extends BaseController {
     })
     @PostMapping("/ckApplyData")
 	public ResultVO<ProcureApplyReq> ckApplyData(@RequestBody PurApplyReq req){
-		//获取申请单跟附件
+		//获取申请单
 		ProcureApplyReq procureApplyReq1 = purApplyService.ckApplyData1(req);
 		//获取添加的产品信息
 		List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);

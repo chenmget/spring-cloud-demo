@@ -155,10 +155,10 @@
 		a.phone as applyContact,
 		a.apply_name as applyName,
 		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_CODE=a.merchant_code) AS supplier,
-		b.file_url AS fileUrl
+		a.status_cd as statusCd,
+		a.create_date as createDate
 	FROM 
 		pur_apply a
-		LEFT JOIN pur_apply_file b ON a.apply_id = b.apply_id
 		where 1=1 and a.apply_id = #{req.applyId}
  
   </select>

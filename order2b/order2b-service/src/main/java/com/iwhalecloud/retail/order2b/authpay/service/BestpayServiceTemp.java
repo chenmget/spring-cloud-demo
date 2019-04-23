@@ -12,6 +12,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * @author yangbo2018
  * @version Id: BestpayServiceTemp.java, v 0.1 2018/3/2 11:35 yangbo2018 Exp $$
@@ -28,7 +31,7 @@ public abstract class BestpayServiceTemp {
         this.bestpayHandler = bestpayHandler;
     }
 
-    public final boolean invoke(String url, Object object, String platformCode, String iv) throws Exception {
+    public final Map<String, Object> invoke(String url, Object object, String platformCode, String iv) throws Exception {
         String request = doConvert(object, platformCode, iv);
         log.info("请求翼支付报文：" + request);
         String response = doService(url, request);
@@ -42,7 +45,15 @@ public abstract class BestpayServiceTemp {
         String sign = (String) jsonObject.get("sign");
         String data = jsonObject.get("data").toString();
 
-        return verifyResult & "000000".equals(JSONObject.fromObject(data).get("code"));
+        Map<String, Object> result = new HashMap<String, Object>();
+        if (verifyResult & "000000".equals(JSONObject.fromObject(data).get("code"))) {
+            result.put("flag", true);
+            result.put("originalTransSeq", JSONObject.fromObject(data).get("result"));
+        } else {
+            result.put("flag", false);
+        }
+
+        return result;
     }
 
     protected abstract String doConvert(Object object, String platformCode, String iv) throws Exception;

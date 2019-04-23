@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -76,10 +77,11 @@ public class PayAuthorizationService {
                 String payAdvanceMoney = resAdvanceOrder.getAdvanceAmount().toString();
                 String payAdvMoney = payAdvanceMoney.substring(0, payAdvanceMoney.indexOf('.'));
                 String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                boolean advFlag = call(payAuthUrl, orderId, operationType, reqSeq, null, payAdvMoney);
+                Map<String, Object> resultCall = call(payAuthUrl, orderId, operationType, reqSeq, null, payAdvMoney);
+                boolean advFlag = (boolean)resultCall.get("flag");
                 if(advFlag){
                     // 保存订单交易流水
-                    advanceOrderMapper.updateAdvanceTransId(orderId, reqSeq);
+                    advanceOrderMapper.updateAdvanceTransId(orderId, (String)resultCall.get("originalTransSeq"));
                 }
                 flag = flag & advFlag;
             }
@@ -87,10 +89,11 @@ public class PayAuthorizationService {
                 String payRestMoney = resAdvanceOrder.getRestPayMoney().toString();
                 String payResMoney = payRestMoney.substring(0, payRestMoney.indexOf('.'));
                 String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                boolean resFlag = call(payAuthUrl, orderId, operationType, reqSeq, null, payResMoney);
+                Map<String, Object> resultCall = call(payAuthUrl, orderId, operationType, reqSeq, null, payResMoney);
+                boolean resFlag = (boolean)resultCall.get("flag");
                 if(resFlag){
                     // 保存订单交易流水
-                    advanceOrderMapper.updateRestTransId(orderId, reqSeq);
+                    advanceOrderMapper.updateRestTransId(orderId, (String)resultCall.get("originalTransSeq"));
                 }
                 flag = flag & resFlag;
             }
@@ -99,10 +102,11 @@ public class PayAuthorizationService {
             String payMoney = resOrder.getOrderAmount().toString();
             String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
             String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-            boolean advFlag = call(payAuthUrl, orderId, operationType, reqSeq, null, resPayMoney);
+            Map<String, Object> resultCall = call(payAuthUrl, orderId, operationType, reqSeq, null, resPayMoney);
+            boolean advFlag = (boolean)resultCall.get("flag");
             if(advFlag){
                 // 保存订单交易流水
-                orderMapper.updatePayTransId(orderId, reqSeq);
+                orderMapper.updatePayTransId(orderId, (String)resultCall.get("originalTransSeq"));
             }
             return advFlag;
         }
@@ -142,7 +146,8 @@ public class PayAuthorizationService {
                 String payAdvanceMoney = resAdvanceOrder.getAdvanceAmount().toString();
                 String payAdvMoney = payAdvanceMoney.substring(0, payAdvanceMoney.indexOf('.'));
                 String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                boolean advFlag = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getAdvanceTransId(), payAdvMoney);
+                Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getAdvanceTransId(), payAdvMoney);
+                boolean advFlag = (boolean)resultCall.get("flag");
                 flag = advFlag & flag;
             }
 
@@ -151,7 +156,8 @@ public class PayAuthorizationService {
                 String payRestMoney = resAdvanceOrder.getRestPayMoney().toString();
                 String payResMoney = payRestMoney.substring(0, payRestMoney.indexOf('.'));
                 String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                boolean resFlag = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getRestTransId(), payResMoney);
+                Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getRestTransId(), payResMoney);
+                boolean resFlag = (boolean)resultCall.get("flag");
                 flag = resFlag & flag;
             }
             return flag;
@@ -161,15 +167,15 @@ public class PayAuthorizationService {
             String payTransId = resOrder.getPayTransId();
             if(payTransId != null && !"".equals(payTransId)){
                 String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                return call(callUrl, orderId, null, reqSeq, payTransId, resPayMoney);
+                Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, payTransId, resPayMoney);
+                return (boolean)resultCall.get("flag");
             }
         }
 
         return false;
-
     }
 
-    private boolean call(String callUrl, String orderId, String operationType, String reqSeq, String originalTransSeq, String payMoney){
+    private Map<String, Object> call(String callUrl, String orderId, String operationType, String reqSeq, String originalTransSeq, String payMoney){
 
         TradeCertificate certificate = CertificateUtil.getTradeCertificate(CertificateUtil.KEYSTORETYPE_JKS, true);
         BestpayHandler bestpayHandler = new BestpayHandler(certificate);
@@ -196,8 +202,10 @@ public class PayAuthorizationService {
         preAuthorizationApplyRequest.setOriginalTransSeq(originalTransSeq);
 
         boolean b = false;
+        Map<String, Object> resultInvoke = new HashMap<String, Object>();
         try {
-            b = bestpayService.invoke(callUrl, preAuthorizationApplyRequest, platformCode, certificate.getIv());
+            resultInvoke = bestpayService.invoke(callUrl, preAuthorizationApplyRequest, platformCode, certificate.getIv());
+            b = (boolean)resultInvoke.get("flag");
         } catch (Exception e) {
             log.error(e.getMessage());
         }
@@ -211,7 +219,7 @@ public class PayAuthorizationService {
         saveLogModel.setOperationType(operationType);
         bpepPayLogService.saveLog(saveLogModel);
 
-        return b;
+        return resultInvoke;
     }
 
 }

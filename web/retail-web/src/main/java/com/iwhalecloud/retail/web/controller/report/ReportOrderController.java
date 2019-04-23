@@ -73,8 +73,8 @@ public class ReportOrderController extends BaseController {
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
-		String userType=req.getUserType();
-		
+		//String userType=req.getUserType();
+		String userType = UserContext.getUser().getUserFounder()+"";
 		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setMerchantCode(retailerCodes);
@@ -121,7 +121,8 @@ public class ReportOrderController extends BaseController {
 	    public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
 	    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 			String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
-			String userType=req.getUserType();
+			//String userType=req.getUserType();
+			String userType = UserContext.getUser().getUserFounder()+"";
 			if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 				retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 				req.setMerchantCode(retailerCodes);

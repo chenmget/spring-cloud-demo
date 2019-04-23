@@ -67,7 +67,8 @@ public class ReportStoreController extends BaseController {
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
-		String userType=req.getUserType();
+		//String userType=req.getUserType();
+		String userType = UserContext.getUser().getUserFounder()+"";
 		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);
@@ -95,7 +96,8 @@ public class ReportStoreController extends BaseController {
 		//userType==5 厂家视图的导出
     	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
-		String userType=req.getUserType();
+		//String userType=req.getUserType();
+		String userType = UserContext.getUser().getUserFounder()+"";
 		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);

@@ -67,7 +67,8 @@ public class ReportDataController extends BaseController {
     })
     @PostMapping("/getReportDeSaleList")
     public ResultVO<Page<ReportDeSaleDaoResq>> getReportDeSaleList(@RequestBody ReportDeSaleDaoReq req) {
-		String userType=req.getUserType();
+		//String userType=req.getUserType();
+		String userType = UserContext.getUser().getUserFounder()+"";
 		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
 			String MerchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(MerchantCode);
@@ -104,7 +105,8 @@ public class ReportDataController extends BaseController {
     })
     @PostMapping(value="/reportDeSaleExport")
     public void reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req, HttpServletResponse response) {
-		String userType=req.getUserType();
+		//String userType=req.getUserType();
+    	String userType = UserContext.getUser().getUserFounder()+"";
 		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
 			String MerchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(MerchantCode);

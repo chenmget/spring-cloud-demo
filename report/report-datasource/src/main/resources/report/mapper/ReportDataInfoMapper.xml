@@ -84,7 +84,8 @@
   </select>
   
   <select id="retailerCodeBylegacy" parameterType="String" resultType="String">
-	  SELECT merchant_code FROM par_merchant WHERE 1=1 and legacy_account=#{legacyAccount}
+
+-	  SELECT merchant_code FROM par_merchant WHERE 1=1 and legacy_account=#{legacyAccount}
   </select>
   
   <select id="getretailerCode" parameterType="String" resultType="String">

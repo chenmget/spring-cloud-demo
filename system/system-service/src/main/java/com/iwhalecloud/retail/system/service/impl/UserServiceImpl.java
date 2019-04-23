@@ -87,7 +87,7 @@ public class UserServiceImpl implements UserService {
             return resp;
         }
         //4、 判断登录失败的次数是否》=5 》=5将此用户冻结 不能登录系统
-        if (user.getFailLoginCnt() >= SystemConst.MAX_FAIL_LOGIN_COUNT) {
+        if (Objects.nonNull(user.getFailLoginCnt()) && user.getFailLoginCnt() >= SystemConst.MAX_FAIL_LOGIN_COUNT) {
             resp.setErrorMessage("您已经连续" + SystemConst.MAX_FAIL_LOGIN_COUNT
                     + "次密码错误，不可再登录此系统，请联系管理员解冻");
             log.info("UserServiceImpl.login 出参：UserLoginResp-{}", JSON.toJSON(resp));
@@ -122,7 +122,7 @@ public class UserServiceImpl implements UserService {
         user.setFailLoginCnt(0);
         Integer successCnt = user.getSuccessLoginCnt() != null ? user.getSuccessLoginCnt() : 0;
         // 登录失败次数大于0 才更新  不用每次成功都更新
-        if (user.getFailLoginCnt() > 0) {
+        if (Objects.nonNull(user.getFailLoginCnt()) && user.getFailLoginCnt() > 0) {
             User updateUser = new User();
             updateUser.setUserId(user.getUserId());
             updateUser.setSuccessLoginCnt(successCnt + 1);

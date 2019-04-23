@@ -3,10 +3,9 @@ package com.iwhalecloud.retail.web.controller.b2b.rights;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.order2b.dto.response.OrderSelectDetailResp;
-import com.iwhalecloud.retail.order2b.dto.resquest.order.SelectOrderReq;
+import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
+import com.iwhalecloud.retail.order2b.dto.model.order.OrderItemDTO;
 import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
-import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.rights.dto.request.CouponNotUsedReq;
 import com.iwhalecloud.retail.rights.dto.request.CouponUsedReq;
@@ -33,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author lin.wenhui@iwhalecloud.com
@@ -68,16 +68,6 @@ public class RightsCardTicketB2BController {
         log.info("CardTicketService queryAllBusinessCouponNotUsed req={}", req);
         req.setBusinessId(UserContext.getMerchantId());
         Page<CouponNotUsedResp> resultData = cardTicketService.queryAllBusinessCouponNotUsed(req);
-        if (resultData.getRecords().size() > 0) {
-            for (int i = 0; i < resultData.getRecords().size(); i++) {
-                if (null != resultData.getRecords().get(i).getPartnerId() && !"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
-                    ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.getRecords().get(i).getPartnerId());
-                    resultData.getRecords().get(i).setCouponResource(merchantDTO.getResultData().getMerchantName());
-                } else {
-                    return ResultVO.error("优惠券配置问题：partner_id不能为空");
-                }
-            }
-        }
         return ResultVO.success(resultData);
     }
 
@@ -90,35 +80,27 @@ public class RightsCardTicketB2BController {
     @UserLoginToken
     public ResultVO queryAllBusinessCouponUsed(@RequestBody @ApiParam(value = "查询条件", required = true) CouponUsedReq req) {
         log.info("CardTicketService queryAllBusinessCouponUsed req={}", req);
-        SelectOrderReq selectOrderReq = new SelectOrderReq();
-        selectOrderReq.setUserId(UserContext.getUserId());
-        selectOrderReq.setUserCode(UserContext.getUser().getRelCode());
         req.setBusinessId(UserContext.getMerchantId());
         Page<CouponUsedResp> resultData = cardTicketService.queryAllBusinessCouponUsed(req);
         if (resultData.getRecords().size() > 0) {
             for (int i = 0; i < resultData.getRecords().size(); i++) {
-                if (null != resultData.getRecords().get(i).getPartnerId() && !"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
-                    //查询商家名称
-                    ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.getRecords().get(i).getPartnerId());
-                    resultData.getRecords().get(i).setCouponResource("".equals(merchantDTO.getResultData().getMerchantName()) ? "" : merchantDTO.getResultData().getMerchantName());
-                } else {
-                    return ResultVO.error("优惠券配置问题：partner_id不能为空");
-                }
-                if (!"".equals(resultData.getRecords().get(i).getOrderNo())) {
-                    selectOrderReq.setOrderId(resultData.getRecords().get(i).getOrderNo());
+                if (null != resultData.getRecords().get(i).getOrderNo() && !"".equals(resultData.getRecords().get(i).getOrderNo())) {
+                    String orderId = resultData.getRecords().get(i).getOrderNo();
                     //查询订单详情
-                    ResultVO<OrderSelectDetailResp> orderDetail = orderSelectOpenService.orderDetail(selectOrderReq);
-                    if (!"".equals(orderDetail.getResultData()) && orderDetail.getResultData() != null) {
-                        if (!StringUtils.isEmpty(orderDetail.getResultData().getOrderId()) && !StringUtils.isEmpty(orderDetail.getResultData().getStatus()) && !StringUtils.isEmpty(orderDetail.getResultData().getPayTime())) {
-                            resultData.getRecords().get(i).setOrderNo("".equals(orderDetail.getResultData().getOrderId()) ? "" : orderDetail.getResultData().getOrderId());
-                            resultData.getRecords().get(i).setOrderState("".equals(orderDetail.getResultData().getStatusName()) ? "" : orderDetail.getResultData().getStatusName());
-                            resultData.getRecords().get(i).setDealTime("".equals(orderDetail.getResultData().getPayTime()) ? "" : orderDetail.getResultData().getPayTime());
-                            resultData.getRecords().get(i).setSupplier("".equals(orderDetail.getResultData().getSupplierName()) ? "" : orderDetail.getResultData().getSupplierName());
-                            //取出第一个订单项里的产品名称
-                            for (int j = 0; j < 1; j++) {
-                                resultData.getRecords().get(i).setProductName("".equals(orderDetail.getResultData().getOrderItems().get(j).getProductName()) ? "" : orderDetail.getResultData().getOrderItems().get(j).getProductName());
-                            }
-                        }
+                    ResultVO<OrderDTO> orderDTOResultVO = orderSelectOpenService.selectOrderById(orderId);
+                    if (!"".equals(orderDTOResultVO.getResultData()) && orderDTOResultVO.getResultData() != null) {
+//                        if (!StringUtils.isEmpty(orderDTOResultVO.getResultData().getOrderId()) && !StringUtils.isEmpty(orderDTOResultVO.getResultData().getStatus()) && !StringUtils.isEmpty(orderDTOResultVO.getResultData().getPayTime())) {
+                        resultData.getRecords().get(i).setOrderNo("".equals(orderDTOResultVO.getResultData().getOrderId()) ? "" : orderDTOResultVO.getResultData().getOrderId());
+                        resultData.getRecords().get(i).setOrderState("".equals(orderDTOResultVO.getResultData().getStatusName()) ? "" : orderDTOResultVO.getResultData().getStatusName());
+                        resultData.getRecords().get(i).setDealTime("".equals(orderDTOResultVO.getResultData().getPayTime()) ? "" : orderDTOResultVO.getResultData().getPayTime());
+                        resultData.getRecords().get(i).setSupplier("".equals(orderDTOResultVO.getResultData().getSupplierName()) ? "" : orderDTOResultVO.getResultData().getSupplierName());
+
+//                        }
+                    }
+                    //查询订单项
+                    OrderItemDTO orderItemById = orderSelectOpenService.getOrderItemById(orderId);
+                    if (!Objects.isNull(orderItemById)) {
+                        resultData.getRecords().get(i).setProductName(orderItemById.getProductName());
                     }
                 }
             }
@@ -135,35 +117,26 @@ public class RightsCardTicketB2BController {
     @UserLoginToken
     public void exportCoupon(@RequestBody @ApiParam(value = "查询条件", required = true) CouponUsedReq req, HttpServletResponse response) {
         log.info("CardTicketService queryAllBusinessCouponUsed req={}", req);
-        SelectOrderReq selectOrderReq = new SelectOrderReq();
-        selectOrderReq.setUserId(UserContext.getUserId());
-        selectOrderReq.setUserCode(UserContext.getUser().getRelCode());
         req.setBusinessId(UserContext.getMerchantId());
         List<CouponUsedResp> resultData = cardTicketService.queryAllBusinessCouponUsedNotPage(req);
         if (resultData.size() > 0) {
             for (int i = 0; i < resultData.size(); i++) {
-                if (null != resultData.get(i).getPartnerId() && !"-1".equals(resultData.get(i).getPartnerId())) {
-                    //查询商家名称
-                    ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.get(i).getPartnerId());
-                    resultData.get(i).setCouponResource("".equals(merchantDTO.getResultData().getMerchantName()) ? "" : merchantDTO.getResultData().getMerchantName());
-                } else {
-                    return;
-                }
-                if (!"".equals(resultData.get(i).getOrderNo())) {
-                    selectOrderReq.setOrderId(resultData.get(i).getOrderNo());
+                if (null != resultData.get(i).getOrderNo() && !"".equals(resultData.get(i).getOrderNo())) {
+                    String orderId = resultData.get(i).getOrderNo();
                     //查询订单详情
-                    ResultVO<OrderSelectDetailResp> orderDetail = orderSelectOpenService.orderDetail(selectOrderReq);
-                    if (!"".equals(orderDetail.getResultData()) && orderDetail.getResultData() != null) {
-                        if (!StringUtils.isEmpty(orderDetail.getResultData().getOrderId()) && !StringUtils.isEmpty(orderDetail.getResultData().getStatus()) && !StringUtils.isEmpty(orderDetail.getResultData().getPayTime())) {
-                            resultData.get(i).setOrderNo("".equals(orderDetail.getResultData().getOrderId()) ? "" : orderDetail.getResultData().getOrderId());
-                            resultData.get(i).setOrderState("".equals(orderDetail.getResultData().getStatusName()) ? "" : orderDetail.getResultData().getStatusName());
-                            resultData.get(i).setDealTime("".equals(orderDetail.getResultData().getPayTime()) ? "" : orderDetail.getResultData().getPayTime());
-                            resultData.get(i).setSupplier("".equals(orderDetail.getResultData().getSupplierName()) ? "" : orderDetail.getResultData().getSupplierName());
-                            //取出第一个订单项里的产品名称
-                            for (int j = 0; j < 1; j++) {
-                                resultData.get(i).setProductName("".equals(orderDetail.getResultData().getOrderItems().get(j).getProductName()) ? "" : orderDetail.getResultData().getOrderItems().get(j).getProductName());
-                            }
-                        }
+                    ResultVO<OrderDTO> orderDTOResultVO = orderSelectOpenService.selectOrderById(orderId);
+                    if (!"".equals(orderDTOResultVO.getResultData()) && orderDTOResultVO.getResultData() != null) {
+//                        if (!StringUtils.isEmpty(orderDTOResultVO.getResultData().getOrderId()) && !StringUtils.isEmpty(orderDTOResultVO.getResultData().getStatus()) && !StringUtils.isEmpty(orderDTOResultVO.getResultData().getPayTime())) {
+                        resultData.get(i).setOrderNo("".equals(orderDTOResultVO.getResultData().getOrderId()) ? "" : orderDTOResultVO.getResultData().getOrderId());
+                        resultData.get(i).setOrderState("".equals(orderDTOResultVO.getResultData().getStatusName()) ? "" : orderDTOResultVO.getResultData().getStatusName());
+                        resultData.get(i).setDealTime("".equals(orderDTOResultVO.getResultData().getPayTime()) ? "" : orderDTOResultVO.getResultData().getPayTime());
+                        resultData.get(i).setSupplier("".equals(orderDTOResultVO.getResultData().getSupplierName()) ? "" : orderDTOResultVO.getResultData().getSupplierName());
+//                        }
+                    }
+                    //查询订单项
+                    OrderItemDTO orderItemById = orderSelectOpenService.getOrderItemById(orderId);
+                    if (!Objects.isNull(orderItemById)) {
+                        resultData.get(i).setProductName(orderItemById.getProductName());
                     }
                 }
             }

@@ -46,7 +46,7 @@ public class PreSubsidyActivityB2BController {
     public ResultVO addPreSubsidyCoupon(@RequestBody AddPreSubsidyCouponReqDTO req) {
         log.info("PreSubsidyActivityService addPreSubsidyCoupon req={}", JSON.toJSON(req));
         if(UserContext.isMerchant()){
-            req.setPartnerId(Long.parseLong(UserContext.getMerchantId()));
+            req.setPartnerId(Long.parseLong(UserContext.getUser().getRelCode()));
         }else{
             req.setPartnerId(Long.parseLong("-1"));
         }

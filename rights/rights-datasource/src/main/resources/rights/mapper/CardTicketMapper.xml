@@ -64,7 +64,6 @@
         ci.COUPON_INST_NBR as couponNo,
         mrc.MKT_RES_NAME AS couponName,
         mrc.COUPON_TYPE AS couponType,
-        ciur.USE_ORDER_ID as orderNo,
         mrc.SHOW_AMOUNT AS amount,
         ci.EFF_DATE,
         ci.EXP_DATE as expiryDate,

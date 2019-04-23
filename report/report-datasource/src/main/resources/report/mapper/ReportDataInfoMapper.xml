@@ -93,7 +93,7 @@
   </select>
   
   <select id="getMyMktResStoreId" parameterType="String" resultType="String">
-	  select * from (SELECT MKT_RES_STORE_ID FROM MKT_RES_STORE_OBJ_REL WHERE obj_id = #{relCode} limit 1)
+	  select * from (SELECT MKT_RES_STORE_ID FROM MKT_RES_STORE_OBJ_REL WHERE obj_id = #{relCode} limit 1) c
   
   </select>
 </mapper>

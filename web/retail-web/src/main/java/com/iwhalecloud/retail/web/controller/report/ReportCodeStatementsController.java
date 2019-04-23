@@ -61,8 +61,8 @@ public class ReportCodeStatementsController extends BaseController  {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getLssCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		if("2".equals(legacyAccount) && !"3".equals(userType)){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(legacyAccount);
+		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setLssCode(retailerCodes);
 		}
 		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
@@ -70,7 +70,6 @@ public class ReportCodeStatementsController extends BaseController  {
 			req.setLanId(lanId);
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(lssCode);
 			req.setLssCode(retailerCodes);
 		}else if("4".equals(userType)){
 			String gysCode = UserContext.getUser().getRelCode();
@@ -92,10 +91,25 @@ public class ReportCodeStatementsController extends BaseController  {
     })
     @PostMapping(value="/codeStatementsReportExport")
     public void StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
+    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+		String retailerCodes = req.getLssCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
-			String regionId = UserContext.getUser().getRegionId();
-			req.setLanId(regionId);
+		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+			req.setLssCode(retailerCodes);
+		}
+		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
+			String lanId=UserContext.getUser().getRegionId();
+			req.setLanId(lanId);
+		}else if("3".equals(userType)){
+			String lssCode = UserContext.getUser().getRelCode();
+			req.setLssCode(retailerCodes);
+		}else if("4".equals(userType)){
+			String gysCode = UserContext.getUser().getRelCode();
+			req.setGysCode(gysCode);
+		}else if("5".equals(userType)){
+			String manufacturerCode = UserContext.getUser().getRelCode();
+			req.setManufacturerCode(manufacturerCode);
 		}
         ResultVO<List<ReportCodeStatementsResp>> resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
         

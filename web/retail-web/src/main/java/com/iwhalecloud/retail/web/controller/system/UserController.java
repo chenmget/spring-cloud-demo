@@ -186,8 +186,11 @@ public class UserController extends BaseController {
         }
 
         request.getSession().invalidate();//清空session
-        Cookie cookie = request.getCookies()[0];//获取cookie
-        cookie.setMaxAge(0);//让cookie过期
+        Cookie[] cookies = request.getCookies();
+        if (Objects.nonNull(cookies) && cookies.length > 0) {
+            Cookie cookie = request.getCookies()[0];//获取cookie
+            cookie.setMaxAge(0);//让cookie过期
+        }
 
         // 获取其他信息  并保存
         UserOtherMsgDTO userOtherMsgDTO = saveUserOtherMsg(resp.getUserDTO());

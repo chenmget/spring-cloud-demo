@@ -75,18 +75,14 @@ public class MerchantController {
     public ResultVO<Page<MerchantPageResp>> pageMerchant(@RequestBody MerchantPageReq req) {
         log.info("MerchantController.pageMerchant() input: MerchantPageReq={}", JSON.toJSONString(req));
         ResultVO<Page<MerchantPageResp>> pageResultVO = merchantService.pageMerchant(req);
-        UserGetReq userGetReq = new UserGetReq();
-        String userName = "";
-        String merchantCode = "";
-        if (pageResultVO.isSuccess()) {
-            for (int i = 0; i < pageResultVO.getResultData().getRecords().size(); i++) {
-                merchantCode = pageResultVO.getResultData().getRecords().get(i).getMerchantCode();
-                userGetReq.setRelCode(merchantCode);
-                UserDTO user = userService.getUser(userGetReq);
-                if (!Objects.isNull(user)) {
-                    userName = user.getUserName();
-                    pageResultVO.getResultData().getRecords().get(i).setLoginName(userName);
-                }
+        // 追加用户登录帐号
+        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
+            List<MerchantPageResp> merchantDTOS = pageResultVO.getResultData().getRecords();
+
+            if (!CollectionUtils.isEmpty(merchantDTOS)) {
+                merchantDTOS.forEach(merchantDTO -> {
+                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+                });
             }
         }
         return pageResultVO;
@@ -142,18 +138,18 @@ public class MerchantController {
     public ResultVO<Page<RetailMerchantDTO>> pageRetailMerchant(@RequestBody @ApiParam(value = "分页参数", required = true) RetailMerchantPageReq req) {
         log.info("MerchantController.pageRetailMerchant() input: RetailMerchantPageReq={}", JSON.toJSONString(req));
         ResultVO<Page<RetailMerchantDTO>> pageResultVO = merchantService.pageRetailMerchant(req);
-        UserGetReq userGetReq = new UserGetReq();
-        String loginName = "";
-        String merchantCode = "";
-        for (int i = 0; i < pageResultVO.getResultData().getRecords().size(); i++) {
-            merchantCode = pageResultVO.getResultData().getRecords().get(i).getMerchantCode();
-            userGetReq.setRelCode(merchantCode);
-            UserDTO user = userService.getUser(userGetReq);
-            if (!Objects.isNull(user)) {
-                loginName = user.getUserName();
-                pageResultVO.getResultData().getRecords().get(i).setLoginName(loginName);
+
+        // 追加用户登录帐号
+        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
+            List<RetailMerchantDTO> retailDTOS = pageResultVO.getResultData().getRecords();
+
+            if (!CollectionUtils.isEmpty(retailDTOS)) {
+                retailDTOS.forEach(retailDTO -> {
+                    retailDTO.setLoginName(getLoginName(retailDTO.getMerchantId()));
+                });
             }
         }
+
         return pageResultVO;
     }
 
@@ -205,19 +201,38 @@ public class MerchantController {
     public ResultVO<Page<SupplyMerchantDTO>> pageSupplyMerchant(@RequestBody @ApiParam(value = "分页参数", required = true) SupplyMerchantPageReq req) {
         log.info("MerchantController.pageSupplyMerchant() input: SupplyMerchantPageReq={}", JSON.toJSONString(req));
         ResultVO<Page<SupplyMerchantDTO>> pageResultVO = merchantService.pageSupplyMerchant(req);
-        UserGetReq userGetReq = new UserGetReq();
-        String merchantCode = "";
-        String loginName = "";
-        for (int i = 0; i < pageResultVO.getResultData().getRecords().size(); i++) {
-            merchantCode = pageResultVO.getResultData().getRecords().get(i).getMerchantCode();
-            userGetReq.setRelCode(merchantCode);
-            UserDTO user = userService.getUser(userGetReq);
-            if (!Objects.isNull(user)) {
-                loginName = user.getUserName();
-                pageResultVO.getResultData().getRecords().get(i).setLoginName(loginName);
+
+        // 追加用户登录帐号
+        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
+            List<SupplyMerchantDTO> supplyDTOS = pageResultVO.getResultData().getRecords();
+
+            if (!CollectionUtils.isEmpty(supplyDTOS)) {
+                supplyDTOS.forEach(supplyDTO -> {
+                    supplyDTO.setLoginName(getLoginName(supplyDTO.getMerchantId()));
+                });
             }
         }
+
         return pageResultVO;
+    }
+
+
+    /**
+     * 获取用户登录名称
+     * @param merchantId 商家ID
+     * @return
+     */
+    private String getLoginName(String merchantId) {
+        if (StringUtils.isEmpty(merchantId)) {
+            return "";
+        }
+        UserGetReq userGetReq = new UserGetReq();
+        userGetReq.setRelCode(merchantId);
+        UserDTO user = userService.getUser(userGetReq);
+        if (!Objects.isNull(user)) {
+            return user.getLoginName();
+        }
+        return "";
     }
 
     @ApiOperation(value = "供应商列表导出", notes = "供应商列表导出")
@@ -267,18 +282,17 @@ public class MerchantController {
     public ResultVO<Page<FactoryMerchantDTO>> pageFactoryMerchant(@RequestBody @ApiParam(value = "分页参数", required = true) FactoryMerchantPageReq req) {
         log.info("MerchantController.pageFactoryMerchant() input: FactoryMerchantPageReq={}", JSON.toJSONString(req));
         ResultVO<Page<FactoryMerchantDTO>> pageResultVO = merchantService.pageFactoryMerchant(req);
-        UserGetReq userGetReq=new UserGetReq();
-        String merchantCode="";
-        String loginName="";
-        for(int i =0;i<pageResultVO.getResultData().getRecords().size();i++){
-            merchantCode = pageResultVO.getResultData().getRecords().get(i).getMerchantCode();
-            userGetReq.setRelCode(merchantCode);
-            UserDTO user = userService.getUser(userGetReq);
-            if (!Objects.isNull(user)) {
-                loginName = user.getUserName();
-                pageResultVO.getResultData().getRecords().get(i).setLoginName(loginName);
+        // 追加用户登录帐号
+        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
+            List<FactoryMerchantDTO> factoryDTOS = pageResultVO.getResultData().getRecords();
+
+            if (!CollectionUtils.isEmpty(factoryDTOS)) {
+                factoryDTOS.forEach(factoryDTO -> {
+                    factoryDTO.setLoginName(getLoginName(factoryDTO.getMerchantId()));
+                });
             }
         }
+
         return pageResultVO;
     }
 

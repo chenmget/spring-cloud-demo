@@ -68,16 +68,14 @@ public class RightsCardTicketB2BController {
         log.info("CardTicketService queryAllBusinessCouponNotUsed req={}", req);
         req.setBusinessId(UserContext.getMerchantId());
         Page<CouponNotUsedResp> resultData = cardTicketService.queryAllBusinessCouponNotUsed(req);
-        if (resultData.getRecords().size() > 0) {
-            for (int i = 0; i < resultData.getRecords().size(); i++) {
-                if (null != resultData.getRecords().get(i).getPartnerId() && !"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
-                    ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.getRecords().get(i).getPartnerId());
-                    resultData.getRecords().get(i).setCouponResource(merchantDTO.getResultData().getMerchantName());
-                } else {
-                    return ResultVO.error("优惠券配置问题：partner_id不能为空");
-                }
-            }
-        }
+//        if (resultData.getRecords().size() > 0) {
+//            for (int i = 0; i < resultData.getRecords().size(); i++) {
+//                if (!"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
+//                    ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.getRecords().get(i).getPartnerId());
+//                    resultData.getRecords().get(i).setCouponResource(merchantDTO.getResultData().getMerchantName());
+//                }
+//            }
+//        }
         return ResultVO.success(resultData);
     }
 
@@ -97,14 +95,12 @@ public class RightsCardTicketB2BController {
         Page<CouponUsedResp> resultData = cardTicketService.queryAllBusinessCouponUsed(req);
         if (resultData.getRecords().size() > 0) {
             for (int i = 0; i < resultData.getRecords().size(); i++) {
-                if (null != resultData.getRecords().get(i).getPartnerId() && !"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
-                    //查询商家名称
-                    ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.getRecords().get(i).getPartnerId());
-                    resultData.getRecords().get(i).setCouponResource("".equals(merchantDTO.getResultData().getMerchantName()) ? "" : merchantDTO.getResultData().getMerchantName());
-                } else {
-                    return ResultVO.error("优惠券配置问题：partner_id不能为空");
-                }
-                if (!"".equals(resultData.getRecords().get(i).getOrderNo())) {
+//                if (!"-1".equals(resultData.getRecords().get(i).getPartnerId())) {
+//                    //查询商家名称
+//                    ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.getRecords().get(i).getPartnerId());
+//                    resultData.getRecords().get(i).setCouponResource("".equals(merchantDTO.getResultData().getMerchantName()) ? "" : merchantDTO.getResultData().getMerchantName());
+//                }
+                if (null != resultData.getRecords().get(i).getOrderNo() && !"".equals(resultData.getRecords().get(i).getOrderNo())) {
                     selectOrderReq.setOrderId(resultData.getRecords().get(i).getOrderNo());
                     //查询订单详情
                     ResultVO<OrderSelectDetailResp> orderDetail = orderSelectOpenService.orderDetail(selectOrderReq);
@@ -142,14 +138,12 @@ public class RightsCardTicketB2BController {
         List<CouponUsedResp> resultData = cardTicketService.queryAllBusinessCouponUsedNotPage(req);
         if (resultData.size() > 0) {
             for (int i = 0; i < resultData.size(); i++) {
-                if (null != resultData.get(i).getPartnerId() && !"-1".equals(resultData.get(i).getPartnerId())) {
-                    //查询商家名称
-                    ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.get(i).getPartnerId());
-                    resultData.get(i).setCouponResource("".equals(merchantDTO.getResultData().getMerchantName()) ? "" : merchantDTO.getResultData().getMerchantName());
-                } else {
-                    return;
-                }
-                if (!"".equals(resultData.get(i).getOrderNo())) {
+//                if (!"-1".equals(resultData.get(i).getPartnerId())) {
+//                    //查询商家名称
+//                    ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(resultData.get(i).getPartnerId());
+//                    resultData.get(i).setCouponResource("".equals(merchantDTO.getResultData().getMerchantName()) ? "" : merchantDTO.getResultData().getMerchantName());
+//                }
+                if (null != resultData.get(i).getOrderNo() && !"".equals(resultData.get(i).getOrderNo())) {
                     selectOrderReq.setOrderId(resultData.get(i).getOrderNo());
                     //查询订单详情
                     ResultVO<OrderSelectDetailResp> orderDetail = orderSelectOpenService.orderDetail(selectOrderReq);

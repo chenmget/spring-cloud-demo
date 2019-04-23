@@ -12,27 +12,27 @@
         ci.COUPON_INST_NBR AS couponNo,
         mrc.MKT_RES_NAME AS couponName,
         mrc.COUPON_TYPE AS couponType,
-        mrc.partner_id AS partnerId,
         mrc.SHOW_AMOUNT AS amount,
+        cipr.PROV_CHANNEL_TYPE as couponResource,
         CASE
         WHEN ci.STATUS_CD = '1200' THEN '未使用'
-        WHEN mrc.STATUS_CD = '1100' THEN '已过期'
-        WHEN mrc.STATUS_CD = '1400' THEN '未生效'
-        ELSE ''
+        ELSE '已过期'
         END AS couponStatus,
         ci.EFF_DATE AS startTime,
         ci.EXP_DATE AS expiryDate
         FROM
         COUPON_INST ci,
-        MKT_RES_COUPON mrc
+        MKT_RES_COUPON mrc,
+        COUPON_INST_PROV_REC cipr
         WHERE
-        ci.MKT_RES_ID = mrc.MKT_RES_ID
+        ci.MKT_RES_ID = mrc.mkt_res_id
+        AND cipr.COUPON_INST_ID = ci.COUPON_INST_ID
         <choose>
             <when test="req.couponStatus != null and req.couponStatus !=''">
                 and ci.STATUS_CD = #{req.couponStatus}
             </when>
             <otherwise>
-                and ci.STATUS_CD in (1100,1200,1400)
+                and ci.STATUS_CD in (1200,1400)
             </otherwise>
         </choose>
         <if test="req.couponNo != null and req.couponNo !=''">
@@ -64,7 +64,7 @@
         ci.COUPON_INST_NBR as couponNo,
         mrc.MKT_RES_NAME AS couponName,
         mrc.COUPON_TYPE AS couponType,
-        mrc.partner_id as partnerId,
+        ciur.USE_ORDER_ID as orderNo,
         mrc.SHOW_AMOUNT AS amount,
         ci.EFF_DATE,
         ci.EXP_DATE as expiryDate,
@@ -102,7 +102,7 @@
         ci.COUPON_INST_NBR as couponNo,
         mrc.MKT_RES_NAME AS couponName,
         mrc.COUPON_TYPE AS couponType,
-        mrc.partner_id as partnerId,
+        ciur.USE_ORDER_ID as orderNo,
         mrc.SHOW_AMOUNT AS amount,
         ci.EFF_DATE,
         ci.EXP_DATE as expiryDate,

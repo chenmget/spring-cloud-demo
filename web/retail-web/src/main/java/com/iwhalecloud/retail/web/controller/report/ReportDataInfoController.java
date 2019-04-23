@@ -77,7 +77,7 @@ public class ReportDataInfoController extends BaseController {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		if("2".equals(legacyAccount) && "3".equals(userType) && retailerCodes != null){
+		if("2".equals(legacyAccount) && "3".equals(userType)){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);
 		}
@@ -139,7 +139,7 @@ public class ReportDataInfoController extends BaseController {
     	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		if("2".equals(legacyAccount) && "3".equals(userType)){
+		if("2".equals(legacyAccount) && "3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);
 		}

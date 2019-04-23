@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportService;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
@@ -64,6 +65,7 @@ public class ReportStoreController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getReportStSaleList")
+	@UserLoginToken
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
@@ -92,6 +94,7 @@ public class ReportStoreController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/cjStorePurchaserReportExport")
+    @UserLoginToken
     public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
 		//userType==5 厂家视图的导出
     	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架

@@ -32,6 +32,7 @@ import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportOrderService;
 import com.iwhalecloud.retail.report.service.ReportService;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
@@ -70,6 +71,7 @@ public class ReportOrderController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getReportOrderList1")
+	@UserLoginToken
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
@@ -87,7 +89,7 @@ public class ReportOrderController extends BaseController {
 			String merchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(merchantCode);
 		}
-		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商只看自己的
+		if(userType!=null && !userType.equals("") && "4".equals(userType) || "5".equals(userType)){//供应商只看自己的
 			String suplierCode=UserContext.getUser().getRelCode();
 			req.setSuplierCode(suplierCode);
 		}
@@ -118,6 +120,7 @@ public class ReportOrderController extends BaseController {
 	            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
 	    })
 	    @PostMapping(value="/orderReportDataExport")
+	    @UserLoginToken
 	    public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
 	    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 			String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
@@ -128,12 +131,12 @@ public class ReportOrderController extends BaseController {
 				req.setMerchantCode(retailerCodes);
 			}
 			//userType 1省级管理员，2地市管理员，3供应商，4零售商，5厂家
-			
-			if(userType!=null && !userType.equals("") && "4".equals(userType)){//零售商只看自己的
+			////1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+			if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的
 				String merchantCode=UserContext.getUser().getRelCode();
 				req.setMerchantCode(merchantCode);
 			}
-			if(userType!=null && !userType.equals("") && "3".equals(userType)){//供应商只看自己的
+			if(userType!=null && !userType.equals("") && "4".equals(userType) || "5".equals(userType)){//供应商只看自己的
 				String suplierCode=UserContext.getUser().getRelCode();
 				req.setSuplierCode(suplierCode);
 			}

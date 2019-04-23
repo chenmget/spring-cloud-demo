@@ -33,6 +33,7 @@ import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.RegionsListReq;
 import com.iwhalecloud.retail.system.dto.response.RegionsGetResp;
 import com.iwhalecloud.retail.system.service.RegionsService;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
@@ -73,7 +74,9 @@ public class ReportDataInfoController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getStorePurchaserReport")
+	@UserLoginToken
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(@RequestBody ReportStorePurchaserReq req) {
+		//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		//String userType=req.getUserType();
@@ -136,6 +139,7 @@ public class ReportDataInfoController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/StorePurchaserReportExport")
+    @UserLoginToken
     public void StorePurchaserReportExport(@RequestBody ReportStorePurchaserReq req, HttpServletResponse response) {
     	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号

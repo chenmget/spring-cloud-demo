@@ -60,6 +60,7 @@ public class ReportCodeStatementsController extends BaseController  {
     @PostMapping("/getCodeStatementsReport")
 	@UserLoginToken
     public ResultVO<Page<ReportCodeStatementsResp>> getCodeStatementsReport(@RequestBody ReportCodeStatementsReq req) {
+		////1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getLssCode();//是否输入了零售商账号
 		String userType = UserContext.getUser().getUserFounder()+"";
@@ -76,13 +77,13 @@ public class ReportCodeStatementsController extends BaseController  {
 			req.setLssCode(retailerCodes);
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(lssCode);
 			req.setMktResStoreId(mktResStoreId);
-		}else if("4".equals(userType)){
+		}else if("4".equals(userType) || "5".equals(userType) ){
 			String gysCode = UserContext.getUser().getRelCode();
 			req.setGysCode(gysCode);
 			//供应商只能看自己的仓库
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(gysCode);
 			req.setMktResStoreId(mktResStoreId);
-		}else if("5".equals(userType)){
+		}else if("8".equals(userType)){
 			String manufacturerCode = UserContext.getUser().getRelCode();
 			req.setManufacturerCode(manufacturerCode);
 		}
@@ -114,10 +115,10 @@ public class ReportCodeStatementsController extends BaseController  {
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
 			req.setLssCode(retailerCodes);
-		}else if("4".equals(userType)){
+		}else if("4".equals(userType) || "5".equals(userType) ){
 			String gysCode = UserContext.getUser().getRelCode();
 			req.setGysCode(gysCode);
-		}else if("5".equals(userType)){
+		}else if("8".equals(userType)){
 			String manufacturerCode = UserContext.getUser().getRelCode();
 			req.setManufacturerCode(manufacturerCode);
 		}

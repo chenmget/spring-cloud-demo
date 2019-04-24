@@ -44,10 +44,10 @@
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')	
 		</if>
 		<if test="req.createTimeStart!=null and req.createTimeStart!=''">
-			and a.CREATE_DATE &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
-			and a.CREATE_DATE &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
 			and a.DATE &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')

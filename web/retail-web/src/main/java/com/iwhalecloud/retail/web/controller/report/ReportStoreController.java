@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.report;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,7 +96,7 @@ public class ReportStoreController extends BaseController {
     })
     @PostMapping(value="/cjStorePurchaserReportExport")
     @UserLoginToken
-    public ResultVO cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
+    public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
     	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
@@ -105,12 +106,7 @@ public class ReportStoreController extends BaseController {
 			req.setRetailerCode(retailerCodes);
 		}
         ResultVO<List<ReportStSaleDaoResp>> resultVO = reportStoreService.getReportStSaleListdc(req);
-        ResultVO result = new ResultVO();
-        if (!resultVO.isSuccess()) {
-            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            result.setResultData("失败：" + resultVO.getResultMsg());
-            return result;
-        }
+       
         List<ReportStSaleDaoResp> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -119,6 +115,7 @@ public class ReportStoreController extends BaseController {
 	        orderMap.add(new ExcelTitleName("partnerCode", "零售商编码"));
 	        orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
 	        orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
+	        orderMap.add(new ExcelTitleName("date", "统计日期"));
 	        orderMap.add(new ExcelTitleName("cityId", "所属城市"));
 	        orderMap.add(new ExcelTitleName("countryId", "所属区县"));
         orderMap.add(new ExcelTitleName("productBaseName", "机型"));
@@ -144,25 +141,33 @@ public class ReportStoreController extends BaseController {
         orderMap.add(new ExcelTitleName("inventoryWarning", "库存预警"));
         
       //创建orderItemDetail
-        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-        		orderMap, "门店进销存明细报表");
-        return deliveryGoodsResNberExcel.uploadExcel(workbook);
-        
-//        try{
-//            //创建Excel
-//            String fileName = "门店进销存明细报表";
-//            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-//
-//            OutputStream output = response.getOutputStream();
-//            response.reset();
-//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-//            response.setContentType("application/msexcel;charset=UTF-8");
-//            response.setCharacterEncoding("UTF-8");
-//            workbook.write(output);
+//        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+//        		orderMap, "门店进销存明细报表");
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        OutputStream output = null ;
+        try{
+            //创建Excel
+            String fileName = "门店进销存明细报表";
+            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+
+            output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+            response.setContentType("application/msexcel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            workbook.write(output);
 //            output.close();
-//        }catch (Exception e){
-//            log.error("门店进销存明细报表导出失败",e);
-//        }
+        }catch (Exception e){
+            log.error("门店进销存明细报表导出失败",e);
+        } finally {
+            if (null != output){
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         
     }
 

@@ -408,6 +408,7 @@
     <select id="listSupplierGoodsByType" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO">
         SELECT
         t1.GOODS_ID,
+        t1.GOODS_NAME,
         t1.SUPPLIER_ID,
         t2.PRODUCT_ID,
         t2.SUPPLY_NUM,

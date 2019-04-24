@@ -19,6 +19,12 @@ public class SupplierGoodsDTO implements java.io.Serializable{
     private String goodsId;
 
     /**
+     * 商品名称
+     */
+    @ApiModelProperty(value = "商品名称")
+    private String goodsName;
+
+    /**
      * 供货商ID
      */
     @ApiModelProperty(value = "供货商ID")

@@ -5,12 +5,10 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
-import com.iwhalecloud.retail.warehouse.dto.request.PageProductReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,5 +50,10 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     public ResultVO selectProduct(PageProductReq req) {
         log.info("MerchantResourceInstOpenServiceImpl.selectProduct req={}", JSON.toJSONString(req));
         return merchantResourceInstService.selectProduct(req);
+    }
+
+    @Override
+    public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req){
+        return merchantResourceInstService.listResourceUploadTemp(req);
     }
 }

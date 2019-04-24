@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResourceUploadTempMapper">
+
+<sql id="allFields">
+    t.MKT_RES_UPLOAD_SEQ
+    ,t.MKT_RES_UPLOAD_BATCH
+    ,t.MKT_RES_INST_NBR
+    ,t.UPLOAD_DATE
+    ,t.RESULT
+    ,t.RESULT_DESC
+    ,t.CREATE_STAFF
+    ,t.CREATE_DATE
+</sql>
+
+
+    <select id="listResourceUploadTemp" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempListPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp" >
+        Select <include refid="allFields" />
+        FROM MKT_RES_UPLOAD_TEMP t
+        WHERE 1=1 and MKT_RES_UPLOAD_BATCH=#{req.mktResUploadBatch}
+        <if test="req.mktResInstNbr != null">
+            and MKT_RES_INST_NBR = #{req.mktResInstNbr}
+        </if>
+        <if test="req.result != null">
+            and RESULT = #{req.result}
+        </if>
+        ORDER BY T.MKT_RES_UPLOAD_SEQ
+    </select>
+
+
+</mapper>

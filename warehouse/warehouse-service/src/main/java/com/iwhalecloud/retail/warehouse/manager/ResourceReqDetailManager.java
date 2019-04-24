@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailAddReq;
@@ -18,7 +19,7 @@ import java.util.List;
 
 
 @Component
-public class ResourceReqDetailManager{
+public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMapper, ResourceReqDetail> {
     @Resource
     private ResourceReqDetailMapper resourceReqDetailMapper;
 

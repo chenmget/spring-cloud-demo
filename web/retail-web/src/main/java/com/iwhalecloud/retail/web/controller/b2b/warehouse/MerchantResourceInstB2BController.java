@@ -7,12 +7,9 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
-import com.iwhalecloud.retail.warehouse.dto.request.PageProductReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -101,7 +98,7 @@ public class MerchantResourceInstB2BController {
     })
     @PostMapping(value="addResourceInst")
     @UserLoginToken
-    public ResultVO<ResourceInstAddResp> addResourceInst(@RequestBody ResourceInstAddReqDTO dto) {
+    public ResultVO addResourceInst(@RequestBody ResourceInstAddReqDTO dto) {
         String userId = UserContext.getUserId();
         ResourceInstAddReq req = new ResourceInstAddReq();
         req.setCreateStaff(userId);
@@ -198,4 +195,13 @@ public class MerchantResourceInstB2BController {
         }
     }
 
+    @ApiOperation(value = "校验串码查询", notes = "添加操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="listResourceUploadTemp")
+    public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(@RequestBody ResourceUploadTempListPageReq req) {
+        return resourceInstService.listResourceUploadTemp(req);
+    }
 }

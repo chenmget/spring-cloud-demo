@@ -13,8 +13,10 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
+import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
+import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
@@ -46,6 +48,10 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     private TaskService taskService;
     @Autowired
     private Constant constant;
+    @Autowired
+    private RunableTask runableTask;
+    @Autowired
+    private ResourceUploadTempManager resourceUploadTempManager;
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -71,7 +77,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     }
 
     @Override
-    public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req) {
+    public ResultVO addResourceInst(ResourceInstAddReq req) {
         log.info("MerchantResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         String merchantId = req.getMerchantId();
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
@@ -99,17 +105,11 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             req.setDestStoreId(mktResStoreId);
         }
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
         resourceInstValidReq.setMktResStoreId(mktResStoreId);
-        List<String> existNbrs = resourceInstService.vaildOwnStore(resourceInstValidReq);
+        runableTask.exceutorValid(resourceInstValidReq);
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
-        resourceInstAddResp.setExistNbrs(existNbrs);
-        mktResInstNbrs.removeAll(existNbrs);
-        if(CollectionUtils.isEmpty(mktResInstNbrs)){
-            return ResultVO.error("该产品串码已在库，请不要重复录入！");
-        }
         // step2 新增申请单
         ResourceRequestAddReq resourceRequestAddReq = new ResourceRequestAddReq();
         List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = Lists.newLinkedList();
@@ -164,12 +164,24 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         if (null != startResultVO && !startResultVO.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
-        return ResultVO.success("串码入库提交申请单", resourceInstAddResp);
+        return ResultVO.success("串码入库提交申请单");
     }
 
     @Override
     public ResultVO selectProduct(PageProductReq req) {
         log.info("MerchantResourceInstServiceImpl.selectProduct req={}", JSON.toJSONString(req));
         return resourceInstService.selectProduct(req);
+    }
+
+
+    @Override
+    public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
+        // 多线程没跑完，返回空
+        if (runableTask.validHasDone()) {
+            return ResultVO.success(resourceUploadTempManager.listResourceUploadTemp(req));
+        } else{
+            return ResultVO.success(new Page<ResourceUploadTempListResp>());
+        }
+
     }
 }

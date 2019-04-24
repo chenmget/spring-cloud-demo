@@ -715,25 +715,11 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ResultVO<List<ResourceInstListResp>> merchantNbrInstVO = resourceInstService.listResourceInst(resourceInstListReq);
         if (!merchantNbrInstVO.isSuccess() || CollectionUtils.isEmpty(merchantNbrInstVO.getResultData())) {
             resourceInstAddResp.setPutInFailNbrs(req.getMktResInstNbrs());
-            return ResultVO.success("领取成功", resourceInstAddResp);
+            return ResultVO.success("源仓库中不存在", resourceInstAddResp);
         }
         List<ResourceInstListResp> merchantNbrInst = merchantNbrInstVO.getResultData();
         List<String> merchantNbrList = merchantNbrInst.stream().map(ResourceInstListResp::getMktResInstNbr).collect(Collectors.toList());
 
-        // step2 再检查自己库是否存在
-        storeGetStoreIdReq.setMerchantId(req.getMerchantId());
-        String storeId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resouceStoreService.getStoreId storeId={}", storeId);
-        ResourceInstListPageReq resourceInstListPageReq = new ResourceInstListPageReq();
-        resourceInstListPageReq.setMktResStoreIds(Lists.newArrayList());
-        resourceInstListPageReq.setMktResInstNbrs(merchantNbrList);
-        ResultVO<Page<ResourceInstListPageResp>> pageResultVO = this.listResourceInst(resourceInstListPageReq);
-        if (pageResultVO.isSuccess() || pageResultVO.getResultData() != null || !CollectionUtils.isEmpty(pageResultVO.getResultData().getRecords())){
-            List<ResourceInstListPageResp> nbrInstList = pageResultVO.getResultData().getRecords();
-            List<String> existNbrs = nbrInstList.stream().map(ResourceInstListPageResp::getMktResInstNbr).collect(Collectors.toList());
-            merchantNbrInst = merchantNbrInst.stream().filter(t -> !existNbrs.contains(t)).collect(Collectors.toList());
-            resourceInstAddResp.setExistNbrs(existNbrs);
-        }
         EBuyTerminalSwapReq eBuyTerminalReq = new EBuyTerminalSwapReq();
         List<EBuyTerminalItemSwapReq> mktResList = new ArrayList<>();
         List<String> mktResInstNbrs = req.getMktResInstNbrs();

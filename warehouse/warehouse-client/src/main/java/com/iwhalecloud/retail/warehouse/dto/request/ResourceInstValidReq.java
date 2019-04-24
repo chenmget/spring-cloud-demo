@@ -53,4 +53,10 @@ public class ResourceInstValidReq implements java.io.Serializable {
 	@ApiModelProperty(value = "校验商家类型")
 	private String merchantType;
 
+	/**
+	 * 创建对象
+	 */
+	@ApiModelProperty(value = "创建对象")
+	private String createStaff;
+
 }

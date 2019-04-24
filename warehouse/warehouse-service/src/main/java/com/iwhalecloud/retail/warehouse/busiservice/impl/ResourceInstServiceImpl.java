@@ -885,9 +885,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         String lanId = merchantDTOResultVO.getResultData().getLanId();
         StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        storePageReq.setMerchantId(req.getMerchantId());
+        storePageReq.setMerchantId(merchantId);
         String storeId = resouceStoreService.getStoreId(storePageReq);
-        log.info("ResourceInstServiceImpl.syncTerminal resouceStoreService.getStoreId merchantId={},storeId={}", req.getMerchantId(), storeId);
+        log.info("ResourceInstServiceImpl.syncTerminal resouceStoreService.getStoreId merchantId={},storeId={}", merchantId, storeId);
         if (StringUtils.isBlank(storeId)) {
             return ResultVO.error(constant.getNoStoreMsg());
         }

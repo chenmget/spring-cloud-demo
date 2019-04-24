@@ -20,6 +20,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestQueryResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceStore;
+import com.iwhalecloud.retail.warehouse.entity.ResourceReqDetail;
 import com.iwhalecloud.retail.warehouse.entity.ResourceRequest;
 import com.iwhalecloud.retail.warehouse.manager.*;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceStoreMapper;
@@ -36,6 +37,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -91,16 +94,18 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
             //新增营销资源申请单项
             ResourceReqItemAddReq itemAddReq = new ResourceReqItemAddReq();
             BeanUtils.copyProperties(req,itemAddReq);
-            String size = String.valueOf(entry.getValue().size());
-            itemAddReq.setQuantity(Long.parseLong(size));
+            Integer size = entry.getValue().size();
+            itemAddReq.setQuantity(Long.valueOf(size));
             itemAddReq.setMktResReqId(mktResReqId);
             itemAddReq.setMktResId(entry.getKey());
             itemAddReq.setRemark("库存管理");
             String itemId = itemManager.insertResourceReqItem(itemAddReq);
             log.info("ResourceRequestServiceImpl.insertResourceRequest itemManager.insertResourceReqItem req={}, resp={}",JSON.toJSONString(itemAddReq), JSON.toJSONString(itemId));
             //营销资源申请单明细
+            List<ResourceReqDetail> detailList = new ArrayList<ResourceReqDetail>(size);
             for(ResourceRequestAddReq.ResourceRequestInst instDTO:entry.getValue()){
-                ResourceReqDetailAddReq detailReq = new ResourceReqDetailAddReq();
+                Date now = new Date();
+                ResourceReqDetail detailReq = new ResourceReqDetail();
                 detailReq.setMktResInstId(instDTO.getMktResInstId());
                 detailReq.setMktResReqItemId(itemId);
                 detailReq.setMktResInstNbr(instDTO.getMktResInstNbr());
@@ -111,9 +116,13 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
                 detailReq.setRemark("库存管理");
                 detailReq.setIsInspection(instDTO.getIsInspection());
                 detailReq.setCtCode(instDTO.getCtCode());
-                int insertResReqDetailCnt = detailManager.insertResourceReqDetail(detailReq);
-                log.info("ResourceRequestServiceImpl.insertResourceRequest detailManager.insertResourceReqDetail req={}, resp={}",JSON.toJSONString(detailReq), JSON.toJSONString(insertResReqDetailCnt));
+                detailReq.setCreateDate(now);
+                detailReq.setStatusDate(now);
+                detailReq.setStatusCd(ResourceConst.PUT_IN_STOAGE);
+                detailList.add(detailReq);
             }
+            Boolean addReqDetail = detailManager.saveBatch(detailList);
+            log.info("ResourceRequestServiceImpl.insertResourceRequest detailManager.insertResourceReqDetail req={}, resp={}",JSON.toJSONString(detailList), addReqDetail);
         }
         if(StringUtils.isEmpty(mktResReqId)){
             return ResultVO.error("insert fail");

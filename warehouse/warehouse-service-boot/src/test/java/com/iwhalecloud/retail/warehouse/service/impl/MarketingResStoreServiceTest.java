@@ -66,7 +66,7 @@ public class MarketingResStoreServiceTest {
         List<EBuyTerminalItemSwapReq> mktResList = new ArrayList<EBuyTerminalItemSwapReq>();
         EBuyTerminalItemSwapReq item1 = new EBuyTerminalItemSwapReq();
 
-        item1.setBarCode("BC54FC5B30EAa");//BC54FC5B30EAa,BC54FC5B30EAb
+        item1.setBarCode("BC54FC5B30EAQ");//BC54FC5B30EAa,BC54FC5B30EAb
         item1.setLanId("734");
         item1.setMktId("15599");
         item1.setPurchaseType("2");
@@ -75,10 +75,10 @@ public class MarketingResStoreServiceTest {
         item1.setSupplyCode("DBS0042908");
         item1.setSupplyName("湖南华龙伟业通信技术有限公司_长沙地包");
 
-//        mktResList.add(item1);
+        mktResList.add(item1);
         EBuyTerminalItemSwapReq item2 = new EBuyTerminalItemSwapReq();
 
-        item2.setBarCode("BC54FC5B30EAB");//BC54FC5B30EAa,BC54FC5B30EAb
+        item2.setBarCode("BC54FC5B30EAK");//BC54FC5B30EAa,BC54FC5B30EAb
         item2.setLanId("734");
         item2.setMktId("15599");
         item2.setPurchaseType("2");
@@ -109,8 +109,8 @@ public class MarketingResStoreServiceTest {
     @Test
     public void qryStoreMktInstInfo() {
         QryStoreMktInstInfoSwapReq req = new QryStoreMktInstInfoSwapReq();
-        req.setBarCode("A000009BB1FA20");
-        req.setStoreId("102654034");//102654034
+        req.setBarCode("BC54FC5B30EAQ");
+        req.setStoreId("203658057");//102654034
         req.setPageIndex("1");
         req.setPageSize("10");
 

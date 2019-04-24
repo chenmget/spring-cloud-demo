@@ -125,8 +125,12 @@ public class MarketingActivityB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/listMarketingActivity")
+    @UserLoginToken
     public ResultVO<Page<MarketingActivityListResp>> listMarketingActivity(@RequestBody MarketingActivityListReq req){
-        log.info("MarketingActivityB2BController listMarketingActivity MarketingActivityListReq={} ", req);
+        //如果不是管理员，根据当前登录帐号过滤
+        if (!UserContext.isAdminType()) {
+            req.setCreator(UserContext.getUserId());
+        };
         if("Invalid date".equals(req.getStartTimeS())) {
             req.setStartTimeS("");
         }
@@ -139,6 +143,8 @@ public class MarketingActivityB2BController {
         if("Invalid date".equals(req.getEndTimeE())) {
             req.setEndTimeE("");
         }
+
+        log.info("MarketingActivityB2BController listMarketingActivity MarketingActivityListReq={} ", req);
         return marketingActivityService.listMarketingActivity(req);
     }
 

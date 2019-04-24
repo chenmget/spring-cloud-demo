@@ -404,4 +404,25 @@
         GROUP BY
             t2.PRODUCT_BASE_ID
     </select>
+
+    <select id="listSupplierGoodsByType" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO">
+        SELECT
+        t1.GOODS_ID,
+        t1.GOODS_NAME,
+        t1.SUPPLIER_ID,
+        t2.PRODUCT_ID,
+        t2.SUPPLY_NUM,
+        t2.DELIVERY_PRICE,
+        t1.MKTPRICE
+        FROM
+        prod_goods t1,
+        prod_goods_product_rel t2
+        WHERE
+        t1.IS_DELETED = 0
+        AND t1.MARKET_ENABLE = 1
+        AND t2.SUPPLY_NUM > 0
+        AND t1.MERCHANT_TYPE = #{merchantType}
+        AND t1.GOODS_ID = t2.GOODS_ID
+        AND t2.PRODUCT_ID = #{productId}
+    </select>
 </mapper>

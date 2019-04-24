@@ -1,0 +1,29 @@
+spring:
+  aop:
+    auto: true
+  dubbo:
+    registry:
+      address: zookeeper://134.176.133.199:2183?backup=134.176.133.200:2183,134.176.133.201:2183,134.176.133.202:2183,134.176.133.203:2183
+    protocol:
+      port: 20880
+      name: dubbo
+    application:
+      name: order-consumer
+    scan: cn.buildworld.elasticjob.job
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+server:
+  port: 9019
+elaticjob:
+  zookeeper:
+    namespace: elastic-job
+    server-lists: 134.176.97.50:3181,134.176.97.51:3181,134.176.97.52:3181
+
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://134.176.161.58:8902/yhjdb?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: yunhj
+  password: YHJ_2019@april

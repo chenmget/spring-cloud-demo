@@ -686,10 +686,10 @@ public class GoodsB2BController extends GoodsBaseController {
     })
     @GetMapping(value = "/querySupplierGoods")
     ResultVO<List<SupplierGoodsDTO>> querySupplierGoods(@RequestParam( value = "goodsId")String goodsId,@RequestParam( value = "productId")String productId){
-        log.info("GoodsController queryMerchantByGoodsId goodsId={}", goodsId);
+        log.info("GoodsController querySupplierGoods goodsId={},productId={}", goodsId,productId);
         List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
         List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsService.querySupplierGoods(goodsId,productId);
-        if (CollectionUtils.isEmpty(supplierGoodsDTOs1)){
+        if (!CollectionUtils.isEmpty(supplierGoodsDTOs1)){
             supplierGoodsDTOs = supplierGoodsDTOs1;
         }
         return ResultVO.success(supplierGoodsDTOs);

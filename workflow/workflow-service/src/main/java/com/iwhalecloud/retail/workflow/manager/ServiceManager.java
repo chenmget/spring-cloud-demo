@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.workflow.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.entity.Service;
 import com.iwhalecloud.retail.workflow.mapper.ServiceMapper;
@@ -18,7 +19,7 @@ import java.util.List;
 
 
 @Component
-public class ServiceManager{
+public class ServiceManager extends ServiceImpl<ServiceMapper,Service> {
     @Resource
     private ServiceMapper serviceMapper;
 

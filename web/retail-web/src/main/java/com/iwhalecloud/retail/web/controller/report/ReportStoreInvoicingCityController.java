@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.report.service.ReportStInvCityService;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -23,10 +24,14 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by jiyou on 2019/4/11.
@@ -75,7 +80,7 @@ public class ReportStoreInvoicingCityController extends BaseController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value = "/storeInvoicingCityReportExport")
-    public ResultVO storeInvoicingCityReportExport(@RequestBody ReportStInvCityDaoReq req) {
+    public void storeInvoicingCityReportExport(@RequestBody ReportStInvCityDaoReq req, HttpServletResponse response) {
 
         ReportStorePurchaserReq req1 = new ReportStorePurchaserReq();
         String userId = UserContext.getUser().getUserId();
@@ -85,14 +90,7 @@ public class ReportStoreInvoicingCityController extends BaseController {
             req.setCity(UserContext.getUser().getLanId());
         }
 
-        ResultVO result = new ResultVO();
         ResultVO<List<RptPartnerOperatingDay>> resultVO = reportStInvCityService.getReportStInvCityListExport(req);
-
-        if (!resultVO.isSuccess()) {
-            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            result.setResultData("失败：" + resultVO.getResultMsg());
-            return result;
-        }
 
         List<RptPartnerOperatingDay> data = resultVO.getResultData();
 
@@ -121,8 +119,33 @@ public class ReportStoreInvoicingCityController extends BaseController {
         orderMap.add(new ExcelTitleName("warnStatus", "预警状态"));
 
         // 创建excel
-        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data, orderMap, "门店进销存地市报表");
-        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+//        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data, orderMap, "门店进销存地市报表");
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        
+        OutputStream output = null ;
+        try{
+            //创建Excel
+            String fileName = "门店进销存地市报表";
+            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+
+            output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+            response.setContentType("application/msexcel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            workbook.write(output);
+//            output.close();
+        }catch (Exception e){
+            log.error("门店进销存地市报表导出失败",e);
+        } finally {
+            if (null != output){
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**

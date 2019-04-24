@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.report;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -100,7 +101,7 @@ public class ReportCodeStatementsController extends BaseController  {
     })
     @PostMapping(value="/codeStatementsReportExport")
     @UserLoginToken
-    public ResultVO StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
+    public void StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
     	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getLssCode();//是否输入了零售商账号
 		//String userType = UserContext.getUser().getUserFounder()+"";
@@ -128,13 +129,6 @@ public class ReportCodeStatementsController extends BaseController  {
 			req.setManufacturerCode(manufacturerCode);
 		}
         ResultVO<List<ReportCodeStatementsResp>> resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
-       
-        ResultVO result = new ResultVO();
-        if (!resultVO.isSuccess()) {
-            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            result.setResultData("失败：" + resultVO.getResultMsg());
-            return result;
-        }
         
         List<ReportCodeStatementsResp> data = resultVO.getResultData();
         //创建Excel
@@ -142,6 +136,7 @@ public class ReportCodeStatementsController extends BaseController  {
         
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
+        orderMap.add(new ExcelTitleName("mktResStoreId", "仓库ID"));
         orderMap.add(new ExcelTitleName("storageType", "在库状态"));
         orderMap.add(new ExcelTitleName("mktResInstType", "串码类型"));
         orderMap.add(new ExcelTitleName("sourceType", "串码来源"));
@@ -170,26 +165,34 @@ public class ReportCodeStatementsController extends BaseController  {
         orderMap.add(new ExcelTitleName("destCountyId", "串码流向所属区县"));
         orderMap.add(new ExcelTitleName("selfRegStatus", "自注册状态"));
 
-      //创建orderItemDetail
-        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-        		orderMap, "串码明细报表");
-        return deliveryGoodsResNberExcel.uploadExcel(workbook);
-        
-//        try{
-//            //创建Excel
-//            String fileName = "串码明细报表";
-//            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-//
-//            OutputStream output = response.getOutputStream();
-//            response.reset();
-//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-//            response.setContentType("application/msexcel;charset=UTF-8");
-//            response.setCharacterEncoding("UTF-8");
-//            workbook.write(output);
+//      //创建orderItemDetail
+//        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+//        		orderMap, "串码明细报表");
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        OutputStream output = null;
+        try{
+            //创建Excel
+            String fileName = "串码明细报表";
+            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+
+            output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+            response.setContentType("application/msexcel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            workbook.write(output);
 //            output.close();
-//        }catch (Exception e){
-//            log.error("串码明细报表导出失败",e);
-//        }
+        }catch (Exception e){
+            log.error("串码明细报表导出失败",e);
+        } finally {
+            if (null != output){
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
         
     }
     

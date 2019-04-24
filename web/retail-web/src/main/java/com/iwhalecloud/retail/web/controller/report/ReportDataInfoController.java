@@ -77,16 +77,16 @@ public class ReportDataInfoController extends BaseController {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		if("2".equals(legacyAccount) && !"3".equals(userType)){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(legacyAccount);
+		if("2".equals(legacyAccount) && "3".equals(userType)){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);
 		}
-		if(userType!=null && !userType.equals("") && "4".equals(userType)){//零售商
+		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
 			String retailerCode=UserContext.getUser().getRelCode();
 			req.setRetailerCode(retailerCode);
 		}
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
-			String regionId = UserContext.getUser().getRegionId();
+			String regionId = UserContext.getUser().getLanId();
 			req.setLanId(regionId);
 		}
 		return iReportDataInfoService.getStorePurchaserReport(req);
@@ -136,13 +136,19 @@ public class ReportDataInfoController extends BaseController {
     })
     @PostMapping(value="/StorePurchaserReportExport")
     public void StorePurchaserReportExport(@RequestBody ReportStorePurchaserReq req, HttpServletResponse response) {
+    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商
+		if("2".equals(legacyAccount) && "3".equals(userType) && retailerCodes != null){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+			req.setRetailerCode(retailerCodes);
+		}
+		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
 			String retailerCode=UserContext.getUser().getRelCode();
 			req.setRetailerCode(retailerCode);
 		}
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
-			String regionId = UserContext.getUser().getRegionId();
+			String regionId = UserContext.getUser().getLanId();
 			req.setLanId(regionId);
 		}
         ResultVO<List<ReportStorePurchaserResq>> resultVO = iReportDataInfoService.getStorePurchaserReportdc(req);

@@ -11,7 +11,11 @@ import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
 import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
 
 public interface IReportDataInfoService {
+	//供应商只能看自己的仓库
+	public String getMyMktResStoreId(String relCode);
 
+	public String getretailerCode(String Code);
+	
 	public String retailerCodeBylegacy(String legacyAccount);
 	//门店进销存机型报表
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(ReportStorePurchaserReq req);

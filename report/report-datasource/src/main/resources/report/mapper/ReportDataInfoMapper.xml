@@ -87,4 +87,13 @@
 	  SELECT merchant_code FROM par_merchant WHERE 1=1 and legacy_account=#{legacyAccount}
   </select>
   
+  <select id="getretailerCode" parameterType="String" resultType="String">
+  		SELECT * FROM ( SELECT b.merchant_code FROM sys_user a,par_merchant b WHERE a.login_name = #{loginName} AND a.rel_code=b.merchant_id ORDER BY a.user_founder  LIMIT 1 ) c
+  
+  </select>
+  
+  <select id="getMyMktResStoreId" parameterType="String" resultType="String">
+	  select * from (SELECT MKT_RES_STORE_ID FROM MKT_RES_STORE_OBJ_REL WHERE obj_id = #{relCode} limit 1) c
+  
+  </select>
 </mapper>

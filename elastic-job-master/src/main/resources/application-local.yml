@@ -14,13 +14,13 @@ spring:
     database: mysql
     show-sql: true
     hibernate:
-      ddl-auto: update
+      ddl-auto: validate
 server:
   port: 9019
 elaticjob:
   zookeeper:
     namespace: elastic-job
-    server-lists: 134.176.97.50:3181,134.176.97.51:3181,134.176.97.52:3181
+    server-lists: 134.176.133.199:2183,134.176.133.200:2183,134.176.133.201:2183,134.176.133.202:2183,134.176.133.203:2183
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver

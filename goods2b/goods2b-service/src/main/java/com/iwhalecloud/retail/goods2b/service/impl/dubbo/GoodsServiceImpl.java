@@ -1572,6 +1572,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public List<SupplierGoodsDTO> querySupplierGoods(String goodsId,String productId) {
+        log.info("GoodsServiceImpl.querySupplierGoods req goodsId={},goodsId={}", goodsId,productId);
         List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
         Goods goods = goodsManager.queryGoods(goodsId);
         if(null ==goods){
@@ -1590,11 +1591,13 @@ public class GoodsServiceImpl implements GoodsService {
 
         //先根据商家类型查询地包商是否有货
         List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsManager.listSupplierGoodsByType(productId, "2");
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 地包商 supplierGoodsDTOs={}", supplierGoodsDTOs1);
         if(CollectionUtils.isNotEmpty(supplierGoodsDTOs1)){
             return supplierGoodsDTOs;
         }
         //先根据商家类型查询省包商是否有货
         List<SupplierGoodsDTO> supplierGoodsDTOs2 = goodsManager.listSupplierGoodsByType(productId, "3");
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 省包商 supplierGoodsDTOs={}", supplierGoodsDTOs2);
         if(CollectionUtils.isNotEmpty(supplierGoodsDTOs2)){
             for(SupplierGoodsDTO supplierGoodsDTO:supplierGoodsDTOs2){
                 List<ProdFileDTO> prodFileDTOs = fileManager.getFile(supplierGoodsDTO.getGoodsId(), FileConst.TargetType.GOODS_TARGET.getType(), FileConst.SubType.THUMBNAILS_SUB.getType());
@@ -1604,7 +1607,7 @@ public class GoodsServiceImpl implements GoodsService {
             }
             supplierGoodsDTOs = supplierGoodsDTOs2;
         }
-
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType  resp={}", supplierGoodsDTOs);
         return supplierGoodsDTOs;
     }
 

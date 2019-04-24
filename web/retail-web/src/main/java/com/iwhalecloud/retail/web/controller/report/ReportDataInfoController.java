@@ -79,9 +79,9 @@ public class ReportDataInfoController extends BaseController {
 		//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
-		//String userType=req.getUserType();
-		String userType = UserContext.getUser().getUserFounder()+"";
-		if("2".equals(legacyAccount) && "3".equals(userType)){
+		String userType=req.getUserType();
+		//String userType = UserContext.getUser().getUserFounder()+"";
+		if("2".equals(legacyAccount) && !"3".equals(userType)){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);
 		}
@@ -140,12 +140,13 @@ public class ReportDataInfoController extends BaseController {
     })
     @PostMapping(value="/StorePurchaserReportExport")
     @UserLoginToken
-    public void StorePurchaserReportExport(@RequestBody ReportStorePurchaserReq req, HttpServletResponse response) {
-    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+    public ResultVO StorePurchaserReportExport(@RequestBody ReportStorePurchaserReq req) {
+    	//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
-		//String userType=req.getUserType();
-		String userType = UserContext.getUser().getUserFounder()+"";
-		if("2".equals(legacyAccount) && "3".equals(userType) && retailerCodes != null){
+		String userType=req.getUserType();
+		//String userType = UserContext.getUser().getUserFounder()+"";
+		if("2".equals(legacyAccount) && !"3".equals(userType)){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);
 		}
@@ -157,7 +158,15 @@ public class ReportDataInfoController extends BaseController {
 			String regionId = UserContext.getUser().getLanId();
 			req.setLanId(regionId);
 		}
+		
         ResultVO<List<ReportStorePurchaserResq>> resultVO = iReportDataInfoService.getStorePurchaserReportdc(req);
+        ResultVO result = new ResultVO();
+        if (!resultVO.isSuccess()) {
+            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            result.setResultData("失败：" + resultVO.getResultMsg());
+            return result;
+        }
+        
         List<ReportStorePurchaserResq> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -181,21 +190,26 @@ public class ReportDataInfoController extends BaseController {
         orderMap.add(new ExcelTitleName("stockTurnover", "库存周转率"));
         orderMap.add(new ExcelTitleName("inventoryWarning", "库存预警"));
         
-        try{
-            //创建Excel
-            String fileName = "门店进销存机型报表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-
-            OutputStream output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
-            output.close();
-        }catch (Exception e){
-            log.error("门店进销存机型报表导出失败",e);
-        }
+      //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+        		orderMap, "门店进销存机型报表");
+        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        
+//        try{
+//            //创建Excel
+//            String fileName = "门店进销存机型报表";
+//            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//
+//            OutputStream output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+//            output.close();
+//        }catch (Exception e){
+//            log.error("门店进销存机型报表导出失败",e);
+//        }
         
     }
     

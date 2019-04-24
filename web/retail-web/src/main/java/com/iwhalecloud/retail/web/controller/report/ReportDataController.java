@@ -66,9 +66,10 @@ public class ReportDataController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getReportDeSaleList")
+	@UserLoginToken
     public ResultVO<Page<ReportDeSaleDaoResq>> getReportDeSaleList(@RequestBody ReportDeSaleDaoReq req) {
-		//String userType=req.getUserType();
-		String userType = UserContext.getUser().getUserFounder()+"";
+		String userType=req.getUserType();
+		//String userType = UserContext.getUser().getUserFounder()+"";
 		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
 			String MerchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(MerchantCode);
@@ -104,9 +105,11 @@ public class ReportDataController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/reportDeSaleExport")
-    public void reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req, HttpServletResponse response) {
-		//String userType=req.getUserType();
-    	String userType = UserContext.getUser().getUserFounder()+"";
+    @UserLoginToken
+    public ResultVO reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req, HttpServletResponse response) {
+		String userType=req.getUserType();
+    	////1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+    	//String userType = UserContext.getUser().getUserFounder()+"";
 		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
 			String MerchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(MerchantCode);
@@ -117,6 +120,12 @@ public class ReportDataController extends BaseController {
 		}
 		
         ResultVO<List<ReportDeSaleDaoResq>> resultVO = reportService.reportDeSaleExport(req);
+        ResultVO result = new ResultVO();
+        if (!resultVO.isSuccess()) {
+            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            result.setResultData("失败：" + resultVO.getResultMsg());
+            return result;
+        }
         List<ReportDeSaleDaoResq> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -144,21 +153,26 @@ public class ReportDataController extends BaseController {
         orderMap.add(new ExcelTitleName("sevenDayLv", "库存周转率"));
         orderMap.add(new ExcelTitleName("redStatus", "库存预警"));
         
-        try{
-            //创建Excel
-            String fileName = "地包进销存明细报表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-
-            OutputStream output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
-            output.close();
-        }catch (Exception e){
-            log.error("地包进销存明细报表导出失败",e);
-        }
+      //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+        		orderMap, "地包进销存明细报表");
+        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        
+//        try{
+//            //创建Excel
+//            String fileName = "地包进销存明细报表";
+//            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//
+//            OutputStream output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+//            output.close();
+//        }catch (Exception e){
+//            log.error("地包进销存明细报表导出失败",e);
+//        }
        
     }
 	

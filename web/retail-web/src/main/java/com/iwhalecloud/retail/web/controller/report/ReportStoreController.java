@@ -69,18 +69,18 @@ public class ReportStoreController extends BaseController {
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
-		//String userType=req.getUserType();
-		String userType = UserContext.getUser().getUserFounder()+"";
+		String userType=req.getUserType();
+		//String userType = UserContext.getUser().getUserFounder()+"";
 		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);
 		}
 		
-		String userId = UserContext.getUserId();
-		ReportStorePurchaserReq req2 = new ReportStorePurchaserReq();
-		req2.setUserId(userId);
-		ResultVO<List<ReportStorePurchaserResq>> brandview = iReportDataInfoService.getUerRoleForView(req2);
-		String brandId = brandview.getResultData().get(0).getBrandId();
+//		String userId = UserContext.getUserId();
+//		ReportStorePurchaserReq req2 = new ReportStorePurchaserReq();
+//		req2.setUserId(userId);
+//		ResultVO<List<ReportStorePurchaserResq>> brandview = iReportDataInfoService.getUerRoleForView(req2);
+//		String brandId = brandview.getResultData().get(0).getBrandId();
 		//req.setBrand(brandId);
         return reportStoreService.getReportStSaleList(req);
     }
@@ -95,17 +95,22 @@ public class ReportStoreController extends BaseController {
     })
     @PostMapping(value="/cjStorePurchaserReportExport")
     @UserLoginToken
-    public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
-		//userType==5 厂家视图的导出
+    public ResultVO cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
     	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
-		//String userType=req.getUserType();
-		String userType = UserContext.getUser().getUserFounder()+"";
+		String userType=req.getUserType();
+		//String userType = UserContext.getUser().getUserFounder()+"";
 		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);
 		}
         ResultVO<List<ReportStSaleDaoResp>> resultVO = reportStoreService.getReportStSaleListdc(req);
+        ResultVO result = new ResultVO();
+        if (!resultVO.isSuccess()) {
+            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            result.setResultData("失败：" + resultVO.getResultMsg());
+            return result;
+        }
         List<ReportStSaleDaoResp> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -138,21 +143,26 @@ public class ReportStoreController extends BaseController {
         orderMap.add(new ExcelTitleName("stockTurnover", "库存周转率"));
         orderMap.add(new ExcelTitleName("inventoryWarning", "库存预警"));
         
-        try{
-            //创建Excel
-            String fileName = "门店进销存明细报表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-
-            OutputStream output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
-            output.close();
-        }catch (Exception e){
-            log.error("门店进销存明细报表导出失败",e);
-        }
+      //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+        		orderMap, "门店进销存明细报表");
+        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        
+//        try{
+//            //创建Excel
+//            String fileName = "门店进销存明细报表";
+//            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//
+//            OutputStream output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+//            output.close();
+//        }catch (Exception e){
+//            log.error("门店进销存明细报表导出失败",e);
+//        }
         
     }
 

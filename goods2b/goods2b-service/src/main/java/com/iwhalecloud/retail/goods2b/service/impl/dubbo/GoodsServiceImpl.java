@@ -1169,6 +1169,19 @@ public class GoodsServiceImpl implements GoodsService {
         if (CollectionUtils.isEmpty(list)) {
             return ResultVO.successMessage("查询产商品列表为空");
         }
+        //查询指定productId
+        String productId = req.getProductId();
+        if(StringUtils.isNotEmpty(productId)){
+            List<GoodsProductRel> list2 = new ArrayList<>();
+            for (GoodsProductRel goodsProductRel : list) {
+                if(productId.equals(goodsProductRel.getProductId())){
+                    list2.add(goodsProductRel);
+                }
+            }
+            if(CollectionUtils.isNotEmpty(list2)){
+                list = list2;
+            }
+        }
         // 查询产商品关联信息
         List<GoodsProductRelDTO> goodsProductRelDTOList = Lists.newArrayList();
         for (GoodsProductRel goodsProductRel : list) {

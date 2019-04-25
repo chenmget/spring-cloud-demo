@@ -326,21 +326,19 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 要入库的串码
         List<String> putInNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
-        // 串码已经存在
-        List<String> mktResInstNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
         // 一去重
         List<String> existNbrs = qryEnableInsertNbr(req);
-        mktResInstNbrs.removeAll(existNbrs);
-        if(CollectionUtils.isEmpty(mktResInstNbrs)){
+        putInNbrs.removeAll(existNbrs);
+        if(CollectionUtils.isEmpty(putInNbrs)){
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
         // 二校验：
         // A) 绿色通道不需要校验
         // B) 非厂家新增串码时，只有在厂家存在的串码，才允许新增
         boolean checkExistsInMerchantStore = !ResourceConst.STORAGETYPE.GREEN_CHANNEL.getCode().equals(req.getStorageType()) && !req.getMerchantType().equals(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
-        if(checkExistsInMerchantStore ){
+        if(checkExistsInMerchantStore){
             ResourceInstsGetReq manufacturerResourceInstsGetReq = new ResourceInstsGetReq();
-            manufacturerResourceInstsGetReq.setMktResInstNbrs(mktResInstNbrs);
+            manufacturerResourceInstsGetReq.setMktResInstNbrs(putInNbrs);
             manufacturerResourceInstsGetReq.setMktResId(req.getMktResId());
             List<String> manufacturerTypes = new ArrayList<>();
             manufacturerTypes.add(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());

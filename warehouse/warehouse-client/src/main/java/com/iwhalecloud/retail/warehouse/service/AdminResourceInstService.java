@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.warehouse.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
+import com.iwhalecloud.retail.warehouse.dto.request.InventoryChangeReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
@@ -34,4 +35,11 @@ public interface AdminResourceInstService {
      */
     ResultVO updateResourceInstByIds(AdminResourceInstDelReq req);
 
+    /**
+     * 管理员补录串码状态
+     *
+     * @param req
+     * @return
+     */
+    ResultVO inventoryChange(InventoryChangeReq req);
 }

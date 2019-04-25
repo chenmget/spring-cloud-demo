@@ -8,14 +8,17 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
+import com.iwhalecloud.retail.warehouse.dto.request.InventoryChangeReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetByIdListAndStoreIdReq;
+import com.iwhalecloud.retail.warehouse.dto.response.InventoryChangeResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.InventoryQueryReq;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
@@ -54,7 +57,7 @@ public class AdminResourceInstB2BController {
 
     @Autowired
     private DeliveryGoodsResNberExcel deliveryGoodsResNberExcel;
-
+    
     @ApiOperation(value = "管理员串码管理页面", notes = "条件分页查询")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
@@ -90,7 +93,7 @@ public class AdminResourceInstB2BController {
         BeanUtils.copyProperties(dto, req);
         return resourceInstService.addResourceInst(req);
     }
-
+    
     @ApiOperation(value = "删除串码", notes = "传入串码集合删除")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
@@ -175,6 +178,29 @@ public class AdminResourceInstB2BController {
             log.error("excel解析失败",e);
         }
         return resultVO;
+    }
+    
+    @ApiOperation(value = "串码补录", notes = "补录操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="inventoryChange")
+//    @UserLoginToken
+    public ResultVO inventoryChange(@RequestBody InventoryQueryReq dto) {
+        if (StringUtils.isEmpty(dto.getDeviceId())) {
+            return ResultVO.error("串码不能为空");
+        }
+        
+        InventoryChangeResp inventoryChangeResp = new InventoryChangeResp();
+//        String userName = UserContext.getUser().getUserName();
+        
+        InventoryChangeReq req = new InventoryChangeReq ();
+        req.setDeviceId(dto.getDeviceId());
+        req.setUserName("test");
+        req.setCode(dto.getCode());
+        ResultVO inventoryChange = resourceInstService.inventoryChange(req);
+        return inventoryChange;
     }
 
 }

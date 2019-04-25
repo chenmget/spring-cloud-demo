@@ -6,14 +6,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
+import com.iwhalecloud.retail.warehouse.dto.request.InventoryChangeReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.manager.CallService;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
 @Service
 @Slf4j
 public class AdminResourceInstOpenServiceImpl implements AdminResourceInstService {
@@ -24,6 +25,10 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     @Autowired
     private ResouceInstTrackService resouceInstTrackService;
 
+    @Autowired
+    private CallService callService;
+    
+    
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("AdminResourceInstOpenServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
@@ -46,5 +51,12 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
         resouceInstTrackService.asynUpdateTrackForAddmin(req, resp);
         return resp;
     }
+
+	@Override
+	public ResultVO inventoryChange(InventoryChangeReq req) {
+		log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));
+		return	adminResourceInstService.inventoryChange(req);
+	}
+
 
 }

@@ -27,7 +27,7 @@ public class MyJob implements SimpleJob {
             System.out.println("321");
             return ;
         }*/
-        jobService.myJob();
+//        jobService.myJob();
         log.info("MyJob demo run...");
     }
 }

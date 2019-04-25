@@ -3,7 +3,7 @@ spring:
     auto: true
   dubbo:
     registry:
-      address: zookeeper://134.176.133.199:2183?backup=134.176.133.200:2183,134.176.133.201:2183,134.176.133.202:2183,134.176.133.203:2183
+      address: zookeeper://127.0.0.1:2181
     protocol:
       port: 20880
       name: dubbo
@@ -14,16 +14,16 @@ spring:
     database: mysql
     show-sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
 server:
   port: 9019
 elaticjob:
   zookeeper:
     namespace: elastic-job
-    server-lists: 134.176.133.199:2183,134.176.133.200:2183,134.176.133.201:2183,134.176.133.202:2183,134.176.133.203:2183
+    server-lists: 127.0.0.1:2181
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://134.176.161.58:8902/yhjdb?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
-  username: yunhj
-  password: YHJ_2019@april
+  url: jdbc:mysql://10.45.46.67:8866/nretail_b2b?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: szxtest
+  password: szxtest.2019

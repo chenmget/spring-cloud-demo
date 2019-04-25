@@ -31,6 +31,7 @@ import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
 import io.swagger.annotations.ApiOperation;
@@ -115,7 +116,7 @@ public class ReportCodeStatementsController extends BaseController  {
 			req.setLanId(lanId);
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
-			req.setLssCode(retailerCodes);
+			req.setLssCode(lssCode);
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(lssCode);
 			req.setMktResStoreId(mktResStoreId);
 		}else if("4".equals(userType)){
@@ -131,8 +132,6 @@ public class ReportCodeStatementsController extends BaseController  {
         ResultVO<List<ReportCodeStatementsResp>> resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
         
         List<ReportCodeStatementsResp> data = resultVO.getResultData();
-        //创建Excel
-        Workbook workbook = new HSSFWorkbook();
         
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
@@ -171,9 +170,10 @@ public class ReportCodeStatementsController extends BaseController  {
 //        return deliveryGoodsResNberExcel.uploadExcel(workbook);
         OutputStream output = null;
         try{
-            //创建Excel
+        	//创建Excel
+            Workbook workbook = new HSSFWorkbook();
             String fileName = "串码明细报表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
 
             output = response.getOutputStream();
             response.reset();

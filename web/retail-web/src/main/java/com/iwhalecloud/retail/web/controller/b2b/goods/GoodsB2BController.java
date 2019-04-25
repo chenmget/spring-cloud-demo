@@ -468,7 +468,7 @@ public class GoodsB2BController extends GoodsBaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value="/queryGoodsDetail",method = RequestMethod.GET)
-    public ResultVO<GoodsDetailResp> queryGoodsDetail(@RequestParam String goodsId){
+    public ResultVO<GoodsDetailResp> queryGoodsDetail(@RequestParam String goodsId,@RequestParam String productId){
         log.info("GoodsB2BController queryGoodsDetail req={} ",goodsId);
         if(StringUtils.isEmpty(goodsId)){
             return ResultVO.error("goodsId is must not be null");
@@ -478,6 +478,9 @@ public class GoodsB2BController extends GoodsBaseController {
         req.setGoodsId(goodsId);
         req.setIsLogin(isLogin);
         req.setUserId(UserContext.getUserId());
+        if(!StringUtils.isEmpty(productId)){
+            req.setProductId(productId);
+        }
         return goodsService.queryGoodsDetail(req);
     }
 

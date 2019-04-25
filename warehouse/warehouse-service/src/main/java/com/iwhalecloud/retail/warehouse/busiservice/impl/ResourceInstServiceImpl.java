@@ -494,6 +494,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
         if (CollectionUtils.isNotEmpty(inst)) {
+            // 作废的串码可以重现导入,把作废的串码去除
+            inst = inst.stream().filter(t -> !ResourceConst.STATUSCD.DELETED.getCode().equals(t.getStatusCd())).collect(Collectors.toList());
             List<String> instNbrs = inst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
             existNbrs = mktResInstNbrs.stream().filter(t -> instNbrs.contains(t)).collect(Collectors.toList());
         }

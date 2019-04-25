@@ -67,6 +67,7 @@ public class RunableTask {
      * @param req
      */
     public String exceutorValid(ResourceInstValidReq req) {
+        initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
         Integer perNum = 200;
         String batchId = resourceInstService.getPrimaryKey();
@@ -135,6 +136,7 @@ public class RunableTask {
      * @param req
      */
     public void exceutorDelNbr(ResourceUploadTempDelReq req) {
+        initExecutorService();
         List<String> nbrList = req.getMktResInstNbrList();
         Integer perNum = 200;
         Integer excutorNum = nbrList.size()/perNum == 0 ? 1 : nbrList.size()/perNum;
@@ -160,6 +162,7 @@ public class RunableTask {
      * @param req
      */
     public void exceutorAddNbr(ResourceInstAddReq req) {
+        initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
         Integer perNum = 200;
         Integer excutorNum = req.getMktResInstNbrs().size()/perNum == 0 ? 1 : req.getMktResInstNbrs().size()/perNum;
@@ -186,6 +189,7 @@ public class RunableTask {
      * @param req
      */
     public void exceutorAddReqDetail(ResourceRequestAddReq req) {
+        initExecutorService();
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
         ExecutorService executorService = new ThreadPoolExecutor(15, Integer.MAX_VALUE, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
         addRequestFutureTask = executorService.submit(new Callable<String>() {

@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.report;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,7 @@ import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
 import io.swagger.annotations.ApiOperation;
@@ -75,8 +77,8 @@ public class ReportOrderController extends BaseController {
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
-		//String userType=req.getUserType();
-		String userType = UserContext.getUser().getUserFounder()+"";
+		String userType=req.getUserType();
+		//String userType = UserContext.getUser().getUserFounder()+"";
 		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setMerchantCode(retailerCodes);
@@ -89,7 +91,7 @@ public class ReportOrderController extends BaseController {
 			String merchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(merchantCode);
 		}
-		if(userType!=null && !userType.equals("") && "4".equals(userType) || "5".equals(userType)){//供应商只看自己的
+		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商只看自己的
 			String suplierCode=UserContext.getUser().getRelCode();
 			req.setSuplierCode(suplierCode);
 		}
@@ -124,19 +126,21 @@ public class ReportOrderController extends BaseController {
 	    public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
 	    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 			String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
-			//String userType=req.getUserType();
-			String userType = UserContext.getUser().getUserFounder()+"";
+			String userType=req.getUserType();
+			//String userType = UserContext.getUser().getUserFounder()+"";
 			if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 				retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 				req.setMerchantCode(retailerCodes);
 			}
-			//userType 1省级管理员，2地市管理员，3供应商，4零售商，5厂家
-			////1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+			//userType 1省级管理员，2地市管理员，3零售商，4供应商，5厂家
+			
 			if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的
+//				String loginName = UserContext.getUser().getLoginName();
+//				iReportDataInfoService.getretailerCode(loginName);
 				String merchantCode=UserContext.getUser().getRelCode();
 				req.setMerchantCode(merchantCode);
 			}
-			if(userType!=null && !userType.equals("") && "4".equals(userType) || "5".equals(userType)){//供应商只看自己的
+			if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商只看自己的
 				String suplierCode=UserContext.getUser().getRelCode();
 				req.setSuplierCode(suplierCode);
 			}
@@ -145,6 +149,7 @@ public class ReportOrderController extends BaseController {
 				req.setLanId(regionId);
 			}
 	        ResultVO<List<ReportOrderResp>> resultVO = reportOrderService.getReportOrderList1dc(req);
+	        
 	        List<ReportOrderResp> data = resultVO.getResultData();
 	        //创建Excel
 	        Workbook workbook = new HSSFWorkbook();
@@ -178,23 +183,34 @@ public class ReportOrderController extends BaseController {
 	        orderMap.add(new ExcelTitleName("lanId", "店中商所属地市"));
 	        orderMap.add(new ExcelTitleName("city", "店中商所属区县"));
 
+	      //创建orderItemDetail
+//	        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+//	        		orderMap, "订单明细报表");
+//	        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+	        OutputStream output = null ;
 	        try{
 	            //创建Excel
 	            String fileName = "订单明细报表";
-	            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-
-	            OutputStream output = response.getOutputStream();
+//	            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+	            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+	            output = response.getOutputStream();
 	            response.reset();
 	            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
 	            response.setContentType("application/msexcel;charset=UTF-8");
 	            response.setCharacterEncoding("UTF-8");
 	            workbook.write(output);
-	            output.close();
+//	            output.close();
 	        }catch (Exception e){
 	            log.error("订单明细报表导出失败",e);
+	        } finally {
+	            if (null != output){
+	                try {
+	                    output.close();
+	                } catch (IOException e) {
+	                    e.printStackTrace();
+	                }
+	            }
 	        }
 	        
-	        
 	    }
-
 }

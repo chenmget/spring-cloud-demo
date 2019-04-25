@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.report;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.OrderExportUtil;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
 import io.swagger.annotations.ApiImplicitParam;
@@ -66,9 +68,10 @@ public class ReportDataController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getReportDeSaleList")
+	@UserLoginToken
     public ResultVO<Page<ReportDeSaleDaoResq>> getReportDeSaleList(@RequestBody ReportDeSaleDaoReq req) {
-		//String userType=req.getUserType();
-		String userType = UserContext.getUser().getUserFounder()+"";
+		String userType=req.getUserType();
+		//String userType = UserContext.getUser().getUserFounder()+"";
 		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
 			String MerchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(MerchantCode);
@@ -104,9 +107,11 @@ public class ReportDataController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/reportDeSaleExport")
+    @UserLoginToken
     public void reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req, HttpServletResponse response) {
-		//String userType=req.getUserType();
-    	String userType = UserContext.getUser().getUserFounder()+"";
+		String userType=req.getUserType();
+    	////1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+    	//String userType = UserContext.getUser().getUserFounder()+"";
 		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
 			String MerchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(MerchantCode);
@@ -117,6 +122,7 @@ public class ReportDataController extends BaseController {
 		}
 		
         ResultVO<List<ReportDeSaleDaoResq>> resultVO = reportService.reportDeSaleExport(req);
+        
         List<ReportDeSaleDaoResq> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -144,20 +150,33 @@ public class ReportDataController extends BaseController {
         orderMap.add(new ExcelTitleName("sevenDayLv", "库存周转率"));
         orderMap.add(new ExcelTitleName("redStatus", "库存预警"));
         
+      //创建orderItemDetail
+//        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+//        		orderMap, "地包进销存明细报表");
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        OutputStream output = null ;
         try{
             //创建Excel
             String fileName = "地包进销存明细报表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-
-            OutputStream output = response.getOutputStream();
+//            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+            output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
             response.setContentType("application/msexcel;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             workbook.write(output);
-            output.close();
+//            output.close();
         }catch (Exception e){
             log.error("地包进销存明细报表导出失败",e);
+        } finally {
+            if (null != output){
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
        
     }

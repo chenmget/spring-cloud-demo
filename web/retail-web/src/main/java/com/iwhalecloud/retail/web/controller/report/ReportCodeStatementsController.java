@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.report;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,7 @@ import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
 import io.swagger.annotations.ApiOperation;
@@ -63,29 +65,32 @@ public class ReportCodeStatementsController extends BaseController  {
 		////1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getLssCode();//是否输入了零售商账号
-		String userType = UserContext.getUser().getUserFounder()+"";
-		//String userType=req.getUserType();
+		//String userType = UserContext.getUser().getUserFounder()+"";
+		String userType=req.getUserType();
 		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setLssCode(retailerCodes);
 		}
-		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
-			String lanId=UserContext.getUser().getRegionId();
+		if(userType!=null&&!"".equals(userType)&&userType.equals("2")){
+			String lanId=UserContext.getUser().getLanId();
 			req.setLanId(lanId);
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
-			req.setLssCode(retailerCodes);
+			req.setLssCode(lssCode);
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(lssCode);
 			req.setMktResStoreId(mktResStoreId);
-		}else if("4".equals(userType) || "5".equals(userType) ){
+		}else if("4".equals(userType)){
 			String gysCode = UserContext.getUser().getRelCode();
 			req.setGysCode(gysCode);
 			//供应商只能看自己的仓库
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(gysCode);
 			req.setMktResStoreId(mktResStoreId);
-		}else if("8".equals(userType)){
+		}else if("5".equals(userType)){
 			String manufacturerCode = UserContext.getUser().getRelCode();
 			req.setManufacturerCode(manufacturerCode);
+			//厂商也只能看自己的仓库
+			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(manufacturerCode);
+			req.setMktResStoreId(mktResStoreId);
 		}
 			return reportCodeStateService.getCodeStatementsReport(req);
     }
@@ -103,33 +108,40 @@ public class ReportCodeStatementsController extends BaseController  {
     public void StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
     	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getLssCode();//是否输入了零售商账号
-		//String userType=req.getUserType();
-		String userType = UserContext.getUser().getUserFounder()+"";
+		//String userType = UserContext.getUser().getUserFounder()+"";
+		String userType=req.getUserType();
 		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setLssCode(retailerCodes);
 		}
 		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
-			String lanId=UserContext.getUser().getRegionId();
+			String lanId=UserContext.getUser().getLanId();
 			req.setLanId(lanId);
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
-			req.setLssCode(retailerCodes);
-		}else if("4".equals(userType) || "5".equals(userType) ){
+			req.setLssCode(lssCode);
+			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(lssCode);
+			req.setMktResStoreId(mktResStoreId);
+		}else if("4".equals(userType)){
 			String gysCode = UserContext.getUser().getRelCode();
 			req.setGysCode(gysCode);
-		}else if("8".equals(userType)){
+			//供应商只能看自己的仓库
+			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(gysCode);
+			req.setMktResStoreId(mktResStoreId);
+		}else if("5".equals(userType)){
 			String manufacturerCode = UserContext.getUser().getRelCode();
 			req.setManufacturerCode(manufacturerCode);
+			//厂商也只能看自己的仓库
+			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(manufacturerCode);
+			req.setMktResStoreId(mktResStoreId);
 		}
         ResultVO<List<ReportCodeStatementsResp>> resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
         
         List<ReportCodeStatementsResp> data = resultVO.getResultData();
-        //创建Excel
-        Workbook workbook = new HSSFWorkbook();
         
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
+        orderMap.add(new ExcelTitleName("mktResStoreId", "仓库ID"));
         orderMap.add(new ExcelTitleName("storageType", "在库状态"));
         orderMap.add(new ExcelTitleName("mktResInstType", "串码类型"));
         orderMap.add(new ExcelTitleName("sourceType", "串码来源"));
@@ -158,20 +170,34 @@ public class ReportCodeStatementsController extends BaseController  {
         orderMap.add(new ExcelTitleName("destCountyId", "串码流向所属区县"));
         orderMap.add(new ExcelTitleName("selfRegStatus", "自注册状态"));
 
+//      //创建orderItemDetail
+//        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+//        		orderMap, "串码明细报表");
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        OutputStream output = null;
         try{
-            //创建Excel
+        	//创建Excel
+            Workbook workbook = new HSSFWorkbook();
             String fileName = "串码明细报表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
 
-            OutputStream output = response.getOutputStream();
+            output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
             response.setContentType("application/msexcel;charset=UTF-8");
             response.setCharacterEncoding("UTF-8");
             workbook.write(output);
-            output.close();
+//            output.close();
         }catch (Exception e){
             log.error("串码明细报表导出失败",e);
+        } finally {
+            if (null != output){
+                try {
+                    output.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
         
     }

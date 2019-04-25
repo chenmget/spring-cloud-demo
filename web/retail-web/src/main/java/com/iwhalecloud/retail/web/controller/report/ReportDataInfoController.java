@@ -204,8 +204,8 @@ public class ReportDataInfoController extends BaseController {
         try{
             //创建Excel
             String fileName = "门店进销存机型报表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-
+//            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
             output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");

@@ -38,6 +38,7 @@ import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
 import io.swagger.annotations.ApiOperation;
@@ -190,7 +191,8 @@ public class ReportOrderController extends BaseController {
 	        try{
 	            //创建Excel
 	            String fileName = "订单明细报表";
-	            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//	            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+	            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
 	            output = response.getOutputStream();
 	            response.reset();
 	            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");

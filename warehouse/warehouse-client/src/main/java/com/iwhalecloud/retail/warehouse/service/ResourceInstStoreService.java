@@ -51,4 +51,10 @@ public interface ResourceInstStoreService{
      * @return
      */
     ResultVO<List<InventoryWarningResp>> queryInventoryWarning(List<InventoryWaringReq> req);
+
+    /**
+     *  串码入库，与ITMS集成
+     */
+    void syncMktToITMS();
+
 }

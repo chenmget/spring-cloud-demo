@@ -149,8 +149,14 @@ public class UserController extends BaseController {
             params.put("password", loginPwdNew);
             params.put("transaction_id", "");
             params.put("version", "1.0");
+            //查询能开地址配置信息
+            ConfigInfoDTO configInfoDTO = configInfoService.getConfigInfoById("zop_address");
+            if(Objects.isNull(configInfoDTO)){
+                return ResultVO.error("未查询到能开地址配置信息");
+            }
+            String zopAddress = configInfoDTO.getCfValue();
             //调用能开提供的"渠道登录鉴权"能力
-            ResponseResult responseResult = ZopClientUtil.callRest("ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=", "http://202.103.124.66:7098/api", "chk.auth.ChkChannelLogin", "1.0", params);
+            ResponseResult responseResult = ZopClientUtil.callRest("ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=", zopAddress, "chk.auth.ChkChannelLogin", "1.0", params);
             String resCode = "00000";
             String resultCodeCom = "0";
             if (resCode.equals(responseResult.getRes_code())) {

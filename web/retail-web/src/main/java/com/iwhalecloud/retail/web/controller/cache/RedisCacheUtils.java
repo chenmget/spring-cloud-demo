@@ -1,15 +1,5 @@
 package com.iwhalecloud.retail.web.controller.cache;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.TimeUnit;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.data.redis.core.BoundSetOperations;
 import org.springframework.data.redis.core.ListOperations;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -17,6 +7,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class RedisCacheUtils {
@@ -522,10 +514,8 @@ public class RedisCacheUtils {
     /**
      * 向List尾部追加记录
      *
-     * @param String
-     *            key
-     * @param String
-     *            value
+     * @param key
+     * @param value
      * @return 记录总数
      */
     public boolean leftPush(String key, Object value) {
@@ -541,10 +531,8 @@ public class RedisCacheUtils {
     /**
      * 向List头部追加记录
      *
-     * @param String
-     *            key
-     * @param Object
-     *            value
+     * @param key
+     * @param value
      * @return 记录总数
      */
     public boolean rightPush(String key, Object value) {
@@ -560,12 +548,9 @@ public class RedisCacheUtils {
     /**
      * 算是删除吧，只保留start与end之间的记录
      *
-     * @param Object
-     *            key
-     * @param int
-     *            start 记录的开始位置(0表示第一条记录)
-     * @param int
-     *            end 记录的结束位置（如果为-1则表示最后一个，-2，-3以此类推）
+     * @param key
+     * @param start 记录的开始位置(0表示第一条记录)
+     * @param end 记录的结束位置（如果为-1则表示最后一个，-2，-3以此类推）
      * @return 执行状态码
      */
     public boolean trim(String key, int start, int end) {

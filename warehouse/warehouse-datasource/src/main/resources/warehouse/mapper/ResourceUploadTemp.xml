@@ -30,5 +30,13 @@
         ORDER BY T.MKT_RES_UPLOAD_SEQ
     </select>
 
+    <delete id="delResourceUploadTemp" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempDelReq">
+        DELETE FROM MKT_RES_UPLOAD_TEMP t
+        WHERE 1=1 and MKT_RES_UPLOAD_BATCH=#{mktResUploadBatch}
+        <if test="mktResInstNbrList != null">
+            and MKT_RES_INST_NBR = #{mktResInstNbrList}
+        </if>
+    </delete>
+
 
 </mapper>

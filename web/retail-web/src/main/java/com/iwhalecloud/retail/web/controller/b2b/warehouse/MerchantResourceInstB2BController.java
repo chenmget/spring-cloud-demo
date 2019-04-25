@@ -195,7 +195,19 @@ public class MerchantResourceInstB2BController {
         }
     }
 
-    @ApiOperation(value = "校验串码查询", notes = "添加操作")
+    @ApiOperation(value = "校验串码", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="validNbr")
+    @UserLoginToken
+    public ResultVO<Page<ResourceUploadTempListResp>> validNbr(@RequestBody ResourceInstAddReq req) {
+        req.setMerchantId(UserContext.getMerchantId());
+        return resourceInstService.validNbr(req);
+    }
+
+    @ApiOperation(value = "校验串码查询", notes = "查询操作")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")

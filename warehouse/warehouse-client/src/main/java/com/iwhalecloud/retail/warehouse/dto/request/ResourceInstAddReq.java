@@ -233,4 +233,10 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "产品类型")
 	private String typeId;
+
+	/**
+	 * 营销资源导入批次。
+	 */
+	@ApiModelProperty(value = "营销资源导入批次。")
+	private String mktResUploadBatch;
 }

@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.warehouse.manager;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempDelReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceUploadTemp;
@@ -27,4 +28,12 @@ public class ResourceUploadTempManager  extends ServiceImpl<ResourceUploadTempMa
         return resourceUploadTempMapper.listResourceUploadTemp(page, req);
     }
 
+    /**
+     * 提交删除临时表
+     * @param req
+     * @return
+     */
+    public Integer delResourceUploadTemp(ResourceUploadTempDelReq req){
+        return resourceUploadTempMapper.delResourceUploadTemp(req);
+    }
 }

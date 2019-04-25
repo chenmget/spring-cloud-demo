@@ -53,6 +53,11 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     }
 
     @Override
+    public ResultVO validNbr(ResourceInstAddReq req){
+        return merchantResourceInstService.validNbr(req);
+    }
+
+    @Override
     public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req){
         return merchantResourceInstService.listResourceUploadTemp(req);
     }

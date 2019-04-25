@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.warehouse.runable;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
@@ -8,9 +9,11 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempDelReq;
 import com.iwhalecloud.retail.warehouse.entity.ResouceUploadTemp;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -23,6 +26,7 @@ import java.util.concurrent.*;
  * Created by fadeaway on 2019/4/24.
  */
 @Component
+@Slf4j
 public class RunableTask {
 
     @Autowired
@@ -40,11 +44,13 @@ public class RunableTask {
 
     private Future<String> addRequestFutureTask;
 
+    private Future<Integer> delNbrFutureTask;
+
     /**
      * 串码校验多线程处理
      * @param req
      */
-    public void exceutorValid(ResourceInstValidReq req) {
+    public String exceutorValid(ResourceInstValidReq req) {
         List<String> nbrList = req.getMktResInstNbrs();
         Integer perNum = 200;
         String batchId = resourceInstService.getPrimaryKey();
@@ -81,22 +87,51 @@ public class RunableTask {
                                                             inst.setCreateStaff(req.getCreateStaff());
                                                             instList.add(inst);
                                                         }
-                                                        resourceUploadTempManager.saveBatch(instList);
+                                                        Boolean addResult = resourceUploadTempManager.saveBatch(instList);
+                                                        log.info("RunableTask.exceutorValid req={}, resp={}", JSON.toJSONString(instList), addResult);
                                                     }
                                                     return batchId;
                                                 }
                                             }
         );
         executorService.shutdown();
+        return batchId;
     }
 
     /**
      * 串码校验多线程处理是否完成
      */
     public Boolean validHasDone() {
-        return validFutureTask.isDone();
+        Boolean hasDone = null == validFutureTask ? false : validFutureTask.isDone();
+        return hasDone;
     }
 
+    /**
+     * 串码临时表删除多线程处理
+     * @param req
+     */
+    public void exceutorDelNbr(ResourceUploadTempDelReq req) {
+        List<String> nbrList = req.getMktResInstNbrList();
+        Integer perNum = 200;
+        Integer excutorNum = nbrList.size()/perNum == 0 ? 1 : nbrList.size()/perNum;
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
+        ExecutorService executorService = new ThreadPoolExecutor(15, Integer.MAX_VALUE, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
+        delNbrFutureTask = executorService.submit(new Callable<Integer>() {
+                                                     @Override
+                                                     public Integer call() throws Exception {
+                                                         Integer totalNum = 0;
+                                                         for (Integer i = 0; i < excutorNum; i++) {
+                                                             List<String> newList = nbrList.subList(perNum*i,perNum*(i+1));
+                                                             req.setMktResInstNbrList(newList);
+                                                             Integer successNum = resourceUploadTempManager.delResourceUploadTemp(req);
+                                                             totalNum += successNum;
+                                                         }
+                                                         return totalNum;
+                                                     }
+                                                 }
+        );
+        executorService.shutdown();
+    }
     /**
      * 串码入库插入多线程处理
      * @param req
@@ -158,7 +193,7 @@ public class RunableTask {
                         public List<String> call() throws Exception {
                             List<String> existsNbrList = new ArrayList<>();
                             Thread.sleep(5000);
-                            for (Integer i = 0; i < 100000; i++) {
+                            for (Integer i = 0; i < 10; i++) {
                                 existsNbrList.add("test" + i);
                             }
                             return existsNbrList;

@@ -45,6 +45,14 @@ public interface MerchantResourceInstService {
     ResultVO selectProduct(PageProductReq req);
 
     /**
+     * 商家新增串码
+     *
+     * @param req
+     * @return
+     */
+    ResultVO validNbr(ResourceInstAddReq req);
+
+    /**
      * 查询校验串码
      * @param req
      * @return

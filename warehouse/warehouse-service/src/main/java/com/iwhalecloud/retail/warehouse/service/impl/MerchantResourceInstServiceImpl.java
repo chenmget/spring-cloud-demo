@@ -77,6 +77,27 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     }
 
     @Override
+    public ResultVO validNbr(ResourceInstAddReq req){
+        // 集采前端会传入库仓库id,其他类型根据当前登陆用户去获取仓库
+        String mktResStoreId = req.getDestStoreId();
+        if (!ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
+            StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+            storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+            storeGetStoreIdReq.setMerchantId(req.getMerchantId());
+            mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+            log.info("MerchantResourceInstServiceImpl.validNbr resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+            if (StringUtils.isBlank(mktResStoreId)) {
+                return ResultVO.error(constant.getCannotGetStoreMsg());
+            }
+        }
+        ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
+        BeanUtils.copyProperties(req, resourceInstValidReq);
+        resourceInstValidReq.setMktResStoreId(mktResStoreId);
+        String batchId = runableTask.exceutorValid(resourceInstValidReq);
+        return ResultVO.success(batchId);
+    }
+
+    @Override
     public ResultVO addResourceInst(ResourceInstAddReq req) {
         log.info("MerchantResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         String merchantId = req.getMerchantId();
@@ -105,10 +126,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             req.setDestStoreId(mktResStoreId);
         }
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
-        BeanUtils.copyProperties(req, resourceInstValidReq);
-        resourceInstValidReq.setMktResStoreId(mktResStoreId);
-        runableTask.exceutorValid(resourceInstValidReq);
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         // step2 新增申请单
         ResourceRequestAddReq resourceRequestAddReq = new ResourceRequestAddReq();
@@ -124,8 +141,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         List<String> checkMktResInstNbrs = req.getCheckMktResInstNbrs();
         if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
-            mktResInstNbrs.removeAll(checkMktResInstNbrs);
-            for (String nbr : mktResInstNbrs) {
+            checkMktResInstNbrs.retainAll(mktResInstNbrs);
+            for (String nbr : checkMktResInstNbrs) {
                 ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
                 instDTO.setMktResInstNbr(nbr);
                 instDTO.setMktResId(req.getMktResId());
@@ -164,6 +181,10 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         if (null != startResultVO && !startResultVO.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
+        ResourceUploadTempDelReq resourceUploadTempDelReq = new ResourceUploadTempDelReq();
+        resourceUploadTempDelReq.setMktResInstNbrList(checkMktResInstNbrs);
+        resourceUploadTempDelReq.setMktResUploadBatch(req.getMktResUploadBatch());
+        runableTask.exceutorDelNbr(resourceUploadTempDelReq);
         return ResultVO.success("串码入库提交申请单");
     }
 

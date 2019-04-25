@@ -23,6 +23,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
@@ -53,14 +54,18 @@ public class cgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/cgSearchApply")
+	@UserLoginToken
     public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
-		String userType=req.getUserType();
+//		String userType=req.getUserType();
 		String lanId = null ;
-		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
-			UserDTO user = UserContext.getUser();
-			if(user != null){
-				lanId = user.getLanId();
-			}
+		String userType = null ;
+		UserDTO user = UserContext.getUser();
+		if(user != null){
+			lanId = user.getLanId();
+			userType = user.getUserFounder()+"";
+		}
+		
+		if(userType!=null && !userType.equals("") && "12".equals(userType)){//地市管理员
 			req.setLanId(lanId);
 		}
 		return purApplyService.cgSearchApply(req);

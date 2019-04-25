@@ -110,6 +110,7 @@ public class ReportStoreController extends BaseController {
 	        orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
 	        orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
 	        orderMap.add(new ExcelTitleName("cityId", "所属城市"));
+	        orderMap.add(new ExcelTitleName("date", "统计日期"));
 	        orderMap.add(new ExcelTitleName("countryId", "所属区县"));
         orderMap.add(new ExcelTitleName("productBaseName", "机型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));

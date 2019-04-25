@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -122,7 +122,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
         for (DeliveryResourceInstItem deliveryResourceInstItem : req.getDeliveryResourceInstItemList()) {
             ProductGetByIdReq productReq = new ProductGetByIdReq();
             productReq.setProductId(deliveryResourceInstItem.getProductId());
-            ResultVO<ProductResp> productRespResultVO = productService.getProduct(productReq);
+            ResultVO<ProductForResourceResp> productRespResultVO = productService.getProductForResource(productReq);
             log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst productService.getProduct req={} resp={}", JSON.toJSONString(productReq), JSON.toJSONString(productRespResultVO));
             String sn = "";
             if (productRespResultVO.isSuccess() && productRespResultVO.getResultData() != null) {

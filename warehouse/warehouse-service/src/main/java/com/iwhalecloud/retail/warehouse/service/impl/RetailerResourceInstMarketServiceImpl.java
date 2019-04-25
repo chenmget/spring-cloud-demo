@@ -9,8 +9,8 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -330,9 +330,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         addReq.setMktResInstNbrs(mktResInstNbrs);
         addReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         addReq.setSourceType(ResourceConst.SOURCE_TYPE.RETAILER.getCode());
-        addReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
         addReq.setStorageType(ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode());
-        addReq.setMktResStoreId(resourceRequestResp.getDestStoreId());
         addReq.setMerchantType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
         addReq.setCreateStaff(req.getUpdateStaff());
         String merchantId = req.getMerchantId();
@@ -416,7 +414,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         for (ResourceReqDetailDTO dto : list) {
             ProductGetByIdReq productReq = new ProductGetByIdReq();
             productReq.setProductId(dto.getMktResId());
-            ResultVO<ProductResp> productRespResultVO = productService.getProduct(productReq);
+            ResultVO<ProductForResourceResp> productRespResultVO = productService.getProductForResource(productReq);
             String sn = "";
             if (productRespResultVO.isSuccess() && productRespResultVO.getResultData() != null) {
                 sn = productRespResultVO.getResultData().getSn();
@@ -439,7 +437,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         SyncTerminalSwapReq syncTerminalSwapReq = new SyncTerminalSwapReq();
         syncTerminalSwapReq.setMktResList(syncTerminalItemSwapReqList);
         ResultVO syncTerminalVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
-        log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr marketingResStoreService.syncTerminal req={},resp={}", JSON.toJSONString(syncTerminalSwapReq),JSON.toJSONString(syncTerminalVO));
+        log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr marketingResStoreService.syncTerminal req={},resp={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalVO));
         if (syncTerminalVO.isSuccess()) {
             Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(list, false);
             // 增加事件和批次

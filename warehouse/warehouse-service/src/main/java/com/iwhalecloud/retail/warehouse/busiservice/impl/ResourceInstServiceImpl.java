@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
@@ -893,7 +894,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ProductGetByIdReq productReq = new ProductGetByIdReq();
         productReq.setProductId(mktResId);
-        ResultVO<ProductResp> productRespResultVO = productService.getProduct(productReq);
+        ResultVO<ProductForResourceResp> productRespResultVO = productService.getProductForResource(productReq);
         String sn = "";
         if (productRespResultVO.isSuccess() && productRespResultVO.getResultData() != null) {
             sn = productRespResultVO.getResultData().getSn();

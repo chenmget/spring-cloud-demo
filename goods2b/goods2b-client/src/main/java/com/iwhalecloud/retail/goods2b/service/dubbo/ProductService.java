@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
+import com.iwhalecloud.retail.goods2b.dto.resp.*;
 
 import java.util.List;
 
@@ -171,4 +168,11 @@ public interface ProductService {
      * @return
      */
     ResultVO<List<ProductResp>> getProductForRebate(ProductRebateReq req);
+
+    /**
+     * 查询产品sn, is_fixed_line(对接营销资源用)
+     * @param req
+     * @return
+     */
+    ResultVO<ProductForResourceResp> getProductForResource(ProductGetByIdReq req);
 }

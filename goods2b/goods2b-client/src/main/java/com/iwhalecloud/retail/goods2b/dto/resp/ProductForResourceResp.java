@@ -22,6 +22,6 @@ public class ProductForResourceResp implements Serializable {
      * 是否固网产品 1是；0否
      */
     @ApiModelProperty(value = "是否固网产品 1是；0否")
-    private Double isFixedLine;
+    private String isFixedLine;
 
 }

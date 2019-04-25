@@ -488,7 +488,7 @@ public class GoodsB2BController extends GoodsBaseController {
     })
     @RequestMapping(value="/queryGoodsDetailByProductId",method = RequestMethod.GET)
     public ResultVO<GoodsDetailResp> queryGoodsDetailByProductId(@RequestParam String goodsId,@RequestParam String productId){
-        log.info("GoodsB2BController queryGoodsDetail req={} ",goodsId);
+        log.info("GoodsB2BController queryGoodsDetail req goodsId={},productId={} ",goodsId, productId);
         if(StringUtils.isEmpty(goodsId) || StringUtils.isEmpty(productId)){
             return ResultVO.error("goodsId or ProductId is must not be null");
         }

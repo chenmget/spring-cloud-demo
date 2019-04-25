@@ -196,9 +196,13 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     @Override
     public void syncMktToITMS() {
 
+        File dir = new File(basePath);
+        if (!dir.isDirectory()) {
+            dir.mkdir();
+        }
+
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String cofStr = "ITMS_PUSH_MKT_NB";
-
         // 开始时间
         String startStr = resourceInstMapper.findCfValueByCfId(cofStr);
         Date startDate = null;
@@ -226,6 +230,14 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             resourceInstMapper.updateCfValueByCfId(cofStr, sdf.format(endDate));
         }
 
+        //删除临时文件
+        if (dir.isDirectory()) {
+            String[] children = dir.list();
+            for (int i=0; i<children.length; i++) {
+                new File(dir, children[i]).delete();
+            }
+        }
+
     }
 
     public void syncMktToITMS(String brand, String ops, Date startDate, Date endDate) {
@@ -234,11 +246,6 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
         // 查询所有地市
         List<String> latIdList = resourceInstMapper.findAllLanID();
-
-        File file = new File(basePath);
-        if (!file.isDirectory()) {
-            file.mkdir();
-        }
 
         // 初始化配置
         String seqConfStr = "ITMS_PUSH_SEQ";
@@ -289,7 +296,11 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     }
 
-
+    /**
+     * 将序列号转换成字符串
+     * @param seqNb
+     * @return
+     */
     private String getSeqStr(int seqNb) {
         String seq = "";
         if (seqNb < 10) {
@@ -382,6 +393,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 //字节数组
                 ftpClient.storeFile(new String(), is);
             }
+            files.clear();
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }

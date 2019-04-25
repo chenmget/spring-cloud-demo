@@ -20,5 +20,9 @@ public class AddFileReq extends PageVO implements Serializable {
 	private String createDate;
 	private String updateStaff;
 	private String updateDate;
+	private String fileName;
+	private String url;
+	private String name;
+	private String uid;
 	
 }

@@ -48,7 +48,7 @@ public class cgSearchApplyController extends BaseController {
     private PurApplyService purApplyService;
     
     
-	@ApiOperation(value = "查询采购申请单报表", notes = "查询采购申请单报表")
+	@ApiOperation(value = "查询采购申请单和采购单报表", notes = "查询采购申请单和采购单")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
@@ -56,6 +56,7 @@ public class cgSearchApplyController extends BaseController {
     @PostMapping("/cgSearchApply")
 	@UserLoginToken
     public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
+		//传过来的APPLY_TYPE看
 //		String userType=req.getUserType();
 		String lanId = null ;
 		String userType = null ;
@@ -77,14 +78,17 @@ public class cgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
 	@GetMapping(value="/tcProcureApplybefore")
+	@UserLoginToken
     public ResultVO<ApplyHeadResp> tcProcureApplybefore() {
-//		UserDTO user = UserContext.getUser();
-		UserDTO user = new UserDTO();
-		user.setRelCode("CS00011001");
-		user.setUserName("深圳市金立通信设备有限公司");
-		user.setLanId("731");
-		user.setRegionId("73101");
-		
+		UserDTO user = UserContext.getUser();
+//		UserDTO user = new UserDTO();
+//		user.setRelCode("CS00011001");
+//		user.setUserName("深圳市金立通信设备有限公司");
+//		user.setLanId("731");
+//		user.setRegionId("73101");
+		if(user == null){
+			return null ;
+		}
 		ApplyHeadResp applyHeadResp = purApplyService.hqShenQingDaoHao();
 		Date date = new Date();
 		String applyCode = date.getTime() + "";
@@ -101,7 +105,6 @@ public class cgSearchApplyController extends BaseController {
 		applyHeadResp.setLanId(lanId);
 		applyHeadResp.setRegionId(regionId);
 		applyHeadResp.setApplyCode(applyCode);
-		//applyHeadResp.setApplyId(applyHeadResp.getApplyCode());
 		
 		return ResultVO.success(applyHeadResp);
     }
@@ -112,6 +115,7 @@ public class cgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/tcProcureApply")
+	@UserLoginToken
     public ResultVO tcProcureApply(@RequestBody ProcureApplyReq req) {
 		String isSave = req.getIsSave();
 		String statusCd = "10";
@@ -180,14 +184,7 @@ public class cgSearchApplyController extends BaseController {
 				purApplyService.crPurApplyFile(addFileReq);
 			}
 		}
-//		
-//		//写表PUR_APPLY_FILE(采购申请单附件表)
-//		if(req.getFileUrl() != null){
-//			String fileId = purApplyService.hqSeqFileId();
-//			req.setFileId(fileId);
-//			purApplyService.crPurApplyFile(req);
-//		}
-		//写表PUR_APPLY(采购申请单)
+
 		purApplyService.tcProcureApply(req);
 		return ResultVO.success();
     }

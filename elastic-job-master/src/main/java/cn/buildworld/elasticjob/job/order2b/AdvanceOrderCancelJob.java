@@ -35,7 +35,11 @@ public class AdvanceOrderCancelJob implements SimpleJob {
 
         long startTime = System.currentTimeMillis();
         log.info("AdvanceOrderCancelJob start-->startTime={}", startTime);
-        advanceOrderOpenService.cancelOverTimePayOrder();
+        try {
+            advanceOrderOpenService.cancelOverTimePayOrder();
+        } catch (Exception e) {
+            log.error("AdvanceOrderCancelJob exceute exception", e);
+        }
         long endTime = System.currentTimeMillis();
         log.info("AdvanceOrderCancelJob end-->endTime={}",endTime);
     }

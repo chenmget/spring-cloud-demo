@@ -16,7 +16,8 @@
     ,t.EXP_DATE 
     ,t.IS_IMEI 
     ,t.IS_ITMS 
-    ,t.IS_CT_CODE 
+    ,t.IS_CT_CODE
+    ,t.IS_FIXED_LINE
     ,t.PRODUCT_CODE 
     ,t.UNIT
     ,t.EXCHANGE_OBJECT

@@ -64,7 +64,7 @@ public class cgSearchApplyController extends BaseController {
 			lanId = user.getLanId();
 			userType = user.getUserFounder()+"";
 		}
-		
+		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userType = "+userType);
 		if(userType!=null && !userType.equals("") && "12".equals(userType)){//地市管理员
 			req.setLanId(lanId);
 		}

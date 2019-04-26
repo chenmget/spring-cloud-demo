@@ -123,7 +123,7 @@ public class CgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/tcProcureApply")
-	//@UserLoginToken
+	@UserLoginToken
     public ResultVO tcProcureApply(@RequestBody ProcureApplyReq req) {
 		String isSave = req.getIsSave();
 		String statusCd = "10";

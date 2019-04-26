@@ -16,12 +16,16 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
+import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
+import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
+import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
@@ -47,6 +51,8 @@ public class cgSearchApplyController extends BaseController {
     @Reference
     private PurApplyService purApplyService;
     
+    @Reference
+    private IReportDataInfoService iReportDataInfoService;
     
 	@ApiOperation(value = "查询采购申请单和采购单报表", notes = "查询采购申请单和采购单")
     @ApiResponses({
@@ -56,14 +62,21 @@ public class cgSearchApplyController extends BaseController {
     @PostMapping("/cgSearchApply")
 	@UserLoginToken
     public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
+		ReportStorePurchaserReq reqStore = new ReportStorePurchaserReq();
+		String userId = UserContext.getUserId();
+		reqStore.setUserId(userId);
+		ResultVO<List<ReportStorePurchaserResq>> resp = iReportDataInfoService.getUerRoleForView(reqStore);
+		List<ReportStorePurchaserResq> list = resp.getResultData();
+		ReportStorePurchaserResq Store = list.get(0);
+		String userType = Store.getUserType();
 		//传过来的APPLY_TYPE看
 //		String userType=req.getUserType();
 		String lanId = null ;
-		String userType = null ;
+		//String userType = null ;
 		UserDTO user = UserContext.getUser();
 		if(user != null){
 			lanId = user.getLanId();
-			userType = user.getUserFounder()+"";
+//			userType = user.getUserFounder()+"";
 		}
 		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userType = "+userType);
 		if(userType!=null && !userType.equals("") && "12".equals(userType)){//地市管理员
@@ -93,15 +106,15 @@ public class cgSearchApplyController extends BaseController {
 		Date date = new Date();
 		String applyCode = date.getTime() + "";
 		String relCode = user.getRelCode();//申请人工号    写表的
-		String applyMerchantCode = user.getUserName();//申请人名称  展示的
+		String applyMerchantName = user.getUserName();//申请人名称  展示的
 		String lanId = user.getLanId();//申请地市  写表的
 		String applyAdress = purApplyService.hqDiShiBuMen(lanId); //申请地市   展示的
 		String regionId = user.getRegionId();//申请部门  //写表的
 		String applyDepartment = purApplyService.hqDiShiBuMen(regionId);//申请部门   展示的
-		applyHeadResp.setApplyAdress(applyAdress);
+		applyHeadResp.setApplyAddress(applyAdress);
 		applyHeadResp.setApplyDepartment(applyDepartment);
-		applyHeadResp.setApplyMerchantCode(applyMerchantCode);
-		applyHeadResp.setRelCode(relCode);
+		applyHeadResp.setApplyMerchantName(applyMerchantName);
+		applyHeadResp.setApplyMerchantCode(relCode);
 		applyHeadResp.setLanId(lanId);
 		applyHeadResp.setRegionId(regionId);
 		applyHeadResp.setApplyCode(applyCode);
@@ -205,9 +218,9 @@ public class cgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/ckApplyData")
-	public ResultVO<ProcureApplyReq> ckApplyData(@RequestBody PurApplyReq req){
+	public ResultVO<CkProcureApplyResp> ckApplyData(@RequestBody PurApplyReq req){
 		//获取申请单
-		ProcureApplyReq procureApplyReq1 = purApplyService.ckApplyData1(req);
+		CkProcureApplyResp procureApplyReq1 = purApplyService.ckApplyData1(req);
 		//获取添加的产品信息
 		List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
 		List<AddFileReq> procureApplyReq3 = purApplyService.ckApplyData3(req);

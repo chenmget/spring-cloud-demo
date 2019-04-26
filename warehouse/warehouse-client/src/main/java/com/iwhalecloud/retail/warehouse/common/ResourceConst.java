@@ -473,7 +473,16 @@ public class ResourceConst {
         // 完成
         DONE("1003","完成"),
         // 取消
-        CANCEL("1004","取消");
+        CANCEL("1004","取消"),
+        //待抽检
+        WAIT_SPOTCHECK("1006","待抽检"),
+        //待抽检
+        WAIT_SPOTCHECK_CUSTSUP("1007","待抽检-客支中心"),
+        //抽检不通过
+        WAIT_SPOTCHECK_MOBINT("1008","待抽检-移互部"),
+        //待审核
+        WATI_REVIEW("1009","待审核");
+
 
         private String code;
         private String name;

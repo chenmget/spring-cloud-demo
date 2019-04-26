@@ -57,7 +57,7 @@ public class RunableTask {
     private Future<Integer> delNbrFutureTask;
 
     public void initExecutorService() {
-        if (null != executorService) {
+        if (null == executorService) {
             ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
             executorService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
         }

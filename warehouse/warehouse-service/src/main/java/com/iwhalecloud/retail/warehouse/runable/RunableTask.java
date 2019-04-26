@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.warehouse.runable;
 import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
@@ -71,9 +72,9 @@ public class RunableTask {
         List<String> nbrList = req.getMktResInstNbrs();
         Integer perNum = 200;
         String batchId = resourceInstService.getPrimaryKey();
-        Integer excutorNum = req.getMktResInstNbrs().size()/perNum == 0 ? 1 : req.getMktResInstNbrs().size()/perNum;
+        Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         validFutureTaskResult = new ArrayList<>(excutorNum);
-        for (Integer i = 0; i < excutorNum; i++) {
+        for (Integer i = 0; i < (excutorNum+1); i++) {
             List<String> newList = nbrList.subList(perNum * i, perNum * (i + 1));
             req.setMktResInstNbrs(newList);
             Future<Boolean> validFutureTask = executorService.submit(new Callable<Boolean>() {
@@ -226,6 +227,9 @@ public class RunableTask {
                         Thread.sleep(1000);
                         String name = Thread.currentThread().getName();
                         System.out.println("name : "+name);
+                        List<String> list = Lists.newArrayList("2");
+                        int t = 10/3;
+                        List<String> newList = list.subList(1, 200);
                         return name;
                     }
                 });

@@ -243,13 +243,13 @@ public class OrderSelectB2BController {
     }
 
 
-    @Reference
-    private TestTelDBseqService testTelDBseqService;
-    @RequestMapping(value = "/testTelDBseq", method = RequestMethod.POST)
-    @UserLoginToken
-    public ResultVO testTelDBseq(@RequestBody AdvanceOrderReq request) {
-       return testTelDBseqService.getseq(request);
-    }
+//    @Reference
+//    private TestTelDBseqService testTelDBseqService;
+//    @RequestMapping(value = "/testTelDBseq", method = RequestMethod.POST)
+//    @UserLoginToken
+//    public ResultVO testTelDBseq(@RequestBody AdvanceOrderReq request) {
+//       return testTelDBseqService.getseq(request);
+//    }
 
 
 }

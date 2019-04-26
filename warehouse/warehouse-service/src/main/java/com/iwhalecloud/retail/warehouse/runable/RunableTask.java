@@ -74,7 +74,7 @@ public class RunableTask {
         String batchId = resourceInstService.getPrimaryKey();
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         validFutureTaskResult = new ArrayList<>(excutorNum);
-        for (Integer i = 0; i < (excutorNum+1); i++) {
+        for (Integer i = 0; i < excutorNum; i++) {
             Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
             List<String> newList = nbrList.subList(perNum * i, maxNum);
             req.setMktResInstNbrs(newList);

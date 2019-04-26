@@ -204,6 +204,7 @@ public class MerchantResourceInstB2BController {
     @UserLoginToken
     public ResultVO<Page<ResourceUploadTempListResp>> validNbr(@RequestBody ResourceInstValidReq req) {
         req.setMerchantId(UserContext.getMerchantId());
+        req.setCreateStaff(UserContext.getUserId());
         return resourceInstService.validNbr(req);
     }
 

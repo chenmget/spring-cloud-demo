@@ -64,4 +64,9 @@ public class MenuManager {
         BeanUtils.copyProperties(menuDTO, menu);
         return menuMapper.updateById(menu);
     }
+
+    public List<MenuDTO> getMenuByRoleId(String userId){
+        return menuMapper.getMenuByRoleId(userId);
+    }
+
 }

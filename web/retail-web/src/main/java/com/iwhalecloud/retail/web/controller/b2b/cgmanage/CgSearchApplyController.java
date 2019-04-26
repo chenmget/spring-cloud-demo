@@ -62,9 +62,11 @@ public class CgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/cgSearchApply")
-	@UserLoginToken
+	//@UserLoginToken
     public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
-		String userId = UserContext.getUserId();
+		
+		//String userId = UserContext.getUserId();
+		String userId = "100028487";
 		PriCityManagerResp login = purApplyService.getLoginInfo(userId);
 		String userType = login.getUserType();
 		//传过来的APPLY_TYPE看
@@ -74,7 +76,7 @@ public class CgSearchApplyController extends BaseController {
 		if("2".equals(userType) || "2" == userType){//地市管理员
 			req.setLanId(lanId);
 		}
-		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() +" **************userType = "+req.getUserType());
+		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
 		return purApplyService.cgSearchApply(req);
     }
 	

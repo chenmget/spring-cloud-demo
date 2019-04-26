@@ -19,14 +19,15 @@ public class ProcureApplyReq extends PageVO implements Serializable {
 	private String applyCode;	//单号申请
 	private String applyName;	//..
 	private String applyMerchantCode;	//申请人
-	private String applyAdress;	//申请地市
+	private String applyAddress;	//申请地市
 	private String applyDepartment;	//申请部门
 	private String applyContact;	//联系方式
 	private String applyProjectName;	//项目名称
 	private String supplier;	//供应商(	供应商ID)
 	private String applyType;//	申请单类型，10 采购申请单、20 采购单
 	private String content;//申请单描述
-	private String merchantCode;//供应商编码
+	//private String merchantCode;//供应商编码
+	private String supplierCode;//供应商编码
 	private String applyMerchantId;//申请商家ID
 	
 	private String regionId;//区域标识

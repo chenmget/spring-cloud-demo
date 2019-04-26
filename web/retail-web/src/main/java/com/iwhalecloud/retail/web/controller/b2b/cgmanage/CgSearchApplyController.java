@@ -123,12 +123,13 @@ public class CgSearchApplyController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/tcProcureApply")
-	@UserLoginToken
+	//@UserLoginToken
     public ResultVO tcProcureApply(@RequestBody ProcureApplyReq req) {
 		String isSave = req.getIsSave();
 		String statusCd = "10";
 		Date date = new Date();
 		String updateStaff =UserContext.getUserId();
+//		String updateStaff ="1";
 		String updateDate = date.toLocaleString();
 		String statusDate = date.toLocaleString();
 		//情况一，默认是保存,状态就是10，待提交
@@ -151,7 +152,7 @@ public class CgSearchApplyController extends BaseController {
 //		String createStaff = "1";
 		
 		//获取供应商ID和申请商家ID
-		String merchantCode = req.getMerchantCode();
+		String merchantCode = req.getSupplierCode();
 		String applyMerchantCode = req.getApplyMerchantCode();
 		String supplier = purApplyService.getMerchantId(merchantCode);
 		String applyMerchantId = purApplyService.getMerchantId(applyMerchantCode);

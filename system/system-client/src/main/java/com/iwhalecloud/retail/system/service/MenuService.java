@@ -18,4 +18,7 @@ public interface MenuService {
     ResultVO deleteMenu(String menuId);
 
     ResultVO updateMenu(MenuDTO menuDTO);
+
+    List<MenuDTO> getMenuByRoleId(String usrId);
+
 }

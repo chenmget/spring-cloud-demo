@@ -75,7 +75,8 @@ public class RunableTask {
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         validFutureTaskResult = new ArrayList<>(excutorNum);
         for (Integer i = 0; i < (excutorNum+1); i++) {
-            List<String> newList = nbrList.subList(perNum * i, perNum * (i + 1));
+            Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
+            List<String> newList = nbrList.subList(perNum * i, maxNum);
             req.setMktResInstNbrs(newList);
             Future<Boolean> validFutureTask = executorService.submit(new Callable<Boolean>() {
                              @Override
@@ -229,7 +230,7 @@ public class RunableTask {
                         System.out.println("name : "+name);
                         List<String> list = Lists.newArrayList("2");
                         int t = 10/3;
-                        List<String> newList = list.subList(1, 200);
+                        List<String> newList = list.subList(0, 1);
                         return name;
                     }
                 });

@@ -10,7 +10,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import lombok.Data;
 
 @Data
-public class CkProcureApplyResp extends PageVO implements Serializable  {
+public class CkProcureApplyResp extends PageVO implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
 	private String isSave;//如果是1就是保存，2就是提交

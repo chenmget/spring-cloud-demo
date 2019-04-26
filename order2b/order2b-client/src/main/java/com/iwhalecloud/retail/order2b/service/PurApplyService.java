@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 
 /**
  * 
@@ -22,6 +24,8 @@ public interface PurApplyService {
 
 	//查询采购申请单
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req);
+	//获取登录用户是地市管理员还是省级管理员
+	public PriCityManagerResp getLoginInfo(String userId);
 	//采购申请的添加产商品的写表
 	public void crPurApplyItem(AddProductReq req);
 	////采购申请单单号写表
@@ -41,7 +45,7 @@ public interface PurApplyService {
 	
 	public int isHaveSave(String applyId);
 	
-	public void updatePurApply(String applyId);
+	public void updatePurApply(UpdatePurApplyState state);
 	
 	public String getMerchantId(String merchantCode);
 	

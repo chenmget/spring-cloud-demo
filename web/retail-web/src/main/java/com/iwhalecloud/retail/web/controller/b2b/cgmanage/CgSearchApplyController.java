@@ -17,11 +17,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
 import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
@@ -46,7 +48,7 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/cgmanage")
-public class cgSearchApplyController extends BaseController {
+public class CgSearchApplyController extends BaseController {
 
     @Reference
     private PurApplyService purApplyService;
@@ -62,24 +64,14 @@ public class cgSearchApplyController extends BaseController {
     @PostMapping("/cgSearchApply")
 	@UserLoginToken
     public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
-		ReportStorePurchaserReq reqStore = new ReportStorePurchaserReq();
 		String userId = UserContext.getUserId();
-		reqStore.setUserId(userId);
-		ResultVO<List<ReportStorePurchaserResq>> resp = iReportDataInfoService.getUerRoleForView(reqStore);
-		List<ReportStorePurchaserResq> list = resp.getResultData();
-		ReportStorePurchaserResq Store = list.get(0);
-		String userType = Store.getUserType();
+		PriCityManagerResp login = purApplyService.getLoginInfo(userId);
+		String userType = login.getUserType();
 		//传过来的APPLY_TYPE看
-//		String userType=req.getUserType();
-		String lanId = null ;
-		//String userType = null ;
-		UserDTO user = UserContext.getUser();
-		if(user != null){
-			lanId = user.getLanId();
-//			userType = user.getUserFounder()+"";
-		}
+		String lanId = login.getLanId();
+		
 		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userType = "+userType);
-		if(userType!=null && !userType.equals("") && "12".equals(userType)){//地市管理员
+		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
 			req.setLanId(lanId);
 		}
 		return purApplyService.cgSearchApply(req);
@@ -132,13 +124,22 @@ public class cgSearchApplyController extends BaseController {
     public ResultVO tcProcureApply(@RequestBody ProcureApplyReq req) {
 		String isSave = req.getIsSave();
 		String statusCd = "10";
+		Date date = new Date();
+		String updateStaff =UserContext.getUserId();
+		String updateDate = date.toLocaleString();
+		String statusDate = date.toLocaleString();
 		//情况一，默认是保存,状态就是10，待提交
 		//情况二，如果是提交，状态就是20，待审核(分表里面是否有记录)
 		if("2".equals(isSave)){
 			String applyId = req.getApplyId();
 			int isHaveSave = purApplyService.isHaveSave(applyId);
-			if(isHaveSave != 0){
-				purApplyService.updatePurApply(applyId);
+			if(isHaveSave != 0){//表里面有记录的话
+				UpdatePurApplyState state = new UpdatePurApplyState();
+				state.setApplyId(applyId);
+				state.setUpdateDate(updateDate);
+				state.setUpdateStaff(updateStaff);
+				state.setStatusDate(statusDate);	
+				purApplyService.updatePurApply(state);
 				return ResultVO.success();
 			}
 			statusCd = "20";
@@ -146,19 +147,16 @@ public class cgSearchApplyController extends BaseController {
 		String createStaff = UserContext.getUserId();
 //		String createStaff = "1";
 		
-		
 		//获取供应商ID和申请商家ID
 		String merchantCode = req.getMerchantCode();
 		String applyMerchantCode = req.getApplyMerchantCode();
 		String supplier = purApplyService.getMerchantId(merchantCode);
 		String applyMerchantId = purApplyService.getMerchantId(applyMerchantCode);
-		Date date = new Date();
+		
 		String createDate = date.toLocaleString();//创建时间
-		String updateStaff =UserContext.getUserId();
+		
 //		String updateStaff ="1";
 		
-		String updateDate = date.toLocaleString();
-		String statusDate = date.toLocaleString();
 		req.setStatusCd(statusCd);
 		req.setCreateStaff(createStaff);
 		req.setCreateDate(createDate);

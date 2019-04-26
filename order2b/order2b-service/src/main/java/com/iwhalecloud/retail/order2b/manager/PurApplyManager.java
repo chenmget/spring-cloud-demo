@@ -11,11 +11,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.mapper.CartMapper;
 import com.iwhalecloud.retail.order2b.mapper.PurApplyMapper;
 
@@ -41,6 +43,10 @@ public class PurApplyManager {
 	
 	public void crPurApplyItem(AddProductReq req){
 		purApplyMapper.crPurApplyItem(req);
+	}
+	
+	public PriCityManagerResp getLoginInfo(String userId){
+		return purApplyMapper.getLoginInfo(userId);
 	}
 	
 	public void delSearchApply(PurApplyReq req){
@@ -71,8 +77,8 @@ public class PurApplyManager {
 		return purApplyMapper.isHaveSave(applyId);
 	}
 	
-	public void updatePurApply(String applyId){
-		purApplyMapper.updatePurApply(applyId);
+	public void updatePurApply(UpdatePurApplyState state){
+		purApplyMapper.updatePurApply(state);
 	}
 	
 	public String getMerchantId(String merchantCode){

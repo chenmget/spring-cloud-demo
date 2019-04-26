@@ -9,11 +9,13 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.entity.PurApply;
 
 @Mapper
@@ -26,6 +28,8 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public void crPurApplyFile(@Param("req") AddFileReq procureApplyReq);
 	
 	public void crPurApplyItem(@Param("req") AddProductReq addProductReq);
+	
+	public PriCityManagerResp getLoginInfo(@Param("userId") String userId);
 	
 	public void delSearchApply(@Param("req") PurApplyReq purApplyReq);
 	
@@ -41,7 +45,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public int isHaveSave(@Param("applyId") String applyId);
 	
-	public void updatePurApply(@Param("applyId") String applyId);
+	public void updatePurApply(@Param("req") UpdatePurApplyState state);
 	
 	public String getMerchantId(@Param("merchantCode") String merchantCode);
 	

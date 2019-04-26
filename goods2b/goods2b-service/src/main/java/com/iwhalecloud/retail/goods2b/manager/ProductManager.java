@@ -194,4 +194,13 @@ public class ProductManager {
     public List<String> listProduct(String productBaseId) {
         return productMapper.listProduct(productBaseId);
     }
+
+    /**
+     * 根据产品名称或编码查询产品
+     * @param request
+     * @return
+     */
+    public Integer getDuplicate(ProductGetDuplicateReq request){
+        return productMapper.getDuplicate(request);
+    }
 }

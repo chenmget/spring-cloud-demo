@@ -457,4 +457,19 @@ public class ProductServiceImpl implements ProductService {
 
         return specName.toString();
     }
+
+    @Override
+    public ResultVO<Integer> getDuplicate(ProductGetDuplicateReq req) {
+        Integer num=0;
+        // 产品编码
+        if (StringUtils.isNotBlank(req.getSn()) || StringUtils.isNotBlank(req.getUnitName())) {
+            Boolean bothNotNull = StringUtils.isNotBlank(req.getSn()) && StringUtils.isNotBlank(req.getUnitName());
+            ProductGetDuplicateReq dto = new ProductGetDuplicateReq();
+            dto.setSn(req.getSn());
+            dto.setUnitName(req.getUnitName());
+            dto.setBothNotNull(bothNotNull);
+            num = productManager.getDuplicate(dto);
+        }
+        return ResultVO.success(num);
+    }
 }

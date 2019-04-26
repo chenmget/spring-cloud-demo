@@ -293,4 +293,16 @@ public class GoodsProductB2BController {
         log.info("GoodsProductB2BController.selectPageProductAdminWithNoRight req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         return productPageRespPage;
     }
+
+    @ApiOperation(value = "根据产品名称或编码查询产品", notes = "根据产品名称或编码查询产品")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="getDuplicate")
+    public ResultVO<Integer> getDuplicate(@RequestBody ProductGetDuplicateReq req) {
+        ResultVO<Integer> integerResultVO = productService.getDuplicate(req);
+        log.info("GoodsProductB2BController.getDuplicate req={}, resp={}", JSON.toJSONString(req), integerResultVO);
+        return integerResultVO;
+    }
 }

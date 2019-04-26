@@ -157,4 +157,11 @@ public interface ProductService {
      * @return
      */
     ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req);
+
+    /**
+     * 根据产品名称或编码查询产品
+     * @param req
+     * @return
+     */
+    ResultVO<Integer> getDuplicate (ProductGetDuplicateReq req);
 }

@@ -10,7 +10,7 @@ import lombok.Data;
 
 @Data
 @ApiModel(value = "对应模型purApply, 对应实体PurApply类")
-@TableName("purApply")
+@TableName("PUR_APPLY")
 public class PurApply implements Serializable {/**
 	 * 
 	 */

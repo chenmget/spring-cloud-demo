@@ -308,7 +308,8 @@ public class WorkFlowConst {
         TASK_SUB_TYPE_2030("1","2030","前置补贴补录流程"),
         TASK_SUB_TYPE_2040("1","2040","串码调拨流程（调出方、调入方都要审核）"),
         TASK_SUB_TYPE_2050("1","2050","通知公告审核流程"),
-        TASK_SUB_TYPE_2060("1","2060","商家权限申请审核流程");
+        TASK_SUB_TYPE_2060("1","2060","商家权限申请审核流程"),
+        TASK_SUB_TYPE_3020("1","3020","采购申请单审核流程");
 
         private String taskType;
         private String taskSubType;

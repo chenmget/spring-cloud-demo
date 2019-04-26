@@ -53,7 +53,7 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     }
 
     @Override
-    public ResultVO validNbr(ResourceInstAddReq req){
+    public ResultVO validNbr(ResourceInstValidReq req){
         return merchantResourceInstService.validNbr(req);
     }
 

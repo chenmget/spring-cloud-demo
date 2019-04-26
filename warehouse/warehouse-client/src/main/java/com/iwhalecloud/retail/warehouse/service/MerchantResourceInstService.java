@@ -50,7 +50,7 @@ public interface MerchantResourceInstService {
      * @param req
      * @return
      */
-    ResultVO validNbr(ResourceInstAddReq req);
+    ResultVO validNbr(ResourceInstValidReq req);
 
     /**
      * 查询校验串码

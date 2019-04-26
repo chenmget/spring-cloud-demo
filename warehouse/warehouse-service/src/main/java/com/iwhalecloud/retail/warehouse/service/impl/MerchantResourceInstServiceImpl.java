@@ -77,9 +77,9 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     }
 
     @Override
-    public ResultVO validNbr(ResourceInstAddReq req){
+    public ResultVO validNbr(ResourceInstValidReq req){
         // 集采前端会传入库仓库id,其他类型根据当前登陆用户去获取仓库
-        String mktResStoreId = req.getDestStoreId();
+        String mktResStoreId = req.getMktResStoreId();
         if (!ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
             StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
             storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());

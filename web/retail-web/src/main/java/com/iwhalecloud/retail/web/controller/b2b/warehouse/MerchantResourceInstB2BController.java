@@ -202,7 +202,7 @@ public class MerchantResourceInstB2BController {
     })
     @PostMapping(value="validNbr")
     @UserLoginToken
-    public ResultVO<Page<ResourceUploadTempListResp>> validNbr(@RequestBody ResourceInstAddReq req) {
+    public ResultVO<Page<ResourceUploadTempListResp>> validNbr(@RequestBody ResourceInstValidReq req) {
         req.setMerchantId(UserContext.getMerchantId());
         return resourceInstService.validNbr(req);
     }

@@ -224,8 +224,13 @@
 	SELECT COUNT(*) AS isHaveSave FROM PUR_APPLY WHERE 1=1 and apply_id =#{applyId}
   </select>
   
-  <select id="updatePurApply"  parameterType="String">
-	UPDATE PUR_APPLY SET status_cd= '20' WHERE apply_id=#{applyId}
+  <select id="updatePurApply"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState">
+	UPDATE 
+	PUR_APPLY SET status_cd= '20',
+	update_date=#{req.updateDate},
+	update_staff=#{req.updateStaff},
+	status_date=#{req.statusDate} 
+	WHERE 1=1 and apply_id=#{req.applyId}
   </select>
   
   <select id="getMerchantId"  parameterType="String"  resultType="String">
@@ -239,5 +244,21 @@
   <select id="hqSeqItemId"  resultType="String">
   	select seq_pur_apply_item_id.nextval as itemId
   </select>
+  
+  <select id="getLoginInfo"  parameterType="String" 
+  		resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp">
+  	
+  	SELECT b.lan_id lanId,(
+	 CASE WHEN a.role_id IN ('1087891202715070466','1087891300077449217') THEN '1' 	
+	 WHEN a.role_id IN ('10000002') THEN '2' 	
+	 WHEN a.role_id IN ('1087891525680672770') THEN '3'			
+	 WHEN a.role_id IN ('1068415942698213378','1087890525473386497','1087890602434670594') THEN '4'		
+	 WHEN a.role_id IN ('1085091905942462465') THEN '5' 
+	 ELSE '6' END) userType
+	FROM sys_user_role a,sys_user b WHERE 1=1 AND a.user_id = b.user_id AND a.user_id = #{userId}
+	ORDER BY userType LIMIT 1   
+	
+  </select>
+  
 </mapper>
 

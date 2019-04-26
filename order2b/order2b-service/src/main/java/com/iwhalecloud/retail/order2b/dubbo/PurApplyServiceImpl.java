@@ -11,11 +11,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 
@@ -51,7 +53,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public void crPurApplyItem(AddProductReq req) {
 		purApplyManager.crPurApplyItem(req);
 	}
-
+	
+	@Override
+	public PriCityManagerResp getLoginInfo(String userId){
+		return purApplyManager.getLoginInfo(userId);
+	}
+	
 	@Override
 	@Transactional
 	public ResultVO<T> delSearchApply(PurApplyReq req) {
@@ -90,8 +97,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 	}
 	
 	@Override
-	public void updatePurApply(String applyId){
-		purApplyManager.updatePurApply(applyId);
+	public void updatePurApply(UpdatePurApplyState state){
+		purApplyManager.updatePurApply(state);
 	}
 	
 	@Override

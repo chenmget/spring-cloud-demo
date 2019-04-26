@@ -16,6 +16,9 @@
 			 FROM PUR_APPLY a
 			 WHERE 1=1
 			 and a.STATUS_CD != '1100'
+		<if test='req.lanId !=null and req.lanId !=""'>  
+			and a.LAN_ID = #{req.lanId}
+		</if>
 		 <if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode}
 		</if>
@@ -26,14 +29,12 @@
 			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.projectName}),'%')	
 		</if>
 		<if test='req.startDate!=null and req.startDate!=""'>
-			and a.CREATE_DATE &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
 		</if>
 		<if test='req.endDate!=null and req.endDate!=""'>
-			and a.CREATE_DATE &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
 		</if>
-		<if test='req.lanId!=null and req.lanId!=""'>  
-			and a.LAN_ID = #{req.lanId}
-		</if>
+		
   </select>
   
   <select id="crPurApplyFile" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq">

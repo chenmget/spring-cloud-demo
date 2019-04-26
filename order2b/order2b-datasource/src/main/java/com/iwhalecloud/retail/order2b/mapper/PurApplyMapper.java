@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
@@ -34,7 +35,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public void delSearchApplyItem(@Param("req") PurApplyReq purApplyReq);
 	
-	public ProcureApplyReq ckApplyData1(@Param("req") PurApplyReq req);
+	public CkProcureApplyResp ckApplyData1(@Param("req") PurApplyReq req);
 	public List<AddProductReq> ckApplyData2(@Param("req") PurApplyReq req) ;
 	public List<AddFileReq> ckApplyData3(@Param("req") PurApplyReq req) ;
 	

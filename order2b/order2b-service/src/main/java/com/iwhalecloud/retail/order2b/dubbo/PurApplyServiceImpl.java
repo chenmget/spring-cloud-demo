@@ -10,6 +10,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
@@ -69,7 +70,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	}
 
 	@Override
-	public ProcureApplyReq ckApplyData1(PurApplyReq req) {
+	public CkProcureApplyResp ckApplyData1(PurApplyReq req) {
 		return purApplyManager.ckApplyData1(req);
 	}
 	

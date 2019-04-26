@@ -21,7 +21,7 @@ public class AddProductReq extends PageVO implements Serializable {
 	private String snCount;	//数量(采购数量)
 	private String priceInStore;  //供货价(采购价格)
 	private String purchaseType;  //采购类型
-	
+	private String sn;//产品编码
 	private String applyItemId;//	申请单项ID
 	private String applyId;//申请单ID
 	private String statusCd;//状态
@@ -30,6 +30,7 @@ public class AddProductReq extends PageVO implements Serializable {
 	private String updateStaff;	//修改人
 	private String updateDate;	//修改时间
 	private String statusDate;  //状态时间
-	
+	private String isFixedLine;//是否固网产品
+	private String typeName;//产品类型
 	
 }

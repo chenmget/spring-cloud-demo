@@ -40,7 +40,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
         productGetByIdReq.setProductId(req.getMktResId());
         ResultVO<ProductResp> producttVO = productService.getProduct(productGetByIdReq);
-        log.info("ResourceInstServiceImpl.qryEnableInsertNbr productService.getProduct mktResId={} resp={}", req.getMktResId(), JSON.toJSONString(producttVO));
+        log.info("ResourceInstCheckServiceImpl.qryEnableInsertNbr productService.getProduct mktResId={} resp={}", req.getMktResId(), JSON.toJSONString(producttVO));
         String typeId = "";
         if (producttVO.isSuccess() && null != producttVO.getResultData()) {
             typeId = producttVO.getResultData().getTypeId();
@@ -64,7 +64,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         resourceInstsGetReq.setTypeId(typeId);
         List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
-        log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
+        log.info("ResourceInstCheckServiceImpl.addResourceInst resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
         if (CollectionUtils.isNotEmpty(inst)) {
             // 作废的串码可以重现导入,把作废的串码去除
             inst = inst.stream().filter(t -> !ResourceConst.STATUSCD.DELETED.getCode().equals(t.getStatusCd())).collect(Collectors.toList());

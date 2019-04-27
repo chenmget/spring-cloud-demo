@@ -49,7 +49,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storeGetStoreIdReq.setMerchantId(req.getMerchantId());
         String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+        log.info("MerchantResourceInstServiceImpl.delResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
         if (StringUtils.isBlank(mktResStoreId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
@@ -79,7 +79,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storeGetStoreIdReq.setMerchantId(merchantId);
         String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+        log.info("MerchantResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
         if (StringUtils.isBlank(mktResStoreId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }

@@ -362,7 +362,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         processStartDTO.setTaskSubType(taskSubType);
         processStartDTO.setExtends1(sourceMerchantDTO.getCityName());
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
+        log.info("SupplierResourceInstServiceImpl.allocateResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
         if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }

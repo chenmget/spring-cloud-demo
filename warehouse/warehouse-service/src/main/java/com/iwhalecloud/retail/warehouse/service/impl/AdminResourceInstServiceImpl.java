@@ -96,7 +96,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 //		InventoryChangeResp inventoryChangeResp = new InventoryChangeResp();
 		String result = "";
 		List<ResourceInstDTO> resourceInstList = resourceInstManager.listInstsByNbr(req.getDeviceId());
-		if(resourceInstList.size()<0 || null == resourceInstList){
+		if(resourceInstList.size()<=0 || null == resourceInstList){
 			return ResultVO.error("串码不在库中");
 		}
 		try {

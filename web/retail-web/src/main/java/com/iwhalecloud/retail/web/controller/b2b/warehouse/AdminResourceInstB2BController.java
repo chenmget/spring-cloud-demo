@@ -186,21 +186,23 @@ public class AdminResourceInstB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="inventoryChange")
-//    @UserLoginToken
+    @UserLoginToken
     public ResultVO inventoryChange(@RequestBody InventoryQueryReq dto) {
         if (StringUtils.isEmpty(dto.getDeviceId())) {
             return ResultVO.error("串码不能为空");
         }
         
         InventoryChangeResp inventoryChangeResp = new InventoryChangeResp();
-//        String userName = UserContext.getUser().getUserName();
+        String userName = UserContext.getUser().getUserName();
+        String params = "city_code"+dto.getCode();
         
         InventoryChangeReq req = new InventoryChangeReq ();
         req.setDeviceId(dto.getDeviceId());
-        req.setUserName("test");
-        req.setCode(dto.getCode());
+        req.setUserName(userName);
+        req.setCode("ITMS_ADD");
+        req.setParams(params);
         ResultVO inventoryChange = resourceInstService.inventoryChange(req);
         return inventoryChange;
     }
-
+    
 }

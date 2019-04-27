@@ -325,7 +325,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         log.info("ResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 要入库的串码
-        List<String> putInNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
+        List<String> putInNbrs =  req.getMktResInstNbrs();
         // 一去重
         List<String> existNbrs = resourceInstCheckService.qryEnableInsertNbr(req);
         putInNbrs.removeAll(existNbrs);
@@ -402,13 +402,11 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         log.info("ResourceInstServiceImpl.addResourceInstForTransaction req={}", JSON.toJSONString(req));
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 要入库的串码
-        List<String> putInNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
-        // 串码已经存在
-        List<String> mktResInstNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
+        List<String> putInNbrs =  req.getMktResInstNbrs();
         // 一去重
         List<String> existNbrs = resourceInstCheckService.qryEnableInsertNbr(req);
-        mktResInstNbrs.removeAll(existNbrs);
-        if(CollectionUtils.isEmpty(mktResInstNbrs)){
+        putInNbrs.removeAll(existNbrs);
+        if(CollectionUtils.isEmpty(putInNbrs)){
             return ResultVO.error("全部是重复串码");
         }
         String batchId = resourceInstManager.getPrimaryKey();

@@ -36,10 +36,11 @@ public interface AdminResourceInstService {
     ResultVO updateResourceInstByIds(AdminResourceInstDelReq req);
 
     /**
-     * 管理员补录串码状态
+     * 补录串码状态
      *
      * @param req
      * @return
      */
     ResultVO inventoryChange(InventoryChangeReq req);
+
 }

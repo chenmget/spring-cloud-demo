@@ -21,10 +21,7 @@ import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.dto.req.HistoryPurchaseQueryExistReq;
 import com.iwhalecloud.retail.promo.service.HistoryPurchaseService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstLogService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
+import com.iwhalecloud.retail.warehouse.busiservice.*;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
@@ -107,6 +104,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
 
     @Autowired
     private ResourceInstLogService resourceInstLogService;
+
+    @Autowired
+    private ResourceInstCheckService resourceInstCheckService;
 
     @Override
     public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req) {
@@ -320,14 +320,14 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 要入库的串码
         List<String> putInNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
         // 一去重
-        List<String> existNbrs = qryEnableInsertNbr(req);
+        List<String> existNbrs = resourceInstCheckService.qryEnableInsertNbr(req);
         putInNbrs.removeAll(existNbrs);
         if(CollectionUtils.isEmpty(putInNbrs)){
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
@@ -398,7 +398,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
-    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
+    @Transactional(isolation= Isolation.REPEATABLE_READ,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
     public ResultVO<ResourceInstAddResp> addResourceInstForTransaction(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInstForTransaction req={}", JSON.toJSONString(req));
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
@@ -407,7 +407,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         // 串码已经存在
         List<String> mktResInstNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
         // 一去重
-        List<String> existNbrs = qryEnableInsertNbr(req);
+        List<String> existNbrs = resourceInstCheckService.qryEnableInsertNbr(req);
         mktResInstNbrs.removeAll(existNbrs);
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("全部是重复串码");
@@ -456,49 +456,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         return ResultVO.success("串码入库完成", resourceInstAddResp);
     }
 
-    /**
-     * 查询串码状态，过滤出可以入库的串码
-     * @param req
-     * @return
-     */
-    private List<String> qryEnableInsertNbr(ResourceInstAddReq req){
-        List<String> existNbrs = new ArrayList<>();
-        ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
-        productGetByIdReq.setProductId(req.getMktResId());
-        ResultVO<ProductResp> producttVO = productService.getProduct(productGetByIdReq);
-        log.info("ResourceInstServiceImpl.qryEnableInsertNbr productService.getProduct mktResId={} resp={}", req.getMktResId(), JSON.toJSONString(producttVO));
-        String typeId = "";
-        if (producttVO.isSuccess() && null != producttVO.getResultData()) {
-            typeId = producttVO.getResultData().getTypeId();
-            req.setTypeId(typeId);
-        }
-        // 一去重：串码存在且状态可用不再导入
-        ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
-        List<String> mktResInstNbrs = Lists.newArrayList(req.getMktResInstNbrs());
-        resourceInstsGetReq.setMktResInstNbrs(mktResInstNbrs);
-        List<String> merchantTypes = null;
-        if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(req.getMerchantType())) {
-            // 厂商增加：只校验厂商库
-            merchantTypes = Lists.newArrayList(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
-        }else{
-            // 非厂商增加：只校验非厂商库
-            merchantTypes = Lists.newArrayList(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType(),
-                    PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType(),
-                    PartnerConst.MerchantTypeEnum.PARTNER.getType());
-        }
-        resourceInstsGetReq.setMerchantTypes(merchantTypes);
-        resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
-        resourceInstsGetReq.setTypeId(typeId);
-        List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
-        log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
-        if (CollectionUtils.isNotEmpty(inst)) {
-            // 作废的串码可以重现导入,把作废的串码去除
-            inst = inst.stream().filter(t -> !ResourceConst.STATUSCD.DELETED.getCode().equals(t.getStatusCd())).collect(Collectors.toList());
-            List<String> instNbrs = inst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
-            existNbrs = mktResInstNbrs.stream().filter(t -> instNbrs.contains(t)).collect(Collectors.toList());
-        }
-        return existNbrs;
-    }
 
     /**
      * 通过品牌等查询出产品id

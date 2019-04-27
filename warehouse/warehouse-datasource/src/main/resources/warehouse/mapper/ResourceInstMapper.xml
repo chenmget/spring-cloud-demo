@@ -121,6 +121,9 @@
                 #{item}
             </foreach>
         </if>
+        <if test="null!=typeId and ''!=typeId">
+            and t.type_id = #{typeId}
+        </if>
     </update>
 
     <update id="updateResourceInstByIds" parameterType="com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq">

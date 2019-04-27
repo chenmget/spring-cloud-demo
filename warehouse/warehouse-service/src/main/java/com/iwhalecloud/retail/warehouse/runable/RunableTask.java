@@ -5,24 +5,28 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempDelReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.entity.ResouceUploadTemp;
+import com.iwhalecloud.retail.warehouse.entity.ResourceReqDetail;
+import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
+import com.iwhalecloud.retail.warehouse.manager.ResourceReqItemManager;
+import com.iwhalecloud.retail.warehouse.manager.ResourceRequestManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by fadeaway on 2019/4/24.
@@ -30,6 +34,9 @@ import java.util.concurrent.*;
 @Component
 @Slf4j
 public class RunableTask {
+
+    @Autowired
+    private ResourceInstCheckService resourceInstCheckService;
 
     @Autowired
     private ResourceInstService resourceInstService;
@@ -52,9 +59,18 @@ public class RunableTask {
 
     private Future<Boolean> addNbrFutureTask;
 
-    private Future<String> addRequestFutureTask;
+    private Future<Boolean> addReqDetailtFutureTask;
 
     private Future<Integer> delNbrFutureTask;
+
+    @Autowired
+    private ResourceRequestManager requestManager;
+
+    @Autowired
+    private ResourceReqItemManager itemManager;
+
+    @Autowired
+    private ResourceReqDetailManager detailManager;
 
     public void initExecutorService() {
         if (null == executorService) {
@@ -82,7 +98,7 @@ public class RunableTask {
                              @Override
                              public Boolean call() throws Exception {
                                  Date now = new Date();
-                                 List<String> exitstNbr = resourceInstService.vaildOwnStore(req);
+                                 List<String> exitstNbr = resourceInstCheckService.vaildOwnStore(req);
                                  List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
                                  for (String mktResInstNbr : exitstNbr) {
                                      ResouceUploadTemp inst = new ResouceUploadTemp();
@@ -141,7 +157,7 @@ public class RunableTask {
         initExecutorService();
         List<String> nbrList = req.getMktResInstNbrList();
         Integer perNum = 200;
-        Integer excutorNum = nbrList.size()/perNum == 0 ? 1 : nbrList.size()/perNum;
+        Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
         ExecutorService executorService = new ThreadPoolExecutor(15, Integer.MAX_VALUE, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
         for (Integer i = 0; i < excutorNum; i++) {
@@ -167,9 +183,7 @@ public class RunableTask {
         initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
         Integer perNum = 200;
-        Integer excutorNum = req.getMktResInstNbrs().size()/perNum == 0 ? 1 : req.getMktResInstNbrs().size()/perNum;
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
-        ExecutorService executorService = new ThreadPoolExecutor(15, Integer.MAX_VALUE, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
+        Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         for (Integer i = 0; i < excutorNum; i++) {
             List newList = nbrList.subList(perNum*i,perNum*(i+1));
             req.setMktResInstNbrs(newList);
@@ -180,7 +194,6 @@ public class RunableTask {
                     log.info("RunableTask.exceutorAddNbr resourceInstService.addResourceInstByMerchant req={}, resp={}", JSON.toJSONString(req), addSuccess);
                     return addSuccess;
                 }
-
             });
         }
         executorService.shutdown();
@@ -188,32 +201,101 @@ public class RunableTask {
 
     /**
      * 申请单详情插入多线程处理
-     * @param req
+     * @param list
      */
-    public void exceutorAddReqDetail(ResourceRequestAddReq req) {
+    public void exceutorAddReqDetail(List<ResourceRequestAddReq.ResourceRequestInst> list, String itemId, String createStaff, String chngType) {
         initExecutorService();
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
-        ExecutorService executorService = new ThreadPoolExecutor(15, Integer.MAX_VALUE, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
-        addRequestFutureTask = executorService.submit(new Callable<String>() {
-                             @Override
-                             public String call() throws Exception {
-                                 String mktReqId = "";
-                                 ResultVO<String> resultVO = requestService.insertResourceRequest(req);
-                                 if (resultVO.isSuccess()) {
-                                     mktReqId = resultVO.getResultData();
-                                 }
-                                 log.info("RunableTask.exceutorAddReqDetail requestService.insertResourceRequest req={}, resp={}", JSON.toJSONString(req), mktReqId);
-                                 return mktReqId;
-                             }
-                         }
-        );
+        //营销资源申请单明细
+        Integer perNum = 200;
+        Integer excutorNum = list.size()%perNum == 0 ? list.size()/perNum : (list.size()/perNum + 1);
+        List<ResourceReqDetail> detailList = new ArrayList<ResourceReqDetail>(list.size());
+        for (Integer i = 0; i < excutorNum; i++){
+            Integer maxNum = perNum * (i + 1) > list.size() ? list.size() : perNum * (i + 1);
+            List<ResourceRequestAddReq.ResourceRequestInst> newList = list.subList(perNum * i, maxNum);
+            addReqDetailtFutureTask = executorService.submit(new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    for(ResourceRequestAddReq.ResourceRequestInst instDTO : newList){
+                        Date now = new Date();
+                        ResourceReqDetail detailReq = new ResourceReqDetail();
+                        detailReq.setMktResInstId(instDTO.getMktResInstId());
+                        detailReq.setMktResReqItemId(itemId);
+                        detailReq.setMktResInstNbr(instDTO.getMktResInstNbr());
+                        detailReq.setQuantity(Long.valueOf(ResourceConst.CONSTANT_YES));
+                        detailReq.setCreateStaff(createStaff);
+                        detailReq.setChngType(chngType);
+                        detailReq.setUnit("个");
+                        detailReq.setRemark("库存管理");
+                        detailReq.setIsInspection(instDTO.getIsInspection());
+                        detailReq.setCtCode(instDTO.getCtCode());
+                        detailReq.setCreateDate(now);
+                        detailReq.setStatusDate(now);
+                        detailReq.setStatusCd(ResourceConst.PUT_IN_STOAGE);
+                        detailList.add(detailReq);
+                    }
+                    Boolean addReqDetail = detailManager.saveBatch(detailList);
+                    log.info("RunableTask.exceutorAddReqDetail detailManager.insertResourceReqDetail req={}, resp={}",JSON.toJSONString(detailList), addReqDetail);
+                    return addReqDetail;
+                }
+            });
+        }
         executorService.shutdown();
     }
 
 
-
+    public String excuetorAddReq(ResourceRequestAddReq req){
+        try{
+            Future<String> addReqtFutureTask = executorService.submit(new Callable<String>() {
+                @Override
+                public String call() throws Exception {
+                    String mktResReqId = requestManager.insertResourceRequest(req);
+                    log.info("RunableTask.excuetorAddReq requestManager.insertResourceRequest req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(mktResReqId));
+                    List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = req.getInstList();
+                    Map<String, List<ResourceRequestAddReq.ResourceRequestInst>> map = instDTOList.stream().collect(Collectors.groupingBy(ResourceRequestAddReq.ResourceRequestInst::getMktResId));
+                    String itemId = "";
+                    for (Map.Entry<String, List<ResourceRequestAddReq.ResourceRequestInst>> entry : map.entrySet()) {
+                        //新增营销资源申请单项
+                        ResourceReqItemAddReq itemAddReq = new ResourceReqItemAddReq();
+                        BeanUtils.copyProperties(req, itemAddReq);
+                        Integer size = entry.getValue().size();
+                        itemAddReq.setQuantity(Long.valueOf(size));
+                        itemAddReq.setMktResReqId(mktResReqId);
+                        itemAddReq.setMktResId(entry.getKey());
+                        itemAddReq.setRemark("库存管理");
+                        itemId = itemManager.insertResourceReqItem(itemAddReq);
+                        log.info("RunableTask.excuetorAddReq itemManager.insertResourceReqItem req={}, resp={}", JSON.toJSONString(itemAddReq), JSON.toJSONString(itemId));
+                        exceutorAddReqDetail(entry.getValue(), itemId, req.getCreateStaff(), req.getChngType());
+                    }
+                    return mktResReqId;
+                }
+                });
+            executorService.shutdown();
+            return addReqtFutureTask.get();
+        }catch (Exception e){
+            log.error("RunableTask.excuetorAddReq error}", e);
+        }
+        return null;
+    }
 
     public static void main(String[] args) {
+        RunableTask task = new RunableTask();
+        task.initExecutorService();
+        Future<String> future = task.executorService.submit(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                //暂停1s
+                Thread.sleep(10000);
+                List<String> list = Lists.newArrayList("2");
+                int t = 10/3;
+                List<String> newList = list.subList(0, 1);
+                String name = test();
+                System.out.println("main excutor name =====================: "+name);
+                return name;
+            }
+        });
+    }
+
+    public static String test(){
         try {
             //创建大小为10的线程池
             ExecutorService executorService = Executors.newFixedThreadPool(10);
@@ -225,7 +307,7 @@ public class RunableTask {
                     @Override
                     public String call() throws Exception {
                         //暂停1s
-                        Thread.sleep(1000);
+                        Thread.sleep(10);
                         String name = Thread.currentThread().getName();
                         System.out.println("name : "+name);
                         List<String> list = Lists.newArrayList("2");
@@ -236,17 +318,20 @@ public class RunableTask {
                 });
                 list.add(future);
             }
+            String name = "";
             for (Future<String> fut : list) {
                 System.out.println(new Date() + "::" + fut.get());
                 System.out.println("result:" + fut.isDone());
-
+                name = fut.get();
             }
-            //关闭线程池哦
+            //关闭线程池
             executorService.shutdown();
+            return name;
 
         }catch (Exception e){
 
         }
+        return null;
     }
 
 }

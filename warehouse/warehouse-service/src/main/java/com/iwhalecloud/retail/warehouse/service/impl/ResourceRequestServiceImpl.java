@@ -29,7 +29,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -76,7 +75,6 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
     private ResouceStoreObjRelManager resouceStoreObjRelManager;
 
     @Override
-    @Async
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
     public ResultVO<String> insertResourceRequest(ResourceRequestAddReq req) {
         if(CollectionUtils.isEmpty(req.getInstList())){

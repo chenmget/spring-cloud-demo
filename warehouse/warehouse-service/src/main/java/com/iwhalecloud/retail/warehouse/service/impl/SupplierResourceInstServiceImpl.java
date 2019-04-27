@@ -8,18 +8,24 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.dto.req.MerChantGetProductReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstLogService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
-import com.iwhalecloud.retail.warehouse.dto.*;
+import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
@@ -108,6 +114,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     @Autowired
     private ResourceInstLogService resourceInstLogService;
 
+    @Autowired
+    private ResourceInstCheckService resourceInstCheckService;
+
 
     @Override
     public ResultVO addResourceInst(ResourceInstAddReq req) {
@@ -155,14 +164,14 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
-        List<String> existNbrs = resourceInstService.vaildOwnStore(resourceInstValidReq);
+        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq);
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         resourceInstAddResp.setExistNbrs(existNbrs);
         mktResInstNbrs.removeAll(existNbrs);
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
-        List<ResourceInstDTO> merchantInst = resourceInstService.validMerchantStore(resourceInstValidReq);
+        List<ResourceInstDTO> merchantInst = resourceInstCheckService.validMerchantStore(resourceInstValidReq);
         if(CollectionUtils.isEmpty(merchantInst)){
             return ResultVO.error("厂商库该机型串码不存在！");
         }
@@ -190,6 +199,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                 ResourceConst.STATUSCD.RESTORAGED.getCode(),
                 ResourceConst.STATUSCD.DELETED.getCode()));
         resourceInstUpdateReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
+        resourceInstUpdateReq.setTypeId(req.getTypeId());
         ResultVO updateResourceresultVO = resourceInstService.updateResourceInst(resourceInstUpdateReq);
         if (!updateResourceresultVO.isSuccess()) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), updateResourceresultVO.getResultMsg());
@@ -434,8 +444,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resouceStoreService.getStoreId req={},destStoreId={}", JSON.toJSONString(storePageReq), JSON.toJSONString(destStoreId));
 
         List<String> mktResInstNbrs = new ArrayList<>();
+        String productId = null;
         for (DeliveryResourceInstItem item : req.getDeliveryResourceInstItemList()) {
             mktResInstNbrs.addAll(item.getMktResInstNbrs());
+            productId = item.getProductId();
         }
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
         resourceInstUpdateReq.setMktResInstNbrs(mktResInstNbrs);
@@ -447,6 +459,14 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         resourceInstUpdateReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
         resourceInstUpdateReq.setObjId(req.getOrderId());
         resourceInstUpdateReq.setMerchantId(req.getSellerMerchantId());
+        if (StringUtils.isNotBlank(productId)) {
+            ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+            productGetByIdReq.setProductId(productId);
+            ResultVO<ProductResp> respResultVO = productService.getProduct(productGetByIdReq);
+            if (respResultVO.isSuccess() && null != respResultVO.getResultData()) {
+                resourceInstUpdateReq.setTypeId(respResultVO.getResultData().getTypeId());
+            }
+        }
         ResultVO delRS = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
         log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resourceInstService.delResourceInst req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(delRS));
 

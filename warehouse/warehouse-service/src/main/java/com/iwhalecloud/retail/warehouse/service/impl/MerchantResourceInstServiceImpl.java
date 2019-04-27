@@ -164,8 +164,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         resourceRequestAddReq.setRegionId(merchantDTOResultVO.getResultData().getCity());
         resourceRequestAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceRequestAddReq.setDestStoreId(mktResStoreId);
-        ResultVO<String> resultVO = requestService.insertResourceRequest(resourceRequestAddReq);
-        log.info("MerchantResourceInstServiceImpl.addResourceInst requestService.insertResourceRequest req={}, resultVO={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVO));
+        String mktResReqId = runableTask.excuetorAddReq(resourceRequestAddReq);
+        log.info("MerchantResourceInstServiceImpl.addResourceInst requestService.insertResourceRequest req={}, resp={}", JSON.toJSONString(resourceRequestAddReq), mktResReqId);
         // step3 启动工作流
         ProcessStartReq processStartDTO = new ProcessStartReq();
         processStartDTO.setTitle("串码入库审批流程");
@@ -173,9 +173,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         processStartDTO.setProcessId(ResourceConst.ADD_NBR_WORK_FLOW_INST);
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1020.getTaskSubType());
         processStartDTO.setApplyUserName(req.getApplyUserName());
-        if (resultVO != null && resultVO.getResultData() != null) {
-            processStartDTO.setFormId(resultVO.getResultData());
-        }
+        processStartDTO.setFormId(mktResReqId);
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("MerchantResourceInstServiceImpl.addResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
         if (null != startResultVO && !startResultVO.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {

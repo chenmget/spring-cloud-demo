@@ -1,48 +1,37 @@
 project:
-  name: 本地环境
+  name: 开发环境
 
 server:
-  port: 8083
+  port: 8082
 
 spring:
   dubbo:
     application:
       name: order-consumer
     registry:
-      address: zookeeper://127.0.0.1:2181
-#      address: zookeeper://134.160.170.208:2181
+      address: zookeeper://10.45.47.90:2121
+    #      address: zookeeper://localhost:2181
     protocol:
       name: dubbo
       port: 20880
-#      port: 21580
     scan: com.iwhalecloud.retail
-
   redis:
-#    database: 0
-#    host: 127.0.0.1
-#    port: 6379
-    cluster:
-      nodes: 10.45.47.129:7021,10.45.47.129:7022,10.45.47.129:7023,10.45.47.129:7024,10.45.47.129:7025,10.45.47.129:7026
-      timeout: 10000
-      max-redirects: 3
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    clusterNodes: 10.45.47.129:7021,10.45.47.129:7022,10.45.47.129:7023,10.45.47.129:7024,10.45.47.129:7025,10.45.47.129:7026
     expireSeconds: 120
     commandTimeout: 10000  #redis操作的超时时间
-    pool:
-      max-active: 600
-      max-idle: 300
-      max-wait: 1000
-      min-idle: 5
-#    password:
-  #spring-session
-  session:
-    store-type: HASH_MAP
-    timeout: PT30M  #30分钟
-
+  pool:
+    max-active: 600
+    max-idle: 300
+    max-wait: 1000
+    min-idle: 5
   http:
-    multipart:
-      enabled: true
-      max-file-size: 5MB
-      max-request-size: 10MB
+      multipart:
+        enabled: true
+        max-file-size: 5MB
+        max-request-size: 10MB
 
 wechat:
   mp:
@@ -51,7 +40,6 @@ wechat:
     token: iwhalecloud
     aesKey: 1CLJdwSqEoIS9Ym7HucEGdgsTbZ9m5hKdCQTEUAKKih
     notifyServer: https://gy.ztesoft.com
-
 
 pay:
   key: 113309875849
@@ -85,7 +73,8 @@ zop:
   url: thisisurl
   timeout: 3000
 
+#jwt
 jwt:
-    secret: A5-!^!.X3K
-    #  token有效时间（分钟）
-    expiresAt: 120
+  secret: A5-!^!.X3K
+  #  token有效时间（分钟）
+  expiresAt: 120

@@ -28,6 +28,7 @@ import com.iwhalecloud.retail.web.controller.system.request.EditUserReq;
 import com.iwhalecloud.retail.web.controller.system.response.GetUserDetailResp;
 import com.iwhalecloud.retail.web.controller.system.response.LoginResp;
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
+import com.iwhalecloud.retail.web.exception.UserNotLoginException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import com.iwhalecloud.retail.web.utils.AESUtils;
 import com.iwhalecloud.retail.web.utils.JWTTokenUtil;
@@ -436,17 +437,22 @@ public class UserController extends BaseController {
 //            if(!selfToken.equals(MD5Util.compute("id="+id+"&sessionId="+sessionId+"&secret="+SECRET+"&exp="+String.valueOf(exp)+"&iat="+String.valueOf(iat)))){
                 return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
             }
+
+            // 验证 token 有效时间
+            if (JWTTokenUtil.isTokenEffect(sessionId)) {
+                // 有效  更新token有效时间
+                if (!JWTTokenUtil.updateTokenExpireTime(sessionId)) {
+                    log.info("更新token 有效时间 失败");
+                }
+            } else {
+                log.info("token失效，请重新登录");
+                throw new UserNotLoginException("token失效，请重新登录");
+            }
         } catch (Exception ex) {
             log.error("MemberController.getMemberToken Exception token="+token,ex);
             return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
         }
-        // 验证token
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
-        try {
-            jwtVerifier.verify(token);
-        } catch (JWTVerificationException e) {
-            return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
-        }
+
         return ResultVO.success(id);
     }
 

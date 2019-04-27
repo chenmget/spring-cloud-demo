@@ -320,7 +320,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
-    @Transactional(isolation = Isolation.REPEATABLE_READ, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
@@ -368,7 +368,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 resourceInst.setCtCode(req.getCtCode().get(mktResInstNbr));
             }
             resourceInst.setCreateDate(now);
-            resourceInst.setCreateTime(now);
             resourceInst.setSourceType(req.getSourceType());
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             resourceInsts.add(resourceInst);
@@ -398,7 +397,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
-    @Transactional(isolation= Isolation.REPEATABLE_READ,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
+    @Transactional(isolation= Isolation.SERIALIZABLE,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
     public ResultVO<ResourceInstAddResp> addResourceInstForTransaction(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInstForTransaction req={}", JSON.toJSONString(req));
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();

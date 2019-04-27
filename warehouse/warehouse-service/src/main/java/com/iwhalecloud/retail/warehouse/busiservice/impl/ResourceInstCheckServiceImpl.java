@@ -38,7 +38,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
 
     @Override
-    @Transactional(isolation= Isolation.REPEATABLE_READ,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
+    @Transactional(isolation= Isolation.SERIALIZABLE,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public List<String> qryEnableInsertNbr(ResourceInstAddReq req){
         List<String> existNbrs = new ArrayList<>();
         ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();

@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.dubbo;
 
 import java.util.List;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
@@ -37,10 +38,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Autowired
     private PurApplyManager purApplyManager;
 
-	@Autowired
+	@Reference
     private TaskService taskService;
 
-	@Autowired
+	@Reference
     private UserService userService;
 	
 	@Override

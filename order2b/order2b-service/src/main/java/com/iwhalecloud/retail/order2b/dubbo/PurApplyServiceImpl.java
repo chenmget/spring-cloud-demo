@@ -37,11 +37,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Autowired
     private PurApplyManager purApplyManager;
-	@Reference
-    private TaskService taskService;
-
-	@Reference
-    private UserService userService;
+//	@Reference
+//    private TaskService taskService;
+//
+//	@Reference
+//    private UserService userService;
 
 	
 	@Override

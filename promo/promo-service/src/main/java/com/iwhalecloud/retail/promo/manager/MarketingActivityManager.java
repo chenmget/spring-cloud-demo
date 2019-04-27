@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
 import com.iwhalecloud.retail.promo.dto.resp.AdvanceActivityProductInfoResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
+import com.iwhalecloud.retail.promo.entity.Promotion;
 import com.iwhalecloud.retail.promo.mapper.ActivityProductMapper;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.promo.entity.MarketingActivity;
@@ -240,6 +241,7 @@ public class MarketingActivityManager{
         //大于等于 >=
         queryWrapper.apply(MarketingActivity.FieldNames.endTime.getTableFieldName() + " >= now()");
         queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(),PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+        queryWrapper.eq(MarketingActivity.FieldNames.status.getTableFieldName(),PromoConst.STATUSCD.STATUS_CD_20.getCode());
 
         return marketingActivityMapper.selectList(queryWrapper);
     }

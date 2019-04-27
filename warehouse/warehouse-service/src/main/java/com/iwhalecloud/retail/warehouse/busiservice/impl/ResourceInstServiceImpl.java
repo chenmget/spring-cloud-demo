@@ -321,7 +321,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
 
     @Override
     @Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req) {
+    public synchronized ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 要入库的串码
@@ -398,7 +398,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
 
     @Override
     @Transactional(isolation= Isolation.SERIALIZABLE,propagation= Propagation.REQUIRES_NEW,rollbackFor=Exception.class)
-    public ResultVO<ResourceInstAddResp> addResourceInstForTransaction(ResourceInstAddReq req) {
+    public synchronized ResultVO<ResourceInstAddResp> addResourceInstForTransaction(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInstForTransaction req={}", JSON.toJSONString(req));
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 要入库的串码

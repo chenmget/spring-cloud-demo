@@ -37,11 +37,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Autowired
     private PurApplyManager purApplyManager;
 
-	@Autowired
-    private TaskService taskService;
-
-	@Autowired
-    private UserService userService;
+//	@Autowired
+//    private TaskService taskService;
+//
+//	@Autowired
+//    private UserService userService;
 	
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
@@ -53,30 +53,30 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
 		purApplyManager.tcProcureApply(req);
-		//启动流程
-		ProcessStartReq processStartDTO = new ProcessStartReq();
-		processStartDTO.setTitle("通知公告审核流程");
-		processStartDTO.setFormId(req.getApplyId());
-		processStartDTO.setProcessId(PurApplyConsts.PURAPPLY_AUDIT_PROCESS_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3020.getTaskSubType());
-		processStartDTO.setApplyUserId(req.getCreateStaff());
-		//根据用户id查询名称
-		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
-		String userName = "";
-		if (userDetailDTO.isSuccess()) {
-			userName = userDetailDTO.getResultData().getUserName();
-		}
-		processStartDTO.setApplyUserName(userName);
-		ResultVO resultVO = new ResultVO();
-		try {
-			resultVO = taskService.startProcess(processStartDTO);
-		} catch (Exception e) {
-			log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
-			return ResultVO.error();
-		} finally {
-			log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
-					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
-		}
+//		//启动流程
+//		ProcessStartReq processStartDTO = new ProcessStartReq();
+//		processStartDTO.setTitle("通知公告审核流程");
+//		processStartDTO.setFormId(req.getApplyId());
+//		processStartDTO.setProcessId(PurApplyConsts.PURAPPLY_AUDIT_PROCESS_ID);
+//		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3020.getTaskSubType());
+//		processStartDTO.setApplyUserId(req.getCreateStaff());
+//		//根据用户id查询名称
+//		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
+//		String userName = "";
+//		if (userDetailDTO.isSuccess()) {
+//			userName = userDetailDTO.getResultData().getUserName();
+//		}
+//		processStartDTO.setApplyUserName(userName);
+//		ResultVO resultVO = new ResultVO();
+//		try {
+//			resultVO = taskService.startProcess(processStartDTO);
+//		} catch (Exception e) {
+//			log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
+//			return ResultVO.error();
+//		} finally {
+//			log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
+//					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
+//		}
 		return ResultVO.successMessage("新增采购申请单成功");
 	}
 	

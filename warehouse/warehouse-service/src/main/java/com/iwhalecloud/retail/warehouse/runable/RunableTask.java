@@ -139,7 +139,7 @@ public class RunableTask {
     public Boolean validHasDone() {
         Boolean hasDone = true;
         if (CollectionUtils.isEmpty(validFutureTaskResult)) {
-            return false;
+            return hasDone;
         }
         for (Future<Boolean> future : validFutureTaskResult) {
             if (!future.isDone()) {

@@ -116,7 +116,7 @@
 	) values (
 		#{req.applyItemId},
 		#{req.applyId},
-		#{req.productName},
+		#{req.productId},
 		#{req.snCount},
 		#{req.priceInStore},
 		#{req.purchaseType},
@@ -224,7 +224,7 @@
 			d.TYPE_ID
 			FROM	
 				(SELECT 
-				a.PRODUCT_ID,
+				a.PRODUCT_ID AS productId,
 				a.APPLY_ID AS applyId,
 				a.APPLY_ITEM_ID AS applyItemId,
 				a.STATUS_CD AS statusCd,

@@ -23,6 +23,8 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 
 	public Page<PurApplyResp> cgSearchApply(Page<PurApplyResp> page,@Param("req") PurApplyReq purApplyReq) ;
 	
+	public Page<PurApplyResp> cgSearchApplyLan(Page<PurApplyResp> page,@Param("req") PurApplyReq purApplyReq) ;
+
 	public void tcProcureApply(@Param("req") ProcureApplyReq procureApplyReq);
 	
 	public void crPurApplyFile(@Param("req") AddFileReq procureApplyReq);

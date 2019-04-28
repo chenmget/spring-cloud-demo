@@ -32,6 +32,12 @@ public class PurApplyManager {
 		Page<PurApplyResp> pageReport =purApplyMapper.cgSearchApply(page,req);
 		return pageReport;
 	}
+	
+	public Page<PurApplyResp> cgSearchApplyLan(PurApplyReq req) {
+		Page<PurApplyResp> page=new Page<>(req.getPageNo(),req.getPageSize());
+		Page<PurApplyResp> pageReport =purApplyMapper.cgSearchApplyLan(page,req);
+		return pageReport;
+	}
 
 	public void tcProcureApply(ProcureApplyReq req){
 		purApplyMapper.tcProcureApply(req);

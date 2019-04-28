@@ -49,6 +49,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApply(req);
 		return ResultVO.success(purApplyResp);
 	}
+	
+	@Override
+	public ResultVO<Page<PurApplyResp>> cgSearchApplyLan(PurApplyReq req) {
+		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApplyLan(req);
+		return ResultVO.success(purApplyResp);
+	}
 
 	@Override
 	@Transactional

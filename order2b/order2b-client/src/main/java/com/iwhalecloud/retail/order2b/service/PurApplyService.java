@@ -24,6 +24,8 @@ public interface PurApplyService {
 
 	//查询采购申请单
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req);
+	//查询采购申请单地市管理员
+	public ResultVO<Page<PurApplyResp>> cgSearchApplyLan(PurApplyReq req);
 	//获取登录用户是地市管理员还是省级管理员
 	public PriCityManagerResp getLoginInfo(String userId);
 	//采购申请的添加产商品的写表

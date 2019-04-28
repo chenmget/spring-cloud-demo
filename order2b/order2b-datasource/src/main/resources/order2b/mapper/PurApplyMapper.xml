@@ -37,6 +37,39 @@
 		
   </select>
   
+  <select id="cgSearchApplyLan" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+            resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">
+		SELECT 
+			a.APPLY_ID AS applyId,
+			a.APPLY_CODE AS applyCode,
+			a.APPLY_NAME AS projectName,
+			a.CREATE_DATE AS applyTime,
+			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
+			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
+			a.STATUS_CD AS STATUS,
+			'' AS `option`
+			 FROM PUR_APPLY a
+			 WHERE 1=1
+			 and a.STATUS_CD != '1100'
+            and a.LAN_ID = #{req.lanId}
+		<if test='req.applyCode!=null and req.applyCode!=""'>  
+			and a.APPLY_CODE = #{req.applyCode} 
+		</if>
+		<if test='req.applyType!=null and req.applyType!=""'>  
+			and a.APPLY_TYPE = #{req.applyType} 
+		</if>
+		<if test='req.projectName!=null and req.projectName!=""'>  
+			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.projectName}),'%')	
+		</if>
+		<if test='req.startDate!=null and req.startDate!=""'>
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
+		</if>
+		<if test='req.endDate!=null and req.endDate!=""'>
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
+		</if>
+		
+  </select>
+  
   <select id="crPurApplyFile" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq">
 	insert into PUR_APPLY_FILE(
 		FILE_ID,

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
@@ -75,7 +76,9 @@ public class CgSearchApplyController extends BaseController {
 		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userType = "+userType);
 		if("2".equals(userType) || "2" == userType){//地市管理员
 			req.setLanId(lanId);
+			return purApplyService.cgSearchApplyLan(req);
 		}
+		
 		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
 		return purApplyService.cgSearchApply(req);
     }
@@ -89,6 +92,7 @@ public class CgSearchApplyController extends BaseController {
 	@UserLoginToken
     public ResultVO<ApplyHeadResp> tcProcureApplybefore() {
 		UserDTO user = UserContext.getUser();
+		log.info("*********************提出申请需要生成的参数。。。。。。。。。。。。。"+JSON.toJSON(user));
 //		UserDTO user = new UserDTO();
 //		user.setRelCode("CS00011001");
 //		user.setUserName("深圳市金立通信设备有限公司");
@@ -125,7 +129,7 @@ public class CgSearchApplyController extends BaseController {
     @PostMapping("/tcProcureApply")
 	@UserLoginToken
     public ResultVO tcProcureApply(@RequestBody ProcureApplyReq req) {
-		String isSave = req.getIsSave();
+//		String isSave = req.getIsSave();
 		String statusCd = "10";
 		Date date = new Date();
 		String updateStaff =UserContext.getUserId();
@@ -134,7 +138,7 @@ public class CgSearchApplyController extends BaseController {
 		String statusDate = date.toLocaleString();
 		//情况一，默认是保存,状态就是10，待提交
 		//情况二，如果是提交，状态就是20，待审核(分表里面是否有记录)
-		if("2".equals(isSave)){
+//		if("2".equals(isSave)){
 			String applyId = req.getApplyId();
 			int isHaveSave = purApplyService.isHaveSave(applyId);
 			if(isHaveSave != 0){//表里面有记录的话
@@ -147,7 +151,7 @@ public class CgSearchApplyController extends BaseController {
 				return ResultVO.success();
 			}
 			statusCd = "20";
-		}
+//		}
 		String createStaff = UserContext.getUserId();
 //		String createStaff = "1";
 		

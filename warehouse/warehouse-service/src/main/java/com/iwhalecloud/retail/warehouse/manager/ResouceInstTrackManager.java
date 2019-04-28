@@ -39,4 +39,14 @@ public class ResouceInstTrackManager{
     public ResouceInstTrackDTO getResourceInstTrackByNbrAndMerchantId(String nbr, String merchantId){
         return resouceInstTrackMapper.getResourceInstTrackByNbrAndMerchantId(nbr, merchantId);
     }
+
+    /**
+     * 通过串码查询仓库id
+     * @param nbr
+     * @return
+     */
+    public String getStoreIdByNbr(String nbr){
+        return resouceInstTrackMapper.getStoreIdByNbr(nbr);
+    }
+
 }

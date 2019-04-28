@@ -1,8 +1,10 @@
 package com.iwhalecloud.retail.warehouse.service.impl;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -12,6 +14,7 @@ import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackManager;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import lombok.extern.slf4j.Slf4j;
@@ -34,10 +37,18 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
 
     @Autowired
     private Constant constant;
+    @Autowired
+    private ResouceInstTrackManager resouceInstTrackManager;
 
     @Override
     public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req) {
         log.info("MerchantResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
+        if (CollectionUtils.isEmpty(req.getMktResStoreIds())) {
+            String mktResInstNbr = req.getMktResInstNbr();
+            String mktResStoreId = resouceInstTrackManager.getStoreIdByNbr(mktResInstNbr);
+            log.info("MerchantResourceInstServiceImpl.getResourceInstList resouceInstTrackManager.getStoreIdByNbr mktResInstNbr={}, mktResStoreId={}", mktResInstNbr, mktResStoreId);
+            req.setMktResStoreIds(Lists.newArrayList(mktResStoreId));
+        }
         return resourceInstService.getResourceInstList(req);
     }
 

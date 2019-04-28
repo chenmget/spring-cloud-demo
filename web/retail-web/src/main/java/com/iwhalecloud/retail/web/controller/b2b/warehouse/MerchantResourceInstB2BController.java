@@ -60,10 +60,10 @@ public class MerchantResourceInstB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="getResourceInstList")
-    @UserLoginToken
+//    @UserLoginToken
     public ResultVO<Page<ResourceInstListResp>> getResourceInstList(@RequestBody ResourceInstListReq req) {
-        if (StringUtils.isEmpty(req.getMktResStoreIds())) {
-            return ResultVO.error("仓库为空");
+        if (StringUtils.isEmpty(req.getMktResStoreIds()) && null == req.getMktResInstNbr()) {
+            return ResultVO.error("仓库和串码不能同时为空");
         }
         return resourceInstService.getResourceInstList(req);
     }

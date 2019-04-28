@@ -1046,9 +1046,14 @@ public class GoodsServiceImpl implements GoodsService {
             merchantListReq.setMerchantName(req.getSupplierName());
             ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchant(merchantListReq);
             if(listResultVO.isSuccess() && null!=listResultVO.getResultData()){
-                String supplierId = listResultVO.getResultData().get(0).getMerchantId();
-                if(StringUtils.isNotEmpty(supplierId)){
-                    req.setSupplierId(supplierId);
+                if(null != listResultVO.getResultData().get(0)){
+                    String supplierId = listResultVO.getResultData().get(0).getMerchantId();
+                    if(StringUtils.isNotEmpty(supplierId)){
+                        req.setSupplierId(supplierId);
+                    }
+                }else{
+                    Page<GoodsPageResp> pageRespPage = new Page<GoodsPageResp>();
+                    return ResultVO.success(pageRespPage);
                 }
             }
         }

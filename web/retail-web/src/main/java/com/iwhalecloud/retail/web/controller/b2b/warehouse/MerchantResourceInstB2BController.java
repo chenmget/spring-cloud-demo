@@ -109,7 +109,6 @@ public class MerchantResourceInstB2BController {
         req.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         req.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
-        req.setMktResInstType(ResourceConst.MKTResInstType.NONTRANSACTION.getCode());
         BeanUtils.copyProperties(dto, req);
         req.setMerchantId(UserContext.getMerchantId());
         return resourceInstService.addResourceInst(req);

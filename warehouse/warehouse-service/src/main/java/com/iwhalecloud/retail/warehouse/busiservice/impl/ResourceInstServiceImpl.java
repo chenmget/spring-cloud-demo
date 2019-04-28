@@ -362,6 +362,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInst.setMktResInstId(resourceInstManager.getPrimaryKey());
             resourceInst.setMktResInstNbr(mktResInstNbr);
             resourceInst.setMktResBatchId(batchId);
+            if (StringUtils.isEmpty(req.getMktResInstType())) {
+                req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
+            }
             // 目标仓库是串码所属人的仓库
             resourceInst.setMktResStoreId(req.getDestStoreId());
             if (null != req.getCtCode()) {
@@ -696,7 +699,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 t.setMktResBatchId(batchId);
                 t.setMktResStoreId(req.getDestStoreId());
                 t.setStorageType(req.getStorageType());
-                t.setMktResInstType(ResourceConst.MKTResInstType.NONTRANSACTION.getCode());
+                t.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
                 t.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
                 t.setCreateStaff("1");
                 resourceInsts.add(t);

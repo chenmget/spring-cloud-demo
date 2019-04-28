@@ -344,11 +344,13 @@ public class ResourceConst {
      */
     public enum MKTResInstType {
         // 交易
-        TRANSACTION("1","交易"),
+        TRANSACTION("1","社采"),
         // 非交易
-        NONTRANSACTION("2","非交易"),
+        NONTRANSACTION("2","集采"),
         // 备机
-        STANDBYMACHINE("3","备机");
+        STANDBYMACHINE("3","备机"),
+        // 省内代收
+        COLLECTION_BY_PROVINCE("4","省内代收");
 
         private String code;
         private String name;

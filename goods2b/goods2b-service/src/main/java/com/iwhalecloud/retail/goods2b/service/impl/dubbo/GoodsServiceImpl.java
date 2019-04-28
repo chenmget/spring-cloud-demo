@@ -1076,15 +1076,22 @@ public class GoodsServiceImpl implements GoodsService {
             }else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)){
                 List<GoodsTargetRel> goodsTargetRels = goodsTargetManager.queryGoodsTargerRel(resp.getGoodsId());
                 if(CollectionUtils.isNotEmpty(goodsTargetRels)){
-                    List<String> goodsTargetRelLists = new ArrayList<>();
+                    List<String> merchantList = new ArrayList<>();
                     for(GoodsTargetRel goodsTargetRel:goodsTargetRels){
                         if(StringUtils.isEmpty(goodsTargetRel.getTargetId())){
-                            continue;
+                            merchantList.add(goodsTargetRel.getTargetId());
                         }
-                        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(goodsTargetRel.getTargetId());
-                        if (merchantDTOResultVO.isSuccess() && merchantDTOResultVO.getResultData() != null) {
-                            MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
-                            goodsTargetRelLists.add(merchantDTO.getMerchantName());
+                    }
+                    MerchantListReq merchantListReq = new MerchantListReq();
+                    merchantListReq.setMerchantIdList(merchantList);
+                    ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(merchantListReq);
+                    List<String> goodsTargetRelLists = new ArrayList<>();
+                    if (resultVO.isSuccess() && null != resultVO.getResultData()) {
+                        List<MerchantDTO> merchantDTOs = resultVO.getResultData();
+                        if(CollectionUtils.isNotEmpty(merchantDTOs)){
+                            for(MerchantDTO merchantDTO:merchantDTOs){
+                                goodsTargetRelLists.add(merchantDTO.getMerchantName());
+                            }
                         }
                     }
                     resp.setGoodsTargetRels(goodsTargetRelLists);

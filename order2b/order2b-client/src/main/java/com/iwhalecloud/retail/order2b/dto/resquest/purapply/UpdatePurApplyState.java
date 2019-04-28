@@ -15,5 +15,6 @@ public class UpdatePurApplyState extends PageVO implements Serializable {/**
 	private String updateStaff;
 	private String updateDate;
 	private String statusDate;
+	private String statusCd;
 
 }

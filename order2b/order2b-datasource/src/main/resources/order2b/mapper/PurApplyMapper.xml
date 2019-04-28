@@ -260,7 +260,7 @@
   
   <select id="updatePurApply"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState">
 	UPDATE 
-	PUR_APPLY SET status_cd= '20',
+	PUR_APPLY SET status_cd= #{req.statusCd},
 	update_date=#{req.updateDate},
 	update_staff=#{req.updateStaff},
 	status_date=#{req.statusDate} 

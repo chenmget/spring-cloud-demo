@@ -129,8 +129,14 @@ public class CgSearchApplyController extends BaseController {
     @PostMapping("/tcProcureApply")
 	@UserLoginToken
     public ResultVO tcProcureApply(@RequestBody ProcureApplyReq req) {
-//		String isSave = req.getIsSave();
-		String statusCd = "10";
+		String isSave = req.getIsSave();
+		String statusCd = null ;
+		if("1".equals(isSave)){//保存
+			statusCd = "10";
+		}else if("2".equals(isSave)){//提交
+			statusCd = "20";
+		}
+		
 		Date date = new Date();
 		String updateStaff =UserContext.getUserId();
 //		String updateStaff ="1";
@@ -138,7 +144,7 @@ public class CgSearchApplyController extends BaseController {
 		String statusDate = date.toLocaleString();
 		//情况一，默认是保存,状态就是10，待提交
 		//情况二，如果是提交，状态就是20，待审核(分表里面是否有记录)
-//		if("2".equals(isSave)){
+//		
 			String applyId = req.getApplyId();
 			int isHaveSave = purApplyService.isHaveSave(applyId);
 			if(isHaveSave != 0){//表里面有记录的话
@@ -146,12 +152,12 @@ public class CgSearchApplyController extends BaseController {
 				state.setApplyId(applyId);
 				state.setUpdateDate(updateDate);
 				state.setUpdateStaff(updateStaff);
-				state.setStatusDate(statusDate);	
+				state.setStatusDate(statusDate);
+				state.setStatusCd(statusCd);
 				purApplyService.updatePurApply(state);
 				return ResultVO.success();
 			}
-			statusCd = "20";
-//		}
+			
 		String createStaff = UserContext.getUserId();
 //		String createStaff = "1";
 		

@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.warehouse.service.impl;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -192,7 +193,9 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
         ResourceUploadTempDelReq resourceUploadTempDelReq = new ResourceUploadTempDelReq();
-        mktResInstNbrs.addAll(req.getCheckMktResInstNbrs());
+        if (!CollectionUtils.isEmpty(req.getCheckMktResInstNbrs())) {
+            mktResInstNbrs.addAll(req.getCheckMktResInstNbrs());
+        }
         resourceUploadTempDelReq.setMktResInstNbrList(mktResInstNbrs);
         resourceUploadTempDelReq.setMktResUploadBatch(req.getMktResUploadBatch());
         runableTask.exceutorDelNbr(resourceUploadTempDelReq);

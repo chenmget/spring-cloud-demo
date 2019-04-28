@@ -281,7 +281,7 @@ public class RunableTask {
             @Override
             public String call() throws Exception {
                 //暂停1s
-                Thread.sleep(10000);
+                Thread.sleep(1000);
                 List<String> list = Lists.newArrayList("2");
                 int t = 10/3;
                 List<String> newList = list.subList(0, 1);

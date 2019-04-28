@@ -129,7 +129,6 @@ public class RunableTask {
             );
             validFutureTaskResult.add(validFutureTask);
         }
-        executorService.shutdown();
         return batchId;
     }
 
@@ -173,7 +172,6 @@ public class RunableTask {
               }
             );
         }
-        executorService.shutdown();
     }
     /**
      * 串码入库插入多线程处理
@@ -196,7 +194,6 @@ public class RunableTask {
                 }
             });
         }
-        executorService.shutdown();
     }
 
     /**
@@ -239,7 +236,6 @@ public class RunableTask {
                 }
             });
         }
-        executorService.shutdown();
     }
 
 
@@ -269,7 +265,6 @@ public class RunableTask {
                     return mktResReqId;
                 }
                 });
-            executorService.shutdown();
             return addReqtFutureTask.get();
         }catch (Exception e){
             log.error("RunableTask.excuetorAddReq error}", e);

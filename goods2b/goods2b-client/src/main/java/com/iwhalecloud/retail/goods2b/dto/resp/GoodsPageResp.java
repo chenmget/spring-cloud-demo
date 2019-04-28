@@ -95,4 +95,7 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "商品发布对象")
     private List<String> goodsTargetRels;
+
+    @ApiModelProperty(value = "供货价")
+    private String deliveryPrice;
 }

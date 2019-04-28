@@ -9,9 +9,12 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
+import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -89,5 +92,36 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         List<ResourceInstDTO> merchantInst = resourceInstManager.getResourceInsts(manufacturerResourceInstsGetReq);
         log.info("ResourceInstCheckServiceImpl.validMerchantStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(manufacturerResourceInstsGetReq), JSON.toJSONString(merchantInst));
         return  merchantInst;
+    }
+
+    @Override
+    public List<ResourceRequestAddReq.ResourceRequestInst> getReqInst(ResourceInstAddReq req){
+        List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = Lists.newLinkedList();
+        List<String> mktResInstNbrs = req.getMktResInstNbrs();
+        for (String nbr : mktResInstNbrs) {
+            ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
+            instDTO.setMktResInstNbr(nbr);
+            instDTO.setMktResId(req.getMktResId());
+            if (null != req.getCtCode()) {
+                instDTO.setCtCode(req.getCtCode().get(nbr));
+            }
+            instDTOList.add(instDTO);
+        }
+        List<String> checkMktResInstNbrs = req.getCheckMktResInstNbrs();
+        if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
+            checkMktResInstNbrs.retainAll(mktResInstNbrs);
+            for (String nbr : checkMktResInstNbrs) {
+                ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
+                instDTO.setMktResInstNbr(nbr);
+                instDTO.setMktResId(req.getMktResId());
+                instDTO.setIsInspection(ResourceConst.CONSTANT_YES);
+                if (null != req.getCtCode()) {
+                    instDTO.setCtCode(req.getCtCode().get(nbr));
+                }
+                instDTOList.add(instDTO);
+            }
+        }
+        log.info("ResourceInstCheckServiceImpl.getReqInst  req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(instDTOList));
+        return instDTOList;
     }
 }

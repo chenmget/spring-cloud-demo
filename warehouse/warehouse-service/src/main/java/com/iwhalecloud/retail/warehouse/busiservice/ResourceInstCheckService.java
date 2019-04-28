@@ -1,7 +1,9 @@
 package com.iwhalecloud.retail.warehouse.busiservice;
 
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
 
 import java.util.List;
 
@@ -23,4 +25,11 @@ public interface ResourceInstCheckService {
      * @return
      */
     List<ResourceInstDTO> validMerchantStore(ResourceInstValidReq req);
+
+    /**
+     * 串码入库，组装申请单
+     * @param req
+     * @return
+     */
+    List<ResourceRequestAddReq.ResourceRequestInst> getReqInst(ResourceInstAddReq req);
 }

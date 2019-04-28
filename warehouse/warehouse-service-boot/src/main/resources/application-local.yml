@@ -106,3 +106,8 @@ ftp:
   iptvdirModify: /data/back/Failure/IPTV/modify
   gmdirDelete: /data/back/Failure/Terminal/delete
   iptvdirDelete: /data/back/Failure/IPTV/delete
+
+#商家增加串码机顶盒、三合一终端产品类型id
+addNbrService:
+  typeId: 10350158,
+  checkMaxNum: 10

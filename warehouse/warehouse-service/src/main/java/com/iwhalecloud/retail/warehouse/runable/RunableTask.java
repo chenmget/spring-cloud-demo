@@ -107,6 +107,7 @@ public class RunableTask {
                                      inst.setResult(ResourceConst.CONSTANT_YES);
                                      inst.setUploadDate(now);
                                      inst.setCreateDate(now);
+                                     inst.setResultDesc("库中已存在");
                                      inst.setCreateStaff(req.getCreateStaff());
                                      instList.add(inst);
                                  }

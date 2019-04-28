@@ -126,7 +126,6 @@ public class SupplierResourceInstB2BController {
         req.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
         BeanUtils.copyProperties(dto, req);
         req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
-        req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
         req.setMerchantId(UserContext.getMerchantId());
         return supplierResourceInstService.addResourceInst(req);
     }

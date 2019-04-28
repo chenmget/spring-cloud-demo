@@ -258,7 +258,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         List<String> unavailbaleNbrs = (List<String>)data.get("unavailbaleNbrs");
         List<String> availbaleNbrs = (List<String>)data.get("availbaleNbrs");
         if (CollectionUtils.isEmpty(availbaleNbrs)) {
-            return ResultVO.success("失败串码",unavailbaleNbrs);
+            return ResultVO.success("失败串码", unavailbaleNbrs);
         }
 
         // step2:源修改状态，即串码源属供应商修改成出库状态
@@ -380,6 +380,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInst.setMktResBatchId(batchId);
             // 目标仓库是串码所属人的仓库
             resourceInst.setMktResStoreId(req.getDestStoreId());
+            if (StringUtils.isEmpty(req.getMktResInstType())) {
+                resourceInst.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
+            }
             resourceInst.setCreateDate(now);
             resourceInst.setCreateTime(now);
             resourceInst.setSourceType(req.getSourceType());
@@ -713,7 +716,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 t.setMktResBatchId(batchId);
                 t.setMktResStoreId(req.getDestStoreId());
                 t.setStorageType(req.getStorageType());
-                t.setMktResInstType(ResourceConst.MKTResInstType.NONTRANSACTION.getCode());
+                t.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
                 t.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
                 t.setCreateStaff("1");
                 resourceInsts.add(t);

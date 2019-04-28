@@ -199,7 +199,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         if (runableTask.validHasDone()) {
             return ResultVO.success(resourceUploadTempManager.listResourceUploadTemp(req));
         } else{
-            return ResultVO.success(new Page<ResourceUploadTempListResp>());
+            return ResultVO.success();
         }
 
     }

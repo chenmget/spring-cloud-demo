@@ -8,9 +8,9 @@ package com.iwhalecloud.retail.order2b.consts;
 public class PurApplyConsts {
 
     /**
-     * 发货类型
+     * 采购申请单审核流程
      */
-    public final static String PURAPPLY_AUDIT_PROCESS_ID = "17";
+    public final static String PUR_APPLY_AUDIT_PROCESS_ID = "17";
 
     /**
      * 发货类型

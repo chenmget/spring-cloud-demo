@@ -29,5 +29,5 @@ public interface PurchaseApplyService {
      * @param req
      * @return
      */
-    ResultVO updateNoticeStatus(PurApplyReq req);
+    ResultVO updatePurApplyStatus(PurApplyReq req);
 }

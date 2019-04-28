@@ -180,7 +180,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
         ResourceUploadTempDelReq resourceUploadTempDelReq = new ResourceUploadTempDelReq();
-        resourceUploadTempDelReq.setMktResInstNbrList(checkMktResInstNbrs);
+        mktResInstNbrs.addAll(checkMktResInstNbrs);
+        resourceUploadTempDelReq.setMktResInstNbrList(mktResInstNbrs);
         resourceUploadTempDelReq.setMktResUploadBatch(req.getMktResUploadBatch());
         runableTask.exceutorDelNbr(resourceUploadTempDelReq);
         return ResultVO.success("串码入库提交申请单");

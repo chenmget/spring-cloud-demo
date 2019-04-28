@@ -116,7 +116,7 @@
 	) values (
 		#{req.applyItemId},
 		#{req.applyId},
-		#{req.productName},
+		#{req.productId},
 		#{req.snCount},
 		#{req.priceInStore},
 		#{req.purchaseType},
@@ -224,7 +224,7 @@
 			d.TYPE_ID
 			FROM	
 				(SELECT 
-				a.PRODUCT_ID,
+				a.PRODUCT_ID AS productId,
 				a.APPLY_ID AS applyId,
 				a.APPLY_ITEM_ID AS applyItemId,
 				a.STATUS_CD AS statusCd,
@@ -263,12 +263,13 @@
 	SELECT COUNT(*) AS isHaveSave FROM PUR_APPLY WHERE 1=1 and apply_id =#{applyId}
   </select>
   
-  <select id="updatePurApply"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState">
+  <select id="updatePurApply"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
 	UPDATE 
 	PUR_APPLY SET status_cd= #{req.statusCd},
 	apply_name=#{req.applyName},
 	phone=#{req.applyContact},
-	merchant_code=#{req.merchantCode},
+	merchant_code=#{req.supplierCode},
+	merchant_id=#{req.supplierId},
 	update_date=#{req.updateDate},
 	update_staff=#{req.updateStaff},
 	status_date=#{req.statusDate} 

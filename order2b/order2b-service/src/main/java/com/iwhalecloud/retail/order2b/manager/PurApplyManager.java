@@ -83,12 +83,20 @@ public class PurApplyManager {
 		return purApplyMapper.isHaveSave(applyId);
 	}
 	
-	public void updatePurApply(UpdatePurApplyState state){
+	public void updatePurApply(ProcureApplyReq state){
 		purApplyMapper.updatePurApply(state);
 	}
 	
-	public String getMerchantId(String merchantCode){
-		return purApplyMapper.getMerchantId(merchantCode);
+	public void delApplyItem(ProcureApplyReq req){
+		purApplyMapper.delApplyItem(req);
+	}
+	
+	public void delApplyFile(ProcureApplyReq req){
+		purApplyMapper.delApplyItem(req);
+	}	
+	
+	public String getMerchantCode(String merchantCode){
+		return purApplyMapper.getMerchantCode(merchantCode);
 	}
 	
 	public String hqSeqFileId(){

@@ -20,7 +20,7 @@ public class ApplyHeadResp extends PageVO implements Serializable {
 	private String applyMerchantName;//申请人
 	
 	
-	private String applyMerchantCode;
+	private String applyMerchantId;
 	private String lanId;
 	private String regionId;
 	

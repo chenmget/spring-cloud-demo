@@ -261,14 +261,17 @@
   <select id="updatePurApply"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState">
 	UPDATE 
 	PUR_APPLY SET status_cd= #{req.statusCd},
+	apply_name=#{req.applyName},
+	phone=#{req.applyContact},
+	merchant_code=#{req.merchantCode},
 	update_date=#{req.updateDate},
 	update_staff=#{req.updateStaff},
 	status_date=#{req.statusDate} 
 	WHERE 1=1 and apply_id=#{req.applyId}
   </select>
   
-  <select id="getMerchantId"  parameterType="String"  resultType="String">
-	SELECT merchant_id FROM par_merchant WHERE 1=1 AND merchant_code=#{merchantCode}
+  <select id="getMerchantCode"  parameterType="String"  resultType="String">
+	SELECT merchant_code FROM par_merchant WHERE 1=1 AND merchant_id=#{merchantId}
   </select>
   
   <select id="hqSeqFileId"  resultType="String">
@@ -292,6 +295,14 @@
 	FROM sys_user_role a,sys_user b WHERE 1=1 AND a.user_id = b.user_id AND a.user_id = #{userId}
 	ORDER BY userType LIMIT 1   
 	
+  </select>
+  
+  <select id="delApplyItem"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
+  		delete from pur_apply_item where  apply_id = #{req.applyId}
+  </select>
+  
+  <select id="delApplyFile"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
+  		delete from pur_apply_file where  apply_id = #{req.applyId}
   </select>
   
 </mapper>

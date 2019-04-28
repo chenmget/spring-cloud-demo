@@ -15,7 +15,7 @@ public class PurApplyReq extends PageVO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String applyId;	//申请单号ID
 	private String applyCode;	//申请单号
-	private String projectName;//项目名称(申请单名称)
+	private String applyName;//项目名称(申请单名称)
 	private String applyTime;//申请时间
 	private String startDate;
 	private String endDate;

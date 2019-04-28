@@ -7,7 +7,7 @@
 		SELECT 
 			a.APPLY_ID AS applyId,
 			a.APPLY_CODE AS applyCode,
-			a.APPLY_NAME AS projectName,
+			a.APPLY_NAME AS applyName,
 			a.CREATE_DATE AS applyTime,
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
@@ -25,14 +25,17 @@
 		<if test='req.applyType!=null and req.applyType!=""'>  
 			and a.APPLY_TYPE = #{req.applyType} 
 		</if>
-		<if test='req.projectName!=null and req.projectName!=""'>  
-			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.projectName}),'%')	
+		<if test='req.applyName!=null and req.applyName!=""'>  
+			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')	
 		</if>
 		<if test='req.startDate!=null and req.startDate!=""'>
 			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
 		</if>
 		<if test='req.endDate!=null and req.endDate!=""'>
 			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
+		</if>
+		<if test='req.applyMerchantId!=null and req.applyMerchantId!=""'>
+			and a.apply_merchant_id= #{req.applyMerchantId}
 		</if>
 		
   </select>
@@ -153,7 +156,7 @@
 		#{req.applyName},
 		#{req.applyType},
 		#{req.content},
-		#{req.supplier},
+		#{req.supplierId},
 		#{req.supplierCode},
 		#{req.applyMerchantId},
 		#{req.applyMerchantCode},
@@ -188,6 +191,7 @@
   		a.apply_id as applyId,
 		a.apply_code as applyCode,
 		a.apply_merchant_code  AS applyMerchantCode,
+		a.apply_merchant_id AS applyMerchantId,
 		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_CODE=a.apply_merchant_code) AS applyMerchantName,
 		a.LAN_ID as lanId,
 		(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
@@ -196,6 +200,7 @@
 		a.phone as applyContact,
 		a.apply_name as applyName,
 		a.merchant_code as supplierCode,
+		a.merchant_id as supplierId,
 		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_CODE=a.merchant_code) AS supplierName,
 		a.status_cd as statusCd,
 		a.create_date as createDate

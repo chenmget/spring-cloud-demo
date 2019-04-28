@@ -65,7 +65,7 @@ public class CgSearchApplyController extends BaseController {
     @PostMapping("/cgSearchApply")
 	@UserLoginToken
     public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
-		
+		//采购单的时候点击查看采购申请单，传申请人ID，apply_code和apply_name项目名称查询
 		String userId = UserContext.getUserId();
 //		String userId = "100028487";
 		PriCityManagerResp login = purApplyService.getLoginInfo(userId);
@@ -246,6 +246,5 @@ public class CgSearchApplyController extends BaseController {
 		procureApplyReq1.setAddFileReq(procureApplyReq3);
 		return ResultVO.success(procureApplyReq1);
 	}
-	
 	
 }

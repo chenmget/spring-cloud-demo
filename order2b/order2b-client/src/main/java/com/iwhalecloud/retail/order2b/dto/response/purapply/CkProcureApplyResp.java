@@ -21,12 +21,12 @@ public class CkProcureApplyResp extends PageVO implements Serializable {
 	private String applyAddress;	//申请地市
 	private String applyDepartment;	//申请部门
 	private String applyContact;	//联系方式
-	private String applyProjectName;	//项目名称
+	//private String applyProjectName;	//项目名称
 	private String supplierName;	//供应商名称
 	private String applyType;//	申请单类型，10 采购申请单、20 采购单
 	private String content;//申请单描述
 	private String merchantCode;//供应商编码
-	//private String applyMerchantId;//申请人ID
+	private String applyMerchantId;//申请人ID
 	private String lanId;//本地网
 	private String regionId;//区域标识
 	private String relApplyId;//关联单号
@@ -38,7 +38,7 @@ public class CkProcureApplyResp extends PageVO implements Serializable {
 	private String updateDate;	//修改时间
 	private String applyMerchantName;//申请人名称
 	private String supplierCode;//供应商编码
-	
+	private String supplierId;//供应商ID
 	private List<AddProductReq> addProductReq;
 	
 	private List<AddFileReq> addFileReq;

@@ -197,7 +197,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
     @Override
     public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRulesDetail(MerchantRulesDetailListReq req) {
-        log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", req);
+        log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", req);
         MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
         BeanUtils.copyProperties(req, merchantRulesListReq);
         Page<MerchantRulesDTO> page = merchantRulesManager.pageMerchantRulesDetail(merchantRulesListReq);

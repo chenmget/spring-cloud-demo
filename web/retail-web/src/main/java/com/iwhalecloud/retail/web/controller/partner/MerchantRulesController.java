@@ -129,7 +129,7 @@ public class MerchantRulesController {
     })
     @RequestMapping(value = "/listPage", method = RequestMethod.POST)
     @Transactional
-    public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRules(@RequestBody @ApiParam(value = "查询商家权限规则列表参数", required = true) MerchantRulesDetailListReq req) {
+    public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRules(@RequestBody @ApiParam(value = "分页查询商家权限规则列表参数", required = true) MerchantRulesDetailListReq req) {
 
         return merchantRulesService.pageMerchantRulesDetail(req);
     }

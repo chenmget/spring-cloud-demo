@@ -1046,7 +1046,7 @@ public class GoodsServiceImpl implements GoodsService {
             merchantListReq.setMerchantName(req.getSupplierName());
             ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchant(merchantListReq);
             if(listResultVO.isSuccess() && null!=listResultVO.getResultData()){
-                if(null != listResultVO.getResultData().get(0)){
+                if(listResultVO.getResultData().size()>0){
                     String supplierId = listResultVO.getResultData().get(0).getMerchantId();
                     if(StringUtils.isNotEmpty(supplierId)){
                         req.setSupplierId(supplierId);

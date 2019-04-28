@@ -29,6 +29,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
@@ -112,6 +115,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
      *
      */
     @Override
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO addResourceInst(ResourceInstAddReq req) {
         log.info("MerchantResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         String merchantId = req.getMerchantId();

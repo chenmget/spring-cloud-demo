@@ -122,6 +122,18 @@ public class MerchantRulesController {
         return merchantRulesService.listMerchantRulesDetail(req);
     }
 
+    @ApiOperation(value = "获取 分页商家权限规则 列表接口", notes = "可以根据 商家ID 规则类型、对象类型 条件进行查询分页（通用接口）")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/listPage", method = RequestMethod.POST)
+    @Transactional
+    public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRules(@RequestBody @ApiParam(value = "查询商家权限规则列表参数", required = true) MerchantRulesDetailListReq req) {
+
+        return merchantRulesService.pageMerchantRulesDetail(req);
+    }
+
     /**
      * 获取 商家权限规则 分页
      * @param req

@@ -195,6 +195,22 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         return ResultVO.success(resultList);
     }
 
+    @Override
+    public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRulesDetail(MerchantRulesDetailListReq req) {
+        log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", req);
+        MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
+        BeanUtils.copyProperties(req, merchantRulesListReq);
+        Page<MerchantRulesDTO> page = merchantRulesManager.pageMerchantRulesDetail(merchantRulesListReq);
+        List<MerchantRulesDTO> list = page.getRecords();
+        List<MerchantRulesDetailDTO> resultList = getDetailList(req, list);
+        Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = new Page<MerchantRulesDetailDTO>();
+        BeanUtils.copyProperties(page, merchantRulesDetailDTOPage);
+        merchantRulesDetailDTOPage.setRecords(resultList);
+        log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), output: resultList={} ", resultList);
+
+        return ResultVO.success(merchantRulesDetailDTOPage);
+    }
+
     /**
      * 商家 权限规则详情 信息 分页查询
      *

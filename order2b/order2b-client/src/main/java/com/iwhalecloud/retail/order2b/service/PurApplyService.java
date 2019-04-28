@@ -47,9 +47,12 @@ public interface PurApplyService {
 	
 	public int isHaveSave(String applyId);
 	
-	public void updatePurApply(UpdatePurApplyState state);
+	public void updatePurApply(ProcureApplyReq state);
 	
-	public String getMerchantId(String merchantCode);
+	public void delApplyItem(ProcureApplyReq req);
+	public void delApplyFile(ProcureApplyReq req);
+	
+	public String getMerchantCode(String merchantCode);
 	
 	public String hqSeqFileId();
 	

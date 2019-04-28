@@ -104,7 +104,7 @@ public class CgSearchApplyController extends BaseController {
 		ApplyHeadResp applyHeadResp = purApplyService.hqShenQingDaoHao();
 		Date date = new Date();
 		String applyCode = date.getTime() + "";
-		String relCode = user.getRelCode();//申请人工号    写表的
+		String relCode = user.getRelCode();//申请人工号    写表的     relCode对应merchant_id
 		String applyMerchantName = user.getUserName();//申请人名称  展示的
 		String lanId = user.getLanId();//申请地市  写表的
 		String applyAdress = purApplyService.hqDiShiBuMen(lanId); //申请地市   展示的
@@ -113,7 +113,7 @@ public class CgSearchApplyController extends BaseController {
 		applyHeadResp.setApplyAddress(applyAdress);
 		applyHeadResp.setApplyDepartment(applyDepartment);
 		applyHeadResp.setApplyMerchantName(applyMerchantName);
-		applyHeadResp.setApplyMerchantCode(relCode);
+		applyHeadResp.setApplyMerchantId(relCode);
 		applyHeadResp.setLanId(lanId);
 		applyHeadResp.setRegionId(regionId);
 		applyHeadResp.setApplyCode(applyCode);
@@ -144,28 +144,15 @@ public class CgSearchApplyController extends BaseController {
 		String statusDate = date.toLocaleString();
 		//情况一，默认是保存,状态就是10，待提交
 		//情况二，如果是提交，状态就是20，待审核(分表里面是否有记录)
-//		
-			String applyId = req.getApplyId();
-			int isHaveSave = purApplyService.isHaveSave(applyId);
-			if(isHaveSave != 0){//表里面有记录的话
-				UpdatePurApplyState state = new UpdatePurApplyState();
-				state.setApplyId(applyId);
-				state.setUpdateDate(updateDate);
-				state.setUpdateStaff(updateStaff);
-				state.setStatusDate(statusDate);
-				state.setStatusCd(statusCd);
-				purApplyService.updatePurApply(state);
-				return ResultVO.success();
-			}
-			
+		String applyId = req.getApplyId();
 		String createStaff = UserContext.getUserId();
 //		String createStaff = "1";
 		
 		//获取供应商ID和申请商家ID
-		String merchantCode = req.getSupplierCode();
-		String applyMerchantCode = req.getApplyMerchantCode();
-		String supplier = purApplyService.getMerchantId(merchantCode);
-		String applyMerchantId = purApplyService.getMerchantId(applyMerchantCode);
+		String supplierId = req.getSupplierId();
+		String applyMerchantId = req.getApplyMerchantId();//申请商家ID
+		String supplierCode = purApplyService.getMerchantCode(supplierId);
+		String applyMerchantCode = purApplyService.getMerchantCode(applyMerchantId);
 		
 		String createDate = date.toLocaleString();//创建时间
 		
@@ -177,8 +164,28 @@ public class CgSearchApplyController extends BaseController {
 		req.setUpdateStaff(updateStaff);
 		req.setUpdateDate(updateDate);
 		req.setStatusDate(statusDate);
-		req.setSupplier(supplier);
-		req.setApplyMerchantId(applyMerchantId);
+		req.setSupplierCode(supplierCode);
+		req.setApplyMerchantCode(applyMerchantCode);
+		
+		int isHaveSave = purApplyService.isHaveSave(applyId);
+		if(isHaveSave != 0){//表里面有记录的话,申请单的字段就update,添加产品跟附件的就先delete再insert
+//			UpdatePurApplyState state = new UpdatePurApplyState();
+//			state.setApplyId(applyId);
+//			state.setUpdateDate(updateDate);
+//			state.setUpdateStaff(updateStaff);
+//			state.setStatusDate(statusDate);
+//			state.setStatusCd(statusCd);
+			purApplyService.updatePurApply(req);//联系电话，项目名称，供应商code可以修改
+			
+			purApplyService.delApplyItem(req);
+			
+			purApplyService.delApplyFile(req);
+			
+		}else{
+			purApplyService.tcProcureApply(req);
+		}
+		
+		//表里面没记录的话
 		List<AddProductReq> list = req.getAddProductReq();
 		for(int i=0;i<list.size();i++){
 			AddProductReq addProductReq = list.get(i);
@@ -210,7 +217,6 @@ public class CgSearchApplyController extends BaseController {
 			}
 		}
 
-		purApplyService.tcProcureApply(req);
 		return ResultVO.success();
     }
 	

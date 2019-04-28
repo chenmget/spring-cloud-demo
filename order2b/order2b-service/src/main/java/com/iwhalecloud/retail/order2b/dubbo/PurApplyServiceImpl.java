@@ -142,13 +142,23 @@ public class PurApplyServiceImpl implements PurApplyService {
 	}
 	
 	@Override
-	public void updatePurApply(UpdatePurApplyState state){
+	public void updatePurApply(ProcureApplyReq state){
 		purApplyManager.updatePurApply(state);
 	}
 	
 	@Override
-	public String getMerchantId(String merchantCode){
-		return purApplyManager.getMerchantId(merchantCode);
+	public void delApplyItem(ProcureApplyReq req){
+		purApplyManager.delApplyItem(req);
+	}
+	
+	@Override
+	public void delApplyFile(ProcureApplyReq req){
+		purApplyManager.delApplyFile(req);
+	}
+	
+	@Override
+	public String getMerchantCode(String merchantCode){
+		return purApplyManager.getMerchantCode(merchantCode);
 	}
 	
 	@Override

@@ -47,9 +47,13 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public int isHaveSave(@Param("applyId") String applyId);
 	
-	public void updatePurApply(@Param("req") UpdatePurApplyState state);
+	public void updatePurApply(@Param("req") ProcureApplyReq state);
 	
-	public String getMerchantId(@Param("merchantCode") String merchantCode);
+	public void delApplyItem(@Param("req") ProcureApplyReq req);
+	
+	public void delApplyFile(@Param("req") ProcureApplyReq req);
+	
+	public String getMerchantCode(@Param("merchantId") String merchantId);
 	
 	public String hqSeqFileId();
 	

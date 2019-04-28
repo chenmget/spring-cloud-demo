@@ -128,8 +128,8 @@ public class RunableTask {
                          }
             );
             validFutureTaskResult.add(validFutureTask);
-            executorService.shutdown();
         }
+        executorService.shutdown();
         return batchId;
     }
 

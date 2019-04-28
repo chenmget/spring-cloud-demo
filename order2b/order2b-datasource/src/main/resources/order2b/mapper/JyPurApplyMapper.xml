@@ -22,8 +22,8 @@
 		<if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode}
 		</if>
-		<if test='req.projectName!=null and req.projectName!=""'>  
-			and a.APPLY_NAME = #{req.projectName}
+		<if test='req.applyName!=null and req.applyName!=""'>  
+			and a.APPLY_NAME = #{req.applyName}
 		</if>
 		<if test='req.applyMerchantId!=null and req.applyMerchantId!=""'>  
 			and a.APPLY_MERCHANT_ID = #{req.applyMerchantId}
@@ -34,7 +34,9 @@
 		<if test='req.applyType!=null and req.applyType!=""'>  
 			and a.APPLY_TYPE = #{req.applyType}
 		</if>
-		
+		<if test='req.lanId!=null and req.lanId!=""'>  
+			and a.lan_id = #{req.lanId}
+		</if>
   </select>
   
 </mapper>

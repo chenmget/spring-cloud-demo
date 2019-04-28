@@ -91,6 +91,7 @@ public class RunableTask {
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         validFutureTaskResult = new ArrayList<>(excutorNum);
         for (Integer i = 0; i < excutorNum; i++) {
+            log.info("RunableTask.exceutorValid excutorNum={}", excutorNum);
             Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
             List<String> newList = nbrList.subList(perNum * i, maxNum);
             req.setMktResInstNbrs(newList);
@@ -159,9 +160,8 @@ public class RunableTask {
         List<String> nbrList = req.getMktResInstNbrList();
         Integer perNum = 200;
         Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
-        ExecutorService executorService = new ThreadPoolExecutor(15, Integer.MAX_VALUE, 0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
         for (Integer i = 0; i < excutorNum; i++) {
+            log.info("RunableTask.exceutorDelNbr excutorNum={}", excutorNum);
             List<String> newList = nbrList.subList(perNum * i, perNum * (i + 1));
             req.setMktResInstNbrList(newList);
             delNbrFutureTask = executorService.submit(new Callable<Integer>() {
@@ -185,6 +185,7 @@ public class RunableTask {
         Integer perNum = 200;
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         for (Integer i = 0; i < excutorNum; i++) {
+            log.info("RunableTask.exceutorAddNbr excutorNum={}", excutorNum);
             List newList = nbrList.subList(perNum*i,perNum*(i+1));
             req.setMktResInstNbrs(newList);
             addNbrFutureTask = executorService.submit(new Callable<Boolean>() {
@@ -209,6 +210,7 @@ public class RunableTask {
         Integer excutorNum = list.size()%perNum == 0 ? list.size()/perNum : (list.size()/perNum + 1);
         List<ResourceReqDetail> detailList = new ArrayList<ResourceReqDetail>(list.size());
         for (Integer i = 0; i < excutorNum; i++){
+            log.info("RunableTask.exceutorAddReqDetail excutorNum={}", excutorNum);
             Integer maxNum = perNum * (i + 1) > list.size() ? list.size() : perNum * (i + 1);
             List<ResourceRequestAddReq.ResourceRequestInst> newList = list.subList(perNum * i, maxNum);
             addReqDetailtFutureTask = executorService.submit(new Callable<Boolean>() {

@@ -138,6 +138,7 @@ public class RunableTask {
      */
     public Boolean validHasDone() {
         Boolean hasDone = true;
+        log.info("RunableTask.validHasDone validFutureTaskResult={}", JSON.toJSONString(validFutureTaskResult));
         if (CollectionUtils.isEmpty(validFutureTaskResult)) {
             return hasDone;
         }

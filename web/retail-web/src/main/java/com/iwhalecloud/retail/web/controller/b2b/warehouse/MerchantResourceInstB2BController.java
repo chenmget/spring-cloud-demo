@@ -59,8 +59,8 @@ public class MerchantResourceInstB2BController {
     @PostMapping(value="getResourceInstList")
     @UserLoginToken
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(@RequestBody ResourceInstListPageReq req) {
-        if (StringUtils.isEmpty(req.getMktResStoreIds())) {
-            return ResultVO.error("仓库为空");
+        if (StringUtils.isEmpty(req.getMktResStoreIds()) && null == req.getMktResInstNbr()) {
+            return ResultVO.error("仓库和串码不能同时为空");
         }
         return resourceInstService.getResourceInstList(req);
     }

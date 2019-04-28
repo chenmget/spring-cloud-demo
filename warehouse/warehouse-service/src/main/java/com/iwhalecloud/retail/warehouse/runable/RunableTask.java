@@ -47,7 +47,6 @@ public class RunableTask {
     @Reference
     private ResourceRequestService requestService;
 
-    private ExecutorService executorService;
     // 核心线程数
     private int corePoolSize = 10;
     // 最大线程数
@@ -72,11 +71,10 @@ public class RunableTask {
     @Autowired
     private ResourceReqDetailManager detailManager;
 
-    public void initExecutorService() {
-        if (null == executorService) {
-            ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
-            executorService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
-        }
+    public ExecutorService initExecutorService() {
+        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
+        ExecutorService executorService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
+        return executorService;
     }
 
     /**
@@ -84,7 +82,7 @@ public class RunableTask {
      * @param req
      */
     public String exceutorValid(ResourceInstValidReq req) {
-        initExecutorService();
+        ExecutorService executorService = initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
         Integer perNum = 200;
         String batchId = resourceInstService.getPrimaryKey();
@@ -130,6 +128,7 @@ public class RunableTask {
                          }
             );
             validFutureTaskResult.add(validFutureTask);
+            executorService.shutdown();
         }
         return batchId;
     }
@@ -156,7 +155,7 @@ public class RunableTask {
      * @param req
      */
     public void exceutorDelNbr(ResourceUploadTempDelReq req) {
-        initExecutorService();
+        ExecutorService executorService = initExecutorService();
         List<String> nbrList = req.getMktResInstNbrList();
         Integer perNum = 200;
         Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
@@ -174,13 +173,14 @@ public class RunableTask {
               }
             );
         }
+        executorService.shutdown();
     }
     /**
      * 串码入库插入多线程处理
      * @param req
      */
     public void exceutorAddNbr(ResourceInstAddReq req) {
-        initExecutorService();
+        ExecutorService executorService = initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
         Integer perNum = 200;
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
@@ -197,6 +197,7 @@ public class RunableTask {
                 }
             });
         }
+        executorService.shutdown();
     }
 
     /**
@@ -204,7 +205,7 @@ public class RunableTask {
      * @param list
      */
     public void exceutorAddReqDetail(List<ResourceRequestAddReq.ResourceRequestInst> list, String itemId, String createStaff, String chngType) {
-        initExecutorService();
+        ExecutorService executorService = initExecutorService();
         //营销资源申请单明细
         Integer perNum = 200;
         Integer excutorNum = list.size()%perNum == 0 ? list.size()/perNum : (list.size()/perNum + 1);
@@ -240,10 +241,12 @@ public class RunableTask {
                 }
             });
         }
+        executorService.shutdown();
     }
 
 
     public String excuetorAddReq(ResourceRequestAddReq req){
+        ExecutorService executorService = initExecutorService();
         try{
             Future<String> addReqtFutureTask = executorService.submit(new Callable<String>() {
                 @Override
@@ -272,14 +275,16 @@ public class RunableTask {
             return addReqtFutureTask.get();
         }catch (Exception e){
             log.error("RunableTask.excuetorAddReq error}", e);
+        }finally {
+            executorService.shutdown();
         }
         return null;
     }
 
     public static void main(String[] args) {
         RunableTask task = new RunableTask();
-        task.initExecutorService();
-        Future<String> future = task.executorService.submit(new Callable<String>() {
+        ExecutorService executorService = task.initExecutorService();
+        Future<String> future = executorService.submit(new Callable<String>() {
             @Override
             public String call() throws Exception {
                 //暂停1s
@@ -292,6 +297,7 @@ public class RunableTask {
                 return name;
             }
         });
+        executorService.shutdown();
     }
 
     public static String test(){

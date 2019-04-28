@@ -24,4 +24,10 @@ public interface ResouceInstTrackMapper extends BaseMapper<ResouceInstTrack>{
      * @return
      */
     ResouceInstTrackDTO getResourceInstTrackByNbrAndMerchantId(@Param("nbr") String nbr, @Param("merchantId") String merchantId);
+    /**
+     * 通过串码查询仓库id
+     * @param nbr
+     * @return
+     */
+    String getStoreIdByNbr(@Param("nbr") String nbr);
 }

@@ -4,6 +4,7 @@ import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
@@ -16,6 +17,7 @@ import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
+import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
@@ -59,6 +61,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     private ResourceUploadTempManager resourceUploadTempManager;
     @Autowired
     private ResourceInstCheckService resourceInstCheckService;
+    @Autowired
+    private ResouceInstTrackManager resouceInstTrackManager;
     @Value("${addNbrService.typeId}")
     private String typeId;
     @Value("${addNbrService.checkMaxNum}")
@@ -67,6 +71,12 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("MerchantResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
+        if (CollectionUtils.isEmpty(req.getMktResStoreIds())) {
+            String mktResInstNbr = req.getMktResInstNbr();
+            String mktResStoreId = resouceInstTrackManager.getStoreIdByNbr(mktResInstNbr);
+            log.info("MerchantResourceInstServiceImpl.getResourceInstList resouceInstTrackManager.getStoreIdByNbr mktResInstNbr={}, mktResStoreId={}", mktResInstNbr, mktResStoreId);
+            req.setMktResStoreIds(Lists.newArrayList(mktResStoreId));
+        }
         return resourceInstService.getResourceInstList(req);
     }
 

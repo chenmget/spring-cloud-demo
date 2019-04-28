@@ -15,6 +15,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
 import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
+import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.MerchantAddNbrProcessingPassActionService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
@@ -53,6 +54,9 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
 
     @Autowired
     private ResourceBatchRecService resourceBatchRecService;
+
+    @Autowired
+    private RunableTask runableTask;
     
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
@@ -98,29 +102,29 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
             addReq.setLanId(merchantDTO.getLanId());
             addReq.setRegionId(merchantDTO.getCity());
         }
-        Boolean addResp = resourceInstService.addResourceInstByMerchant(addReq);
-        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addResp));
-        if (addResp) {
-            // step3 修改申请单状态变为审核通过
-            ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
-            reqUpdate.setMktResReqId(businessId);
-            reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
-            ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
-            log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
-            // step4 增加事件和批次
-            Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);
-            BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
-            batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-            batchAndEventAddReq.setLanId(detailDTO.getLanId());
-            batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
-            batchAndEventAddReq.setRegionId(detailDTO.getRegionId());
-            batchAndEventAddReq.setDestStoreId(detailDTO.getMktResStoreId());
-            batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-            batchAndEventAddReq.setMerchantId(merchantId);
-            batchAndEventAddReq.setCreateStaff(merchantId);
-            resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-            log.info("MerchantAddNbrProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
-        }
+        runableTask.exceutorAddNbr(addReq);
+        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}");
+
+        // step3 修改申请单状态变为审核通过
+        ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
+        reqUpdate.setMktResReqId(businessId);
+        reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
+        ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
+        log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
+        // step4 增加事件和批次
+        Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);
+        BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
+        batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+        batchAndEventAddReq.setLanId(detailDTO.getLanId());
+        batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
+        batchAndEventAddReq.setRegionId(detailDTO.getRegionId());
+        batchAndEventAddReq.setDestStoreId(detailDTO.getMktResStoreId());
+        batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        batchAndEventAddReq.setMerchantId(merchantId);
+        batchAndEventAddReq.setCreateStaff(merchantId);
+        resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
+        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
+
         return ResultVO.success();
     }
 

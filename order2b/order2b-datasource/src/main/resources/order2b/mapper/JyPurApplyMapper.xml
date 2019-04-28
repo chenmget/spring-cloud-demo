@@ -13,12 +13,6 @@
 		a.CREATE_DATE as createDate
 		FROM pur_apply a
 		where 1=1
-		<if test='req.startDate!=null and req.startDate!=""'>
-			and a.CREATE_DATE &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
-		</if>
-		<if test='req.endDate!=null and req.endDate!=""'>
-			and a.CREATE_DATE &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
-		</if>
 		<if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode}
 		</if>
@@ -36,6 +30,12 @@
 		</if>
 		<if test='req.lanId!=null and req.lanId!=""'>  
 			and a.lan_id = #{req.lanId}
+		</if>
+		<if test='req.startDate!=null and req.startDate!=""'>
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
+		</if>
+		<if test='req.endDate!=null and req.endDate!=""'>
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
 		</if>
   </select>
   

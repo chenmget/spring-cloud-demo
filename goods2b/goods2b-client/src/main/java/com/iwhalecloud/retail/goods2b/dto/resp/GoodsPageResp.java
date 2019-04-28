@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.goods2b.dto.resp;
 
+import com.iwhalecloud.retail.goods2b.dto.GoodsRegionRelDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -82,4 +83,16 @@ public class GoodsPageResp implements Serializable {
      */
     @ApiModelProperty(value = "市场价")
     private Double mktprice;
+
+    @ApiModelProperty(value = "供应商类型")
+    private String merchantType;
+
+    @ApiModelProperty(value = "商品发布对象类型")
+    private String targetType;
+
+    @ApiModelProperty(value = "商品发布范围")
+    private List<GoodsRegionRelDTO> goodsRegionRels;
+
+    @ApiModelProperty(value = "商品发布对象")
+    private List<String> goodsTargetRels;
 }

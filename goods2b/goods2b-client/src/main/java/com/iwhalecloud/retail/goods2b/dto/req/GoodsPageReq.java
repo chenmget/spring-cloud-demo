@@ -74,4 +74,13 @@ public class GoodsPageReq extends PageVO {
 
     @ApiModelProperty(value = "产品编码")
     private String sn;
+
+    @ApiModelProperty(value = "供应商ID")
+    private String supplierId;
+
+    @ApiModelProperty(value = "供应商名称")
+    private String supplierName;
+
+    @ApiModelProperty(value = "供应商类型")
+    private String merchantType;
 }

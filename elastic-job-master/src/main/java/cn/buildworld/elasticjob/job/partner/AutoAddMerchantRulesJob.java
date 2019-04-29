@@ -28,7 +28,7 @@ import java.util.List;
  * Created by Administrator on 2019/4/29.
  */
 @ElasticSimpleJob(cron = "0 0/10 * * * ?",
-        jobName = "syncBusinessEntityJob",
+        jobName = "AutoAddMerchantRulesJob",
         shardingTotalCount = 1,
         jobParameter = "测试参数",
         shardingItemParameters = "0=A,1=B",

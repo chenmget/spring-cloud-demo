@@ -105,6 +105,7 @@ public class ReportDataInfoController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
 	@GetMapping(value="/getRegionIdForCity")
+	@UserLoginToken
 	public ResultVO<List<RegionsGetResp>> getRegionIdForCity() {
 		RegionsListReq req = new RegionsListReq();
 		String regionId = UserContext.getUser().getRegionId();
@@ -125,9 +126,10 @@ public class ReportDataInfoController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
 	@GetMapping(value="/getUerRoleForView")
+	@UserLoginToken
     public ResultVO<List<ReportStorePurchaserResq>> getUerRoleForView() {
 		ReportStorePurchaserReq req = new ReportStorePurchaserReq();
-		String userId = UserContext.getUser().getUserId();
+		String userId = UserContext.getUserId();
 		req.setUserId(userId);
 		return iReportDataInfoService.getUerRoleForView(req);
     }

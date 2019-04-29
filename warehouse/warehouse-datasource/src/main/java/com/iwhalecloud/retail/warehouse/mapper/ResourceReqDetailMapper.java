@@ -32,4 +32,11 @@ public interface ResourceReqDetailMapper extends BaseMapper<ResourceReqDetail>{
      * @return
      */
     Page<ResourceReqDetailPageResp> resourceRequestPage(Page<ResourceReqDetailPageResp> page,@Param("req") ResourceReqDetailPageReq req);
+
+    /**
+     * 申请单明细处理中的串码
+     * @param nbrList
+     * @return
+     */
+    List<String> getProcessingNbrList(@Param("nbrList") List<String> nbrList);
 }

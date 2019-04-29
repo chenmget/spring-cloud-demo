@@ -46,4 +46,20 @@
             and detail.MKT_RES_INST_NBR = #{req.mktResInstNbr}
         </if>
     </select>
+
+    <select id="getProcessingNbrList" parameterType="java.util.List"
+            resultType="java.lang.String">
+        select detail.MKT_RES_INST_NBR
+        from MKT_RES_REQUEST rest,MKT_RES_REQ_ITEM item,MKT_RES_REQ_DETAIL detail
+        where 1=1
+        and rest.MKT_RES_REQ_ID = item.MKT_RES_REQ_ID and  item.MKT_RES_REQ_ITEM_ID = detail.MKT_RES_REQ_ITEM_ID
+        and rest.CREATE_DATE &lt;= now() and item.CREATE_DATE &lt;= now() and detail.CREATE_DATE &lt;= now()
+        and rest.STATUS_CD != ${@com.iwhalecloud.retail.warehouse.common.ResourceConst$MKTRESSTATE@DONE.getCode()}
+        and rest.STATUS_CD != ${@com.iwhalecloud.retail.warehouse.common.ResourceConst$MKTRESSTATE@CANCEL.getCode()}
+        and detail.MKT_RES_INST_NBR in
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="nbrList">
+            #{item}
+        </foreach>
+
+    </select>
 </mapper>

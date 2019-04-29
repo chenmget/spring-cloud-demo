@@ -55,4 +55,13 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
         Page<ResourceReqDetailPageResp> page = new Page<>(req.getPageNo(), req.getPageSize());
         return resourceReqDetailMapper.resourceRequestPage(page, req);
     }
+
+    /**
+     * 申请单明细处理中的串码
+     * @param nbrList
+     * @return
+     */
+    public List<String> getProcessingNbrList(List<String> nbrList){
+        return resourceReqDetailMapper.getProcessingNbrList(nbrList);
+    }
 }

@@ -161,7 +161,8 @@ public class RunableTask {
         Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
         for (Integer i = 0; i < excutorNum; i++) {
             log.info("RunableTask.exceutorDelNbr excutorNum={}", excutorNum);
-            List<String> newList = nbrList.subList(perNum * i, perNum * (i + 1));
+            Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
+            List<String> newList = nbrList.subList(perNum * i, maxNum);
             req.setMktResInstNbrList(newList);
             delNbrFutureTask = executorService.submit(new Callable<Integer>() {
                   @Override
@@ -186,7 +187,8 @@ public class RunableTask {
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         for (Integer i = 0; i < excutorNum; i++) {
             log.info("RunableTask.exceutorAddNbr excutorNum={}", excutorNum);
-            List newList = nbrList.subList(perNum*i,perNum*(i+1));
+            Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
+            List newList = nbrList.subList(perNum*i, maxNum);
             req.setMktResInstNbrs(newList);
             addNbrFutureTask = executorService.submit(new Callable<Boolean>() {
                 @Override

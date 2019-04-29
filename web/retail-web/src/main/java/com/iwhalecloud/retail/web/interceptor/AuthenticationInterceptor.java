@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
 import com.iwhalecloud.retail.web.utils.JWTTokenUtil;
 import com.twmacinta.util.MD5;
+import com.ztesoft.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -298,6 +299,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         userOtherMsgDTO.setUser(userDTO);
+        log.info("AuthenticationInterceptor saveUserOtherMsg userOtherMsgDTO={}", JSON.toJSONString(userOtherMsgDTO));
         return userOtherMsgDTO;
     }
 

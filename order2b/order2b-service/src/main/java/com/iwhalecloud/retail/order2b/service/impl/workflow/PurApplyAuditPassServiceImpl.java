@@ -34,8 +34,9 @@ public class PurApplyAuditPassServiceImpl implements PurApplyAuditNotPassService
         }
         PurApplyReq req = new PurApplyReq();
         req.setApplyId(params.getBusinessId());
-        //审核不通过
+        //审核通过
         req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_PASS);
+        req.setApplyType(PurApplyConsts.PURCHASE_TYPE);
         return purchaseApplyService.updatePurApplyStatus(req);
     }
 }

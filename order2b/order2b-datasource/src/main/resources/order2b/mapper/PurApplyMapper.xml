@@ -70,6 +70,9 @@
 		<if test='req.endDate!=null and req.endDate!=""'>
 			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
 		</if>
+		<if test='req.applyMerchantId!=null and req.applyMerchantId!=""'>
+			and a.apply_merchant_id= #{req.applyMerchantId}
+		</if>
 		
   </select>
   
@@ -254,6 +257,7 @@
   	select 
   		a.file_url as url ,
   		a.uid as uid,
+  		a.file_type as fileType,
   		a.file_name as name
   		from pur_apply_file a 
   		where 1=1 and a.apply_id =#{req.applyId}

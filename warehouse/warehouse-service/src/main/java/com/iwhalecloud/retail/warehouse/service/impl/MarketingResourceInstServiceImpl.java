@@ -154,7 +154,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
                 if (ResourceConst.CONSTANT_YES.equals(isFixedLine)) {
                     EBuyTerminalItemSwapReq eBuyTerminalItemSwapReq = new EBuyTerminalItemSwapReq();
                     BeanUtils.copyProperties(syncTerminalItemSwapReq, eBuyTerminalItemSwapReq);
-                    eBuyTerminalItemSwapReq.setMktId(deliveryResourceInstItem.getProductId());
+                    eBuyTerminalItemSwapReq.setMktId(sn);
                     eBuyTerminalItemReqs.add(eBuyTerminalItemSwapReq);
                 }
             }

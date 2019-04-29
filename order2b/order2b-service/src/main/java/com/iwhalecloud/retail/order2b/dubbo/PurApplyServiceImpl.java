@@ -64,13 +64,38 @@ public class PurApplyServiceImpl implements PurApplyService {
 		purApplyManager.tcProcureApply(req);
 		String isSave = req.getIsSave();
 		//提交时发起流程审核
-		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT)) {
+		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PUR_APPLY_TYPE)) {
 			//启动流程
 			ProcessStartReq processStartDTO = new ProcessStartReq();
 			processStartDTO.setTitle("采购申请单审核流程");
 			processStartDTO.setFormId(req.getApplyId());
 			processStartDTO.setProcessId(PurApplyConsts.PUR_APPLY_AUDIT_PROCESS_ID);
 			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3020.getTaskSubType());
+			processStartDTO.setApplyUserId(req.getCreateStaff());
+			//根据用户id查询名称
+			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
+			String userName = "";
+			if (userDetailDTO.isSuccess()) {
+				userName = userDetailDTO.getResultData().getUserName();
+			}
+			processStartDTO.setApplyUserName(userName);
+			ResultVO resultVO = new ResultVO();
+			try {
+				resultVO = taskService.startProcess(processStartDTO);
+			} catch (Exception e) {
+				log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
+				return ResultVO.error();
+			} finally {
+				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
+						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
+			}
+		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PURCHASE_TYPE)) {
+			//启动流程
+			ProcessStartReq processStartDTO = new ProcessStartReq();
+			processStartDTO.setTitle("采购单审核流程");
+			processStartDTO.setFormId(req.getApplyId());
+			processStartDTO.setProcessId(PurApplyConsts.PURCHASE_AUDIT_PROCESS_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3030.getTaskSubType());
 			processStartDTO.setApplyUserId(req.getCreateStaff());
 			//根据用户id查询名称
 			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());

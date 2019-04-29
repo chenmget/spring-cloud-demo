@@ -33,6 +33,11 @@ public class PurApplyConsts {
     public final static String PUR_APPLY_AUDIT_PROCESS_ID = "17";
 
     /**
+     * 采购申请单审核流程
+     */
+    public final static String PURCHASE_AUDIT_PROCESS_ID = "18";
+
+    /**
      * 发货类型
      */
     public final static String DELIVERY_TYPE = "1";

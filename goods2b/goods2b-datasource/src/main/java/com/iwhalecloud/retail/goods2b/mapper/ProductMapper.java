@@ -94,4 +94,7 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
     List<String> listProduct(@Param("productBaseId")String productBaseId);
+
+
+    public Integer updateAttrValue10(ProductAuditStateUpdateReq request);
 }

@@ -141,6 +141,8 @@ public interface ProductService {
      */
     ResultVO updateAuditState(ProductAuditStateUpdateReq req);
 
+    ResultVO updateAttrValue10(ProductAuditStateUpdateReq req);
+
 //    /**
 //     * 审核通过，事务控制:
 //     * 1.修改产品状态为审核通过

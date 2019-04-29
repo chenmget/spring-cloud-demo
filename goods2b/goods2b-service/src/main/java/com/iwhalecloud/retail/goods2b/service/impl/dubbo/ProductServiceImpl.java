@@ -409,6 +409,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResultVO updateAttrValue10(ProductAuditStateUpdateReq req) {
+        log.info("ProductServiceImpl.updateAttrValue10 productIds={},attrValue10={},updateStaff={}", req.getProductIds(), req.getAttrValue10(),req.getUpdateStaff());
+        return ResultVO.success(productManager.updateAttrValue10(req));
+    }
+
+    @Override
     public ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req){
         return ResultVO.success(productManager.getProductByProductIdsAndBrandIds(req));
     }

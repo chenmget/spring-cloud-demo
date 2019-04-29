@@ -193,6 +193,9 @@
     <if test="null!=req.createStaff and ''!=req.createStaff">
       and t.create_staff = #{req.createStaff}
     </if>
+    <if test="null!=req.attrValue10 and ''!=req.attrValue10">
+      and t.ATTR_VALUE10 = #{req.attrValue10}
+    </if>
     order by t.CREATE_DATE DESC
   </select>
 
@@ -272,8 +275,20 @@
 
   <update id="updateAuditStateByProductBaseId" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductAuditStateUpdateReq">
     UPDATE prod_product
-    SET audit_state=#{auditState},STATUS=#{status}
+    SET audit_state=#{auditState},STATUS=#{status},ATTR_VALUE10=#{attrValue10}
     WHERE product_base_id=#{productBaseId} and is_deleted = '0'
+  </update>
+
+  <update id="updateAttrValue10" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductAuditStateUpdateReq">
+    UPDATE prod_product
+    SET ATTR_VALUE10=#{attrValue10}
+    WHERE is_deleted = '0' and ATTR_VALUE10 = '2'
+    <if test="null!=productIds">
+      and product_id in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="productIds">
+        #{item}
+      </foreach>
+    </if>
   </update>
 
   <select id="getProductByProductIdsAndBrandIds" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductAndBrandGetReq"

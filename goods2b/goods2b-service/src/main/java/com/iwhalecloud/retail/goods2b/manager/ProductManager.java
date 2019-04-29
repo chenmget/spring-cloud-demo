@@ -177,6 +177,11 @@ public class ProductManager {
 
     }
 
+    public int updateAttrValue10(ProductAuditStateUpdateReq req){
+        return productMapper.updateAttrValue10(req);
+
+    }
+
     /**
      * 权限过滤用
      * @param req

@@ -68,4 +68,7 @@ public class ProductGetReq extends PageVO {
 	 */
 	@ApiModelProperty(value = "商家id")
 	private String merchantId;
+
+	@ApiModelProperty(value = "attrValue10")
+	private String attrValue10;
 }

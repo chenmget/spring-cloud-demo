@@ -35,6 +35,9 @@ public class ProductAuditPassServiceImpl implements ProductAuditPassService {
 
         req.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
 
+        req.setAttrValue10(ProductConst.attrValue10.EFFECTIVE.getCode());
+
+
         return productService.updateAuditState(req);
     }
 }

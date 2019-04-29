@@ -8,6 +8,26 @@ package com.iwhalecloud.retail.order2b.consts;
 public class PurApplyConsts {
 
     /**
+     * 修改申请单
+     */
+    public final static String PUR_APPLY_SAVE = "1";
+
+    /**
+     * 新增申请单
+     */
+    public final static String PUR_APPLY_SUBMIT = "2";
+
+    /**
+     * 申请单类型：采购申请单
+     */
+    public final static String PUR_APPLY_TYPE = "10";
+
+    /**
+     * 申请单类型：采购单
+     */
+    public final static String PURCHASE_TYPE = "20";
+
+    /**
      * 采购申请单审核流程
      */
     public final static String PUR_APPLY_AUDIT_PROCESS_ID = "17";

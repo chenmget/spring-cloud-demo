@@ -864,7 +864,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             if (ResourceConst.CONSTANT_YES.equals(isFixedLine)) {
                 EBuyTerminalItemSwapReq eBuyTerminalItemSwapReq = new EBuyTerminalItemSwapReq();
                 BeanUtils.copyProperties(syncTerminalItemReq, eBuyTerminalItemSwapReq);
-                eBuyTerminalItemSwapReq.setMktId(mktResId);
+                eBuyTerminalItemSwapReq.setMktId(sn);
                 eBuyTerminalItemReqs.add(eBuyTerminalItemSwapReq);
             }
         }

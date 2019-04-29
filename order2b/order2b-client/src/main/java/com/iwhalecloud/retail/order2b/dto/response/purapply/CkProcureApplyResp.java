@@ -6,6 +6,7 @@ import java.util.List;
 import com.iwhalecloud.retail.dto.PageVO;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 
 import lombok.Data;
 
@@ -38,7 +39,10 @@ public class CkProcureApplyResp extends PageVO implements Serializable {
 	private String applyMerchantName;//申请人名称
 	private String supplierCode;//供应商编码
 	private String supplierId;//供应商ID
+	
 	private List<AddProductReq> addProductReq;
 	
 	private List<AddFileReq> addFileReq;
+	
+	private List<MemMemberAddressReq> memMemberAddressReq;
 }

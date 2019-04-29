@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.JyPurApplyService;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
@@ -53,6 +54,7 @@ public class JySearchApplyControll extends BaseController  {
 			}
 			req.setLanId(lanId);
 		}
+		
 		return jypurApplyService.jycgSearchApply(req);
     }
 	

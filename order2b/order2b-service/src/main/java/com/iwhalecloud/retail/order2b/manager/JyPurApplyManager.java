@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.mapper.JyPurApplyMapper;
 
@@ -15,6 +16,10 @@ public class JyPurApplyManager {
 
 	@Resource
     private JyPurApplyMapper jypurApplyMapper;
+	
+	public WfTaskResp getTaskItemId(String applyId){
+		return jypurApplyMapper.getTaskItemId(applyId);
+	}
 	
 	public Page<JyPurApplyResp> jycgSearchApply(PurApplyReq req) {
 		Page<JyPurApplyResp> page=new Page<>(req.getPageNo(),req.getPageSize());

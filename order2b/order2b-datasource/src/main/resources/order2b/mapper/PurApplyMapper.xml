@@ -70,6 +70,9 @@
 		<if test='req.endDate!=null and req.endDate!=""'>
 			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
 		</if>
+		<if test='req.applyMerchantId!=null and req.applyMerchantId!=""'>
+			and a.apply_merchant_id= #{req.applyMerchantId}
+		</if>
 		
   </select>
   
@@ -254,6 +257,7 @@
   	select 
   		a.file_url as url ,
   		a.uid as uid,
+  		a.file_type as fileType,
   		a.file_name as name
   		from pur_apply_file a 
   		where 1=1 and a.apply_id =#{req.applyId}
@@ -309,6 +313,69 @@
   
   <select id="delApplyFile"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
   		delete from pur_apply_file where  apply_id = #{req.applyId}
+  </select>
+  
+  <select id="addShippingAddress"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq">
+  		insert into mem_member_address(
+  			ADDR_ID,
+  			MEMBER_ID,
+  			COUNTRY,
+  			PROVINCE_ID,
+  			CITY_ID,
+  			REGION_ID,
+  			REGION,
+  			CITY,
+  			PROVINCE,
+  			ADDR,
+  			ZIP,
+  			EMAIL,
+  			IS_EFFECT,
+  			IS_DEFAULT,
+  			CONSIGEE_NAME,
+  			CONSIGEE_MOBILE,
+  			LAST_UPDATE
+  		) values(
+  			#{req.addrId},
+  			#{req.memberId},
+  			#{req.country},
+  			#{req.provinceId},
+  			#{req.cityId},
+  			#{req.regionId},
+  			#{req.region},
+  			#{req.city},
+  			#{req.province},
+  			#{req.addr},
+  			#{req.zip},
+  			#{req.emall},
+  			#{req.isEffect},
+  			#{req.isDefault},
+  			#{req.consigeeName},
+  			#{req.consigeeMobile},
+  			#{req.lastUpdate}
+  		)
+  </select>
+  
+  <select id="ckApplyData4" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq" 
+  		resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq">
+  		SELECT a.addr_id as addrId,
+	  		a.member_id as memberId,
+			a.country as country,
+			a.province_id as provinceId,
+			a.city_id as cityId,
+			a.region_id as regionId,
+			a.region as region,
+			a.city as city,
+			a.province as province,
+			a.addr as addr,
+			a.zip as zip,
+			a.email as email,
+			a.is_effect as isEffect,
+			a.is_default as isDefault,
+			a.consigee_name as consigeeName,
+			a.consigee_mobile as consigeeMobile,
+			a.last_update as lastUpdate 
+		FROM mem_member_address a 
+		where a.member_id = #{req.applyMerchantId}
   </select>
   
 </mapper>

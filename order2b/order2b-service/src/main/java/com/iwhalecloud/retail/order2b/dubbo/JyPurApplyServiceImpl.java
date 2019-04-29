@@ -1,5 +1,7 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
@@ -7,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.manager.JyPurApplyManager;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
@@ -24,6 +27,18 @@ public class JyPurApplyServiceImpl implements JyPurApplyService {
 	@Override
 	public ResultVO<Page<JyPurApplyResp>> jycgSearchApply(PurApplyReq req) {
 		Page<JyPurApplyResp> jypurApplyResp = jypurApplyManager.jycgSearchApply(req);
+		
+		List<JyPurApplyResp> list = jypurApplyResp.getRecords();
+		
+		for(int i=0;i<list.size();i++){
+			JyPurApplyResp jyPurApplyResp = list.get(i);
+			String applyId = jyPurApplyResp.getApplyId();
+			WfTaskResp wfTaskResp = jypurApplyManager.getTaskItemId(applyId);
+			
+			jyPurApplyResp.setTaskId(wfTaskResp.getTaskId());
+			jyPurApplyResp.setTaskItemId(wfTaskResp.getTaskItemId());
+			
+		}
 		return ResultVO.success(jypurApplyResp);
 	}
 

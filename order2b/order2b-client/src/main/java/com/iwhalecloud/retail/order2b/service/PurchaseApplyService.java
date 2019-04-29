@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 
@@ -30,4 +31,12 @@ public interface PurchaseApplyService {
      * @return
      */
     ResultVO updatePurApplyStatus(PurApplyReq req);
+
+    /**
+     * 采购申请单扩展信息
+     * @param req
+     * @return
+     */
+    ResultVO addPurApplyExtInfo(PurApplyExtReq req);
+
 }

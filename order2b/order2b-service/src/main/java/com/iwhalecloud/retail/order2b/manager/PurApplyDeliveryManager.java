@@ -42,6 +42,7 @@ public class PurApplyDeliveryManager {
         String applyId = req.getApplyId();
         PurApply purApply = new PurApply();
         //更新采购申请单状态
+        BeanUtils.copyProperties(req , purApply);
         purApply.setStatusCd(req.getStatusCd());
         //修改条件
         UpdateWrapper<PurApply> userUpdateWrapper = new UpdateWrapper<>();

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.web.controller.b2b.purchase;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -50,7 +51,6 @@ public class PurchaseApplyController extends BaseController {
             return ResultVO.successMessage("发货成功");
         }
         return ResultVO.error(resultVO.getResultMsg());
-//        return ResultVO.error("发货失败");
     }
 
     @ApiOperation(value = "采购单确认收货", notes = "采购单确认收货")
@@ -74,7 +74,23 @@ public class PurchaseApplyController extends BaseController {
             return ResultVO.successMessage("确认收货成功");
         }
         return ResultVO.error(resultVO.getResultMsg());
-//        return ResultVO.error("确认收货失败");
+    }
+
+    @ApiOperation(value = "添加收货地址", notes = "添加收货地址")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @UserLoginToken
+    @PostMapping("/addReceiveAddress")
+    public ResultVO addReceiveAddress(@RequestBody PurApplyExtReq req) {
+        String userId = UserContext.getUserId();
+        req.setCreateStaff(userId);
+        ResultVO resultVO = purchaseApplyService.addPurApplyExtInfo(req);
+        if (resultVO.isSuccess()) {
+            return ResultVO.successMessage("添加收货地址成功");
+        }
+        return ResultVO.error(resultVO.getResultMsg());
     }
 }
 

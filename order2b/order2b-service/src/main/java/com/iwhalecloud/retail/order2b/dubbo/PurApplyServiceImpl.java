@@ -27,7 +27,6 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 
@@ -63,7 +62,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
 		String isSave = req.getIsSave();
-		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PUR_APPLY_TYPE)) {
+		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT)) {
 			purApplyManager.tcProcureApply(req);
 			//启动流程
 			ProcessStartReq processStartDTO = new ProcessStartReq();
@@ -89,8 +88,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
 						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 			}
-
-		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_SAVE) && req.getApplyType().equals(PurApplyConsts.PUR_APPLY_TYPE)) {
+		} else {
 			NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new NextRouteAndReceiveTaskReq();
 			nextRouteAndReceiveTaskReq.setFormId(req.getApplyId());
 			nextRouteAndReceiveTaskReq.setHandlerUserId(req.getCreateStaff());

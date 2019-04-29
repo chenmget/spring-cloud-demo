@@ -92,5 +92,22 @@ public class PurchaseApplyController extends BaseController {
         }
         return ResultVO.error(resultVO.getResultMsg());
     }
+
+    @ApiOperation(value = "更新收货地址", notes = "更新收货地址")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @UserLoginToken
+    @PostMapping("/updateReceiveAddress")
+    public ResultVO updateReceiveAddress(@RequestBody PurApplyExtReq req) {
+        String userId = UserContext.getUserId();
+        req.setUpdateStaff(userId);
+        ResultVO resultVO = purchaseApplyService.updatePurApplyExtInfo(req);
+        if (resultVO.isSuccess()) {
+            return ResultVO.successMessage("更新收货地址成功");
+        }
+        return ResultVO.error(resultVO.getResultMsg());
+    }
 }
 

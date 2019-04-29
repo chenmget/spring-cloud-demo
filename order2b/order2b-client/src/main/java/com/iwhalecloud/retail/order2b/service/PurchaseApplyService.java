@@ -33,10 +33,17 @@ public interface PurchaseApplyService {
     ResultVO updatePurApplyStatus(PurApplyReq req);
 
     /**
-     * 采购申请单扩展信息
+     * 新增采购申请单扩展信息
      * @param req
      * @return
      */
     ResultVO addPurApplyExtInfo(PurApplyExtReq req);
+
+    /**
+     * 更新采购申请单扩展信息
+     * @param req
+     * @return
+     */
+    ResultVO updatePurApplyExtInfo(PurApplyExtReq req);
 
 }

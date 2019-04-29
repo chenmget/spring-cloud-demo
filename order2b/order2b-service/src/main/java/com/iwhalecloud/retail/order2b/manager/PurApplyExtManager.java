@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.manager;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.entity.PurApplyExt;
 import com.iwhalecloud.retail.order2b.mapper.PurApplyExtMapper;
@@ -26,6 +27,16 @@ public class PurApplyExtManager {
         BeanUtils.copyProperties(req, purApplyExt);
         purApplyExt.setCreateDate(DateUtils.currentSysTimeForDate());
         return purApplyExtMapper.insert(purApplyExt);
+    }
+
+    public int updatePurApplyExtInfo(PurApplyExtReq req) {
+        PurApplyExt purApplyExt = new PurApplyExt();
+        BeanUtils.copyProperties(req, purApplyExt);
+        purApplyExt.setUpdateDate(DateUtils.currentSysTimeForDate());
+        //修改条件
+        UpdateWrapper<PurApplyExt> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("APPLY_ID", req.getApplyId());
+        return purApplyExtMapper.update(purApplyExt, updateWrapper);
     }
 }
 

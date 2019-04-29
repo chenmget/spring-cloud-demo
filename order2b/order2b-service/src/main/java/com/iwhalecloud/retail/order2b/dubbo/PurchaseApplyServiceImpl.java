@@ -173,6 +173,17 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         return ResultVO.success();
     }
 
+    @Override
+    public ResultVO updatePurApplyExtInfo(PurApplyExtReq req) {
+        //更新采购申请单扩展表
+        int i = purApplyExtManager.updatePurApplyExtInfo(req);
+        log.info("PurchaseApplyServiceImpl.addPurApplyExtInfo Resp = {}", i);
+        if (i < 1) {
+            return ResultVO.error("更新采购申请单扩展失败");
+        }
+        return ResultVO.success();
+    }
+
     public static void main(String[] args) {
 
 //		1001;2001;

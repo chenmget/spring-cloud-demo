@@ -15,6 +15,7 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
@@ -79,6 +80,10 @@ public class PurApplyManager {
 		return purApplyMapper.ckApplyData3(req);
 	}
 	
+	public List<MemMemberAddressReq> ckApplyData4(PurApplyReq req) {
+		return purApplyMapper.ckApplyData4(req);
+	}
+	
 	public int isHaveSave(String applyId){
 		return purApplyMapper.isHaveSave(applyId);
 	}
@@ -105,6 +110,10 @@ public class PurApplyManager {
 	
 	public String hqSeqItemId(){
 		return purApplyMapper.hqSeqItemId();
+	}
+	
+	public void addShippingAddress(MemMemberAddressReq req){
+		purApplyMapper.addShippingAddress(req);
 	}
 	
 }

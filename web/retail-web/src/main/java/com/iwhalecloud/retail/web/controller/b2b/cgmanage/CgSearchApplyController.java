@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
@@ -242,9 +243,33 @@ public class CgSearchApplyController extends BaseController {
 		//获取添加的产品信息
 		List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
 		List<AddFileReq> procureApplyReq3 = purApplyService.ckApplyData3(req);
+		
+		String applyType = req.getApplyType();
+		if(applyType == "20" || "20".equals(applyType)){
+			//如果是采购单，则查看收货地址
+			List<MemMemberAddressReq> procureApplyReq4 = purApplyService.ckApplyData4(req);
+			procureApplyReq1.setMemMemberAddressReq(procureApplyReq4);
+		}
+		
+		
 		procureApplyReq1.setAddProductReq(procureApplyReq2);
 		procureApplyReq1.setAddFileReq(procureApplyReq3);
 		return ResultVO.success(procureApplyReq1);
 	}
+	
+	
+	//添加收货地址
+	@ApiOperation(value = "添加收货地址操作", notes = "添加收货地址操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping("/addShippingAddress")
+	public ResultVO addShippingAddress(MemMemberAddressReq req){
+		purApplyService.addShippingAddress(req);
+		return ResultVO.success();
+	}
+	
+	
 	
 }

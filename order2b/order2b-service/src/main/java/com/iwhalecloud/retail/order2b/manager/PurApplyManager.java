@@ -92,7 +92,7 @@ public class PurApplyManager {
 	}
 	
 	public void delApplyFile(ProcureApplyReq req){
-		purApplyMapper.delApplyItem(req);
+		purApplyMapper.delApplyFile(req);
 	}	
 	
 	public String getMerchantCode(String merchantCode){

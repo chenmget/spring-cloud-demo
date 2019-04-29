@@ -61,9 +61,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
+		purApplyManager.tcProcureApply(req);
 		String isSave = req.getIsSave();
+		//提交时发起流程审核
 		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT)) {
-			purApplyManager.tcProcureApply(req);
 			//启动流程
 			ProcessStartReq processStartDTO = new ProcessStartReq();
 			processStartDTO.setTitle("采购申请单审核流程");
@@ -88,25 +89,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
 						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 			}
-		} else {
-			NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new NextRouteAndReceiveTaskReq();
-			nextRouteAndReceiveTaskReq.setFormId(req.getApplyId());
-			nextRouteAndReceiveTaskReq.setHandlerUserId(req.getCreateStaff());
-			nextRouteAndReceiveTaskReq.setHandlerMsg("采购申请单驳回审核");
-
-			ResultVO taskServiceRV = new ResultVO();
-			try {
-				taskServiceRV = taskService.nextRouteAndReceiveTask(nextRouteAndReceiveTaskReq);
-			} catch (Exception e) {
-				log.error("PurApplyServiceImpl.tcProcureApply nextRouteAndReceiveTask exception={}", e);
-				return ResultVO.error();
-			} finally {
-				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
-						JSON.toJSONString(nextRouteAndReceiveTaskReq), JSON.toJSONString(taskServiceRV));
-			}
 		}
 		return ResultVO.successMessage("修改采购申请单成功");
-
 	}
 	
 	@Override

@@ -85,8 +85,13 @@ public class AutoAddMerchantRulesJob implements SimpleJob {
                     merchantRulesSaveReq.setMerchantId(merchantDTO.getMerchantId());
                     merchantRulesSaveReq.setRuleType("1");
                     merchantRulesSaveReq.setTargetType("2");
-                    for(int i=0;i<productIds.size();i+=100){
-                        List newlist = productIds.subList(i,i+99);
+                    int listSize=productIds.size();
+                    int toIndex=100;
+                    for(int i=0;i<listSize;i+=100){
+                        if(i+100>listSize){
+                            toIndex=listSize-i;
+                        }
+                        List newlist = productIds.subList(i,i+toIndex);
                         merchantRulesSaveReq.setTargetIdList(newlist);
                         merchantRulesService.saveMerchantRules(merchantRulesSaveReq);
                         ProductAuditStateUpdateReq productAuditStateUpdateReq = new ProductAuditStateUpdateReq();

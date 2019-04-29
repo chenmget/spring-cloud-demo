@@ -8,7 +8,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
-import com.iwhalecloud.retail.order2b.service.workflow.PurApplyAuditNotPassService;
+import com.iwhalecloud.retail.order2b.service.workflow.PurApplyAuditPassService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -21,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 @Service
-public class PurApplyAuditPassServiceImpl implements PurApplyAuditNotPassService {
+public class PurApplyAuditPassServiceImpl implements PurApplyAuditPassService {
 
     @Reference
     private PurchaseApplyService purchaseApplyService;

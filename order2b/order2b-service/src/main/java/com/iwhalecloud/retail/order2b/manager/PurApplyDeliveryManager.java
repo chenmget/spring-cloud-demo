@@ -43,7 +43,7 @@ public class PurApplyDeliveryManager {
         PurApply purApply = new PurApply();
         //更新采购申请单状态
         BeanUtils.copyProperties(req , purApply);
-        purApply.setStatusCd(req.getStatusCd());
+//        purApply.setStatusCd(req.getStatusCd());
         //修改条件
         UpdateWrapper<PurApply> userUpdateWrapper = new UpdateWrapper<>();
         userUpdateWrapper.eq("APPLY_ID", applyId);

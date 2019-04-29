@@ -117,8 +117,11 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         //检查有没有需要用户权限的注解
+        String id = "";
+        String sessionId = "";
+        String type = "";
         if (method.isAnnotationPresent(UserLoginToken.class)) {
-        	log.info("校验token = {}",token);
+            log.info("校验token = {}",token);
             UserLoginToken userLoginToken = method.getAnnotation(UserLoginToken.class);
             if (userLoginToken.required()) {
                 // 执行认证
@@ -126,9 +129,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     throw new UserNotLoginException("token为空，无效token，请重新登录");
                 }
 
-                String id = "";
-                String sessionId = "";
-                String type = "";
                 try {
                     Map<String, Claim> claims = JWT.decode(token).getClaims();
                     id = claims.get("id").asString();
@@ -151,14 +151,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     throw new UserNotLoginException("非法数据，请重新登录");
                 }
 
-                // 验证 token 有效时间
-//                JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
-//                try {
-//                    jwtVerifier.verify(token);
-//                } catch (JWTVerificationException e) {
-//                	e.printStackTrace();
-//                    throw new UserNotLoginException("token失效，请重新登录");
-//                }
                 // 验证 token 有效时间
                 if (JWTTokenUtil.isTokenEffect(sessionId)) {
                     // 有效  更新token有效时间
@@ -187,31 +179,64 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     UserDTO userDTO = (UserDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER);
                     UserOtherMsgDTO otherMsgDTO = (UserOtherMsgDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER_OTHER_MSG);
 
-//                    log.info("token 里面的用户ID= {}", id);
-//                    if (userDTO != null) {
-//                        log.info("session里面的用户信息的用户ID=  {}", userDTO.getUserId());
-//                    }
-
                     if(userDTO == null || !StringUtils.equals(id, userDTO.getUserId())){
-//                        log.info("session里面的用户信息为空，或者 toke里面的用户ID和session里面的用户ID 不一样，重新获取用户信息");
+                        log.info("session里面的用户信息为空，或者 toke里面的用户ID和session里面的用户ID 不一样，重新获取用户信息");
                         userDTO = userService.getUserByUserId(id);
                         if(userDTO != null){
                             otherMsgDTO = saveUserOtherMsg(userDTO);
                         }
                     }
-//                    if(otherMsgDTO == null
-//                            && userDTO != null){
-//                        otherMsgDTO = saveUserOtherMsg(userDTO);
-//                    }
                     // 保存用户信息
                     UserContext.setUser(userDTO);
                     UserContext.setUserId(id);
                     UserContext.setSessionId(sessionId);
                     UserContext.setUserOtherMsg(otherMsgDTO);
                 }
-
                 return true;
             }
+        } else{
+            if (token == null || "".equals(token)) {
+                return true;
+            }
+            try {
+                Map<String, Claim> claims = JWT.decode(token).getClaims();
+                id = claims.get("id").asString();
+                sessionId = claims.get("sessionId").asString();
+                type = claims.get("type").asString();
+            } catch (Exception j) {
+                log.error("token异常", j);
+            }
+
+            //将id放入线程变量
+            if(UserType.MEMBER.toString().equals(type)){
+                MemberDTO memberDTO = (MemberDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_MEMBER);
+                if(memberDTO == null){
+                    // web 重启后  从session 取到的值可能是空
+                    MemberGetReq req = new MemberGetReq();
+                    req.setMemberId(id);
+                    memberDTO = memberService.getMember(req).getResultData();
+                }
+                // 保存会员信息
+                MemberContext.setMember(memberDTO);
+                MemberContext.setMemberId(id);
+                MemberContext.setUserSessionId(sessionId);
+            }else if(UserType.USER.toString().equals(type)){
+                UserDTO userDTO = (UserDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER);
+                UserOtherMsgDTO otherMsgDTO = (UserOtherMsgDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER_OTHER_MSG);
+
+                if(userDTO == null || !StringUtils.equals(id, userDTO.getUserId())){
+                    log.info("no UserLoginToken session里面的用户信息为空，或者 toke里面的用户ID和session里面的用户ID 不一样，重新获取用户信息");
+                    userDTO = userService.getUserByUserId(id);
+                    if(userDTO != null){
+                        otherMsgDTO = saveUserOtherMsg(userDTO);
+                    }
+                }
+                UserContext.setUser(userDTO);
+                UserContext.setUserId(id);
+                UserContext.setSessionId(sessionId);
+                UserContext.setUserOtherMsg(otherMsgDTO);
+            }
+            return true;
         }
         return true;
     }

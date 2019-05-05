@@ -55,6 +55,12 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
     public ResultVO<String> savePermissionApply(PermissionApplySaveDTO req) throws Exception {
         log.info("PermissionApplyServiceImpl.savePermissionApply(), input: PermissionApplySaveReq={} ", JSON.toJSONString(req));
         // 判空
+        if (StringUtils.isEmpty(req.getUserId())) {
+            return ResultVO.error("用户ID不能为空");
+        }
+        if (StringUtils.isEmpty(req.getMerchantId())) {
+            return ResultVO.error("商家ID不能为空");
+        }
         if (Objects.isNull(req.getPermissionApplySaveReq())) {
             return ResultVO.error("商家权限申请单信息不能为空");
         }
@@ -62,8 +68,13 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
             return ResultVO.error("商家权限申请单项列表不能为空");
         }
 
-        // 1、新增申请单信息
-        String applyId = permissionApplyManager.savePermissionApply(req.getPermissionApplySaveReq());
+        // 1、新增申请单信息 (设置必要信息）
+        PermissionApplySaveReq applySaveReq = req.getPermissionApplySaveReq();
+        applySaveReq.setCreateStaff(req.getUserId());
+        applySaveReq.setUpdateStaff(req.getUserId());
+        applySaveReq.setMerchantId(req.getMerchantId());
+        applySaveReq.setStatusCd(PartnerConst.PermissionApplyStatusEnum.AUDITING.getCode());
+        String applyId = permissionApplyManager.savePermissionApply(applySaveReq);
         if (StringUtils.isEmpty(applyId)) {
            return ResultVO.error("新增商家权限申请单失败");
         }
@@ -79,16 +90,11 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
             entity.setMerchantId(req.getMerchantId());
             entity.setStatusCd(PartnerConst.TelecomCommonState.VALID.getCode());
             entity.setOperationType(PartnerConst.PermissionApplyItemOperationTypeEnum.ADD.getType());
-            entity.setUpdateStaff(req.getUserId());
             entity.setCreateStaff(req.getUserId());
             entity.setUpdateStaff(req.getUserId());
             entity.setCreateDate(new Date());
             entity.setUpdateDate(new Date());
 
-//            entity.setMerchantId(item.getMerchantId());
-//            entity.setRuleType(item.getRuleType());
-//            entity.setTargetType(item.getTargetType());
-//            entity.setTargetId(item.getTargetId());
             entityList.add(entity);
         }
         if (!permissionApplyItemManager.saveBatch(entityList)) {
@@ -223,7 +229,7 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
             throw new Exception("商家权限 申请单 状态 更新失败");
         }
 
-        return ResultVO.successMessage("审核通过");
+        return ResultVO.successMessage("审核成功");
     }
 
 

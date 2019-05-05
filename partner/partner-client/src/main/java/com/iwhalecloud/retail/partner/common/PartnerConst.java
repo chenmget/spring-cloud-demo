@@ -376,4 +376,25 @@ public class PartnerConst {
             return code;
         }
     }
+
+    /**
+     *  商家权限申请单 状态类型
+     */
+    public enum PermissionApplyTypeEnum {
+
+        PERMISSION_APPLY("10","权限申请"),
+        ;
+        private String code;
+        private String name;
+        PermissionApplyTypeEnum(String code, String name){
+            this.code = code;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+        public String getCode() {
+            return code;
+        }
+    }
 }

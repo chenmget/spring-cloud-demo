@@ -74,6 +74,7 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
         applySaveReq.setUpdateStaff(req.getUserId());
         applySaveReq.setMerchantId(req.getMerchantId());
         applySaveReq.setStatusCd(PartnerConst.PermissionApplyStatusEnum.AUDITING.getCode());
+//        applySaveReq.setApplyType(PartnerConst.PermissionApplyTypeEnum.PERMISSION_APPLY.getCode());
         String applyId = permissionApplyManager.savePermissionApply(applySaveReq);
         if (StringUtils.isEmpty(applyId)) {
            return ResultVO.error("新增商家权限申请单失败");

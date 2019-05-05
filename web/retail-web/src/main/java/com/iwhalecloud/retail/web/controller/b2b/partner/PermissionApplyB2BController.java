@@ -47,6 +47,7 @@ public class PermissionApplyB2BController {
         }
         req.setUserId(userDTO.getUserId());
         req.setMerchantId(userDTO.getRelCode());
+        req.setName(userDTO.getUserName());
         ResultVO resp = permissionApplyService.savePermissionApply(req);
         log.info("PermissionApplyB2BController.save(), output: resp={} ", JSON.toJSONString(resp));
         return resp;

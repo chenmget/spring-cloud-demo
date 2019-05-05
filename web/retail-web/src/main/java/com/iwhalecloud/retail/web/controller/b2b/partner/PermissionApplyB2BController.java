@@ -23,7 +23,7 @@ import java.util.Objects;
 @RestController
 @CrossOrigin
 @RequestMapping("/api/b2b/permissionApply")
-@Api(value="商家权限申请:", tags={"商家权限申请:PermissionApplyB2BController"})
+@Api(value = "商家权限申请:", tags = {"商家权限申请:PermissionApplyB2BController"})
 public class PermissionApplyB2BController {
 
     @Reference
@@ -31,12 +31,12 @@ public class PermissionApplyB2BController {
 
     @ApiOperation(value = "商家权限申请新建接口", notes = "商家权限申请新建接口")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数不全"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数不全"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/save")
+    @PostMapping(value = "/save")
     @UserLoginToken
-    public ResultVO<String> save(@RequestBody @ApiParam(value = "商家权限申请新建入参", required = true) PermissionApplySaveDTO req)throws Exception{
+    public ResultVO<String> save(@RequestBody @ApiParam(value = "商家权限申请新建入参", required = true) PermissionApplySaveDTO req)throws Exception {
         log.info("PermissionApplyB2BController.save(), input: PermissionApplySaveDTO={} ", JSON.toJSONString(req));
         UserDTO userDTO = UserContext.getUser();
         if (Objects.isNull(userDTO)) {

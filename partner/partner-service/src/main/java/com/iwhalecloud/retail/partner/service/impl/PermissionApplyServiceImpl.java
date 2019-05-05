@@ -7,7 +7,14 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.PermissionApplyDTO;
-import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyItemSaveReq;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplySaveDTO;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplySaveReq;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyUpdateReq;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyItemListReq;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyListReq;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyAuditReq;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyItemUpdateReq;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import com.iwhalecloud.retail.partner.entity.PermissionApply;
 import com.iwhalecloud.retail.partner.entity.PermissionApplyItem;
@@ -124,13 +131,15 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
 //                List<HandlerUser> uerList = new ArrayList<HandlerUser>(1);
 //                processStartDTO.setNextHandlerUser(uerList);
         ResultVO taskServiceRV = new ResultVO();
-        try{
+        try {
             //开启流程
             taskServiceRV = taskService.startProcess(processStartDTO);
 //            return ResultVO.success();
-        }catch (Exception ex){
+        }
+        catch (Exception ex) {
             return ResultVO.error("开启申请审核流程失败");
-        }finally {
+        }
+        finally {
             log.info("TaskService.startProcess req={},resp={}",
                     JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
         }
@@ -166,7 +175,7 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
         log.info("PermissionApplyServiceImpl.listPermissionApply(), input: PermissionApplyUpdateReq={} ", JSON.toJSONString(req));
         List<PermissionApply> entityList = permissionApplyManager.listPermissionApply(req);
         List<PermissionApplyDTO> dtoList = Lists.newArrayList();
-        if(!CollectionUtils.isEmpty(entityList)) {
+        if (!CollectionUtils.isEmpty(entityList)) {
             for (PermissionApply entity : entityList) {
                 PermissionApplyDTO  dto = new PermissionApplyDTO();
                 BeanUtils.copyProperties(entity, dto);
@@ -211,7 +220,7 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
             }
 
             // 3、审核通过 添加数据到 商家权限表
-            if (StringUtils.equals(req.getStatusCd(), PartnerConst.PermissionApplyStatusEnum.PASS.getCode())){
+            if (StringUtils.equals(req.getStatusCd(), PartnerConst.PermissionApplyStatusEnum.PASS.getCode())) {
                 if (!addItemToRules(itemList)) {
                     log.info("PermissionApplyServiceImpl.passPermissionApply(), 添加数据到 商家权限表 失败");
                     throw new Exception("添加数据到 商家权限表 失败");

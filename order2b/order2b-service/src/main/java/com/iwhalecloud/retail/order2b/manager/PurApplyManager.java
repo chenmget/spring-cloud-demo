@@ -10,10 +10,15 @@ import org.springframework.stereotype.Component;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.mapper.CartMapper;
 import com.iwhalecloud.retail.order2b.mapper.PurApplyMapper;
 
@@ -28,17 +33,27 @@ public class PurApplyManager {
 		Page<PurApplyResp> pageReport =purApplyMapper.cgSearchApply(page,req);
 		return pageReport;
 	}
+	
+	public Page<PurApplyResp> cgSearchApplyLan(PurApplyReq req) {
+		Page<PurApplyResp> page=new Page<>(req.getPageNo(),req.getPageSize());
+		Page<PurApplyResp> pageReport =purApplyMapper.cgSearchApplyLan(page,req);
+		return pageReport;
+	}
 
 	public void tcProcureApply(ProcureApplyReq req){
 		purApplyMapper.tcProcureApply(req);
 	}
 	
-	public void crPurApplyFile(ProcureApplyReq req){
+	public void crPurApplyFile(AddFileReq req){
 		purApplyMapper.crPurApplyFile(req);
 	}
 	
 	public void crPurApplyItem(AddProductReq req){
 		purApplyMapper.crPurApplyItem(req);
+	}
+	
+	public PriCityManagerResp getLoginInfo(String userId){
+		return purApplyMapper.getLoginInfo(userId);
 	}
 	
 	public void delSearchApply(PurApplyReq req){
@@ -53,7 +68,7 @@ public class PurApplyManager {
 		return purApplyMapper.hqDiShiBuMen(dsbm);
 	}
 	
-	public ProcureApplyReq ckApplyData1(PurApplyReq req) {
+	public CkProcureApplyResp ckApplyData1(PurApplyReq req) {
 		return purApplyMapper.ckApplyData1(req);
 	}
 	
@@ -61,16 +76,32 @@ public class PurApplyManager {
 		return purApplyMapper.ckApplyData2(req);
 	}
 	
+	public List<AddFileReq> ckApplyData3(PurApplyReq req) {
+		return purApplyMapper.ckApplyData3(req);
+	}
+	
+	public List<MemMemberAddressReq> ckApplyData4(PurApplyReq req) {
+		return purApplyMapper.ckApplyData4(req);
+	}
+	
 	public int isHaveSave(String applyId){
 		return purApplyMapper.isHaveSave(applyId);
 	}
 	
-	public void updatePurApply(String applyId){
-		purApplyMapper.updatePurApply(applyId);
+	public void updatePurApply(ProcureApplyReq state){
+		purApplyMapper.updatePurApply(state);
 	}
 	
-	public String getMerchantId(String merchantCode){
-		return purApplyMapper.getMerchantId(merchantCode);
+	public void delApplyItem(ProcureApplyReq req){
+		purApplyMapper.delApplyItem(req);
+	}
+	
+	public void delApplyFile(ProcureApplyReq req){
+		purApplyMapper.delApplyFile(req);
+	}	
+	
+	public String getMerchantCode(String merchantCode){
+		return purApplyMapper.getMerchantCode(merchantCode);
 	}
 	
 	public String hqSeqFileId(){
@@ -79,6 +110,10 @@ public class PurApplyManager {
 	
 	public String hqSeqItemId(){
 		return purApplyMapper.hqSeqItemId();
+	}
+	
+	public void addShippingAddress(MemMemberAddressReq req){
+		purApplyMapper.addShippingAddress(req);
 	}
 	
 }

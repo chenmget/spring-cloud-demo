@@ -70,6 +70,12 @@ public class ProductBaseGetReq extends AbstractRequest implements Serializable {
     private String isCtCode;
 
     /**
+     * 是否需要抽检
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String isFixedLine;
+
+    /**
      * 产品编码
      */
     @ApiModelProperty(value = "产品编码")

@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
@@ -206,5 +207,14 @@ public class ProductManager {
      */
     public List<ProductResp> getProductForRebate(ProductRebateReq req){
         return productMapper.getProductForRebate(req);
+    }
+
+    /**
+     * 查询产品sn, is_fixed_line(对接营销资源用)
+     * @param productId
+     * @return
+     */
+    public ProductForResourceResp getProductForResource(String productId){
+        return productMapper.getProductForResource(productId);
     }
 }

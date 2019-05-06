@@ -56,7 +56,7 @@ import java.util.*;
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
-@Api(value="用户模块：登录、增、改、查等", tags={"用户模块：登录、增、改、查等"})
+@Api(value = "用户模块：登录、增、改、查等", tags = {"用户模块：登录、增、改、查等"})
 public class UserController extends BaseController {
 
     @Value("${jwt.secret}")
@@ -207,6 +207,7 @@ public class UserController extends BaseController {
 
     /**
      * 把前端传过来的ASE加密后的密码 还原成普通字符串
+     *
      * @param base64StrPW
      * @return
      */
@@ -220,7 +221,6 @@ public class UserController extends BaseController {
         // 2、解密
         return AESUtils.decrypt(base64StrPW, key);
     }
-
 
 
     /**
@@ -262,12 +262,13 @@ public class UserController extends BaseController {
 
     /**
      * 系统用户登出
+     *
      * @return
      */
     @ApiOperation(value = "系统员工登出", notes = "")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public ResultVO userLogout(HttpServletRequest request) {
@@ -282,39 +283,48 @@ public class UserController extends BaseController {
 
     /**
      * 根据用户ID  获取用户的菜单
+     *
      * @param userId
      * @return
      */
-    private List<MenuDTO> getUserMenu(String userId){
-        List<MenuDTO> menuList = new ArrayList();
-        //1、先找  用户-角色 关联
-        List<UserRoleDTO> userRoleDTOList = userRoleService.listUserRoleByUserId(userId).getResultData();
-        List<String> menuIdList = new ArrayList<>();
+    private List<MenuDTO> getUserMenu(String userId) {
 
-        for(UserRoleDTO userRoleDTO : userRoleDTOList){
-            //2、找 角色-菜单 关联
-            List<RoleMenuDTO> roleMenuDTOList = roleMenuService.listRoleMenuByRoleId(userRoleDTO.getRoleId()).getResultData();
-            // 存menuID
-            for (RoleMenuDTO roleMenuDTO : roleMenuDTOList){
-                menuIdList.add(roleMenuDTO.getMenuId());
-            }
-        }
-        // menuID 去重
-        HashSet h = new HashSet(menuIdList);
-        menuIdList.clear();
-        menuIdList.addAll(h);
-        for (String menuId : menuIdList){
-            MenuDTO menuDTO = menuService.getMenuByMenuId(menuId).getResultData();
-            if(menuDTO != null){
-                menuList.add(menuDTO);
-            }
-        }
+        long startTime = System.currentTimeMillis();
+        List<MenuDTO> menuList = menuService.getMenuByRoleId(userId);
+        long endTime = System.currentTimeMillis();
+        log.info("菜单查询耗时：" + (endTime - startTime));
         return menuList;
+
+//        List<MenuDTO> menuList = new ArrayList();
+//        //1、先找  用户-角色 关联
+//        List<UserRoleDTO> userRoleDTOList = userRoleService.listUserRoleByUserId(userId).getResultData();
+//        List<String> menuIdList = new ArrayList<>();
+//
+//        for(UserRoleDTO userRoleDTO : userRoleDTOList){
+//            //2、找 角色-菜单 关联
+//            List<RoleMenuDTO> roleMenuDTOList = roleMenuService.listRoleMenuByRoleId(userRoleDTO.getRoleId()).getResultData();
+//            // 存menuID
+//            for (RoleMenuDTO roleMenuDTO : roleMenuDTOList){
+//                menuIdList.add(roleMenuDTO.getMenuId());
+//            }
+//        }
+//        // menuID 去重
+//        HashSet h = new HashSet(menuIdList);
+//        menuIdList.clear();
+//        menuIdList.addAll(h);
+//        for (String menuId : menuIdList){
+//            MenuDTO menuDTO = menuService.getMenuByMenuId(menuId).getResultData();
+//            if(menuDTO != null){
+//                menuList.add(menuDTO);
+//            }
+//        }
+//        return menuList;
     }
 
     /**
      * 获取系统用户信息（外层都返回成功，是否登陆在resultData字段里面返回）
      * 不用token拦截啦，这里本身要做token校验啦（方便统一返回）
+     *
      * @param request
      * @return
      */
@@ -324,7 +334,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @ApiImplicitParam(name = "platformFlag", value = "平台标识：0交易平台；1管理平台", paramType = "query", required = true, dataType = "String")
-    @RequestMapping(value="/getUser",method = RequestMethod.GET)
+    @RequestMapping(value = "/getUser", method = RequestMethod.GET)
     @UserLoginToken
     public ResultVO<LoginResp> getUser(HttpServletRequest request, @RequestParam String platformFlag) {
         ResultVO checkUserLoginResult = checkUserLogin(request);
@@ -358,7 +368,7 @@ public class UserController extends BaseController {
             resp.setLoginStatusCode(WebConst.loginStatusEnum.LOGIN_WRONG_PLATFORM.getCode());
             resp.setLoginStatusMsg(WebConst.loginStatusEnum.LOGIN_WRONG_PLATFORM.getValue());
             return successResultVO(resp);
-        }else if(!isAdminType && !tradePlaltform.equals(platformFlag)){
+        } else if (!isAdminType && !tradePlaltform.equals(platformFlag)) {
             resp.setLoginStatusCode(WebConst.loginStatusEnum.LOGIN_WRONG_PLATFORM.getCode());
             resp.setLoginStatusMsg(WebConst.loginStatusEnum.LOGIN_WRONG_PLATFORM.getValue());
             return successResultVO(resp);
@@ -379,21 +389,23 @@ public class UserController extends BaseController {
 
     /**
      * 取token
+     *
      * @param request
      * @return
      */
-    private String getToken(HttpServletRequest request){
+    private String getToken(HttpServletRequest request) {
         // 从 http 请求头中取出 token
         String token = request.getHeader("token");
         // 如果http请求头没有token则尝试从session中获取
         if (StringUtils.isEmpty(token)) {
-            token = (String)request.getSession().getAttribute(WebConst.SESSION_TOKEN);
+            token = (String) request.getSession().getAttribute(WebConst.SESSION_TOKEN);
         }
         return token;
     }
 
     /**
      * 判断用户是否登陆  登陆：返回 用户ID： userId
+     *
      * @param request
      * @return
      */
@@ -420,15 +432,15 @@ public class UserController extends BaseController {
             int iat = claims.get("iat").asInt();
             String selfToken = claims.get("selfToken").asString();
 
-            String hash = "id="+id+"&sessionId="+sessionId+"&secret="+SECRET+"&exp="+String.valueOf(exp)+"&iat="+String.valueOf(iat);
+            String hash = "id=" + id + "&sessionId=" + sessionId + "&secret=" + SECRET + "&exp=" + String.valueOf(exp) + "&iat=" + String.valueOf(iat);
             MD5 md5 = new MD5();
             md5.Update(hash, null);
-            if(!selfToken.equals(md5.asHex())){
+            if (!selfToken.equals(md5.asHex())) {
 //            if(!selfToken.equals(MD5Util.compute("id="+id+"&sessionId="+sessionId+"&secret="+SECRET+"&exp="+String.valueOf(exp)+"&iat="+String.valueOf(iat)))){
                 return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
             }
         } catch (Exception ex) {
-            log.error("MemberController.getMemberToken Exception token="+token,ex);
+            log.error("MemberController.getMemberToken Exception token=" + token, ex);
             return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
         }
         // 验证token
@@ -445,10 +457,11 @@ public class UserController extends BaseController {
     /**
      * 保存用户的 其他信息
      * 同时存到session
+     *
      * @param userDTO
      * @return
      */
-    private UserOtherMsgDTO saveUserOtherMsg(UserDTO userDTO){
+    private UserOtherMsgDTO saveUserOtherMsg(UserDTO userDTO) {
 
         UserOtherMsgDTO userOtherMsgDTO = new UserOtherMsgDTO();
         // 找  用户-角色 关联
@@ -493,11 +506,11 @@ public class UserController extends BaseController {
 //
 //        } else
 
-            if(Objects.nonNull(userDTO.getUserFounder())
-                    && userDTO.getUserFounder() == SystemConst.USER_FOUNDER_7) {
+        if (Objects.nonNull(userDTO.getUserFounder())
+                && userDTO.getUserFounder() == SystemConst.USER_FOUNDER_7) {
 
             // 如果founder=7 去获取分销商经营主体信息
-            if(!StringUtils.isEmpty(userDTO.getRelCode())){
+            if (!StringUtils.isEmpty(userDTO.getRelCode())) {
                 BusinessEntityGetReq req = new BusinessEntityGetReq();
                 req.setBusinessEntityId(userDTO.getRelCode());
                 BusinessEntityDTO businessEntityDTO = businessEntityService.getBusinessEntity(req).getResultData();
@@ -513,32 +526,27 @@ public class UserController extends BaseController {
     }
 
 
-
-
-
-
 /*******   登录部分 end ********/
-
-
 
 
     /**
      * 获取用户列表
+     *
      * @param req
      * @return
      */
     @ApiOperation(value = "获取用户列表", notes = "可以根据用户账号、姓名条件进行筛选查询")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/getUserPage", method = RequestMethod.POST)
     public ResultVO<Page<UserDTO>> getAdminListWithRole(@RequestBody UserPageReq req) {
         // 判空
         Page<UserDTO> resp = userService.pageUser(req);
         // 设置组织名称
-        if(!CollectionUtils.isEmpty(resp.getRecords())){
-            for (UserDTO userDTO : resp.getRecords()){
+        if (!CollectionUtils.isEmpty(resp.getRecords())) {
+            for (UserDTO userDTO : resp.getRecords()) {
                 userDTO.setOrgName(getOrgNameByOrgId(userDTO.getOrgId()));
             }
         }
@@ -547,23 +555,24 @@ public class UserController extends BaseController {
 
     /**
      * 获取用户列表
+     *
      * @param userId
      * @return
      */
     @ApiOperation(value = "获取用户详情", notes = "可以根据用户ID获取用户详情")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/getUserDetail", method = RequestMethod.GET)
     public ResultVO<GetUserDetailResp> getUserDetail(@RequestParam(value = "userId", required = true) String userId) {
         // 判空
-        if(StringUtils.isEmpty(userId)){
+        if (StringUtils.isEmpty(userId)) {
             return failResultVO("用户ID不能为空");
         }
         // 用户信息
         UserDTO userDTO = userService.getUserByUserId(userId);
-        if (userDTO == null){
+        if (userDTO == null) {
             return failResultVO("获取用户详情失败");
         }
         // 获取组织名称
@@ -581,30 +590,32 @@ public class UserController extends BaseController {
 
     /**
      * 获取组织名称
+     *
      * @param orgId
      * @return
      */
-    private String getOrgNameByOrgId(String orgId){
-        if(StringUtils.isEmpty(orgId)){
+    private String getOrgNameByOrgId(String orgId) {
+        if (StringUtils.isEmpty(orgId)) {
             return "";
         }
         String orgName = "";
-        com.iwhalecloud.retail.dto.ResultVO resultVO =organizationService.getOrganization(orgId);
-        if(resultVO.getResultData() != null ){
-            orgName =((OrganizationDTO)resultVO.getResultData()).getOrgName();
+        com.iwhalecloud.retail.dto.ResultVO resultVO = organizationService.getOrganization(orgId);
+        if (resultVO.getResultData() != null) {
+            orgName = ((OrganizationDTO) resultVO.getResultData()).getOrgName();
         }
         return orgName;
     }
 
     /**
      * 添加用户(先根据userName字段去查询有没有这个字段值的账号，没有才能注册）
+     *
      * @param req
      * @return
      */
     @ApiOperation(value = "添加系统员工", notes = "传入UserAddReq对象，进行添加操作")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/add", method = RequestMethod.POST)
     public ResultVO<UserDTO> addUser(@RequestBody AddUserReq req) {
@@ -617,7 +628,7 @@ public class UserController extends BaseController {
         }
 
         UserDTO loginUser = UserContext.getUser();
-        if (loginUser == null){
+        if (loginUser == null) {
             return failResultVO("用户未登录！");
         }
 
@@ -625,7 +636,7 @@ public class UserController extends BaseController {
         UserGetReq userGetReq = new UserGetReq();
         userGetReq.setLoginName(req.getLoginName());
         UserDTO userDTO = userService.getUser(userGetReq);
-        if(userDTO != null){
+        if (userDTO != null) {
             return failResultVO("该账号已经存在，请换一个账号名");
         }
         // 添加账号信息
@@ -646,13 +657,13 @@ public class UserController extends BaseController {
         }
 
         // 判断是否需要增加角色关联
-        if(!CollectionUtils.isEmpty(req.getRoleIdList())){
-            for (String roleId : req.getRoleIdList()){
+        if (!CollectionUtils.isEmpty(req.getRoleIdList())) {
+            for (String roleId : req.getRoleIdList()) {
                 // 获取角色
                 RoleGetReq roleGetReq = new RoleGetReq();
                 roleGetReq.setRoleId(roleId);
                 RoleDTO roleDTO = roleService.getRole(roleGetReq);
-                if(roleDTO == null){
+                if (roleDTO == null) {
                     continue;
                 }
                 // 增加关联关系
@@ -670,13 +681,14 @@ public class UserController extends BaseController {
 
     /**
      * 设置用户状态
+     *
      * @param req
      * @return
      */
     @ApiOperation(value = "设置用户状态", notes = "传入UserSetStatusReq对象，进行添加操作")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/setStatus", method = RequestMethod.POST)
     public ResultVO setAdminStatus(@RequestBody UserSetStatusReq req) {
@@ -690,17 +702,17 @@ public class UserController extends BaseController {
                 && req.getStatusCd() != SystemConst.USER_STATUS_VALID
                 && req.getStatusCd() != SystemConst.USER_STATUS_DELETE
                 && req.getStatusCd() != SystemConst.USER_STATUS_LOCK
-        ) {
+                ) {
             return failResultVO("状态值有误，请确认");
         }
         int result = userService.setUserStatus(req);
         // 失败统一返回
         if (result == 0) {
-            if (req.getStatusCd() == SystemConst.USER_STATUS_INVALID ) {
+            if (req.getStatusCd() == SystemConst.USER_STATUS_INVALID) {
                 return failResultVO("禁用用户失败");
-            }else if ( req.getStatusCd() == SystemConst.USER_STATUS_VALID ) {
+            } else if (req.getStatusCd() == SystemConst.USER_STATUS_VALID) {
                 return failResultVO("启用用户失败");
-            }else if (req.getStatusCd() == SystemConst.USER_STATUS_DELETE) {
+            } else if (req.getStatusCd() == SystemConst.USER_STATUS_DELETE) {
                 return failResultVO("删除用户失败");
             }
             return failResultVO("修改用户状态失败");
@@ -711,13 +723,14 @@ public class UserController extends BaseController {
 
     /**
      * 设置用户密码
+     *
      * @param req
      * @return
      */
     @ApiOperation(value = "设置用户密码", notes = "传入UserSetStatusReq对象，进行添加操作")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/updatePassword", method = RequestMethod.POST)
     @UserLoginToken
@@ -732,7 +745,7 @@ public class UserController extends BaseController {
             return failResultVO("新密码不能为空");
         }
         UserDTO userDTO = UserContext.getUser();
-        if(userDTO == null) {
+        if (userDTO == null) {
             return failResultVO("用户未登录！");
         }
         req.setUserId(userDTO.getUserId());
@@ -746,8 +759,9 @@ public class UserController extends BaseController {
 
     /**
      * 编辑用户
-     * @para requestDTO
+     *
      * @return
+     * @para requestDTO
      */
     @ApiOperation(value = "编辑系统用户信息", notes = "传入AdminUserEditRequestDTO对象，进行编辑操作")
     @ApiResponses({
@@ -766,7 +780,7 @@ public class UserController extends BaseController {
 //        }
 
         UserDTO loginUser = UserContext.getUser();
-        if (loginUser == null){
+        if (loginUser == null) {
             return failResultVO("用户未登录！");
         }
 
@@ -790,13 +804,13 @@ public class UserController extends BaseController {
         userRoleService.deleteUserRoleByUserId(req.getUserId());
 
         // 判断是否需要增加角色关联
-        if(!CollectionUtils.isEmpty(req.getRoleIdList())){
-            for (String roleId : req.getRoleIdList()){
+        if (!CollectionUtils.isEmpty(req.getRoleIdList())) {
+            for (String roleId : req.getRoleIdList()) {
                 // 获取角色
                 RoleGetReq roleGetReq = new RoleGetReq();
                 roleGetReq.setRoleId(roleId);
                 RoleDTO roleDTO = roleService.getRole(roleGetReq);
-                if(roleDTO == null){
+                if (roleDTO == null) {
                     continue;
                 }
                 // 增加关联关系
@@ -838,9 +852,9 @@ public class UserController extends BaseController {
         String signString = request.getParameter("signString");
         String signTimestamp = request.getParameter("signTimestamp");
 
-        if(businessCode.equals(menuCode)){
+        if (businessCode.equals(menuCode)) {
             platformFlag = "0";
-        }else{
+        } else {
             platformFlag = "1";
         }
 
@@ -928,7 +942,7 @@ public class UserController extends BaseController {
                         }
                         return;
                     } else {
-                        out.print("单点登录失败，"+rv.getResultMsg());
+                        out.print("单点登录失败，" + rv.getResultMsg());
                         return;
                     }
                 } else {
@@ -992,6 +1006,7 @@ public class UserController extends BaseController {
 
     /**
      * 重置用户密码
+     *
      * @param userResetPasswordReq
      * @return
      */

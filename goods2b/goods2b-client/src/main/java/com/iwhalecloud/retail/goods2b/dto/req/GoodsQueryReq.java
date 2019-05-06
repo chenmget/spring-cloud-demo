@@ -23,6 +23,9 @@ public class GoodsQueryReq extends AbstractRequest implements Serializable {
     @ApiModelProperty(value = "是否登录")
     private Boolean isLogin;
 
+    @ApiModelProperty(value = "产品id")
+    private String productId;
+
 
 
 }

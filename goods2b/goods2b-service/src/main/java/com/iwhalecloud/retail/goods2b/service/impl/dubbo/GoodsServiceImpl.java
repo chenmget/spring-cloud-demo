@@ -1169,6 +1169,19 @@ public class GoodsServiceImpl implements GoodsService {
         if (CollectionUtils.isEmpty(list)) {
             return ResultVO.successMessage("查询产商品列表为空");
         }
+        //查询指定productId
+        String productId = req.getProductId();
+        if(StringUtils.isNotEmpty(productId)){
+            List<GoodsProductRel> list2 = new ArrayList<>();
+            for (GoodsProductRel goodsProductRel : list) {
+                if(productId.equals(goodsProductRel.getProductId())){
+                    list2.add(goodsProductRel);
+                }
+            }
+            if(CollectionUtils.isNotEmpty(list2)){
+                list = list2;
+            }
+        }
         // 查询产商品关联信息
         List<GoodsProductRelDTO> goodsProductRelDTOList = Lists.newArrayList();
         for (GoodsProductRel goodsProductRel : list) {
@@ -1568,6 +1581,47 @@ public class GoodsServiceImpl implements GoodsService {
         }
         log.info("GoodsServiceImpl.updateGoodsActTypeByGoodsIdList req={}", updateFlag);
         return ResultVO.success(updateFlag);
+    }
+
+    @Override
+    public List<SupplierGoodsDTO> querySupplierGoods(String goodsId,String productId) {
+        log.info("GoodsServiceImpl.querySupplierGoods req goodsId={},goodsId={}", goodsId,productId);
+        List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
+        Goods goods = goodsManager.queryGoods(goodsId);
+        if(null ==goods){
+            return supplierGoodsDTOs;
+        }else{
+            Double mktprice = goods.getMktprice();
+            Integer isSubsidy = 0;
+            if(null!=goods.getIsSubsidy()){
+                isSubsidy = goods.getIsSubsidy();
+            }
+            if(1==isSubsidy || mktprice <= 1599){
+                return supplierGoodsDTOs;
+            }
+
+        }
+
+        //先根据商家类型查询地包商是否有货
+        List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsManager.listSupplierGoodsByType(productId, "2");
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 地包商 supplierGoodsDTOs={}", supplierGoodsDTOs1);
+        if(CollectionUtils.isNotEmpty(supplierGoodsDTOs1)){
+            return supplierGoodsDTOs;
+        }
+        //先根据商家类型查询省包商是否有货
+        List<SupplierGoodsDTO> supplierGoodsDTOs2 = goodsManager.listSupplierGoodsByType(productId, "3");
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 省包商 supplierGoodsDTOs={}", supplierGoodsDTOs2);
+        if(CollectionUtils.isNotEmpty(supplierGoodsDTOs2)){
+            for(SupplierGoodsDTO supplierGoodsDTO:supplierGoodsDTOs2){
+                List<ProdFileDTO> prodFileDTOs = fileManager.getFile(supplierGoodsDTO.getGoodsId(), FileConst.TargetType.GOODS_TARGET.getType(), FileConst.SubType.THUMBNAILS_SUB.getType());
+                if(CollectionUtils.isNotEmpty(prodFileDTOs)){
+                    supplierGoodsDTO.setImageUrl(prodFileDTOs.get(0).getFileUrl());
+                }
+            }
+            supplierGoodsDTOs = supplierGoodsDTOs2;
+        }
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType  resp={}", supplierGoodsDTOs);
+        return supplierGoodsDTOs;
     }
 
 }

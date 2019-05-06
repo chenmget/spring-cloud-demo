@@ -12,10 +12,7 @@ import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
+import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
@@ -460,5 +457,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ResultVO<List<ProductResp>> getProductForRebate(ProductRebateReq req){
         return ResultVO.success(productManager.getProductForRebate(req));
+    }
+
+    @Override
+    public ResultVO<ProductForResourceResp> getProductForResource(ProductGetByIdReq req){
+        return ResultVO.success(productManager.getProductForResource(req.getProductId()));
     }
 }

@@ -119,19 +119,6 @@ public interface ResourceInstService {
      ResultVO<List<ResourceInstListResp>> listResourceInst(ResourceInstListReq req);
 
     /**
-     * 入库串码校验，原库中存在的串码不再入库
-     * @param req
-     * @return
-     */
-    List<String> vaildOwnStore(ResourceInstValidReq req);
-    /**
-     * 入库串码校验，厂商库存在才能入库
-     * @param req
-     * @return
-     */
-    List<ResourceInstDTO> validMerchantStore(ResourceInstValidReq req);
-
-    /**
      * 获取主键
      * @return
      */

@@ -86,5 +86,28 @@ fdfs:
 #能开配置
 zop:
   secret: ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=
-  url: http://134.176.102.33:8081/api
+  url: http://134.176.102.33:9080/api
   timeout: 50000
+
+#webService配置
+webService:
+   inventoryUrl: http://ws.webxml.com.cn/WebServices/MobileCodeWS.asmx?wsdl
+
+#串码补录
+ftp:
+  basePath: /Users/jiyou/Documents/work/hj/mkt2itms
+  ftpAddress: 134.176.1.27
+  ftpPort: 24
+  ftpUserName: admin
+  ftpPassword: admin
+  gmdirAdd: /data/back/Failure/Terminal/add
+  iptvdirAdd: /data/back/Failure/IPTV/add
+  gmdirModify: /data/back/Failure/Terminal/modify
+  iptvdirModify: /data/back/Failure/IPTV/modify
+  gmdirDelete: /data/back/Failure/Terminal/delete
+  iptvdirDelete: /data/back/Failure/IPTV/delete
+
+#商家增加串码机顶盒、三合一终端产品类型id
+addNbrService:
+  typeId: 10350158,
+  checkMaxNum: 10

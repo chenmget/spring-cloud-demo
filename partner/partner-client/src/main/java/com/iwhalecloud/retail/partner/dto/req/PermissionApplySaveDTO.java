@@ -15,13 +15,13 @@ import java.util.List;
 public class PermissionApplySaveDTO implements Serializable {
     private static final long serialVersionUID = -6201783885092631849L;
 
-    @ApiModelProperty(value = "用户ID")
+    @ApiModelProperty(value = "用户ID, 后端自动获取")
     private String userId;
 
-    @ApiModelProperty(value = "用户名称")
+    @ApiModelProperty(value = "用户名称，后端自动获取")
     private String name;
 
-    @ApiModelProperty(value = "商家ID")
+    @ApiModelProperty(value = "商家ID，后端自动获取")
     private String merchantId;
 
     @ApiModelProperty(value = "申请单对象")

@@ -121,6 +121,9 @@
                 #{item}
             </foreach>
         </if>
+        <if test="null!=typeId and ''!=typeId">
+            and t.type_id = #{typeId}
+        </if>
     </update>
 
     <update id="updateResourceInstByIds" parameterType="com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq">
@@ -297,5 +300,33 @@
         and t.mkt_res_store_id = #{req.mktResStoreId}
         order by create_date desc
     </select>
+
+    <select id="findAllLanID" resultType="java.lang.String">
+        select LAN_ID from sys_lan where lan_id != '10000000'
+    </select>
+
+    <select id="findMKTInfoByLadId" resultType="java.lang.String">
+      select concat(mrced.MKT_RES_INST_NBR, ',', ppb.PRODUCT_NAME, ppb.UNIT_TYPE, ',', '2', ',', mrced.lan_id) as itms_str
+      from mkt_res_event mre
+      inner join mkt_res_chng_evt_detail mrced on mre.MKT_RES_EVENT_ID = mrced.MKT_RES_EVENT_ID and mre.STATUS_CD = #{scd} and mrced.lan_id = #{lanId} and mre.CREATE_DATE &lt; #{endDate}
+        <if test="startDate != '' and startDate != null">
+            and mre.CREATE_DATE &gt;= #{startDate}
+        </if>
+      inner join prod_product pp on pp.product_id = mre.MKT_RES_ID
+      inner join prod_product_base ppb on ppb.PRODUCT_BASE_ID = pp.PRODUCT_BASE_ID
+      inner join prod_type pt on pt.type_id = ppb.type_id and pt.type_id = #{brand}
+    </select>
+
+    <select id="findCfValueByCfId" resultType="java.lang.String">
+        select CF_VALUE from SYS_CONFIG_INFO where CF_ID = #{cofStr}
+    </select>
+
+    <update id="updateCfValueByCfId">
+        update sys_config_info set CF_VALUE = #{dateStr} where CF_ID = #{cofStr}
+    </update>
+
+    <insert id="initConfig">
+        insert into SYS_CONFIG_INFO values('ITMS_PUSH_MKT_NB','推送到ITMS数据的开始统计时间',#{endDate},'job');
+    </insert>
 
 </mapper>

@@ -83,4 +83,9 @@ public class MenuServiceImpl implements MenuService {
             return ResultVO.errorEnum(ResultCodeEnum.ERROR);
         }
     }
+
+    @Override
+    public List<MenuDTO> getMenuByRoleId(String usrId) {
+        return menuManager.getMenuByRoleId(usrId);
+    }
 }

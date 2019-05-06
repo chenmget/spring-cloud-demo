@@ -73,22 +73,26 @@ public class ReportOrderController extends BaseController {
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
-		if(legacyAccount=="2" || "2".equals(legacyAccount)){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(legacyAccount);
+		String userType=req.getUserType();
+		
+		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setMerchantCode(retailerCodes);
 		}
-		//userType 1省级管理员，2地市管理员，3供应商，4零售商，5厂家
-		String userType=req.getUserType();
-		if(userType!=null && !userType.equals("") && "4".equals(userType)){//零售商只看自己的
+		//userType 1省级管理员，2地市管理员，3零售商，4供应商，5厂家
+		
+		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的
+//			String loginName = UserContext.getUser().getLoginName();
+//			iReportDataInfoService.getretailerCode(loginName);
 			String merchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(merchantCode);
 		}
-		if(userType!=null && !userType.equals("") && "3".equals(userType)){//供应商只看自己的
+		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商只看自己的
 			String suplierCode=UserContext.getUser().getRelCode();
 			req.setSuplierCode(suplierCode);
 		}
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){
-			String regionId = UserContext.getUser().getRegionId();
+			String regionId = UserContext.getUser().getLanId();
 			req.setLanId(regionId);
 		}
         return reportOrderService.getReportOrderList1(req);
@@ -115,17 +119,25 @@ public class ReportOrderController extends BaseController {
 	    })
 	    @PostMapping(value="/orderReportDataExport")
 	    public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
+	    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+			String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
 			String userType=req.getUserType();
-			if(userType!=null && !userType.equals("") && "4".equals(userType)){
+			if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+				retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+				req.setMerchantCode(retailerCodes);
+			}
+			//userType 1省级管理员，2地市管理员，3供应商，4零售商，5厂家
+			
+			if(userType!=null && !userType.equals("") && "4".equals(userType)){//零售商只看自己的
 				String merchantCode=UserContext.getUser().getRelCode();
 				req.setMerchantCode(merchantCode);
 			}
-			if(userType!=null && !userType.equals("") && "3".equals(userType)){
+			if(userType!=null && !userType.equals("") && "3".equals(userType)){//供应商只看自己的
 				String suplierCode=UserContext.getUser().getRelCode();
 				req.setSuplierCode(suplierCode);
 			}
 			if(userType!=null && !userType.equals("") && "2".equals(userType)){
-				String regionId = UserContext.getUser().getRegionId();
+				String regionId = UserContext.getUser().getLanId();
 				req.setLanId(regionId);
 			}
 	        ResultVO<List<ReportOrderResp>> resultVO = reportOrderService.getReportOrderList1dc(req);

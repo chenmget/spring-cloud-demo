@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.Goods2BServiceApplication;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
+import com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsService;
@@ -234,5 +235,13 @@ public class GoodsServiceImplTest {
         req.setBrandIdList(brandList);
         ResultVO<Page<GoodsPageResp>> pageResultVO = goodsService.queryPageByConditionAdmin(req);
         System.out.println(pageResultVO.getResultData());
+    }
+
+    @Test
+    public void testQry(){
+        String goodsId = "10147709";
+        String productId = "10002460";
+        List<SupplierGoodsDTO> supplierGoodsDTOs = goodsService.querySupplierGoods(goodsId, productId);
+        System.out.println(supplierGoodsDTOs);
     }
 }

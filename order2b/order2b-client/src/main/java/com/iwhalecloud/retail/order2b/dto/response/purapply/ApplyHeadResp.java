@@ -15,11 +15,12 @@ public class ApplyHeadResp extends PageVO implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private String applyId;	//申请单ID
 	private String applyCode;//申请单号
-	private String applyAdress;//申请地市
+	private String applyAddress;//申请地市
 	private String applyDepartment;//申请部门
-	private String applyMerchantCode;//申请人
+	private String applyMerchantName;//申请人
 	
-	private String relCode;
+	
+	private String applyMerchantId;
 	private String lanId;
 	private String regionId;
 	

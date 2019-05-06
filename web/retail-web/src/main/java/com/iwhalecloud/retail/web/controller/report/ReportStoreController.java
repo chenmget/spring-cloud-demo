@@ -67,12 +67,13 @@ public class ReportStoreController extends BaseController {
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
 		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
-		if(legacyAccount=="2" || "2".equals(legacyAccount)){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(legacyAccount);
+		String userType=req.getUserType();
+		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setRetailerCode(retailerCodes);
 		}
 		
-		String userId = UserContext.getUser().getUserId();
+		String userId = UserContext.getUserId();
 		ReportStorePurchaserReq req2 = new ReportStorePurchaserReq();
 		req2.setUserId(userId);
 		ResultVO<List<ReportStorePurchaserResq>> brandview = iReportDataInfoService.getUerRoleForView(req2);
@@ -92,6 +93,13 @@ public class ReportStoreController extends BaseController {
     @PostMapping(value="/cjStorePurchaserReportExport")
     public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
 		//userType==5 厂家视图的导出
+    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
+		String userType=req.getUserType();
+		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+			req.setRetailerCode(retailerCodes);
+		}
         ResultVO<List<ReportStSaleDaoResp>> resultVO = reportStoreService.getReportStSaleListdc(req);
         List<ReportStSaleDaoResp> data = resultVO.getResultData();
         //创建Excel
@@ -102,6 +110,7 @@ public class ReportStoreController extends BaseController {
 	        orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
 	        orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
 	        orderMap.add(new ExcelTitleName("cityId", "所属城市"));
+	        orderMap.add(new ExcelTitleName("date", "统计日期"));
 	        orderMap.add(new ExcelTitleName("countryId", "所属区县"));
         orderMap.add(new ExcelTitleName("productBaseName", "机型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));

@@ -481,6 +481,26 @@ public class GoodsB2BController extends GoodsBaseController {
         return goodsService.queryGoodsDetail(req);
     }
 
+    @ApiOperation(value = "查询指定产品ID的商品详情", notes = "查询指定产品ID的商品详情")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value="/queryGoodsDetailByProductId",method = RequestMethod.GET)
+    public ResultVO<GoodsDetailResp> queryGoodsDetailByProductId(@RequestParam String goodsId,@RequestParam String productId){
+        log.info("GoodsB2BController queryGoodsDetail req goodsId={},productId={} ",goodsId, productId);
+        if(StringUtils.isEmpty(goodsId) || StringUtils.isEmpty(productId)){
+            return ResultVO.error("goodsId or ProductId is must not be null");
+        }
+        Boolean isLogin = UserContext.isUserLogin();
+        GoodsQueryReq req = new GoodsQueryReq();
+        req.setGoodsId(goodsId);
+        req.setIsLogin(isLogin);
+        req.setUserId(UserContext.getUserId());
+        req.setProductId(productId);
+        return goodsService.queryGoodsDetail(req);
+    }
+
     @ApiOperation(value = "删除商品", notes = "删除商品")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
@@ -676,6 +696,23 @@ public class GoodsB2BController extends GoodsBaseController {
             list = listResultVO.getResultData();
         }
         return ResultVO.success(list);
+
+    }
+
+    @ApiOperation(value = "根据商品ID和产品id省包推荐商品", notes = "根据商品ID和产品id省包推荐商品")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/querySupplierGoods")
+    ResultVO<List<SupplierGoodsDTO>> querySupplierGoods(@RequestParam( value = "goodsId")String goodsId,@RequestParam( value = "productId")String productId){
+        log.info("GoodsController querySupplierGoods goodsId={},productId={}", goodsId,productId);
+        List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
+        List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsService.querySupplierGoods(goodsId,productId);
+        if (!CollectionUtils.isEmpty(supplierGoodsDTOs1)){
+            supplierGoodsDTOs = supplierGoodsDTOs1;
+        }
+        return ResultVO.success(supplierGoodsDTOs);
 
     }
 }

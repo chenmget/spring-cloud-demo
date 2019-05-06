@@ -55,9 +55,17 @@ public class ResourceConst {
      */
     public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
     /**
-     * 厂商串码入库审批流程实例ID
+     * 一步抽检流程
      */
-    public final static String  ADD_NBR_WORK_FLOW_INST = "13";
+    public final static String  ONE_STEP_WORK_FLOW_INST = "14";
+    /**
+     * 厂商串码入库集采流程实例
+     */
+    public final static String  ADD_NBR_WORK_FLOW_INST = "15";
+    /**
+     * 两步抽检流程
+     */
+    public final static String  TWO_STEP_WORK_FLOW_INST = "16";
 
     /**
      * 调拨返回成功的消息
@@ -351,12 +359,15 @@ public class ResourceConst {
      * 资源类型
      */
     public enum MKTResInstType {
+
         // 交易
-        TRANSACTION("1","交易"),
+        TRANSACTION("1","社采"),
         // 非交易
         NONTRANSACTION("2","集采"),
         // 备机
-        STANDBYMACHINE("3","备机");
+        STANDBYMACHINE("3","备机"),
+        // 省内代收
+        COLLECTION_BY_PROVINCE("4","省内代收");
 
         private String code;
         private String name;
@@ -473,7 +484,16 @@ public class ResourceConst {
         // 完成
         DONE("1003","完成"),
         // 取消
-        CANCEL("1004","取消");
+        CANCEL("1004","取消"),
+        //待抽检
+        WAIT_SPOTCHECK("1006","待抽检"),
+        //待抽检
+        WAIT_SPOTCHECK_CUSTSUP("1007","待抽检-客支中心"),
+        //抽检不通过
+        WAIT_SPOTCHECK_MOBINT("1008","待抽检-移互部"),
+        //待审核
+        WATI_REVIEW("1009","待审核");
+
 
         private String code;
         private String name;

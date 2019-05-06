@@ -76,8 +76,7 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
         addReq.setSourceType(ResourceConst.SOURCE_TYPE.RETAILER.getCode());
         addReq.setStorageType(ResourceConst.STORAGETYPE.GREEN_CHANNEL.getCode());
         addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        addReq.setDestStoreId(detailDTO.getMktResStoreId());
+        addReq.setMktResStoreId(detailDTO.getMktResStoreId());
         addReq.setMktResId(detailDTO.getMktResId());
 
         ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getMktResStoreId());

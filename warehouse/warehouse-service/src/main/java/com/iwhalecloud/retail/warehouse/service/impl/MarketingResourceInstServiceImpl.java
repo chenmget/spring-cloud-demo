@@ -1,12 +1,13 @@
 package com.iwhalecloud.retail.warehouse.service.impl;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -15,9 +16,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SynMktInstStatusSwapReq;
-import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalItemSwapReq;
-import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalSwapReq;
+import com.iwhalecloud.retail.warehouse.dto.request.markresswap.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.model.MerchantInfByNbrModel;
 import com.iwhalecloud.retail.warehouse.service.MarketingResStoreService;
@@ -25,6 +24,7 @@ import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -101,6 +101,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
         String merchantId = req.getBuyerMerchantId();
         ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(merchantId);
         List<SyncTerminalItemSwapReq> syncTerminalItemSwapReqs = Lists.newArrayList();
+        List<EBuyTerminalItemSwapReq> eBuyTerminalItemReqs = Lists.newArrayList();
         // 获取目标仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
@@ -122,11 +123,13 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
         for (DeliveryResourceInstItem deliveryResourceInstItem : req.getDeliveryResourceInstItemList()) {
             ProductGetByIdReq productReq = new ProductGetByIdReq();
             productReq.setProductId(deliveryResourceInstItem.getProductId());
-            ResultVO<ProductResp> productRespResultVO = productService.getProduct(productReq);
-            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst productService.getProduct req={} resp={}", JSON.toJSONString(productReq), JSON.toJSONString(productRespResultVO));
+            ResultVO<ProductForResourceResp> productRespResultVO = productService.getProductForResource(productReq);
+            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst getProductForResource.getProduct req={} resp={}", JSON.toJSONString(productReq), JSON.toJSONString(productRespResultVO));
             String sn = "";
+            String isFixedLine = "";
             if (productRespResultVO.isSuccess() && productRespResultVO.getResultData() != null) {
                 sn = productRespResultVO.getResultData().getSn();
+                isFixedLine = productRespResultVO.getResultData().getIsFixedLine();
             }
             mktResIdAndNbrMap.put(deliveryResourceInstItem.getProductId(), deliveryResourceInstItem.getMktResInstNbrs());
             nbrList.addAll(deliveryResourceInstItem.getMktResInstNbrs());
@@ -142,20 +145,36 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
                 syncTerminalItemSwapReq.setStoreId(destStroeId);
                 MerchantInfByNbrModel merchantInfByNbrModel = resourceInstService.qryMerchantInfoByNbr(nbr);
                 log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst resourceInstService.qryMerchantInfoByNbr req={} resp={}", JSON.toJSONString(nbr), JSON.toJSONString(merchantInfByNbrModel));
-                if (null != merchantInfByNbrModel) {
-                    syncTerminalItemSwapReq.setProvSupplyId(merchantInfByNbrModel.getProvSupplyId());
-                    syncTerminalItemSwapReq.setProvSupplyName(merchantInfByNbrModel.getProvSupplyName());
-                    syncTerminalItemSwapReq.setCitySupplyId(merchantInfByNbrModel.getCitySupplyId());
-                    syncTerminalItemSwapReq.setCitySupplyName(merchantInfByNbrModel.getCitySupplyName());
-                }
+                syncTerminalItemSwapReq.setProvSupplyId(merchantInfByNbrModel.getProvSupplyId());
+                syncTerminalItemSwapReq.setProvSupplyName(merchantInfByNbrModel.getProvSupplyName());
+                syncTerminalItemSwapReq.setCitySupplyId(merchantInfByNbrModel.getCitySupplyId());
+                syncTerminalItemSwapReq.setCitySupplyName(merchantInfByNbrModel.getCitySupplyName());
                 syncTerminalItemSwapReqs.add(syncTerminalItemSwapReq);
+                // 固网终端
+                if (ResourceConst.CONSTANT_YES.equals(isFixedLine)) {
+                    EBuyTerminalItemSwapReq eBuyTerminalItemSwapReq = new EBuyTerminalItemSwapReq();
+                    BeanUtils.copyProperties(syncTerminalItemSwapReq, eBuyTerminalItemSwapReq);
+                    eBuyTerminalItemSwapReq.setMktId(sn);
+                    eBuyTerminalItemReqs.add(eBuyTerminalItemSwapReq);
+                }
             }
         }
-        SyncTerminalSwapReq syncTerminalSwapReq = new SyncTerminalSwapReq();
-        syncTerminalSwapReq.setMktResList(syncTerminalItemSwapReqs);
-        log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}", JSON.toJSONString(syncTerminalSwapReq));
-        ResultVO syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
-        if (syncTerminalResultVO.isSuccess()) {
+        ResultVO syncTerminalResultVO = null;
+        ResultVO eBuyTerminalResultVO = null;
+        if (CollectionUtils.isNotEmpty(syncTerminalItemSwapReqs)) {
+            SyncTerminalSwapReq syncTerminalSwapReq = new SyncTerminalSwapReq();
+            syncTerminalSwapReq.setMktResList(syncTerminalItemSwapReqs);
+            syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
+            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalResultVO));
+        }
+        if (CollectionUtils.isNotEmpty(eBuyTerminalItemReqs)) {
+            EBuyTerminalSwapReq eBuyTerminalSwapReq = new EBuyTerminalSwapReq();
+            eBuyTerminalSwapReq.setMktResList(eBuyTerminalItemReqs);
+            eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
+            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.ebuyTerminal req={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
+        }
+        Boolean notSucess = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) || (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess());
+        if (!notSucess) {
             // step3 增加事件和批次
             BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
             batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
@@ -174,7 +193,9 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
             log.info("ResourceInstServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
             return ResultVO.success(true);
         } else {
-            return ResultVO.error(syncTerminalResultVO.getResultMsg());
+            String errorMsg1 = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
+            String errorMsg2 = (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
+            return ResultVO.error(errorMsg1 + errorMsg2);
         }
     }
 

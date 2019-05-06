@@ -25,5 +25,8 @@ public interface ReportDataInfoMapper extends BaseMapper<RptPartnerOperatingDay>
 	public List<ReportStorePurchaserResq> getUerRoleForView(@Param("req") ReportStorePurchaserReq reportStorePurchaserReq);
 
 	public String retailerCodeBylegacy(@Param("legacyAccount") String legacyAccount);
+	
+	public String getretailerCode(@Param("loginName") String loginName);
 
+	public String getMyMktResStoreId(@Param("relCode") String relCode);
 }

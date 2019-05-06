@@ -66,8 +66,13 @@ public class OrderSelectB2BController {
     @UserLoginToken
     public void orderExport(@RequestBody AdvanceOrderReq request, HttpServletResponse response) {
         ResultVO result = new ResultVO();
+        request.setPageNo(1);
+        request.setPageSize(60000);
         request.setUserId(UserContext.getUserId());
         request.setUserCode(UserContext.getUser().getRelCode());
+//        request.setUserId("1");
+//        request.setUserCode("4331301047393");
+//        request.setUserExportType("3");
         ResultVO<OrderListExportResp> resultVO = orderSelectOpenService.orderExport(request);
         if (!resultVO.isSuccess()) {
             result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);

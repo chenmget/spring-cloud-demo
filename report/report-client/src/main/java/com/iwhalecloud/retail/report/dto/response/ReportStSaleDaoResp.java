@@ -17,6 +17,7 @@ public class ReportStSaleDaoResp implements Serializable {
 		private String countryId;//所属区县
 	//private String productName;//机型
 	private String productBaseName;//机型
+	private String date;//统计日期
 	private String brandName;//品牌
 	private String priceLevel;//机型档位
 	private String TheTotalInventory;//入库总量

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.report.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.alibaba.dubbo.config.annotation.Service;
@@ -53,5 +54,14 @@ public class IReportDataInfoServiceImpl implements IReportDataInfoService {
 	public String retailerCodeBylegacy(String legacyAccount) {
 		return reportDataInfoManager.retailerCodeBylegacy(legacyAccount);
 	}
-
+	
+	@Override
+	public String getretailerCode(String Code) {
+		return reportDataInfoManager.getretailerCode(Code);
+	}
+	
+	@Override
+	public String getMyMktResStoreId(String relCode) {
+		return reportDataInfoManager.getMyMktResStoreId(relCode);
+	}
 }

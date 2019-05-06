@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.warehouse.dto.request;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
@@ -38,7 +37,6 @@ public class ResourceInstValidReq implements java.io.Serializable {
   	 * 营销资源仓库标识
   	 */
 	@ApiModelProperty(value = "营销资源仓库标识")
-	@NotBlank(message = "仓库不能为空")
   	private String mktResStoreId;
 
 	/**
@@ -48,9 +46,27 @@ public class ResourceInstValidReq implements java.io.Serializable {
 	private String typeId;
 
 	/**
+	 * 商家ID
+	 */
+	@ApiModelProperty(value = "商家ID")
+	private String merchantId;
+
+	/**
 	 * 校验商家类型
 	 */
 	@ApiModelProperty(value = "校验商家类型")
 	private String merchantType;
+
+	/**
+	 * 01 交易 2 非交易 03 备机
+	 */
+	@ApiModelProperty(value = "01 交易,02 非交易,03 备机")
+	private String mktResInstType;
+
+	/**
+	 * 创建对象
+	 */
+	@ApiModelProperty(value = "创建对象")
+	private String createStaff;
 
 }

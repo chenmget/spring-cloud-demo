@@ -136,6 +136,16 @@ public class ProductManager {
     }
 
     /**
+     * 分页查询
+     * @param req
+     * @return
+     */
+    public Page<ProductPageResp> selectPageProductAdminAll(ProductsPageReq req) {
+        Page<ProductPageResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+        return productMapper.selectPageProductAdminAll(page, req);
+    }
+
+    /**
      * 查询产品Id
      * @param req
      * @return

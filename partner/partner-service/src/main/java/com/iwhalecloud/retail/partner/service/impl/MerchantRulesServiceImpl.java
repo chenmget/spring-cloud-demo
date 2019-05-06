@@ -196,6 +196,15 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     }
 
     @Override
+    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesDetailListReq req) {
+        log.info("MerchantRulesServiceImpl.listMerchantRules(), input: MerchantRulesDetailListReq={} ", req);
+        MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
+        BeanUtils.copyProperties(req, merchantRulesListReq);
+        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(merchantRulesListReq);
+        return ResultVO.success(list);
+    }
+
+    @Override
     public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRulesDetail(MerchantRulesDetailListReq req) {
         log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", req);
         MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
@@ -395,7 +404,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
                 }
 
-                detailList = productService.selectPageProductAdmin(productsPageReq).getResultData().getRecords();
+                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())) {
@@ -438,7 +447,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 fieldName = "productId";
             }
 
-            detailList = productService.selectPageProductAdmin(productsPageReq).getResultData().getRecords();
+            detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
         } else if (StringUtils.equals(req.getRuleType(), PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType())) {
             // 调拨权限
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType())) {
@@ -449,14 +458,13 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setUnitType(req.getUnitType());
                 productsPageReq.setPageNo(1);
                 productsPageReq.setPageSize(1000); // 写死 大一点
-                productsPageReq.setSelectAll("1");
                 productsPageReq.setProductIdList(targetIdList);
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
                 }
 
-                detailList = productService.selectPageProductAdmin(productsPageReq).getResultData().getRecords();
+                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())) {

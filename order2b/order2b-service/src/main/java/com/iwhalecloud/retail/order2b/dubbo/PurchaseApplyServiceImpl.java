@@ -6,11 +6,13 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
 import com.iwhalecloud.retail.order2b.entity.PurApplyItemDetail;
 import com.iwhalecloud.retail.order2b.manager.PurApplyDeliveryManager;
+import com.iwhalecloud.retail.order2b.manager.PurApplyExtManager;
 import com.iwhalecloud.retail.order2b.manager.PurApplyItemDetailManager;
 import com.iwhalecloud.retail.order2b.manager.PurApplyItemManager;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
@@ -44,6 +46,9 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
     @Autowired
     private PurApplyItemDetailManager purApplyItemDetailManager;
+
+    @Autowired
+    private PurApplyExtManager purApplyExtManager;
 
     @Reference
     private SupplierResourceInstService supplierResourceInstService;
@@ -149,13 +154,32 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
     @Override
     public ResultVO updatePurApplyStatus(PurApplyReq req) {
-        PurApplyReq purApplyReq = new PurApplyReq();
-        purApplyReq.setApplyId(req.getApplyId());
-        purApplyReq.setStatusCd(req.getStatusCd());
-        int i = purApplyDeliveryManager.updatePurApplyStatus(purApplyReq);
+        int i = purApplyDeliveryManager.updatePurApplyStatus(req);
         log.info("PurchaseApplyServiceImpl.updatePurApplyStatus Resp = {}", i);
         if (i < 1) {
             return ResultVO.error("更新采购申请单状态失败");
+        }
+        return ResultVO.success();
+    }
+
+    @Override
+    public ResultVO addPurApplyExtInfo(PurApplyExtReq req) {
+        //插入采购申请单扩展表
+        int i = purApplyExtManager.addPurApplyExtInfo(req);
+        log.info("PurchaseApplyServiceImpl.addPurApplyExtInfo Resp = {}", i);
+        if (i < 1) {
+            return ResultVO.error("新增采购申请单扩展失败");
+        }
+        return ResultVO.success();
+    }
+
+    @Override
+    public ResultVO updatePurApplyExtInfo(PurApplyExtReq req) {
+        //更新采购申请单扩展表
+        int i = purApplyExtManager.updatePurApplyExtInfo(req);
+        log.info("PurchaseApplyServiceImpl.addPurApplyExtInfo Resp = {}", i);
+        if (i < 1) {
+            return ResultVO.error("更新采购申请单扩展失败");
         }
         return ResultVO.success();
     }

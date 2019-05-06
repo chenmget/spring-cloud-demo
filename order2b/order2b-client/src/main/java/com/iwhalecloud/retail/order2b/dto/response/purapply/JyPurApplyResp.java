@@ -20,4 +20,6 @@ public class JyPurApplyResp extends PageVO implements Serializable {
 	private String statusCd;//当前处理环节
 	private String createDate;//申请时间
 
+	private String taskId;
+	private String taskItemId;
 }

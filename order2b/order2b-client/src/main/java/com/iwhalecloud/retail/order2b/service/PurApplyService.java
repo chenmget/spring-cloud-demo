@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
@@ -40,6 +41,7 @@ public interface PurApplyService {
 	public CkProcureApplyResp ckApplyData1(PurApplyReq req);
 	public List<AddProductReq> ckApplyData2(PurApplyReq req);
 	public List<AddFileReq> ckApplyData3(PurApplyReq req);
+	public List<MemMemberAddressReq> ckApplyData4(PurApplyReq req);
 
 	public ApplyHeadResp hqShenQingDaoHao();
 	
@@ -57,6 +59,8 @@ public interface PurApplyService {
 	public String hqSeqFileId();
 	
 	public String hqSeqItemId();
+	//添加收货地址
+	public void addShippingAddress(MemMemberAddressReq req);
 
 
 }

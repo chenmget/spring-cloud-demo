@@ -97,29 +97,48 @@ public class RunableTask {
                              @Override
                              public Boolean call() throws Exception {
                                  Date now = new Date();
-                                 List<String> exitstNbr = resourceInstCheckService.vaildOwnStore(req);
+                                 List<String> instExitstNbr = resourceInstCheckService.vaildOwnStore(req);
+                                 List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
                                  List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
-                                 for (String mktResInstNbr : exitstNbr) {
-                                     ResouceUploadTemp inst = new ResouceUploadTemp();
-                                     inst.setMktResUploadBatch(batchId);
-                                     inst.setMktResInstNbr(mktResInstNbr);
-                                     inst.setResult(ResourceConst.CONSTANT_YES);
-                                     inst.setUploadDate(now);
-                                     inst.setCreateDate(now);
-                                     inst.setResultDesc("库中已存在");
-                                     inst.setCreateStaff(req.getCreateStaff());
-                                     instList.add(inst);
+                                 if (CollectionUtils.isNotEmpty(instExitstNbr)) {
+                                     for (String mktResInstNbr : instExitstNbr) {
+                                         ResouceUploadTemp inst = new ResouceUploadTemp();
+                                         inst.setMktResUploadBatch(batchId);
+                                         inst.setMktResInstNbr(mktResInstNbr);
+                                         inst.setResult(ResourceConst.CONSTANT_YES);
+                                         inst.setUploadDate(now);
+                                         inst.setCreateDate(now);
+                                         inst.setResultDesc("库中已存在");
+                                         inst.setCreateStaff(req.getCreateStaff());
+                                         instList.add(inst);
+                                     }
+                                     newList.removeAll(instExitstNbr);
                                  }
-                                 newList.removeAll(exitstNbr);
-                                 for (String mktResInstNbr : newList) {
-                                     ResouceUploadTemp inst = new ResouceUploadTemp();
-                                     inst.setMktResUploadBatch(batchId);
-                                     inst.setMktResInstNbr(mktResInstNbr);
-                                     inst.setResult(ResourceConst.CONSTANT_NO);
-                                     inst.setUploadDate(now);
-                                     inst.setCreateDate(now);
-                                     inst.setCreateStaff(req.getCreateStaff());
-                                     instList.add(inst);
+                                 if (CollectionUtils.isNotEmpty(detailExitstNbr)) {
+                                     for (String mktResInstNbr : detailExitstNbr) {
+                                         ResouceUploadTemp inst = new ResouceUploadTemp();
+                                         inst.setMktResUploadBatch(batchId);
+                                         inst.setMktResInstNbr(mktResInstNbr);
+                                         inst.setResult(ResourceConst.CONSTANT_YES);
+                                         inst.setUploadDate(now);
+                                         inst.setCreateDate(now);
+                                         inst.setResultDesc("申请单中已存在");
+                                         inst.setCreateStaff(req.getCreateStaff());
+                                         instList.add(inst);
+                                     }
+                                     newList.removeAll(detailExitstNbr);
+                                 }
+                                 if (CollectionUtils.isNotEmpty(newList)) {
+                                     for (String mktResInstNbr : newList) {
+                                         ResouceUploadTemp inst = new ResouceUploadTemp();
+                                         inst.setMktResUploadBatch(batchId);
+                                         inst.setMktResInstNbr(mktResInstNbr);
+                                         inst.setResult(ResourceConst.CONSTANT_NO);
+                                         inst.setUploadDate(now);
+                                         inst.setCreateDate(now);
+                                         inst.setCreateStaff(req.getCreateStaff());
+                                         instList.add(inst);
+                                     }
                                  }
                                  Boolean addResult = resourceUploadTempManager.saveBatch(instList);
                                  log.info("RunableTask.exceutorValid req={}, resp={}", JSON.toJSONString(instList), addResult);

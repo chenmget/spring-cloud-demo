@@ -10,12 +10,14 @@ import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.mapper.ResourceReqDetailMapper;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -30,6 +32,9 @@ public class RetailerResourceInstServiceImplTest {
     private RetailerResourceInstService retailerResourceInstService;
     @Reference
     private AdminResourceInstService adminResourceInstService;
+
+    @Autowired
+    private ResourceReqDetailMapper resourceReqDetailMapper;
 
     @Test
     public void addResourceInstByGreenChannel() {
@@ -92,5 +97,13 @@ public class RetailerResourceInstServiceImplTest {
                 ResourceConst.STATUSCD.SALED.getCode());
         req.setCheckStatusCd(checkStatusCd);
         adminResourceInstService.updateResourceInstByIds(req);
+    }
+
+    @Test
+    public void getProcessingNbrList() {
+        List<String> list = Lists.newArrayList("201903192105","201903192108");
+        List<String> nbrList = resourceReqDetailMapper.getProcessingNbrList(list);
+        System.out.print(nbrList.toString());
+
     }
 }

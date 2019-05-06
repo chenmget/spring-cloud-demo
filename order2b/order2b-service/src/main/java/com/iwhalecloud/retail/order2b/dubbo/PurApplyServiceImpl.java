@@ -24,9 +24,9 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 
@@ -61,9 +61,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
+		purApplyManager.tcProcureApply(req);
 		String isSave = req.getIsSave();
+		//提交时发起流程审核
 		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PUR_APPLY_TYPE)) {
-			purApplyManager.tcProcureApply(req);
 			//启动流程
 			ProcessStartReq processStartDTO = new ProcessStartReq();
 			processStartDTO.setTitle("采购申请单审核流程");
@@ -88,26 +89,33 @@ public class PurApplyServiceImpl implements PurApplyService {
 				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
 						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 			}
-
-		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_SAVE) && req.getApplyType().equals(PurApplyConsts.PUR_APPLY_TYPE)) {
-			NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new NextRouteAndReceiveTaskReq();
-			nextRouteAndReceiveTaskReq.setFormId(req.getApplyId());
-			nextRouteAndReceiveTaskReq.setHandlerUserId(req.getCreateStaff());
-			nextRouteAndReceiveTaskReq.setHandlerMsg("采购申请单驳回审核");
-
-			ResultVO taskServiceRV = new ResultVO();
+		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PURCHASE_TYPE)) {
+			//启动流程
+			ProcessStartReq processStartDTO = new ProcessStartReq();
+			processStartDTO.setTitle("采购单审核流程");
+			processStartDTO.setFormId(req.getApplyId());
+			processStartDTO.setProcessId(PurApplyConsts.PURCHASE_AUDIT_PROCESS_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3030.getTaskSubType());
+			processStartDTO.setApplyUserId(req.getCreateStaff());
+			//根据用户id查询名称
+			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
+			String userName = "";
+			if (userDetailDTO.isSuccess()) {
+				userName = userDetailDTO.getResultData().getUserName();
+			}
+			processStartDTO.setApplyUserName(userName);
+			ResultVO resultVO = new ResultVO();
 			try {
-				taskServiceRV = taskService.nextRouteAndReceiveTask(nextRouteAndReceiveTaskReq);
+				resultVO = taskService.startProcess(processStartDTO);
 			} catch (Exception e) {
-				log.error("PurApplyServiceImpl.tcProcureApply nextRouteAndReceiveTask exception={}", e);
+				log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
 				return ResultVO.error();
 			} finally {
 				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
-						JSON.toJSONString(nextRouteAndReceiveTaskReq), JSON.toJSONString(taskServiceRV));
+						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 			}
 		}
 		return ResultVO.successMessage("修改采购申请单成功");
-
 	}
 	
 	@Override
@@ -160,6 +168,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 	}
 	
 	@Override
+	public List<MemMemberAddressReq> ckApplyData4(PurApplyReq req){
+		return purApplyManager.ckApplyData4(req);
+	}
+	
+	@Override
 	public int isHaveSave(String applyId){
 		return purApplyManager.isHaveSave(applyId);
 	}
@@ -192,6 +205,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	public String hqSeqItemId(){
 		return purApplyManager.hqSeqItemId();
+	}
+	
+	@Override
+	public void addShippingAddress(MemMemberAddressReq req){
+		purApplyManager.addShippingAddress(req);
 	}
 	
 }

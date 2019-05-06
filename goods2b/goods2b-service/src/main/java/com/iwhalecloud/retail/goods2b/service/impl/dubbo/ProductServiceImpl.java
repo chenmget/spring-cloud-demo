@@ -274,6 +274,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req) {
+        log.info("ProductServiceImpl.selectPageProductAdmin req={}", req);
         Page<ProductPageResp> page = productManager.selectPageProductAdmin(req);
         List<ProductPageResp> respList = page.getRecords();
         for (ProductPageResp resp : respList){

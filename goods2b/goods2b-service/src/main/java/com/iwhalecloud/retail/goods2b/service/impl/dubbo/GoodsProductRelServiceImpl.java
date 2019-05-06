@@ -14,6 +14,8 @@ import com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ActivityGoodsReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;
+import com.iwhalecloud.retail.goods2b.dto.req.GoodsQueryByProductIdsReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.GoodsQueryByProductIdsResp;
 import com.iwhalecloud.retail.goods2b.entity.*;
 import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
@@ -34,7 +36,6 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Component("goodsProductRelService")
@@ -338,5 +339,22 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
         return ResultVO.success(goodsProductRelDTOList);
     }
 
+
+    @Override
+    public ResultVO<GoodsQueryByProductIdsResp> queryGoodsIdsByProductIds(GoodsQueryByProductIdsReq req) {
+        log.info("GoodsProductRelServiceImpl.queryGoodsIdsByProductIds(), req={} ", JSON.toJSONString(req));
+        GoodsQueryByProductIdsResp resp = new GoodsQueryByProductIdsResp();
+        List<GoodsProductRel> goodsProductRelList = goodsProductRelManager.queryGoodsByProductIds(req.getProductIds());
+        log.info("GoodsProductRelServiceImpl.queryGoodsByProductIds(), goodsProductRelList={} ", JSON.toJSONString(goodsProductRelList));
+        if (!CollectionUtils.isEmpty(goodsProductRelList)) {
+            List<String> goodsIdList = Lists.newArrayList();
+            goodsProductRelList.forEach(item -> {
+                goodsIdList.add(item.getGoodsId());
+            });
+            resp.setGoodsIds(goodsIdList);
+        }
+        log.info("GoodsProductRelServiceImpl.queryGoodsIdsByProductIds(), resp={} ", JSON.toJSONString(resp));
+        return ResultVO.success(resp);
+    }
 
 }

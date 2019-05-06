@@ -395,7 +395,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
                 }
 
-                detailList = productService.selectPageProductAdmin(productsPageReq).getResultData().getRecords();
+                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())) {

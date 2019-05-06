@@ -95,7 +95,7 @@
       left join prod_type t on t.TYPE_ID = b.TYPE_ID
       left join prod_brand pb on pb.BRAND_ID = b.BRAND_ID
       where 1=1
-        <if test="null=pageReq.selectAll or ''=pageReq.selectAll">
+        <if test="null==pageReq.selectAll or ''==pageReq.selectAll">
           and p.IS_DELETED = '0' and b.IS_DELETED = '0' and pb.is_deleted = '0'
         </if>
         <if test="null!=pageReq.sn and ''!=pageReq.sn">

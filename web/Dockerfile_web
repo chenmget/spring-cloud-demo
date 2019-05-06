@@ -1,30 +1,34 @@
-FROM 10.45.80.1/public/centos7_java8_tomcat8_base:8.0.35
+# FROM 10.45.80.1/public/openjdk_java8_cloud_ci:latest
+FROM 10.45.80.1/public/centos7-java-base:openjdk1.8.0.151
+
+MAINTAINER obed
+
 
 RUN mkdir /opt/ZSMART_HOME  \
     && mkdir /opt/ZSMART_HOME/config    \
     && mkdir /opt/ZSMART_HOME/webapps   \
     && mkdir /opt/ZSMART_HOME/logs  \
-    && mkdir /usr/tomcat/tomcat8.0/webserver/webapps/ShelfManager   \
-    && echo 'APP=( "tomcat" )'>> /root/docker-app.def  \
-    && echo 'tomcat=(' >> /root/docker-app.def \
-    && echo '"/usr/tomcat/tomcat8.0/webserver/bin/catalina.sh run"' >> /root/docker-app.def    \
-    && echo '"tomcat"' >> /root/docker-app.def  \
+#    && echo 'APP=("webapp")\nwebapp=("nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log&"\n"webapp")' > /root/docker-app.def   \
+    && echo 'APP=( "webapp" )'>> /root/docker-app.def  \
+    && echo 'webapp=(' >> /root/docker-app.def \
+    && echo '"nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log&"' >> /root/docker-app.def    \
+    && echo '"webapp"' >> /root/docker-app.def  \
     && echo ")" >> /root/docker-app.def \
     && chmod +x /root/docker-app.def    \
-  && echo "CLASSPATH=$CLASSPATH:/opt/ZSMART_HOME:/opt/ZSMART_HOME/config" > /usr/tomcat/tomcat8.0/webserver/bin/setenv.sh  \
-    && chmod +x /usr/tomcat/tomcat8.0/webserver/bin/*.sh   \
+	&& echo "CLASSPATH=$CLASSPATH:/opt/ZSMART_HOME:/opt/ZSMART_HOME/config" > /opt/ZSMART_HOME/setenv.sh  \
+    && echo "nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log& " > /opt/ZSMART_HOME/start.sh \
     && chmod +x /opt/ZSMART_HOME/*
 
-COPY java/web/retail-web-boot/target/retail-web.war /usr/tomcat/tomcat8.0/webserver/webapps/retail-web.jar
-COPY js/build/* /usr/tomcat/tomcat8.0/webserver/webapps/ShelfManager/*
+COPY web/retail-web-boot/target/retail-web.jar /opt/ZSMART_HOME/webapps/retail-web.jar
+
+# RUN nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log&
 
 EXPOSE 8080
 
-VOLUME [ "/usr/tomcat/tomcat8.0/webserver/logs" ]
-LABEL zcm.logs.myapp="/usr/tomcat/tomcat8.0/webserver/logs/*.log"
+VOLUME [ "/opt/ZSMART_HOME/logs" ]
+LABEL zcm.logs.myapp="/opt/ZSMART_HOME/logs/*.log"
 LABEL zcm.logs.myapp.tags="project=kp"
-ENV APP_NAME=b2c_web
-ENV HOME = /usr/tomcat/tomcat8.0/webserver/logs
+ENV APP_NAME=b2b_web
 
 ENV PINPOINT_TRACE=on
 ENV ZSMART_HOME=/opt/ZSMART_HOME
@@ -32,6 +36,8 @@ ENV PATH $PATH:$ZSMART_HOME
 
 ENV JAVA_OPTS="$JAVA_OPTS -d64 -XX:+HeapDumpOnOutOfMemoryError -Xms1024m -Xmx2048m -XX:PermSize=128M -XX:MaxPermSize=256m -Djava.awt.headless=true -Dfile.encoding=UTF-8 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
 ENV HOUND_HOME=/opt/ZSMART_HOME
-ENV z_app=b2c_web
+ENV z_app=b2b_web
 
 CMD ["start"]
+# CMD /opt/ZSMART_HOME/start.sh
+

@@ -10,6 +10,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
@@ -38,6 +39,9 @@ public class JySearchApplyControll extends BaseController  {
 	@Reference
     private JyPurApplyService jypurApplyService;
 	
+	@Reference
+    private PurApplyService purApplyService;
+	
 	@ApiOperation(value = "查询采购申请单报表", notes = "查询采购申请单报表")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
@@ -45,16 +49,17 @@ public class JySearchApplyControll extends BaseController  {
     })
     @PostMapping("/jycgSearchApply")
     public ResultVO<Page<JyPurApplyResp>> jycgSearchApply(@RequestBody PurApplyReq req) {
-		String userType=req.getUserType();
-		String lanId = null ;
-		if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商
-			UserDTO user = UserContext.getUser();
-			if(user != null){
-				lanId = user.getLanId();
-			}
-			req.setLanId(lanId);
-		}
-		
+		//采购单的时候点击查看采购申请单，传申请人ID，apply_code和apply_name项目名称查询
+				String userId = UserContext.getUserId();
+//				String userId = "100028487";
+				PriCityManagerResp login = purApplyService.getLoginInfo(userId);
+				String userType = login.getUserType();
+				//传过来的APPLY_TYPE看
+				String lanId = login.getLanId();
+				if("4".equals(userType) || "4" == userType){//地市管理员
+					req.setLanId(lanId);
+					return jypurApplyService.jycgSearchApply(req);
+				}
 		return jypurApplyService.jycgSearchApply(req);
     }
 	

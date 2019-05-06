@@ -54,6 +54,13 @@ public interface MerchantRulesService {
      * @return
      */
     ResultVO<List<MerchantRulesDetailDTO>> listMerchantRulesDetail(MerchantRulesDetailListReq req);
+
+    /**
+     * 商家 权限规则信息 列表查询
+     * @param req
+     * @return
+     */
+    ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesDetailListReq req);
     /**
      * 商家 权限规则详情 信息 列表查询分页
      * @param req

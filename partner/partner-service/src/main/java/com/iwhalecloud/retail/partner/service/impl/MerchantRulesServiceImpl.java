@@ -438,7 +438,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 fieldName = "productId";
             }
 
-            detailList = productService.selectPageProductAdmin(productsPageReq).getResultData().getRecords();
+            detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
         } else if (StringUtils.equals(req.getRuleType(), PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType())) {
             // 调拨权限
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType())) {

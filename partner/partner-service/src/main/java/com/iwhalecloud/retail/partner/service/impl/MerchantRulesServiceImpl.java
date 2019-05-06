@@ -449,6 +449,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setUnitType(req.getUnitType());
                 productsPageReq.setPageNo(1);
                 productsPageReq.setPageSize(1000); // 写死 大一点
+                productsPageReq.setSelectAll("1");
                 productsPageReq.setProductIdList(targetIdList);
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {

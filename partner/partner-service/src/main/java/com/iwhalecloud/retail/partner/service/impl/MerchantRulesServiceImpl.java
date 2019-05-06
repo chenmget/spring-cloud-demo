@@ -206,7 +206,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = new Page<MerchantRulesDetailDTO>();
         BeanUtils.copyProperties(page, merchantRulesDetailDTOPage);
         merchantRulesDetailDTOPage.setRecords(resultList);
-        merchantRulesDetailDTOPage.setTotal(resultList.size());
         log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), output: resultList={} ", resultList);
 
         return ResultVO.success(merchantRulesDetailDTOPage);

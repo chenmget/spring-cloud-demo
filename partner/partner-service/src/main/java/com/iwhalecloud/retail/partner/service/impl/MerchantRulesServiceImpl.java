@@ -200,12 +200,29 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", req);
         MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
         BeanUtils.copyProperties(req, merchantRulesListReq);
-        Page<MerchantRulesDTO> page = merchantRulesManager.pageMerchantRulesDetail(merchantRulesListReq);
-        List<MerchantRulesDTO> list = page.getRecords();
+//        Page<MerchantRulesDTO> page = merchantRulesManager.pageMerchantRulesDetail(merchantRulesListReq);
+//        List<MerchantRulesDTO> list = page.getRecords();
+//        List<MerchantRulesDetailDTO> resultList = getDetailList(req, list);
+//        Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = new Page<MerchantRulesDetailDTO>();
+//        BeanUtils.copyProperties(page, merchantRulesDetailDTOPage);
+//        merchantRulesDetailDTOPage.setRecords(resultList);
+        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(merchantRulesListReq);
+
         List<MerchantRulesDetailDTO> resultList = getDetailList(req, list);
         Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = new Page<MerchantRulesDetailDTO>();
-        BeanUtils.copyProperties(page, merchantRulesDetailDTOPage);
-        merchantRulesDetailDTOPage.setRecords(resultList);
+        int pageNo = req.getPageNo();
+        int pageSize = req.getPageSize();
+        merchantRulesDetailDTOPage.setTotal(resultList.size());
+        merchantRulesDetailDTOPage.setPages(pageNo);
+        merchantRulesDetailDTOPage.setSize(pageSize);
+        if(!CollectionUtils.isEmpty(resultList)){
+            int end = pageNo*pageSize -1 ;
+            int begin = (pageNo-1)*pageSize;
+            if(end > resultList.size()-1){
+                end = resultList.size() - begin;
+            }
+            merchantRulesDetailDTOPage.setRecords(resultList.subList(begin,end));
+        }
         log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), output: resultList={} ", resultList);
 
         return ResultVO.success(merchantRulesDetailDTOPage);

@@ -31,8 +31,12 @@ import com.iwhalecloud.retail.web.controller.member.requst.LoginReq;
 import com.iwhalecloud.retail.web.controller.member.requst.VerificationCodeReq;
 import com.iwhalecloud.retail.web.controller.member.response.LoginResp;
 import com.iwhalecloud.retail.web.interceptor.MemberContext;
+import com.iwhalecloud.retail.web.interceptor.UserContext;
 import com.iwhalecloud.retail.web.utils.JWTTokenUtil;
 import com.twmacinta.util.MD5;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -452,4 +456,24 @@ public class MemberController extends BaseController {
         Page<MemberDTO> memberPage = memberService.pageMember(req);
         return ResultVO.success(memberPage);
     }
+    
+    @ApiOperation(value = "判断商家是否拥有翼支付账号,没有则弹窗提示", notes = "传入商家MERCHANT_ID，进行查询")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @ApiImplicitParams({
+    })
+    @RequestMapping(value = "/checkPayAccount", method = RequestMethod.GET)
+    @UserLoginToken
+    public ResultVO checkPayAccount() {
+    	
+    	String userId = UserContext.getUserId();
+    	int flag = memberService.checkPayAccount(userId);
+    	if(flag > 0){
+    		return ResultVO.success("翼支付账号存在");
+    	}
+    	return ResultVO.success("翼支付账号不存在");
+    }
+    
 }

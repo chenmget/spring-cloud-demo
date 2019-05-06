@@ -100,6 +100,13 @@ public interface ProductService {
     ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req);
 
     /**
+     * 条件分页查询-All
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ProductPageResp>> selectPageProductAdminAll(ProductsPageReq req);
+
+    /**
      * 查询产品Id
      * @param req
      * @return

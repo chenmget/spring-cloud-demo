@@ -100,7 +100,4 @@ public class ProductsPageReq extends PageVO {
 
     @ApiModelProperty(value = "审核状态")
     private String auditState;
-
-    @ApiModelProperty(value = "是否查询全部")
-    private String selectAll = "0";
 }

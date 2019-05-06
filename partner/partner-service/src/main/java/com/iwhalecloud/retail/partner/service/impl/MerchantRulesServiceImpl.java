@@ -449,14 +449,13 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setUnitType(req.getUnitType());
                 productsPageReq.setPageNo(1);
                 productsPageReq.setPageSize(1000); // 写死 大一点
-                productsPageReq.setSelectAll("1");
                 productsPageReq.setProductIdList(targetIdList);
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
                 }
 
-                detailList = productService.selectPageProductAdmin(productsPageReq).getResultData().getRecords();
+                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())) {

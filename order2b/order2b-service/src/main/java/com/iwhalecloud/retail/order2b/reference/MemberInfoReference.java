@@ -134,4 +134,11 @@ public class MemberInfoReference {
         return merchantAccountService.listMerchantAccount(merchantAccountListReq);
     }
 
+    public MerchantDTO getMerchantById(String merchantId) {
+        ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(merchantId);
+        if (merchantResultVO.isSuccess() && null != merchantResultVO.getResultData()) {
+            return merchantResultVO.getResultData();
+        }
+        return null;
+    }
 }

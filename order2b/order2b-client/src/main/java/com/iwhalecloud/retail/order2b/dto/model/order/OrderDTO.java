@@ -111,6 +111,11 @@ public class OrderDTO extends SelectModel implements Serializable {
     private String merchantCode;
     private String buyerCode;
 
+    @ApiModelProperty("买家名称")
+    private String buyerName;
+    @ApiModelProperty("买家类型")
+    private String buyerType;
+
     @ApiModelProperty("直减金额")
     private double directReductionAmount;
     @ApiModelProperty("优惠金额")

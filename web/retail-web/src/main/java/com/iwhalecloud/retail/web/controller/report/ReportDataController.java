@@ -123,6 +123,14 @@ public class ReportDataController extends BaseController {
 		
         ResultVO<List<ReportDeSaleDaoResq>> resultVO = reportService.reportDeSaleExport(req);
         
+        ResultVO result = new ResultVO();
+        if (!resultVO.isSuccess()) {
+            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            result.setResultMsg(resultVO.getResultMsg());
+            deliveryGoodsResNberExcel.outputResponse(response,resultVO);
+            return;
+        }
+        
         List<ReportDeSaleDaoResq> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -151,33 +159,35 @@ public class ReportDataController extends BaseController {
         orderMap.add(new ExcelTitleName("redStatus", "库存预警"));
         
       //创建orderItemDetail
-//        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-//        		orderMap, "地包进销存明细报表");
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+        		orderMap, "地包进销存明细报表");
+        deliveryGoodsResNberExcel.exportExcel("地包进销存明细报表",workbook,response);
+        
 //        return deliveryGoodsResNberExcel.uploadExcel(workbook);
-        OutputStream output = null ;
-        try{
-            //创建Excel
-            String fileName = "地包进销存明细报表";
-//            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
-            output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
-//            output.close();
-        }catch (Exception e){
-            log.error("地包进销存明细报表导出失败",e);
-        } finally {
-            if (null != output){
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        OutputStream output = null ;
+//        try{
+//            //创建Excel
+//            String fileName = "地包进销存明细报表";
+////            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+//            output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+////            output.close();
+//        }catch (Exception e){
+//            log.error("地包进销存明细报表导出失败",e);
+//        } finally {
+//            if (null != output){
+//                try {
+//                    output.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
        
     }
 	

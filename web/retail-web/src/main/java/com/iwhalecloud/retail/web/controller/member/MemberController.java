@@ -50,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 /**
@@ -464,16 +465,22 @@ public class MemberController extends BaseController {
     })
     @ApiImplicitParams({
     })
-    @RequestMapping(value = "/checkPayAccount", method = RequestMethod.GET)
-    @UserLoginToken
-    public ResultVO checkPayAccount() {
+    @RequestMapping(value = "/checkPayAccount", method = RequestMethod.POST)
+//    @UserLoginToken
+    public ResultVO<Map<String, String>> checkPayAccount() {
     	
     	String userId = UserContext.getUserId();
+    	if(StringUtils.isBlank(userId)){
+    		ResultVO.error("账号不能为空");
+    	}
+    	//resultCode 1、账号存在  2、账号不存在
+    	Map<String, String> resultCode = new TreeMap<String, String>();
+    	resultCode.put("resultCode", "2");
     	int flag = memberService.checkPayAccount(userId);
     	if(flag > 0){
-    		return ResultVO.success("翼支付账号存在");
+    		resultCode.put("resultCode", "1");
     	}
-    	return ResultVO.success("翼支付账号不存在");
+    	return ResultVO.success(resultCode);
     }
     
 }

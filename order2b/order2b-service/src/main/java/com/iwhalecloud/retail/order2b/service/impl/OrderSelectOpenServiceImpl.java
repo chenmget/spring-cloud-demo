@@ -175,6 +175,17 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         IPage list = selectOrderService.selectOrderListByOrder(req);
         respResultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         List<OrderSelectResp> orderSelectResp = JSON.parseArray(JSON.toJSONString(list.getRecords()), OrderSelectResp.class);
+        // 设置买家信息
+        if (!CollectionUtils.isEmpty(orderSelectResp)) {
+            for (OrderSelectResp resp : orderSelectResp) {
+                String buyerCode = resp.getBuyerCode();
+                if (!StringUtils.isEmpty(buyerCode)) {
+                    MerchantDTO merchantDTO = memberInfoReference.getMerchantById(buyerCode);
+                    resp.setBuyerName(null != merchantDTO ? merchantDTO.getMerchantName() : null);
+                    resp.setBuyerType(null != merchantDTO ? merchantDTO.getMerchantType() : null);
+                }
+            }
+        }
         list.setRecords(orderSelectResp);
         respResultVO.setResultData(list);
         return respResultVO;

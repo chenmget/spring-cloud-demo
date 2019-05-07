@@ -8,6 +8,12 @@ public class ProductConst {
 
     public static final String APP_PRODUCT_FLOW_PROCESS_ID="1";
 
+    public static final String BRANDEDIT_PRODUCT_FLOW_PROCESS_ID="20";
+
+    public static final String OPEREDIT_PRODUCT_FLOW_PROCESS_ID="21";
+
+    public static final String EDIT_PRODUCT_FLOW_PROCESS_ID="22";
+
     public static final String UPDATE_PRODUCT_FLOW_PROCESS_ID="10";
 
     /**
@@ -66,6 +72,32 @@ public class ProductConst {
                 }
             }
             return UN_SUBMIT;
+        }
+
+        public String getCode() {
+            return code;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public enum BrandAuditPeople {
+        HUWEI("zdgsfch","华为"),
+        OPPO("zdgliuxb","OPPO"),
+        VIVO("zdgszoup","vivo"),
+        XIAOMI("zdzzm","小米"),
+        RONGYAO("zdzzm","荣耀"),
+        OTHER("zdlb","其他品牌");
+
+
+
+        private String code;
+        private String value;
+
+        BrandAuditPeople(String code, String value){
+            this.code = code;
+            this.value = value;
         }
 
         public String getCode() {

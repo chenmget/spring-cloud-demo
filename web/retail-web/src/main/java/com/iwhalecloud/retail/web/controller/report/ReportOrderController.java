@@ -37,6 +37,7 @@ import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
+import com.iwhalecloud.retail.web.controller.b2b.order.service.OrderExportUtil;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -149,6 +150,13 @@ public class ReportOrderController extends BaseController {
 				req.setLanId(regionId);
 			}
 	        ResultVO<List<ReportOrderResp>> resultVO = reportOrderService.getReportOrderList1dc(req);
+	        ResultVO result = new ResultVO();
+	        if (!resultVO.isSuccess()) {
+	            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+	            result.setResultMsg(resultVO.getResultMsg());
+	            deliveryGoodsResNberExcel.outputResponse(response,resultVO);
+	            return;
+	        }
 	        
 	        List<ReportOrderResp> data = resultVO.getResultData();
 	        //创建Excel
@@ -184,33 +192,40 @@ public class ReportOrderController extends BaseController {
 	        orderMap.add(new ExcelTitleName("city", "店中商所属区县"));
 
 	      //创建orderItemDetail
-//	        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-//	        		orderMap, "订单明细报表");
+	        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+	        		orderMap, "订单明细报表");
+	        deliveryGoodsResNberExcel.exportExcel("订单明细报表",workbook,response);
 //	        return deliveryGoodsResNberExcel.uploadExcel(workbook);
-	        OutputStream output = null ;
-	        try{
-	            //创建Excel
-	            String fileName = "订单明细报表";
-//	            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-	            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
-	            output = response.getOutputStream();
-	            response.reset();
-	            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-	            response.setContentType("application/msexcel;charset=UTF-8");
-	            response.setCharacterEncoding("UTF-8");
-	            workbook.write(output);
-//	            output.close();
-	        }catch (Exception e){
-	            log.error("订单明细报表导出失败",e);
-	        } finally {
-	            if (null != output){
-	                try {
-	                    output.close();
-	                } catch (IOException e) {
-	                    e.printStackTrace();
-	                }
-	            }
-	        }
+	        
+	      
+//	        OutputStream output = null ;
+//	        try{
+//	            //创建Excel
+//	            String fileName = "订单明细报表";
+////	            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//	            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+//	            output = response.getOutputStream();
+//	            response.reset();
+//	            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//	            response.setContentType("application/msexcel;charset=UTF-8");
+//	            response.setCharacterEncoding("UTF-8");
+//	            workbook.write(output);
+////	            output.close();
+//	        }catch (Exception e){
+//	            log.error("订单明细报表导出失败",e);
+//	        } finally {
+//	            if (null != output){
+//	                try {
+//	                    output.close();
+//	                } catch (IOException e) {
+//	                    e.printStackTrace();
+//	                }
+//	            }
+//	        }
+	        
+	        
+	        
+	        
 	        
 	    }
 }

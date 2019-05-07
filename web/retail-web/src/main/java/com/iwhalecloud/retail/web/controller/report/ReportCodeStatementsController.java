@@ -137,6 +137,14 @@ public class ReportCodeStatementsController extends BaseController  {
 		}
         ResultVO<List<ReportCodeStatementsResp>> resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
         
+        ResultVO result = new ResultVO();
+        if (!resultVO.isSuccess()) {
+            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            result.setResultMsg(resultVO.getResultMsg());
+            deliveryGoodsResNberExcel.outputResponse(response,resultVO);
+            return;
+        }
+        
         List<ReportCodeStatementsResp> data = resultVO.getResultData();
         
         List<ExcelTitleName> orderMap = new ArrayList<>();
@@ -169,36 +177,38 @@ public class ReportCodeStatementsController extends BaseController  {
         orderMap.add(new ExcelTitleName("destCityId", "串码流向所属地市"));
         orderMap.add(new ExcelTitleName("destCountyId", "串码流向所属区县"));
         orderMap.add(new ExcelTitleName("selfRegStatus", "自注册状态"));
-
+      //创建Excel
+        Workbook workbook = new HSSFWorkbook();
 //      //创建orderItemDetail
-//        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-//        		orderMap, "串码明细报表");
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+        		orderMap, "串码明细报表");
+        deliveryGoodsResNberExcel.exportExcel("串码明细报表",workbook,response);
 //        return deliveryGoodsResNberExcel.uploadExcel(workbook);
-        OutputStream output = null;
-        try{
-        	//创建Excel
-            Workbook workbook = new HSSFWorkbook();
-            String fileName = "串码明细报表";
-            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
-
-            output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
-//            output.close();
-        }catch (Exception e){
-            log.error("串码明细报表导出失败",e);
-        } finally {
-            if (null != output){
-                try {
-                    output.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        OutputStream output = null;
+//        try{
+//        	//创建Excel
+//            Workbook workbook = new HSSFWorkbook();
+//            String fileName = "串码明细报表";
+//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+//
+//            output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+////            output.close();
+//        }catch (Exception e){
+//            log.error("串码明细报表导出失败",e);
+//        } finally {
+//            if (null != output){
+//                try {
+//                    output.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
         
     }
     

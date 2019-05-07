@@ -53,8 +53,10 @@ public class ProductBrandNodeRightsServiceExecutorImpl implements WFServiceExecu
 
         String productBaseId = context.getBusinessId();
         ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
+        log.info("ProductBrandNodeRightsServiceExecutorImpl productBaseGetResp={}" + productBaseGetResp);
         String type = "BRAND_AUDIT_PEOPLE"; //品牌审核人
         List<PublicDictDTO> publicDictDTOs = PublicDictService.queryPublicDictListByType(type);
+        log.info("ProductBrandNodeRightsServiceExecutorImpl publicDictDTOs={}" + publicDictDTOs);
         if(CollectionUtils.isEmpty(publicDictDTOs)){
             return ResultVO.success(handlerUsers);
         }

@@ -304,7 +304,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     private String getProcessId(ProductBaseUpdateReq req){
-        String processId = ProductConst.APP_PRODUCT_FLOW_PROCESS_ID;
+        String processId = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
         String processId1 = "";
         String processId2 = "";
         if(null==req){

@@ -82,32 +82,6 @@ public class ProductConst {
         }
     }
 
-    public enum BrandAuditPeople {
-        HUWEI("zdgsfch","华为"),
-        OPPO("zdgliuxb","OPPO"),
-        VIVO("zdgszoup","vivo"),
-        XIAOMI("zdzzm","小米"),
-        RONGYAO("zdzzm","荣耀"),
-        OTHER("zdlb","其他品牌");
-
-
-
-        private String code;
-        private String value;
-
-        BrandAuditPeople(String code, String value){
-            this.code = code;
-            this.value = value;
-        }
-
-        public String getCode() {
-            return code;
-        }
-        public String getValue() {
-            return value;
-        }
-    }
-
     /**
      * 是否被删除
      */

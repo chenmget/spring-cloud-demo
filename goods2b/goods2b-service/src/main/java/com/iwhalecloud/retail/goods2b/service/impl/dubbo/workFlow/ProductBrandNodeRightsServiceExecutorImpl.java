@@ -10,15 +10,19 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.manager.BrandManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
+import com.iwhalecloud.retail.system.dto.PublicDictDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.UserGetReq;
+import com.iwhalecloud.retail.system.service.PublicDictService;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.extservice.WFServiceExecutor;
 import com.iwhalecloud.retail.workflow.extservice.params.ServiceParamContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -36,33 +40,39 @@ public class ProductBrandNodeRightsServiceExecutorImpl implements WFServiceExecu
     @Reference
     private UserService userService;
 
+    @Reference
+    private PublicDictService PublicDictService;
+
     @Override
     public ResultVO<List<HandlerUser>> execute(ServiceParamContext context) {
         List<HandlerUser> handlerUsers = Lists.newArrayList();
 
-        log.info("业务ID=" + context.getBusinessId());
-        log.info("动态参数=" + context.getDynamicParam());
+        log.info("ProductBrandNodeRightsServiceExecutorImpl业务ID=" + context.getBusinessId());
+        log.info("ProductBrandNodeRightsServiceExecutorImpl动态参数=" + context.getDynamicParam());
         System.out.println("--------------");
 
         String productBaseId = context.getBusinessId();
         ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
+        String type = "BRANDAUDITPEOPLE"; //品牌审核人
+        List<PublicDictDTO> publicDictDTOs = PublicDictService.queryPublicDictListByType(type);
+        if(CollectionUtils.isEmpty(publicDictDTOs)){
+            return ResultVO.success(handlerUsers);
+        }
+        HashMap<String,String> brandMap = new HashMap<>();
+        for(PublicDictDTO publicDictDTO:publicDictDTOs){
+            brandMap.put(publicDictDTO.getCodec(),publicDictDTO.getCodeb());
+        }
+        log.info("ProductBrandNodeRightsServiceExecutorImpl brandMap={}",brandMap);
         if(null!=productBaseGetResp){
             HandlerUser handlerUser = new HandlerUser();
             String brandId = productBaseGetResp.getBrandId();
             Brand brand = brandManager.getBrandByBrandId(brandId);
             if(null!=brand && StringUtils.isNotEmpty(brand.getName())){
                 UserGetReq userGetReq = new UserGetReq();
-                if(ProductConst.BrandAuditPeople.HUWEI.getValue().equals(brand.getName())){
-                    userGetReq.setLoginName(ProductConst.BrandAuditPeople.HUWEI.getCode());
-                }else if (ProductConst.BrandAuditPeople.OPPO.getValue().equals(brand.getName())){
-                    userGetReq.setLoginName(ProductConst.BrandAuditPeople.OPPO.getCode());
-                }else if(ProductConst.BrandAuditPeople.VIVO.getValue().equals(brand.getName())){
-                    userGetReq.setLoginName(ProductConst.BrandAuditPeople.VIVO.getCode());
-                }else if(ProductConst.BrandAuditPeople.XIAOMI.getValue().equals(brand.getName()) ||
-                        ProductConst.BrandAuditPeople.RONGYAO.getValue().equals(brand.getName())){
-                    userGetReq.setLoginName(ProductConst.BrandAuditPeople.XIAOMI.getCode());
+                if(brandMap.containsKey(brand.getName())){
+                    userGetReq.setLoginName(brandMap.get(brand.getName()));
                 }else{
-                    userGetReq.setLoginName(ProductConst.BrandAuditPeople.OTHER.getCode());
+                    userGetReq.setLoginName(brandMap.get("其他品牌"));
                 }
                 UserDTO userDTO = userService.getUser(userGetReq);
                 if(null!=userDTO){

@@ -135,7 +135,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
             for (OrderSelectResp resp : orderSelectResp) {
                 String buyerCode = resp.getBuyerCode();
                 if (!StringUtils.isEmpty(buyerCode)) {
-                    MerchantDTO merchantDTO = memberInfoReference.getMerchantById(buyerCode);
+                    MerchantDTO merchantDTO = memberInfoReference.getMerchantByCode(buyerCode);
                     resp.setBuyerName(null != merchantDTO ? merchantDTO.getMerchantName() : null);
                     resp.setBuyerType(null != merchantDTO ? merchantDTO.getMerchantType() : null);
                 }
@@ -191,7 +191,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
             for (OrderSelectResp resp : orderSelectResp) {
                 String buyerCode = resp.getBuyerCode();
                 if (!StringUtils.isEmpty(buyerCode)) {
-                    MerchantDTO merchantDTO = memberInfoReference.getMerchantById(buyerCode);
+                    MerchantDTO merchantDTO = memberInfoReference.getMerchantByCode(buyerCode);
                     resp.setBuyerName(null != merchantDTO ? merchantDTO.getMerchantName() : null);
                     resp.setBuyerType(null != merchantDTO ? merchantDTO.getMerchantType() : null);
                 }
@@ -486,7 +486,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
 
         // 设置买家信息
         if (!StringUtils.isEmpty(orderInfoModel.getBuyerCode())) {
-            MerchantDTO merchantDTO = memberInfoReference.getMerchantById(orderInfoModel.getBuyerCode());
+            MerchantDTO merchantDTO = memberInfoReference.getMerchantByCode(orderInfoModel.getBuyerCode());
             if (null != merchantDTO) {
                 orderSelectDetailResp.setBuyerName(merchantDTO.getMerchantName());
                 orderSelectDetailResp.setBuyerType(merchantDTO.getMerchantType());

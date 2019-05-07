@@ -60,6 +60,12 @@ public class MerchantRulesDetailListReq implements Serializable {
     @ApiModelProperty(value = "品牌id")
     private java.lang.String brandId;
 
+    /**
+     * 查询表PROD_CAT使用
+     */
+    @ApiModelProperty(value = "产品类别")
+    private String catId;
+
     /******  查机型 或 产品 用到的字段   ***/
 
 

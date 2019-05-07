@@ -375,6 +375,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setPageNo(1);
                 productsPageReq.setPageSize(1000); // 写死 大一点
                 productsPageReq.setProductIdList(targetIdList);
+                productsPageReq.setCatId(req.getCatId());
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
@@ -407,6 +408,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             productsPageReq.setUnitType(req.getUnitType());
             productsPageReq.setPageNo(1);
             productsPageReq.setPageSize(1000); // 写死 大一点
+            productsPageReq.setCatId(req.getCatId());
+
             // 品牌
             if (!StringUtils.isEmpty(req.getBrandId())) {
                 productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
@@ -435,6 +438,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setPageNo(1);
                 productsPageReq.setPageSize(1000); // 写死 大一点
                 productsPageReq.setProductIdList(targetIdList);
+                productsPageReq.setCatId(req.getCatId());
+
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));

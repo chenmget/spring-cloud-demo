@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.web.controller.partner;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods.dto.req.ProdBrandGetReq;
 import com.iwhalecloud.retail.goods.dto.resp.ProdBrandGetResp;
 
 import com.iwhalecloud.retail.goods2b.dto.req.BrandGetReq;
@@ -66,8 +65,8 @@ public class MerchantRulesController {
      */
     @ApiOperation(value = "新建商家权限规则接口", notes = "新建商家权限规则（可以批量）接口(通用）,逻辑：先删除原有的记录，再新建新的记录")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @Transactional
@@ -88,8 +87,8 @@ public class MerchantRulesController {
             name = "merchantRuleId", value = "规则ID", paramType = "query", required = true, dataType = "String"
     )
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/deleteById", method = RequestMethod.GET)
     @Transactional
@@ -107,8 +106,8 @@ public class MerchantRulesController {
      */
     @ApiOperation(value = "获取 商家权限规则 列表接口", notes = "可以根据 商家ID 规则类型、对象类型 条件进行查询（通用接口）")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
 //    @RequestMapping(value = "/list", method = RequestMethod.POST)
 //    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(@RequestBody @ApiParam(value = "列表查询参数", required = true) MerchantRulesListReq req) {
@@ -129,8 +128,8 @@ public class MerchantRulesController {
      */
     @ApiOperation(value = "获取 商家权限规则  分页接口", notes = "可以根据 商家ID 规则类型、对象类型 条件进行查询（通用接口）")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/page", method = RequestMethod.POST)
     @Transactional
@@ -179,8 +178,8 @@ public class MerchantRulesController {
      */
     @ApiOperation(value = "批量新建商家权限规则接口", notes = "新建商家权限规则（可以批量）接口(通用）,逻辑：通过解析excel模板，批量新增")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/saveExcelRules", method = RequestMethod.POST)
     @Transactional
@@ -192,10 +191,10 @@ public class MerchantRulesController {
 
     @ApiOperation(value = "上传并解析Excel文件", notes = "支持xlsx、xls格式")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value = "/uploadExcel",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadExcel", headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
     public ResultVO uploadExcel(@RequestParam("file") MultipartFile file) {
 
         String suffix = StringUtils.getFilenameExtension(file.getOriginalFilename());
@@ -212,37 +211,37 @@ public class MerchantRulesController {
             for (int i = 0; i < data.size(); i++) {
                 MerchantRulesImportResp merchantRulesImportResp = data.get(i);
                 ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantByCode(merchantRulesImportResp.getMerchantCode());
-                if(merchantDTOResultVO.isSuccess() && merchantDTOResultVO.getResultData() != null){
+                if (merchantDTOResultVO.isSuccess() && merchantDTOResultVO.getResultData() != null) {
                     MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
                     data.get(i).setMerchantName(merchantDTO.getMerchantName());
                     data.get(i).setMerchantType(merchantDTO.getMerchantType());
                     data.get(i).setMerchantId(merchantDTO.getMerchantId());
-                }else{
-                    return ResultVO.error("商家编码{"+merchantRulesImportResp.getMerchantCode()+"}不存在");
+                } else {
+                    return ResultVO.error("商家编码{" + merchantRulesImportResp.getMerchantCode() + "}不存在");
                 }
-                if(merchantRulesImportResp.getBrandCode() != null) {
+                if (merchantRulesImportResp.getBrandCode() != null) {
                     ResultVO<BrandUrlResp> brandUrlRespResultVO = brandService.getBrandByBrandId(merchantRulesImportResp.getBrandCode());
                     if (brandUrlRespResultVO.isSuccess() && brandUrlRespResultVO.getResultData() != null) {
                         BrandUrlResp brandUrlResp = brandUrlRespResultVO.getResultData();
                         data.get(i).setBrandName(brandUrlResp.getName());
                     }
-                }else if(merchantRulesImportResp.getTargetMerchantCode() != null){
+                } else if (merchantRulesImportResp.getTargetMerchantCode() != null) {
                     MerchantDTO merchantDTO = merchantService.getMerchantByCode(merchantRulesImportResp.getTargetMerchantCode()).getResultData();
-                    if(merchantDTO == null){
-                        return ResultVO.error("对象编码{"+merchantRulesImportResp.getTargetMerchantCode()+"}不存在");
+                    if (merchantDTO == null) {
+                        return ResultVO.error("对象编码{" + merchantRulesImportResp.getTargetMerchantCode() + "}不存在");
                     }
                     data.get(i).setTargetMerchantName(merchantDTO.getMerchantName());
                     data.get(i).setTargetMerchantId(merchantDTO.getMerchantId());
-                }else if(merchantRulesImportResp.getRegionId() != null){
+                } else if (merchantRulesImportResp.getRegionId() != null) {
                     CommonRegionDTO commonRegionDTO = commonRegionService.getCommonRegionById(merchantRulesImportResp.getRegionId()).getResultData();
-                    if(commonRegionDTO == null){
-                        return ResultVO.error("区域编码{"+merchantRulesImportResp.getRegionId()+"}不存在");
+                    if (commonRegionDTO == null) {
+                        return ResultVO.error("区域编码{" + merchantRulesImportResp.getRegionId() + "}不存在");
                     }
                     data.get(i).setRegionName(commonRegionDTO.getRegionName());
-                }else if(merchantRulesImportResp.getSn() != null){
+                } else if (merchantRulesImportResp.getSn() != null) {
                     ProductResp productResp = productService.getProductBySn(merchantRulesImportResp.getSn()).getResultData();
-                    if(productResp == null){
-                        return ResultVO.error("机型编码{"+merchantRulesImportResp.getSn()+"}不存在");
+                    if (productResp == null) {
+                        return ResultVO.error("机型编码{" + merchantRulesImportResp.getSn() + "}不存在");
                     }
                     data.get(i).setProductId(productResp.getProductId());
                     data.get(i).setUnitName(productResp.getUnitName());
@@ -253,7 +252,7 @@ public class MerchantRulesController {
         } catch (Exception e) {
             resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
             resultVO.setResultMsg(e.getMessage());
-            log.error("excel解析失败",e);
+            log.error("excel解析失败", e);
         }
         return resultVO;
     }

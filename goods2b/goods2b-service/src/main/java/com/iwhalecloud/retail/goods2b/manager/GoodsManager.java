@@ -13,7 +13,6 @@ import com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp;
 import com.iwhalecloud.retail.goods2b.entity.Goods;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -111,6 +110,9 @@ public class GoodsManager{
     public int updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req){
         UpdateWrapper<Goods> updateWrapper = new UpdateWrapper<>();
         updateWrapper.in("GOODS_ID",req.getGoodsIds());
+        if(null != req.getMerchantType()){
+            updateWrapper.eq("MERCHANT_TYPE", req.getMerchantType());
+        }
         Goods goods = new Goods();
         if(null != req.getIsAdvanceSale()){
             goods.setIsAdvanceSale(req.getIsAdvanceSale());

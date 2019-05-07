@@ -24,4 +24,7 @@ public class GoodsUpdateActTypeByGoodsIdsReq extends AbstractRequest implements 
 
     @ApiModelProperty(value = "是否前置补贴")
     private Integer isSubsidy;
+
+    @ApiModelProperty(value = "商家类型")
+    private String merchantType;
 }

@@ -178,6 +178,9 @@ public class UserContext implements Serializable {
                 SystemConst.USER_FOUNDER_5,
                 SystemConst.USER_FOUNDER_8
         );
+        if (null == userOtherMsgDTO.getUser().getUserFounder())   {
+            throw new UserNoMerchantException("用户没有关联商家，请确认");
+        }
         Boolean isfrontUser = frontUserList.contains(userOtherMsgDTO.getUser().getUserFounder());
         if ((null != userOtherMsgDTO && null == userOtherMsgDTO.getMerchant()) && isfrontUser)   {
             throw new UserNoMerchantException("用户没有关联商家，请确认");

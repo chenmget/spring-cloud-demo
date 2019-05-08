@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.WorkFlowServiceApplication;
 import com.iwhalecloud.retail.workflow.bizservice.RunRouteService;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import com.iwhalecloud.retail.workflow.dto.TaskItemDTO;
 import com.iwhalecloud.retail.workflow.dto.req.*;
@@ -17,6 +18,7 @@ import com.iwhalecloud.retail.workflow.manager.NodeRightsManager;
 import com.iwhalecloud.retail.workflow.manager.TaskItemManager;
 import com.iwhalecloud.retail.workflow.service.TaskItemService;
 import com.iwhalecloud.retail.workflow.service.TaskService;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -49,12 +51,16 @@ public class TaskServiceImplTest {
     public void startProcess() {
         ProcessStartReq req = new ProcessStartReq();
         req.setProcessId("3");
-        req.setFormId("11003880785593794566");
+        req.setTaskSubType("1130");
+        req.setFormId("201905080000001");
         req.setTitle("商品审核测试");
 //        req.setApplyUserId("1");
 //        req.setApplyUserName("admin");
+        req.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+        req.setParamsValue("{'brandId':'1001'}");
         ResultVO resultVO = taskService.startProcess(req);
         System.out.println(resultVO.isSuccess());
+        Assert.assertEquals("0", resultVO.getResultCode());
     }
 
     @Test
@@ -66,6 +72,7 @@ public class TaskServiceImplTest {
         req.setUserName("管理员");
         ResultVO resultVO = taskService.receiveTask(req);
         System.out.println(resultVO.isSuccess());
+
     }
 
     @Test
@@ -121,6 +128,7 @@ public class TaskServiceImplTest {
         req.setHandlerMsg("测试");
         ResultVO<RouteNextReq> reqResultVO = taskService.nextRouteAndReceiveTask(req);
         System.out.println(reqResultVO.isSuccess());
+        Assert.assertEquals("0", reqResultVO.getResultCode());
     }
 
     @Test

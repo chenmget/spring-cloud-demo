@@ -3,10 +3,12 @@ package com.iwhalecloud.retail.web.interceptor;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.member.dto.MemberDTO;
 import com.iwhalecloud.retail.member.dto.request.MemberGetReq;
 import com.iwhalecloud.retail.member.service.MemberService;
 import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.BusinessEntityGetReq;
 import com.iwhalecloud.retail.partner.service.*;
 import com.iwhalecloud.retail.system.common.SystemConst;
@@ -187,6 +189,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                             otherMsgDTO = saveUserOtherMsg(userDTO);
                         }
                     }
+                    if (null == otherMsgDTO) {
+                        return false;
+                    }
                     // 保存用户信息
                     UserContext.setUser(userDTO);
                     UserContext.setUserId(id);
@@ -231,6 +236,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                         otherMsgDTO = saveUserOtherMsg(userDTO);
                     }
                 }
+                if (null == otherMsgDTO) {
+                    return false;
+                }
                 UserContext.setUser(userDTO);
                 UserContext.setUserId(id);
                 UserContext.setSessionId(sessionId);
@@ -254,8 +262,12 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 //        List<UserRoleDTO> userRoleDTOList = userRoleService.listUserRoleByUserId(userDTO.getUserId()).getResultData();
 //        userOtherMsgDTO.setUserRoleList(userRoleDTOList);
 
+        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(userDTO.getRelCode());
+        if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
+            return null;
+        }
         // 获取商家信息
-        userOtherMsgDTO.setMerchant(merchantService.getMerchantById(userDTO.getRelCode()).getResultData());
+        userOtherMsgDTO.setMerchant(merchantDTOResultVO.getResultData());
 
 //        if(userDTO.getUserFounder() == SystemConst.USER_FOUNDER_3
 //                || userDTO.getUserFounder() == SystemConst.USER_FOUNDER_6) {

@@ -76,6 +76,10 @@ public class ResourceInstStoreManager{
 
     public Integer getQuantityByMerchantId(String merchantId, List<String> statusList){
         ResouceStoreDTO resouceStoreDTO = resouceStoreMapper.getStore(merchantId, ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        log.info("ResourceInstStoreManager.getQuantityByMerchantId resouceStoreMapper.getStore merchantId={},resp={}", merchantId, JSON.toJSONString(resouceStoreDTO));
+        if (null == resouceStoreDTO) {
+            return 0;
+        }
         List<String> list = resourceInstStoreMapper.getQuantityByMerchantId(resouceStoreDTO.getMktResStoreId(), merchantId, statusList);
         Integer number = CollectionUtils.isEmpty(list) ? 0 : list.size();
         return number;

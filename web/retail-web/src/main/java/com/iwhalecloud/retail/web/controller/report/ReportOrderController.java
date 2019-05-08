@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -114,15 +115,11 @@ public class ReportOrderController extends BaseController {
     }
 	 
 	 
-	 /**
+	 	/**
 	     * 导出按钮
 	     */
-	    @ApiOperation(value = "导出", notes = "导出报表数据")
-	    @ApiResponses({
-	            @ApiResponse(code=400,message="请求参数没填好"),
-	            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-	    })
-	    @PostMapping(value="/orderReportDataExport")
+	   
+	    @RequestMapping(value = "/orderReportDataExport", method = RequestMethod.POST)
 	    @UserLoginToken
 	    public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
 	    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
@@ -195,6 +192,9 @@ public class ReportOrderController extends BaseController {
 	        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
 	        		orderMap, "订单明细报表");
 	        deliveryGoodsResNberExcel.exportExcel("订单明细报表",workbook,response);
+	        
+//	        deliveryGoodsResNberExcel.uploadExcel(workbook);
+	        
 //	        return deliveryGoodsResNberExcel.uploadExcel(workbook);
 	        
 	      
@@ -222,10 +222,6 @@ public class ReportOrderController extends BaseController {
 //	                }
 //	            }
 //	        }
-	        
-	        
-	        
-	        
 	        
 	    }
 }

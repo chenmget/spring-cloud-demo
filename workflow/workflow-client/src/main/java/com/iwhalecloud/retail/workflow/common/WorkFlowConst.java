@@ -327,4 +327,29 @@ public class WorkFlowConst {
             return taskSubName;
         }
     }
+
+    /**
+     * 流程节点
+     */
+    public enum TASK_PARAMS_TYPE {
+        NO_PARAMS(-1, "无参数"),
+        JSON_PARAMS(1, "json"),
+        STRING_PARAMS(2, "字符串");
+
+        private Integer code;
+        private String name;
+
+        TASK_PARAMS_TYPE(Integer code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
 }

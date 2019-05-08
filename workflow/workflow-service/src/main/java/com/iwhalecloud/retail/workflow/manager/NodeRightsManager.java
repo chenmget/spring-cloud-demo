@@ -67,7 +67,7 @@ public class NodeRightsManager{
      * @param task 任务实例
      * @return
      */
-    public List<HandlerUser> listUserByRightsType(NodeRights nodeRights,Task task) {
+    public List<HandlerUser> listUserByRightsType(NodeRights nodeRights, Task task) {
         List<HandlerUser> handlerUserList = Lists.newArrayList();
         String rightsType = nodeRights.getRightsType();
         final String createUserId = task.getCreateUserId();
@@ -90,21 +90,21 @@ public class NodeRightsManager{
         } else if (WorkFlowConst.RightsType.RoleDept.getId().equals(rightsType)) {
             roleId = nodeRights.getRoleId();
             deptId = nodeRights.getDeptId();
-        } else if (WorkFlowConst.RightsType.RoleUserDept.getId().equals(rightsType)){
+        } else if (WorkFlowConst.RightsType.RoleUserDept.getId().equals(rightsType)) {
             roleId = nodeRights.getRoleId();
             UserDetailDTO userDetailDTO = userClient.getUserDetail(createUserId);
             deptId = userDetailDTO.getOrgId();
-            if(StringUtils.isEmpty(deptId)) {
+            if (StringUtils.isEmpty(deptId)) {
                 return handlerUserList;
             }
         } else if (WorkFlowConst.RightsType.UserDept.getId().equals(rightsType)) {
             UserDetailDTO userDetailDTO = userClient.getUserDetail(createUserId);
             deptId = userDetailDTO.getOrgId();
-            if(StringUtils.isEmpty(deptId)) {
+            if (StringUtils.isEmpty(deptId)) {
                 return handlerUserList;
             }
         } else if (WorkFlowConst.RightsType.RemoteService.getId().equals(rightsType)) {
-            return getHandlerUserByRemote(nodeRights,task);
+            return getHandlerUserByRemote(nodeRights, task);
         }
         if (roleId != null || deptId != null) {
             List<HandlerUser> userList = userClient.listUserByCondition(roleId, deptId);
@@ -135,11 +135,13 @@ public class NodeRightsManager{
         serviceParamContext.setClassPath(service.getClassPath());
         serviceParamContext.setServiceGroup(service.getServiceGroup());
         serviceParamContext.setDynamicParam(service.getDynamicParam());
+        serviceParamContext.setParamsType(task.getParamsType());
+        serviceParamContext.setParamsValue(task.getParamsValue());
 
         ResultVO<List<HandlerUser>> resultVO = wfServiceExecutor.execute(serviceParamContext);
-        if (null==resultVO || !resultVO.isSuccess()) {
-            log.error("NodeRightsManager.getHandlerUserByRemote-->wfServiceExecutor.execute,serviceParamContext={},resultVO={}"
-                    ,JSON.toJSONString(serviceParamContext),JSON.toJSONString(resultVO));
+        if (null == resultVO || !resultVO.isSuccess()) {
+            log.error("NodeRightsManager.getHandlerUserByRemote-->wfServiceExecutor.execute,serviceParamContext={},resultVO={}",
+                    JSON.toJSONString(serviceParamContext), JSON.toJSONString(resultVO));
             throw new RetailTipException(ResultCodeEnum.NEXT_HADNLE_USER_IS_EMPTY);
         }
 

@@ -38,11 +38,11 @@ public class GlobalExceptionHandler extends BaseController<Object>{
     private ResultVO<Object> createResultVO(ResultCodeEnum resultCodeEnum,String detailMessage) {
 
         //如果是本地环境/测试环境/开发环境抛出详细错误
-        if (env.contains("local") || env.contains("test") || env.contains("dev") || true) {
+//        if (env.contains("local") || env.contains("test") || env.contains("dev") || true) {
             return resultVO(resultCodeEnum.getCode(), resultCodeEnum.getDesc(), detailMessage);
-        }
+//        }
 
-        return resultVO(resultCodeEnum.getCode(), resultCodeEnum.getDesc(), "");
+//        return resultVO(resultCodeEnum.getCode(), resultCodeEnum.getDesc(), "");
     }
 
     @ResponseStatus(HttpStatus.OK)

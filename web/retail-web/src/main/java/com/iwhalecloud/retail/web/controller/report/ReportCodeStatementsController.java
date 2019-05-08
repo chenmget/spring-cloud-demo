@@ -2,7 +2,11 @@ package com.iwhalecloud.retail.web.controller.report;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -92,6 +96,24 @@ public class ReportCodeStatementsController extends BaseController  {
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(manufacturerCode);
 			req.setMktResStoreId(mktResStoreId);
 		}
+		String xdCreateTimeStart = req.getXdCreateTimeStart();
+		String xdCreateTimeEnd = req.getXdCreateTimeEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -1);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		
+		if(xdCreateTimeStart==null && xdCreateTimeEnd==null){
+			xdCreateTimeStart = format3.format(date3);
+			xdCreateTimeEnd = df.format(date);
+		}
+		
+		
+		
 			return reportCodeStateService.getCodeStatementsReport(req);
     }
 	

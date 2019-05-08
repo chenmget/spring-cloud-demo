@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.web.exception.ParamInvalidException;
+import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -38,11 +39,11 @@ public class GlobalExceptionHandler extends BaseController<Object>{
     private ResultVO<Object> createResultVO(ResultCodeEnum resultCodeEnum,String detailMessage) {
 
         //如果是本地环境/测试环境/开发环境抛出详细错误
-//        if (env.contains("local") || env.contains("test") || env.contains("dev") || true) {
+        if (env.contains("local") || env.contains("test") || env.contains("dev") || true) {
             return resultVO(resultCodeEnum.getCode(), resultCodeEnum.getDesc(), detailMessage);
-//        }
+        }
 
-//        return resultVO(resultCodeEnum.getCode(), resultCodeEnum.getDesc(), "");
+        return resultVO(resultCodeEnum.getCode(), resultCodeEnum.getDesc(), "");
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -145,6 +146,16 @@ public class GlobalExceptionHandler extends BaseController<Object>{
         final String detailMessage = StringUtils.collectionToDelimitedString(ex.getErrors(),"\n");
 
         return resultVO(ResultCodeEnum.ERROR.getCode(), detailMessage, ResultCodeEnum.ERROR.getDesc());
+
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    @ExceptionHandler(UserNoMerchantException.class)
+    public ResultVO<Object> userNoMerchantException(HttpServletRequest request,UserNoMerchantException ex){
+        log.error("请求失败[" + request.getRequestURI() + "] "+JSON.toJSONString(ex.getResultVo()), ex);
+
+        return ex.getResultVo();
 
     }
 }

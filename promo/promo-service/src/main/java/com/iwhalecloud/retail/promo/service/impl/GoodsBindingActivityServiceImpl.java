@@ -57,8 +57,6 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 // 更新商品表是否参与预售活动字段
                 GoodsUpdateActTypeByGoodsIdsReq req = new GoodsUpdateActTypeByGoodsIdsReq();
                 req.setGoodsIds(goodsIdList);
-                // 前置补贴只更新地包的，加merchantType类型
-                req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
                 req.setIsAdvanceSale(GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode());
                 log.info("开始更新商品表字段 req={}", JSON.toJSON(req));
                 Boolean resultData = goodsService.updateGoodsActTypeByGoodsIdList(req).getResultData();
@@ -74,6 +72,8 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 // 更新商品表是否参与前置补贴活动字段
                 GoodsUpdateActTypeByGoodsIdsReq req = new GoodsUpdateActTypeByGoodsIdsReq();
                 req.setGoodsIds(goodsIdList);
+                // 前置补贴只更新地包的，加merchantType类型
+                req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
                 req.setIsSubsidy(GoodsConst.IsSubsidy.IS_SUBSIDY.getCode());
                 log.info("开始更新商品表字段 req={}", JSON.toJSON(req));
                 Boolean resultData = goodsService.updateGoodsActTypeByGoodsIdList(req).getResultData();

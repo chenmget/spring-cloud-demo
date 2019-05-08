@@ -5,9 +5,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
@@ -28,6 +25,7 @@ import com.iwhalecloud.retail.web.controller.system.request.EditUserReq;
 import com.iwhalecloud.retail.web.controller.system.response.GetUserDetailResp;
 import com.iwhalecloud.retail.web.controller.system.response.LoginResp;
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
+import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import com.iwhalecloud.retail.web.utils.AESUtils;
@@ -245,7 +243,8 @@ public class UserController extends BaseController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/loginWithoutPwd", method = RequestMethod.POST)
-    public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req) {
+    public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req)
+            throws UserNoMerchantException{
         UserLoginResp resp = userService.loginWithoutPwd(req);
 
         // 失败 返回错误信息
@@ -336,7 +335,7 @@ public class UserController extends BaseController {
     @ApiImplicitParam(name = "platformFlag", value = "平台标识：0交易平台；1管理平台", paramType = "query", required = true, dataType = "String")
     @RequestMapping(value="/getUser",method = RequestMethod.GET)
     @UserLoginToken
-    public ResultVO<LoginResp> getUser(HttpServletRequest request, @RequestParam String platformFlag) {
+    public ResultVO<LoginResp> getUser(HttpServletRequest request, @RequestParam String platformFlag) throws UserNoMerchantException{
         ResultVO checkUserLoginResult = checkUserLogin(request);
 
         LoginResp resp = new LoginResp();
@@ -463,7 +462,7 @@ public class UserController extends BaseController {
      * @param userDTO
      * @return
      */
-    private UserOtherMsgDTO saveUserOtherMsg(UserDTO userDTO){
+    private UserOtherMsgDTO saveUserOtherMsg(UserDTO userDTO) throws UserNoMerchantException {
 
         UserOtherMsgDTO userOtherMsgDTO = new UserOtherMsgDTO();
         // 找  用户-角色 关联

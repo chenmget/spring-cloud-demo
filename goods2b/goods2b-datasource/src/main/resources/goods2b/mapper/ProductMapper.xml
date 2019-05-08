@@ -67,6 +67,7 @@
     b.IS_ITMS,
     b.IS_CT_CODE,
     b.IS_INSPECTION,
+    b.IS_FIXED_LINE,
     c.CAT_ID,
     c.CAT_NAME,
     t.TYPE_ID,

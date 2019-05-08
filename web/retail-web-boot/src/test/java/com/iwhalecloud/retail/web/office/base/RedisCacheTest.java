@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.web.office.base;
 
 import com.iwhalecloud.retail.RetailWebApplication;
 import com.iwhalecloud.retail.web.controller.cache.RedisCacheUtils;
-import com.iwhalecloud.retail.web.utils.JWTTokenUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,19 +23,19 @@ public class RedisCacheTest {
 
     @Test
     public void set1(){
-        System.out.println("JWTTokenUtil.updateTokenExpireTime result:" + JWTTokenUtil.updateTokenExpireTime("sessionid1"));
+//        System.out.println("JWTTokenUtil.updateTokenExpireTime result:" + JWTTokenUtil.updateTokenExpireTime("sessionid1"));
     }
 
     @Test
     public void get1(){
-        if (JWTTokenUtil.isTokenEffect("sessionid1")) {
-
-            System.out.println( "redisCacheUtils.hasKey is true");
-            System.out.println( "redisCacheUtils.getCacheObject result:" + redisCacheUtils.getCacheObject("sessionid1")) ;
-            System.out.println( "redisCacheUtils.getExpire result: " + redisCacheUtils.getExpire("sessionid1")) ;
-        } else {
-            System.out.println( "redisCacheUtils.hasKey is false");
-        }
+//        if (JWTTokenUtil.isTokenEffect("sessionid1")) {
+//
+//            System.out.println( "redisCacheUtils.hasKey is true");
+//            System.out.println( "redisCacheUtils.getCacheObject result:" + redisCacheUtils.getCacheObject("sessionid1")) ;
+//            System.out.println( "redisCacheUtils.getExpire result: " + redisCacheUtils.getExpire("sessionid1")) ;
+//        } else {
+//            System.out.println( "redisCacheUtils.hasKey is false");
+//        }
     }
 
 

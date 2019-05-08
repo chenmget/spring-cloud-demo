@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
@@ -30,13 +31,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -63,10 +62,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     private ResourceInstCheckService resourceInstCheckService;
     @Autowired
     private ResouceInstTrackManager resouceInstTrackManager;
-    @Value("${addNbrService.typeId}")
-    private String typeId;
-    @Value("${addNbrService.checkMaxNum}")
-    private String checkMaxNum;
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -156,22 +151,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
-        String requestStatusCd = null;
-        String processId = null;
-        if (mktResInstNbrs.size() < 10 || ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
-            requestStatusCd = ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode();
-            processId = ResourceConst.ADD_NBR_WORK_FLOW_INST;
-        }else {
-            String inTypeId = req.getTypeId();
-            List<String> typeIdList = Arrays.asList(typeId.split(","));
-            if (typeIdList.contains(inTypeId)) {
-                processId = ResourceConst.TWO_STEP_WORK_FLOW_INST;
-                requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK_MOBINT.getCode();
-            } else{
-                processId = ResourceConst.ONE_STEP_WORK_FLOW_INST;
-                requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK.getCode();
-            }
-        }
+        SelectProcessResp selectProcessResp = resourceInstCheckService.selectProcess(req);
         // step2 新增申请单
         ResourceRequestAddReq resourceRequestAddReq = new ResourceRequestAddReq();
         List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = resourceInstCheckService.getReqInst(req);
@@ -186,14 +166,14 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         resourceRequestAddReq.setRegionId(merchantDTOResultVO.getResultData().getCity());
         resourceRequestAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceRequestAddReq.setDestStoreId(mktResStoreId);
-        resourceRequestAddReq.setStatusCd(requestStatusCd);
+        resourceRequestAddReq.setStatusCd(selectProcessResp.getRequestStatusCd());
         String mktResReqId = runableTask.excuetorAddReq(resourceRequestAddReq);
         log.info("MerchantResourceInstServiceImpl.addResourceInst requestService.insertResourceRequest req={}, resp={}", JSON.toJSONString(resourceRequestAddReq), mktResReqId);
         // step3 启动工作流
         ProcessStartReq processStartDTO = new ProcessStartReq();
         processStartDTO.setTitle("串码入库审批流程");
         processStartDTO.setApplyUserId(req.getCreateStaff());
-        processStartDTO.setProcessId(processId);
+        processStartDTO.setProcessId(selectProcessResp.getProcessId());
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3010.getTaskSubType());
         processStartDTO.setApplyUserName(req.getApplyUserName());
         processStartDTO.setFormId(mktResReqId);

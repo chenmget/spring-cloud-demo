@@ -462,4 +462,10 @@ public class MerchantPageResp implements Serializable {
     @ApiModelProperty(value = "(商家)失效时间	")
     private java.util.Date expDate;
 
+    /**
+     * 系统账号
+     */
+    @ApiModelProperty(value = "系统账号	")
+    private java.lang.String loginName;
+
 }

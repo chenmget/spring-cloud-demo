@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * ProdProduct
@@ -38,5 +39,11 @@ public class ProductAuditStateUpdateReq extends AbstractRequest implements Seria
 	 */
 	@ApiModelProperty(value = "状态:01 待提交，02审核中，03 已挂网，04 已退市")
 	private String status;
+
+	@ApiModelProperty(value = "productIds")
+	private List<String> productIds;
+
+	@ApiModelProperty(value = "用来打标 审核通过更新为2 后台程序给零售商添加产品权限")
+	private String attrValue10;
 
 }

@@ -130,4 +130,16 @@
 		 <!--</where>-->
 	<!--</select>-->
     <!---->
+
+    <select id="getParMerchantAccountByMerchantId"
+            resultType="int">
+			SELECT
+				count(1) 
+			FROM
+				PAR_MERCHANT_ACCOUNT t 
+			WHERE
+				t.MERCHANT_ID =  #{merchantId}
+				AND t.STATE = '1' 
+				AND t.ACCOUNT_TYPE = '1'
+		    </select>
 </mapper>

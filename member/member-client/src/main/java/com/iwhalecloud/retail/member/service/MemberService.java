@@ -53,4 +53,11 @@ public interface MemberService{
 	 */
     ResultVO register(MemberAddReq member);
 
+    /**
+	 * 判断是否拥有翼支付账号
+	 * @param merchantId
+	 * @return
+	 */
+	int checkPayAccount(String merchantId);
+
 }

@@ -1,8 +1,11 @@
 package com.iwhalecloud.retail.partner.service.impl;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.PartnerServiceApplication;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
@@ -66,16 +69,21 @@ public class MerchantTest {
     public void list() {
         MerchantListReq req = new MerchantListReq();
         req.setNeedOtherTableFields(true);
-
-        req.setLanId("731");
-        ResultVO resultVO = merchantService.listMerchant(req);
-        System.out.print("结果：" + resultVO.toString());
+        req.setMerchantType("4");
+        ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(req);
+        List<MerchantDTO> list = resultVO.getResultData();
+        for (MerchantDTO dto : list) {
+            if ("4300002063684".equals(dto.getMerchantId())) {
+                System.out.print("merchantId = "+dto.getMerchantId());
+            }
+        }
+//        System.out.print("结果：" + JSON.toJSONString(resultVO.toString()));
     }
 
     @Test
     public void page() {
         MerchantPageReq req = new MerchantPageReq();
-        req.setMerchantTypeList(Lists.newArrayList( "2"));
+//        req.setMerchantTypeList(Lists.newArrayList( "2"));
 //        req.setLanIdList(Lists.newArrayList("730", "731"));
 //        req.setCityList(Lists.newArrayList("73001", "73101"));
 //        req.setLanIdList(Lists.newArrayList());
@@ -83,8 +91,10 @@ public class MerchantTest {
 //        req.setTagId("11222");
 //        req.setMerchantCode("12345");
         req.setPageSize(1000);
-        ResultVO resultVO = merchantService.pageMerchant(req);
-        System.out.print("结果：" + resultVO.toString());
+        req.setMerchantName("郑小文");
+        ResultVO<Page<MerchantPageResp>> resultVO = merchantService.pageMerchant(req);
+        MerchantPageResp dto = resultVO.getResultData().getRecords().get(0);
+        System.out.print("结果：" + dto.getMerchantId());
     }
 
     @Test

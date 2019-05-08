@@ -44,10 +44,10 @@
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')	
 		</if>
 		<if test="req.createTimeStart!=null and req.createTimeStart!=''">
-			and a.CREATE_DATE &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
-			and a.CREATE_DATE &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
 			and a.DATE &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
@@ -66,7 +66,7 @@
 		</if>
 			GROUP BY a.PRODUCT_BASE_ID
 		) g
-		 limit 1000) z
+		 limit 60000) z
   </select>
   
   <select id="getUerRoleForView" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"
@@ -81,5 +81,20 @@
 	from sys_user_role a,sys_user b where 1=1 and a.user_id = b.user_id and a.user_id = #{req.userId}
 	order by userType limit 1   
 
+  </select>
+  
+  <select id="retailerCodeBylegacy" parameterType="String" resultType="String">
+
+-	  SELECT merchant_code FROM par_merchant WHERE 1=1 and legacy_account=#{legacyAccount}
+  </select>
+  
+  <select id="getretailerCode" parameterType="String" resultType="String">
+  		SELECT * FROM ( SELECT b.merchant_code FROM sys_user a,par_merchant b WHERE a.login_name = #{loginName} AND a.rel_code=b.merchant_id ORDER BY a.user_founder  LIMIT 1 ) c
+  
+  </select>
+  
+  <select id="getMyMktResStoreId" parameterType="String" resultType="String">
+	  select * from (SELECT MKT_RES_STORE_ID FROM MKT_RES_STORE_OBJ_REL WHERE obj_id = #{relCode} limit 1) c
+  
   </select>
 </mapper>

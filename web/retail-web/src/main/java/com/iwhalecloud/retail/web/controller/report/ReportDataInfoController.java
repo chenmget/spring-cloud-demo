@@ -1,8 +1,12 @@
 package com.iwhalecloud.retail.web.controller.report;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -17,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
@@ -30,9 +35,12 @@ import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.RegionsListReq;
 import com.iwhalecloud.retail.system.dto.response.RegionsGetResp;
 import com.iwhalecloud.retail.system.service.RegionsService;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.controller.system.RegionController;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
@@ -69,45 +77,24 @@ public class ReportDataInfoController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getStorePurchaserReport")
+	@UserLoginToken
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(@RequestBody ReportStorePurchaserReq req) {
+		//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		//省公司，地市，零售商三种权限
-		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
-			String regionId = UserContext.getUser().getRegionId();
-			req.setLanId(regionId);
-		}
+		//String userType = UserContext.getUser().getUserFounder()+"";
+//		if("2".equals(legacyAccount) && !"3".equals(userType)){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setRetailerCode(retailerCodes);
+//		}
 		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
 			String retailerCode=UserContext.getUser().getRelCode();
 			req.setRetailerCode(retailerCode);
 		}
-		if(!"1".equals(userType) && !"2".equals(userType) && !"3".equals(userType)){
-			req.setLanId("999");
-		}
-		String lanId = req.getLanId();
-		if("430100".equals(lanId)){
-			req.setLanId("731");
-		}else if("430200".equals(lanId)){
-			req.setLanId("733");
-		}else if("430300".equals(lanId)){
-			req.setLanId("732");
-		}else if("430400".equals(lanId)){
-			req.setLanId("734");
-		}else if("430500".equals(lanId)){
-			req.setLanId("739");
-		}else if("430600".equals(lanId)){
-			req.setLanId("730");
-		}else if("430700".equals(lanId)){
-			req.setLanId("736");
-		}else if("430800".equals(lanId)){
-			req.setLanId("744");
-		}else if("430900".equals(lanId)){
-			req.setLanId("737");
-		}else if("431000".equals(lanId)){
-			req.setLanId("735");
-		}else if("431300".equals(lanId)){//娄底
-			req.setLanId("738");
-		}else if("433100".equals(lanId)){//湘西土家族苗族自治州
-			req.setLanId("743");
+		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
+			String regionId = UserContext.getUser().getLanId();
+			req.setLanId(regionId);
 		}
 		return iReportDataInfoService.getStorePurchaserReport(req);
     }
@@ -118,6 +105,7 @@ public class ReportDataInfoController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
 	@GetMapping(value="/getRegionIdForCity")
+	@UserLoginToken
 	public ResultVO<List<RegionsGetResp>> getRegionIdForCity() {
 		RegionsListReq req = new RegionsListReq();
 		String regionId = UserContext.getUser().getRegionId();
@@ -138,9 +126,10 @@ public class ReportDataInfoController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
 	@GetMapping(value="/getUerRoleForView")
+	@UserLoginToken
     public ResultVO<List<ReportStorePurchaserResq>> getUerRoleForView() {
 		ReportStorePurchaserReq req = new ReportStorePurchaserReq();
-		String userId = UserContext.getUser().getUserId();
+		String userId = UserContext.getUserId();
 		req.setUserId(userId);
 		return iReportDataInfoService.getUerRoleForView(req);
     }
@@ -155,68 +144,55 @@ public class ReportDataInfoController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/StorePurchaserReportExport")
-    public ResultVO StorePurchaserReportExport(@RequestBody ReportStorePurchaserReq req) {
+    @UserLoginToken
+    public void StorePurchaserReportExport(@RequestBody ReportStorePurchaserReq req, HttpServletResponse response) {
+    	log.info("ReportDataInfoController.StorePurchaserReportExport() ", JSON.toJSONString(req));
+        //req.setPageNo(1);
+        //数据量控制在1万条
+        //req.setPageSize(10000);
+    	//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
+		//String userType = UserContext.getUser().getUserFounder()+"";
+//		if("2".equals(legacyAccount) && !"3".equals(userType)){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setRetailerCode(retailerCodes);
+//		}
 		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
 			String retailerCode=UserContext.getUser().getRelCode();
 			req.setRetailerCode(retailerCode);
 		}
 		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
-			String regionId = UserContext.getUser().getRegionId();
+			String regionId = UserContext.getUser().getLanId();
 			req.setLanId(regionId);
 		}
-		if(!"1".equals(userType) && !"2".equals(userType) && !"3".equals(userType)){
-			req.setLanId("999");
-		}
-		String lanId = req.getLanId();
-		if("430100".equals(lanId)){
-			req.setLanId("731");
-		}else if("430200".equals(lanId)){
-			req.setLanId("733");
-		}else if("430300".equals(lanId)){
-			req.setLanId("732");
-		}else if("430400".equals(lanId)){
-			req.setLanId("734");
-		}else if("430500".equals(lanId)){
-			req.setLanId("739");
-		}else if("430600".equals(lanId)){
-			req.setLanId("730");
-		}else if("430700".equals(lanId)){
-			req.setLanId("736");
-		}else if("430800".equals(lanId)){
-			req.setLanId("744");
-		}else if("430900".equals(lanId)){
-			req.setLanId("737");
-		}else if("431000".equals(lanId)){
-			req.setLanId("735");
-		}else if("431300".equals(lanId)){//娄底
-			req.setLanId("738");
-		}else if("433100".equals(lanId)){//湘西土家族苗族自治州
-			req.setLanId("743");
-		}
-        ResultVO result = new ResultVO();
+		
         ResultVO<List<ReportStorePurchaserResq>> resultVO = iReportDataInfoService.getStorePurchaserReportdc(req);
+        ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {
             result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            result.setResultData("失败：" + resultVO.getResultMsg());
-            return result;
+            result.setResultMsg(resultVO.getResultMsg());
+            deliveryGoodsResNberExcel.outputResponse(response,resultVO);
+            return;
         }
+        
+        
         List<ReportStorePurchaserResq> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
-        //机型的导出
+        
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("productBaseName", "机型"));
-        orderMap.add(new ExcelTitleName("partnerCode", "零售商编码"));
         orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
+        orderMap.add(new ExcelTitleName("partnerCode", "零售商编码"));
         orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
-        orderMap.add(new ExcelTitleName("typeId", "产品类型"));
-        orderMap.add(new ExcelTitleName("cityId", "所属城市"));
-        orderMap.add(new ExcelTitleName("countryId", "所属区县"));
+        
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
-        orderMap.add(new ExcelTitleName("redStatus", "库存预警"));
+        orderMap.add(new ExcelTitleName("typeId", "产品类型"));
         orderMap.add(new ExcelTitleName("theTotalInventory", "入库总量"));
         orderMap.add(new ExcelTitleName("theTotalOutbound", "出库总量"));
+        orderMap.add(new ExcelTitleName("stockTotalNum", "库存总量"));
         orderMap.add(new ExcelTitleName("purchaseNum", "交易入库量"));
         orderMap.add(new ExcelTitleName("manualNum", "手工入库量"));
         orderMap.add(new ExcelTitleName("totalSalesNum", "总销售量"));
@@ -227,13 +203,41 @@ public class ReportDataInfoController extends BaseController {
         orderMap.add(new ExcelTitleName("averageDailySales", "近7天日均销量"));
         orderMap.add(new ExcelTitleName("stockNum", "库存量"));
         orderMap.add(new ExcelTitleName("stockTurnover", "库存周转率"));
+        orderMap.add(new ExcelTitleName("inventoryWarning", "库存预警"));
         
-        //创建orderItemDetail
+//      //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-        		orderMap, "串码");
-        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        		orderMap, "门店进销存机型报表");
+        deliveryGoodsResNberExcel.exportExcel("门店进销存机型报表",workbook,response);
+        
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+//        OutputStream output = null;
+//        
+//        try{
+//            //创建Excel
+//            String fileName = "门店进销存机型报表";
+////            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+//            output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+////            output.close();
+//          
+//        }catch (Exception e){
+//            log.error("门店进销存机型报表导出失败",e);
+//        } finally {
+//            if (null != output){
+//                try {
+//                    output.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+        
     }
-
     
 }
-

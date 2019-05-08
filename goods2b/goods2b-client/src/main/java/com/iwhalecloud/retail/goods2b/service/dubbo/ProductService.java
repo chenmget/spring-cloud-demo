@@ -100,6 +100,13 @@ public interface ProductService {
     ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req);
 
     /**
+     * 条件分页查询-All
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ProductPageResp>> selectPageProductAdminAll(ProductsPageReq req);
+
+    /**
      * 查询产品Id
      * @param req
      * @return
@@ -141,6 +148,8 @@ public interface ProductService {
      */
     ResultVO updateAuditState(ProductAuditStateUpdateReq req);
 
+    ResultVO updateAttrValue10(ProductAuditStateUpdateReq req);
+
 //    /**
 //     * 审核通过，事务控制:
 //     * 1.修改产品状态为审核通过
@@ -157,4 +166,11 @@ public interface ProductService {
      * @return
      */
     ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req);
+
+    /**
+     * 根据产品名称或编码查询产品
+     * @param req
+     * @return
+     */
+    ResultVO<Integer> getDuplicate (ProductGetDuplicateReq req);
 }

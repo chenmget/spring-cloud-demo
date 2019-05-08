@@ -35,7 +35,7 @@ spring:
 #    password:
   #spring-session
   session:
-    store-type: redis
+    store-type: HASH_MAP
     timeout: PT30M  #30分钟
 
   http:

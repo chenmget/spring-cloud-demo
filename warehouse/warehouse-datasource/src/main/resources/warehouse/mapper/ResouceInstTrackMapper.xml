@@ -37,4 +37,7 @@
          SELECT <include refid="nbrSource" /> from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr} and MERCHANT_ID = #{merchantId} LIMIT 1
     </select>
 
+    <select id="getStoreIdByNbr" resultType="java.lang.String">
+        SELECT MKT_RES_STORE_ID from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr}
+    </select>
 </mapper>

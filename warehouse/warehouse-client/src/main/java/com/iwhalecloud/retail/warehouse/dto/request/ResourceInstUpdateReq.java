@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
 
 
@@ -107,4 +106,10 @@ public class ResourceInstUpdateReq implements Serializable {
 	 */
 	@ApiModelProperty(value = "记录状态变更的时间。")
 	private java.util.Date statusDate;
+
+	/**
+	 * 产品类型
+	 */
+	@ApiModelProperty(value = "产品类型")
+	private String typeId;
 }

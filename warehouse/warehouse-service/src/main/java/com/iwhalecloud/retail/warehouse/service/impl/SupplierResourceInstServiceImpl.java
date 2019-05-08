@@ -8,8 +8,10 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.dto.req.MerChantGetProductReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -19,7 +21,10 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstLogService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
-import com.iwhalecloud.retail.warehouse.dto.*;
+import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
@@ -110,7 +115,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
 
     @Override
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO addResourceInst(ResourceInstAddReq req) {
         log.info("SupplierResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         // 获取产品归属厂商
@@ -164,6 +168,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         nbrList.removeAll(addRespResultVO.getResultData().getExistNbrs());
         nbrList.removeAll(addRespResultVO.getResultData().getPutInFailNbrs());
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
+        resourceInstUpdateReq.setTypeId(req.getTypeId());
         resourceInstUpdateReq.setDestStoreId(manuResStoreId);
         resourceInstUpdateReq.setMktResInstNbrs(nbrList);
         resourceInstUpdateReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
@@ -298,7 +303,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
      */
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req) {
+    public synchronized ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req) {
         //根据仓库查使用对象
         ResultVO<MerchantDTO> sourceMerchantVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getMktResStoreId(), JSON.toJSONString(sourceMerchantVO));
@@ -362,7 +367,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         processStartDTO.setTaskSubType(taskSubType);
         processStartDTO.setExtends1(sourceMerchantDTO.getCityName());
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
+        log.info("SupplierResourceInstServiceImpl.allocateResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
         if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
@@ -419,9 +424,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resouceStoreService.getStoreId req={},destStoreId={}", JSON.toJSONString(storePageReq), JSON.toJSONString(destStoreId));
 
         List<String> mktResInstNbrs = new ArrayList<>();
+        String productId = null;
         for (DeliveryResourceInstItem item : req.getDeliveryResourceInstItemList()) {
             mktResInstNbrs.addAll(item.getMktResInstNbrs());
+            productId = item.getProductId();
         }
+
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
         resourceInstUpdateReq.setMktResInstNbrs(mktResInstNbrs);
         resourceInstUpdateReq.setCheckStatusCd(Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode()));
@@ -432,6 +440,15 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         resourceInstUpdateReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
         resourceInstUpdateReq.setObjId(req.getOrderId());
         resourceInstUpdateReq.setMerchantId(req.getSellerMerchantId());
+        if (StringUtils.isNotBlank(productId)) {
+            ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+            productGetByIdReq.setProductId(productId);
+            ResultVO<ProductResp> respResultVO = productService.getProduct(productGetByIdReq);
+            log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst productService.getProduct productId={},resp={}", productId, JSON.toJSONString(respResultVO));
+            if (respResultVO.isSuccess() && null != respResultVO.getResultData()) {
+                resourceInstUpdateReq.setTypeId(respResultVO.getResultData().getTypeId());
+            }
+        }
         ResultVO delRS = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
         log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resourceInstService.delResourceInst req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(delRS));
 

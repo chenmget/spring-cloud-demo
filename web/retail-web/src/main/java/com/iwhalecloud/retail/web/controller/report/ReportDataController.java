@@ -1,8 +1,12 @@
 package com.iwhalecloud.retail.web.controller.report;
 
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -31,6 +35,7 @@ import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.OrderExportUtil;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
 import io.swagger.annotations.ApiImplicitParam;
@@ -63,44 +68,17 @@ public class ReportDataController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getReportDeSaleList")
+	@UserLoginToken
     public ResultVO<Page<ReportDeSaleDaoResq>> getReportDeSaleList(@RequestBody ReportDeSaleDaoReq req) {
 		String userType=req.getUserType();
-		if(userType!=null&&!userType.equals("")&&userType.equals("4")){//供应商
+		//String userType = UserContext.getUser().getUserFounder()+"";
+		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
 			String MerchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(MerchantCode);
 		}
-		if(userType!=null&&!userType.equals("")&&userType.equals("2")){//地市管理员
+		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
 			String lanId=UserContext.getUser().getRegionId();
 			req.setLanId(lanId);
-		}
-		if(!"1".equals(userType) && !"2".equals(userType) && !"4".equals(userType)){
-			req.setLanId("999");
-		}
-		String lanId = req.getLanId();
-		if("430100".equals(lanId)){
-			req.setLanId("731");
-		}else if("430200".equals(lanId)){
-			req.setLanId("733");
-		}else if("430300".equals(lanId)){
-			req.setLanId("732");
-		}else if("430400".equals(lanId)){
-			req.setLanId("734");
-		}else if("430500".equals(lanId)){
-			req.setLanId("739");
-		}else if("430600".equals(lanId)){
-			req.setLanId("730");
-		}else if("430700".equals(lanId)){
-			req.setLanId("736");
-		}else if("430800".equals(lanId)){
-			req.setLanId("744");
-		}else if("430900".equals(lanId)){
-			req.setLanId("737");
-		}else if("431000".equals(lanId)){
-			req.setLanId("735");
-		}else if("431300".equals(lanId)){//娄底
-			req.setLanId("738");
-		}else if("433100".equals(lanId)){//湘西土家族苗族自治州
-			req.setLanId("743");
 		}
         return reportService.getReportDeSaleList(req);
     }
@@ -129,52 +107,30 @@ public class ReportDataController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/reportDeSaleExport")
-    public ResultVO reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req) {
-    	String userType=req.getUserType();
-		if(userType!=null&&!userType.equals("")&&userType.equals("4")){//供应商
+    @UserLoginToken
+    public void reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req, HttpServletResponse response) {
+		String userType=req.getUserType();
+    	////1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+    	//String userType = UserContext.getUser().getUserFounder()+"";
+		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
 			String MerchantCode=UserContext.getUser().getRelCode();
 			req.setMerchantCode(MerchantCode);
 		}
-		if(userType!=null&&!userType.equals("")&&userType.equals("2")){//地市管理员
+		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
 			String lanId=UserContext.getUser().getRegionId();
 			req.setLanId(lanId);
 		}
-		if(!"1".equals(userType) && !"2".equals(userType) && !"4".equals(userType)){
-			req.setLanId("999");
-		}
-		String lanId = req.getLanId();
-		if("430100".equals(lanId)){
-			req.setLanId("731");
-		}else if("430200".equals(lanId)){
-			req.setLanId("733");
-		}else if("430300".equals(lanId)){
-			req.setLanId("732");
-		}else if("430400".equals(lanId)){
-			req.setLanId("734");
-		}else if("430500".equals(lanId)){
-			req.setLanId("739");
-		}else if("430600".equals(lanId)){
-			req.setLanId("730");
-		}else if("430700".equals(lanId)){
-			req.setLanId("736");
-		}else if("430800".equals(lanId)){
-			req.setLanId("744");
-		}else if("430900".equals(lanId)){
-			req.setLanId("737");
-		}else if("431000".equals(lanId)){
-			req.setLanId("735");
-		}else if("431300".equals(lanId)){//娄底
-			req.setLanId("738");
-		}else if("433100".equals(lanId)){//湘西土家族苗族自治州
-			req.setLanId("743");
-		}
-        ResultVO result = new ResultVO();
+		
         ResultVO<List<ReportDeSaleDaoResq>> resultVO = reportService.reportDeSaleExport(req);
+        
+        ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {
             result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            result.setResultData("失败：" + resultVO.getResultMsg());
-            return result;
+            result.setResultMsg(resultVO.getResultMsg());
+            deliveryGoodsResNberExcel.outputResponse(response,resultVO);
+            return;
         }
+        
         List<ReportDeSaleDaoResq> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -186,6 +142,7 @@ public class ReportDataController extends BaseController {
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
         orderMap.add(new ExcelTitleName("priceLevel", "机型档位"));
         orderMap.add(new ExcelTitleName("totalInnum", "入库总量"));
+        orderMap.add(new ExcelTitleName("typeId", "产品类型"));
         orderMap.add(new ExcelTitleName("totalOutNum", "出库总量"));
         orderMap.add(new ExcelTitleName("sumPurchase", "交易进货量"));
         orderMap.add(new ExcelTitleName("amoutPurcchase", "进货金额"));
@@ -201,24 +158,37 @@ public class ReportDataController extends BaseController {
         orderMap.add(new ExcelTitleName("sevenDayLv", "库存周转率"));
         orderMap.add(new ExcelTitleName("redStatus", "库存预警"));
         
-
-        InputStream is = null;
-//        try {
-//            ExcelToNbrUtils.builderOrderExcel(data, orderMap, "串码列表");
-//            resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
-//            resultVO.setResultMsg("导出成功");
-//        } catch (Exception e) {
-//            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
-//            resultVO.setResultMsg(e.getMessage());
-//            log.error("excel导出失败",e);
-//        }
-//        return resultVO;
-        //创建orderItemDetail
+      //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-        		orderMap, "串码");
-        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        		orderMap, "地包进销存明细报表");
+        deliveryGoodsResNberExcel.exportExcel("地包进销存明细报表",workbook,response);
+        
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+//        OutputStream output = null ;
+//        try{
+//            //创建Excel
+//            String fileName = "地包进销存明细报表";
+////            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+//            output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+////            output.close();
+//        }catch (Exception e){
+//            log.error("地包进销存明细报表导出失败",e);
+//        } finally {
+//            if (null != output){
+//                try {
+//                    output.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+       
     }
-
-	
 	
 }

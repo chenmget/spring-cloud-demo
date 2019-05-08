@@ -386,3 +386,16 @@ public class DateUtil {
 
 ##### 7、表达式生成器地址
 http://www.bejson.com/othertools/cron/
+
+
+
+##### 8、ddl-auto取值
+ddl-auto:create----每次运行该程序，没有表格会新建表格，表内有数据会清空
+
+ddl-auto:create-drop----每次程序结束的时候会清空表
+
+ddl-auto:update----每次运行程序，没有表格会新建表格，表内有数据不会清空，只会更新
+
+ddl-auto:validate----运行程序会校验数据与数据库的字段类型是否相同，不同会报错
+
+

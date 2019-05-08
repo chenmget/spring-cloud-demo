@@ -34,7 +34,11 @@ public class SyncStoreJob implements SimpleJob {
             return;
         }
         log.info("SyncStoreJob.execute begin");
-        resouceStoreService.initStoredata();
+        try {
+            resouceStoreService.initStoredata();
+        } catch (Exception e) {
+            log.error("SyncStoreJob exceute exception", e);
+        }
         log.info("SyncStoreJob.execute end");
     }
 }

@@ -103,4 +103,33 @@ public class ProductConst {
         }
     }
 
+    public enum attrValue10 {
+        NOTPASS("1","审核不通过成功，不添加权限"),
+        EFFECTIVE("2","审核成功待添加权限"),
+        SUCCESS("3","添加权限成功");
+
+        private String code;
+        private String value;
+
+        attrValue10(String code, String value){
+            this.code = code;
+            this.value = value;
+        }
+        public static StatusType  getStatusTypeByCode(String code){
+            StatusType[] values = StatusType.values();
+            for (int i = 0; i <values.length ; i++) {
+                if(code.equals(values[i].getCode())){
+                    return values[i];
+                }
+            }
+            return null;
+        }
+
+        public String getCode() {
+            return code;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
 }

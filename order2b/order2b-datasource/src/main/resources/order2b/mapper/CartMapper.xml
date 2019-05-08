@@ -21,8 +21,8 @@
             resultType="com.iwhalecloud.retail.order2b.dto.model.cart.CartItemDTO">
         SELECT c.product_id, c.price, c.cart_id, c.num, c.addon,c.goods_id,c.supplier_id, c.user_id,
         CASE is_check WHEN 0 THEN 0 ELSE 1 END is_check
-        FROM ord_cart c
-        WHERE c.user_id = #{req.userId}
+        FROM ord_cart c,PROD_GOODS g
+        WHERE c.user_id = #{req.userId} and c.goods_id = g.goods_id
         <if test="null!= req.partnerId and ''!= req.partnerId">
             and c.partner_id =#{req.partnerId}
         </if>

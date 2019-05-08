@@ -104,5 +104,11 @@ public interface GoodsService{
      */
     ResultVO<MerchantDTO> querySupplierIdByGoodsId(GoodsSupplierIDGetReq goodsSupplierIDGetReq);
 
-
+    /**
+     * 更新商品预售、前置补贴状态
+     *
+     * @param req 更新参数
+     * @return 更新结果
+     */
+    ResultVO<Boolean> updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req);
 }

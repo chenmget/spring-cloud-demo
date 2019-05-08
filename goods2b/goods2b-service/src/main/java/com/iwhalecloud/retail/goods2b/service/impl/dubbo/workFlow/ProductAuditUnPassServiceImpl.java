@@ -32,6 +32,8 @@ public class ProductAuditUnPassServiceImpl implements ProductAuditUnPassService 
         //审核不通过
         req.setAuditState(ProductConst.AuditStateType.AUDIT_UN_PASS.getCode());
 
+        req.setAttrValue10(ProductConst.attrValue10.NOTPASS.getCode());
+
         return productService.updateAuditState(req);
     }
 

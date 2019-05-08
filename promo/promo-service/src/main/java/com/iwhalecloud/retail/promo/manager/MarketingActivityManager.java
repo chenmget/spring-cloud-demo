@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
 import com.iwhalecloud.retail.promo.dto.resp.AdvanceActivityProductInfoResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
+import com.iwhalecloud.retail.promo.entity.Promotion;
 import com.iwhalecloud.retail.promo.mapper.ActivityProductMapper;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.promo.entity.MarketingActivity;
@@ -240,6 +241,7 @@ public class MarketingActivityManager{
         //大于等于 >=
         queryWrapper.apply(MarketingActivity.FieldNames.endTime.getTableFieldName() + " >= now()");
         queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(),PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+        queryWrapper.eq(MarketingActivity.FieldNames.status.getTableFieldName(),PromoConst.STATUSCD.STATUS_CD_20.getCode());
 
         return marketingActivityMapper.selectList(queryWrapper);
     }
@@ -278,5 +280,29 @@ public class MarketingActivityManager{
             marketingActivityList = marketingActivityMapper.selectList(queryWrapper);
         }
         return marketingActivityList;
+    }
+
+    /**
+     * 根据活动类型查询生失效活动
+     *
+     * @param isInvalid 是否生效，生效：false，失效：true
+     * @return 活动列表
+     */
+    public List<MarketingActivity> queryActivityListByStatus(Boolean isInvalid, String activityType) {
+        QueryWrapper<MarketingActivity> queryWrapper = new QueryWrapper<>();
+        if (isInvalid) {
+            // 失效
+            queryWrapper.ne(MarketingActivity.FieldNames.status.getTableFieldName(), PromoConst.STATUSCD.STATUS_CD_20.getCode());
+            queryWrapper.apply(MarketingActivity.FieldNames.startTime.getTableFieldName() + " > now()")
+                    .or().apply(MarketingActivity.FieldNames.endTime.getTableFieldName() + " <= now()");
+        } else {
+            // 生效
+            queryWrapper.eq(MarketingActivity.FieldNames.status.getTableFieldName(), PromoConst.STATUSCD.STATUS_CD_20.getCode());
+            queryWrapper.apply(MarketingActivity.FieldNames.startTime.getTableFieldName() + " <= now()");
+            queryWrapper.apply(MarketingActivity.FieldNames.endTime.getTableFieldName() + " > now()");
+            queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(), PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+        }
+        queryWrapper.eq(MarketingActivity.FieldNames.activityType.getTableFieldName(), activityType);
+        return marketingActivityMapper.selectList(queryWrapper);
     }
 }

@@ -98,7 +98,7 @@ public class ResourceConst {
         // 1205	退换货已冻结
         RESTORAGED("1205","退换货已冻结"),
         // 1203	已销售未补贴
-        SALED("1203","已销售"),
+        SALED("1203","交易出库"),
         // 1110	已作废
         DELETED("1110","已作废");
 
@@ -344,11 +344,13 @@ public class ResourceConst {
      */
     public enum MKTResInstType {
         // 交易
-        TRANSACTION("1","交易"),
+        TRANSACTION("1","社采"),
         // 非交易
-        NONTRANSACTION("2","非交易"),
+        NONTRANSACTION("2","集采"),
         // 备机
-        STANDBYMACHINE("3","备机");
+        STANDBYMACHINE("3","备机"),
+        // 省内代收
+        COLLECTION_BY_PROVINCE("4","省内代收");
 
         private String code;
         private String name;

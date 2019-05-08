@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceAllocateResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -315,5 +316,37 @@ public class RetailerResourceInstB2BController {
             return ResultVO.success(true);
         }
         return ResultVO.success(false);
+    }
+
+    @ApiOperation(value = "导出录入失败串码", notes = "导出录入失败串码")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="nbrFailExport")
+    public void nbrFailExport(@RequestBody ResourceInstAddResp resp, HttpServletResponse response) {
+        log.info("RetailerResourceInstB2BController.nbrFailExport req={}, resp={}", JSON.toJSONString(resp));
+        OutputStream output = null;
+        try {
+            Workbook workbook = new HSSFWorkbook();
+            String fileName = "导出失败串码列表";
+            ExcelToNbrUtils.builderOrderExcel(workbook, resp);
+            output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+            response.setContentType("application/msexcel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            workbook.write(output);
+        } catch (Exception e) {
+            log.error("串码导出失败", e);
+        } finally {
+            try {
+                if (null != output){
+                    output.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

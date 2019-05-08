@@ -7,12 +7,12 @@ import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.SupplierGroundGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq;
+import com.iwhalecloud.retail.goods2b.dto.req.GoodsUpdateActTypeByGoodsIdsReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp;
 import com.iwhalecloud.retail.goods2b.entity.Goods;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -105,5 +105,21 @@ public class GoodsManager{
 
     public Double listSupplierGroundSupplyNum(String productBaseId) {
         return goodsMapper.listSupplierGroundSupplyNum(productBaseId);
+    }
+
+    public int updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req){
+        UpdateWrapper<Goods> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.in("GOODS_ID",req.getGoodsIds());
+        if(null != req.getMerchantType()){
+            updateWrapper.eq("MERCHANT_TYPE", req.getMerchantType());
+        }
+        Goods goods = new Goods();
+        if(null != req.getIsAdvanceSale()){
+            goods.setIsAdvanceSale(req.getIsAdvanceSale());
+        }
+        if(null != req.getIsSubsidy()){
+            goods.setIsSubsidy(req.getIsSubsidy());
+        }
+        return goodsMapper.update(goods, updateWrapper);
     }
 }

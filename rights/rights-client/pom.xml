@@ -45,10 +45,13 @@
 
     <distributionManagement>
         <snapshotRepository>
-            <id>releases</id>
-            <name>ztesoft distribution snapshot repository</name>
-            <url>http://10.45.47.168:8081/nexus/content/repositories/snapshots/</url>
+            <id>snapshots</id>
+            <url>${snapshots.url}</url>
         </snapshotRepository>
+        <repository>
+            <id>releases</id>
+            <url>${releases.url}</url>
+        </repository>
     </distributionManagement>
 
 </project>

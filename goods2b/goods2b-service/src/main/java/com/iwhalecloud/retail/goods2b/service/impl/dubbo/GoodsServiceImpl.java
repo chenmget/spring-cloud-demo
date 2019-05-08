@@ -1041,6 +1041,22 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public ResultVO<Page<GoodsPageResp>> queryPageByConditionAdmin(GoodsPageReq req) {
         log.info("GoodsServiceImpl.queryPageByConditionAdmin req={}", req);
+        if(StringUtils.isNotEmpty(req.getSupplierName())){
+            MerchantListReq merchantListReq = new MerchantListReq();
+            merchantListReq.setMerchantName(req.getSupplierName());
+            ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchant(merchantListReq);
+            if(listResultVO.isSuccess() && null!=listResultVO.getResultData()){
+                if(listResultVO.getResultData().size()>0){
+                    String supplierId = listResultVO.getResultData().get(0).getMerchantId();
+                    if(StringUtils.isNotEmpty(supplierId)){
+                        req.setSupplierId(supplierId);
+                    }
+                }else{
+                    Page<GoodsPageResp> pageRespPage = new Page<GoodsPageResp>();
+                    return ResultVO.success(pageRespPage);
+                }
+            }
+        }
         Page<GoodsPageResp> respPage = goodsManager.queryPageByConditionAdmin(req);
         List<GoodsPageResp> respList = respPage.getRecords();
         for (GoodsPageResp resp : respList) {
@@ -1050,6 +1066,43 @@ public class GoodsServiceImpl implements GoodsService {
             // 添加产品最低零售价至商品
             Double lowestPrice = goodsProductRelManager.getLowestPriceByGoodsId(resp.getGoodsId());
             resp.setGoodsLowestPrice(lowestPrice);
+            String targetType = resp.getTargetType();
+            if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_REGION.equals(targetType)){
+                List<GoodsRegionRel> goodsRegionRels = goodsRegionRelManager.queryGoodsRegionRel(resp.getGoodsId());
+                if(CollectionUtils.isNotEmpty(goodsRegionRels)){
+                    List<GoodsRegionRelDTO> goodsRegionRelDTOs = new ArrayList<>();
+                    for(GoodsRegionRel goodsRegionRel:goodsRegionRels){
+                        GoodsRegionRelDTO goodsRegionRelDTO = new GoodsRegionRelDTO();
+                        BeanUtils.copyProperties(goodsRegionRel, goodsRegionRelDTO);
+                        goodsRegionRelDTOs.add(goodsRegionRelDTO);
+                    }
+                    resp.setGoodsRegionRels(goodsRegionRelDTOs);
+                }
+            }else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)){
+                List<GoodsTargetRel> goodsTargetRels = goodsTargetManager.queryGoodsTargerRel(resp.getGoodsId());
+                if(CollectionUtils.isNotEmpty(goodsTargetRels)){
+                    List<String> merchantList = new ArrayList<>();
+                    for(GoodsTargetRel goodsTargetRel:goodsTargetRels){
+                        if(StringUtils.isEmpty(goodsTargetRel.getTargetId())){
+                            merchantList.add(goodsTargetRel.getTargetId());
+                        }
+                    }
+                    MerchantListReq merchantListReq = new MerchantListReq();
+                    merchantListReq.setMerchantIdList(merchantList);
+                    ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(merchantListReq);
+                    List<String> goodsTargetRelLists = new ArrayList<>();
+                    if (resultVO.isSuccess() && null != resultVO.getResultData()) {
+                        List<MerchantDTO> merchantDTOs = resultVO.getResultData();
+                        if(CollectionUtils.isNotEmpty(merchantDTOs)){
+                            for(MerchantDTO merchantDTO:merchantDTOs){
+                                goodsTargetRelLists.add(merchantDTO.getMerchantName());
+                            }
+                        }
+                    }
+                    resp.setGoodsTargetRels(goodsTargetRelLists);
+                }
+            }
+
             // 补充供应商名称及等级
             resp.setImagesUrl(getDefaultPicUrl(resp.getGoodsId()));
             try {
@@ -1094,7 +1147,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public ResultVO<GoodsDetailResp> queryGoodsDetail(GoodsQueryReq req) {
-
+        log.info("GoodsServiceImpl.queryGoodsDetail GoodsQueryReq={}", req);
         String goodsId = req.getGoodsId();
         GoodsDetailResp resp = new GoodsDetailResp();
         //查询商品
@@ -1539,6 +1592,18 @@ public class GoodsServiceImpl implements GoodsService {
             }
         }
         return ResultVO.success(merchantDTO);
+    }
+
+    @Override
+    public ResultVO<Boolean> updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req) {
+        log.info("GoodsServiceImpl.updateGoodsActTypeByGoodsIdList req={}", JSON.toJSON(req));
+        boolean updateFlag = false;
+        if (CollectionUtils.isNotEmpty(req.getGoodsIds())) {
+            int updateNum = goodsManager.updateGoodsActTypeByGoodsIdList(req);
+            updateFlag = updateNum > 0;
+        }
+        log.info("GoodsServiceImpl.updateGoodsActTypeByGoodsIdList req={}", updateFlag);
+        return ResultVO.success(updateFlag);
     }
 
 }

@@ -73,6 +73,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
         String merchantId = req.getMerchantId();
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
+        log.info("AdminResourceInstServiceImpl.addResourceInst merchantService.getMerchantById req={},resp={}", merchantId, JSON.toJSONString(merchantDTOResultVO));
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         } else {
@@ -90,7 +91,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storeGetStoreIdReq.setMerchantId(merchantId);
         String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+        log.info("AdminResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
         if (StringUtils.isBlank(mktResStoreId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }

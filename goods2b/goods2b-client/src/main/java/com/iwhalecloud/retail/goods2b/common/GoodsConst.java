@@ -321,16 +321,52 @@ public class GoodsConst {
     }
 
     /**
-     *
+     * 是否预售
      */
     public enum IsAdvanceSale {
+        /**
+         * 非预售商品
+         */
         IS_NOT_ADVANCE_SALE(0,"非预售商品"),
+        /**
+         * 预售商品
+         */
         IS_ADVANCE_SALE(1,"预售商品");
 
         private Integer code;
         private String value;
 
         IsAdvanceSale(Integer code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public Integer getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
+
+    /**
+     * 是否前置补贴
+     */
+    public enum IsSubsidy {
+        /**
+         * 非前置补贴商品
+         */
+        IS_NOT_SUBSIDY(0,"非前置补贴商品"),
+        /**
+         * 前置补贴商品
+         */
+        IS_SUBSIDY(1,"前置补贴商品");
+
+        private Integer code;
+        private String value;
+
+        IsSubsidy(Integer code, String value){
             this.code = code;
             this.value = value;
         }

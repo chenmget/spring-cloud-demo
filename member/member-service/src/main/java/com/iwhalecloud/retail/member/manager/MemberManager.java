@@ -133,5 +133,14 @@ public class MemberManager{
     	BeanUtils.copyProperties(member, dto);
     	return dto;
     }
+    
+    /**
+   	 * 根据merchantId获取ParMerchantAccount信息
+   	 * @param merchantId
+   	 * @return 
+   	 */
+	public int getParMerchantAccountByMerchantId(String merchantId) {
+		return memberMapper.getParMerchantAccountByMerchantId(merchantId);
+	}
 
 }

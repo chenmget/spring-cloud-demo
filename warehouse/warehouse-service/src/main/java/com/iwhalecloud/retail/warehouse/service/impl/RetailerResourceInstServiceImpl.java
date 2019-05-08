@@ -183,7 +183,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
             // step2 串码入库
             req.setStorageType(ResourceConst.STORAGETYPE.GREEN_CHANNEL.getCode());
             req.setSourceType(ResourceConst.SOURCE_TYPE.RETAILER.getCode());
-            req.setMktResInstType(ResourceConst.MKTResInstType.NONTRANSACTION.getCode());
+            req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
             req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
             req.setMerchantType(merchantDTO.getMerchantType());
             req.setMerchantName(merchantDTO.getMerchantName());

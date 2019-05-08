@@ -195,6 +195,32 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         return ResultVO.success(resultList);
     }
 
+    @Override
+    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesDetailListReq req) {
+        log.info("MerchantRulesServiceImpl.listMerchantRules(), input: MerchantRulesDetailListReq={} ", req);
+        MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
+        BeanUtils.copyProperties(req, merchantRulesListReq);
+        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(merchantRulesListReq);
+        return ResultVO.success(list);
+    }
+
+    @Override
+    public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRulesDetail(MerchantRulesDetailListReq req) {
+        log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", req);
+        MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
+        BeanUtils.copyProperties(req, merchantRulesListReq);
+        Page<MerchantRulesDTO> page = merchantRulesManager.pageMerchantRulesDetail(merchantRulesListReq);
+        List<MerchantRulesDTO> list = page.getRecords();
+        List<MerchantRulesDetailDTO> resultList = getDetailList(req, list);
+        Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = new Page<MerchantRulesDetailDTO>();
+        BeanUtils.copyProperties(page, merchantRulesDetailDTOPage);
+        merchantRulesDetailDTOPage.setRecords(resultList);
+
+        log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), output: resultList={} ", resultList);
+
+        return ResultVO.success(merchantRulesDetailDTOPage);
+    }
+
     /**
      * 商家 权限规则详情 信息 分页查询
      *
@@ -378,7 +404,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
                 }
 
-                detailList = productService.selectPageProductAdmin(productsPageReq).getResultData().getRecords();
+                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())) {
@@ -421,7 +447,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 fieldName = "productId";
             }
 
-            detailList = productService.selectPageProductAdmin(productsPageReq).getResultData().getRecords();
+            detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
         } else if (StringUtils.equals(req.getRuleType(), PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType())) {
             // 调拨权限
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType())) {
@@ -438,7 +464,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
                 }
 
-                detailList = productService.selectPageProductAdmin(productsPageReq).getResultData().getRecords();
+                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())) {
@@ -477,8 +503,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
 
         // 去除没有详情的数据
-        return resultList.stream().filter(item -> item.getTargetData() != null).collect(Collectors.toList());
-//        return resultList;
+//        return resultList.stream().filter(item -> item.getTargetData() != null).collect(Collectors.toList());
+        return resultList;
     }
 
 

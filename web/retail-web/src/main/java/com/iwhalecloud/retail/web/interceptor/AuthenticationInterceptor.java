@@ -263,6 +263,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 //        userOtherMsgDTO.setUserRoleList(userRoleDTOList);
 
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(userDTO.getRelCode());
+        log.info("AuthenticationInterceptor saveUserOtherMsg merchantService.getMerchantById merchentCode={}, resp={}", userDTO.getRelCode(), JSON.toJSONString(merchantDTOResultVO));
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
             return null;
         }

@@ -38,4 +38,12 @@ public class ProcessStartReq implements Serializable {
     @ApiModelProperty(value = "如果申请人是商家，该字段信息显示“地市+区县”信息，如果是电信人员则显示“岗位+部门”信息")
     private java.lang.String extends1;
 
+    @ApiModelProperty(value = "-1：无参数\n" +
+            "1：json\n" +
+            "2：字符串")
+    private java.lang.Integer paramsType;
+
+    @ApiModelProperty(value = "业务参数类型在启动流程的时候传入，便于在环节流转时直接获取需要的数据。")
+    private java.lang.String paramsValue;
+
 }

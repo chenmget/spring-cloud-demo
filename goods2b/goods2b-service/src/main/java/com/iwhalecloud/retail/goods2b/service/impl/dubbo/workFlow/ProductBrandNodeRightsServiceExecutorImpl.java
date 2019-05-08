@@ -49,11 +49,14 @@ public class ProductBrandNodeRightsServiceExecutorImpl implements WFServiceExecu
 
         log.info("ProductBrandNodeRightsServiceExecutorImpl业务ID=" + context.getBusinessId());
         log.info("ProductBrandNodeRightsServiceExecutorImpl动态参数=" + context.getDynamicParam());
+        log.info("ProductBrandNodeRightsServiceExecutorImpl业务参数类型=" + context.getParamsType());
+        log.info("ProductBrandNodeRightsServiceExecutorImpl业务参数值=" + context.getParamsValue());
         System.out.println("--------------");
 
         String productBaseId = context.getBusinessId();
-        ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
-        log.info("ProductBrandNodeRightsServiceExecutorImpl productBaseGetResp={}" + productBaseGetResp);
+        String brandId = context.getParamsValue();
+//        ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
+//        log.info("ProductBrandNodeRightsServiceExecutorImpl productBaseGetResp={}" + productBaseGetResp);
         String type = "BRAND_AUDIT_PEOPLE"; //品牌审核人
         List<PublicDictDTO> publicDictDTOs = PublicDictService.queryPublicDictListByType(type);
         log.info("ProductBrandNodeRightsServiceExecutorImpl publicDictDTOs={}" + publicDictDTOs);
@@ -65,25 +68,41 @@ public class ProductBrandNodeRightsServiceExecutorImpl implements WFServiceExecu
             brandMap.put(publicDictDTO.getCodec(),publicDictDTO.getCodeb());
         }
         log.info("ProductBrandNodeRightsServiceExecutorImpl brandMap={}",brandMap);
-        if(null!=productBaseGetResp){
-            HandlerUser handlerUser = new HandlerUser();
-            String brandId = productBaseGetResp.getBrandId();
-            Brand brand = brandManager.getBrandByBrandId(brandId);
-            if(null!=brand && StringUtils.isNotEmpty(brand.getName())){
-                UserGetReq userGetReq = new UserGetReq();
-                if(brandMap.containsKey(brand.getName())){
-                    userGetReq.setLoginName(brandMap.get(brand.getName()));
-                }else{
-                    userGetReq.setLoginName(brandMap.get("其他品牌"));
-                }
-                UserDTO userDTO = userService.getUser(userGetReq);
-                if(null!=userDTO){
-                    handlerUser.setHandlerUserName(userDTO.getUserName());
-                    handlerUser.setHandlerUserId(userDTO.getUserId());
-                }
-                handlerUsers.add(handlerUser);
+        HandlerUser handlerUser = new HandlerUser();
+        Brand brand = brandManager.getBrandByBrandId(brandId);
+        if(null!=brand && StringUtils.isNotEmpty(brand.getName())){
+            UserGetReq userGetReq = new UserGetReq();
+            if(brandMap.containsKey(brand.getName())){
+                userGetReq.setLoginName(brandMap.get(brand.getName()));
+            }else{
+                userGetReq.setLoginName(brandMap.get("其他品牌"));
             }
+            UserDTO userDTO = userService.getUser(userGetReq);
+            if(null!=userDTO){
+                handlerUser.setHandlerUserName(userDTO.getUserName());
+                handlerUser.setHandlerUserId(userDTO.getUserId());
+            }
+            handlerUsers.add(handlerUser);
         }
+//        if(null!=productBaseGetResp){
+//            HandlerUser handlerUser = new HandlerUser();
+//            String brandId = productBaseGetResp.getBrandId();
+//            Brand brand = brandManager.getBrandByBrandId(brandId);
+//            if(null!=brand && StringUtils.isNotEmpty(brand.getName())){
+//                UserGetReq userGetReq = new UserGetReq();
+//                if(brandMap.containsKey(brand.getName())){
+//                    userGetReq.setLoginName(brandMap.get(brand.getName()));
+//                }else{
+//                    userGetReq.setLoginName(brandMap.get("其他品牌"));
+//                }
+//                UserDTO userDTO = userService.getUser(userGetReq);
+//                if(null!=userDTO){
+//                    handlerUser.setHandlerUserName(userDTO.getUserName());
+//                    handlerUser.setHandlerUserId(userDTO.getUserId());
+//                }
+//                handlerUsers.add(handlerUser);
+//            }
+//        }
         log.info("ProductBrandNodeRightsServiceExecutorImpl resp={}",handlerUsers);
         //以下实现获取处理人的逻辑
         return ResultVO.success(handlerUsers);

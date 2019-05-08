@@ -466,7 +466,7 @@ public class MemberController extends BaseController {
     @ApiImplicitParams({
     })
     @RequestMapping(value = "/checkPayAccount", method = RequestMethod.POST)
-//    @UserLoginToken
+    @UserLoginToken
     public ResultVO<Map<String, String>> checkPayAccount() {
     	
     	String userId = UserContext.getUserId();

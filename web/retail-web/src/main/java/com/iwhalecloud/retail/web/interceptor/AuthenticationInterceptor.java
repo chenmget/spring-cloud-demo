@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.web.interceptor;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.Claim;
-import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.member.dto.MemberDTO;
 import com.iwhalecloud.retail.member.dto.request.MemberGetReq;
@@ -22,7 +21,6 @@ import com.iwhalecloud.retail.web.consts.UserType;
 import com.iwhalecloud.retail.web.consts.WebConst;
 import com.iwhalecloud.retail.web.controller.cache.RedisCacheUtils;
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
-import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
 import com.iwhalecloud.retail.web.utils.JWTTokenUtil;
 import com.twmacinta.util.MD5;
@@ -39,7 +37,6 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -127,12 +124,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         String sessionId = "";
         String type = "";
 
-        List<Integer> frontUserList = Lists.newArrayList(
-                SystemConst.USER_FOUNDER_3,
-                SystemConst.USER_FOUNDER_4,
-                SystemConst.USER_FOUNDER_5,
-                SystemConst.USER_FOUNDER_8
-        );
         if (method.isAnnotationPresent(UserLoginToken.class)) {
             log.info("校验token = {}",token);
             UserLoginToken userLoginToken = method.getAnnotation(UserLoginToken.class);
@@ -199,10 +190,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                             otherMsgDTO = saveUserOtherMsg(userDTO);
                         }
                     }
-                    Boolean isfrontUser = frontUserList.contains(userDTO.getUserFounder());
-                    if (null != otherMsgDTO && null == otherMsgDTO.getMerchant() && isfrontUser) {
-                        throw new UserNoMerchantException("用户没有关联商家，请确认");
-                    }
                     // 保存用户信息
                     UserContext.setUser(userDTO);
                     UserContext.setUserId(id);
@@ -246,10 +233,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     if(userDTO != null){
                         otherMsgDTO = saveUserOtherMsg(userDTO);
                     }
-                }
-                Boolean isfrontUser = frontUserList.contains(userDTO.getUserFounder());
-                if ((null != otherMsgDTO && null == otherMsgDTO.getMerchant()) && isfrontUser)   {
-                    throw new UserNoMerchantException("用户没有关联商家，请确认");
                 }
                 UserContext.setUser(userDTO);
                 UserContext.setUserId(id);

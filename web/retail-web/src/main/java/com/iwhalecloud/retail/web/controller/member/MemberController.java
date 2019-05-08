@@ -31,8 +31,12 @@ import com.iwhalecloud.retail.web.controller.member.requst.LoginReq;
 import com.iwhalecloud.retail.web.controller.member.requst.VerificationCodeReq;
 import com.iwhalecloud.retail.web.controller.member.response.LoginResp;
 import com.iwhalecloud.retail.web.interceptor.MemberContext;
+import com.iwhalecloud.retail.web.interceptor.UserContext;
 import com.iwhalecloud.retail.web.utils.JWTTokenUtil;
 import com.twmacinta.util.MD5;
+
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -46,6 +50,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 /**
@@ -452,4 +457,30 @@ public class MemberController extends BaseController {
         Page<MemberDTO> memberPage = memberService.pageMember(req);
         return ResultVO.success(memberPage);
     }
+    
+    @ApiOperation(value = "判断商家是否拥有翼支付账号,没有则弹窗提示", notes = "传入商家MERCHANT_ID，进行查询")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @ApiImplicitParams({
+    })
+    @RequestMapping(value = "/checkPayAccount", method = RequestMethod.POST)
+//    @UserLoginToken
+    public ResultVO<Map<String, String>> checkPayAccount() {
+    	
+    	String userId = UserContext.getUserId();
+    	if(StringUtils.isBlank(userId)){
+    		ResultVO.error("账号不能为空");
+    	}
+    	//resultCode 1、账号存在  2、账号不存在
+    	Map<String, String> resultCode = new TreeMap<String, String>();
+    	resultCode.put("resultCode", "2");
+    	int flag = memberService.checkPayAccount(userId);
+    	if(flag > 0){
+    		resultCode.put("resultCode", "1");
+    	}
+    	return ResultVO.success(resultCode);
+    }
+    
 }

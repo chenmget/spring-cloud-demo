@@ -70,7 +70,7 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	/**
   	 * 01 交易 2 非交易 03 备机
   	 */
-	@ApiModelProperty(value = "01 交易,02 非交易,03 备机")
+	@ApiModelProperty(value = "1 社采,2 集采,3 备机, 4 省内代收")
   	private String mktResInstType;
 
 	/**
@@ -239,4 +239,7 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "营销资源导入批次。")
 	private String mktResUploadBatch;
+
+	@ApiModelProperty(value = "是否固网终端")
+	private String isFixedLine;
 }

@@ -142,4 +142,7 @@ public class TaskPageResp implements Serializable {
 
     @ApiModelProperty(value = "扩展信息1")
     private java.lang.String extends1;
+
+    @ApiModelProperty(value = "processId")
+    private java.lang.String processId;
 }

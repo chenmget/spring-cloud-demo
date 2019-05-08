@@ -8,6 +8,12 @@ public class ProductConst {
 
     public static final String APP_PRODUCT_FLOW_PROCESS_ID="1";
 
+    public static final String BRANDEDIT_PRODUCT_FLOW_PROCESS_ID="20";
+
+    public static final String OPEREDIT_PRODUCT_FLOW_PROCESS_ID="21";
+
+    public static final String EDIT_PRODUCT_FLOW_PROCESS_ID="22";
+
     public static final String UPDATE_PRODUCT_FLOW_PROCESS_ID="10";
 
     /**

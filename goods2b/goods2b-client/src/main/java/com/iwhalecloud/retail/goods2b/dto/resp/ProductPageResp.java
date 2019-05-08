@@ -139,5 +139,7 @@ public class ProductPageResp implements Serializable {
     @ApiModelProperty(value = "是否需要抽检")
     private String isInspection;
 
+    @ApiModelProperty(value = "是否固网终端")
+    private String isFixedLine;
 
 }

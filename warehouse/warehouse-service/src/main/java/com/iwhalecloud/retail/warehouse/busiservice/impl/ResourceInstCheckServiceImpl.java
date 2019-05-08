@@ -15,16 +15,19 @@ import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
+import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -37,6 +40,12 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
     @Reference
     private ProductService productService;
+
+    @Value("${addNbrService.typeId}")
+    private String typeId;
+
+    @Value("${addNbrService.checkMaxNum}")
+    private Integer checkMaxNum;
 
 
     @Override
@@ -123,5 +132,37 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         }
         log.info("ResourceInstCheckServiceImpl.getReqInst  req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(instDTOList));
         return instDTOList;
+    }
+
+    @Override
+    public SelectProcessResp selectProcess(ResourceInstAddReq req){
+        String requestStatusCd = null;
+        String processId = null;
+        // 移动串码审核流程
+        if (ResourceConst.CONSTANT_YES.equals(req.getIsFixedLine())) {
+            // 固网串码审核流程 1 集采或入库串码数量小于checkMaxNum（配置值）流程；2 两步抽检流程；3 一步抽检流程
+            if (req.getMktResInstNbrs().size() < checkMaxNum || ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
+                requestStatusCd = ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode();
+                processId = ResourceConst.FIXED_NBR_WORK_FLOW_INST;
+            }else {
+                String inTypeId = req.getTypeId();
+                // 机顶盒，三合一产品类型对应的typeId
+                List<String> typeIdList = Arrays.asList(typeId.split(","));
+                if (typeIdList.contains(inTypeId)) {
+                    processId = ResourceConst.TWO_STEP_WORK_FLOW_INST;
+                    requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK_MOBINT.getCode();
+                } else{
+                    processId = ResourceConst.ONE_STEP_WORK_FLOW_INST;
+                    requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK.getCode();
+                }
+            }
+        }else{
+            requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
+            processId = ResourceConst.MOVE_NBR_WORK_FLOW_INST;
+        }
+        SelectProcessResp resp = new SelectProcessResp();
+        resp.setProcessId(processId);
+        resp.setRequestStatusCd(requestStatusCd);
+        return  resp;
     }
 }

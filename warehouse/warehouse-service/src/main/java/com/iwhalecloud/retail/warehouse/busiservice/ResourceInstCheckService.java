@@ -4,6 +4,7 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
+import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
 
 import java.util.List;
 
@@ -32,4 +33,11 @@ public interface ResourceInstCheckService {
      * @return
      */
     List<ResourceRequestAddReq.ResourceRequestInst> getReqInst(ResourceInstAddReq req);
+
+    /**
+     * 串码流程选择
+     * @param req
+     * @return
+     */
+    SelectProcessResp selectProcess(ResourceInstAddReq req);
 }

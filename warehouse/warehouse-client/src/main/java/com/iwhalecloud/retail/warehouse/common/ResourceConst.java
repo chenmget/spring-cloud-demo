@@ -55,15 +55,19 @@ public class ResourceConst {
      */
     public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
     /**
-     * 一步抽检流程
+     * 移动串码审核流程
+     */
+    public final static String  MOVE_NBR_WORK_FLOW_INST = "13";
+    /**
+     * 一步抽检流程（固网）
      */
     public final static String  ONE_STEP_WORK_FLOW_INST = "14";
     /**
-     * 厂商串码入库集采流程实例
+     * 厂商串码入库集采流程实例（固网）
      */
-    public final static String  ADD_NBR_WORK_FLOW_INST = "15";
+    public final static String  FIXED_NBR_WORK_FLOW_INST = "15";
     /**
-     * 两步抽检流程
+     * 两步抽检流程（固网）
      */
     public final static String  TWO_STEP_WORK_FLOW_INST = "16";
 

@@ -283,7 +283,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                  }else if(ProductConst.AuditStateType.UN_SUBMIT.getCode().equals(oldAuditState)
                          || ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
                      //原审核状态为待提交，且新状态为非待提交
-                     String processId =ProductConst.APP_PRODUCT_FLOW_PROCESS_ID;
+//                     String processId =ProductConst.APP_PRODUCT_FLOW_PROCESS_ID;
+                     String processId = getProcessId(req);
                      if(ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
                          processId =ProductConst.UPDATE_PRODUCT_FLOW_PROCESS_ID;
                      }
@@ -300,6 +301,42 @@ public class ProductBaseServiceImpl implements ProductBaseService {
              }
         }
         return  ResultVO.success(index);
+    }
+
+    private String getProcessId(ProductBaseUpdateReq req){
+        String processId = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
+        String processId1 = "";
+        String processId2 = "";
+        if(null==req){
+            return "";
+        }
+        String productName = req.getProductName();
+        if(StringUtils.isNotEmpty(productName) ){
+            processId2 = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
+        }
+        List<ProductUpdateReq> reqs = req.getProductUpdateReqs();
+        for(ProductUpdateReq productUpdateReq: reqs){
+            String sn= productUpdateReq.getSn();
+            Double cost = productUpdateReq.getCost();
+            List<FileAddReq> fileAddReqs = productUpdateReq.getFileAddReqs();
+            String unitName = productUpdateReq.getUnitName();
+            if(StringUtils.isNotEmpty(sn) ||cost > 0 ){
+                processId1 = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
+            }
+            if(StringUtils.isNotEmpty(unitName)|| !CollectionUtils.isEmpty(fileAddReqs)){
+                processId2 = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
+            }
+        }
+        if(StringUtils.isNotEmpty(processId1)){
+            processId = processId1;
+        }
+        if(StringUtils.isNotEmpty(processId2)){
+            processId = processId2;
+        }
+        if(StringUtils.isNotEmpty(processId1) && StringUtils.isNotEmpty(processId2)){
+            processId = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+        }
+        return processId;
     }
 
     @Override

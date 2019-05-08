@@ -22,12 +22,19 @@ public class MemMemberAddressReq extends PageVO implements Serializable {
 	private String city;
 	private String province;
 	private String addr;//具体地址
-	private String zip;//邮箱
+	private String zip;//邮编
 	private String emall;//邮箱
 	private String isEffect;//是否默认地址 1是 0否
 	private String isDefault;//是否默认地址 1是 0否
 	private String consigeeName;//收货人名称
 	private String consigeeMobile;//收货人联系方式
 	private String lastUpdate;//更新时间
+	
+	
+	private String applyId;
+	private String createStaff;
+	private String createDate;
+	private String updateStaff;
+	private String updateDate;
 
 }

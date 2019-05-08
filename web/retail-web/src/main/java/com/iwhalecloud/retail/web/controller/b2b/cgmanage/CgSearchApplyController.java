@@ -24,6 +24,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
@@ -182,11 +183,22 @@ public class CgSearchApplyController extends BaseController {
 			
 			purApplyService.delApplyFile(req);
 			
+			purApplyService.delPurApplyExt(req);
+			
 		}else{
 			purApplyService.tcProcureApply(req);
 		}
 		
 		//表里面没记录的话
+		
+		MemMemberAddressReq memMeneberAddr = purApplyService.selectMemMeneberAddr(req);
+		memMeneberAddr.setApplyId(applyId);
+		memMeneberAddr.setCreateStaff(createStaff);
+		memMeneberAddr.setCreateDate(createDate);
+		memMeneberAddr.setUpdateStaff(updateStaff);
+		memMeneberAddr.setUpdateDate(updateDate);
+		purApplyService.insertPurApplyExt(memMeneberAddr);
+		
 		List<AddProductReq> list = req.getAddProductReq();
 		for(int i=0;i<list.size();i++){
 			AddProductReq addProductReq = list.get(i);
@@ -247,8 +259,8 @@ public class CgSearchApplyController extends BaseController {
 		String applyType = req.getApplyType();
 		if(applyType == "20" || "20".equals(applyType)){
 			//如果是采购单，则查看收货地址
-			List<MemMemberAddressReq> procureApplyReq4 = purApplyService.ckApplyData4(req);
-			procureApplyReq1.setMemMemberAddressReq(procureApplyReq4);
+			List<PurApplyExtReq> procureApplyReq4 = purApplyService.ckApplyData4(req);
+			procureApplyReq1.setPurApplyExtReq(procureApplyReq4);
 		}
 		
 		

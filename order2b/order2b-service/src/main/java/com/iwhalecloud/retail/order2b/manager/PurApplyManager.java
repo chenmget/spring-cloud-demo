@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.mapper.CartMapper;
@@ -80,7 +81,7 @@ public class PurApplyManager {
 		return purApplyMapper.ckApplyData3(req);
 	}
 	
-	public List<MemMemberAddressReq> ckApplyData4(PurApplyReq req) {
+	public List<PurApplyExtReq> ckApplyData4(PurApplyReq req) {
 		return purApplyMapper.ckApplyData4(req);
 	}
 	
@@ -99,6 +100,18 @@ public class PurApplyManager {
 	public void delApplyFile(ProcureApplyReq req){
 		purApplyMapper.delApplyFile(req);
 	}	
+	
+	public void delPurApplyExt(ProcureApplyReq req){
+		purApplyMapper.delPurApplyExt(req);
+	}
+	
+	public MemMemberAddressReq selectMemMeneberAddr(ProcureApplyReq req){
+		return purApplyMapper.selectMemMeneberAddr(req);
+	}
+	
+	public void insertPurApplyExt(MemMemberAddressReq req){
+		purApplyMapper.insertPurApplyExt(req);
+	}
 	
 	public String getMerchantCode(String merchantCode){
 		return purApplyMapper.getMerchantCode(merchantCode);

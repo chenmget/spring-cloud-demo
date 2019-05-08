@@ -26,6 +26,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
@@ -168,7 +169,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	}
 	
 	@Override
-	public List<MemMemberAddressReq> ckApplyData4(PurApplyReq req){
+	public List<PurApplyExtReq> ckApplyData4(PurApplyReq req){
 		return purApplyManager.ckApplyData4(req);
 	}
 	
@@ -191,6 +192,22 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public void delApplyFile(ProcureApplyReq req){
 		purApplyManager.delApplyFile(req);
 	}
+	
+	@Override
+	public void delPurApplyExt(ProcureApplyReq req){
+		purApplyManager.delPurApplyExt(req);
+	}
+	
+	@Override
+	public MemMemberAddressReq selectMemMeneberAddr(ProcureApplyReq req){
+		return purApplyManager.selectMemMeneberAddr(req);
+	}
+	
+	@Override
+	public void insertPurApplyExt(MemMemberAddressReq req){
+		purApplyManager.insertPurApplyExt(req);
+	}
+	
 	
 	@Override
 	public String getMerchantCode(String merchantCode){

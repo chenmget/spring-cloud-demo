@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 
@@ -41,7 +42,7 @@ public interface PurApplyService {
 	public CkProcureApplyResp ckApplyData1(PurApplyReq req);
 	public List<AddProductReq> ckApplyData2(PurApplyReq req);
 	public List<AddFileReq> ckApplyData3(PurApplyReq req);
-	public List<MemMemberAddressReq> ckApplyData4(PurApplyReq req);
+	public List<PurApplyExtReq> ckApplyData4(PurApplyReq req);
 
 	public ApplyHeadResp hqShenQingDaoHao();
 	
@@ -53,6 +54,11 @@ public interface PurApplyService {
 	
 	public void delApplyItem(ProcureApplyReq req);
 	public void delApplyFile(ProcureApplyReq req);
+	public void delPurApplyExt(ProcureApplyReq req);
+	
+	public MemMemberAddressReq selectMemMeneberAddr(ProcureApplyReq req);
+	
+	public void insertPurApplyExt(MemMemberAddressReq req);
 	
 	public String getMerchantCode(String merchantCode);
 	

@@ -36,6 +36,8 @@ public class ProcureApplyReq extends PageVO implements Serializable {
 	private String updateStaff;	//修改人
 	private String updateDate;	//修改时间
 	
+	private String addrId;//收货地址的ID
+	
 	private List<AddProductReq> addProductReq;
 	
 	private List<AddFileReq> addFileReq;

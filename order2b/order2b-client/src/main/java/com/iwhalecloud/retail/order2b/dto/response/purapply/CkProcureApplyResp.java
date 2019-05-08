@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.dto.PageVO;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 
 import lombok.Data;
 
@@ -44,5 +45,5 @@ public class CkProcureApplyResp extends PageVO implements Serializable {
 	
 	private List<AddFileReq> addFileReq;
 	
-	private List<MemMemberAddressReq> memMemberAddressReq;
+	private List<PurApplyExtReq> purApplyExtReq;
 }

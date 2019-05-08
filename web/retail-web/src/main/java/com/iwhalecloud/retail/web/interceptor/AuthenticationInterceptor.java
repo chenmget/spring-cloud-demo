@@ -189,8 +189,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                             otherMsgDTO = saveUserOtherMsg(userDTO);
                         }
                     }
-                    if (null == otherMsgDTO) {
-                        throw new UserNotLoginException("用户没有关联商家，请确认");
+                    if (null == otherMsgDTO || null == otherMsgDTO.getMerchant() || null == otherMsgDTO.getBusinessEntity()) {
+                        throw new Exception("用户没有关联商家，请确认");
                     }
                     // 保存用户信息
                     UserContext.setUser(userDTO);
@@ -236,8 +236,8 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                         otherMsgDTO = saveUserOtherMsg(userDTO);
                     }
                 }
-                if (null == otherMsgDTO) {
-                    throw new UserNotLoginException("用户没有关联商家，请确认");
+                if (null == otherMsgDTO || null == otherMsgDTO.getMerchant() || null == otherMsgDTO.getBusinessEntity()) {
+                    throw new Exception("用户没有关联商家，请确认");
                 }
                 UserContext.setUser(userDTO);
                 UserContext.setUserId(id);

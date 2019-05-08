@@ -66,15 +66,15 @@ public class ReportCodeStatementsController extends BaseController  {
     @PostMapping("/getCodeStatementsReport")
 	@UserLoginToken
     public ResultVO<Page<ReportCodeStatementsResp>> getCodeStatementsReport(@RequestBody ReportCodeStatementsReq req) {
-		////1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
-		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-		String retailerCodes = req.getLssCode();//是否输入了零售商账号
+		//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getLssCode();//是否输入了零售商账号
 		//String userType = UserContext.getUser().getUserFounder()+"";
 		String userType=req.getUserType();
-		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-			req.setLssCode(retailerCodes);
-		}
+//		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setLssCode(retailerCodes);
+//		}
 		if(userType!=null&&!"".equals(userType)&&userType.equals("2")){
 			String lanId=UserContext.getUser().getLanId();
 			req.setLanId(lanId);
@@ -111,8 +111,6 @@ public class ReportCodeStatementsController extends BaseController  {
 			xdCreateTimeStart = format3.format(date3);
 			xdCreateTimeEnd = df.format(date);
 		}
-		
-		
 		
 			return reportCodeStateService.getCodeStatementsReport(req);
     }
@@ -156,6 +154,21 @@ public class ReportCodeStatementsController extends BaseController  {
 			//厂商也只能看自己的仓库
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(manufacturerCode);
 			req.setMktResStoreId(mktResStoreId);
+		}
+		String xdCreateTimeStart = req.getXdCreateTimeStart();
+		String xdCreateTimeEnd = req.getXdCreateTimeEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -1);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		
+		if(xdCreateTimeStart==null && xdCreateTimeEnd==null){
+			xdCreateTimeStart = format3.format(date3);
+			xdCreateTimeEnd = df.format(date);
 		}
         ResultVO<List<ReportCodeStatementsResp>> resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
         

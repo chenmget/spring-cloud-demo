@@ -77,14 +77,14 @@ public class ReportOrderController extends BaseController {
     @PostMapping("/getReportOrderList1")
 	@UserLoginToken
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
-		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-		String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
+//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
 		String userType=req.getUserType();
 		//String userType = UserContext.getUser().getUserFounder()+"";
-		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-			req.setMerchantCode(retailerCodes);
-		}
+//		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setMerchantCode(retailerCodes);
+//		}
 		//userType 1省级管理员，2地市管理员，3零售商，4供应商，5厂家
 		
 		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的
@@ -122,14 +122,14 @@ public class ReportOrderController extends BaseController {
 	    @RequestMapping(value = "/orderReportDataExport", method = RequestMethod.POST)
 	    @UserLoginToken
 	    public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
-	    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-			String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
+//	    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//			String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
 			String userType=req.getUserType();
 			//String userType = UserContext.getUser().getUserFounder()+"";
-			if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-				retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-				req.setMerchantCode(retailerCodes);
-			}
+//			if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+//				retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//				req.setMerchantCode(retailerCodes);
+//			}
 			//userType 1省级管理员，2地市管理员，3零售商，4供应商，5厂家
 			
 			if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的

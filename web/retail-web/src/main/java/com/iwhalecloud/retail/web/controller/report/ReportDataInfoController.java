@@ -80,14 +80,14 @@ public class ReportDataInfoController extends BaseController {
 	@UserLoginToken
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(@RequestBody ReportStorePurchaserReq req) {
 		//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
-		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
+//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
 		//String userType = UserContext.getUser().getUserFounder()+"";
-		if("2".equals(legacyAccount) && !"3".equals(userType)){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-			req.setRetailerCode(retailerCodes);
-		}
+//		if("2".equals(legacyAccount) && !"3".equals(userType)){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setRetailerCode(retailerCodes);
+//		}
 		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
 			String retailerCode=UserContext.getUser().getRelCode();
 			req.setRetailerCode(retailerCode);
@@ -151,14 +151,14 @@ public class ReportDataInfoController extends BaseController {
         //数据量控制在1万条
         //req.setPageSize(10000);
     	//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
-		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
+//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
 		//String userType = UserContext.getUser().getUserFounder()+"";
-		if("2".equals(legacyAccount) && !"3".equals(userType)){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-			req.setRetailerCode(retailerCodes);
-		}
+//		if("2".equals(legacyAccount) && !"3".equals(userType)){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setRetailerCode(retailerCodes);
+//		}
 		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
 			String retailerCode=UserContext.getUser().getRelCode();
 			req.setRetailerCode(retailerCode);

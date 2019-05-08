@@ -183,6 +183,11 @@ public class ProductFlowServiceImpl implements ProductFlowService {
         //流程类型->厂家产品管理流程
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1110.getTaskSubType());
 
+        //流程参数类型
+        processStartDTO.setParamsType(req.getParamsType());
+        //流程参数值
+        processStartDTO.setParamsValue(req.getParamsValue());
+
         return processStartDTO;
 
     }

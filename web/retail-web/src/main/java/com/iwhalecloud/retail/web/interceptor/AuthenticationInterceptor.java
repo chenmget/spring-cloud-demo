@@ -200,7 +200,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                         }
                     }
                     Boolean isfrontUser = frontUserList.contains(userDTO.getUserFounder());
-                    if ((null == otherMsgDTO || null == otherMsgDTO.getMerchant()) && isfrontUser)   {
+                    if (null != otherMsgDTO && null == otherMsgDTO.getMerchant() && isfrontUser) {
                         throw new UserNoMerchantException("用户没有关联商家，请确认");
                     }
                     // 保存用户信息
@@ -246,10 +246,10 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     if(userDTO != null){
                         otherMsgDTO = saveUserOtherMsg(userDTO);
                     }
-                    Boolean isfrontUser = frontUserList.contains(userDTO.getUserFounder());
-                    if ((null == otherMsgDTO || null == otherMsgDTO.getMerchant()) && isfrontUser)   {
-                        throw new UserNoMerchantException("用户没有关联商家，请确认");
-                    }
+                }
+                Boolean isfrontUser = frontUserList.contains(userDTO.getUserFounder());
+                if ((null != otherMsgDTO && null == otherMsgDTO.getMerchant()) && isfrontUser)   {
+                    throw new UserNoMerchantException("用户没有关联商家，请确认");
                 }
                 UserContext.setUser(userDTO);
                 UserContext.setUserId(id);

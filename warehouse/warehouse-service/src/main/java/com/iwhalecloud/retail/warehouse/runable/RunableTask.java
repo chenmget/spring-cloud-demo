@@ -51,8 +51,10 @@ public class RunableTask {
     private int corePoolSize = 10;
     // 最大线程数
     private int maximumPoolSize = 20;
-    // 超时时间30秒
-    private long keepAliveTime = 30;
+    // 超时时间100秒
+    private long keepAliveTime = 100;
+
+    private final Integer perNum = 1000;
 
     private List<Future<Boolean>> validFutureTaskResult;
 
@@ -84,7 +86,6 @@ public class RunableTask {
     public String exceutorValid(ResourceInstValidReq req) {
         ExecutorService executorService = initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
-        Integer perNum = 200;
         String batchId = resourceInstService.getPrimaryKey();
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         validFutureTaskResult = new ArrayList<>(excutorNum);
@@ -176,7 +177,6 @@ public class RunableTask {
     public void exceutorDelNbr(ResourceUploadTempDelReq req) {
         ExecutorService executorService = initExecutorService();
         List<String> nbrList = req.getMktResInstNbrList();
-        Integer perNum = 200;
         Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
         for (Integer i = 0; i < excutorNum; i++) {
             Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
@@ -202,7 +202,6 @@ public class RunableTask {
     public void exceutorAddNbr(ResourceInstAddReq req) {
         ExecutorService executorService = initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
-        Integer perNum = 200;
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         for (Integer i = 0; i < excutorNum; i++) {
             Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
@@ -228,7 +227,6 @@ public class RunableTask {
     public void exceutorAddReqDetail(List<ResourceRequestAddReq.ResourceRequestInst> list, String itemId, String createStaff, String chngType) {
         ExecutorService executorService = initExecutorService();
         //营销资源申请单明细
-        Integer perNum = 200;
         Integer excutorNum = list.size()%perNum == 0 ? list.size()/perNum : (list.size()/perNum + 1);
         List<ResourceReqDetail> detailList = new ArrayList<ResourceReqDetail>(list.size());
         for (Integer i = 0; i < excutorNum; i++){

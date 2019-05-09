@@ -91,7 +91,7 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	String status = rr.getStatus();//订单状态
 	    	String orderType = rr.getOrderType();//订单类型
 	    	String type = rr.getType();//交易类型
-	    	String paymentType = rr.getPaymentType();//支付类型
+//	    	String paymentType = rr.getPaymentType();//支付类型
 	    	String payType = rr.getPayType();//支付方式
 	    	String lanId = rr.getLanId();
 	    	String couponType = rr.getCouponType();//优惠类型
@@ -178,21 +178,19 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    		}
 	    	}
 	    	
-	    	if(paymentType != null){
-	    		if("1".equals(paymentType)){
-	    			rr.setPaymentType("在线支付");
-	    		}else if("2".equals(paymentType)){
-	    			rr.setPaymentType("线下支付");
-	    		}
-	    	}
+//	    	if(paymentType != null){
+//	    		if("1".equals(paymentType)){
+//	    			rr.setPaymentType("在线支付");
+//	    		}else if("2".equals(paymentType)){
+//	    			rr.setPaymentType("线下支付");
+//	    		}
+//	    	}
 	    	
 	    	if(payType != null){
 	    		if("1".equals(payType)){
 	    			rr.setPayType("翼支付");
-	    		}else if("2".equals(payType)){
-	    			rr.setPayType("微信");
 	    		}else if("3".equals(payType)){
-	    			rr.setPayType("支付宝");
+	    			rr.setPayType("线下支付");
 	    		}
 	    	}
 	    	

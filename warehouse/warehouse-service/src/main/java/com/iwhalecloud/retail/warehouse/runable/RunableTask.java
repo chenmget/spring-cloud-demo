@@ -141,7 +141,7 @@ public class RunableTask {
                                      }
                                  }
                                  Boolean addResult = resourceUploadTempManager.saveBatch(instList);
-                                 log.info("RunableTask.exceutorValid req={}, resp={}", JSON.toJSONString(instList), addResult);
+                                 log.info("RunableTask.exceutorValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
                                  return addResult;
                              }
                          }
@@ -187,7 +187,7 @@ public class RunableTask {
                   @Override
                   public Integer call() throws Exception {
                       Integer successNum = resourceUploadTempManager.delResourceUploadTemp(req);
-                      log.info("RunableTask.exceutorDelNbr req={}, resp={}", JSON.toJSONString(req), successNum);
+                      log.info("RunableTask.exceutorDelNbr resourceUploadTempManager.delResourceUploadTemp req={}, resp={}", JSON.toJSONString(req), successNum);
                       return successNum;
                   }
               }

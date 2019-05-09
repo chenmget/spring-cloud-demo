@@ -243,8 +243,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/loginWithoutPwd", method = RequestMethod.POST)
-    public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req)
-            throws UserNoMerchantException{
+    public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req){
         UserLoginResp resp = userService.loginWithoutPwd(req);
 
         // 失败 返回错误信息
@@ -462,7 +461,7 @@ public class UserController extends BaseController {
      * @param userDTO
      * @return
      */
-    private UserOtherMsgDTO saveUserOtherMsg(UserDTO userDTO) throws UserNoMerchantException {
+    private UserOtherMsgDTO saveUserOtherMsg(UserDTO userDTO){
 
         UserOtherMsgDTO userOtherMsgDTO = new UserOtherMsgDTO();
         // 找  用户-角色 关联

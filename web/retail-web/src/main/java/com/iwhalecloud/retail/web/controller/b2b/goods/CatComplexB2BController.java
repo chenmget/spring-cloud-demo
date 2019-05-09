@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatComplexService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsService;
+import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -70,7 +71,7 @@ public class CatComplexB2BController extends GoodsBaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value="/queryCategoryRanking")
-    ResultVO<Page<GoodsForPageQueryResp>> queryCategoryRanking(@RequestParam(value = "catId") String catId) {
+    ResultVO<Page<GoodsForPageQueryResp>> queryCategoryRanking(@RequestParam(value = "catId") String catId)  throws UserNoMerchantException {
         log.info("CatComplexB2BController queryCategoryRanking catId={} ", catId);
         GoodsForPageQueryReq req = new GoodsForPageQueryReq();
         List<String> catIdList = Lists.newArrayList();

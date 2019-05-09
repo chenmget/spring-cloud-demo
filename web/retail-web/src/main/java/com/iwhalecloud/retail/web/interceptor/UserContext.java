@@ -6,7 +6,6 @@ import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.consts.WebConst;
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
-import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -167,23 +166,10 @@ public class UserContext implements Serializable {
      * @param userOtherMsgDTO 登录用户的其他信息
      * @author zwl 2018-11-5
      */
-    public static final void setUserOtherMsg(UserOtherMsgDTO userOtherMsgDTO) throws UserNoMerchantException{
+    public static final void setUserOtherMsg(UserOtherMsgDTO userOtherMsgDTO){
         HttpSession session = getSession();
         if (session == null) {
             return;
-        }
-        List<Integer> frontUserList = Lists.newArrayList(
-                SystemConst.USER_FOUNDER_3,
-                SystemConst.USER_FOUNDER_4,
-                SystemConst.USER_FOUNDER_5,
-                SystemConst.USER_FOUNDER_8
-        );
-        if (null == userOtherMsgDTO.getUser().getUserFounder())   {
-            throw new UserNoMerchantException("用户没有关联商家，请确认");
-        }
-        Boolean isfrontUser = frontUserList.contains(userOtherMsgDTO.getUser().getUserFounder());
-        if ((null != userOtherMsgDTO && null == userOtherMsgDTO.getMerchant()) && isfrontUser)   {
-            throw new UserNoMerchantException("用户没有关联商家，请确认");
         }
         // 写入session
         session.setAttribute(WebConst.SESSION_USER_OTHER_MSG, userOtherMsgDTO);

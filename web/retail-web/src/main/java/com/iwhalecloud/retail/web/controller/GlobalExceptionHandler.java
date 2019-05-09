@@ -154,7 +154,6 @@ public class GlobalExceptionHandler extends BaseController<Object>{
     @ExceptionHandler(UserNoMerchantException.class)
     public ResultVO<Object> userNoMerchantException(HttpServletRequest request,UserNoMerchantException ex){
         log.error("请求失败[" + request.getRequestURI() + "] "+JSON.toJSONString(ex.getResultVo()), ex);
-
         return ex.getResultVo();
 
     }

@@ -175,7 +175,7 @@ public class MerchantResourceInstB2BController {
             return;
         }
         List<ResourceInstListPageResp> list = dataVO.getResultData().getRecords();
-        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.merchantColumn();
         try{
             //创建Excel
@@ -205,6 +205,7 @@ public class MerchantResourceInstB2BController {
     public ResultVO<Page<ResourceUploadTempListResp>> validNbr(@RequestBody ResourceInstValidReq req) {
         req.setMerchantId(UserContext.getMerchantId());
         req.setCreateStaff(UserContext.getUserId());
+        req.setMerchantType(UserContext.getUserOtherMsg().getMerchant().getMerchantType());
         return resourceInstService.validNbr(req);
     }
 

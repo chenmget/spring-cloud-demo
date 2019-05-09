@@ -48,13 +48,13 @@ public class RunableTask {
     private ResourceRequestService requestService;
 
     // 核心线程数
-    private int corePoolSize = 10;
+    private int corePoolSize = 50;
     // 最大线程数
-    private int maximumPoolSize = 20;
+    private int maximumPoolSize = 100;
     // 超时时间100秒
     private long keepAliveTime = 100;
 
-    private final Integer perNum = 1000;
+    private final Integer perNum = 100;
 
     private List<Future<Boolean>> validFutureTaskResult;
 

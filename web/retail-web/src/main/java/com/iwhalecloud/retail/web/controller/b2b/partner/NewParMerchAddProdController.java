@@ -38,13 +38,13 @@ public class NewParMerchAddProdController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/addProd")
-    public void addProd(@RequestBody LSSAddControlReq req){
+    public ResultVO<Integer> addProd(@RequestBody LSSAddControlReq req){
     	req.setRuleType("1");
     	req.setTargetType("2");
 //    	List<ProductIdListResp> targetIdList = newParMerchAddProdService.selectProductIdList();
     	List<String> targetIdList = newParMerchAddProdService.selectProductIdList();
     	req.setTargetIdList(targetIdList);
-    	newParMerchAddProdService.addProd(req);
+    	return newParMerchAddProdService.addProd(req);
     }
 
 }

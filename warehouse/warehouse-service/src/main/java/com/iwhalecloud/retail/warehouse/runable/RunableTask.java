@@ -93,11 +93,11 @@ public class RunableTask {
             Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
             List<String> newList = nbrList.subList(perNum * i, maxNum);
             log.info("RunableTask.exceutorValid newList={}", JSON.toJSONString(newList));
-            req.setMktResInstNbrs(newList);
             Future<Boolean> validFutureTask = executorService.submit(new Callable<Boolean>() {
                              @Override
                              public Boolean call() throws Exception {
                                  Date now = new Date();
+                                 req.setMktResInstNbrs(newList);
                                  List<String> instExitstNbr = resourceInstCheckService.vaildOwnStore(req);
                                  List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
                                  List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);

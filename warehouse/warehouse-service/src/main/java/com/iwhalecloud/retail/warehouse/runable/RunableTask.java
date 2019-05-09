@@ -91,8 +91,8 @@ public class RunableTask {
         validFutureTaskResult = new ArrayList<>(excutorNum);
         for (Integer i = 0; i < excutorNum; i++) {
             Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
-            log.info("RunableTask.exceutorValid maxNum={}", maxNum);
             List<String> newList = nbrList.subList(perNum * i, maxNum);
+            log.info("RunableTask.exceutorValid newList={}", JSON.toJSONString(newList));
             req.setMktResInstNbrs(newList);
             Future<Boolean> validFutureTask = executorService.submit(new Callable<Boolean>() {
                              @Override
@@ -308,49 +308,47 @@ public class RunableTask {
             public String call() throws Exception {
                 //暂停1s
                 Thread.sleep(1000);
-                List<String> list = Lists.newArrayList("2");
-                int t = 10/3;
-                List<String> newList = list.subList(0, 1);
-                String name = test();
-                System.out.println("main excutor name =====================: "+name);
-                return name;
+                List<Future<String>> list = test();
+                System.out.println("excutor result  =====================: "+JSON.toJSONString(list));
+                return null;
             }
         });
+
+
         executorService.shutdown();
     }
 
-    public static String test(){
+    public static List<Future<String>> test(){
         try {
             //创建大小为10的线程池
             ExecutorService executorService = Executors.newFixedThreadPool(10);
             //存储线程处理结果
             List<Future<String>> list = new ArrayList<Future<String>>();
             //线程池只有10，要执行50个线程，分50/10=5次进行，每进行完10个callable后重新调用call(),因此每执行输出10行就会等1s。
-            for (int i = 0; i < 50; i++) {
+            for (int i = 0; i < 500; i++) {
+                List<Integer> newList = new ArrayList<>(200);
+//                synchronized(RunableTask.class){
+                    for (Integer j = i; j< (i+200); j++) {
+                        newList.add(j);
+                    }
+//                }
                 Future<String> future = executorService.submit(new Callable<String>() {
                     @Override
                     public String call() throws Exception {
                         //暂停1s
                         Thread.sleep(10);
                         String name = Thread.currentThread().getName();
-                        System.out.println("name : "+name);
+                        System.out.println("name : " + JSON.toJSONString(newList));
                         List<String> list = Lists.newArrayList("2");
-                        int t = 10/3;
-                        List<String> newList = list.subList(0, 1);
                         return name;
                     }
                 });
                 list.add(future);
             }
-            String name = "";
-            for (Future<String> fut : list) {
-                System.out.println(new Date() + "::" + fut.get());
-                System.out.println("result:" + fut.isDone());
-                name = fut.get();
-            }
+
             //关闭线程池
             executorService.shutdown();
-            return name;
+            return list;
 
         }catch (Exception e){
 

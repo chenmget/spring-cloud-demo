@@ -50,7 +50,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
     @Override
     @Transactional(isolation= Isolation.SERIALIZABLE,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public List<String> vaildOwnStore(ResourceInstValidReq req){
+    public List<String> vaildOwnStore(ResourceInstValidReq req, List<String> nbrList){
         List<String> existNbrs = new ArrayList<>();
         ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
         productGetByIdReq.setProductId(req.getMktResId());
@@ -63,7 +63,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         }
         // 一去重：串码存在不再导入
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
-        List<String> mktResInstNbrs = Lists.newArrayList(req.getMktResInstNbrs());
+        List<String> mktResInstNbrs = Lists.newArrayList(nbrList);
         resourceInstsGetReq.setMktResInstNbrs(mktResInstNbrs);
         List<String> merchantTypes = null;
         if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(req.getMerchantType())) {

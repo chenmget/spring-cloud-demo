@@ -97,8 +97,7 @@ public class RunableTask {
                              @Override
                              public Boolean call() throws Exception {
                                  Date now = new Date();
-                                 req.setMktResInstNbrs(newList);
-                                 List<String> instExitstNbr = resourceInstCheckService.vaildOwnStore(req);
+                                 List<String> instExitstNbr = resourceInstCheckService.vaildOwnStore(req, newList);
                                  List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
                                  List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
                                  if (CollectionUtils.isNotEmpty(instExitstNbr)) {

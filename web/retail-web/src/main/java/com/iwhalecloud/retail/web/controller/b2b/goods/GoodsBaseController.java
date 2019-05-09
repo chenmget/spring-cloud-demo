@@ -29,6 +29,9 @@ import java.util.List;
 public class GoodsBaseController {
 
     public void setTargetCode(List<String> targetCodeList, Integer userFounder) throws UserNoMerchantException {
+        if (null == userFounder) {
+            throw new UserNoMerchantException(ResultCodeEnum.ERROR.getCode(), "用户没有商家类型，请确认");
+        }
         if (userFounder == SystemConst.USER_FOUNDER_3 || userFounder == SystemConst.USER_FOUNDER_5) {
             // 商家信息
             MerchantDTO merchantDTO = UserContext.getUserOtherMsg().getMerchant();

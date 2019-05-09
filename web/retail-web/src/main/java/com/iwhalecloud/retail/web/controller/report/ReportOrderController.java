@@ -187,7 +187,10 @@ public class ReportOrderController extends BaseController {
 	        orderMap.add(new ExcelTitleName("businessEntityName", "经营主体名称"));
 	        orderMap.add(new ExcelTitleName("lanId", "店中商所属地市"));
 	        orderMap.add(new ExcelTitleName("city", "店中商所属区县"));
-
+	        
+	        orderMap.add(new ExcelTitleName("couponActive", "营销活动"));
+	        orderMap.add(new ExcelTitleName("couponType", "优惠类型"));
+	        orderMap.add(new ExcelTitleName("couponMoney", "优惠额度"));
 	      //创建orderItemDetail
 	        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
 	        		orderMap, "订单明细报表");

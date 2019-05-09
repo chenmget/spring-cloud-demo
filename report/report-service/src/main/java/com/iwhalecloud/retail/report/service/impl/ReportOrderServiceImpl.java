@@ -143,16 +143,8 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	}
 	    	
 	    	if(orderType != null){
-	    		if("1".equals(orderType)){
-	    			rr.setOrderType("订购");
-	    		}else if("2".equals(orderType)){
-	    			rr.setOrderType("退费");
-	    		}else if("3".equals(orderType)){
-	    			rr.setOrderType("换货");
-	    		}else if("4".equals(orderType)){
-	    			rr.setOrderType("退货");
-	    		}else if("5".equals(orderType)){
-	    			rr.setOrderType("预约单（商机单）");
+	    		if("2".equals(orderType)){
+	    			rr.setOrderType("未知");
 	    		}else if("11".equals(orderType)){
 	    			rr.setOrderType("省包至地包交易订单");
 	    		}else if("12".equals(orderType)){

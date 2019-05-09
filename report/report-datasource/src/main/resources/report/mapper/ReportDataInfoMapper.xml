@@ -94,7 +94,10 @@
   </select>
   
   <select id="getMyMktResStoreId" parameterType="String" resultType="String">
-	  select * from (SELECT MKT_RES_STORE_ID FROM MKT_RES_STORE_OBJ_REL WHERE obj_id = #{relCode} limit 1) c
-  
+  		SELECT s.MKT_RES_STORE_ID
+	        FROM mkt_res_store s,mkt_res_store_obj_rel r WHERE 1 = 1
+	        AND s.MKT_RES_STORE_ID = r.MKT_RES_STORE_ID
+	        AND r.OBJ_ID = #{relCode}
+	        AND s.STORE_SUB_TYPE = '1300'
   </select>
 </mapper>

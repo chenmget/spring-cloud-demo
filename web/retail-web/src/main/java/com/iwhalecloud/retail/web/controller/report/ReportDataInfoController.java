@@ -177,7 +177,6 @@ public class ReportDataInfoController extends BaseController {
             return;
         }
         
-        
         List<ReportStorePurchaserResq> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -187,7 +186,6 @@ public class ReportDataInfoController extends BaseController {
         orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
         orderMap.add(new ExcelTitleName("partnerCode", "零售商编码"));
         orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
-        
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
         orderMap.add(new ExcelTitleName("typeId", "产品类型"));
         orderMap.add(new ExcelTitleName("theTotalInventory", "入库总量"));

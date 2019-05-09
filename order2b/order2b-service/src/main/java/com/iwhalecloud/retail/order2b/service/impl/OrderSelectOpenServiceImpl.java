@@ -509,9 +509,9 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         orderSelectDetailResp.setZFlowList(orderZFlowManager.selectFlowList(orderZFlowDTO));
 
         //订单类型：
-        if (reqest.getUserCode().equals(orderSelectDetailResp.getUserId())) {
+        if (orderSelectDetailResp.getUserId().equals(reqest.getUserCode())) {
             orderSelectDetailResp.setUserOrderType(OrderManagerConsts.USER_EXPORT_TYPE_1); //采购订单
-        } else if(reqest.getUserCode().equals(orderSelectDetailResp.getMerchantId())) {
+        } else if(orderSelectDetailResp.getMerchantId().equals(reqest.getUserCode())) {
             orderSelectDetailResp.setUserOrderType(OrderManagerConsts.USER_EXPORT_TYPE_2); //销售定单
         }
 

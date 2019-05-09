@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  *
  * @author xuqinyuan
  */
-@ElasticSimpleJob(cron = "0 20 15 * * ?",
+@ElasticSimpleJob(cron = "0 40 16 * * ?",
     jobName = "syncBusinessEntityJob",
     shardingTotalCount = 1,
     jobParameter = "测试参数",

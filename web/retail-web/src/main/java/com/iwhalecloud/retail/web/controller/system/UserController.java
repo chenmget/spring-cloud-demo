@@ -100,6 +100,9 @@ public class UserController extends BaseController {
 
     @Reference
     ConfigInfoService configInfoService;
+    
+    @Reference
+    LoginLogService loginLogService;
 
     /**
      * 云货架
@@ -179,7 +182,25 @@ public class UserController extends BaseController {
             }
         }
         UserLoginResp resp = userService.login(req);
-
+        
+        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
+        
+        // 登录日志记录
+        if(StringUtils.isNotBlank(user.getUserId())){
+            LoginLogDTO loginLogDTO = new LoginLogDTO();
+            loginLogDTO.setUserId(user.getUserId());
+            Date nowDate = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            loginLogDTO.setLoginTime(sdf.format(nowDate));
+            loginLogDTO.setLoginType("3");
+            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
+            String sourceIp = getUserLoginIp(request);
+            loginLogDTO.setSourceIp(sourceIp);
+            loginLogDTO.setLoginDesc(resp.getErrorMessage());
+            loginLogService.saveLoginLog(loginLogDTO);
+            
+        }
+       
         // 失败 返回错误信息
         if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
             return failResultVO(resp.getErrorMessage());
@@ -237,7 +258,24 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/loginWithoutPwd", method = RequestMethod.POST)
     public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req) {
         UserLoginResp resp = userService.loginWithoutPwd(req);
-
+        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
+        
+        // 登录日志记录
+        if(StringUtils.isNotBlank(user.getUserId())){
+            LoginLogDTO loginLogDTO = new LoginLogDTO();
+            loginLogDTO.setUserId(user.getUserId());
+            Date nowDate = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            loginLogDTO.setLoginTime(sdf.format(nowDate));
+            loginLogDTO.setLoginType("portal".equals(req.getLoginType())? "2":"3");
+            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
+            String sourceIp = getUserLoginIp(request);
+            loginLogDTO.setSourceIp(sourceIp);
+            loginLogDTO.setLoginDesc(resp.getErrorMessage());
+            loginLogService.saveLoginLog(loginLogDTO);
+            
+        }
+        
         // 失败 返回错误信息
         if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
             return failResultVO(resp.getErrorMessage());
@@ -272,7 +310,11 @@ public class UserController extends BaseController {
     })
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public ResultVO userLogout(HttpServletRequest request) {
-
+    	String userId = UserContext.getUserId();
+        Date nowDate = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    	loginLogService.updatelogoutTimeByUserId(userId, sdf.format(nowDate));
+    	
         //清空session里面的用户信息
         request.getSession().removeAttribute(WebConst.SESSION_TOKEN);
         request.getSession().removeAttribute(WebConst.SESSION_USER_OTHER_MSG);
@@ -523,6 +565,38 @@ public class UserController extends BaseController {
         UserContext.setUserOtherMsg(userOtherMsgDTO);
         UserContext.setUser(userDTO);
         return userOtherMsgDTO;
+    }
+    
+    
+    /**
+     * 取用户登录的地址来源
+     *
+     * @param request
+     * @return
+     */
+    private String getUserLoginIp(HttpServletRequest request) {
+    	String ip = request.getHeader("x-forwarded-for");
+    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+    		ip = request.getHeader("Proxy-Client-IP");
+    	}
+    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+    		ip = request.getHeader("WL-Proxy-Client-IP");
+    	}
+    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+    		ip = request.getHeader("HTTP_CLIENT_IP");
+    	}
+    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+    		ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+    	}
+    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+    		ip = request.getRemoteAddr();
+    	}
+    	// 因为有些有些登录是通过代理，所以取第一个（第一个为真是ip）
+    	int index = ip.indexOf(',');
+    	if (index != -1) {
+    		ip = ip.substring(0, index);
+    	}
+    	return ip;
     }
 
 
@@ -922,7 +996,7 @@ public class UserController extends BaseController {
                     UserLoginWithoutPwdReq req = new UserLoginWithoutPwdReq();
                     req.setLoginName(staffCode);
                     req.setPlatformFlag(platformFlag);
-                    req.setLoginType("yhj");
+                    req.setLoginType("portal");
                     //免密登录
                     ResultVO<LoginResp> rv = this.userLoginWithoutPwd(request, req);
                     log.info("UserController userLoginWithoutPwd resp:{}" + JSON.toJSON(rv.getResultData()));

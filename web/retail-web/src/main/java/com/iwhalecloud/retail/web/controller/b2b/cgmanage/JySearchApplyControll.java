@@ -50,16 +50,13 @@ public class JySearchApplyControll extends BaseController  {
     @PostMapping("/jycgSearchApply")
     public ResultVO<Page<JyPurApplyResp>> jycgSearchApply(@RequestBody PurApplyReq req) {
 		//采购单的时候点击查看采购申请单，传申请人ID，apply_code和apply_name项目名称查询
-				String userId = UserContext.getUserId();
-//				String userId = "100028487";
-				PriCityManagerResp login = purApplyService.getLoginInfo(userId);
-				String userType = login.getUserType();
-				//传过来的APPLY_TYPE看
-				String lanId = login.getLanId();
-				if("4".equals(userType) || "4" == userType){//地市管理员
-					req.setLanId(lanId);
-					return jypurApplyService.jycgSearchApply(req);
-				}
+		String userId = UserContext.getUserId();
+		PriCityManagerResp login = purApplyService.getLoginInfo(userId);
+		String userType = login.getUserType();
+		//传过来的APPLY_TYPE看
+		if("4".equals(userType) || "4" == userType){//零售商只看自己的采购单
+			req.setApplyMerchantId(userId);
+		}
 		return jypurApplyService.jycgSearchApply(req);
     }
 	

@@ -95,11 +95,7 @@ public class CgSearchApplyController extends BaseController {
     public ResultVO<ApplyHeadResp> tcProcureApplybefore() {
 		UserDTO user = UserContext.getUser();
 		log.info("*********************提出申请需要生成的参数。。。。。。。。。。。。。"+JSON.toJSON(user));
-//		UserDTO user = new UserDTO();
-//		user.setRelCode("CS00011001");
-//		user.setUserName("深圳市金立通信设备有限公司");
-//		user.setLanId("731");
-//		user.setRegionId("73101");
+
 		if(user == null){
 			return null ;
 		}
@@ -141,14 +137,12 @@ public class CgSearchApplyController extends BaseController {
 		
 		Date date = new Date();
 		String updateStaff =UserContext.getUserId();
-//		String updateStaff ="1";
 		String updateDate = date.toLocaleString();
 		String statusDate = date.toLocaleString();
 		//情况一，默认是保存,状态就是10，待提交
 		//情况二，如果是提交，状态就是20，待审核(分表里面是否有记录)
 		String applyId = req.getApplyId();
 		String createStaff = UserContext.getUserId();
-//		String createStaff = "1";
 		
 		//获取供应商ID和申请商家ID
 		String supplierId = req.getSupplierId();
@@ -157,8 +151,6 @@ public class CgSearchApplyController extends BaseController {
 		String applyMerchantCode = purApplyService.getMerchantCode(applyMerchantId);
 		
 		String createDate = date.toLocaleString();//创建时间
-		
-//		String updateStaff ="1";
 		
 		req.setStatusCd(statusCd);
 		req.setCreateStaff(createStaff);
@@ -171,12 +163,7 @@ public class CgSearchApplyController extends BaseController {
 		
 		int isHaveSave = purApplyService.isHaveSave(applyId);
 		if(isHaveSave != 0){//表里面有记录的话,申请单的字段就update,添加产品跟附件的就先delete再insert
-//			UpdatePurApplyState state = new UpdatePurApplyState();
-//			state.setApplyId(applyId);
-//			state.setUpdateDate(updateDate);
-//			state.setUpdateStaff(updateStaff);
-//			state.setStatusDate(statusDate);
-//			state.setStatusCd(statusCd);
+
 			purApplyService.updatePurApply(req);//联系电话，项目名称，供应商code可以修改
 			
 			purApplyService.delApplyItem(req);
@@ -256,13 +243,9 @@ public class CgSearchApplyController extends BaseController {
 		List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
 		List<AddFileReq> procureApplyReq3 = purApplyService.ckApplyData3(req);
 		
-		String applyType = req.getApplyType();
-		if(applyType == "20" || "20".equals(applyType)){
-			//如果是采购单，则查看收货地址
-			List<PurApplyExtReq> procureApplyReq4 = purApplyService.ckApplyData4(req);
-			procureApplyReq1.setPurApplyExtReq(procureApplyReq4);
-		}
-		
+		//如果是采购单，则查看收货地址
+		List<PurApplyExtReq> procureApplyReq4 = purApplyService.ckApplyData4(req);
+		procureApplyReq1.setPurApplyExtReq(procureApplyReq4);
 		
 		procureApplyReq1.setAddProductReq(procureApplyReq2);
 		procureApplyReq1.setAddFileReq(procureApplyReq3);

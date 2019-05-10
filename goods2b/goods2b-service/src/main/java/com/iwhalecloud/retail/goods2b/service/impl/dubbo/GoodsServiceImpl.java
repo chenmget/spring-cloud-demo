@@ -1061,6 +1061,7 @@ public class GoodsServiceImpl implements GoodsService {
         List<GoodsPageResp> respList = respPage.getRecords();
         for (GoodsPageResp resp : respList) {
             GoodsProductRel goodsProductRel = goodsProductRelManager.queryGoodsProductRel(resp.getGoodsId());
+            log.info("GoodsServiceImpl.queryPageByConditionAdmin queryGoodsProductRel rsp={},goodsProductRel={}", resp.getGoodsId(), goodsProductRel);
             if(null!=goodsProductRel){
                 ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
                 productBaseGetReq.setProductBaseId(goodsProductRel.getProductBaseId());

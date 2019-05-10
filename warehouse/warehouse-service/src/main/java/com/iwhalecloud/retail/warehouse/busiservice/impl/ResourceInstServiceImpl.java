@@ -420,7 +420,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
         resourceInstValidReq.setMktResStoreId(req.getDestStoreId());
-        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq);
+        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, req.getMktResInstNbrs());
         mktResInstNbrs.removeAll(existNbrs);
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("全部是重复串码");

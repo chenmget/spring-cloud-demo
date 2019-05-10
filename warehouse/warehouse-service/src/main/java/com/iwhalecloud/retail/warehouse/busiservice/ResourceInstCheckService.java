@@ -16,9 +16,10 @@ public interface ResourceInstCheckService {
     /**
      * 校验串码是否已存在
      * @param req
+     * @param nbrList
      * @return
      */
-    List<String> vaildOwnStore(ResourceInstValidReq req);
+    List<String> vaildOwnStore(ResourceInstValidReq req, List<String> nbrList);
 
     /**
      * 入库串码校验，厂商库存在才能入库

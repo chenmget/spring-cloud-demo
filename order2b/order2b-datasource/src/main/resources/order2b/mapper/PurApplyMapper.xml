@@ -22,9 +22,6 @@
 		<if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode} 
 		</if>
-		<if test='req.applyType!=null and req.applyType!=""'>  
-			and a.APPLY_TYPE = #{req.applyType} 
-		</if>
 		<if test='req.applyName!=null and req.applyName!=""'>  
 			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')	
 		</if>
@@ -57,9 +54,6 @@
             and a.LAN_ID = #{req.lanId}
 		<if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode} 
-		</if>
-		<if test='req.applyType!=null and req.applyType!=""'>  
-			and a.APPLY_TYPE = #{req.applyType} 
 		</if>
 		<if test='req.applyName!=null and req.applyName!=""'>  
 			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')	
@@ -137,7 +131,6 @@
 		APPLY_ID,
 		APPLY_CODE,
 		APPLY_NAME,
-		APPLY_TYPE,
 		CONTENT,
 		MERCHANT_ID,
 		MERCHANT_CODE,
@@ -157,7 +150,6 @@
 		#{req.applyId},
 		#{req.applyCode},
 		#{req.applyName},
-		#{req.applyType},
 		#{req.content},
 		#{req.supplierId},
 		#{req.supplierCode},

@@ -61,6 +61,8 @@ public class ProductFlowServiceImpl implements ProductFlowService {
         nextProductFlowReq.setDealer(req.getDealer());
         nextProductFlowReq.setDealMsg(req.getDealMsg());
         nextProductFlowReq.setProductBaseId(req.getProductBaseId());
+        nextProductFlowReq.setParamsType(req.getParamsType());
+        nextProductFlowReq.setParamsValue(req.getParamsValue());
         return toProductFlowNext(nextProductFlowReq);
     }
 

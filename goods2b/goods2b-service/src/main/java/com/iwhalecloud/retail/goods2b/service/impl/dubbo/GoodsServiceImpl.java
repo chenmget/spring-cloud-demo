@@ -1064,12 +1064,10 @@ public class GoodsServiceImpl implements GoodsService {
             log.info("GoodsServiceImpl.queryPageByConditionAdmin queryGoodsProductRel rsp={},goodsProductRel={}", resp.getGoodsId(), goodsProductRel);
             if(null!=goodsProductRel){
                 ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
-                productBaseGetReq.setProductBaseId(goodsProductRel.getProductBaseId());
-                List<ProductBaseGetResp> productBaseGetRespList = productBaseManager.selectProductBase(productBaseGetReq);
-                if(CollectionUtils.isNotEmpty(productBaseGetRespList)){
-                    ProductBaseGetResp productBaseGetResp = productBaseGetRespList.get(0);
-                    resp.setTypeId(productBaseGetResp.getTypeId());
-                    resp.setTypeName(productBaseGetResp.getTypeName());
+                ProductDetailResp productDetail = productBaseManager.getProductDetail(goodsProductRel.getProductBaseId());
+                if(null!=productDetail){
+                    resp.setTypeId(productDetail.getTypeId());
+                    resp.setTypeName(productDetail.getTypeName());
                 }
             }
             // 添加营销活动名称

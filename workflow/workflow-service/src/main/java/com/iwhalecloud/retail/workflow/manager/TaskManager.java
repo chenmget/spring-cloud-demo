@@ -531,9 +531,9 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      */
     public Page<TaskPageResp> queryTaskPage(TaskPageReq req) {
 
-        Page<TaskPageResp> page = new Page<TaskPageResp>(req.getPageNo(),req.getPageSize());
+        Page<TaskPageResp> page = new Page<TaskPageResp>(req.getPageNo(), req.getPageSize());
 
-        return taskMapper.queryTask(page,req);
+        return taskMapper.queryTask(page, req);
     }
 
     /**
@@ -605,7 +605,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      * @param taskId
      * @return
      */
-    private Boolean updateTaskStatusById(String taskId, String taskStatus,String curNodeId,String curNodeName) {
+    private Boolean updateTaskStatusById(String taskId, String taskStatus, String curNodeId, String curNodeName) {
         Task task = new Task();
         //task.setTaskId(taskId);
         task.setTaskStatus(taskStatus);
@@ -614,8 +614,8 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         task.setLastDealTime(new Date());
 
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq(Task.FieldNames.taskId.getTableFieldName(),taskId);
-        return taskMapper.update(task,updateWrapper) > 0;
+        updateWrapper.eq(Task.FieldNames.taskId.getTableFieldName(), taskId);
+        return taskMapper.update(task, updateWrapper) > 0;
     }
 
     /**
@@ -672,5 +672,22 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
 
 
         return serviceExecutor.execute(paramContext);
+    }
+
+    /**
+     * 根据流程ID修改业务参数信息
+     * @param taskId 流程ID
+     * @param paramsType 参数类型
+     * @param paramsValue 参数值
+     * @return
+     */
+    public boolean updateTaskParams(String taskId, Integer paramsType, String paramsValue) {
+        Task task = new Task();
+        task.setParamsType(paramsType);
+        task.setParamsValue(paramsValue);
+
+        UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq(Task.FieldNames.taskId.getTableFieldName(), taskId);
+        return taskMapper.update(task, updateWrapper) > 0;
     }
 }

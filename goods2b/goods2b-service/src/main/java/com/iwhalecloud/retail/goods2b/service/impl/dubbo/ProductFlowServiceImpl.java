@@ -76,6 +76,8 @@ public class ProductFlowServiceImpl implements ProductFlowService {
         flowReq.setFormId(req.getProductBaseId());
         flowReq.setHandlerUserId(req.getDealer());
         flowReq.setHandlerMsg(req.getDealMsg());
+        flowReq.setParamsType(req.getParamsType());
+        flowReq.setParamsValue(req.getParamsValue());
         //申请用户ID：创建流程的用户ID->创建人
         ResultVO<UserDetailDTO> userVO = userService.getUserDetailByUserId(req.getDealer());
 ;

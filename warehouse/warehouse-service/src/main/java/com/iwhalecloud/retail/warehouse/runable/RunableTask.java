@@ -48,7 +48,7 @@ public class RunableTask {
     private ResourceRequestService requestService;
 
     // 核心线程数
-    private int corePoolSize = 50;
+    private int corePoolSize = 20;
     // 最大线程数
     private int maximumPoolSize = 100;
     // 超时时间100秒

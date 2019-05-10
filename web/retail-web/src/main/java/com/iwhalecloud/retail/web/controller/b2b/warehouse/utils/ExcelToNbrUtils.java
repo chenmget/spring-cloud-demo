@@ -21,13 +21,13 @@ import java.util.List;
 @Component
 public class ExcelToNbrUtils {
 
-	private static final String EXCEL_XLS = "xls";  
+	private static final String EXCEL_XLS = "xls";
     private static final String EXCEL_XLSX = "xlsx";
 
     /**
      * 读取Excel并把数据返回，兼容 Excel 2003/2007/2010
-     * @throws Exception  
-     */  
+     * @throws Exception
+     */
     public static List<ResInsExcleImportResp> getData(InputStream inputStream) throws Exception {
 		List<ResInsExcleImportResp> data = new ArrayList<ResInsExcleImportResp>();
         try {
@@ -166,20 +166,20 @@ public class ExcelToNbrUtils {
 		//标题占位
 		Sheet sheet2 = book.createSheet("导入失败串码");
 
-		for (int i = 1; i < existNbrList.size(); i++) {
+		for (int i = 0; i < existNbrList.size()+1; i++) {
 			Row row = sheet1.createRow(i);
 			// 只有一列
 			Cell cell = row.createCell(0);
-			if (i == 1) {
+			if (i == 0) {
 				//设置标题
 				cell.setCellValue("已存在串码");
 			} else {
 				//设置内容
-				cell.setCellValue(existNbrList.get(i));
+				cell.setCellValue(existNbrList.get(i-1));
 			}
 		}
 
-		for (int i = 1; i < failNbrList.size(); i++) {
+		for (int i = 0; i < failNbrList.size()+1; i++) {
 			Row row = sheet2.createRow(i);
 			// 只有一列
 			Cell cell = row.createCell(0);
@@ -188,7 +188,7 @@ public class ExcelToNbrUtils {
 				cell.setCellValue("导入失败串码");
 			} else {
 				//设置内容
-				cell.setCellValue(failNbrList.get(i));
+				cell.setCellValue(failNbrList.get(i-1));
 			}
 		}
 

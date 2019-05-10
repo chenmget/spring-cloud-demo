@@ -98,4 +98,10 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "供货价")
     private String deliveryPrice;
+
+    @ApiModelProperty(value = "类型名称")
+    private String typeName;
+
+    @ApiModelProperty(value = "类型Id")
+    private String typeId;
 }

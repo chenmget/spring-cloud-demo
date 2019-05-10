@@ -1060,6 +1060,17 @@ public class GoodsServiceImpl implements GoodsService {
         Page<GoodsPageResp> respPage = goodsManager.queryPageByConditionAdmin(req);
         List<GoodsPageResp> respList = respPage.getRecords();
         for (GoodsPageResp resp : respList) {
+            GoodsProductRel goodsProductRel = goodsProductRelManager.queryGoodsProductRel(resp.getGoodsId());
+            if(null!=goodsProductRel){
+                ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
+                productBaseGetReq.setProductBaseId(goodsProductRel.getProductBaseId());
+                List<ProductBaseGetResp> productBaseGetRespList = productBaseManager.selectProductBase(productBaseGetReq);
+                if(CollectionUtils.isNotEmpty(productBaseGetRespList)){
+                    ProductBaseGetResp productBaseGetResp = productBaseGetRespList.get(0);
+                    resp.setTypeId(productBaseGetResp.getTypeId());
+                    resp.setTypeName(productBaseGetResp.getTypeName());
+                }
+            }
             // 添加营销活动名称
             List<String> actNames = goodsActRelManager.queryActNameByGoodsId(resp.getGoodsId());
             resp.setActNames(actNames);

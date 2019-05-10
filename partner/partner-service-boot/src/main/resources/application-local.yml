@@ -2,7 +2,7 @@ project:
   name: 本机环境
 
 server:
-  port: 8085
+  port: 8088
 
 spring:
   dubbo:
@@ -13,7 +13,7 @@ spring:
       address: zookeeper://127.0.0.1:2181
     protocol:
       name: dubbo
-      port: 20885
+      port: 20888
     scan: com.iwhalecloud.retail
 
   redis:

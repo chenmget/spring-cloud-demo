@@ -2,7 +2,7 @@ project:
   name: 本机环境
 
 server:
-  port: 8088
+  port: 8090
 
 spring:
   dubbo:
@@ -10,11 +10,11 @@ spring:
       name: member-provider
     registry:
 #      address: zookeeper://10.45.47.87:2285
-      address: zookeeper://localhost:2181
+      address: zookeeper://127.0.0.1:2181
 
     protocol:
       name: dubbo
-      port: 20888
+      port: 20890
     scan: com.iwhalecloud.retail
 
   #i18n国际化配置

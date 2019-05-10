@@ -166,11 +166,11 @@ public class ExcelToNbrUtils {
 		//标题占位
 		Sheet sheet2 = book.createSheet("导入失败串码");
 
-		for (int i = 0; i < (existNbrList.size()+1); i++) {
+		for (int i = 1; i < existNbrList.size(); i++) {
 			Row row = sheet1.createRow(i);
 			// 只有一列
 			Cell cell = row.createCell(0);
-			if (i == 0) {
+			if (i == 1) {
 				//设置标题
 				cell.setCellValue("已存在串码");
 			} else {
@@ -179,7 +179,7 @@ public class ExcelToNbrUtils {
 			}
 		}
 
-		for (int i = 0; i < (failNbrList.size()+1); i++) {
+		for (int i = 1; i < failNbrList.size(); i++) {
 			Row row = sheet2.createRow(i);
 			// 只有一列
 			Cell cell = row.createCell(0);

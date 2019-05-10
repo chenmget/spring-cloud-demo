@@ -32,7 +32,7 @@ public class GoodsProductRelManager{
     public GoodsProductRel queryGoodsProductRel(String goodsId){
 
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("is_deleted", GoodsConst.NO_DELETE);
+//        queryWrapper.eq("is_deleted", GoodsConst.NO_DELETE);
         queryWrapper.eq("goods_id",goodsId);
         List<GoodsProductRel> goodsProductRels = goodsProductRelMapper.selectList(queryWrapper);
         if(CollectionUtils.isEmpty(goodsProductRels)){

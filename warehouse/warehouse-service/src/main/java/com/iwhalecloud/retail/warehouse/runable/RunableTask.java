@@ -54,7 +54,7 @@ public class RunableTask {
     // 超时时间100秒
     private long keepAliveTime = 100;
 
-    private final Integer perNum = 100;
+    private final Integer perNum = 1000;
 
     private List<Future<Boolean>> validFutureTaskResult;
 

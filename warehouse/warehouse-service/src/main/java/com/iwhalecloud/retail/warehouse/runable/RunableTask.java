@@ -200,15 +200,15 @@ public class RunableTask {
             List<String> subList = nbrList.subList(perNum * i, maxNum);
             CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
             req.setMktResInstNbrList(newList);
-            delNbrFutureTask = executorService.submit(new Callable<Integer>() {
-                  @Override
-                  public Integer call() throws Exception {
-                      Integer successNum = resourceUploadTempManager.delResourceUploadTemp(req);
-                      log.info("RunableTask.exceutorDelNbr resourceUploadTempManager.delResourceUploadTemp req={}, resp={}", JSON.toJSONString(req), successNum);
-                      return successNum;
-                  }
-              }
-            );
+            Callable callable = new Callable<Integer>() {
+                @Override
+                public Integer call() throws Exception {
+                    Integer successNum = resourceUploadTempManager.delResourceUploadTemp(req);
+                    log.info("RunableTask.exceutorDelNbr resourceUploadTempManager.delResourceUploadTemp req={}, resp={}", JSON.toJSONString(req), successNum);
+                    return successNum;
+                }
+            };
+            delNbrFutureTask = executorService.submit(callable);
         }
         executorService.shutdown();
     }
@@ -226,14 +226,15 @@ public class RunableTask {
             List subList = nbrList.subList(perNum*i, maxNum);
             CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
             req.setMktResInstNbrs(newList);
-            addNbrFutureTask = executorService.submit(new Callable<Boolean>() {
+            Callable callable = new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
                     Boolean addSuccess = resourceInstService.addResourceInstByMerchant(req);
                     log.info("RunableTask.exceutorAddNbr resourceInstService.addResourceInstByMerchant req={}, resp={}", JSON.toJSONString(req), addSuccess);
                     return addSuccess;
                 }
-            });
+            };
+            addNbrFutureTask = executorService.submit(callable);
         }
         executorService.shutdown();
     }
@@ -252,7 +253,7 @@ public class RunableTask {
             log.info("RunableTask.exceutorAddReqDetail maxNum={}", maxNum);
             List<ResourceRequestAddReq.ResourceRequestInst> subList = list.subList(perNum * i, maxNum);
             CopyOnWriteArrayList<ResourceRequestAddReq.ResourceRequestInst> newList = new CopyOnWriteArrayList(subList);
-            addReqDetailtFutureTask = executorService.submit(new Callable<Boolean>() {
+            Callable callable = new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
                     for(ResourceRequestAddReq.ResourceRequestInst instDTO : newList){
@@ -277,7 +278,8 @@ public class RunableTask {
                     log.info("RunableTask.exceutorAddReqDetail detailManager.insertResourceReqDetail req={}, resp={}",JSON.toJSONString(detailList), addReqDetail);
                     return addReqDetail;
                 }
-            });
+            };
+            addReqDetailtFutureTask = executorService.submit(callable);
         }
         executorService.shutdown();
     }
@@ -286,7 +288,7 @@ public class RunableTask {
     public String excuetorAddReq(ResourceRequestAddReq req){
         ExecutorService executorService = initExecutorService();
         try{
-            Future<String> addReqtFutureTask = executorService.submit(new Callable<String>() {
+            Callable callable = new Callable<String>() {
                 @Override
                 public String call() throws Exception {
                     String mktResReqId = requestManager.insertResourceRequest(req);
@@ -309,7 +311,8 @@ public class RunableTask {
                     }
                     return mktResReqId;
                 }
-                });
+            };
+            Future<String> addReqtFutureTask = executorService.submit(callable);
             return addReqtFutureTask.get();
         }catch (Exception e){
             log.error("RunableTask.excuetorAddReq error}", e);

@@ -13,7 +13,7 @@ spring:
       address: zookeeper://localhost:2181
     protocol:
       name: dubbo
-      port: 20888
+      port: 20885
     scan: com.iwhalecloud.retail
 
   #i18n国际化配置

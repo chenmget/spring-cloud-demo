@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
 import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by fadeaway on 2019/4/27.
@@ -19,7 +20,7 @@ public interface ResourceInstCheckService {
      * @param nbrList
      * @return
      */
-    List<String> vaildOwnStore(ResourceInstValidReq req, List<String> nbrList);
+    List<String> vaildOwnStore(ResourceInstValidReq req, CopyOnWriteArrayList<String> nbrList);
 
     /**
      * 入库串码校验，厂商库存在才能入库

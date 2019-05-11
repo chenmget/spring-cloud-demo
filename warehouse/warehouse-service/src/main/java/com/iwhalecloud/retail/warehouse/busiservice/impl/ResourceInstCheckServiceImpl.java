@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -50,7 +51,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
     @Override
     @Transactional(isolation= Isolation.SERIALIZABLE,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public List<String> vaildOwnStore(ResourceInstValidReq req, List<String> nbrList){
+    public List<String> vaildOwnStore(ResourceInstValidReq req, CopyOnWriteArrayList<String> nbrList){
         List<String> existNbrs = new ArrayList<>();
         ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
         productGetByIdReq.setProductId(req.getMktResId());

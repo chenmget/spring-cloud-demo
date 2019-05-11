@@ -205,7 +205,7 @@ public class TaskServiceImpl implements TaskService {
 
         //5、设置当前环节是否允许编辑
         Node node = nodeManager.getNode(taskDetailModel.getCurNodeId());
-        log.info("TaskServiceImpl.queryHandleTaskPage getNode={}", JSON.toJSONString(node));
+        log.info("TaskServiceImpl.queryHandleTaskPage curNodeId={}, getNode={}", taskDetailModel.getCurNodeId(), JSON.toJSONString(node));
         if (node != null) {
             resp.setBooEdit(node.getBooEdit());
             resp.setNodePage(node.getNodePage());

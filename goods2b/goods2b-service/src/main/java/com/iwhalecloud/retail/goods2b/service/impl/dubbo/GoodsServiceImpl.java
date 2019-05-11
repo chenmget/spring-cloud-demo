@@ -999,12 +999,14 @@ public class GoodsServiceImpl implements GoodsService {
                 GetProductQuantityByMerchantResp resultData = booleanResultVO.getResultData();
                 List<ProductQuantityItem> productQuantityItemList = resultData.getItemList();
                 if (productQuantityItemList == null && CollectionUtils.isEmpty(productQuantityItemList)) {
-                    return ResultVO.error(GoodsResultCodeEnum.NOT_HAS_STOCK);
+//                    return ResultVO.error(GoodsResultCodeEnum.NOT_HAS_STOCK);
+                }else{
+                    // 更新该商品有库存字段
+                    for (ProductQuantityItem item : productQuantityItemList) {
+                        goodsProductRelManager.updateIsHaveStock(goods.getGoodsId(), item.getProductId(), item.getIsEnough());
+                    }
                 }
-                // 更新该商品有库存字段
-                for (ProductQuantityItem item : productQuantityItemList) {
-                    goodsProductRelManager.updateIsHaveStock(goods.getGoodsId(), item.getProductId(), item.getIsEnough());
-                }
+                
             } catch (Exception ex) {
                 log.error("GoodsServiceImpl.updateMarketEnable getProductQuantityByMerchant throw exception ex={}", ex);
                 return ResultVO.error(GoodsResultCodeEnum.INVOKE_WAREHOUSE_SERVICE_EXCEPTION);

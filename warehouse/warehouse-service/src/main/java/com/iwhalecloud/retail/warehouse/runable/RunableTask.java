@@ -240,7 +240,6 @@ public class RunableTask {
         //营销资源申请单明细
         Integer excutorNum = list.size()%perNum == 0 ? list.size()/perNum : (list.size()/perNum + 1);
         log.info("RunableTask.exceutorAddReqDetail list.size()={}", list.size());
-        List<ResourceReqDetail> detailList = new ArrayList<ResourceReqDetail>(list.size());
         for (Integer i = 0; i < excutorNum; i++){
             Integer maxNum = perNum * (i + 1) > list.size() ? list.size() : perNum * (i + 1);
             List<ResourceRequestAddReq.ResourceRequestInst> subList = list.subList(perNum * i, maxNum);
@@ -248,6 +247,7 @@ public class RunableTask {
             Callable callable = new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
+                    CopyOnWriteArrayList<ResourceReqDetail> detailList = new CopyOnWriteArrayList<ResourceReqDetail>();
                     for(ResourceRequestAddReq.ResourceRequestInst instDTO : newList){
                         Date now = new Date();
                         ResourceReqDetail detailReq = new ResourceReqDetail();

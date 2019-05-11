@@ -208,6 +208,7 @@ public class TaskServiceImpl implements TaskService {
         log.info("TaskServiceImpl.queryHandleTaskPage  getNode={}" + JSON.toJSONString(node));
         if (node != null) {
             resp.setBooEdit(node.getBooEdit());
+            resp.setNodePage(node.getNodePage());
         }
 
         log.info("TaskServiceImpl.queryHandleTaskPage  resp={}" + JSON.toJSONString(resp));

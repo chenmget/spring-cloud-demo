@@ -188,16 +188,16 @@ public class AdminResourceInstB2BController {
     @PostMapping(value="inventoryChange")
     @UserLoginToken
     public ResultVO inventoryChange(@RequestBody InventoryQueryReq dto) {
-        if (StringUtils.isEmpty(dto.getDeviceId())) {
+        if (StringUtils.isEmpty(dto.getNbr())) {
             return ResultVO.error("串码不能为空");
         }
         
         InventoryChangeResp inventoryChangeResp = new InventoryChangeResp();
         String userName = UserContext.getUser().getUserName();
-        String params = "city_code"+dto.getCode();
+        String params = "city_code"+dto.getCityCode();
         
         InventoryChangeReq req = new InventoryChangeReq ();
-        req.setDeviceId(dto.getDeviceId());
+        req.setDeviceId(dto.getNbr());
         req.setUserName(userName);
         req.setCode("ITMS_ADD");
         req.setParams(params);

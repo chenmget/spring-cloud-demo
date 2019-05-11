@@ -108,6 +108,10 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
     public List<ResourceRequestAddReq.ResourceRequestInst> getReqInst(ResourceInstAddReq req){
         List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = Lists.newLinkedList();
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
+        List<String> checkMktResInstNbrs = req.getCheckMktResInstNbrs();
+        if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
+            mktResInstNbrs.removeAll(checkMktResInstNbrs);
+        }
         for (String nbr : mktResInstNbrs) {
             ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
             instDTO.setMktResInstNbr(nbr);
@@ -117,9 +121,8 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             }
             instDTOList.add(instDTO);
         }
-        List<String> checkMktResInstNbrs = req.getCheckMktResInstNbrs();
+
         if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
-            checkMktResInstNbrs.retainAll(mktResInstNbrs);
             for (String nbr : checkMktResInstNbrs) {
                 ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
                 instDTO.setMktResInstNbr(nbr);

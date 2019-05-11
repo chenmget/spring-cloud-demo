@@ -48,6 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -164,7 +165,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
-        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, req.getMktResInstNbrs());
+        CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(req.getMktResInstNbrs());
+        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, newList);
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         resourceInstAddResp.setExistNbrs(existNbrs);
         mktResInstNbrs.removeAll(existNbrs);

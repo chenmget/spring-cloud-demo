@@ -84,89 +84,106 @@ public class RunableTask {
      * @param req
      */
     public String exceutorValid(ResourceInstValidReq req) {
-        ExecutorService executorService = initExecutorService();
-        List<String> nbrList = req.getMktResInstNbrs();
-        String batchId = resourceInstService.getPrimaryKey();
-        Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
-        validFutureTaskResult = new ArrayList<>(excutorNum);
-        for (Integer i = 0; i < excutorNum; i++) {
-            Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
-            List<String> newList = nbrList.subList(perNum * i, maxNum);
-            log.info("RunableTask.exceutorValid newList={}", JSON.toJSONString(newList));
-            Future<Boolean> validFutureTask = executorService.submit(new Callable<Boolean>() {
-                             @Override
-                             public Boolean call() throws Exception {
-                                 Date now = new Date();
-                                 List<String> instExitstNbr = resourceInstCheckService.vaildOwnStore(req, newList);
-                                 List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
-                                 List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
-                                 if (CollectionUtils.isNotEmpty(instExitstNbr)) {
-                                     for (String mktResInstNbr : instExitstNbr) {
-                                         ResouceUploadTemp inst = new ResouceUploadTemp();
-                                         inst.setMktResUploadBatch(batchId);
-                                         inst.setMktResInstNbr(mktResInstNbr);
-                                         inst.setResult(ResourceConst.CONSTANT_YES);
-                                         inst.setUploadDate(now);
-                                         inst.setCreateDate(now);
-                                         inst.setResultDesc("库中已存在");
-                                         inst.setCreateStaff(req.getCreateStaff());
-                                         instList.add(inst);
-                                     }
-                                     newList.removeAll(instExitstNbr);
-                                 }
-                                 if (CollectionUtils.isNotEmpty(detailExitstNbr)) {
-                                     for (String mktResInstNbr : detailExitstNbr) {
-                                         ResouceUploadTemp inst = new ResouceUploadTemp();
-                                         inst.setMktResUploadBatch(batchId);
-                                         inst.setMktResInstNbr(mktResInstNbr);
-                                         inst.setResult(ResourceConst.CONSTANT_YES);
-                                         inst.setUploadDate(now);
-                                         inst.setCreateDate(now);
-                                         inst.setResultDesc("申请单中已存在");
-                                         inst.setCreateStaff(req.getCreateStaff());
-                                         instList.add(inst);
-                                     }
-                                     newList.removeAll(detailExitstNbr);
-                                 }
-                                 if (CollectionUtils.isNotEmpty(newList)) {
-                                     for (String mktResInstNbr : newList) {
-                                         ResouceUploadTemp inst = new ResouceUploadTemp();
-                                         inst.setMktResUploadBatch(batchId);
-                                         inst.setMktResInstNbr(mktResInstNbr);
-                                         inst.setResult(ResourceConst.CONSTANT_NO);
-                                         inst.setUploadDate(now);
-                                         inst.setCreateDate(now);
-                                         inst.setCreateStaff(req.getCreateStaff());
-                                         instList.add(inst);
-                                     }
-                                 }
-                                 Boolean addResult = resourceUploadTempManager.saveBatch(instList);
-                                 log.info("RunableTask.exceutorValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
-                                 return addResult;
-                             }
-                         }
-            );
-            validFutureTaskResult.add(validFutureTask);
+        try {
+            ExecutorService executorService = initExecutorService();
+            List<String> nbrList = req.getMktResInstNbrs();
+            String batchId = resourceInstService.getPrimaryKey();
+            Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
+            validFutureTaskResult = new ArrayList<>(excutorNum);
+            for (Integer i = 0; i < excutorNum; i++) {
+                Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
+                List<String> subList = nbrList.subList(perNum * i, maxNum);
+                CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
+                log.info("RunableTask.exceutorValid newList={}", JSON.toJSONString(newList));
+                Callable<Boolean> callable = new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        Date now = new Date();
+                        List<String> instExitstNbr = resourceInstCheckService.vaildOwnStore(req, newList);
+                        List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
+                        List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
+                        if (CollectionUtils.isNotEmpty(instExitstNbr)) {
+                            for (String mktResInstNbr : instExitstNbr) {
+                                ResouceUploadTemp inst = new ResouceUploadTemp();
+                                inst.setMktResUploadBatch(batchId);
+                                inst.setMktResInstNbr(mktResInstNbr);
+                                inst.setResult(ResourceConst.CONSTANT_YES);
+                                inst.setUploadDate(now);
+                                inst.setCreateDate(now);
+                                inst.setResultDesc("库中已存在");
+                                inst.setCreateStaff(req.getCreateStaff());
+                                instList.add(inst);
+                            }
+                            newList.removeAll(instExitstNbr);
+                        }
+                        if (CollectionUtils.isNotEmpty(detailExitstNbr)) {
+                            for (String mktResInstNbr : detailExitstNbr) {
+                                ResouceUploadTemp inst = new ResouceUploadTemp();
+                                inst.setMktResUploadBatch(batchId);
+                                inst.setMktResInstNbr(mktResInstNbr);
+                                inst.setResult(ResourceConst.CONSTANT_YES);
+                                inst.setUploadDate(now);
+                                inst.setCreateDate(now);
+                                inst.setResultDesc("申请单中已存在");
+                                inst.setCreateStaff(req.getCreateStaff());
+                                instList.add(inst);
+                            }
+                            newList.removeAll(detailExitstNbr);
+                        }
+                        if (CollectionUtils.isNotEmpty(newList)) {
+                            for (String mktResInstNbr : newList) {
+                                ResouceUploadTemp inst = new ResouceUploadTemp();
+                                inst.setMktResUploadBatch(batchId);
+                                inst.setMktResInstNbr(mktResInstNbr);
+                                inst.setResult(ResourceConst.CONSTANT_NO);
+                                inst.setUploadDate(now);
+                                inst.setCreateDate(now);
+                                inst.setCreateStaff(req.getCreateStaff());
+                                instList.add(inst);
+                            }
+                        }
+                        Boolean addResult = resourceUploadTempManager.saveBatch(instList);
+                        log.info("RunableTask.exceutorValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
+                        return addResult;
+                    }
+                };
+                Future<Boolean> validFutureTask = executorService.submit(callable);
+                validFutureTaskResult.add(validFutureTask);
+            }
+            executorService.shutdown();
+            return batchId;
+        }catch (Throwable e) {
+            if (e instanceof ExecutionException) {
+                e = e.getCause();
+            }
+            log.info("error happen", e);
         }
-        executorService.shutdown();
-        return batchId;
+        return null;
     }
 
     /**
      * 串码校验多线程处理是否完成
      */
     public Boolean validHasDone() {
-        Boolean hasDone = true;
-        log.info("RunableTask.validHasDone validFutureTaskResult={}", JSON.toJSONString(validFutureTaskResult));
-        if (CollectionUtils.isEmpty(validFutureTaskResult)) {
-            return hasDone;
-        }
-        for (Future<Boolean> future : validFutureTaskResult) {
-            if (!future.isDone()) {
-                return future.isDone();
+        try{
+            Boolean hasDone = true;
+            log.info("RunableTask.validHasDone validFutureTaskResult={}", JSON.toJSONString(validFutureTaskResult));
+            if (CollectionUtils.isEmpty(validFutureTaskResult)) {
+                return hasDone;
             }
+            for (Future<Boolean> future : validFutureTaskResult) {
+                if (!future.isDone()) {
+                    return future.isDone();
+                }
+            }
+            return hasDone;
+        }catch (Throwable e) {
+            if (e instanceof ExecutionException) {
+                e = e.getCause();
+            }
+            log.error("error happen", e);
         }
-        return hasDone;
+        return null;
     }
 
     /**
@@ -180,7 +197,8 @@ public class RunableTask {
         for (Integer i = 0; i < excutorNum; i++) {
             Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
             log.info("RunableTask.exceutorDelNbr maxNum={}", maxNum);
-            List<String> newList = nbrList.subList(perNum * i, maxNum);
+            List<String> subList = nbrList.subList(perNum * i, maxNum);
+            CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
             req.setMktResInstNbrList(newList);
             delNbrFutureTask = executorService.submit(new Callable<Integer>() {
                   @Override
@@ -205,7 +223,8 @@ public class RunableTask {
         for (Integer i = 0; i < excutorNum; i++) {
             Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
             log.info("RunableTask.exceutorAddNbr maxNum={}", maxNum);
-            List newList = nbrList.subList(perNum*i, maxNum);
+            List subList = nbrList.subList(perNum*i, maxNum);
+            CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
             req.setMktResInstNbrs(newList);
             addNbrFutureTask = executorService.submit(new Callable<Boolean>() {
                 @Override
@@ -231,7 +250,8 @@ public class RunableTask {
         for (Integer i = 0; i < excutorNum; i++){
             Integer maxNum = perNum * (i + 1) > list.size() ? list.size() : perNum * (i + 1);
             log.info("RunableTask.exceutorAddReqDetail maxNum={}", maxNum);
-            List<ResourceRequestAddReq.ResourceRequestInst> newList = list.subList(perNum * i, maxNum);
+            List<ResourceRequestAddReq.ResourceRequestInst> subList = list.subList(perNum * i, maxNum);
+            CopyOnWriteArrayList<ResourceRequestAddReq.ResourceRequestInst> newList = new CopyOnWriteArrayList(subList);
             addReqDetailtFutureTask = executorService.submit(new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {

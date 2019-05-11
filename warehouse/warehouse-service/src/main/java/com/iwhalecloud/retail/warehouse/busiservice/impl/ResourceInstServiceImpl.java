@@ -53,6 +53,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -420,7 +421,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
         resourceInstValidReq.setMktResStoreId(req.getDestStoreId());
-        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, req.getMktResInstNbrs());
+        CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(req.getMktResInstNbrs());
+        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, newList);
         mktResInstNbrs.removeAll(existNbrs);
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("全部是重复串码");

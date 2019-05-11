@@ -309,7 +309,7 @@ public class TaskServiceImpl implements TaskService {
         routeNextReq.setHandlerUserId(req.getHandlerUserId());
         routeNextReq.setHandlerUserName(req.getHandlerUserName());
         routeNextReq.setHandlerMsg(req.getHandlerMsg());
-        resultVO = nextRoute(routeNextReq);
+        return nextRoute(routeNextReq);
     }
 
     @Override

@@ -193,23 +193,15 @@ public class RunableTask {
     public void exceutorDelNbr(ResourceUploadTempDelReq req) {
         ExecutorService executorService = initExecutorService();
         List<String> nbrList = req.getMktResInstNbrList();
-        Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
-        for (Integer i = 0; i < excutorNum; i++) {
-            Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
-            log.info("RunableTask.exceutorDelNbr maxNum={}", maxNum);
-            List<String> subList = nbrList.subList(perNum * i, maxNum);
-            CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
-            req.setMktResInstNbrList(newList);
-            Callable callable = new Callable<Integer>() {
-                @Override
-                public Integer call() throws Exception {
-                    Integer successNum = resourceUploadTempManager.delResourceUploadTemp(req);
-                    log.info("RunableTask.exceutorDelNbr resourceUploadTempManager.delResourceUploadTemp req={}, resp={}", JSON.toJSONString(req), successNum);
-                    return successNum;
-                }
-            };
-            delNbrFutureTask = executorService.submit(callable);
-        }
+        Callable callable = new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                Integer successNum = resourceUploadTempManager.delResourceUploadTemp(req);
+                log.info("RunableTask.exceutorDelNbr resourceUploadTempManager.delResourceUploadTemp req={}, resp={}", JSON.toJSONString(req), successNum);
+                return successNum;
+            }
+        };
+        delNbrFutureTask = executorService.submit(callable);
         executorService.shutdown();
     }
     /**
@@ -247,15 +239,15 @@ public class RunableTask {
         ExecutorService executorService = initExecutorService();
         //营销资源申请单明细
         Integer excutorNum = list.size()%perNum == 0 ? list.size()/perNum : (list.size()/perNum + 1);
-        List<ResourceReqDetail> detailList = new ArrayList<ResourceReqDetail>(list.size());
+        log.info("RunableTask.exceutorAddReqDetail list.size()={}", list.size());
         for (Integer i = 0; i < excutorNum; i++){
             Integer maxNum = perNum * (i + 1) > list.size() ? list.size() : perNum * (i + 1);
-            log.info("RunableTask.exceutorAddReqDetail maxNum={}", maxNum);
             List<ResourceRequestAddReq.ResourceRequestInst> subList = list.subList(perNum * i, maxNum);
             CopyOnWriteArrayList<ResourceRequestAddReq.ResourceRequestInst> newList = new CopyOnWriteArrayList(subList);
             Callable callable = new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
+                    CopyOnWriteArrayList<ResourceReqDetail> detailList = new CopyOnWriteArrayList<ResourceReqDetail>();
                     for(ResourceRequestAddReq.ResourceRequestInst instDTO : newList){
                         Date now = new Date();
                         ResourceReqDetail detailReq = new ResourceReqDetail();

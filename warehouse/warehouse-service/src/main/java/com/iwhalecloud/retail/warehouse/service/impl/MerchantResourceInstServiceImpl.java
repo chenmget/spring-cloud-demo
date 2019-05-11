@@ -186,7 +186,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         if (!CollectionUtils.isEmpty(req.getCheckMktResInstNbrs())) {
             mktResInstNbrs.addAll(req.getCheckMktResInstNbrs());
         }
-        resourceUploadTempDelReq.setMktResInstNbrList(mktResInstNbrs);
         resourceUploadTempDelReq.setMktResUploadBatch(req.getMktResUploadBatch());
         runableTask.exceutorDelNbr(resourceUploadTempDelReq);
         return ResultVO.success("串码入库提交申请单");

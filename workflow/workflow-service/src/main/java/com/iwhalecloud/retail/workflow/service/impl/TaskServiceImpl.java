@@ -122,7 +122,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResultVO<Long> queryHandleTaskCnt(HandleTaskPageReq req) {
 
-        log.info("TaskServiceImpl.queryHandleTaskCnt  req={}" + JSON.toJSONString(req));
+        log.info("TaskServiceImpl.queryHandleTaskCnt  req={}", JSON.toJSONString(req));
         try {
             Long taskHandleCnt = taskManager.queryHandleTaskCnt(req);
 
@@ -138,11 +138,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResultVO<Page<HandleTaskPageResp>> queryHandleTaskPage(HandleTaskPageReq req) {
 
-        log.info("TaskServiceImpl.queryHandleTaskPage  req={}" + JSON.toJSONString(req));
+        log.info("TaskServiceImpl.queryHandleTaskPage  req={}", JSON.toJSONString(req));
 
         Page<HandleTaskPageResp> page = taskManager.queryHandleTask(req);
 
-        log.info("TaskServiceImpl.queryHandleTaskPage  page={}" + JSON.toJSONString(page));
+        log.info("TaskServiceImpl.queryHandleTaskPage  page={}", JSON.toJSONString(page));
         return ResultVO.success(page);
 
     }
@@ -154,7 +154,7 @@ public class TaskServiceImpl implements TaskService {
         //1、获取待办项基本信息
         TaskItemDetailModel taskDetailModel = taskManager.getTaskItemDetail(req.getTaskId(),req.getTaskItemId());
 
-        log.info("TaskServiceImpl.getTaskDetail taskDetailModel={}" + JSON.toJSONString(taskDetailModel));
+        log.info("TaskServiceImpl.getTaskDetail taskDetailModel={}", JSON.toJSONString(taskDetailModel));
         if (taskDetailModel == null) {
             log.warn("TaskServiceImpl.getTaskDetail taskDetailModel records do not exist,taskItemId = {}",req.getTaskItemId());
             return ResultVO.error("记录不存在，待办项已处理");
@@ -166,7 +166,7 @@ public class TaskServiceImpl implements TaskService {
             BeanUtils.copyProperties(req, flowTaskClaimReq);
             ResultVO receiveTaskVO = this.receiveTask(flowTaskClaimReq);
             if (!receiveTaskVO.isSuccess()) {
-                log.info("TaskServiceImpl.getTaskDetail receiveTaskVO={}" + JSON.toJSONString(receiveTaskVO));
+                log.info("TaskServiceImpl.getTaskDetail receiveTaskVO={}", JSON.toJSONString(receiveTaskVO));
                 return receiveTaskVO;
             }
             //待办领取成功，将查询出来的任务项改为待处理
@@ -185,7 +185,7 @@ public class TaskServiceImpl implements TaskService {
                 taskItemInfos.add(taskItemInfo);
             }
             resp.setTaskItemInfos(taskItemInfos);
-            log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}" + JSON.toJSONString(taskItemInfos));
+            log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}", JSON.toJSONString(taskItemInfos));
         }
 
         //4、获取下一个环节记录
@@ -200,18 +200,18 @@ public class TaskServiceImpl implements TaskService {
                 routeInfos.add(routeInfo);
             }
             resp.setRouteInfos(routeInfos);
-            log.info("TaskServiceImpl.getTaskDetail routeInfos={}" + JSON.toJSONString(routeInfos));
+            log.info("TaskServiceImpl.getTaskDetail routeInfos={}", JSON.toJSONString(routeInfos));
         }
 
         //5、设置当前环节是否允许编辑
         Node node = nodeManager.getNode(taskDetailModel.getCurNodeId());
-        log.info("TaskServiceImpl.queryHandleTaskPage  getNode={}" + JSON.toJSONString(node));
+        log.info("TaskServiceImpl.queryHandleTaskPage getNode={}", JSON.toJSONString(node));
         if (node != null) {
             resp.setBooEdit(node.getBooEdit());
             resp.setNodePage(node.getNodePage());
         }
 
-        log.info("TaskServiceImpl.queryHandleTaskPage  resp={}" + JSON.toJSONString(resp));
+        log.info("TaskServiceImpl.queryHandleTaskPage  resp={}", JSON.toJSONString(resp));
         return ResultVO.success(resp);
     }
 
@@ -219,7 +219,7 @@ public class TaskServiceImpl implements TaskService {
     public ResultVO<HandleTaskDetailGetResp> getHandleTaskDetail(HandleTaskDetailReq req) {
 
         Task taskEntity = taskManager.getTask(req.getTaskId());
-        log.info("TaskServiceImpl.getHandleTaskDetail taskEntity={}" + JSON.toJSONString(taskEntity));
+        log.info("TaskServiceImpl.getHandleTaskDetail taskEntity={}", JSON.toJSONString(taskEntity));
         if (taskEntity == null) {
             log.warn("TaskServiceImpl.getTaskDetail taskEntity records do not exist,taskId = {}",req.getTaskId());
             return ResultVO.error("记录不存在，待办项已处理");
@@ -239,7 +239,7 @@ public class TaskServiceImpl implements TaskService {
                 taskItemInfos.add(taskItemInfo);
             }
             resp.setTaskItemInfos(taskItemInfos);
-            log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}" + JSON.toJSONString(taskItemInfos));
+            log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}", JSON.toJSONString(taskItemInfos));
         }
         return ResultVO.success(resp);
     }
@@ -248,7 +248,7 @@ public class TaskServiceImpl implements TaskService {
         // 根据formId查询processId
         List<Task> taskList = taskManager.getTaskByFormId(formId);
         if (CollectionUtils.isEmpty(taskList) || taskList.size() > 1) {
-            log.info("TaskServiceImpl.getNextRoute formId ={},taskList={}" + formId, JSON.toJSONString(taskList));
+            log.info("TaskServiceImpl.getNextRoute formId ={},taskList={}", formId, JSON.toJSONString(taskList));
             return null;
         }
         Task task = taskList.get(0);
@@ -256,7 +256,7 @@ public class TaskServiceImpl implements TaskService {
         // 根据formId查询待处理任务项
         TaskItem taskItem = taskItemManager.queryWaitHandlerTaskItem(task.getTaskId());
         if (taskItem == null) {
-            log.info("TaskServiceImpl.getNextRoute formId ={},taskItem={}" + formId, JSON.toJSONString(taskItem));
+            log.info("TaskServiceImpl.getNextRoute formId ={},taskItem={}", formId, JSON.toJSONString(taskItem));
             return null;
         }
         RouteNextReq routeNextReq = new RouteNextReq();
@@ -267,7 +267,7 @@ public class TaskServiceImpl implements TaskService {
         // 查询流程下一步路由id
         List<Route> routeList = routeManager.listRouteByCondition(condition);
         if (CollectionUtils.isEmpty(routeList) || routeList.size() > 1) {
-            log.info("TaskServiceImpl.getNextRoute formId ={},routeList={}" + formId,JSON.toJSONString(routeList));
+            log.info("TaskServiceImpl.getNextRoute formId ={},routeList={}", formId,JSON.toJSONString(routeList));
             return null;
         }
         Route route = routeList.get(0);

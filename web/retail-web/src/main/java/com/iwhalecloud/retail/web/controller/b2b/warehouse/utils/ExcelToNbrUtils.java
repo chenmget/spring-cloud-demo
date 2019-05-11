@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.web.controller.b2b.warehouse.utils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
 import lombok.extern.slf4j.Slf4j;
@@ -149,50 +148,6 @@ public class ExcelToNbrUtils {
 		}
 	}
 
-	/**
-	 *
-	 * @param book
-	 * @param resp 录入串码返回数据
-	 */
-	public static void builderOrderExcel(Workbook book, ResourceInstAddResp resp) {
-		if(null == resp){
-			return;
-		}
-		List<String> existNbrList = resp.getExistNbrs();
-		List<String> failNbrList = resp.getPutInFailNbrs();
-		//标题占位
-		Sheet sheet1 = book.createSheet("已存在串码");
-
-		//标题占位
-		Sheet sheet2 = book.createSheet("导入失败串码");
-
-		for (int i = 0; i < existNbrList.size()+1; i++) {
-			Row row = sheet1.createRow(i);
-			// 只有一列
-			Cell cell = row.createCell(0);
-			if (i == 0) {
-				//设置标题
-				cell.setCellValue("已存在串码");
-			} else {
-				//设置内容
-				cell.setCellValue(existNbrList.get(i-1));
-			}
-		}
-
-		for (int i = 0; i < failNbrList.size()+1; i++) {
-			Row row = sheet2.createRow(i);
-			// 只有一列
-			Cell cell = row.createCell(0);
-			if (i == 0) {
-				//设置标题
-				cell.setCellValue("导入失败串码");
-			} else {
-				//设置内容
-				cell.setCellValue(failNbrList.get(i-1));
-			}
-		}
-
-	}
 
 	private static String transferValue(String filedName, String value, Boolean isRetailer) {
 		final String MKT_RES_INST_TYPE = "mktResInstType";
@@ -202,6 +157,7 @@ public class ExcelToNbrUtils {
 		final String CREATE_TIME = "createTime";
 		final String CREATE_DATE = "createDate";
 		final String CRM_STATUS = "statusCd";
+		final String RESULT = "result";
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
 		if (filedName.equals(MKT_RES_INST_TYPE)) {
 			return ResourceConst.MKTResInstType.getMKTResInstTypeName(value);
@@ -230,6 +186,14 @@ public class ExcelToNbrUtils {
 				return StringDate;
 			}catch (Exception e){
 				log.error("时间解析错误",e);
+			}
+		}
+
+		if (filedName.equals(RESULT)) {
+			if (ResourceConst.CONSTANT_YES.equals(value)) {
+				return "是";
+			}else {
+				return "否";
 			}
 		}
 		String finalValue = (value == null || "null".equals(value))? "" : value;

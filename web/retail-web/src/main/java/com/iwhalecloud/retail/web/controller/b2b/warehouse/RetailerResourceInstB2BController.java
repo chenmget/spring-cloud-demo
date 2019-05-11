@@ -13,7 +13,6 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceAllocateResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -228,7 +227,7 @@ public class RetailerResourceInstB2BController {
             return;
         }
         List<ResourceInstListResp> list = dataVO.getResultData().getRecords();
-        log.info("RetailerResourceInstB2BController.nbrExport retailerResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
+        log.info("RetailerResourceInstB2BController.nbrExport retailerResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.retailerColumn();
         OutputStream output = null;
         try{
@@ -324,13 +323,14 @@ public class RetailerResourceInstB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="nbrFailExport")
-    public void nbrFailExport(@RequestBody ResourceInstAddResp resp, HttpServletResponse response) {
-        log.info("RetailerResourceInstB2BController.nbrFailExport req={}, resp={}", JSON.toJSONString(resp));
+    public void nbrFailExport(@RequestBody ResourceNbrFailExportDTO dto, HttpServletResponse response) {
+        log.info("RetailerResourceInstB2BController.nbrFailExport req={}, resp={}", JSON.toJSONString(dto));
         OutputStream output = null;
         try {
             Workbook workbook = new HSSFWorkbook();
             String fileName = "导出失败串码列表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, resp);
+            List<ExcelTitleName> failNbrColumn = ResourceInstColum.failNbrColumn();
+            ExcelToNbrUtils.builderOrderExcel(workbook, dto.getFailReqList(), failNbrColumn, false);
             output = response.getOutputStream();
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");

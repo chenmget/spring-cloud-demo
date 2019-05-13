@@ -88,6 +88,9 @@
     b.EXP_DATE,
     p.SUPPLY_FEE_LOWER,
     p.SUPPLY_FEE_UPPER,
+    p.LOCAL_SUPPLY_FEE_LOWER,
+    p.LOCAL_SUPPLY_FEE_UPPER,
+    p.PURCHASE_TYPE,
     pb.name AS brand_name,
     pb.BRAND_ID
   </sql>
@@ -162,6 +165,9 @@
         </if>
       <if test="null!=pageReq.auditState and ''!=pageReq.auditState">
         and p.AUDIT_STATE = #{pageReq.auditState}
+      </if>
+      <if test="null!=pageReq.purchaseType and ''!=pageReq.purchaseType">
+        and p.PURCHASE_TYPE = #{pageReq.purchaseType}
       </if>
 
 

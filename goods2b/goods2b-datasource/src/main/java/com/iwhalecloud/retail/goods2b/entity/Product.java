@@ -219,6 +219,8 @@ public class Product implements Serializable {
 	@ApiModelProperty(value = "auditState")
 	private String auditState;
 
+	@ApiModelProperty(value = "采购类型")
+	private String purchaseType;
   	
   	
   	//属性 end
@@ -314,6 +316,9 @@ public class Product implements Serializable {
 
 		/** sourceFrom. */
 		sourceFrom("sourceFrom","source_from"),
+
+		/** purchaseType. */
+		purchaseType("purchaseType","purchase_type"),
 
 		/** auditState. */
 		auditState("auditState","audit_state");

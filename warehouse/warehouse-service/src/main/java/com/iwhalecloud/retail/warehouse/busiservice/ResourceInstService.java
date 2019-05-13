@@ -20,7 +20,7 @@ public interface ResourceInstService {
      * @param req
      * @return
      */
-    Boolean addResourceInstByMerchant(ResourceInstAddReq req, CopyOnWriteArrayList mktResInstNbrs);
+    Boolean addResourceInstByMerchant(ResourceInstAddReq req, CopyOnWriteArrayList<String> mktResInstNbrs);
     /**
      * 非厂商添加串码
      * @param req

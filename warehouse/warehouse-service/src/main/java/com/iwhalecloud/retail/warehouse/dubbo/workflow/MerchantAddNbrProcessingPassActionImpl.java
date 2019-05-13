@@ -65,7 +65,7 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         ResourceReqDetailQueryReq detailQueryReq = new ResourceReqDetailQueryReq();
         detailQueryReq.setMktResReqId(businessId);
         List<ResourceReqDetailDTO> reqDetailDTOS = detailManager.listDetail(detailQueryReq);
-        log.info("MerchantAddNbrProcessingPassActionImpl.run detailManager.listDetail detailQueryReq={}, resp={}", JSON.toJSONString(detailQueryReq), JSON.toJSONString(reqDetailDTOS));
+        log.info("MerchantAddNbrProcessingPassActionImpl.run detailManager.listDetail detailQueryReq={}, respSize={}", JSON.toJSONString(detailQueryReq), null == reqDetailDTOS ? 0 : reqDetailDTOS.size());
         List<String> mktResInstNbrs = reqDetailDTOS.stream().map(ResourceReqDetailDTO::getMktResInstNbr).collect(Collectors.toList());
         Map<String, String> ctCodeMap = new HashMap<>();
         reqDetailDTOS.forEach(item->{
@@ -103,7 +103,7 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
             addReq.setRegionId(merchantDTO.getCity());
         }
         runableTask.exceutorAddNbr(addReq);
-        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}");
+        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}", addReq);
 
         // step3 修改申请单状态变为审核通过
         ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();

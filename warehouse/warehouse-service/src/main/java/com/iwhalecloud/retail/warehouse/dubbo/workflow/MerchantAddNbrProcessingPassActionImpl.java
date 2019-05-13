@@ -108,7 +108,7 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         // step3 修改申请单状态变为审核通过
         ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
         reqUpdate.setMktResReqId(businessId);
-        reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
+        reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
         ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
         log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
         // step4 增加事件和批次

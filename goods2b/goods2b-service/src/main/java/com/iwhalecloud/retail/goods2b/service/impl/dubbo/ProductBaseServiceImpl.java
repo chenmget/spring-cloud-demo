@@ -21,6 +21,7 @@ import com.iwhalecloud.retail.goods2b.utils.ReflectUtils;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -64,7 +64,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Override
     public ResultVO<Page<ProductBaseGetResp>> getProductBaseList(ProductBaseListReq req){
-
         Page<ProductBaseGetResp> pageResp = productBaseManager.getProductBaseList(req);
         List<ProductBaseGetResp> respList = pageResp.getRecords();
         for(ProductBaseGetResp dto : respList){
@@ -82,7 +81,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 snCount = selectProductVO.getResultData().getRecords().size();
             }
             dto.setSnCount(snCount);
-
         }
         return ResultVO.success(pageResp);
     }
@@ -92,7 +90,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Override
     public ResultVO<String> addProductBase(ProductBaseAddReq req){
         log.info("ProductBaseServiceImpl.addProductBase,req={}", JSON.toJSONString(req));
-        List<String> errorList = new ArrayList<String>();
         ProductBase t = new ProductBase();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -115,10 +112,10 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         BeanUtils.copyProperties(req, pear);
         pear.setProductBaseId(productBaseId);
         productExtService.addProductExt(pear);
-
         // 添加产品
         List<ProductAddReq> productAddReqs = req.getProductAddReqs();
         String status = "";
+        Boolean addResult = true;
         if (null != productAddReqs && !productAddReqs.isEmpty()){
             for (ProductAddReq par : productAddReqs){
                 status = par.getStatus();
@@ -133,7 +130,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setAuditState(auditState);
                 productService.addProduct(par);
             }
-
         }
 
 //         添加零售商标签
@@ -146,18 +142,19 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
 
         //除了待提交，都是审核中,都要提交审核
-        if(!ProductConst.StatusType.SUBMIT.getCode().equals(status)){
+        if(!ProductConst.StatusType.SUBMIT.getCode().equals(status) && addResult){
             StartProductFlowReq startProductFlowReq= new StartProductFlowReq();
             startProductFlowReq.setProductBaseId(productBaseId);
             startProductFlowReq.setDealer(t.getCreateStaff());
             startProductFlowReq.setProductName(req.getProductName());
             startProductFlowReq.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
+            startProductFlowReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.STRING_PARAMS.getCode());
+            startProductFlowReq.setParamsValue(t.getBrandId());
             ResultVO flowResltVO = productFlowService.startProductFlow(startProductFlowReq);
             if(!flowResltVO.isSuccess()){
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());
             }
         }
-
         return  ResultVO.success(productBaseId);
     }
 
@@ -170,11 +167,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         ProductBaseGetByIdReq req1 = new ProductBaseGetByIdReq();
         req1.setProductBaseId(req.getProductBaseId());
         ResultVO<ProductBaseGetResp> product = this.getProductBase(req1);
-        List<String> errorList = new ArrayList<String>();
         if (product==null||product.getResultData() == null) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "产品不存在");
         }
-
         List<String> tagList = req.getTagList();
         if (!CollectionUtils.isEmpty(tagList)) {
             TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
@@ -185,7 +180,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             relBatchAddReq.setProductBaseId(req.getProductBaseId());
             tagRelService.batchAddTagRel(relBatchAddReq);
         }
-
         ProductExtUpdateReq extUpdateReq = req.getProductExtUpdateReq();
         String notCheckField = "productBaseId";
         Boolean isAllFieldNull = ReflectUtils.isAllFieldNull(extUpdateReq, notCheckField);
@@ -210,11 +204,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         productGetReq.setPageNo(1);
         productGetReq.setPageSize(Integer.MAX_VALUE);
         ResultVO<Page<ProductDTO>> productListResult =  productService.selectProduct(productGetReq);
-
         if(productListResult==null||!productListResult.isSuccess()||productListResult.getResultData()==null){
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "原产品为空无法获取审核状态");
         }
-
         Page<ProductDTO> page = productListResult.getResultData();
         if(page==null||page.getRecords()==null||page.getRecords().isEmpty()){
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "原产品为空无法获取审核状态");
@@ -223,7 +215,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         if(StringUtils.isEmpty(oldAuditState)){
             oldAuditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();
         }
-
         String newState = "";
         for (ProductUpdateReq productUpdateReq : productUpdateReqs) {
             String productId = productUpdateReq.getProductId();
@@ -258,11 +249,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     par.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
                 }
-
-                productService.addProduct(par);
+                ResultVO<Integer> addResultVO = productService.addProduct(par);
+                if (!addResultVO.isSuccess() || addResultVO.getResultData() < 1) {
+                    throw new RetailTipException(addResultVO.getResultCode(), addResultVO.getResultMsg());
+                }
                 continue;
             }
-
         }
         req.setUpdateDate(new Date());
         int index = productBaseManager.updateProductBase(req);

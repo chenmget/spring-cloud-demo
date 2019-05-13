@@ -32,7 +32,11 @@ public class SyncMerchantJob implements SimpleJob {
         if (partnerJobService == null) {
             return;
         }
-        partnerJobService.syncMerchant();
-
+        try {
+            partnerJobService.syncMerchant();
+        } catch (Exception e) {
+            log.error("SyncMerchantJob exceute exception", e);
+        }
+        log.info("----->>  SyncMerchantJob end ..... ");
     }
 }

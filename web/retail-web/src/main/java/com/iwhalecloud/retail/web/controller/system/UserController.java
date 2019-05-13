@@ -5,9 +5,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
@@ -28,6 +25,8 @@ import com.iwhalecloud.retail.web.controller.system.request.EditUserReq;
 import com.iwhalecloud.retail.web.controller.system.response.GetUserDetailResp;
 import com.iwhalecloud.retail.web.controller.system.response.LoginResp;
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
+import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
+import com.iwhalecloud.retail.web.exception.UserNotLoginException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import com.iwhalecloud.retail.web.utils.AESUtils;
 import com.iwhalecloud.retail.web.utils.JWTTokenUtil;
@@ -152,8 +151,14 @@ public class UserController extends BaseController {
             params.put("password", loginPwdNew);
             params.put("transaction_id", "");
             params.put("version", "1.0");
+            //查询能开地址配置信息
+            ConfigInfoDTO configInfoDTO = configInfoService.getConfigInfoById("zop_address");
+            if(Objects.isNull(configInfoDTO)){
+                return ResultVO.error("未查询到能开地址配置信息");
+            }
+            String zopAddress = configInfoDTO.getCfValue();
             //调用能开提供的"渠道登录鉴权"能力
-            ResponseResult responseResult = ZopClientUtil.callRest("ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=", "http://202.103.124.66:7098/api", "chk.auth.ChkChannelLogin", "1.0", params);
+            ResponseResult responseResult = ZopClientUtil.callRest("ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=", zopAddress, "chk.auth.ChkChannelLogin", "1.0", params);
             String resCode = "00000";
             String resultCodeCom = "0";
             if (resCode.equals(responseResult.getRes_code())) {
@@ -207,8 +212,11 @@ public class UserController extends BaseController {
         }
 
         request.getSession().invalidate();//清空session
-        Cookie cookie = request.getCookies()[0];//获取cookie
-        cookie.setMaxAge(0);//让cookie过期
+        Cookie[] cookies = request.getCookies();
+        if (Objects.nonNull(cookies) && cookies.length > 0) {
+            Cookie cookie = request.getCookies()[0];//获取cookie
+            cookie.setMaxAge(0);//让cookie过期
+        }
 
         // 获取其他信息  并保存
         UserOtherMsgDTO userOtherMsgDTO = saveUserOtherMsg(resp.getUserDTO());
@@ -256,7 +264,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/loginWithoutPwd", method = RequestMethod.POST)
-    public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req) {
+    public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req){
         UserLoginResp resp = userService.loginWithoutPwd(req);
         UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
         
@@ -378,7 +386,7 @@ public class UserController extends BaseController {
     @ApiImplicitParam(name = "platformFlag", value = "平台标识：0交易平台；1管理平台", paramType = "query", required = true, dataType = "String")
     @RequestMapping(value = "/getUser", method = RequestMethod.GET)
     @UserLoginToken
-    public ResultVO<LoginResp> getUser(HttpServletRequest request, @RequestParam String platformFlag) {
+    public ResultVO<LoginResp> getUser(HttpServletRequest request, @RequestParam String platformFlag) throws UserNoMerchantException{
         ResultVO checkUserLoginResult = checkUserLogin(request);
 
         LoginResp resp = new LoginResp();
@@ -481,17 +489,22 @@ public class UserController extends BaseController {
 //            if(!selfToken.equals(MD5Util.compute("id="+id+"&sessionId="+sessionId+"&secret="+SECRET+"&exp="+String.valueOf(exp)+"&iat="+String.valueOf(iat)))){
                 return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
             }
+
+            // 验证 token 有效时间
+            if (JWTTokenUtil.isTokenEffect(sessionId)) {
+                // 有效  更新token有效时间
+                if (!JWTTokenUtil.updateTokenExpireTime(sessionId)) {
+                    log.info("更新token 有效时间 失败");
+                }
+            } else {
+                log.info("token失效，请重新登录");
+                throw new UserNotLoginException("token失效，请重新登录");
+            }
         } catch (Exception ex) {
             log.error("MemberController.getMemberToken Exception token=" + token, ex);
             return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
         }
-        // 验证token
-        JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
-        try {
-            jwtVerifier.verify(token);
-        } catch (JWTVerificationException e) {
-            return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
-        }
+
         return ResultVO.success(id);
     }
 
@@ -844,6 +857,7 @@ public class UserController extends BaseController {
     })
     @RequestMapping(value = "/edit", method = RequestMethod.POST)
     @Transactional
+    @UserLoginToken
     public ResultVO editUser(@RequestBody EditUserReq req) {
 
         if (StringUtils.isEmpty(req.getUserId())) {

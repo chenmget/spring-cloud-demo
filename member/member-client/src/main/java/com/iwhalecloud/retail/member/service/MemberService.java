@@ -59,5 +59,4 @@ public interface MemberService{
 	 * @return
 	 */
 	int checkPayAccount(String merchantId);
-
 }

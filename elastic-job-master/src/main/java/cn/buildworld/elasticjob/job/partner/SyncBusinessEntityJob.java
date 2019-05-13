@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  *
  * @author xuqinyuan
  */
-@ElasticSimpleJob(cron = "0 0 2 * * ?",
+@ElasticSimpleJob(cron = "0 0 1 * * ?",
     jobName = "syncBusinessEntityJob",
     shardingTotalCount = 1,
     jobParameter = "测试参数",
@@ -32,6 +32,11 @@ public class SyncBusinessEntityJob implements SimpleJob {
         if (partnerJobService == null) {
             return;
         }
-        partnerJobService.syncBusinessEntity();
+        try {
+            partnerJobService.syncBusinessEntity();
+        } catch (Exception e) {
+            log.error("SyncBusinessEntityJob exceute exception", e);
+        }
+        log.info("------>> SyncBusinessEntityJob end......");
     }
 }

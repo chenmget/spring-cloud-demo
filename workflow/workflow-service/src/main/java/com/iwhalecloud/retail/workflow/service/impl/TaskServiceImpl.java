@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Objects;
 
 
+/**
+ * @author z
+ */
 @Service
 @Slf4j
 public class TaskServiceImpl implements TaskService {
@@ -97,7 +100,7 @@ public class TaskServiceImpl implements TaskService {
             log.info("TaskServiceImpl.queryTaskPage  page={}" + JSON.toJSONString(page));
             return ResultVO.success(page);
         } catch (Exception e) {
-            log.error("TaskServiceImpl.queryTaskPage 异常：",e);
+            log.error("TaskServiceImpl.queryTaskPage 异常：", e);
 
             return ResultVO.error(e.getMessage());
         }
@@ -175,13 +178,13 @@ public class TaskServiceImpl implements TaskService {
 
         //3、获取审核记录
         DealTaskDetailGetResp resp = new DealTaskDetailGetResp();
-        BeanUtils.copyProperties(taskDetailModel,resp);
+        BeanUtils.copyProperties(taskDetailModel, resp);
         List<TaskItem> taskItems =  taskItemManager.queryTaskItem(taskDetailModel.getTaskId());
         if (taskItems != null) {
             List<DealTaskDetailGetResp.TaskItemInfo> taskItemInfos = new ArrayList<DealTaskDetailGetResp.TaskItemInfo>();
             for (TaskItem taskItem : taskItems) {
                 DealTaskDetailGetResp.TaskItemInfo taskItemInfo = new DealTaskDetailGetResp.TaskItemInfo();
-                BeanUtils.copyProperties(taskItem,taskItemInfo);
+                BeanUtils.copyProperties(taskItem, taskItemInfo);
                 taskItemInfos.add(taskItemInfo);
             }
             resp.setTaskItemInfos(taskItemInfos);
@@ -194,7 +197,7 @@ public class TaskServiceImpl implements TaskService {
         if (routeInfos != null) {
             for (Route route : routes) {
                 DealTaskDetailGetResp.RouteInfo routeInfo = new DealTaskDetailGetResp.RouteInfo();
-                BeanUtils.copyProperties(route,routeInfo);
+                BeanUtils.copyProperties(route, routeInfo);
                 Node node = nodeManager.getNode(route.getNextNodeId());
                 routeInfo.setBooAppointDealUser(node.getBooAppointDealUser());
                 routeInfos.add(routeInfo);
@@ -227,7 +230,7 @@ public class TaskServiceImpl implements TaskService {
 
         //1、获取基本信息
         HandleTaskDetailGetResp resp = new HandleTaskDetailGetResp();
-        BeanUtils.copyProperties(taskEntity,resp);
+        BeanUtils.copyProperties(taskEntity, resp);
 
         //2、获取审核记录
         List<TaskItem> taskItems =  taskItemManager.queryTaskItem(req.getTaskId());
@@ -235,7 +238,7 @@ public class TaskServiceImpl implements TaskService {
             List<HandleTaskDetailGetResp.TaskItemInfo> taskItemInfos = new ArrayList<HandleTaskDetailGetResp.TaskItemInfo>();
             for (TaskItem taskItem : taskItems) {
                 HandleTaskDetailGetResp.TaskItemInfo taskItemInfo = new HandleTaskDetailGetResp.TaskItemInfo();
-                BeanUtils.copyProperties(taskItem,taskItemInfo);
+                BeanUtils.copyProperties(taskItem, taskItemInfo);
                 taskItemInfos.add(taskItemInfo);
             }
             resp.setTaskItemInfos(taskItemInfos);
@@ -267,7 +270,7 @@ public class TaskServiceImpl implements TaskService {
         // 查询流程下一步路由id
         List<Route> routeList = routeManager.listRouteByCondition(condition);
         if (CollectionUtils.isEmpty(routeList) || routeList.size() > 1) {
-            log.info("TaskServiceImpl.getNextRoute formId ={},routeList={}", formId,JSON.toJSONString(routeList));
+            log.info("TaskServiceImpl.getNextRoute formId ={},routeList={}" + formId, JSON.toJSONString(routeList));
             return null;
         }
         Route route = routeList.get(0);
@@ -278,14 +281,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVO nextRouteAndReceiveTask(NextRouteAndReceiveTaskReq req) {
-        log.info("TaskServiceImpl.nextRouteAndReceiveTask req={}",JSON.toJSONString(req));
+        log.info("TaskServiceImpl.nextRouteAndReceiveTask req={}", JSON.toJSONString(req));
         if (req == null) {
             ResultVO.error(com.iwhalecloud.retail.dto.ResultCodeEnum.LACK_OF_PARAM);
         }
         // 根据formId获取流程下一步路由
         RouteNextReq routeNextReq = getNextRoute(req.getFormId());
-        if (routeNextReq == null){
+        if (routeNextReq == null) {
             return ResultVO.error(ResultCodeEnum.NEXT_ROUTE_IS_EMPTY);
         }
         String taskItemId = routeNextReq.getTaskItemId();
@@ -296,14 +300,20 @@ public class TaskServiceImpl implements TaskService {
         taskClaimReq.setUserName(req.getHandlerUserName());
         taskClaimReq.setTaskId(routeNextReq.getTaskId());
         ResultVO resultVO = receiveTask(taskClaimReq);
-        if (resultVO.isSuccess()) {
-            // 执行流程下一步
-            routeNextReq.setHandlerUserId(req.getHandlerUserId());
-            routeNextReq.setHandlerUserName(req.getHandlerUserName());
-            routeNextReq.setHandlerMsg(req.getHandlerMsg());
-            resultVO = nextRoute(routeNextReq);
+        if (!resultVO.isSuccess()) {
+            return resultVO;
         }
-        return resultVO;
+
+        //修改业务参数值
+        if (req.getParamsType() != null) {
+            taskManager.updateTaskParams(routeNextReq.getTaskId(), req.getParamsType(), req.getParamsValue());
+        }
+
+        // 执行流程下一步
+        routeNextReq.setHandlerUserId(req.getHandlerUserId());
+        routeNextReq.setHandlerUserName(req.getHandlerUserName());
+        routeNextReq.setHandlerMsg(req.getHandlerMsg());
+        return nextRoute(routeNextReq);
     }
 
     @Override

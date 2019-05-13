@@ -81,20 +81,19 @@
     select q.goodsId,q.goodsName,q.categoryId,q.retailPrice,q.wholeSalePrice,q.orderAmount,q.supplierId,q.imageUrl from (
     select DISTINCT p.GOODS_ID as goodsId,p.GOODS_NAME as goodsName,p.GOODS_CAT_ID as categoryId,
     p.MKTPRICE as retailPrice,p.DELIVERY_PRICE as wholeSalePrice,p.BUY_COUNT as orderAmount,
-    p.SUPPLIER_ID as supplierId,t.FILE_URL as imageUrl,p.CREATE_DATE from
+    p.SUPPLIER_ID as supplierId,t.FILE_URL as imageUrl,p.brand_id from
     (SELECT pg.GOODS_ID ,pg.GOODS_NAME ,pg.GOODS_CAT_ID ,
-    pg.MKTPRICE ,pgpr.DELIVERY_PRICE ,pg.BUY_COUNT , pg.SUPPLIER_ID ,pb.CREATE_DATE,pgrr.REGION_ID
-    FROM PROD_GOODS_PRODUCT_REL pgpr ,PROD_GOODS pg ,PROD_BRAND pb,PROD_GOODS_REGION_REL pgrr
+    pg.MKTPRICE ,pgpr.DELIVERY_PRICE ,pg.BUY_COUNT , pg.SUPPLIER_ID ,pg.brand_id,pgrr.REGION_ID
+    FROM PROD_GOODS_PRODUCT_REL pgpr ,PROD_GOODS pg ,PROD_GOODS_REGION_REL pgrr
     WHERE pgpr.GOODS_ID=pg.GOODS_ID
-    AND pb.BRAND_ID = pg.BRAND_ID
     AND pg.GOODS_ID = pgrr.GOODS_ID
     AND pg.MARKET_ENABLE='1'
     AND pg.TARGET_TYPE='1'
     <if test="null!=req.brandId and ''!=req.brandId">
-      and pb.brand_id = #{req.brandId}
+      and pg.brand_id = #{req.brandId}
     </if>
     <if test="null!=req.regionId and ''!=req.regionId">
-      and (pgrr.REGION_ID = #{req.regionId} or pgrr.REGION_ID='-1')
+      and (pgrr.REGION_ID = #{req.regionId} or pgrr.REGION_ID=pgrr.LAN_ID)
     </if>
     <if test="null!=req.lanId and ''!=req.lanId">
       and pgrr.LAN_ID = #{req.lanId}
@@ -106,22 +105,21 @@
         </foreach>
     </if>
     ) p
-    LEFT JOIN (select pc.TARGET_ID,IF(LOCATE('://',FILE_URL) >0,pc.FILE_URL,CONCAT('https://gy.ztesoft.com/',pc.FILE_URL)) as FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'
+    LEFT JOIN (select pc.TARGET_ID,pc.FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'
     and pc.TARGET_TYPE='1') t on t.TARGET_ID = p.GOODS_ID
     UNION ALL
     select DISTINCT p.GOODS_ID as goodsId,p.GOODS_NAME as goodsName,p.GOODS_CAT_ID as categoryId,
     p.MKTPRICE as retailPrice,p.DELIVERY_PRICE as wholeSalePrice,p.BUY_COUNT as orderAmount,
-    p.SUPPLIER_ID as supplierId,t.FILE_URL as imageUrl,p.CREATE_DATE from
+    p.SUPPLIER_ID as supplierId,t.FILE_URL as imageUrl,p.brand_id from
     (SELECT pg.GOODS_ID ,pg.GOODS_NAME ,pg.GOODS_CAT_ID ,
-    pg.MKTPRICE ,pgpr.DELIVERY_PRICE ,pg.BUY_COUNT , pg.SUPPLIER_ID ,pb.CREATE_DATE
-    FROM PROD_GOODS_PRODUCT_REL pgpr ,PROD_GOODS pg ,PROD_BRAND pb,prod_goods_target_rel pgtr
+    pg.MKTPRICE ,pgpr.DELIVERY_PRICE ,pg.BUY_COUNT , pg.SUPPLIER_ID ,pg.brand_id
+    FROM PROD_GOODS_PRODUCT_REL pgpr ,PROD_GOODS pg ,prod_goods_target_rel pgtr
     WHERE pgpr.GOODS_ID=pg.GOODS_ID
-    AND pb.BRAND_ID = pg.BRAND_ID
     AND pg.GOODS_ID = pgtr.GOODS_ID
     AND pg.MARKET_ENABLE='1'
     AND pg.TARGET_TYPE='2'
     <if test="null!=req.brandId and ''!=req.brandId">
-      and pb.brand_id = #{req.brandId}
+      and pg.brand_id = #{req.brandId}
     </if>
     <if test="req.productIdList != null and req.productIdList.size>0">
       and pgpr.PRODUCT_ID in
@@ -133,9 +131,9 @@
       and  pgtr.TARGET_ID=#{req.supplierId}
     </if>
     ) p
-    LEFT JOIN (select pc.TARGET_ID,IF(LOCATE('://',FILE_URL) >0,pc.FILE_URL,CONCAT('https://gy.ztesoft.com/',pc.FILE_URL)) as FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'
+    LEFT JOIN (select pc.TARGET_ID,pc.FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'
     and pc.TARGET_TYPE='1') t on t.TARGET_ID = p.GOODS_ID
     ) q
-    ORDER BY q.CREATE_DATE DESC
+    ORDER BY q.brand_id DESC
   </select>
 </mapper>

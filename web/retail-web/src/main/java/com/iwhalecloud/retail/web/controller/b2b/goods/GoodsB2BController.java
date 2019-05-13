@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsResultCodeEnum;
@@ -32,6 +33,7 @@ import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
+import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import io.swagger.annotations.ApiOperation;
@@ -336,7 +338,7 @@ public class GoodsB2BController extends GoodsBaseController {
         @RequestParam(value = "endPrice", required = false) Long endPrice,
         @RequestParam(value = "attrSpecValues", required = false) String attrSpecValues,
         @RequestParam(value = "isHaveStock", required = false) Integer isHaveStock,
-        @RequestParam(value = "sortType", required = false) Integer sortType) {
+        @RequestParam(value = "sortType", required = false) Integer sortType)  throws UserNoMerchantException{
         GoodsForPageQueryReq req = new GoodsForPageQueryReq();
         // 组装req参数
         setReqParam(pageNo, pageSize, ids, catIdList, brandIdList, searchKey, startPrice, endPrice, isHaveStock, req, catService);
@@ -357,7 +359,9 @@ public class GoodsB2BController extends GoodsBaseController {
             log.info("GoodsB2BController.queryGoodsForPage lanId={},regionId={},merchantId={}",lanId,regionId,merchantId);
             // 如果用户是零售商，先查地包商品，没有地包商品才能查省包商品
             userFounder = UserContext.getUser().getUserFounder();
-            if (userFounder == SystemConst.USER_FOUNDER_3) {
+            if (null == userFounder) {
+                throw new UserNoMerchantException(ResultCodeEnum.ERROR.getCode(), "用户没有商家类型，请确认");
+            }else if (userFounder == SystemConst.USER_FOUNDER_3) {
                 req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC_MERCHANT_TYPE_ASC.getValue());
             } else if (userFounder == SystemConst.USER_FOUNDER_5) {
                 String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType();
@@ -432,7 +436,7 @@ public class GoodsB2BController extends GoodsBaseController {
         return pageResultVO;
     }
 
-    private void setTarGetCodeList(GoodsForPageQueryReq req) {
+    private void setTarGetCodeList(GoodsForPageQueryReq req)  throws UserNoMerchantException {
         req.setIsLogin(true);
         req.setUserId(UserContext.getUser().getUserId());
         List<String> targetCodeList = Lists.newArrayList();
@@ -576,10 +580,32 @@ public class GoodsB2BController extends GoodsBaseController {
                 return ResultVO.errorEnum(GoodsResultCodeEnum.INVOKE_PARTNER_SERVICE_EXCEPTION);
             }
         }
+        GoodsIdListReq goodsIdListReq = new GoodsIdListReq();
+        List<String> list = Lists.newArrayList();
+        list.add(req.getGoodsId());
+        goodsIdListReq.setGoodsIdList(list);
+        ResultVO<List<GoodsDTO>> listResultVO = goodsService.listGoods(goodsIdListReq);
+        if (!listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
+            return ResultVO.error("商品不存在");
+        }
+        GoodsDTO goodsDTO = listResultVO.getResultData().get(0);
+        String merchantType = goodsDTO.getMerchantType();
+        ResultVO<List<GoodsProductRelDTO>> resultVO = goodsProductRelService.listGoodsProductRel(req.getGoodsId());
+        if (!resultVO.isSuccess() || CollectionUtils.isEmpty(resultVO.getResultData())) {
+            return ResultVO.error("产商品关联不存在");
+        }
+        GoodsProductRelDTO goodsProductRelDTO = resultVO.getResultData().get(0);
         GoodsMarketEnableReq req1 = new GoodsMarketEnableReq();
         req1.setGoodsId(req.getGoodsId());
         req1.setMarketEnable(req.getMarketEnable());
-        return goodsService.updateMarketEnable(req1);
+        ResultVO<GoodsOperateResp> respResultVO = goodsService.updateMarketEnable(req1);
+        if (respResultVO.isSuccess() && respResultVO.getResultData() != null) {
+            List<GoodsProductRelDTO> goodsProductRelDTOList = Lists.newArrayList();
+            goodsProductRelDTOList.add(goodsProductRelDTO);
+            // 更新省包平均供货价
+            updateAvgSupplyPrice(merchantType, goodsProductRelDTOList);
+        }
+        return respResultVO;
     }
 
     @ApiOperation(value = "修改商品审核状态", notes = "修改商品审核状态")

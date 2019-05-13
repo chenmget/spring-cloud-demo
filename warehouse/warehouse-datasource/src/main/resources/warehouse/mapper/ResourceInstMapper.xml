@@ -50,19 +50,15 @@
             and t.create_time &lt;= #{req.createTimeEnd}
         </if>
         <if test="null!=req.instInDateStart and ''!=req.instInDateStart">
-            and t.status_cd = '1202'
             and t.create_date &gt;= #{req.instInDateStart}
         </if>
         <if test="null!=req.instInDateEnd and ''!=req.instInDateEnd">
-            and t.status_cd = '1202'
             and t.create_date &lt;= #{req.instInDateEnd}
         </if>
         <if test="null!=req.instOutDateStart and ''!=req.instOutDateStart">
-            and t.status_cd = '1211'
             and t.update_date &gt;= #{req.instOutDateStart}
         </if>
         <if test="null!=req.instOutDateEnd and ''!=req.instOutDateEnd">
-            and t.status_cd = '1211'
             and t.update_date &lt;= #{req.instOutDateEnd}
         </if>
 
@@ -121,7 +117,11 @@
                 #{item}
             </foreach>
         </if>
+<<<<<<< HEAD
         <if test="null!=typeId and ''!=typeId">
+=======
+        <if test="null!=typeId and '' !=typeId">
+>>>>>>> release
             and t.type_id = #{typeId}
         </if>
     </update>

@@ -30,16 +30,16 @@ public class RunRouteServiceImpl implements RunRouteService {
         for (Service service : serviceList) {
             String classPath = service.getClassPath();
             String serviceGroup = service.getServiceGroup();
-            ReferenceConfig<WfRunnable> reference = dubboConsumer.getConsumer(classPath,serviceGroup);
-            log.info("invokeRouteService:{}",reference);
-            if(reference == null){
+            ReferenceConfig<WfRunnable> reference = dubboConsumer.getConsumer(classPath, serviceGroup);
+            log.info("invokeRouteService:{}", reference);
+            if (reference == null) {
                 return ResultVO.error("获取消费服务失败");
             }
             ResultVO resultVO = reference.get().run(invokeRouteServiceRequest);
-            log.info("invokeRouteService.run:{}",resultVO);
+            log.info("invokeRouteService.run:{}", resultVO);
             if (resultVO == null || !resultVO.isSuccess()) {
-                log.error("RunRouteServiceImpl.invokeRouteService invoke fail,classPath={},serviceGroup={},resultVO={}"
-                        ,classPath,serviceGroup, JSON.toJSONString(resultVO));
+                log.error("RunRouteServiceImpl.invokeRouteService invoke fail,classPath={},serviceGroup={},resultVO={}",
+                        classPath, serviceGroup, JSON.toJSONString(resultVO));
                 return resultVO;
             }
 

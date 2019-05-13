@@ -80,4 +80,12 @@ public class GoodsPageReq extends PageVO {
      */
     @ApiModelProperty(value = "支付方式")
     private String payments;
+    @ApiModelProperty(value = "供应商ID")
+    private String supplierId;
+
+    @ApiModelProperty(value = "供应商名称")
+    private String supplierName;
+
+    @ApiModelProperty(value = "供应商类型")
+    private String merchantType;
 }

@@ -8,6 +8,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
@@ -45,7 +46,7 @@ import java.util.List;
 @Slf4j
 public class MerchantResourceInstB2BController {
 
-	@Reference
+    @Reference
     private MerchantResourceInstService resourceInstService;
 
     @Value("${fdfs.suffix.allowUpload}")
@@ -98,7 +99,7 @@ public class MerchantResourceInstB2BController {
     })
     @PostMapping(value="addResourceInst")
     @UserLoginToken
-    public ResultVO addResourceInst(@RequestBody ResourceInstAddReqDTO dto) {
+    public ResultVO<ResourceInstAddResp> addResourceInst(@RequestBody ResourceInstAddReqDTO dto) {
         String userId = UserContext.getUserId();
         ResourceInstAddReq req = new ResourceInstAddReq();
         req.setCreateStaff(userId);
@@ -175,7 +176,7 @@ public class MerchantResourceInstB2BController {
             return;
         }
         List<ResourceInstListPageResp> list = dataVO.getResultData().getRecords();
-        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.merchantColumn();
         try{
             //创建Excel

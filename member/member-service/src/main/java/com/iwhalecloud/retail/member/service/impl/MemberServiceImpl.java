@@ -129,11 +129,10 @@ public class MemberServiceImpl implements MemberService {
 		}
 		return resultVo;
 	}
-
+	
 	@Override
 	public int checkPayAccount(String merchantId) {
 		int number = memberManager.getParMerchantAccountByMerchantId(merchantId);
 		return number;
 	}
-    
 }

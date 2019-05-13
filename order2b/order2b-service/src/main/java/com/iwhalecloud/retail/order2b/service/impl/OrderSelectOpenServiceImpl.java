@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.order2b.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
@@ -22,6 +21,7 @@ import com.iwhalecloud.retail.order2b.manager.*;
 import com.iwhalecloud.retail.order2b.model.*;
 import com.iwhalecloud.retail.order2b.reference.MemberInfoReference;
 import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -131,6 +131,17 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         IPage list = selectOrderService.selectOrderListByOrder(req);
         respResultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         List<OrderSelectResp> orderSelectResp = JSON.parseArray(JSON.toJSONString(list.getRecords()), OrderSelectResp.class);
+        // 设置买家信息
+        if (!CollectionUtils.isEmpty(orderSelectResp)) {
+            for (OrderSelectResp resp : orderSelectResp) {
+                String buyerCode = resp.getBuyerCode();
+                if (!StringUtils.isEmpty(buyerCode)) {
+                    MerchantDTO merchantDTO = memberInfoReference.getMerchantByCode(buyerCode);
+                    resp.setBuyerName(null != merchantDTO ? merchantDTO.getMerchantName() : null);
+                    resp.setBuyerType(null != merchantDTO ? merchantDTO.getMerchantType() : null);
+                }
+            }
+        }
         list.setRecords(orderSelectResp);
         respResultVO.setResultData(list);
         return respResultVO;
@@ -176,6 +187,17 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         IPage list = selectOrderService.selectOrderListByOrder(req);
         respResultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         List<OrderSelectResp> orderSelectResp = JSON.parseArray(JSON.toJSONString(list.getRecords()), OrderSelectResp.class);
+        // 设置买家信息
+        if (!CollectionUtils.isEmpty(orderSelectResp)) {
+            for (OrderSelectResp resp : orderSelectResp) {
+                String buyerCode = resp.getBuyerCode();
+                if (!StringUtils.isEmpty(buyerCode)) {
+                    MerchantDTO merchantDTO = memberInfoReference.getMerchantByCode(buyerCode);
+                    resp.setBuyerName(null != merchantDTO ? merchantDTO.getMerchantName() : null);
+                    resp.setBuyerType(null != merchantDTO ? merchantDTO.getMerchantType() : null);
+                }
+            }
+        }
         list.setRecords(orderSelectResp);
         respResultVO.setResultData(list);
         return respResultVO;
@@ -432,7 +454,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         BeanUtils.copyProperties(reqest, req);
         req.setUserCode(null);
         req.setUserId(null);
-        IPage list = selectOrderService.selectOrderListByOrder(req);
+        IPage<OrderInfoModel> list = selectOrderService.selectOrderListByOrder(req);
         ResultVO respResultVO = new ResultVO<>();
         if (CollectionUtils.isEmpty(list.getRecords())) {
             respResultVO.setResultMsg("未查询到订单");
@@ -447,7 +469,8 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
             return respResultVO;
         }
 
-        OrderSelectDetailResp orderSelectDetailResp = JSON.parseObject(JSON.toJSONString(list.getRecords().get(0)), OrderSelectDetailResp.class);
+        OrderInfoModel orderInfoModel = list.getRecords().get(0);
+        OrderSelectDetailResp orderSelectDetailResp = JSON.parseObject(JSON.toJSONString(orderInfoModel), OrderSelectDetailResp.class);
         //身份校验
         if (SystemConst.USER_FOUNDER_1 != userInfoModel.getUserFounder()) { //超级管理员
             if (reqest.getUserCode() != null) {
@@ -462,6 +485,14 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
             }
         }
 
+        // 设置买家信息
+        if (!StringUtils.isEmpty(orderInfoModel.getBuyerCode())) {
+            MerchantDTO merchantDTO = memberInfoReference.getMerchantByCode(orderInfoModel.getBuyerCode());
+            if (null != merchantDTO) {
+                orderSelectDetailResp.setBuyerName(merchantDTO.getMerchantName());
+                orderSelectDetailResp.setBuyerType(merchantDTO.getMerchantType());
+            }
+        }
 
         //当前要处理的过程
         orderSelectDetailResp.setCurrentFlowType(orderZFlowManager.selectCurrentFlowType(req.getOrderId()));
@@ -479,9 +510,9 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         orderSelectDetailResp.setZFlowList(orderZFlowManager.selectFlowList(orderZFlowDTO));
 
         //订单类型：
-        if (reqest.getUserCode().equals(orderSelectDetailResp.getUserId())) {
+        if (orderSelectDetailResp.getUserId().equals(reqest.getUserCode())) {
             orderSelectDetailResp.setUserOrderType(OrderManagerConsts.USER_EXPORT_TYPE_1); //采购订单
-        } else if(reqest.getUserCode().equals(orderSelectDetailResp.getMerchantId())) {
+        } else if(orderSelectDetailResp.getMerchantId().equals(reqest.getUserCode())) {
             orderSelectDetailResp.setUserOrderType(OrderManagerConsts.USER_EXPORT_TYPE_2); //销售定单
         }
 

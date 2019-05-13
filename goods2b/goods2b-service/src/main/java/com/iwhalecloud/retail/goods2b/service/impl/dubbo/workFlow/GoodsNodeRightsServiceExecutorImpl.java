@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.workflow.extservice.params.NodeRightsServiceParamC
 import com.iwhalecloud.retail.workflow.extservice.params.ServiceParamContext;
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,8 +28,16 @@ public class GoodsNodeRightsServiceExecutorImpl implements WFServiceExecutor {
 
         log.info("业务ID=" + context.getBusinessId());
         log.info("动态参数=" + context.getDynamicParam());
+        log.info("业务参数类型=" + context.getParamsType());
+        log.info("业务参数值=" + context.getParamsValue());
         System.out.println("--------------");
+
+        List<HandlerUser> handlerUsers = new ArrayList<>();
+        HandlerUser user = new HandlerUser();
+        user.setHandlerUserId("1");
+        user.setHandlerUserName("管理员");
+        handlerUsers.add(user);
         //以下实现获取处理人的逻辑
-        return ResultVO.success(Lists.newArrayList());
+        return ResultVO.success(handlerUsers);
     }
 }

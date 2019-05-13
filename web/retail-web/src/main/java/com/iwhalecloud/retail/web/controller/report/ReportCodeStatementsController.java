@@ -1,7 +1,12 @@
 package com.iwhalecloud.retail.web.controller.report;
 
+import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -25,10 +30,12 @@ import com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp;
 import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportCodeStateService;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
 import io.swagger.annotations.ApiOperation;
@@ -57,21 +64,23 @@ public class ReportCodeStatementsController extends BaseController  {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getCodeStatementsReport")
+	@UserLoginToken
     public ResultVO<Page<ReportCodeStatementsResp>> getCodeStatementsReport(@RequestBody ReportCodeStatementsReq req) {
-		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-		String retailerCodes = req.getLssCode();//是否输入了零售商账号
-		
+		//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
+//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getLssCode();//是否输入了零售商账号
+		//String userType = UserContext.getUser().getUserFounder()+"";
 		String userType=req.getUserType();
-		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-			req.setLssCode(retailerCodes);
-		}
-		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
-			String lanId=UserContext.getUser().getRegionId();
+//		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setLssCode(retailerCodes);
+//		}
+		if(userType!=null&&!"".equals(userType)&&userType.equals("2")){
+			String lanId=UserContext.getUser().getLanId();
 			req.setLanId(lanId);
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
-			req.setLssCode(retailerCodes);
+			req.setLssCode(lssCode);
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(lssCode);
 			req.setMktResStoreId(mktResStoreId);
 		}else if("4".equals(userType)){
@@ -83,7 +92,26 @@ public class ReportCodeStatementsController extends BaseController  {
 		}else if("5".equals(userType)){
 			String manufacturerCode = UserContext.getUser().getRelCode();
 			req.setManufacturerCode(manufacturerCode);
+			//厂商也只能看自己的仓库
+			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(manufacturerCode);
+			req.setMktResStoreId(mktResStoreId);
 		}
+		String xdCreateTimeStart = req.getXdCreateTimeStart();
+		String xdCreateTimeEnd = req.getXdCreateTimeEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -1);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		
+		if(xdCreateTimeStart==null && xdCreateTimeEnd==null){
+			xdCreateTimeStart = format3.format(date3);
+			xdCreateTimeEnd = df.format(date);
+		}
+		
 			return reportCodeStateService.getCodeStatementsReport(req);
     }
 	
@@ -96,35 +124,69 @@ public class ReportCodeStatementsController extends BaseController  {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/codeStatementsReportExport")
+    @UserLoginToken
     public void StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
     	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
 		String retailerCodes = req.getLssCode();//是否输入了零售商账号
+		//String userType = UserContext.getUser().getUserFounder()+"";
+		req.setPageNo(1);
+		req.setPageSize(60000);
 		String userType=req.getUserType();
 		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
 			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 			req.setLssCode(retailerCodes);
 		}
 		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
-			String lanId=UserContext.getUser().getRegionId();
+			String lanId=UserContext.getUser().getLanId();
 			req.setLanId(lanId);
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
-			req.setLssCode(retailerCodes);
+			req.setLssCode(lssCode);
+			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(lssCode);
+			req.setMktResStoreId(mktResStoreId);
 		}else if("4".equals(userType)){
 			String gysCode = UserContext.getUser().getRelCode();
 			req.setGysCode(gysCode);
+			//供应商只能看自己的仓库
+			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(gysCode);
+			req.setMktResStoreId(mktResStoreId);
 		}else if("5".equals(userType)){
 			String manufacturerCode = UserContext.getUser().getRelCode();
 			req.setManufacturerCode(manufacturerCode);
+			//厂商也只能看自己的仓库
+			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(manufacturerCode);
+			req.setMktResStoreId(mktResStoreId);
+		}
+		String xdCreateTimeStart = req.getXdCreateTimeStart();
+		String xdCreateTimeEnd = req.getXdCreateTimeEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -1);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		
+		if(xdCreateTimeStart==null && xdCreateTimeEnd==null){
+			xdCreateTimeStart = format3.format(date3);
+			xdCreateTimeEnd = df.format(date);
 		}
         ResultVO<List<ReportCodeStatementsResp>> resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
         
+        ResultVO result = new ResultVO();
+        if (!resultVO.isSuccess()) {
+            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            result.setResultMsg(resultVO.getResultMsg());
+            deliveryGoodsResNberExcel.outputResponse(response,resultVO);
+            return;
+        }
+        
         List<ReportCodeStatementsResp> data = resultVO.getResultData();
-        //创建Excel
-        Workbook workbook = new HSSFWorkbook();
         
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
+        orderMap.add(new ExcelTitleName("mktResStoreId", "仓库ID"));
         orderMap.add(new ExcelTitleName("storageType", "在库状态"));
         orderMap.add(new ExcelTitleName("mktResInstType", "串码类型"));
         orderMap.add(new ExcelTitleName("sourceType", "串码来源"));
@@ -152,22 +214,38 @@ public class ReportCodeStatementsController extends BaseController  {
         orderMap.add(new ExcelTitleName("destCityId", "串码流向所属地市"));
         orderMap.add(new ExcelTitleName("destCountyId", "串码流向所属区县"));
         orderMap.add(new ExcelTitleName("selfRegStatus", "自注册状态"));
-
-        try{
-            //创建Excel
-            String fileName = "串码明细报表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-
-            OutputStream output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
-            output.close();
-        }catch (Exception e){
-            log.error("串码明细报表导出失败",e);
-        }
+      //创建Excel
+        Workbook workbook = new HSSFWorkbook();
+//      //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+        		orderMap, "串码明细报表");
+        deliveryGoodsResNberExcel.exportExcel("串码明细报表",workbook,response);
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+//        OutputStream output = null;
+//        try{
+//        	//创建Excel
+//            Workbook workbook = new HSSFWorkbook();
+//            String fileName = "串码明细报表";
+//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+//
+//            output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+////            output.close();
+//        }catch (Exception e){
+//            log.error("串码明细报表导出失败",e);
+//        } finally {
+//            if (null != output){
+//                try {
+//                    output.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
         
     }
     

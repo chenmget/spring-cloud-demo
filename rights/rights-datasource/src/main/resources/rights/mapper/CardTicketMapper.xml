@@ -11,32 +11,28 @@
         ci.coupon_inst_id,
         ci.COUPON_INST_NBR AS couponNo,
         mrc.MKT_RES_NAME AS couponName,
-        mrt.MKT_RES_TYPE_NAME AS couponType,
-        mrc.partner_id AS partnerId,
+        mrc.COUPON_TYPE AS couponType,
         mrc.SHOW_AMOUNT AS amount,
+        cipr.PROV_CHANNEL_TYPE as couponResource,
         CASE
         WHEN ci.STATUS_CD = '1200' THEN '未使用'
-        WHEN mrc.STATUS_CD = '1100' THEN '已过期'
-        WHEN mrc.STATUS_CD = '1400' THEN '未生效'
-        ELSE ''
+        ELSE '已过期'
         END AS couponStatus,
         ci.EFF_DATE AS startTime,
         ci.EXP_DATE AS expiryDate
         FROM
         COUPON_INST ci,
-        MKT_RESOURCE mr,
         MKT_RES_COUPON mrc,
-        MKT_RES_TYPE mrt
+        COUPON_INST_PROV_REC cipr
         WHERE
-        ci.MKT_RES_ID = mr.MKT_RES_ID
-        AND ci.MKT_RES_ID = mrc.mkt_res_id
-        AND mrt.MKT_RES_TYPE_ID = mr.MKT_RES_TYPE_ID
+        ci.MKT_RES_ID = mrc.mkt_res_id
+        AND cipr.COUPON_INST_ID = ci.COUPON_INST_ID
         <choose>
             <when test="req.couponStatus != null and req.couponStatus !=''">
                 and ci.STATUS_CD = #{req.couponStatus}
             </when>
             <otherwise>
-                and ci.STATUS_CD in (1100,1200,1400)
+                and ci.STATUS_CD in (1200,1400)
             </otherwise>
         </choose>
         <if test="req.couponNo != null and req.couponNo !=''">
@@ -49,7 +45,7 @@
             and ci.CUST_ACCT_ID = #{req.businessId}
         </if>
         <if test="req.couponType != null and req.couponType !=''">
-            and mrt.MKT_RES_TYPE_ID = #{req.couponType}
+            and mrc.COUPON_TYPE = #{req.couponType}
         </if>
         <if test="req.startDate != null and req.startDate !=''">
             and ci.EXP_DATE &gt;= #{req.startDate}
@@ -67,8 +63,7 @@
         ci.coupon_inst_id,
         ci.COUPON_INST_NBR as couponNo,
         mrc.MKT_RES_NAME AS couponName,
-        mrt.MKT_RES_TYPE_NAME AS couponType,
-        mrc.partner_id as partnerId,
+        mrc.COUPON_TYPE AS couponType,
         mrc.SHOW_AMOUNT AS amount,
         ci.EFF_DATE,
         ci.EXP_DATE as expiryDate,
@@ -76,14 +71,10 @@
         ciur.USE_ORDER_ID as orderNo
         FROM
         COUPON_INST ci,
-        MKT_RESOURCE mr,
         MKT_RES_COUPON mrc,
-        MKT_RES_TYPE mrt,
         COUPON_INST_USE_REC ciur
         WHERE
-        ci.MKT_RES_ID = mr.MKT_RES_ID
-        AND ci.MKT_RES_ID = mrc.mkt_res_id
-        AND mrt.MKT_RES_TYPE_ID = mr.MKT_RES_TYPE_ID
+        ci.MKT_RES_ID = mrc.mkt_res_id
         AND ciur.COUPON_INST_ID = ci.coupon_inst_id and ci.STATUS_CD = '1300'
         <if test="req.businessId != null and req.businessId !=''">
             and ci.CUST_ACCT_ID = #{req.businessId}
@@ -98,7 +89,7 @@
             and ci.COUPON_INST_NBR = #{req.couponNo}
         </if>
         <if test="req.couponType != null and req.couponType !=''">
-            and mrt.MKT_RES_TYPE_ID = #{req.couponType}
+            and mrc.COUPON_TYPE = #{req.couponType}
         </if>
     </select>
 
@@ -109,8 +100,8 @@
         ci.coupon_inst_id,
         ci.COUPON_INST_NBR as couponNo,
         mrc.MKT_RES_NAME AS couponName,
-        mrt.MKT_RES_TYPE_NAME AS couponType,
-        mrc.partner_id as partnerId,
+        mrc.COUPON_TYPE AS couponType,
+        ciur.USE_ORDER_ID as orderNo,
         mrc.SHOW_AMOUNT AS amount,
         ci.EFF_DATE,
         ci.EXP_DATE as expiryDate,
@@ -118,14 +109,10 @@
         ciur.USE_ORDER_ID as orderNo
         FROM
         COUPON_INST ci,
-        MKT_RESOURCE mr,
         MKT_RES_COUPON mrc,
-        MKT_RES_TYPE mrt,
         COUPON_INST_USE_REC ciur
         WHERE
-        ci.MKT_RES_ID = mr.MKT_RES_ID
-        AND ci.MKT_RES_ID = mrc.mkt_res_id
-        AND mrt.MKT_RES_TYPE_ID = mr.MKT_RES_TYPE_ID
+        ci.MKT_RES_ID = mrc.mkt_res_id
         AND ciur.COUPON_INST_ID = ci.coupon_inst_id and ci.STATUS_CD = '1300'
         <if test="req.businessId != null and req.businessId !=''">
             and ci.CUST_ACCT_ID = #{req.businessId}
@@ -140,7 +127,7 @@
             and ci.COUPON_INST_NBR = #{req.couponNo}
         </if>
         <if test="req.couponType != null and req.couponType !=''">
-            and mrt.MKT_RES_TYPE_ID = #{req.couponType}
+            and mrc.COUPON_TYPE = #{req.couponType}
         </if>
     </select>
 

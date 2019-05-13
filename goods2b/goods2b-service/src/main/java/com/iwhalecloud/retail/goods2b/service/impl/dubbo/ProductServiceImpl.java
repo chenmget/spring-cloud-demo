@@ -315,6 +315,51 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResultVO<Page<ProductPageResp>> selectPageProductAdminAll(ProductsPageReq req) {
+        Page<ProductPageResp> page = productManager.selectPageProductAdminAll(req);
+        List<ProductPageResp> respList = page.getRecords();
+        for (ProductPageResp resp : respList){
+            MerchantGetReq merchantGetReq = new MerchantGetReq();
+            merchantGetReq.setMerchantId(resp.getManufacturerId());
+            ResultVO<MerchantDTO> result = merchantService.getMerchant(merchantGetReq);
+            MerchantDTO dto = result.getResultData();
+            resp.setManufacturerName(null!=dto? dto.getMerchantName():null);
+            // 设置规格名
+            ProductDTO productDTO = new ProductDTO();
+            BeanUtils.copyProperties(resp, productDTO);
+            String specName = this.getSpecName(productDTO);
+            resp.setSpecName(specName);
+
+            // 查询缩略图图片
+            String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
+            String nailType = FileConst.ProductSubType.NAIL_SUB.getType();
+            List<ProdFileDTO> nailImages =  fileManager.getFile(resp.getProductId(), targetType,nailType);
+            if(null == nailImages || nailImages.isEmpty()){
+                // // 没有缩略图图片，查询默认图片
+                String defaultType = FileConst.ProductSubType.DEFAULT_SUB.getType();
+                nailImages =  fileManager.getFile(resp.getProductId(), targetType,defaultType);
+            }
+
+            if(null == nailImages || nailImages.isEmpty()){
+                continue;
+            }
+            StringBuilder url = new StringBuilder();
+            for (int i = 0;  i< nailImages.size(); i++){
+                ProdFileDTO file = nailImages.get(i);
+                if (i == (nailImages.size() - 1)){
+                    url.append(file.getFileUrl());
+                }else {
+                    url.append(file.getFileUrl()).append(",");
+                }
+            }
+            resp.setDefaultImages(url.toString());
+        }
+        page.setRecords(respList);
+        log.info("ProductServiceImpl.selectPageProductAdminAll req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respList));
+        return ResultVO.success(page);
+    }
+
+    @Override
     public ResultVO<List<ProductResourceResp>> getProductResource(ProductResourceInstGetReq req){
         List<ProductResourceResp> respList = productManager.getProductResource(req);
         if (CollectionUtils.isEmpty(respList)) {
@@ -406,6 +451,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResultVO updateAttrValue10(ProductAuditStateUpdateReq req) {
+        log.info("ProductServiceImpl.updateAttrValue10 productIds={},attrValue10={},updateStaff={}", req.getProductIds(), req.getAttrValue10(),req.getUpdateStaff());
+        return ResultVO.success(productManager.updateAttrValue10(req));
+    }
+
+    @Override
     public ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req){
         return ResultVO.success(productManager.getProductByProductIdsAndBrandIds(req));
     }
@@ -454,13 +505,29 @@ public class ProductServiceImpl implements ProductService {
 
         return specName.toString();
     }
+
     @Override
     public ResultVO<List<ProductResp>> getProductForRebate(ProductRebateReq req){
         return ResultVO.success(productManager.getProductForRebate(req));
     }
 
     @Override
-    public ResultVO<ProductForResourceResp> getProductForResource(ProductGetByIdReq req){
+    public ResultVO<ProductForResourceResp> getProductForResource(ProductGetByIdReq req) {
         return ResultVO.success(productManager.getProductForResource(req.getProductId()));
+    }
+
+    @Override
+    public ResultVO<Integer> getDuplicate(ProductGetDuplicateReq req) {
+        Integer num=0;
+        // 产品编码
+        if (StringUtils.isNotBlank(req.getSn()) || StringUtils.isNotBlank(req.getUnitName())) {
+            Boolean bothNotNull = StringUtils.isNotBlank(req.getSn()) && StringUtils.isNotBlank(req.getUnitName());
+            ProductGetDuplicateReq dto = new ProductGetDuplicateReq();
+            dto.setSn(req.getSn());
+            dto.setUnitName(req.getUnitName());
+            dto.setBothNotNull(bothNotNull);
+            num = productManager.getDuplicate(dto);
+        }
+        return ResultVO.success(num);
     }
 }

@@ -107,14 +107,14 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storeGetStoreIdReq.setMerchantId(merchantId);
         String destStroeId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId merchantId={},destStroeId={}", merchantId, destStroeId);
+        log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst resouceStoreService.getStoreId merchantId={},destStroeId={}", merchantId, destStroeId);
         if (StringUtils.isBlank(destStroeId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
         // 获取源仓库
         storeGetStoreIdReq.setMerchantId(req.getSellerMerchantId());
         String mktResStroeId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId merchantId={},mktResStroeId={}", merchantId, mktResStroeId);
+        log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst resouceStoreService.getStoreId merchantId={},mktResStroeId={}", merchantId, mktResStroeId);
         if (StringUtils.isBlank(mktResStroeId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
@@ -190,7 +190,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
             batchAndEventAddReq.setObjId(req.getOrderId());
             batchAndEventAddReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-            log.info("ResourceInstServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
+            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
             return ResultVO.success(true);
         } else {
             String errorMsg1 = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();

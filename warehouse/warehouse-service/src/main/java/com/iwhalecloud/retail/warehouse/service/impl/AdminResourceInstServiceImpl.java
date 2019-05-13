@@ -14,9 +14,7 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
 import com.iwhalecloud.retail.warehouse.dto.request.InventoryChangeReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstGetReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
-import com.iwhalecloud.retail.warehouse.dto.response.InventoryChangeResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.manager.CallService;
@@ -25,12 +23,10 @@ import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
-
-import java.util.List;
-
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 @Slf4j
@@ -50,10 +46,10 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Autowired
     private Constant constant;
-    
+
     @Autowired
     private CallService callService;
-    
+
     @Autowired
     private ResourceInstManager resourceInstManager;
 
@@ -90,24 +86,24 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     }
 
     @Override
-	public ResultVO inventoryChange(InventoryChangeReq req) {
-		log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));
-		
+    public ResultVO inventoryChange(InventoryChangeReq req) {
+        log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));
+
 //		InventoryChangeResp inventoryChangeResp = new InventoryChangeResp();
-		String result = "";
-		List<ResourceInstDTO> resourceInstList = resourceInstManager.listInstsByNbr(req.getDeviceId());
-		if(resourceInstList.size()<=0 || null == resourceInstList){
-			return ResultVO.error("串码不在库中");
-		}
-		try {
-			result = callService.postInvenChangeToWebService(req);
+        String result = "";
+        List<ResourceInstDTO> resourceInstList = resourceInstManager.listInstsByNbr(req.getDeviceId());
+        if(resourceInstList.size()<=0 || null == resourceInstList){
+            return ResultVO.error("串码不在库中");
+        }
+        try {
+            result = callService.postInvenChangeToWebService(req);
 //			inventoryChangeResp.setResult(result);
-		} catch (Exception e) {
-			log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed req={}", JSON.toJSONString(req));
-			return ResultVO.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed");
-		}
-		return ResultVO.success(result);
-	}
-    
-    
+        } catch (Exception e) {
+            log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed req={}", JSON.toJSONString(req));
+            return ResultVO.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed");
+        }
+        return ResultVO.success(result);
+    }
+
+
 }

@@ -118,7 +118,7 @@ public class ResourceConst {
         // 1205	退换货已冻结
         RESTORAGED("1205","退换货已冻结"),
         // 1203	已销售未补贴
-        SALED("1203","已销售"),
+        SALED("1203","交易出库"),
         // 1110	已作废
         DELETED("1110","已作废");
 

@@ -20,7 +20,7 @@ public enum GoodsResultCodeEnum implements ResultCode {
     NOT_HAS_STOCK("1008","不存在库存"),
     GOODS_RULE_VALID_FAIL("1009","分货规则校验不通过"),
     GOODS_RULE_VALID_FAIL_EXIST_OVERLAPPING_RECORDS("1010","存在经营主体和零售商交叉的记录"),
-    MERCHANT_ACCOUNT_IS_EMPTY("1011","供应商账户为空");
+    MERCHANT_ACCOUNT_IS_EMPTY("1011","为了确保交易成功，请提前准确维护您的翼支付收款账号");
 
     private final String code;
     private final String desc;

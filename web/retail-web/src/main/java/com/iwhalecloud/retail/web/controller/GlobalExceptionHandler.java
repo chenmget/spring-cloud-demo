@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.web.exception.ParamInvalidException;
+import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -88,8 +89,8 @@ public class GlobalExceptionHandler extends BaseController<Object>{
     public ResultVO<Object> handleException(HttpServletRequest request,RpcException ex){
         log.error("请求失败[" + request.getRequestURI() + "]，缺少服务提供", ex);
 
-
-        return createResultVO(ResultCodeEnum.FORBID_CONSUMER, ex.getMessage());
+        final String errorDesc = "请求失败[" + request.getRequestURI() + "]，" + ResultCodeEnum.FORBID_CONSUMER.getDesc();
+        return resultVO(ResultCodeEnum.FORBID_CONSUMER.getCode(), errorDesc , ex.getMessage());
     }
 
     @ResponseStatus(HttpStatus.OK)
@@ -145,6 +146,15 @@ public class GlobalExceptionHandler extends BaseController<Object>{
         final String detailMessage = StringUtils.collectionToDelimitedString(ex.getErrors(),"\n");
 
         return resultVO(ResultCodeEnum.ERROR.getCode(), detailMessage, ResultCodeEnum.ERROR.getDesc());
+
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    @ExceptionHandler(UserNoMerchantException.class)
+    public ResultVO<Object> userNoMerchantException(HttpServletRequest request,UserNoMerchantException ex){
+        log.error("请求失败[" + request.getRequestURI() + "] "+JSON.toJSONString(ex.getResultVo()), ex);
+        return ex.getResultVo();
 
     }
 }

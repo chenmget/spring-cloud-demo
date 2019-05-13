@@ -218,4 +218,14 @@ public class MerchantResourceInstB2BController {
     public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(@RequestBody ResourceUploadTempListPageReq req) {
         return resourceInstService.listResourceUploadTemp(req);
     }
+
+    @ApiOperation(value = "删除串码", notes = "传入串码集合删除")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PutMapping(value="exceutorDelNbr")
+    public ResultVO exceutorDelNbr(@RequestBody ResourceUploadTempDelReq req) {
+        return resourceInstService.exceutorDelNbr(req);
+    }
 }

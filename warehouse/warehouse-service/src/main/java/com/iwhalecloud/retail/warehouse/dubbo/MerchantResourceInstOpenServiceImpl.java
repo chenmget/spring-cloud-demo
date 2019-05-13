@@ -61,4 +61,9 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req){
         return merchantResourceInstService.listResourceUploadTemp(req);
     }
+
+    @Override
+    public ResultVO exceutorDelNbr(ResourceUploadTempDelReq req){
+        return merchantResourceInstService.exceutorDelNbr(req);
+    }
 }

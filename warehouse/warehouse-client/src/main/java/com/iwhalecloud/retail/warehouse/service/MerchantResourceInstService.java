@@ -59,4 +59,6 @@ public interface MerchantResourceInstService {
      */
     ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req);
 
+    ResultVO exceutorDelNbr(ResourceUploadTempDelReq req);
+
 }

@@ -38,7 +38,7 @@ public class ResourceUploadTempManager  extends ServiceImpl<ResourceUploadTempMa
      */
     public Integer delResourceUploadTemp(ResourceUploadTempDelReq req){
         Integer num = resourceUploadTempMapper.delResourceUploadTemp(req);
-        log.info("resourceUploadTempMapper.delResourceUploadTemp num={}", JSON.toJSONString(req), num);
+        log.info("resourceUploadTempMapper.delResourceUploadTemp req={}, num={}", JSON.toJSONString(req), num);
         return num;
     }
 }

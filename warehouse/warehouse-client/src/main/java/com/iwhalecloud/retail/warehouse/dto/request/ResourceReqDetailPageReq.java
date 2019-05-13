@@ -19,4 +19,7 @@ public class ResourceReqDetailPageReq extends PageVO {
     @ApiModelProperty(value = "串码")
     private String mktResInstNbr;
 
+    @ApiModelProperty(value = "是否抽检")
+    private String isInspection;
+
 }

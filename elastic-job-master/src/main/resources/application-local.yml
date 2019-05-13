@@ -1,0 +1,29 @@
+spring:
+  aop:
+    auto: true
+  dubbo:
+    registry:
+      address: zookeeper://127.0.0.1:2181
+    protocol:
+      port: 20880
+      name: dubbo
+    application:
+      name: order-consumer
+    scan: cn.buildworld.elasticjob.job
+  jpa:
+    database: mysql
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+server:
+  port: 9019
+elaticjob:
+  zookeeper:
+    namespace: elastic-job
+    server-lists: 127.0.0.1:2181
+
+spring.datasource:
+  driver-class-name: com.mysql.jdbc.Driver
+  url: jdbc:mysql://10.45.46.67:8866/nretail_b2b?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: szxtest
+  password: szxtest.2019

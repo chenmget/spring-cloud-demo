@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.partner.mapper.NewParMerchAddProdMapper">
+
+   <select id="selectProductIdList" resultType="String">	
+         SELECT 
+         	a.product_id as productId
+         FROM prod_product a
+         	WHERE 
+         a.is_deleted='0' AND a.audit_state='3'
+  </select>
+  
+  <select id="" parameterType="com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq">	
+         		
+  </select>
+   
+</mapper>

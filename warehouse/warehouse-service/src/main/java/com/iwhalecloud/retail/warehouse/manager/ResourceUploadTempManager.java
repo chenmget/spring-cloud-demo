@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempDelReq;
@@ -37,7 +38,7 @@ public class ResourceUploadTempManager  extends ServiceImpl<ResourceUploadTempMa
      */
     public Integer delResourceUploadTemp(ResourceUploadTempDelReq req){
         Integer num = resourceUploadTempMapper.delResourceUploadTemp(req);
-        log.info("resourceUploadTempMapper.delResourceUploadTemp num={}", num);
+        log.info("resourceUploadTempMapper.delResourceUploadTemp num={}", JSON.toJSONString(req), num);
         return num;
     }
 }

@@ -62,9 +62,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
     @Reference
     private RetailerResourceInstService retailerResourceInstService;
 
-    @Reference
-    private MerchantService merchantService;
-
     @Async
     @Override
     public void asynSaveTrackForAddmin(ResourceInstAddReq req, ResultVO<ResourceInstAddResp> resp) {

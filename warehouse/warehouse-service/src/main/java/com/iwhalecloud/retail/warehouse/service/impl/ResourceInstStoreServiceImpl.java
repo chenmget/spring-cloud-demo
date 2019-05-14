@@ -13,7 +13,9 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.GetProductQuantityByMerchantResp;
 import com.iwhalecloud.retail.warehouse.dto.response.InventoryWarningResp;
+import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
+import com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceInstStoreService;
@@ -31,8 +33,10 @@ import java.net.SocketException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -50,6 +54,11 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     @Value("${ftp.ftpPassword}")
     private String ftpPassword;
 
+    @Value("${ftp.gmAdd}")
+    private String gmAdd;
+    @Value("${ftp.iptvAdd}")
+    private String iptvAdd;
+    
     @Value("${ftp.gmdirAdd}")
     private String gmdirAdd;
     @Value("${ftp.iptvdirAdd}")
@@ -66,7 +75,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private String iptvdirDelete;
 
     private static String[] brands = {"10350143", "10350148"};
-    private static String[] types = {"1001", "1002", "1003"};
+    private static String[][] types = {{"1001", "1003"}, {"1002"}, {"1007", "1009"}};
 
     private static final String SEQ_CONF_STR = "ITMS_PUSH_SEQ";
     private static final String CONF_STR = "ITMS_PUSH_MKT_NB";
@@ -85,6 +94,9 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     @Autowired
     private Constant constant;
+    
+    @Autowired
+    private MktResItmsSyncRecMapper mktResItmsSyncRecMapper;
 
     @Override
     public ResultVO<Integer> getQuantityByMerchantId(String merchantId) {
@@ -198,7 +210,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     /**
      * 根据地市生成相关的文件
      * 光猫：10350143，IPTV：10350148
-     * 入库：1001，调拨：1002，退库：1003
+     * 新增：1001,1003, 修改：1002, 删除：1007,1009
      * 统计时间和序列号都存放在SYS_CONFIG_INFO表中，
      * 其中统计时间的CF_ID是CONF_STR，一字符串的方式存储；生成文件的序列号的CF_ID是SEQ_CONF_STR，以json格式的字符串存储
      *
@@ -216,15 +228,19 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
         // 开始时间
         String startStr = resourceInstMapper.findCfValueByCfId(CONF_STR);
-        Date startDate = null;
-        try {
-            if (startStr != null) {
-                startDate = sdf.parse(startStr);
-            }
-        } catch (ParseException e) {
-            log.error("统计时间，字符串转换时间失败！");
-        }
+//        Date startDate = new Date();
+//        if (startStr != null) {
+//			startStr = sdf.format(startDate);
+//		}
 
+//        int num = insertToMRISR(startStr);
+        
+        //没有待推送数据
+//        if(num == 0){
+//        	return;
+//        }
+//    	log.info(startStr+"成功插入到 MktResItmsSyncRec表 "+num+"条数据。");
+        
         // 结束时间
         Date endDate = new Date();
 
@@ -239,7 +255,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
         for (int i = 0; i < brands.length; i++) {
             for (int j = 0; j < types.length; j++) {
-                this.syncMktToITMS(brands[i], types[j], startDate, endDate, jsonObject);
+                this.syncMktToITMS(brands[i], types[j], startStr, jsonObject);
             }
         }
 
@@ -260,26 +276,27 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     }
 
-    public void syncMktToITMS(String brand, String ops, Date startDate, Date endDate, JSONObject jsonObject) {
+    public void syncMktToITMS(String brand, String[] ops, String startDate, JSONObject jsonObject) {
 
         List<String> files = new ArrayList<String>();
 
         // 查询所有地市
         List<String> latIdList = resourceInstMapper.findAllLanID();
 
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMDD");
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
         String time = sdf.format(new Date());
         String opsTime = (String) jsonObject.get("ops_time");
         if (!opsTime.equals(time)) {
             jsonObject = initConfJsonStr();
         }
 
-        List<String> mktList = null;
+        List<Map<String, String>> mktList = null;
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {
 
-            mktList = resourceInstMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate, endDate);
-            if (mktList.size() <= 0) continue;
+//          mktList = resourceInstMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate, endDate);
+        	mktList = mktResItmsSyncRecMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate);
+        	if (mktList.size() <= 0) continue;
 
             int seqNb = Integer.valueOf(jsonObject.get("ITMS_" + brand + "_" + ops).toString());
             String seq = getSeqStr(seqNb);
@@ -287,7 +304,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             File destFile = new File(basePath + File.separator + destFileName);
             files.add(destFileName);
             pw = getPrintWriter(destFile);
-
+            String sendDir = "";
             for (int j = 0; j < mktList.size(); j++) {
                 if (j > 0 && j % 10000 == 0) {
                     seqNb++;
@@ -297,7 +314,12 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                     files.add(destFileName);
                     pw = getPrintWriter(destFile);
                 }
-                pw.write(mktList.get(j));
+                pw.write(mktList.get(j).get("itmsStr"));
+                pw.println();
+                sendDir = getSendDir(brand);
+                String syncFileName = sendDir+"/"+destFileName;
+                mktResItmsSyncRecMapper.updateFileNameById(mktList.get(j).get("id"), syncFileName, time + seq);
+                
             }
         }
         pw.close();
@@ -336,7 +358,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      * @return
      */
     private JSONObject initConfJsonStr() {
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMDD");
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("ops_time", sdf.format(new Date()));
 
@@ -373,32 +395,10 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      * @param ftpClient
      * @param files
      */
-    private void sendFileToFtp(FTPClient ftpClient, List<String> files, String brand, String ops) {
+    private void sendFileToFtp(FTPClient ftpClient, List<String> files, String brand, String[] ops) {
         String sendDir = null;
         // 判断传送目录
-        if (brands[0].equals(brand)) {
-            // 光猫
-            if (types[0].equals(ops)) {
-                sendDir = gmdirAdd;
-            }
-            if (types[1].equals(ops)) {
-                sendDir = gmdirModify;
-            }
-            if (types[2].equals(ops)) {
-                sendDir = gmdirDelete;
-            }
-        } else {
-            // iptv
-            if (types[0].equals(ops)) {
-                sendDir = iptvdirAdd;
-            }
-            if (types[1].equals(ops)) {
-                sendDir = iptvdirModify;
-            }
-            if (types[2].equals(ops)) {
-                sendDir = iptvdirDelete;
-            }
-        }
+        sendDir = getSendDir(brand);
         InputStream is = null;
         try {
             ftpClient.changeWorkingDirectory(sendDir);
@@ -436,5 +436,64 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         }
         return ftpClient;
     }
+    
+    /**
+     * 数据插入到MKT_RES_ITMS_SYNC_REC表
+     *
+     * @return
+     * @throws 
+     */
+    private int insertToMRISR(String startDate) {
+    	List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByDate(startDate);
+    	int num = 0;
+    	if(mktResItmsSyncRecList.size()>0){
+    		for(MktResItmsSyncRec mktResItmsSyncRec : mktResItmsSyncRecList){
+    			mktResItmsSyncRecMapper.insert(mktResItmsSyncRec);
+    			num++;
+    		}
+    	}
+    	return num;
+    }
 
+    //获取返回的文件路径
+    public String getReturnDir(String brand, String[] ops){
+    	String sendDir = "";
+    	if (brands[0].equals(brand)) {
+            // 光猫
+            if (Arrays.equals(types[0],ops)) {
+                sendDir = gmdirAdd;
+            }
+            if (Arrays.equals(types[1],ops)) {
+                sendDir = gmdirModify;
+            }
+            if (Arrays.equals(types[2],ops)) {
+                sendDir = gmdirDelete;
+            }
+        } else {
+            // iptv
+            if (Arrays.equals(types[0],ops)) {
+                sendDir = iptvdirAdd;
+            }
+            if (Arrays.equals(types[1],ops)) {
+                sendDir = iptvdirModify;
+            }
+            if (Arrays.equals(types[2],ops)) {
+                sendDir = iptvdirDelete;
+            }
+        }
+    	return sendDir;
+    }
+    
+    public String getSendDir(String brand){
+    	String sendDir = "";
+    	if (brands[0].equals(brand)) {
+            // 光猫
+    		sendDir = gmAdd;
+        } else {
+            // iptv
+        	sendDir = iptvAdd;
+        }
+    	return sendDir;
+    }
+    
 }

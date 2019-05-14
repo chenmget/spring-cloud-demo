@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper">
+
+ <select id="findMKTInfoByDate" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
+		SELECT
+			now() as SYNC_DATE,
+			'000' as SYNC_BATCH_ID,
+			mre.MKT_RES_EVENT_ID,
+			mrced.MKT_RES_CHNG_EVT_DETAIL_ID,
+			mrced.MKT_RES_INST_NBR,
+			mre.mkt_res_id,
+			mre.EVENT_TYPE,
+			pr.brand_id,
+			mrced.lan_id as ORIG_LAN_ID,
+			pr.NAME as BRAND_NAME,
+			ppb.UNIT_TYPE,
+			'0' as STATUS_CD,
+			now() as STATUS_DATE,
+			'admin' CREATE_STAFF,
+			now() as CREATE_DATE  
+		FROM
+			MKT_RES_EVENT mre
+			LEFT JOIN mkt_res_chng_evt_detail mrced ON mre.MKT_RES_EVENT_ID = mrced.MKT_RES_EVENT_ID
+			INNER JOIN PROD_PRODUCT_BASE ppb ON mre.mkt_res_id = ppb.PRODUCT_BASE_ID
+			INNER JOIN PROD_BRAND pr ON pr.brand_id = ppb.brand_id 
+			<if test="startDate != '' and startDate != null">
+            AND mre.CREATE_DATE >= #{startDate}
+        	</if>
+			AND mrced.MKT_RES_CHNG_EVT_DETAIL_ID IS NOT NULL
+  </select>
+  
+  <select id="findMKTInfoByLadId" resultType="java.util.HashMap">
+		SELECT
+			CONCAT(mrisr.MKT_RES_INST_NBR, ',', mrisr.BRAND_NAME, mrisr.UNIT_TYPE, ',2,', mrisr.ORIG_LAN_ID) as itmsStr,
+			mrisr.MKT_RES_ITMS_SYNC_REC_ID	as id
+		FROM
+			MKT_RES_ITMS_SYNC_REC mrisr
+			INNER JOIN PROD_PRODUCT_BASE ppb ON mrisr.BRAND_ID = ppb.BRAND_ID
+			INNER JOIN MKT_RES_EVENT mre ON mre.MKT_RES_EVENT_ID = mrisr.MKT_RES_EVENT_ID 
+			AND mre.EVENT_TYPE in
+			<foreach collection="eventTypeArray" index="index" item="item" open="(" separator="," close=")">
+          	#{item}
+     		</foreach>
+			AND ppb.TYPE_ID = #{typeId}
+			<if test="startDate != '' and startDate != null">
+            AND mrisr.CREATE_DATE &gt;= #{startDate}
+        	</if>
+        	AND mrisr.ORIG_LAN_ID = #{lanId}
+  </select>
+  
+  <update id="updateFileNameById">
+		UPDATE MKT_RES_ITMS_SYNC_REC mrisr 
+			SET mrisr.SYNC_FILE_NAME = #{destFileName},
+			mrisr.SYNC_BATCH_ID = #{syncBatchId} 
+		WHERE
+			mrisr.MKT_RES_ITMS_SYNC_REC_ID = #{id}
+  </update>
+
+</mapper>

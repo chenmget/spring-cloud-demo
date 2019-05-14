@@ -17,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -28,7 +30,7 @@ import java.util.List;
 @Slf4j
 public class ResourceInstStoreServiceImplTest {
 
-    @Reference
+    @Reference(timeout=100000)
     private ResourceInstStoreService resourceInstStoreService;
 
     @Test
@@ -67,9 +69,9 @@ public class ResourceInstStoreServiceImplTest {
     @Test
     public void updateResourceInstStore(){
         ResourceInstStoreDTO req = new ResourceInstStoreDTO();
-        req.setMerchantId("4301811022885");
-        req.setMktResId("1101089045995012097");
-        req.setMktResStoreId("31");
+        req.setMerchantId("4301811025392");
+        req.setMktResId("10412537");
+        req.setMktResStoreId("11");
         req.setQuantity(1L);
         req.setQuantityAddFlag(false);
         req.setStatusCd("1302");
@@ -99,6 +101,14 @@ public class ResourceInstStoreServiceImplTest {
     public void getQuantityByMerchantId(){
         ResultVO<Integer> amount = resourceInstStoreService.getQuantityByMerchantId("4300001063072");
         System.out.print("amount==============="+ amount.getResultData());
+    }
+    
+    /**
+     * 测试串码入库的
+     */
+    @Test
+    public void syncMktToITMS(){
+    	resourceInstStoreService.syncMktToITMS();
     }
 
 }

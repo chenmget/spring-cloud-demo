@@ -128,8 +128,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         if (null != productAddReqs && !productAddReqs.isEmpty()){
             for (ProductAddReq par : productAddReqs){
                 String sn = par.getSn();
-                String purchaseString = sn.substring(sn.length()-3);
-                if("100".equals(purchaseString)){
+                String purchaseString = sn.substring(sn.length() - 3);
+                if ("100".equals(purchaseString)){
                     par.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
                 }else if("300".equals(purchaseString)){
                     par.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
@@ -237,6 +237,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             String isDeleted = productUpdateReq.getIsDeleted();
             String state = productUpdateReq.getStatus();
             newState = state;
+            String sn = productUpdateReq.getSn();
+            String purchaseString = sn.substring(sn.length() - 3);
+            if ("100".equals(purchaseString)){
+                productUpdateReq.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
+            }else if("300".equals(purchaseString)){
+                productUpdateReq.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
+            }
             if (ProductConst.IsDelete.YES.getCode().equals(isDeleted) && StringUtils.isNotBlank(productId)) {
                 PrdoProductDeleteReq prdoProductDeleteReq = new PrdoProductDeleteReq();
                 prdoProductDeleteReq.setProductId(productId);

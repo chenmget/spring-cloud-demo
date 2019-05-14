@@ -110,4 +110,10 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "类型Id")
     private String typeId;
+
+    @ApiModelProperty(value = "颜色")
+    private Double color;
+
+    @ApiModelProperty(value = "内存")
+    private Double memory;
 }

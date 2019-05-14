@@ -290,7 +290,7 @@
             parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq">
         select distinct g.GOODS_ID as goodsId,g.GOODS_NAME as goodsName,g.MARKET_ENABLE as marketEnable,c.CAT_ID as goodsCatId,c.CAT_NAME as goodsCatName,
         g.SUPPLIER_ID as supplierId ,g.AUDIT_STATE as auditState,g.IS_ALLOT as isAllot,g.SOURCE_FROM as sourceFrom,g.MERCHANT_TYPE as merchantType,g.TARGET_TYPE as targetType,
-        pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn,g.MKTPRICE,g.PAYMENTS as payments,t.deliveryPrice
+        pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn,g.MKTPRICE,g.PAYMENTS as payments,t.deliveryPrice,t.COLOR,t.MEMORY
         from prod_goods g left join prod_cat c on g.GOODS_CAT_ID=c.CAT_ID
         left join prod_brand pb on g.brand_id=pb.brand_id
         left join

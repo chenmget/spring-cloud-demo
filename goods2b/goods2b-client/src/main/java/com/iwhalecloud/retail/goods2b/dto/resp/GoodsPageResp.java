@@ -112,8 +112,8 @@ public class GoodsPageResp implements Serializable {
     private String typeId;
 
     @ApiModelProperty(value = "颜色")
-    private Double color;
+    private String color;
 
     @ApiModelProperty(value = "内存")
-    private Double memory;
+    private String memory;
 }

@@ -317,10 +317,10 @@ public class ProductBaseGetResp implements Serializable {
     private List<String> tagList;
 
     @ApiModelProperty(value = "颜色")
-    private Double color;
+    private String color;
 
     @ApiModelProperty(value = "内存")
-    private Double memory;
+    private String memory;
 
     @ApiModelProperty(value = "25位产品编码")
     private String sn;

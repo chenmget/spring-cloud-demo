@@ -187,4 +187,6 @@ public class ProductAddReq extends AbstractRequest implements Serializable {
 	@ApiModelProperty(value = "审核状态")
 	private String auditState;
 
+	@ApiModelProperty(value = "采购类型")
+	private String purchaseType;
 }

@@ -90,6 +90,15 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Override
     public ResultVO<String> addProductBase(ProductBaseAddReq req){
         log.info("ProductBaseServiceImpl.addProductBase,req={}", JSON.toJSONString(req));
+        String unitType = req.getUnitType();
+        if(StringUtils.isNotEmpty(unitType)){
+            ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
+            productBaseGetReq.setUnitType(unitType);
+            List<ProductBaseGetResp> productBaseGetRespList = productBaseManager.selectProductBase(productBaseGetReq);
+            if(!CollectionUtils.isEmpty(productBaseGetRespList)){
+                ResultVO.error("同一型号只能创建一个产品，已经存在改型号产品");
+            }
+        }
         ProductBase t = new ProductBase();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -118,6 +127,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         Boolean addResult = true;
         if (null != productAddReqs && !productAddReqs.isEmpty()){
             for (ProductAddReq par : productAddReqs){
+                String sn = par.getSn();
+                String purchaseString = sn.substring(sn.length()-3);
+                if("100".equals(purchaseString)){
+                    par.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
+                }else if("300".equals(purchaseString)){
+                    par.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
+                }
                 status = par.getStatus();
                 String auditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();
                 //除了待提交，都是审核中

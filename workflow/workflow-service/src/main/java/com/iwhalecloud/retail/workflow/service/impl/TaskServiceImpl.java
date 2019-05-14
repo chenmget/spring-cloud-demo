@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.Objects;
 
 
+/**
+ * @author z
+ */
 @Service
 @Slf4j
 public class TaskServiceImpl implements TaskService {
@@ -97,7 +100,7 @@ public class TaskServiceImpl implements TaskService {
             log.info("TaskServiceImpl.queryTaskPage  page={}" + JSON.toJSONString(page));
             return ResultVO.success(page);
         } catch (Exception e) {
-            log.error("TaskServiceImpl.queryTaskPage 异常：",e);
+            log.error("TaskServiceImpl.queryTaskPage 异常：", e);
 
             return ResultVO.error(e.getMessage());
         }
@@ -122,7 +125,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResultVO<Long> queryHandleTaskCnt(HandleTaskPageReq req) {
 
-        log.info("TaskServiceImpl.queryHandleTaskCnt  req={}" + JSON.toJSONString(req));
+        log.info("TaskServiceImpl.queryHandleTaskCnt  req={}", JSON.toJSONString(req));
         try {
             Long taskHandleCnt = taskManager.queryHandleTaskCnt(req);
 
@@ -138,11 +141,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public ResultVO<Page<HandleTaskPageResp>> queryHandleTaskPage(HandleTaskPageReq req) {
 
-        log.info("TaskServiceImpl.queryHandleTaskPage  req={}" + JSON.toJSONString(req));
+        log.info("TaskServiceImpl.queryHandleTaskPage  req={}", JSON.toJSONString(req));
 
         Page<HandleTaskPageResp> page = taskManager.queryHandleTask(req);
 
-        log.info("TaskServiceImpl.queryHandleTaskPage  page={}" + JSON.toJSONString(page));
+        log.info("TaskServiceImpl.queryHandleTaskPage  page={}", JSON.toJSONString(page));
         return ResultVO.success(page);
 
     }
@@ -154,7 +157,7 @@ public class TaskServiceImpl implements TaskService {
         //1、获取待办项基本信息
         TaskItemDetailModel taskDetailModel = taskManager.getTaskItemDetail(req.getTaskId(),req.getTaskItemId());
 
-        log.info("TaskServiceImpl.getTaskDetail taskDetailModel={}" + JSON.toJSONString(taskDetailModel));
+        log.info("TaskServiceImpl.getTaskDetail taskDetailModel={}", JSON.toJSONString(taskDetailModel));
         if (taskDetailModel == null) {
             log.warn("TaskServiceImpl.getTaskDetail taskDetailModel records do not exist,taskItemId = {}",req.getTaskItemId());
             return ResultVO.error("记录不存在，待办项已处理");
@@ -166,7 +169,7 @@ public class TaskServiceImpl implements TaskService {
             BeanUtils.copyProperties(req, flowTaskClaimReq);
             ResultVO receiveTaskVO = this.receiveTask(flowTaskClaimReq);
             if (!receiveTaskVO.isSuccess()) {
-                log.info("TaskServiceImpl.getTaskDetail receiveTaskVO={}" + JSON.toJSONString(receiveTaskVO));
+                log.info("TaskServiceImpl.getTaskDetail receiveTaskVO={}", JSON.toJSONString(receiveTaskVO));
                 return receiveTaskVO;
             }
             //待办领取成功，将查询出来的任务项改为待处理
@@ -175,17 +178,17 @@ public class TaskServiceImpl implements TaskService {
 
         //3、获取审核记录
         DealTaskDetailGetResp resp = new DealTaskDetailGetResp();
-        BeanUtils.copyProperties(taskDetailModel,resp);
+        BeanUtils.copyProperties(taskDetailModel, resp);
         List<TaskItem> taskItems =  taskItemManager.queryTaskItem(taskDetailModel.getTaskId());
         if (taskItems != null) {
             List<DealTaskDetailGetResp.TaskItemInfo> taskItemInfos = new ArrayList<DealTaskDetailGetResp.TaskItemInfo>();
             for (TaskItem taskItem : taskItems) {
                 DealTaskDetailGetResp.TaskItemInfo taskItemInfo = new DealTaskDetailGetResp.TaskItemInfo();
-                BeanUtils.copyProperties(taskItem,taskItemInfo);
+                BeanUtils.copyProperties(taskItem, taskItemInfo);
                 taskItemInfos.add(taskItemInfo);
             }
             resp.setTaskItemInfos(taskItemInfos);
-            log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}" + JSON.toJSONString(taskItemInfos));
+            log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}", JSON.toJSONString(taskItemInfos));
         }
 
         //4、获取下一个环节记录
@@ -194,23 +197,24 @@ public class TaskServiceImpl implements TaskService {
         if (routeInfos != null) {
             for (Route route : routes) {
                 DealTaskDetailGetResp.RouteInfo routeInfo = new DealTaskDetailGetResp.RouteInfo();
-                BeanUtils.copyProperties(route,routeInfo);
+                BeanUtils.copyProperties(route, routeInfo);
                 Node node = nodeManager.getNode(route.getNextNodeId());
                 routeInfo.setBooAppointDealUser(node.getBooAppointDealUser());
                 routeInfos.add(routeInfo);
             }
             resp.setRouteInfos(routeInfos);
-            log.info("TaskServiceImpl.getTaskDetail routeInfos={}" + JSON.toJSONString(routeInfos));
+            log.info("TaskServiceImpl.getTaskDetail routeInfos={}", JSON.toJSONString(routeInfos));
         }
 
         //5、设置当前环节是否允许编辑
         Node node = nodeManager.getNode(taskDetailModel.getCurNodeId());
-        log.info("TaskServiceImpl.queryHandleTaskPage  getNode={}" + JSON.toJSONString(node));
+        log.info("TaskServiceImpl.queryHandleTaskPage curNodeId={}, getNode={}", taskDetailModel.getCurNodeId(), JSON.toJSONString(node));
         if (node != null) {
             resp.setBooEdit(node.getBooEdit());
+            resp.setNodePage(node.getNodePage());
         }
 
-        log.info("TaskServiceImpl.queryHandleTaskPage  resp={}" + JSON.toJSONString(resp));
+        log.info("TaskServiceImpl.queryHandleTaskPage  resp={}", JSON.toJSONString(resp));
         return ResultVO.success(resp);
     }
 
@@ -218,7 +222,7 @@ public class TaskServiceImpl implements TaskService {
     public ResultVO<HandleTaskDetailGetResp> getHandleTaskDetail(HandleTaskDetailReq req) {
 
         Task taskEntity = taskManager.getTask(req.getTaskId());
-        log.info("TaskServiceImpl.getHandleTaskDetail taskEntity={}" + JSON.toJSONString(taskEntity));
+        log.info("TaskServiceImpl.getHandleTaskDetail taskEntity={}", JSON.toJSONString(taskEntity));
         if (taskEntity == null) {
             log.warn("TaskServiceImpl.getTaskDetail taskEntity records do not exist,taskId = {}",req.getTaskId());
             return ResultVO.error("记录不存在，待办项已处理");
@@ -226,7 +230,7 @@ public class TaskServiceImpl implements TaskService {
 
         //1、获取基本信息
         HandleTaskDetailGetResp resp = new HandleTaskDetailGetResp();
-        BeanUtils.copyProperties(taskEntity,resp);
+        BeanUtils.copyProperties(taskEntity, resp);
 
         //2、获取审核记录
         List<TaskItem> taskItems =  taskItemManager.queryTaskItem(req.getTaskId());
@@ -234,11 +238,11 @@ public class TaskServiceImpl implements TaskService {
             List<HandleTaskDetailGetResp.TaskItemInfo> taskItemInfos = new ArrayList<HandleTaskDetailGetResp.TaskItemInfo>();
             for (TaskItem taskItem : taskItems) {
                 HandleTaskDetailGetResp.TaskItemInfo taskItemInfo = new HandleTaskDetailGetResp.TaskItemInfo();
-                BeanUtils.copyProperties(taskItem,taskItemInfo);
+                BeanUtils.copyProperties(taskItem, taskItemInfo);
                 taskItemInfos.add(taskItemInfo);
             }
             resp.setTaskItemInfos(taskItemInfos);
-            log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}" + JSON.toJSONString(taskItemInfos));
+            log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}", JSON.toJSONString(taskItemInfos));
         }
         return ResultVO.success(resp);
     }
@@ -247,7 +251,7 @@ public class TaskServiceImpl implements TaskService {
         // 根据formId查询processId
         List<Task> taskList = taskManager.getTaskByFormId(formId);
         if (CollectionUtils.isEmpty(taskList) || taskList.size() > 1) {
-            log.info("TaskServiceImpl.getNextRoute formId ={},taskList={}" + formId, JSON.toJSONString(taskList));
+            log.info("TaskServiceImpl.getNextRoute formId ={},taskList={}", formId, JSON.toJSONString(taskList));
             return null;
         }
         Task task = taskList.get(0);
@@ -255,7 +259,7 @@ public class TaskServiceImpl implements TaskService {
         // 根据formId查询待处理任务项
         TaskItem taskItem = taskItemManager.queryWaitHandlerTaskItem(task.getTaskId());
         if (taskItem == null) {
-            log.info("TaskServiceImpl.getNextRoute formId ={},taskItem={}" + formId, JSON.toJSONString(taskItem));
+            log.info("TaskServiceImpl.getNextRoute formId ={},taskItem={}", formId, JSON.toJSONString(taskItem));
             return null;
         }
         RouteNextReq routeNextReq = new RouteNextReq();
@@ -266,7 +270,7 @@ public class TaskServiceImpl implements TaskService {
         // 查询流程下一步路由id
         List<Route> routeList = routeManager.listRouteByCondition(condition);
         if (CollectionUtils.isEmpty(routeList) || routeList.size() > 1) {
-            log.info("TaskServiceImpl.getNextRoute formId ={},routeList={}" + formId,JSON.toJSONString(routeList));
+            log.info("TaskServiceImpl.getNextRoute formId ={},routeList={}" + formId, JSON.toJSONString(routeList));
             return null;
         }
         Route route = routeList.get(0);
@@ -277,14 +281,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVO nextRouteAndReceiveTask(NextRouteAndReceiveTaskReq req) {
-        log.info("TaskServiceImpl.nextRouteAndReceiveTask req={}",JSON.toJSONString(req));
+        log.info("TaskServiceImpl.nextRouteAndReceiveTask req={}", JSON.toJSONString(req));
         if (req == null) {
             ResultVO.error(com.iwhalecloud.retail.dto.ResultCodeEnum.LACK_OF_PARAM);
         }
         // 根据formId获取流程下一步路由
         RouteNextReq routeNextReq = getNextRoute(req.getFormId());
-        if (routeNextReq == null){
+        if (routeNextReq == null) {
             return ResultVO.error(ResultCodeEnum.NEXT_ROUTE_IS_EMPTY);
         }
         String taskItemId = routeNextReq.getTaskItemId();
@@ -295,14 +300,20 @@ public class TaskServiceImpl implements TaskService {
         taskClaimReq.setUserName(req.getHandlerUserName());
         taskClaimReq.setTaskId(routeNextReq.getTaskId());
         ResultVO resultVO = receiveTask(taskClaimReq);
-        if (resultVO.isSuccess()) {
-            // 执行流程下一步
-            routeNextReq.setHandlerUserId(req.getHandlerUserId());
-            routeNextReq.setHandlerUserName(req.getHandlerUserName());
-            routeNextReq.setHandlerMsg(req.getHandlerMsg());
-            resultVO = nextRoute(routeNextReq);
+        if (!resultVO.isSuccess()) {
+            return resultVO;
         }
-        return resultVO;
+
+        //修改业务参数值
+        if (req.getParamsType() != null) {
+            taskManager.updateTaskParams(routeNextReq.getTaskId(), req.getParamsType(), req.getParamsValue());
+        }
+
+        // 执行流程下一步
+        routeNextReq.setHandlerUserId(req.getHandlerUserId());
+        routeNextReq.setHandlerUserName(req.getHandlerUserName());
+        routeNextReq.setHandlerMsg(req.getHandlerMsg());
+        return nextRoute(routeNextReq);
     }
 
     @Override

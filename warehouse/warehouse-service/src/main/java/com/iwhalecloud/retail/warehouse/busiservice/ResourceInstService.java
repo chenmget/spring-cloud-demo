@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.model.MerchantInfByNbrModel;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface ResourceInstService {
 
@@ -19,7 +20,7 @@ public interface ResourceInstService {
      * @param req
      * @return
      */
-    Boolean addResourceInstByMerchant(ResourceInstAddReq req);
+    Boolean addResourceInstByMerchant(ResourceInstAddReq req, CopyOnWriteArrayList<String> mktResInstNbrs);
     /**
      * 非厂商添加串码
      * @param req

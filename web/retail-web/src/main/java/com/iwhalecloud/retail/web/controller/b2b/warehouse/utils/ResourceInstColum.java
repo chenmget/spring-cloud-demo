@@ -78,4 +78,12 @@ public class ResourceInstColum {
         orderMap.add(new ExcelTitleName("ctCode", "CT码"));
         return orderMap;
     }
+
+    public static List<ExcelTitleName> failNbrColumn() {
+        List<ExcelTitleName> orderMap = new ArrayList<>();
+        orderMap.add(new ExcelTitleName("mktResInstNbr", "失败的串码"));
+        orderMap.add(new ExcelTitleName("result", "是否异常"));
+        orderMap.add(new ExcelTitleName("resultDesc", "状态描述"));
+        return orderMap;
+    }
 }

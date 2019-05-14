@@ -30,7 +30,7 @@
 	SUM(a.TRANS_OUT_NUM) transOutNum, 
 	SUM(a.RETURN_NUM) returnNum, 
 	a.type_id typeId,
-	a.date date,
+	a.date,
 	a.stock_warning redStatus,
 	(SELECT (SUM(b.CONTRACT_NUM)+SUM(b.REGISTER_NUM))/7 FROM RPT_PARTNER_OPERATING_DAY b WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(b.DATE) AND a.partner_id=b.partner_id GROUP BY b.partner_id) AverageDailySales,
 	(SELECT SUM(c.STOCK_NUM) FROM RPT_PARTNER_OPERATING_DAY c WHERE c.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY) AND a.partner_id=c.partner_id GROUP BY c.partner_id) stockNum,

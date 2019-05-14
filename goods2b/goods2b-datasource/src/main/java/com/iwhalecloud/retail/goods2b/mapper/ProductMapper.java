@@ -31,6 +31,14 @@ public interface ProductMapper extends BaseMapper<Product>{
     Page<ProductPageResp> selectPageProductAdmin(Page<ProductPageResp> page, @Param("pageReq")ProductsPageReq request);
 
     /**
+     * 条件分页查询,2B
+     * @param page
+     * @param request
+     * @return
+     */
+    Page<ProductPageResp> selectPageProductAdminAll(Page<ProductPageResp> page, @Param("pageReq")ProductsPageReq request);
+
+    /**
      * 条件分页查询
      * @param page
      * @param request
@@ -108,4 +116,6 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
     ProductForResourceResp getProductForResource(String productId);
+
+    public Integer updateAttrValue10(ProductAuditStateUpdateReq request);
 }

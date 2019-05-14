@@ -142,4 +142,12 @@ public class ProductPageResp implements Serializable {
     @ApiModelProperty(value = "是否固网终端")
     private String isFixedLine;
 
+    @ApiModelProperty(value = "采购类型")
+    private String purchaseType;
+
+    @ApiModelProperty(value = "非地包供货价下限")
+    private String localSupplyFeeLower;
+
+    @ApiModelProperty(value = "非地包供货价上限")
+    private String localSupplyFeeUpper;
 }

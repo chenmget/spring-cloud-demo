@@ -120,6 +120,11 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
         return merchantRulesDTOList;
     }
 
+    public Page<MerchantRulesDTO> pageMerchantRulesDetail(MerchantRulesListReq req){
+        Page<MerchantRulesDTO> page = new Page<>(req.getPageNo(), req.getPageSize());
+        return merchantRulesMapper.pageMerchantRulesDetail(page,req);
+    }
+
     public Page<MerchantRulesDetailPageResp> pageMerchantRules(MerchantRulesDetailPageReq req) {
         Page<MerchantRulesDetailPageResp> page = new Page<>(req.getPageNo(), req.getPageSize());
         return merchantRulesMapper.pageMerchantRules(page, req);

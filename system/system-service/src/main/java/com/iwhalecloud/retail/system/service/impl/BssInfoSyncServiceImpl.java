@@ -170,6 +170,7 @@ public class BssInfoSyncServiceImpl implements BssInfoSyncService {
                 "\"resultCode\": \"" + resultCode + "\"," +
                 "\"resultMsg\": \"" + resultMsg + "\"" +
                 "}";
+        log.info("BssInfoSyncServiceImpl.userInfoSync assembleResult resultMsg1:{}", resultMsg1);
         return resultMsg1;
     }
 

@@ -21,6 +21,7 @@ import com.iwhalecloud.retail.goods2b.utils.ReflectUtils;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -30,7 +31,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -64,7 +64,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Override
     public ResultVO<Page<ProductBaseGetResp>> getProductBaseList(ProductBaseListReq req){
-
         Page<ProductBaseGetResp> pageResp = productBaseManager.getProductBaseList(req);
         List<ProductBaseGetResp> respList = pageResp.getRecords();
         for(ProductBaseGetResp dto : respList){
@@ -82,7 +81,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 snCount = selectProductVO.getResultData().getRecords().size();
             }
             dto.setSnCount(snCount);
-
         }
         return ResultVO.success(pageResp);
     }
@@ -92,7 +90,15 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Override
     public ResultVO<String> addProductBase(ProductBaseAddReq req){
         log.info("ProductBaseServiceImpl.addProductBase,req={}", JSON.toJSONString(req));
-        List<String> errorList = new ArrayList<String>();
+        String unitType = req.getUnitType();
+        if(StringUtils.isNotEmpty(unitType)){
+            ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
+            productBaseGetReq.setUnitType(unitType);
+            List<ProductBaseGetResp> productBaseGetRespList = productBaseManager.selectProductBase(productBaseGetReq);
+            if(!CollectionUtils.isEmpty(productBaseGetRespList)){
+                ResultVO.error("同一型号只能创建一个产品，已经存在改型号产品");
+            }
+        }
         ProductBase t = new ProductBase();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -115,12 +121,19 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         BeanUtils.copyProperties(req, pear);
         pear.setProductBaseId(productBaseId);
         productExtService.addProductExt(pear);
-
         // 添加产品
         List<ProductAddReq> productAddReqs = req.getProductAddReqs();
         String status = "";
+        Boolean addResult = true;
         if (null != productAddReqs && !productAddReqs.isEmpty()){
             for (ProductAddReq par : productAddReqs){
+                String sn = par.getSn();
+                String purchaseString = sn.substring(sn.length() - 3);
+                if ("100".equals(purchaseString)){
+                    par.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
+                }else if("300".equals(purchaseString)){
+                    par.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
+                }
                 status = par.getStatus();
                 String auditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();
                 //除了待提交，都是审核中
@@ -133,7 +146,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setAuditState(auditState);
                 productService.addProduct(par);
             }
-
         }
 
 //         添加零售商标签
@@ -146,18 +158,19 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
 
         //除了待提交，都是审核中,都要提交审核
-        if(!ProductConst.StatusType.SUBMIT.getCode().equals(status)){
+        if(!ProductConst.StatusType.SUBMIT.getCode().equals(status) && addResult){
             StartProductFlowReq startProductFlowReq= new StartProductFlowReq();
             startProductFlowReq.setProductBaseId(productBaseId);
             startProductFlowReq.setDealer(t.getCreateStaff());
             startProductFlowReq.setProductName(req.getProductName());
             startProductFlowReq.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
+            startProductFlowReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.STRING_PARAMS.getCode());
+            startProductFlowReq.setParamsValue(t.getBrandId());
             ResultVO flowResltVO = productFlowService.startProductFlow(startProductFlowReq);
             if(!flowResltVO.isSuccess()){
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());
             }
         }
-
         return  ResultVO.success(productBaseId);
     }
 
@@ -170,11 +183,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         ProductBaseGetByIdReq req1 = new ProductBaseGetByIdReq();
         req1.setProductBaseId(req.getProductBaseId());
         ResultVO<ProductBaseGetResp> product = this.getProductBase(req1);
-        List<String> errorList = new ArrayList<String>();
         if (product==null||product.getResultData() == null) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "产品不存在");
         }
-
         List<String> tagList = req.getTagList();
         if (!CollectionUtils.isEmpty(tagList)) {
             TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
@@ -185,7 +196,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             relBatchAddReq.setProductBaseId(req.getProductBaseId());
             tagRelService.batchAddTagRel(relBatchAddReq);
         }
-
         ProductExtUpdateReq extUpdateReq = req.getProductExtUpdateReq();
         String notCheckField = "productBaseId";
         Boolean isAllFieldNull = ReflectUtils.isAllFieldNull(extUpdateReq, notCheckField);
@@ -210,11 +220,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         productGetReq.setPageNo(1);
         productGetReq.setPageSize(Integer.MAX_VALUE);
         ResultVO<Page<ProductDTO>> productListResult =  productService.selectProduct(productGetReq);
-
         if(productListResult==null||!productListResult.isSuccess()||productListResult.getResultData()==null){
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "原产品为空无法获取审核状态");
         }
-
         Page<ProductDTO> page = productListResult.getResultData();
         if(page==null||page.getRecords()==null||page.getRecords().isEmpty()){
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "原产品为空无法获取审核状态");
@@ -223,13 +231,19 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         if(StringUtils.isEmpty(oldAuditState)){
             oldAuditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();
         }
-
         String newState = "";
         for (ProductUpdateReq productUpdateReq : productUpdateReqs) {
             String productId = productUpdateReq.getProductId();
             String isDeleted = productUpdateReq.getIsDeleted();
             String state = productUpdateReq.getStatus();
             newState = state;
+            String sn = productUpdateReq.getSn();
+            String purchaseString = sn.substring(sn.length() - 3);
+            if ("100".equals(purchaseString)){
+                productUpdateReq.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
+            }else if("300".equals(purchaseString)){
+                productUpdateReq.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
+            }
             if (ProductConst.IsDelete.YES.getCode().equals(isDeleted) && StringUtils.isNotBlank(productId)) {
                 PrdoProductDeleteReq prdoProductDeleteReq = new PrdoProductDeleteReq();
                 prdoProductDeleteReq.setProductId(productId);
@@ -258,11 +272,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     par.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
                 }
-
-                productService.addProduct(par);
+                ResultVO<Integer> addResultVO = productService.addProduct(par);
+                if (!addResultVO.isSuccess() || addResultVO.getResultData() < 1) {
+                    throw new RetailTipException(addResultVO.getResultCode(), addResultVO.getResultMsg());
+                }
                 continue;
             }
-
         }
         req.setUpdateDate(new Date());
         int index = productBaseManager.updateProductBase(req);
@@ -283,8 +298,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                  }else if(ProductConst.AuditStateType.UN_SUBMIT.getCode().equals(oldAuditState)
                          || ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
                      //原审核状态为待提交，且新状态为非待提交
-//                     String processId =ProductConst.APP_PRODUCT_FLOW_PROCESS_ID;
-                     String processId = getProcessId(req);
+                     String processId =ProductConst.APP_PRODUCT_FLOW_PROCESS_ID;
                      if(ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
                          processId =ProductConst.UPDATE_PRODUCT_FLOW_PROCESS_ID;
                      }
@@ -302,43 +316,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
         return  ResultVO.success(index);
     }
-
-    private String getProcessId(ProductBaseUpdateReq req){
-        String processId = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
-        String processId1 = "";
-        String processId2 = "";
-        if(null==req){
-            return "";
-        }
-        String productName = req.getProductName();
-        if(StringUtils.isNotEmpty(productName) ){
-            processId2 = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
-        }
-        List<ProductUpdateReq> reqs = req.getProductUpdateReqs();
-        for(ProductUpdateReq productUpdateReq: reqs){
-            String sn= productUpdateReq.getSn();
-            Double cost = productUpdateReq.getCost();
-            List<FileAddReq> fileAddReqs = productUpdateReq.getFileAddReqs();
-            String unitName = productUpdateReq.getUnitName();
-            if(StringUtils.isNotEmpty(sn) ||cost > 0 ){
-                processId1 = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
-            }
-            if(StringUtils.isNotEmpty(unitName)|| !CollectionUtils.isEmpty(fileAddReqs)){
-                processId2 = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
-            }
-        }
-        if(StringUtils.isNotEmpty(processId1)){
-            processId = processId1;
-        }
-        if(StringUtils.isNotEmpty(processId2)){
-            processId = processId2;
-        }
-        if(StringUtils.isNotEmpty(processId1) && StringUtils.isNotEmpty(processId2)){
-            processId = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
-        }
-        return processId;
-    }
-
+    
     @Override
     public ResultVO<Integer> deleteProdProductBase(ProdProductBaseDeleteReq req){
         return ResultVO.success(productBaseManager.deleteProdProductBase(req.getProductBaseId()));

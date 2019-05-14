@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportService;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
@@ -64,20 +65,22 @@ public class ReportStoreController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getReportStSaleList")
+	@UserLoginToken
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
-		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
+//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-			req.setRetailerCode(retailerCodes);
-		}
+		//String userType = UserContext.getUser().getUserFounder()+"";
+//		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setRetailerCode(retailerCodes);
+//		}
 		
-		String userId = UserContext.getUserId();
-		ReportStorePurchaserReq req2 = new ReportStorePurchaserReq();
-		req2.setUserId(userId);
-		ResultVO<List<ReportStorePurchaserResq>> brandview = iReportDataInfoService.getUerRoleForView(req2);
-		String brandId = brandview.getResultData().get(0).getBrandId();
+//		String userId = UserContext.getUserId();
+//		ReportStorePurchaserReq req2 = new ReportStorePurchaserReq();
+//		req2.setUserId(userId);
+//		ResultVO<List<ReportStorePurchaserResq>> brandview = iReportDataInfoService.getUerRoleForView(req2);
+//		String brandId = brandview.getResultData().get(0).getBrandId();
 		//req.setBrand(brandId);
         return reportStoreService.getReportStSaleList(req);
     }
@@ -91,16 +94,24 @@ public class ReportStoreController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/cjStorePurchaserReportExport")
+    @UserLoginToken
     public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
-		//userType==5 厂家视图的导出
-    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
+//    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-			req.setRetailerCode(retailerCodes);
-		}
+		//String userType = UserContext.getUser().getUserFounder()+"";
+//		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setRetailerCode(retailerCodes);
+//		}
         ResultVO<List<ReportStSaleDaoResp>> resultVO = reportStoreService.getReportStSaleListdc(req);
+        ResultVO result = new ResultVO();
+        if (!resultVO.isSuccess()) {
+            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            result.setResultMsg(resultVO.getResultMsg());
+            deliveryGoodsResNberExcel.outputResponse(response,resultVO);
+            return;
+        }
         List<ReportStSaleDaoResp> data = resultVO.getResultData();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -109,8 +120,8 @@ public class ReportStoreController extends BaseController {
 	        orderMap.add(new ExcelTitleName("partnerCode", "零售商编码"));
 	        orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
 	        orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
-	        orderMap.add(new ExcelTitleName("cityId", "所属城市"));
 	        orderMap.add(new ExcelTitleName("date", "统计日期"));
+	        orderMap.add(new ExcelTitleName("cityId", "所属城市"));
 	        orderMap.add(new ExcelTitleName("countryId", "所属区县"));
         orderMap.add(new ExcelTitleName("productBaseName", "机型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
@@ -134,21 +145,36 @@ public class ReportStoreController extends BaseController {
         orderMap.add(new ExcelTitleName("stockTurnover", "库存周转率"));
         orderMap.add(new ExcelTitleName("inventoryWarning", "库存预警"));
         
-        try{
-            //创建Excel
-            String fileName = "门店进销存明细报表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-
-            OutputStream output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
-            response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
-            output.close();
-        }catch (Exception e){
-            log.error("门店进销存明细报表导出失败",e);
-        }
+      //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+        		orderMap, "门店进销存明细报表");
+        deliveryGoodsResNberExcel.exportExcel("门店进销存明细报表",workbook,response);
+        
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+//        OutputStream output = null ;
+//        try{
+//            //创建Excel
+//            String fileName = "门店进销存明细报表";
+////            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+//            output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+////            output.close();
+//        }catch (Exception e){
+//            log.error("门店进销存明细报表导出失败",e);
+//        } finally {
+//            if (null != output){
+//                try {
+//                    output.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
         
     }
 

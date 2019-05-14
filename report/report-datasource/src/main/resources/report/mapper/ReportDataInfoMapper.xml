@@ -44,10 +44,10 @@
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')	
 		</if>
 		<if test="req.createTimeStart!=null and req.createTimeStart!=''">
-			and a.CREATE_DATE &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
-			and a.CREATE_DATE &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
 			and a.DATE &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
@@ -84,7 +84,7 @@
   </select>
   
   <select id="retailerCodeBylegacy" parameterType="String" resultType="String">
-	  SELECT merchant_code FROM par_merchant WHERE 1=1 and legacy_account=#{legacyAccount}
+-	  SELECT merchant_code FROM par_merchant WHERE 1=1 and legacy_account=#{legacyAccount}
   </select>
   
   <select id="getretailerCode" parameterType="String" resultType="String">
@@ -93,7 +93,11 @@
   </select>
   
   <select id="getMyMktResStoreId" parameterType="String" resultType="String">
-	  select * from (SELECT MKT_RES_STORE_ID FROM MKT_RES_STORE_OBJ_REL WHERE obj_id = #{relCode} limit 1) c
-  
+
+  		SELECT s.MKT_RES_STORE_ID
+	        FROM mkt_res_store s,mkt_res_store_obj_rel r WHERE 1 = 1
+	        AND s.MKT_RES_STORE_ID = r.MKT_RES_STORE_ID
+	        AND r.OBJ_ID = #{relCode}
+	        AND s.STORE_SUB_TYPE = '1300'
   </select>
 </mapper>

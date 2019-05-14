@@ -116,6 +116,10 @@
         <if test="req.activityInitiator != null and req.activityInitiator != '' ">
             and lower(t.INITIATOR) = #{req.activityInitiator}
         </if>
+        <if test="req.creator != null and req.creator != '' ">
+            and t.creator = #{req.creator}
+        </if>
+
         order by t.GMT_CREATE DESC
     </select>
 

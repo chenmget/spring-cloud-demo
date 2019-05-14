@@ -315,4 +315,19 @@ public class ProductBaseGetResp implements Serializable {
      */
     @ApiModelProperty(value = "零售商标签")
     private List<String> tagList;
+
+    @ApiModelProperty(value = "颜色")
+    private String color;
+
+    @ApiModelProperty(value = "内存")
+    private String memory;
+
+    @ApiModelProperty(value = "25位产品编码")
+    private String sn;
+
+    @ApiModelProperty(value = "销售价")
+    private String cost;
+
+    @ApiModelProperty(value = "状态")
+    private String status;
 }

@@ -2,15 +2,16 @@ package com.iwhalecloud.retail.web.controller.b2b.goods;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.CatDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.CatQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatService;
-import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
@@ -27,10 +28,16 @@ import java.util.List;
 @Slf4j
 public class GoodsBaseController {
 
-    public void setTargetCode(List<String> targetCodeList, Integer userFounder) {
+    public void setTargetCode(List<String> targetCodeList, Integer userFounder) throws UserNoMerchantException {
+        if (null == userFounder) {
+            throw new UserNoMerchantException(ResultCodeEnum.ERROR.getCode(), "用户没有商家类型，请确认");
+        }
         if (userFounder == SystemConst.USER_FOUNDER_3 || userFounder == SystemConst.USER_FOUNDER_5) {
             // 商家信息
             MerchantDTO merchantDTO = UserContext.getUserOtherMsg().getMerchant();
+            if (null == merchantDTO) {
+                throw new UserNoMerchantException(ResultCodeEnum.ERROR.getCode(), "用户没有关联商家，请确认");
+            }
             String merchantCode = merchantDTO.getMerchantCode();
             String businessEntityCode = merchantDTO.getBusinessEntityCode();
             if (!StringUtils.isEmpty(merchantCode)) {

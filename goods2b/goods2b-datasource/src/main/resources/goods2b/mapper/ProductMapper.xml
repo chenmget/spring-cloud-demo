@@ -88,6 +88,9 @@
     b.EXP_DATE,
     p.SUPPLY_FEE_LOWER,
     p.SUPPLY_FEE_UPPER,
+    p.LOCAL_SUPPLY_FEE_LOWER,
+    p.LOCAL_SUPPLY_FEE_UPPER,
+    p.PURCHASE_TYPE,
     pb.name AS brand_name,
     pb.BRAND_ID
   </sql>
@@ -163,6 +166,86 @@
       <if test="null!=pageReq.auditState and ''!=pageReq.auditState">
         and p.AUDIT_STATE = #{pageReq.auditState}
       </if>
+      <if test="null!=pageReq.purchaseType and ''!=pageReq.purchaseType">
+        and p.PURCHASE_TYPE = #{pageReq.purchaseType}
+      </if>
+
+
+    order by p.CREATE_DATE DESC
+  </select>
+
+  <select id="selectPageProductAdminAll" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
+    select <include refid="pageProductFields"/>
+    from prod_product p
+    inner join prod_product_base b on p.PRODUCT_BASE_ID = b.PRODUCT_BASE_ID
+    left join prod_cat c on b.CAT_ID = c.CAT_ID
+    left join prod_type t on t.TYPE_ID = b.TYPE_ID
+    left join prod_brand pb on pb.BRAND_ID = b.BRAND_ID
+    where 1=1
+    <if test="null!=pageReq.sn and ''!=pageReq.sn">
+      and p.SN = #{pageReq.sn}
+    </if>
+    <if test="null!=pageReq.unitName and ''!=pageReq.unitName">
+      and upper(p.UNIT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.unitName})),'%')
+    </if>
+    <if test="null!=pageReq.productName and ''!=pageReq.productName">
+      and upper(b.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.productName})),'%')
+    </if>
+    <if test="null!=pageReq.catName and ''!=pageReq.catName">
+      and upper(c.CAT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.catName})),'%')
+    </if>
+    <if test="null!=pageReq.typeId and ''!=pageReq.typeId">
+      and t.TYPE_ID = #{pageReq.typeId}
+    </if>
+    <if test="null!=pageReq.statusList and pageReq.statusList.size > 0">
+      and p.STATUS in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.statusList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.catId and ''!=pageReq.catId">
+      and c.CAT_ID = #{pageReq.catId}
+    </if>
+    <if test="null!=pageReq.unitType and ''!=pageReq.unitType">
+      and b.UNIT_TYPE = #{pageReq.unitType}
+    </if>
+    <if test="null!=pageReq.isDeleted and ''!=pageReq.isDeleted">
+      and p.IS_DELETED = #{pageReq.isDeleted}
+    </if>
+    <if test="null!=pageReq.manufacturerId and ''!=pageReq.manufacturerId">
+      and p.MANUFACTURER_ID = #{pageReq.manufacturerId}
+    </if>
+    <if test="null!=pageReq.productIdList and pageReq.productIdList.size > 0">
+      and p.PRODUCT_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productIdList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.productBaseIdList and pageReq.productBaseIdList.size > 0">
+      and b.PRODUCT_BASE_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productBaseIdList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.brandIdList and pageReq.brandIdList.size > 0">
+      and pb.BRAND_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.brandIdList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.createStaff">
+      and b.CREATE_STAFF = = #{pageReq.createStaff}
+    </if>
+    <if test="null!=pageReq.costLower and ''!=pageReq.costLower">
+      and p.COST <![CDATA[ >= ]]> #{pageReq.costLower}
+    </if>
+    <if test="null!=pageReq.costUpper and ''!=pageReq.costUpper">
+      and p.COST <![CDATA[ <= ]]> #{pageReq.costUpper}
+    </if>
+    <if test="null!=pageReq.auditState and ''!=pageReq.auditState">
+      and p.AUDIT_STATE = #{pageReq.auditState}
+    </if>
 
 
     order by p.CREATE_DATE DESC
@@ -197,6 +280,9 @@
     </if>
     <if test="null!=req.createStaff and ''!=req.createStaff">
       and t.create_staff = #{req.createStaff}
+    </if>
+    <if test="null!=req.attrValue10 and ''!=req.attrValue10">
+      and t.ATTR_VALUE10 = #{req.attrValue10}
     </if>
     order by t.CREATE_DATE DESC
   </select>
@@ -277,8 +363,20 @@
 
   <update id="updateAuditStateByProductBaseId" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductAuditStateUpdateReq">
     UPDATE prod_product
-    SET audit_state=#{auditState},STATUS=#{status}
+    SET audit_state=#{auditState},STATUS=#{status},ATTR_VALUE10=#{attrValue10}
     WHERE product_base_id=#{productBaseId} and is_deleted = '0'
+  </update>
+
+  <update id="updateAttrValue10" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductAuditStateUpdateReq">
+    UPDATE prod_product
+    SET ATTR_VALUE10=#{attrValue10}
+    WHERE is_deleted = '0' and ATTR_VALUE10 = '2'
+    <if test="null!=productIds">
+      and product_id in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="productIds">
+        #{item}
+      </foreach>
+    </if>
   </update>
 
   <select id="getProductByProductIdsAndBrandIds" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductAndBrandGetReq"

@@ -114,14 +114,16 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         String taskType = WorkFlowConst.TaskType.FLOW.getCode();
         String taskStatus = WorkFlowConst.TaskState.HANDING.getCode();
         String taskSubType = processStartDTO.getTaskSubType();
-        Task task = addTask(formId,title,processId,applyUserId,applyUserName, taskType, taskStatus
-                , taskSubType,nextNodeId,route.getNextNodeName(),processStartDTO.getExtends1());
+        Integer paramsType = processStartDTO.getParamsType();
+        String paramsValue = processStartDTO.getParamsValue();
+        Task task = addTask(formId, title, processId, applyUserId, applyUserName, taskType, taskStatus,
+                taskSubType, nextNodeId, route.getNextNodeName(), processStartDTO.getExtends1(), paramsType, paramsValue);
         //如果serviceList为空，忽略第6部
         log.info("4、根据路由信息查询路由服务（wf_route_service）表，获取需要执行的服务");
         List<RouteService> routeServiceList = routeServiceManager.listRouteService(routeId);
         log.info("TaskManager.startProcess route_id={},routeServiceList={}", routeId, JSON.toJSONString(routeServiceList));
         log.info("5、构造服务运行的容器对象，调用配置的服务");
-        invokeRouteService(formId,applyUserId,applyUserName,routeServiceList);
+        invokeRouteService(task, applyUserId, applyUserName, routeServiceList);
 
         log.info("6、如果下一个节点为结束节点，修改任务实例表的状态、办结时间，忽略后面的步骤");
         if (WorkFlowConst.WF_NODE.NODE_END.getId().equals(nextNodeId)) {
@@ -130,10 +132,10 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         }
 
         log.info("7、根据路由信息的下一环节ID查询环节权限表（wf_node_rights）,获取允许处理当前环节的用户列表");
-        List<HandlerUser> handlerUserList = getHandlerUsers(task,nextNodeId,processStartDTO.getNextHandlerUser());
+        List<HandlerUser> handlerUserList = getHandlerUsers(task, nextNodeId, processStartDTO.getNextHandlerUser());
 
         log.info("8、添加下个环节处理");
-        addNextTaskItem(route, task,handlerUserList);
+        addNextTaskItem(route, task, handlerUserList);
 
         return ResultVO.success();
     }
@@ -210,16 +212,18 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      * 调用路由服务
      * @return
      */
-    private void invokeRouteService(String formId,String handlerUserId,String handlerUserName,List<RouteService> routeServiceList) {
+    private void invokeRouteService(Task task, String handleUserId, String handleUserName, List<RouteService> routeServiceList) {
         if (CollectionUtils.isNotEmpty(routeServiceList)) {
             List<String> serviceIdList = routeServiceList.stream().map(RouteService::getServiceId).collect(Collectors.toList());
             List<Service> serviceList = serviceManager.listServiceByIds(serviceIdList);
             if (CollectionUtils.isNotEmpty(serviceList)) {
                 // 调用服务
                 InvokeRouteServiceRequest invokeRouteServiceRequest = new InvokeRouteServiceRequest();
-                invokeRouteServiceRequest.setBusinessId(formId);
-                invokeRouteServiceRequest.setHandlerUserId(handlerUserId);
-                invokeRouteServiceRequest.setHandlerUserName(handlerUserName);
+                invokeRouteServiceRequest.setBusinessId(task.getFormId());
+                invokeRouteServiceRequest.setHandlerUserId(handleUserId);
+                invokeRouteServiceRequest.setHandlerUserName(handleUserName);
+                invokeRouteServiceRequest.setParamsType(task.getParamsType());
+                invokeRouteServiceRequest.setParamsValue(task.getParamsValue());
                 runRouteService.invokeRouteService(invokeRouteServiceRequest, serviceList);
             }
         }
@@ -227,11 +231,12 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
 
     /**
      * 添加任务
+     *
      * @return
      */
     private Task addTask(String formId, String title, String processId, String applyUserId,
-                           String applyUserName, String taskType, String taskStatus, String taskSubType,
-                           String curNodeId,String curNodeName,String extends1) {
+                         String applyUserName, String taskType, String taskStatus, String taskSubType,
+                         String curNodeId, String curNodeName, String extends1, Integer paramType, String paramValue) {
 
         UserDetailDTO userDetailDTO = userClient.getUserDetail(applyUserId);
 
@@ -243,12 +248,14 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         task.setTaskSubType(taskSubType);
         task.setTaskStatus(taskStatus);
         task.setCreateUserId(applyUserId);
-        task.setCreateUserName(getUserDisplayName(userDetailDTO,applyUserName));
+        task.setCreateUserName(getUserDisplayName(userDetailDTO, applyUserName));
         task.setCreateTime(new Date());
         task.setCurNodeId(curNodeId);
         task.setCurNodeName(curNodeName);
         task.setLastDealTime(new Date());
-        task.setExtends1(getExtends1(userDetailDTO,extends1));
+        task.setExtends1(getExtends1(userDetailDTO, extends1));
+        task.setParamsType(paramType);
+        task.setParamsValue(paramValue);
         taskMapper.insert(task);
         return task;
     }
@@ -345,8 +352,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         log.info("TaskManager.nextRoute route_id={},routeServiceList={}", routeId, JSON.toJSONString(routeServiceList));
         log.info("4、构造服务运行的容器对象，调用配置的服务");
         Task task =  taskMapper.selectById(taskId);
-        String formId = task.getFormId();
-        invokeRouteService(formId,handleUserId,handleUserName,routeServiceList);
+        invokeRouteService(task, handleUserId, handleUserName, routeServiceList);
         Route route = routeManager.queryRouteById(routeId);
         log.info("nextRoute routeManager.queryRouteById routeId={}, route={}", routeId, JSON.toJSONString(route));
         log.info("5、如果下一个节点为结束节点，修改任务实例表的状态、办结时间，忽略后面的步骤");
@@ -355,7 +361,7 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
             return ResultVO.success();
         } else {
             //将最新的环节信息冗余到任务实例表
-            updateTaskStatusById(taskId, WorkFlowConst.TASK_STATUS_PROCESSING,route.getNextNodeId(),route.getNextNodeName());
+            updateTaskStatusById(taskId, WorkFlowConst.TASK_STATUS_PROCESSING, route.getNextNodeId(), route.getNextNodeName());
         }
 
         log.info("6、根据路由信息的下一环节ID查询环节权限表（wf_node_rights）,获取允许处理当前环节的用户列表");
@@ -403,9 +409,19 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         log.info("1、根据任务项ID查询任务项（wf_task_item）表，task_item_id={},taskId={}", taskItemId, taskId);
         //1> 校验任务项的状态,如果状态不是待领取抛出异常
         TaskItem taskItem = taskItemManager.queryTaskItemById(taskItemId,taskId);
-        if (taskItem == null || !WorkFlowConst.TaskItemState.WAITING.getCode().equals(taskItem.getItemStatus())) {
+        if (taskItem == null) {
+            return ResultVO.error(ResultCodeEnum.TASK_ITEM_IS_EMPTY);
+        }
+
+        // 如果任务项状态为已领取，而且领取人和处理人一致，直接返回成功
+        if (WorkFlowConst.TaskItemState.PENDING.getCode().equals(taskItem.getItemStatus())
+                && taskClaimDTO.getUserId().equals(taskItem.getHandlerUserId())) {
+            return ResultVO.success();
+        }
+        if (!WorkFlowConst.TaskItemState.WAITING.getCode().equals(taskItem.getItemStatus())) {
             return ResultVO.error(ResultCodeEnum.TASK_ITEM_STATE_NOT_IS_WAITING);
         }
+
         log.info("2、根据任务项ID查询任务池表（wf_task_pool）表，task_item_id={}", taskItemId);
         //1> 校验用户ID是否在任务池的列表中，如果不存在抛出异常
         List<TaskPool> taskPoolList = taskPoolManager.queryTaskPoolByTaskItemId(taskItemId,taskId);
@@ -447,8 +463,9 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
             taskSubType = taskAddReq.getTaskSubType();
         }
         Task task = addTask(formId, taskTitle, WorkFlowConst.WORK_TYPE, userId, userName,
-                    taskType,taskStatus, taskSubType,WorkFlowConst.WORK_TYPE,
-                    taskAddReq.getNextNodeName(),taskAddReq.getExtends1());
+                taskType, taskStatus, taskSubType, WorkFlowConst.WORK_TYPE,
+                taskAddReq.getNextNodeName(), taskAddReq.getExtends1(),
+                WorkFlowConst.TASK_PARAMS_TYPE.NO_PARAMS.getCode(), "");
         final String taskId = task.getTaskId();
         log.info("2、根据传入的信息添加任务项（wf_task_item）表");
         //如果传入的处理用户列表只有1个，直接填写任务分配时间和处理人信息，忽略第3步
@@ -524,9 +541,9 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
      */
     public Page<TaskPageResp> queryTaskPage(TaskPageReq req) {
 
-        Page<TaskPageResp> page = new Page<TaskPageResp>(req.getPageNo(),req.getPageSize());
+        Page<TaskPageResp> page = new Page<TaskPageResp>(req.getPageNo(), req.getPageSize());
 
-        return taskMapper.queryTask(page,req);
+        return taskMapper.queryTask(page, req);
     }
 
     /**
@@ -608,8 +625,8 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
         task.setLastDealTime(new Date());
 
         UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq(Task.FieldNames.taskId.getTableFieldName(),taskId);
-        return taskMapper.update(task,updateWrapper) > 0;
+        updateWrapper.eq(Task.FieldNames.taskId.getTableFieldName(), taskId);
+        return taskMapper.update(task, updateWrapper) > 0;
     }
 
     /**
@@ -686,5 +703,22 @@ public class TaskManager extends ServiceImpl<TaskMapper,Task> {
 
 
         return serviceExecutor.execute(paramContext);
+    }
+
+    /**
+     * 根据流程ID修改业务参数信息
+     * @param taskId 流程ID
+     * @param paramsType 参数类型
+     * @param paramsValue 参数值
+     * @return
+     */
+    public boolean updateTaskParams(String taskId, Integer paramsType, String paramsValue) {
+        Task task = new Task();
+        task.setParamsType(paramsType);
+        task.setParamsValue(paramsValue);
+
+        UpdateWrapper<Task> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq(Task.FieldNames.taskId.getTableFieldName(), taskId);
+        return taskMapper.update(task, updateWrapper) > 0;
     }
 }

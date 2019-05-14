@@ -32,6 +32,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +48,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class RetailerResourceInstB2BController {
 
-	@Reference
+    @Reference
     private RetailerResourceInstService retailerResourceInstService;
-	@Reference
+    @Reference
     private MerchantRulesService merchantRulesService;
     @Reference
     private MerchantService merchantService;
@@ -66,7 +67,7 @@ public class RetailerResourceInstB2BController {
         if (org.springframework.util.StringUtils.isEmpty(req.getMktResStoreIds())) {
             ResultVO.error("仓库为空");
         }
-	    return retailerResourceInstService.listResourceInst(req);
+        return retailerResourceInstService.listResourceInst(req);
     }
 
     @ApiOperation(value = "绿色通道串码导入", notes = "绿色通道串码导入")
@@ -227,7 +228,7 @@ public class RetailerResourceInstB2BController {
             return;
         }
         List<ResourceInstListPageResp> list = dataVO.getResultData().getRecords();
-        log.info("RetailerResourceInstB2BController.nbrExport retailerResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
+        log.info("RetailerResourceInstB2BController.nbrExport retailerResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.retailerColumn();
         OutputStream output = null;
         try{
@@ -254,6 +255,7 @@ public class RetailerResourceInstB2BController {
         }
     }
 
+
     @ApiOperation(value = "绿色通道录入串码机型权限校验", notes = "有权限返回true,无返回false")
     @ApiImplicitParam(name = "产品id", value = "mktResId", paramType = "query", required = true, dataType = "String")
     @ApiResponses({
@@ -276,5 +278,38 @@ public class RetailerResourceInstB2BController {
             return ResultVO.success(true);
         }
         return ResultVO.success(false);
+    }
+
+    @ApiOperation(value = "导出录入失败串码", notes = "导出录入失败串码")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="nbrFailExport")
+    public void nbrFailExport(@RequestBody ResourceNbrFailExportDTO dto, HttpServletResponse response) {
+        log.info("RetailerResourceInstB2BController.nbrFailExport req={}, resp={}", JSON.toJSONString(dto));
+        OutputStream output = null;
+        try {
+            Workbook workbook = new HSSFWorkbook();
+            String fileName = "导出失败串码列表";
+            List<ExcelTitleName> failNbrColumn = ResourceInstColum.failNbrColumn();
+            ExcelToNbrUtils.builderOrderExcel(workbook, dto.getFailReqList(), failNbrColumn, false);
+            output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+            response.setContentType("application/msexcel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            workbook.write(output);
+        } catch (Exception e) {
+            log.error("串码导出失败", e);
+        } finally {
+            try {
+                if (null != output){
+                    output.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

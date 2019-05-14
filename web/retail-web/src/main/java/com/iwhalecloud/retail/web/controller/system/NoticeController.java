@@ -70,7 +70,7 @@ public class NoticeController {
 
     /**
      * 更新通知
-     * @param noticeId
+     * @param
      * @return
      */
     @ApiOperation(value = "更新通知接口", notes = "更新通知")
@@ -81,14 +81,15 @@ public class NoticeController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value = "/setHasReadStatus", method = RequestMethod.PUT)
+    @PutMapping(value="setHasReadStatus")
+//    @RequestMapping(value = "/setHasReadStatus", method = RequestMethod.PUT)
     @Transactional
     @UserLoginToken
-    public ResultVO setHasReadStatus(@RequestParam(value = "noticeId") String noticeId) {
+    public ResultVO setHasReadStatus(@RequestBody NoticeUpdateReq req) {
         NoticeUserUpdateReq noticeUserUpdateReq = new NoticeUserUpdateReq();
-        noticeUserUpdateReq.setNoticeId(noticeId);
+        noticeUserUpdateReq.setNoticeId(req.getNoticeId());
         noticeUserUpdateReq.setUserId(UserContext.getUser().getUserId());
-        return noticeUserService.setHasReadStatus(noticeId, UserContext.getUser().getUserId());
+        return noticeUserService.setHasReadStatus(req.getNoticeId(), UserContext.getUser().getUserId());
     }
 
 //    /**

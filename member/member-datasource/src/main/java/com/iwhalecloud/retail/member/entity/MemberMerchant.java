@@ -27,15 +27,12 @@ public class MemberMerchant implements Serializable {
   	
   	//属性 begin
 	/**
-	 * ID
-	 */
+  	 * 商家ID
+  	 */
 	@TableId
 	@ApiModelProperty(value = "ID")
 	private String id;
 
-	/**
-  	 * 商家ID
-  	 */
 	@ApiModelProperty(value = "商家ID")
   	private String merchId;
   	
@@ -75,6 +72,7 @@ public class MemberMerchant implements Serializable {
     /** 字段名称枚举. */
     public enum FieldNames {
 		/** 商家ID. */
+		id("id","ID"),
 		merchId("merchId","MERCH_ID"),
 		
 		/** 会员ID. */

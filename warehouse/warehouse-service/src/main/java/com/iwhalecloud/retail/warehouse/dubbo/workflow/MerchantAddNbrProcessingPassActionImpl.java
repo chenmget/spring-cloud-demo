@@ -21,6 +21,7 @@ import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
@@ -65,11 +66,13 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         ResourceReqDetailQueryReq detailQueryReq = new ResourceReqDetailQueryReq();
         detailQueryReq.setMktResReqId(businessId);
         List<ResourceReqDetailDTO> reqDetailDTOS = detailManager.listDetail(detailQueryReq);
-        log.info("MerchantAddNbrProcessingPassActionImpl.run detailManager.listDetail detailQueryReq={}, resp={}", JSON.toJSONString(detailQueryReq), JSON.toJSONString(reqDetailDTOS));
         List<String> mktResInstNbrs = reqDetailDTOS.stream().map(ResourceReqDetailDTO::getMktResInstNbr).collect(Collectors.toList());
+        log.info("MerchantAddNbrProcessingPassActionImpl.run detailManager.listDetail mktResInstNbrs={}", JSON.toJSONString(mktResInstNbrs));
         Map<String, String> ctCodeMap = new HashMap<>();
         reqDetailDTOS.forEach(item->{
-            ctCodeMap.put(item.getMktResInstNbr(), item.getCtCode());
+            if(StringUtils.isNotBlank(item.getCtCode())){
+                ctCodeMap.put(item.getMktResInstNbr(), item.getCtCode());
+            }
         });
         ResourceReqDetailDTO detailDTO = reqDetailDTOS.get(0);
 
@@ -103,12 +106,12 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
             addReq.setRegionId(merchantDTO.getCity());
         }
         runableTask.exceutorAddNbr(addReq);
-        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}");
+        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}", addReq);
 
         // step3 修改申请单状态变为审核通过
         ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
         reqUpdate.setMktResReqId(businessId);
-        reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
+        reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
         ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
         log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
         // step4 增加事件和批次

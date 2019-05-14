@@ -130,8 +130,7 @@
 		 <!--</where>-->
 	<!--</select>-->
     <!---->
-    
-    
+
     <select id="getParMerchantAccountByMerchantId"
             resultType="int">
 			SELECT

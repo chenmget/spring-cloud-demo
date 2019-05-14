@@ -28,6 +28,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Created by jiyou on 2019/4/11.
  * <p>
@@ -75,7 +77,7 @@ public class ReportStoreInvoicingCityController extends BaseController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value = "/storeInvoicingCityReportExport")
-    public ResultVO storeInvoicingCityReportExport(@RequestBody ReportStInvCityDaoReq req) {
+    public void storeInvoicingCityReportExport(@RequestBody ReportStInvCityDaoReq req, HttpServletResponse response) {
 
         ReportStorePurchaserReq req1 = new ReportStorePurchaserReq();
         String userId = UserContext.getUser().getUserId();
@@ -85,15 +87,14 @@ public class ReportStoreInvoicingCityController extends BaseController {
             req.setCity(UserContext.getUser().getLanId());
         }
 
-        ResultVO result = new ResultVO();
         ResultVO<List<RptPartnerOperatingDay>> resultVO = reportStInvCityService.getReportStInvCityListExport(req);
-
+        ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {
             result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            result.setResultData("失败：" + resultVO.getResultMsg());
-            return result;
+            result.setResultMsg(resultVO.getResultMsg());
+            deliveryGoodsResNberExcel.outputResponse(response,resultVO);
+            return;
         }
-
         List<RptPartnerOperatingDay> data = resultVO.getResultData();
 
         //创建Excel
@@ -122,7 +123,34 @@ public class ReportStoreInvoicingCityController extends BaseController {
 
         // 创建excel
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data, orderMap, "门店进销存地市报表");
-        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+
+        deliveryGoodsResNberExcel.exportExcel("门店进销存地市报表",workbook,response);
+//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+        
+//        OutputStream output = null ;
+//        try{
+//            //创建Excel
+//            String fileName = "门店进销存地市报表";
+////            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+//            output = response.getOutputStream();
+//            response.reset();
+//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//            response.setContentType("application/msexcel;charset=UTF-8");
+//            response.setCharacterEncoding("UTF-8");
+//            workbook.write(output);
+////            output.close();
+//        }catch (Exception e){
+//            log.error("门店进销存地市报表导出失败",e);
+//        } finally {
+//            if (null != output){
+//                try {
+//                    output.close();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
     }
 
     /**

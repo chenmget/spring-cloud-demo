@@ -2,12 +2,14 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.ActivityGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ActivityGoodsReq;
 import com.iwhalecloud.retail.goods2b.entity.GoodsProductRel;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsProductRelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -19,6 +21,9 @@ public class GoodsProductRelManager{
     @Resource
     private GoodsProductRelMapper goodsProductRelMapper;
 
+    @Value("${fdfs.showUrl}")
+    private String dfsShowIp;
+
     /**
      * 查询产商品关联表
      * @param goodsId
@@ -27,7 +32,7 @@ public class GoodsProductRelManager{
     public GoodsProductRel queryGoodsProductRel(String goodsId){
 
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.eq("is_deleted", GoodsConst.NO_DELETE);
+//        queryWrapper.eq("is_deleted", GoodsConst.NO_DELETE);
         queryWrapper.eq("goods_id",goodsId);
         List<GoodsProductRel> goodsProductRels = goodsProductRelMapper.selectList(queryWrapper);
         if(CollectionUtils.isEmpty(goodsProductRels)){
@@ -109,7 +114,16 @@ public class GoodsProductRelManager{
     }
 
     public List<ActivityGoodsDTO> qryActivityGoodsId(ActivityGoodsReq req){
-        return goodsProductRelMapper.qryActivityGoodsId(req);
+        List<ActivityGoodsDTO> activityGoodsDTOs = goodsProductRelMapper.qryActivityGoodsId(req);
+        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(activityGoodsDTOs)){
+            for(ActivityGoodsDTO activityGoodsDTO:activityGoodsDTOs){
+                String imageUrl = activityGoodsDTO.getImageUrl();
+                if(StringUtils.isNotEmpty(imageUrl)){
+                    activityGoodsDTO.setImageUrl(dfsShowIp+imageUrl);
+                }
+            }
+        }
+        return activityGoodsDTOs;
     }
 
     public List<GoodsProductRel> queryGoodsByProductIds(List<String> productIds) {

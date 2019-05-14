@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.workflow.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -96,6 +95,12 @@ public class Node implements Serializable {
 
 	@ApiModelProperty(value = "是否指定用户:0-否，1-是")
 	private String booAppointDealUser;
+
+	/**
+	 * 修改用户ID
+	 */
+	@ApiModelProperty(value = "配置环节展示的业务界面地址 ")
+	private String nodePage;
   	
   	
   	//属性 end
@@ -124,7 +129,9 @@ public class Node implements Serializable {
         /** 修改用户ID  */
         updateUserId,
 		/** 修改用户ID  */
-		booAppointDealUser
+		booAppointDealUser,
+		/** 配置环节展示的业务界面地址  */
+		nodePage
     }
 
 	

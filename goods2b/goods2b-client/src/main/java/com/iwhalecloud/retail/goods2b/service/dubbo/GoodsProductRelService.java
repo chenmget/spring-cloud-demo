@@ -39,7 +39,7 @@ public interface GoodsProductRelService{
      * @param goodsProductRelEditReq
      * @return
      */
-    ResultVO<Boolean> checkBuyCount(GoodsProductRelEditReq goodsProductRelEditReq);
+    ResultVO checkBuyCount(GoodsProductRelEditReq goodsProductRelEditReq);
     /**
      * 查询商品的提货价
      * @param goodsProductRelEditReq
@@ -63,5 +63,4 @@ public interface GoodsProductRelService{
     ResultVO<GoodsQueryByProductIdsResp> queryGoodsIdsByProductIds(GoodsQueryByProductIdsReq req);
 
     ResultVO<List<GoodsProductRelDTO>> listGoodsProductRel(String goodsId);
-
 }

@@ -122,6 +122,9 @@ public class GoodsForPageQueryResp implements Serializable {
     @ApiModelProperty(value = "产品ID")
     private String productId;
 
+    @ApiModelProperty(value = "订购数量")
+    private String supplyNum;
+
     /**
      * 是否预售商品
      */
@@ -134,7 +137,6 @@ public class GoodsForPageQueryResp implements Serializable {
      */
     @ApiModelProperty(value = "是否前置补贴商品 1.是 0.否")
     private Integer isSubsidy;
-
     /**
      * 支付方式
      */

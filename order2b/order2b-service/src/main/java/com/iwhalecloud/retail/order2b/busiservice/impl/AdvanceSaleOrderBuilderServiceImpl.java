@@ -60,6 +60,21 @@ public class AdvanceSaleOrderBuilderServiceImpl implements AdvanceSaleOrderBuild
         }
 
         /**
+         * 地包不能购买地包的商品
+         */
+        if (supplierModel != null) {
+            if (PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(supplierModel.getMerchantType())) { //地包
+                SupplierModel merchanModel= memberInfoReference.selectSuperById(request.getMerchantId());
+                if(merchanModel!=null && PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchanModel.getMerchantType())){
+                    resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                    resp.setResultMsg("地包不能购买地包的商品");
+                    return resp;
+                }
+            }
+
+        }
+
+        /**
          * 购买数量校验（最大，最小）
          */
         ResultVO b = goodsManagerReference.checkBuyCount(list,request);

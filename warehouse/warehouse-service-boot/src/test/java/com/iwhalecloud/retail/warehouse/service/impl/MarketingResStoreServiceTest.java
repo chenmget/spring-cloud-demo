@@ -10,6 +10,8 @@ import com.iwhalecloud.retail.warehouse.dto.response.markresswap.QryStoreMktInst
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.StoreInventoryQuantityItemSwapResp;
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.base.QueryMarkResQueryResultsSwapResp;
 import com.iwhalecloud.retail.warehouse.service.MarketingResStoreService;
+import com.iwhalecloud.retail.warehouse.service.MerchantAddNbrProcessingPassActionService;
+import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,6 +35,9 @@ import java.util.List;
 public class MarketingResStoreServiceTest {
     @Reference
     private MarketingResStoreService marketingResStoreService;
+
+    @Reference
+    private MerchantAddNbrProcessingPassActionService merchantAddNbrProcessingPassActionService;
 
     @Test
     public void syncTerminal() {
@@ -157,5 +162,13 @@ public class MarketingResStoreServiceTest {
         SynMarkResStoreReq req = new SynMarkResStoreReq();
 
         marketingResStoreService.synMarkResStore(req);
+    }
+
+    @Test
+    public void run(){
+        InvokeRouteServiceRequest params = new InvokeRouteServiceRequest();
+        params.setBusinessId("11916310");
+
+        merchantAddNbrProcessingPassActionService.run(params);
     }
 }

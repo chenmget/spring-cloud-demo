@@ -418,18 +418,20 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             return;
         }
         StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
-        storePageReq.setMerchantId(req.getBuyerMerchantId());
+        storePageReq.setMerchantId(req.getSellerMerchantId());
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         String storeId = resouceStoreService.getStoreId(storePageReq);
-        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceStoreService.getStoreId req={},storeId={}", JSON.toJSONString(storePageReq), JSON.toJSONString(storeId));
+        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceStoreService.getStoreId req={},storeId={}", JSON.toJSONString(storePageReq), storeId);
+
+        storePageReq.setMerchantId(req.getBuyerMerchantId());
+        String buyerStoreId = resouceStoreService.getStoreId(storePageReq);
+        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceStoreService.getStoreId req={},storeId={}", JSON.toJSONString(storePageReq), buyerStoreId);
 
         List<String> distinctList = Lists.newArrayList();
         List<DeliveryResourceInstItem> deliveryResourceInstItemList = req.getDeliveryResourceInstItemList();
         for (DeliveryResourceInstItem deliveryResourceInstItem : deliveryResourceInstItemList) {
             distinctList.addAll(deliveryResourceInstItem.getMktResInstNbrs());
         }
-        ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
-        resourceInstsGetReq.setMktResInstNbrs(distinctList);
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }
@@ -438,23 +440,27 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         // 是否地包供货：地包商交易给零售商时填是
         String ifGroundSupply = ResourceConst.CONSTANT_NO;
         String buyerMerchantId = req.getBuyerMerchantId();
+        ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
+        resourceInstsGetReq.setMktResInstNbrs(distinctList);
         resourceInstsGetReq.setMktResStoreId(storeId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         int count = 0;
         for (int i = 0; i < insts.size(); i++) {
             ResourceInstDTO resourceInstDTO = insts.get(i);
-            ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
-            if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.equals(resourceInstDTO.getMerchantType())) {
+            if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(resourceInstDTO.getMerchantType())) {
                 ifDirectSuppLy = ResourceConst.CONSTANT_YES;
             }
-            if (PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.equals(resourceInstDTO.getMerchantType())) {
+            if (PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(resourceInstDTO.getMerchantType())) {
                 ifGroundSupply = ResourceConst.CONSTANT_YES;
             }
+            ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
             resouceInstTrackDTO.setIfDirectSupply(ifDirectSuppLy);
             resouceInstTrackDTO.setIfGroundSupply(ifGroundSupply);
             resouceInstTrackDTO.setMerchantId(buyerMerchantId);
+            resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+            resouceInstTrackDTO.setMktResStoreId(buyerStoreId);
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();

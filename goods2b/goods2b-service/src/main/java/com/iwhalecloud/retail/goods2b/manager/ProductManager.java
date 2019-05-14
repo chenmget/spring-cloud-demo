@@ -16,9 +16,6 @@ import com.iwhalecloud.retail.goods2b.mapper.ProductMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
@@ -34,7 +31,6 @@ public class ProductManager {
      * @param req
      * @return
      */
-    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public Integer insert(Product req) {
         // 产品编码
         if (StringUtils.isNotBlank(req.getSn()) || StringUtils.isNotBlank(req.getUnitName())) {
@@ -141,6 +137,16 @@ public class ProductManager {
     }
 
     /**
+     * 分页查询
+     * @param req
+     * @return
+     */
+    public Page<ProductPageResp> selectPageProductAdminAll(ProductsPageReq req) {
+        Page<ProductPageResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+        return productMapper.selectPageProductAdminAll(page, req);
+    }
+
+    /**
      * 查询产品Id
      * @param req
      * @return
@@ -182,6 +188,11 @@ public class ProductManager {
 
     }
 
+    public int updateAttrValue10(ProductAuditStateUpdateReq req){
+        return productMapper.updateAttrValue10(req);
+
+    }
+
     /**
      * 权限过滤用
      * @param req
@@ -214,7 +225,16 @@ public class ProductManager {
      * @param productId
      * @return
      */
-    public ProductForResourceResp getProductForResource(String productId){
+    public ProductForResourceResp getProductForResource(String productId) {
         return productMapper.getProductForResource(productId);
+    }
+
+     /**
+     * 根据产品名称或编码查询产品
+     * @param request
+     * @return
+     */
+    public Integer getDuplicate(ProductGetDuplicateReq request){
+        return productMapper.getDuplicate(request);
     }
 }

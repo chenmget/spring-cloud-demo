@@ -69,7 +69,7 @@ public class MemberMerchantServiceTest {
         req.setPageSize("10");
         req.setMerchId("");
         req.setMemId("");
-        req.setLvId(1);
+//        req.setLvId(1);
         req.setUpdateEndDate(new Date());
         ResultVO<Page<MemberMerchantQueryForPageResp>> resultVO = memberMerchantService.queryMemberMerchantForPage(req);
         log.info("queryGroupByMemberForPageTest result={}",resultVO.getResultData());

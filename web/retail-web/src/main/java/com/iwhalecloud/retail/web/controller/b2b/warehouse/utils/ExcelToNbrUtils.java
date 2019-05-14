@@ -20,13 +20,13 @@ import java.util.List;
 @Component
 public class ExcelToNbrUtils {
 
-	private static final String EXCEL_XLS = "xls";  
+	private static final String EXCEL_XLS = "xls";
     private static final String EXCEL_XLSX = "xlsx";
 
     /**
      * 读取Excel并把数据返回，兼容 Excel 2003/2007/2010
-     * @throws Exception  
-     */  
+     * @throws Exception
+     */
     public static List<ResInsExcleImportResp> getData(InputStream inputStream) throws Exception {
 		List<ResInsExcleImportResp> data = new ArrayList<ResInsExcleImportResp>();
         try {
@@ -146,7 +146,6 @@ public class ExcelToNbrUtils {
 				}
 			}
 		}
-
 	}
 
 
@@ -158,6 +157,7 @@ public class ExcelToNbrUtils {
 		final String CREATE_TIME = "createTime";
 		final String CREATE_DATE = "createDate";
 		final String CRM_STATUS = "statusCd";
+		final String RESULT = "result";
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
 		if (filedName.equals(MKT_RES_INST_TYPE)) {
 			return ResourceConst.MKTResInstType.getMKTResInstTypeName(value);
@@ -186,6 +186,14 @@ public class ExcelToNbrUtils {
 				return StringDate;
 			}catch (Exception e){
 				log.error("时间解析错误",e);
+			}
+		}
+
+		if (filedName.equals(RESULT)) {
+			if (ResourceConst.CONSTANT_YES.equals(value)) {
+				return "是";
+			}else {
+				return "否";
 			}
 		}
 		String finalValue = (value == null || "null".equals(value))? "" : value;

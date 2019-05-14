@@ -129,11 +129,11 @@ public class ProductBase implements Serializable {
 	@ApiModelProperty(value = "换货对象")
 	private String exchangeObject;
 
-	/**
-	 * 采购类型
-	 */
-	@ApiModelProperty(value = "采购类型")
-	private String purchaseType;
+//	/**
+//	 * 采购类型
+//	 */
+//	@ApiModelProperty(value = "采购类型")
+//	private String purchaseType;
   	
   	/**
   	 * 参数1

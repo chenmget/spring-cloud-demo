@@ -41,6 +41,7 @@
     ,t.MERCHANT_TYPE
     ,t.PRODUCT_BASE_ID
     ,min(t.DELIVERY_PRICE) as DELIVERY_PRICE
+    ,SUM(t.SUPPLY_NUM) as SUPPLY_NUM
     ,t.PRODUCT_ID
     ,t.IS_ADVANCE_SALE
     ,t.IS_SUBSIDY
@@ -65,6 +66,7 @@
  t0.IS_SUBSIDY,
  t1.IS_HAVE_STOCK,
  t1.DELIVERY_PRICE,
+ t1.SUPPLY_NUM,
  t3.PRODUCT_CODE
 ,t2.PRODUCT_ID
 ,t2.COLOR
@@ -287,12 +289,13 @@
     <select id="queryPageByConditionAdmin" resultType="com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp"
             parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq">
         select distinct g.GOODS_ID as goodsId,g.GOODS_NAME as goodsName,g.MARKET_ENABLE as marketEnable,c.CAT_ID as goodsCatId,c.CAT_NAME as goodsCatName,
-        g.SUPPLIER_ID as supplierId ,g.AUDIT_STATE as auditState,g.IS_ALLOT as isAllot,g.SOURCE_FROM as sourceFrom,
-        pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn,g.MKTPRICE,g.PAYMENTS as payments
+        g.SUPPLIER_ID as supplierId ,g.AUDIT_STATE as auditState,g.IS_ALLOT as isAllot,g.SOURCE_FROM as sourceFrom,g.MERCHANT_TYPE as merchantType,g.TARGET_TYPE as targetType,
+        pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn,g.MKTPRICE,g.PAYMENTS as payments,t.deliveryPrice,t.COLOR,t.MEMORY
         from prod_goods g left join prod_cat c on g.GOODS_CAT_ID=c.CAT_ID
         left join prod_brand pb on g.brand_id=pb.brand_id
         left join
-        (select pgpr.goods_id,pgpr.PRODUCT_ID,group_concat(pp.sn) sn,ppb.PRODUCT_BASE_ID,ppb.UNIT_TYPE from PROD_GOODS_PRODUCT_REL pgpr,PROD_PRODUCT pp,PROD_PRODUCT_BASE ppb
+        (select pgpr.goods_id,pgpr.PRODUCT_ID,group_concat(pp.sn) sn,group_concat(pgpr.delivery_price) deliveryPrice,ppb.PRODUCT_BASE_ID,ppb.UNIT_TYPE,pp.COLOR,pp.MEMORY 
+        from PROD_GOODS_PRODUCT_REL pgpr,PROD_PRODUCT pp,PROD_PRODUCT_BASE ppb
         where  pgpr.PRODUCT_ID = pp.PRODUCT_ID
         and pgpr.PRODUCT_BASE_ID = ppb.PRODUCT_BASE_ID GROUP BY pgpr.GOODS_ID) t on t.goods_id=g.goods_id
         <where>
@@ -320,8 +323,12 @@
                     #{item}
                 </foreach>
             </if>
-
-
+            <if test="null!=req.supplierId">
+                and g.SUPPLIER_ID=#{req.supplierId}
+            </if>
+            <if test="null!=req.merchantType">
+                and g.MERCHANT_TYPE=#{req.merchantType}
+            </if>
 
             <if test="null!=req.beginTime">
                 and g.CREATE_DATE >= #{req.beginTime}
@@ -373,9 +380,13 @@
         order by g.UPDATE_DATE desc
     </select>
 
-    <select id="listSupplierGroundId" parameterType="java.lang.String" resultType="java.lang.String">
-        SELECT DISTINCT
-            (t1.SUPPLIER_ID)
+    <select id="listSupplierGroundRelative" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.goods2b.dto.SupplierGroundGoodsDTO">
+        SELECT
+            t1.GOODS_ID,
+            t1.SUPPLIER_ID,
+			t2.PRODUCT_ID,
+            t2.SUPPLY_NUM,
+            t2.DELIVERY_PRICE
         FROM
             prod_goods t1,
             prod_goods_product_rel t2,
@@ -383,26 +394,27 @@
         WHERE
             t1.IS_DELETED = 0
         AND t1.MARKET_ENABLE = 1
+        AND t1.MERCHANT_TYPE = '2'
+        AND t1.GOODS_ID = t2.GOODS_ID
+        AND t2.PRODUCT_BASE_ID = t3.PRODUCT_BASE_ID
+        AND t2.PRODUCT_BASE_ID = #{productBaseId}
+    </select>
+
+    <select id="listSupplierGroundSupplyNum" parameterType="java.lang.String" resultType="java.lang.Double">
+        SELECT MAX
+        (t2.SUPPLY_NUM)
+        FROM
+        prod_goods t1,
+        prod_goods_product_rel t2,
+        prod_product_base t3
+        WHERE
+        t1.IS_DELETED = 0
+        AND t1.MARKET_ENABLE = 1
         AND t1.GOODS_ID = t2.GOODS_ID
         AND t2.PRODUCT_BASE_ID = t3.PRODUCT_BASE_ID
         AND t1.MERCHANT_TYPE = '2'
         AND t3.PRODUCT_BASE_ID = #{productBaseId}
-    </select>
-
-    <select id="listSupplierGroundDeliveryPrice" parameterType="java.lang.String" resultType="java.lang.Double">
-        SELECT
-            MIN(t2.DELIVERY_PRICE)
-        FROM
-            prod_goods t1,
-            prod_goods_product_rel t2
-        WHERE
-            t1.IS_DELETED = 0
-        AND t1.MARKET_ENABLE = 1
-        AND t1.MERCHANT_TYPE = 2
-        AND t1.GOODS_ID = t2.GOODS_ID
-        AND t2.PRODUCT_BASE_ID = #{productBaseId}
-        GROUP BY
-            t2.PRODUCT_BASE_ID
+        GROUP by t3.PRODUCT_BASE_ID
     </select>
 
     <select id="listSupplierGoodsByType" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO">

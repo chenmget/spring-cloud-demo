@@ -118,7 +118,7 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
     }
 
     @Override
-    public ResultVO<Boolean> checkBuyCount(GoodsProductRelEditReq goodsProductRelEditReq) {
+    public ResultVO checkBuyCount(GoodsProductRelEditReq goodsProductRelEditReq) {
         List<BuyCountCheckDTO> buyCountCheckDTOList = goodsProductRelEditReq.getBuyCountCheckDTOList();
         log.info("GoodsProductRelServiceImpl.checkBuyCount goodsProductRelEditReq={}", JSON.toJSONString(goodsProductRelEditReq));
         String merchantId = goodsProductRelEditReq.getMerchantId();
@@ -142,7 +142,7 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
         if (CollectionUtils.isEmpty(productIdList)) {
             // 该商家没有经营的机型
             log.error("GoodsProductRelServiceImpl.checkBuyCount 商家没有经营的机型，merchantId={}", merchantId);
-            return ResultVO.success(false);
+            return ResultVO.error("没有经营权限");
         }
         for (BuyCountCheckDTO buyCountCheck : buyCountCheckDTOList) {
             String goodsId = buyCountCheck.getGoodsId();
@@ -154,17 +154,17 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
             }
             // 校验发布区域和发布对象
             if (checkRegionAndTarget(merchantId, lanId, regionId, goodsId)) {
-                return ResultVO.success(false);
+                return ResultVO.error("校验发布区域或发布对象失败");
             }
             if (!productIdList.contains(productId)) {
                 // 该商家没有这款产品的经营权限
                 log.error("GoodsProductRelServiceImpl.checkBuyCount 商家没有该机型的经营权限，merchantId={}，productId={}", merchantId, productId);
-                return ResultVO.success(false);
+                return ResultVO.error("没有经营权限");
             }
             GoodsProductRel goodsProductRel = goodsProductRelManager.getGoodsProductRel(goodsId,productId);
             if (goodsProductRel == null) {
                 log.error("GoodsProductRelServiceImpl.checkBuyCount getGoodsProductRel return null goodsId={}, productId={}", goodsId, productId);
-                return ResultVO.success(false);
+                return ResultVO.error("数据不完整");
             }
 
             // 校验当前预售商品已订购的数量是否超出活动定义的参与数
@@ -175,7 +175,7 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
                 if(respResultVO.isSuccess() && respResultVO.getResultData() != null){
                     if (checkAdvanceSale(productId, buyCount, respResultVO)) {
                         log.error("GoodsProductRelServiceImpl.checkBuyCount check advance sale is false，productId={}", productId);
-                        return ResultVO.success(false);
+                        return ResultVO.error("当前预售商品已订购的数量是否超出活动定义的参与数");
                     }
                 }
             }
@@ -185,10 +185,10 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
             if (buyCount < minNum || buyCount > maxNum || supplyNum - buyCount < 0) {
                 log.info("GoodsProductRelServiceImpl.checkBuyCount buyCountCheckDTOList={},minNum={},maxNum={},buyCount={}, supplyNum={}",
                         JSON.toJSONString(buyCountCheckDTOList),minNum ,maxNum ,buyCount, supplyNum);
-                return ResultVO.success(false);
+                return ResultVO.error("购买数量校验失败，未达到规则要求");
             }
         }
-        return ResultVO.success(true);
+        return ResultVO.success();
     }
 
     private boolean checkRegionAndTarget(String merchantId, String lanId, String regionId, String goodsId) {

@@ -29,6 +29,7 @@ import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.dto.request.UserEditReq;
+import com.iwhalecloud.retail.system.dto.request.UserGetReq;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -203,8 +204,12 @@ public class MerchantServiceImpl implements MerchantService {
             }
 
             // “系统账号”、“系统状态”
-            if (!StringUtils.isEmpty(merchantDetailDTO.getUserId())) {
-                UserDTO userDTO = userService.getUserByUserId(merchantDetailDTO.getUserId());
+//            if (!StringUtils.isEmpty(merchantDetailDTO.getUserId())) {
+//                UserDTO userDTO = userService.getUserByUserId(merchantDetailDTO.getUserId());
+            if (!StringUtils.isEmpty(merchantDetailDTO.getMerchantId())) {
+                UserGetReq userGetReq = new UserGetReq();
+                userGetReq.setRelCode(merchantDetailDTO.getMerchantId());
+                UserDTO userDTO = userService.getUser(userGetReq);
                 if (userDTO != null) {
                     merchantDetailDTO.setLoginName(userDTO.getLoginName());
                     merchantDetailDTO.setUserStatus(userDTO.getStatusCd().toString());

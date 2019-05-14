@@ -87,6 +87,7 @@ public class GoodsConst {
      * 国际化配置文件里当前语言
      */
     public static final String LOCALE_CODE = "Locale";
+
     /**
      * 状态常量
      */

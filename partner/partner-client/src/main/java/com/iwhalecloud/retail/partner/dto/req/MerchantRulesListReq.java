@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.partner.dto.req;
 
+import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,7 +10,7 @@ import java.io.Serializable;
 
 @Data
 @ApiModel(value = "商家权限规则 获取列表请求对象，对应模型par_merchant_rules, 对应实体MerchantRules类")
-public class MerchantRulesListReq implements Serializable {
+public class MerchantRulesListReq extends PageVO implements Serializable {
     private static final long serialVersionUID = -2226785874416304896L;
 
     //属性 begin

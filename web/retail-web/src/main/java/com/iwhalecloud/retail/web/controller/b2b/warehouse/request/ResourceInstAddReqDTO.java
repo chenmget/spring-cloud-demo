@@ -129,4 +129,11 @@ public class ResourceInstAddReqDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "产品类型")
 	private java.lang.String typeId;
 
+	/**
+	 * 营销资源导入批次。
+	 */
+	@ApiModelProperty(value = "营销资源导入批次。")
+	private String mktResUploadBatch;
+
+
 }

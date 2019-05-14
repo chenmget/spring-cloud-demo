@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsActRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsActRelListReq;
-import com.iwhalecloud.retail.goods2b.exception.BusinessException;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsActRelService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
@@ -23,10 +22,13 @@ import com.iwhalecloud.retail.web.controller.b2b.promo.request.MarketingActivity
 import com.iwhalecloud.retail.web.controller.b2b.promo.request.MarketingActivityListCouponyReq;
 import com.iwhalecloud.retail.web.controller.b2b.promo.request.MarketingActivityListReliefReq;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
+import com.iwhalecloud.retail.web.utils.FastDFSImgStrJoinUtil;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
@@ -50,6 +52,9 @@ public class MarketingActivityB2BController {
 
     @Reference
     private GoodsActRelService goodsActRelService;
+
+    @Value("${fdfs.showUrl}")
+    private String dfsShowIp;
 
     @ApiOperation(value = "创建活动", notes = "创建活动")
     @ApiResponses({
@@ -102,6 +107,15 @@ public class MarketingActivityB2BController {
             req.setSysPostName(userDTO.getUserName());
             req.setOrgId(userDTO.getOrgId());
         }
+        if (!StringUtils.isEmpty(req.getPageImgUrl())) {
+            req.setPageImgUrl(req.getPageImgUrl().replaceAll(dfsShowIp,""));
+        }
+        if (!StringUtils.isEmpty(req.getActivityUrl())) {
+            req.setActivityUrl(req.getActivityUrl().replaceAll(dfsShowIp, ""));
+        }
+        if (!StringUtils.isEmpty(req.getTopImgUrl())) {
+            req.setTopImgUrl(req.getTopImgUrl().replaceAll(dfsShowIp,""));
+        }
         return marketingActivityService.addMarketingActivity(req);
     }
 
@@ -111,8 +125,12 @@ public class MarketingActivityB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/listMarketingActivity")
+    @UserLoginToken
     public ResultVO<Page<MarketingActivityListResp>> listMarketingActivity(@RequestBody MarketingActivityListReq req){
-        log.info("MarketingActivityB2BController listMarketingActivity MarketingActivityListReq={} ", req);
+        //如果不是管理员，根据当前登录帐号过滤
+        if (!UserContext.isAdminType()) {
+            req.setCreator(UserContext.getUserId());
+        };
         if("Invalid date".equals(req.getStartTimeS())) {
             req.setStartTimeS("");
         }
@@ -125,6 +143,8 @@ public class MarketingActivityB2BController {
         if("Invalid date".equals(req.getEndTimeE())) {
             req.setEndTimeE("");
         }
+
+        log.info("MarketingActivityB2BController listMarketingActivity MarketingActivityListReq={} ", req);
         return marketingActivityService.listMarketingActivity(req);
     }
 
@@ -157,6 +177,18 @@ public class MarketingActivityB2BController {
                     activityParticipantList.get(i).setMerchantId(activityParticipantList.get(i).getShopCode());
                 }
             }
+        }
+        if (!StringUtils.isEmpty(marketingActivityDetailResp.getPageImgUrl())) {
+            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getPageImgUrl(), dfsShowIp, true);
+            marketingActivityDetailResp.setPageImgUrl(newImageFile);
+        }
+        if (!StringUtils.isEmpty(marketingActivityDetailResp.getTopImgUrl())) {
+            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getTopImgUrl(), dfsShowIp, true);
+            marketingActivityDetailResp.setTopImgUrl(newImageFile);
+        }
+        if (!StringUtils.isEmpty(marketingActivityDetailResp.getActivityUrl())) {
+            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getActivityUrl(), dfsShowIp, true);
+            marketingActivityDetailResp.setActivityUrl(newImageFile);
         }
         return respResultVO;
     }

@@ -217,11 +217,10 @@ public class RunableTask {
             log.info("RunableTask.exceutorAddNbr maxNum={}", maxNum);
             List subList = nbrList.subList(perNum*i, maxNum);
             CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
-            req.setMktResInstNbrs(newList);
             Callable callable = new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
-                    Boolean addSuccess = resourceInstService.addResourceInstByMerchant(req);
+                    Boolean addSuccess = resourceInstService.addResourceInstByMerchant(req, newList);
                     log.info("RunableTask.exceutorAddNbr resourceInstService.addResourceInstByMerchant req={}, resp={}", JSON.toJSONString(req), addSuccess);
                     return addSuccess;
                 }

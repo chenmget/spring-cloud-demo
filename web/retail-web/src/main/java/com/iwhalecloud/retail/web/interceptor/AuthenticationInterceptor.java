@@ -2,14 +2,13 @@ package com.iwhalecloud.retail.web.interceptor;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.Claim;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.member.dto.MemberDTO;
 import com.iwhalecloud.retail.member.dto.request.MemberGetReq;
 import com.iwhalecloud.retail.member.service.MemberService;
 import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.BusinessEntityGetReq;
 import com.iwhalecloud.retail.partner.service.*;
 import com.iwhalecloud.retail.system.common.SystemConst;
@@ -20,11 +19,15 @@ import com.iwhalecloud.retail.web.annotation.PassToken;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.consts.UserType;
 import com.iwhalecloud.retail.web.consts.WebConst;
+import com.iwhalecloud.retail.web.controller.cache.RedisCacheUtils;
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
+import com.iwhalecloud.retail.web.utils.JWTTokenUtil;
 import com.twmacinta.util.MD5;
+import com.ztesoft.fastjson.JSON;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.web.method.HandlerMethod;
@@ -67,6 +70,9 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 
     @Reference
     UserRoleService userRoleService;
+
+    @Autowired
+    private  RedisCacheUtils redisCacheUtils;
 
 
     @Override
@@ -114,8 +120,12 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         //检查有没有需要用户权限的注解
+        String id = "";
+        String sessionId = "";
+        String type = "";
+
         if (method.isAnnotationPresent(UserLoginToken.class)) {
-        	log.info("校验token = {}",token);
+            log.info("校验token = {}",token);
             UserLoginToken userLoginToken = method.getAnnotation(UserLoginToken.class);
             if (userLoginToken.required()) {
                 // 执行认证
@@ -123,9 +133,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     throw new UserNotLoginException("token为空，无效token，请重新登录");
                 }
 
-                String id = "";
-                String sessionId = "";
-                String type = "";
                 try {
                     Map<String, Claim> claims = JWT.decode(token).getClaims();
                     id = claims.get("id").asString();
@@ -148,12 +155,14 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     throw new UserNotLoginException("非法数据，请重新登录");
                 }
 
-                // 验证 token
-                JWTVerifier jwtVerifier = JWT.require(Algorithm.HMAC256(SECRET)).build();
-                try {
-                    jwtVerifier.verify(token);
-                } catch (JWTVerificationException e) {
-                	e.printStackTrace();
+                // 验证 token 有效时间
+                if (JWTTokenUtil.isTokenEffect(sessionId)) {
+                    // 有效  更新token有效时间
+                    if (!JWTTokenUtil.updateTokenExpireTime(sessionId)) {
+                        log.info("更新token 有效时间 失败");
+                    }
+                } else {
+                    log.info("token失效，请重新登录");
                     throw new UserNotLoginException("token失效，请重新登录");
                 }
 
@@ -174,31 +183,63 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
                     UserDTO userDTO = (UserDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER);
                     UserOtherMsgDTO otherMsgDTO = (UserOtherMsgDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER_OTHER_MSG);
 
-//                    log.info("token 里面的用户ID= {}", id);
-//                    if (userDTO != null) {
-//                        log.info("session里面的用户信息的用户ID=  {}", userDTO.getUserId());
-//                    }
-
                     if(userDTO == null || !StringUtils.equals(id, userDTO.getUserId())){
-//                        log.info("session里面的用户信息为空，或者 toke里面的用户ID和session里面的用户ID 不一样，重新获取用户信息");
+                        log.info("session里面的用户信息为空，或者 toke里面的用户ID和session里面的用户ID 不一样，重新获取用户信息");
                         userDTO = userService.getUserByUserId(id);
                         if(userDTO != null){
                             otherMsgDTO = saveUserOtherMsg(userDTO);
                         }
                     }
-//                    if(otherMsgDTO == null
-//                            && userDTO != null){
-//                        otherMsgDTO = saveUserOtherMsg(userDTO);
-//                    }
                     // 保存用户信息
                     UserContext.setUser(userDTO);
                     UserContext.setUserId(id);
                     UserContext.setSessionId(sessionId);
                     UserContext.setUserOtherMsg(otherMsgDTO);
                 }
-
                 return true;
             }
+        } else{
+            if (token == null || "".equals(token)) {
+                return true;
+            }
+            try {
+                Map<String, Claim> claims = JWT.decode(token).getClaims();
+                id = claims.get("id").asString();
+                sessionId = claims.get("sessionId").asString();
+                type = claims.get("type").asString();
+            } catch (Exception j) {
+                log.error("token异常", j);
+            }
+
+            //将id放入线程变量
+            if(UserType.MEMBER.toString().equals(type)){
+                MemberDTO memberDTO = (MemberDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_MEMBER);
+                if(memberDTO == null){
+                    // web 重启后  从session 取到的值可能是空
+                    MemberGetReq req = new MemberGetReq();
+                    req.setMemberId(id);
+                    memberDTO = memberService.getMember(req).getResultData();
+                }
+                // 保存会员信息
+                MemberContext.setMember(memberDTO);
+                MemberContext.setMemberId(id);
+                MemberContext.setUserSessionId(sessionId);
+            }else if(UserType.USER.toString().equals(type)){
+                UserDTO userDTO = (UserDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER);
+                UserOtherMsgDTO otherMsgDTO = (UserOtherMsgDTO) httpServletRequest.getSession().getAttribute(WebConst.SESSION_USER_OTHER_MSG);
+                log.info("no UserLoginToken userDTO={}, otherMsgDTO={}",JSON.toJSONString(userDTO),JSON.toJSONString(otherMsgDTO));
+                if(userDTO == null || !StringUtils.equals(id, userDTO.getUserId())){
+                    userDTO = userService.getUserByUserId(id);
+                    if(userDTO != null){
+                        otherMsgDTO = saveUserOtherMsg(userDTO);
+                    }
+                }
+                UserContext.setUser(userDTO);
+                UserContext.setUserId(id);
+                UserContext.setSessionId(sessionId);
+                UserContext.setUserOtherMsg(otherMsgDTO);
+            }
+            return true;
         }
         return true;
     }
@@ -216,8 +257,13 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
 //        List<UserRoleDTO> userRoleDTOList = userRoleService.listUserRoleByUserId(userDTO.getUserId()).getResultData();
 //        userOtherMsgDTO.setUserRoleList(userRoleDTOList);
 
+        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(userDTO.getRelCode());
+        log.info("AuthenticationInterceptor saveUserOtherMsg merchantService.getMerchantById merchentCode={}, resp={}", userDTO.getRelCode(), JSON.toJSONString(merchantDTOResultVO));
+        if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
+            return null;
+        }
         // 获取商家信息
-        userOtherMsgDTO.setMerchant(merchantService.getMerchantById(userDTO.getRelCode()).getResultData());
+        userOtherMsgDTO.setMerchant(merchantDTOResultVO.getResultData());
 
 //        if(userDTO.getUserFounder() == SystemConst.USER_FOUNDER_3
 //                || userDTO.getUserFounder() == SystemConst.USER_FOUNDER_6) {
@@ -260,6 +306,7 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
         }
 
         userOtherMsgDTO.setUser(userDTO);
+        log.info("AuthenticationInterceptor saveUserOtherMsg userOtherMsgDTO={}", JSON.toJSONString(userOtherMsgDTO));
         return userOtherMsgDTO;
     }
 

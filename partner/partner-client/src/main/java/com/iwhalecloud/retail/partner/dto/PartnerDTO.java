@@ -132,8 +132,8 @@ public class PartnerDTO implements java.io.Serializable {
 	/**
 	 * 重写脱敏
 	 */
-	public String getPhoneNo() {
-		return DesensitizedUtils.mobilePhone(phoneNo);
-	}
+//	public String getPhoneNo() {
+//		return DesensitizedUtils.mobilePhone(phoneNo);
+//	}
 
 }

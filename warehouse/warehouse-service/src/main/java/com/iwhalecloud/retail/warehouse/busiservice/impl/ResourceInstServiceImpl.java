@@ -323,13 +323,12 @@ public class ResourceInstServiceImpl implements ResourceInstService {
 
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public synchronized Boolean addResourceInstByMerchant(ResourceInstAddReq req) {
-        log.info("ResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
+    public synchronized Boolean addResourceInstByMerchant(ResourceInstAddReq req, CopyOnWriteArrayList<String> mktResInstNbrs) {
+        log.info("ResourceInstServiceImpl.addResourceInst req={}, mktResInstNbrs={}", JSON.toJSONString(req), JSON.toJSONString(mktResInstNbrs));
         String batchId = resourceInstManager.getPrimaryKey();
-        List<String> nbrList = req.getMktResInstNbrs();
-        List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(nbrList.size());
+        List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(mktResInstNbrs.size());
         Date now = new Date();
-        for (String mktResInstNbr : nbrList) {
+        for (String mktResInstNbr : mktResInstNbrs) {
             ResourceInst resourceInst = new ResourceInst();
             BeanUtils.copyProperties(req, resourceInst);
             resourceInst.setMktResInstId(resourceInstManager.getPrimaryKey());
@@ -353,7 +352,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
-        resourceInstStoreDTO.setQuantity(Long.valueOf(nbrList.size()));
+        resourceInstStoreDTO.setQuantity(Long.valueOf(mktResInstNbrs.size()));
         resourceInstStoreDTO.setQuantityAddFlag(true);
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
         resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());

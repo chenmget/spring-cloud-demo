@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.goods2b.dto.req.GoodsQueryByProductIdsReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsUpdateActTypeByGoodsIdsReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsService;
+import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
 import com.iwhalecloud.retail.promo.entity.MarketingActivity;
@@ -71,6 +72,8 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 // 更新商品表是否参与前置补贴活动字段
                 GoodsUpdateActTypeByGoodsIdsReq req = new GoodsUpdateActTypeByGoodsIdsReq();
                 req.setGoodsIds(goodsIdList);
+                // 前置补贴只更新地包的，加merchantType类型
+                req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
                 req.setIsSubsidy(GoodsConst.IsSubsidy.IS_SUBSIDY.getCode());
                 log.info("开始更新商品表字段 req={}", JSON.toJSON(req));
                 Boolean resultData = goodsService.updateGoodsActTypeByGoodsIdList(req).getResultData();

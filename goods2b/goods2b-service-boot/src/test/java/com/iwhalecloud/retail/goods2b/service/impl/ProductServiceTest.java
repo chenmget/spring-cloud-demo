@@ -9,6 +9,8 @@ import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductTagsAddReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
+import com.iwhalecloud.retail.goods2b.common.ProductConst;
+import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
@@ -19,6 +21,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Z
@@ -77,5 +81,15 @@ public class ProductServiceTest {
         req.setProductId("100000065");
         ResultVO<ProductForResourceResp> resultVO = productService.getProductForResource(req);
         System.out.println("resultVO=" + JSON.toJSON(resultVO));
+    }
+
+    public void testupdate(){
+        ProductAuditStateUpdateReq req = new ProductAuditStateUpdateReq();
+        List<String> list = new ArrayList<>();
+        list.add("100000092");
+        list.add("100000065");
+        req.setAttrValue10(ProductConst.attrValue10.SUCCESS.getCode());
+        req.setProductIds(list);
+        productService.updateAttrValue10(req);
     }
 }

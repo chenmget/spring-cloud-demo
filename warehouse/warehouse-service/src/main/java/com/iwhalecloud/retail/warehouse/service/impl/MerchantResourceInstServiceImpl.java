@@ -183,11 +183,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
         ResourceUploadTempDelReq resourceUploadTempDelReq = new ResourceUploadTempDelReq();
-        if (!CollectionUtils.isEmpty(req.getCheckMktResInstNbrs())) {
-            mktResInstNbrs.addAll(req.getCheckMktResInstNbrs());
-        }
         resourceUploadTempDelReq.setMktResUploadBatch(req.getMktResUploadBatch());
-        runableTask.exceutorDelNbr(resourceUploadTempDelReq);
+        resourceUploadTempManager.delResourceUploadTemp(resourceUploadTempDelReq);
         return ResultVO.success("串码入库提交申请单");
     }
 
@@ -207,6 +204,11 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             return ResultVO.success();
         }
 
+    }
+
+    @Override
+    public ResultVO exceutorDelNbr(ResourceUploadTempDelReq req) {
+        return ResultVO.success(resourceUploadTempManager.delResourceUploadTemp(req));
     }
 
 

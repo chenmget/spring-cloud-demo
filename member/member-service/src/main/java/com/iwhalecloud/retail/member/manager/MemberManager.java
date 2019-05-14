@@ -134,7 +134,6 @@ public class MemberManager{
     	return dto;
     }
     
-
     /**
    	 * 根据merchantId获取ParMerchantAccount信息
    	 * @param merchantId

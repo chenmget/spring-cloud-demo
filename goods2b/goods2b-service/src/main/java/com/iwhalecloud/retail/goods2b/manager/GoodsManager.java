@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO;
+import com.iwhalecloud.retail.goods2b.dto.SupplierGroundGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsUpdateActTypeByGoodsIdsReq;
@@ -13,7 +14,6 @@ import com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp;
 import com.iwhalecloud.retail.goods2b.entity.Goods;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsMapper;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -100,24 +100,28 @@ public class GoodsManager{
         return goodsMapper.update(goods, updateWrapper);
     }
 
-    public List<String> listSupplierGroundId(String productBaseId) {
-        return goodsMapper.listSupplierGroundId(productBaseId);
+    public List<SupplierGroundGoodsDTO> listSupplierGroundRelative(String productBaseId) {
+        return goodsMapper.listSupplierGroundRelative(productBaseId);
     }
 
-    public int updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req) {
+    public Double listSupplierGroundSupplyNum(String productBaseId) {
+        return goodsMapper.listSupplierGroundSupplyNum(productBaseId);
+    }
+
+    public int updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req){
         UpdateWrapper<Goods> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("GOODS_ID", req.getGoodsIds());
+        updateWrapper.in("GOODS_ID",req.getGoodsIds());
+        if(null != req.getMerchantType()){
+            updateWrapper.eq("MERCHANT_TYPE", req.getMerchantType());
+        }
         Goods goods = new Goods();
-        if (null != req.getIsAdvanceSale()) {
+        if(null != req.getIsAdvanceSale()){
             goods.setIsAdvanceSale(req.getIsAdvanceSale());
         }
-        if (null != req.getIsSubsidy()) {
+        if(null != req.getIsSubsidy()){
             goods.setIsSubsidy(req.getIsSubsidy());
         }
         return goodsMapper.update(goods, updateWrapper);
-    }
-    public List<Double> listSupplierGroundDeliveryPrice(String productBaseId) {
-        return goodsMapper.listSupplierGroundDeliveryPrice(productBaseId);
     }
 
     public List<SupplierGoodsDTO> listSupplierGoodsByType(String productId,String merchantType){

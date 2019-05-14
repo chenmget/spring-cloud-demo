@@ -44,6 +44,25 @@
         </if>
     </select>
 
+    <select id="pageMerchantRulesDetail" parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantRulesListReq"
+            resultType="com.iwhalecloud.retail.partner.dto.MerchantRulesDTO">
+        SELECT <include refid="allFields"/>
+        FROM PAR_MERCHANT_RULES t
+        WHERE 1 = 1
+        <if test="null != req.merchantId and '' != req.merchantId ">
+            and t.MERCHANT_ID = #{req.merchantId}
+        </if>
+        <if test="null != req.ruleType and '' != req.ruleType ">
+            and t.RULE_TYPE = #{req.ruleType}
+        </if>
+        <if test="null != req.targetType and '' != req.targetType ">
+            and t.TARGET_TYPE = #{req.targetType}
+        </if>
+        <if test="null != req.targetId and '' != req.targetId ">
+            and t.TARGET_ID = #{req.targetId}
+        </if>
+    </select>
+
     <select id="pageMerchantRules" parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantRulesDetailPageReq"
             resultType="com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp">
         SELECT <include refid="pageMerchantRulesFields"/>

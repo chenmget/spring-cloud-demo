@@ -17,6 +17,6 @@ import org.apache.ibatis.annotations.Param;
 public interface MemberMapper extends BaseMapper<Member>{
 
 	Page<MemberDTO> pageMember(Page<MemberDTO> page, @Param("pageReq")MemberPageReq req);
-
+	
 	int getParMerchantAccountByMerchantId(String merchantId);
 }

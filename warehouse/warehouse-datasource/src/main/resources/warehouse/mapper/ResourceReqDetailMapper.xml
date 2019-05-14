@@ -45,6 +45,9 @@
         <if test = "null != req.mktResInstNbr and '' != req.mktResInstNbr">
             and detail.MKT_RES_INST_NBR = #{req.mktResInstNbr}
         </if>
+        <if test = "null != req.isInspection and '' != req.isInspection">
+            and detail.IS_INSPECTION = #{req.isInspection}
+        </if>
     </select>
 
     <select id="getProcessingNbrList" parameterType="java.util.List"

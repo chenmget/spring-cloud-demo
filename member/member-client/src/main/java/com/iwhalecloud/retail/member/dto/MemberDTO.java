@@ -426,18 +426,18 @@ public class MemberDTO implements java.io.Serializable {
     /**
      * 重写脱敏
      */
-    public String getMobile() {
-        return DesensitizedUtils.mobilePhone(mobile);
-    }
+//    public String getMobile() {
+//        return DesensitizedUtils.mobilePhone(mobile);
+//    }
 
     /**
      * 重写脱敏
      */
-    public String getTel() {
-        return DesensitizedUtils.mobilePhone(tel);
-    }
+//    public String getTel() {
+//        return DesensitizedUtils.mobilePhone(tel);
+//    }
 
-    public String getUname() {
-        return DesensitizedUtils.mobilePhone(uname);
-    }
+//    public String getUname() {
+//        return DesensitizedUtils.mobilePhone(uname);
+//    }
 }

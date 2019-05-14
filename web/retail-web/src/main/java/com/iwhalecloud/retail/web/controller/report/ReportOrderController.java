@@ -1,47 +1,37 @@
 package com.iwhalecloud.retail.web.controller.report;
 
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
-//import com.iwhalecloud.retail.report.dto.request.ReportDaoReq;
-import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
 import com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq;
 import com.iwhalecloud.retail.report.dto.request.ReportOrderNbrDaoReq;
-import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp;
-//import com.iwhalecloud.retail.report.dto.response.ReportDaoResp;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
-import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportOrderService;
-import com.iwhalecloud.retail.report.service.ReportService;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
-
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+//import com.iwhalecloud.retail.report.dto.request.ReportDaoReq;
+//import com.iwhalecloud.retail.report.dto.response.ReportDaoResp;
 
 
 /**
@@ -70,15 +60,16 @@ public class ReportOrderController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/getReportOrderList1")
+	@UserLoginToken
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
-		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-		String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
+//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//		String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
 		String userType=req.getUserType();
-		
-		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-			req.setMerchantCode(retailerCodes);
-		}
+		//String userType = UserContext.getUser().getUserFounder()+"";
+//		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//			req.setMerchantCode(retailerCodes);
+//		}
 		//userType 1省级管理员，2地市管理员，3零售商，4供应商，5厂家
 		
 		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的
@@ -109,30 +100,29 @@ public class ReportOrderController extends BaseController {
     }
 	 
 	 
-	 /**
+	 	/**
 	     * 导出按钮
 	     */
-	    @ApiOperation(value = "导出", notes = "导出报表数据")
-	    @ApiResponses({
-	            @ApiResponse(code=400,message="请求参数没填好"),
-	            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-	    })
-	    @PostMapping(value="/orderReportDataExport")
+	    @RequestMapping(value = "/orderReportDataExport", method = RequestMethod.POST)
+	    @UserLoginToken
 	    public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
-	    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-			String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
+//	    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
+//			String retailerCodes = req.getMerchantCode();//是否输入了零售商账号
 			String userType=req.getUserType();
-			if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-				retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-				req.setMerchantCode(retailerCodes);
-			}
-			//userType 1省级管理员，2地市管理员，3供应商，4零售商，5厂家
+			//String userType = UserContext.getUser().getUserFounder()+"";
+//			if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
+//				retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
+//				req.setMerchantCode(retailerCodes);
+//			}
+			//userType 1省级管理员，2地市管理员，3零售商，4供应商，5厂家
 			
-			if(userType!=null && !userType.equals("") && "4".equals(userType)){//零售商只看自己的
+			if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商只看自己的
+//				String loginName = UserContext.getUser().getLoginName();
+//				iReportDataInfoService.getretailerCode(loginName);
 				String merchantCode=UserContext.getUser().getRelCode();
 				req.setMerchantCode(merchantCode);
 			}
-			if(userType!=null && !userType.equals("") && "3".equals(userType)){//供应商只看自己的
+			if(userType!=null && !userType.equals("") && "4".equals(userType)){//供应商只看自己的
 				String suplierCode=UserContext.getUser().getRelCode();
 				req.setSuplierCode(suplierCode);
 			}
@@ -141,6 +131,13 @@ public class ReportOrderController extends BaseController {
 				req.setLanId(regionId);
 			}
 	        ResultVO<List<ReportOrderResp>> resultVO = reportOrderService.getReportOrderList1dc(req);
+	        ResultVO result = new ResultVO();
+	        if (!resultVO.isSuccess()) {
+	            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+	            result.setResultMsg(resultVO.getResultMsg());
+	            deliveryGoodsResNberExcel.outputResponse(response,resultVO);
+	            return;
+	        }
 	        List<ReportOrderResp> data = resultVO.getResultData();
 	        //创建Excel
 	        Workbook workbook = new HSSFWorkbook();
@@ -174,23 +171,43 @@ public class ReportOrderController extends BaseController {
 	        orderMap.add(new ExcelTitleName("lanId", "店中商所属地市"));
 	        orderMap.add(new ExcelTitleName("city", "店中商所属区县"));
 
-	        try{
-	            //创建Excel
-	            String fileName = "订单明细报表";
-	            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+	        orderMap.add(new ExcelTitleName("couponActive", "营销活动"));
+	        orderMap.add(new ExcelTitleName("couponType", "优惠类型"));
+	        orderMap.add(new ExcelTitleName("couponMoney", "优惠额度"));
+	      //创建orderItemDetail
+	        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+	        		orderMap, "订单明细报表");
+	        deliveryGoodsResNberExcel.exportExcel("订单明细报表",workbook,response);
+	        
+//	        deliveryGoodsResNberExcel.uploadExcel(workbook);
+	        
+//	        return deliveryGoodsResNberExcel.uploadExcel(workbook);
+	        
+	      
+//	        OutputStream output = null ;
+//	        try{
+//	            //创建Excel
+//	            String fileName = "订单明细报表";
+////	            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
+//	            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
+//	            output = response.getOutputStream();
+//	            response.reset();
+//	            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+//	            response.setContentType("application/msexcel;charset=UTF-8");
+//	            response.setCharacterEncoding("UTF-8");
+//	            workbook.write(output);
+////	            output.close();
+//	        }catch (Exception e){
+//	            log.error("订单明细报表导出失败",e);
+//	        } finally {
+//	            if (null != output){
+//	                try {
+//	                    output.close();
+//	                } catch (IOException e) {
+//	                    e.printStackTrace();
+//	                }
+//	            }
+//	        }
 
-	            OutputStream output = response.getOutputStream();
-	            response.reset();
-	            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-	            response.setContentType("application/msexcel;charset=UTF-8");
-	            response.setCharacterEncoding("UTF-8");
-	            workbook.write(output);
-	            output.close();
-	        }catch (Exception e){
-	            log.error("订单明细报表导出失败",e);
-	        }
-	        
-	        
 	    }
-
 }

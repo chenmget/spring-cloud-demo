@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempDelReq;
@@ -7,12 +8,14 @@ import com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempListPageRe
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceUploadTemp;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceUploadTempMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 
 
 @Component
+@Slf4j
 public class ResourceUploadTempManager  extends ServiceImpl<ResourceUploadTempMapper, ResouceUploadTemp> {
     @Resource
     private ResourceUploadTempMapper resourceUploadTempMapper;
@@ -34,6 +37,8 @@ public class ResourceUploadTempManager  extends ServiceImpl<ResourceUploadTempMa
      * @return
      */
     public Integer delResourceUploadTemp(ResourceUploadTempDelReq req){
-        return resourceUploadTempMapper.delResourceUploadTemp(req);
+        Integer num = resourceUploadTempMapper.delResourceUploadTemp(req);
+        log.info("resourceUploadTempMapper.delResourceUploadTemp req={}, num={}", JSON.toJSONString(req), num);
+        return num;
     }
 }

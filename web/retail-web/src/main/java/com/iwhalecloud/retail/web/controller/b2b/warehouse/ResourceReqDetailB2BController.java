@@ -36,6 +36,7 @@ public class ResourceReqDetailB2BController {
     @ApiImplicitParams({
             @ApiImplicitParam(name = "mktResReqId", value = "mktResReqId", paramType = "query", required = true, dataType = "String"),
             @ApiImplicitParam(name = "mktResInstNbr", value = "mktResInstNbr", paramType = "query", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "isInspection", value = "isInspection", paramType = "query", required = false, dataType = "String"),
             @ApiImplicitParam(name = "pageNo", value = "pageNo", paramType = "query", required = false, dataType = "Integer"),
             @ApiImplicitParam(name = "pageSize", value = "pageSize", paramType = "query", required = false, dataType = "Integer")
     })
@@ -44,13 +45,14 @@ public class ResourceReqDetailB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value="resourceRequestPage")
-    public ResultVO<Page<ResourceReqDetailPageResp>> resourceRequestPage(String mktResReqId, String mktResInstNbr,
+    public ResultVO<Page<ResourceReqDetailPageResp>> resourceRequestPage(String mktResReqId, String mktResInstNbr, String isInspection,
                                                                          Integer pageNo, Integer pageSize) {
         ResourceReqDetailPageReq req = new ResourceReqDetailPageReq();
         req.setMktResReqId(mktResReqId);
         req.setMktResInstNbr(mktResInstNbr);
         req.setPageNo(pageNo);
         req.setPageSize(pageSize);
+        req.setIsInspection(isInspection);
         return resourceReqDetailService.resourceRequestPage(req);
     }
 

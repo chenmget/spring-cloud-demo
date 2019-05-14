@@ -4,9 +4,8 @@
   
     <select id="getCodeStatementsReport" parameterType="com.iwhalecloud.retail.report.dto.request.ReportCodeStatementsReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp">
-	SELECT * FROM (	
-		SELECT a.mkt_res_inst_nbr,
-		a.mkt_res_store_id mktResStoreId,
+	SELECT a.mkt_res_inst_nbr,
+	a.mkt_res_store_id mktResStoreId,
 	a.status_cd storageType,
 	a.mkt_res_inst_type,
 	a.source_type,
@@ -39,10 +38,10 @@
 	rpt_res_inst_detail_day a
 	where 1=1
 		<if test="req.xdCreateTimeStart!=null and req.xdCreateTimeStart!=''">
-			and a.DATE &gt;= str_to_date(#{req.xdCreateTimeStart}, '%Y-%m-%d')
+			and a.CREATE_TIME &gt;= str_to_date(#{req.xdCreateTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.xdCreateTimeEnd!=null and req.xdCreateTimeEnd!=''">
-			and a.DATE &lt;= str_to_date(#{req.xdCreateTimeEnd}, '%Y-%m-%d')
+			and a.CREATE_TIME &lt;= str_to_date(#{req.xdCreateTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.createTimeStart!=null and req.createTimeStart!=''">
 			and a.RECEIVE_TIME &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
@@ -119,7 +118,6 @@
 		<if test="req.cpType!=null and req.cpType!=''">
 			and a.product_type = #{req.cpType}
 		</if>
-		limit 60000) c
   </select>
   
 </mapper>

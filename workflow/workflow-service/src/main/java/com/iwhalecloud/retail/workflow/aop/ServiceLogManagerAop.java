@@ -36,12 +36,18 @@ public class ServiceLogManagerAop {
         try {
             Object result = point.proceed();
             log.info("interface=({}),gs_close={},timeConsuming={},request{},result={}",
-                    JSON.toJSONString(point.getSignature().getDeclaringType()),time, (System.currentTimeMillis() - time),
+                    JSON.toJSONString(point.getSignature().getDeclaringType()), time, (System.currentTimeMillis() - time),
                     JSON.toJSONString(point.getArgs()), JSON.toJSONString(result));
             return result;
         } catch (RetailTipException e) {
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return e.getTipResultVO();
+
+            //只有在事务开启的方法捕获异常，如果是传播事务则不捕获，在最外层统一捕获
+            if (TransactionAspectSupport.currentTransactionStatus().isNewTransaction()) {
+                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+                return e.getTipResultVO();
+            }
+
+            throw e;
         }
 
 

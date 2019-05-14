@@ -144,7 +144,6 @@ public class ResourceRequest implements Serializable {
 	@ApiModelProperty(value = "串码类型")
   	private java.lang.String mktResInstType;
 
-
   	//属性 end
 	
     /** 字段名称枚举. */

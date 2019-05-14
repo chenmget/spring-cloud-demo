@@ -140,7 +140,6 @@ public class MemberInfoReference {
         return merchantAccountService.listMerchantAccount(merchantAccountListReq);
     }
 
-
     public List<String> listMerchantIdList(MerchantLigthReq req) {
         ResultVO<List<MerchantLigthResp>> merchantRespVO = merchantService.listMerchantForOrder(req);
         log.info("MemberInfoReference.listMerchantIdList merchantService.listMerchantForOrder req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(merchantRespVO));
@@ -159,6 +158,14 @@ public class MemberInfoReference {
         log.info("MemberInfoReference.getMerchantForOrder merchantService.getMerchantForOrder req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(merchantRespVO));
         if (!merchantRespVO.isSuccess() || null != merchantRespVO.getResultData()) {
             return merchantRespVO.getResultData();
+        }
+        return null;
+    }
+
+    public MerchantDTO getMerchantByCode(String merchantCode) {
+        ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantByCode(merchantCode);
+        if (merchantResultVO.isSuccess() && null != merchantResultVO.getResultData()) {
+            return merchantResultVO.getResultData();
         }
         return null;
     }

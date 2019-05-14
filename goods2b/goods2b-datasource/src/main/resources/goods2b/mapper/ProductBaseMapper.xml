@@ -120,7 +120,7 @@
     <!-- 一个productbase对应多个product的情况去除PRODUCT_NAME相同的记录 -->
     <select id="getProductBaseList" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductBaseListReq"
             resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp">
-        Select <include refid="allFields" />,pt.type_name,c.cat_name,pb.name AS brandName,pp.SN,pp.COLOR,pp.MEMORY,pp.COST,pp.PURCHASE_TYPE as purchaseType,count(distinct t.product_base_id)
+        Select <include refid="allFields" />,pt.type_name,c.cat_name,pb.name AS brandName,pp.SN,pp.COLOR,pp.MEMORY,pp.COST,pp.PURCHASE_TYPE as purchaseType,pp.status,count(distinct t.product_base_id)
         FROM prod_product_base t
         left join prod_cat c on c.cat_id = t.cat_id
         left join prod_type pt on pt.type_id = t.type_id

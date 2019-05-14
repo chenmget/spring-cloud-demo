@@ -327,4 +327,7 @@ public class ProductBaseGetResp implements Serializable {
 
     @ApiModelProperty(value = "销售价")
     private String cost;
+
+    @ApiModelProperty(value = "状态")
+    private String status;
 }

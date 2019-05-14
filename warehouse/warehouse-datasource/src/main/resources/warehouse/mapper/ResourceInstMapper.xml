@@ -117,11 +117,7 @@
                 #{item}
             </foreach>
         </if>
-<<<<<<< HEAD
-        <if test="null!=typeId and ''!=typeId">
-=======
         <if test="null!=typeId and '' !=typeId">
->>>>>>> release
             and t.type_id = #{typeId}
         </if>
     </update>

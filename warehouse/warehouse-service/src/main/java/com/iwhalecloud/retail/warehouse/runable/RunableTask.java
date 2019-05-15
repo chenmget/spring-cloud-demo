@@ -136,6 +136,9 @@ public class RunableTask {
                                 inst.setMktResUploadBatch(batchId);
                                 inst.setMktResInstNbr(mktResInstNbr);
                                 inst.setResult(ResourceConst.CONSTANT_NO);
+                                if (null != req.getCtCode()) {
+                                    inst.setCtCode(req.getCtCode().get(mktResInstNbr));
+                                }
                                 inst.setUploadDate(now);
                                 inst.setCreateDate(now);
                                 inst.setCreateStaff(req.getCreateStaff());

@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -26,6 +27,12 @@ public class ResourceInstValidReq implements java.io.Serializable {
 	@ApiModelProperty(value = "记录营销资源实例编码。")
 	@NotEmpty(message = "串码不能为空")
   	private List<String> mktResInstNbrs;
+
+	/**
+	 * 固网终端需要CT码管理时，记录CT码
+	 */
+	@ApiModelProperty(value = "固网CT码,键是串码，值是ct码")
+	private Map<String, String> ctCode;
 
 	/**
   	 * 营销资源标识，记录product_id

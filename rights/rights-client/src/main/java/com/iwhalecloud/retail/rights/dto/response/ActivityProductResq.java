@@ -123,4 +123,17 @@ public class ActivityProductResq implements Serializable {
      */
     @ApiModelProperty(value = "产品参与总数量限制标识")
     private String numLimitFlg;
+    
+    /**
+     * 颜色
+     */
+    @ApiModelProperty(value = "颜色")
+    private String color;
+    
+    /**
+     * 内存
+     */
+    @ApiModelProperty(value = "内存")
+    private String memory;
+
 }

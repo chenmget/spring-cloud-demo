@@ -143,7 +143,35 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         }
         return ResultVO.success(preSubsidyProductResqDTOS);
     }
-
+    
+    @Override
+    public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProductInfo(String marketingActivityId) {
+        log.info("ActivityProductServiceImpl.queryPreSubsidyProduct marketingActivityId={}", marketingActivityId);
+        List<PreSubsidyProductRespDTO> preSubsidyProductResqDTOS = new ArrayList<>();
+        List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityId);
+        log.info("ActivityProductServiceImpl.queryPreSubsidyProduct activityProductManager.queryActivityProductByCondition activityProducts={}", JSON.toJSON(activityProducts));
+        if (activityProducts.size() <= 0) {
+            return ResultVO.success(preSubsidyProductResqDTOS);
+        }
+        for (ActivityProduct activityProduct : activityProducts) {
+            PreSubsidyProductRespDTO preSubsidyProductResqDTO = new PreSubsidyProductRespDTO();
+            String productId = activityProduct.getProductId();
+            QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();
+            queryProductInfoReqDTO.setProductId(productId);
+            ResultVO<QueryProductInfoResqDTO> productInfoResqDTOResultVO = productService.getProductInfor(queryProductInfoReqDTO);
+            log.info("ActivityProductServiceImpl.queryPreSubsidyProduct productService.getProductInfo productInfoResqDTOResultVO ={}", JSON.toJSON(productInfoResqDTOResultVO));
+            if (productInfoResqDTOResultVO.getResultData() == null) {
+                continue;
+            }
+            BeanUtils.copyProperties(productInfoResqDTOResultVO.getResultData(), preSubsidyProductResqDTO);
+            ActivityProductRespDTO activityProductResqDTO = new ActivityProductRespDTO();
+            BeanUtils.copyProperties(activityProduct, activityProductResqDTO);
+            preSubsidyProductResqDTO.setActivityProductResqDTO(activityProductResqDTO);
+            preSubsidyProductResqDTOS.add(preSubsidyProductResqDTO);
+        }
+        return ResultVO.success(preSubsidyProductResqDTOS);
+    }
+    
     @Override
     public ResultVO addPreSubsidyProduct(ActivityProductReq activityProductReq) {
         ActivityProduct activityProduct = new ActivityProduct();
@@ -196,6 +224,12 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         return ResultVO.success(listResultVO.getResultData());
     }
 
+    @Override
+    public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSaleProductInfo(QueryMarketingActivityReq queryMarketingActivityReq) {
+        ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = queryPreSubsidyProductInfo(queryMarketingActivityReq.getMarketingActivityId());
+        return ResultVO.success(listResultVO.getResultData());
+    }
+    
     @Override
     public ResultVO checkProductDiscountAmount(String productId, Long discountAmount) {
         QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();

@@ -328,6 +328,17 @@ public class MarketingActivityB2BController {
         log.info("MarketingActivityB2BController queryMarketingActivityInfo marketingActivityCode={} ", activityId);
         return marketingActivityService.queryMarketingActivityInfo(activityId);
     }
+    
+    @ApiOperation(value = "查询活动详情", notes = "查询活动详情")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value="/queryMarketingActivityInfor",method = RequestMethod.GET)
+    public ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfor(@RequestParam String activityId){
+        log.info("MarketingActivityB2BController queryMarketingActivityInfo marketingActivityCode={} ", activityId);
+        return marketingActivityService.queryMarketingActivityInfor(activityId);
+    }
 
     @ApiOperation(value = "查询供货商允许参加的活动", notes = "查询供货商允许参加的活动")
     @ApiResponses({

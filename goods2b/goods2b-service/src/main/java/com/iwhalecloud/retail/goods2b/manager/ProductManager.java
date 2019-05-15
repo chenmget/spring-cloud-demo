@@ -64,6 +64,15 @@ public class ProductManager {
     public ProductResp getProduct(String productId) {
         return productMapper.getProduct(productId);
     }
+    
+    /**
+     * 根据产品ID获取产品对象
+     * @param productId 产品ID
+     * @return
+     */
+    public ProductResp getProductInfo(String productId) {
+        return productMapper.getProducts(productId);
+    }
 
     /**
      * 根据产品编码获取产品对象
@@ -176,6 +185,16 @@ public class ProductManager {
     public ProductPageResp getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO){
         return productMapper.getProductInfo(queryProductInfoReqDTO);
     }
+    
+    /**
+     * 根据产品ID获取产品信息
+     * @param queryProductInfoReqDTO
+     * @return
+     */
+    public ProductPageResp getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO){
+        return productMapper.getProductInfor(queryProductInfoReqDTO);
+    }
+    
     public int updateAuditStateByProductBaseId(ProductAuditStateUpdateReq req){
 //        Product record = new Product();
 //        record.setProductId(productId);

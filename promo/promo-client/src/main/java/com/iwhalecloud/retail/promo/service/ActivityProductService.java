@@ -44,6 +44,13 @@ public interface ActivityProductService{
     ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProduct(String marketingActivityId);
 
     /**
+     * 根据活动id查询前置补贴或预售的产品配置信息
+     * @param marketingActivityId
+     * @return
+     */
+    ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProductInfo(String marketingActivityId);
+    
+    /**
      * 添加前置补贴活动的产品
      * @param activityProductReq
      * @return
@@ -63,6 +70,13 @@ public interface ActivityProductService{
      * @return
      */
     ResultVO<List<PreSubsidyProductRespDTO>> queryPreSaleProduct(QueryMarketingActivityReq queryMarketingActivityReq);
+
+     /**
+      * 查询预售活动的产品
+      * @param queryMarketingActivityReq
+      * @return
+      */
+     ResultVO<List<PreSubsidyProductRespDTO>> queryPreSaleProductInfo(QueryMarketingActivityReq queryMarketingActivityReq);
 
     /**
      * 校验减免金额是否小于销售价

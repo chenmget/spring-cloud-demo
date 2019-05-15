@@ -357,6 +357,147 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     }
 
     @Override
+    public ResultVO<MarketingActivityDetailResp> queryMarketingActivityFor(String id) {
+        log.info("MarketingActivityServiceImpl.queryMarketingActivity id={}", id);
+        ResultVO<MarketingActivityDTO> resultVO = marketingActivityManager.getMarketingActivityDtoById(id);
+        MarketingActivityDTO marketingActivityDTO = resultVO.getResultData();
+        log.info("MarketingActivityServiceImpl.queryMarketingActivity marketingActivityDTO{}", marketingActivityDTO);
+        if (marketingActivityDTO == null) {
+            return ResultVO.error(constant.getNoMarketingActivity());
+        }
+        MarketingActivityDetailResp resp = new MarketingActivityDetailResp();
+        BeanUtils.copyProperties(marketingActivityDTO, resp);
+        String marketingActivityCode = marketingActivityDTO.getCode();
+        String marketingActivityId = marketingActivityDTO.getId();
+        List<ActivityScopeDTO> activityScopeDTOList = activityScopeManager.queryActivityScopeByMktId(marketingActivityId);
+        log.info("MarketingActivityServiceImpl.queryMarketingActivity activityScopeList=" + activityScopeDTOList);
+
+        if (!CollectionUtils.isEmpty(activityScopeDTOList)) {
+            for (ActivityScopeDTO activityScopeDTO : activityScopeDTOList
+            ) {
+                List<String> list = new ArrayList<>();
+                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
+                list.add(activityScopeDTO.getLanId());
+                commonRegionListReq.setRegionIdList(list);
+                ResultVO<List<CommonRegionDTO>> lancommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(lancommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : lancommonRegionDTOList.getResultData()
+                    ) {
+                        activityScopeDTO.setLanName(commonRegionDTO.getRegionName());
+                        activityScopeDTO.setKey(commonRegionDTO.getRegionId());
+                        activityScopeDTO.setTitle(commonRegionDTO.getRegionName());
+                        activityScopeDTO.setRegionId(commonRegionDTO.getRegionId());
+                    }
+                }
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity commonRegionDTOList=" +
+                        lancommonRegionDTOList.getResultData());
+                list.clear();
+                commonRegionListReq.getRegionIdList().clear();
+                list.add(activityScopeDTO.getCity());
+                commonRegionListReq.setRegionIdList(list);
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity list commonRegionListReq=" +
+                        list, commonRegionListReq.getRegionIdList());
+                ResultVO<List<CommonRegionDTO>> citycommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(citycommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : citycommonRegionDTOList.getResultData()
+                    ) {
+                        activityScopeDTO.setCityName(commonRegionDTO.getRegionName());
+                        activityScopeDTO.setKey(commonRegionDTO.getRegionId());
+                        activityScopeDTO.setTitle(commonRegionDTO.getRegionName());
+                        activityScopeDTO.setRegionId(commonRegionDTO.getRegionId());
+                    }
+                }
+            }
+            List<ActivityScopeDTO> activityScopeDTOLists = ReflectUtils.batchAssign(activityScopeDTOList, ActivityScopeDTO.class);
+            resp.setActivityScopeList(activityScopeDTOLists);
+            log.info("MarketingActivityServiceImpl.queryMarketingActivity resp.getActivityScopeList=" +
+                    resp.getActivityScopeList());
+        }
+        List<ActivityParticipantDTO> activityParticipantDTOList = activityParticipantManager.queryActivityParticipantByMktId(marketingActivityId);
+        log.info("MarketingActivityServiceImpl.queryMarketingActivity activityParticipantDTOList=" +
+                activityParticipantDTOList);
+        if (!CollectionUtils.isEmpty(activityParticipantDTOList)) {
+            for (ActivityParticipantDTO activityParticipantDTO : activityParticipantDTOList
+            ) {
+                List<String> list = new ArrayList<>();
+                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
+                list.add(activityParticipantDTO.getLanId());
+                commonRegionListReq.setRegionIdList(list);
+                ResultVO<List<CommonRegionDTO>> lancommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(lancommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : lancommonRegionDTOList.getResultData()
+                    ) {
+                        activityParticipantDTO.setLanName(commonRegionDTO.getRegionName());
+                        activityParticipantDTO.setKey(commonRegionDTO.getRegionId());
+                        activityParticipantDTO.setTitle(commonRegionDTO.getRegionName());
+                        activityParticipantDTO.setRegionId(commonRegionDTO.getRegionId());
+                    }
+                }
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity lancommonRegionDTOList=" +
+                        lancommonRegionDTOList.getResultData());
+                list.clear();
+                commonRegionListReq.getRegionIdList().clear();
+                list.add(activityParticipantDTO.getCity());
+                commonRegionListReq.setRegionIdList(list);
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity list commonRegionListReq=" +
+                        list, commonRegionListReq.getRegionIdList());
+                ResultVO<List<CommonRegionDTO>> citycommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(citycommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : citycommonRegionDTOList.getResultData()) {
+                        activityParticipantDTO.setCityName(commonRegionDTO.getRegionName());
+                        activityParticipantDTO.setKey(commonRegionDTO.getRegionId());
+                        activityParticipantDTO.setTitle(commonRegionDTO.getRegionName());
+                        ;
+                        activityParticipantDTO.setRegionId(commonRegionDTO.getRegionId());
+                    }
+                }
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity citycommonRegionDTOList=" +
+                        citycommonRegionDTOList.getResultData());
+            }
+            List<ActivityParticipantDTO> activityParticipantDTOLists = ReflectUtils.batchAssign(activityParticipantDTOList, ActivityParticipantDTO.class);
+            resp.setActivityParticipantList(activityParticipantDTOLists);
+            log.info("MarketingActivityServiceImpl.queryMarketingActivity resp.getActivityParticipantList=" +
+                    resp.getActivityParticipantList());
+        }
+        // 根据活动编码查询参与活动产品
+        List<ActivityProduct> activityGoodsList = activityProductManager.queryActivityProductByCondition(marketingActivityId);
+        if (!CollectionUtils.isEmpty(activityGoodsList)) {
+            List<ActivityProductDTO> activityProductDTOList = ReflectUtils.batchAssign(activityGoodsList, ActivityProductDTO.class);
+            if (!CollectionUtils.isEmpty(activityProductDTOList)){
+                for (int i = 0; i<activityProductDTOList.size(); i++){
+                    ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                    productGetByIdReq.setProductId(activityProductDTOList.get(i).getProductId());
+                    ResultVO<ProductResp> respResultVO = productService.getProductInfo(productGetByIdReq);
+                    if (null != respResultVO.getResultData()){
+                        activityProductDTOList.get(i).setUnitName(respResultVO.getResultData().getUnitName());
+                        activityProductDTOList.get(i).setSn(respResultVO.getResultData().getSn());
+                        activityProductDTOList.get(i).setTypeName(respResultVO.getResultData().getTypeName());//lws
+                        activityProductDTOList.get(i).setProductName(respResultVO.getResultData().getProductName());//lws
+                        activityProductDTOList.get(i).setColor(respResultVO.getResultData().getColor());//lws
+                        activityProductDTOList.get(i).setMemory(respResultVO.getResultData().getMemory());//lws
+                        activityProductDTOList.get(i).setUnitTypeName(respResultVO.getResultData().getUnitTypeName());//lws
+                        activityProductDTOList.get(i).setBrandName(respResultVO.getResultData().getBrandName());//lws
+                    }
+                }
+            }
+            resp.setActivityProductList(activityProductDTOList);
+        }
+        // 根据活动编码查询活动规则
+        List<ActivityRule> activityRuleList = activityRuleManager.queryActivityRuleByCondition(marketingActivityId);
+        if (!CollectionUtils.isEmpty(activityRuleList)) {
+            List<ActivityRuleDTO> activityRuleDTOList = ReflectUtils.batchAssign(activityRuleList, ActivityRuleDTO.class);
+            resp.setActivityRuleDTOList(activityRuleDTOList);
+        }
+        // 根据活动编码查询优惠信息
+        List<Promotion> promotionList = promotionManager.queryPromotionByCondition(marketingActivityId);
+        if (!CollectionUtils.isEmpty(promotionList)) {
+            List<PromotionDTO> promotionDTOList = ReflectUtils.batchAssign(promotionList, PromotionDTO.class);
+            resp.setPromotionDTOList(promotionDTOList);
+        }
+        return ResultVO.success(resp);
+    }
+    
+    @Override
     public ResultVO<Page<MarketingActivityListResp>> listMarketingActivity(MarketingActivityListReq req) {
         log.info("MarketingActivityServiceImpl.listMarketingActivity req={}", JSON.toJSONString(req));
         return ResultVO.success(marketingActivityManager.listMarketingActivity(req));
@@ -860,6 +1001,59 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         return ResultVO.success(marketingActivityInfoResp);
     }
 
+    /**
+     * 根据营销活动ID查询营销活动、优惠券、参与产品详情
+     *
+     * @param activityId
+     * @return
+     */
+    @Override
+    public ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfor(String activityId) {
+        MarketingActivityInfoResp marketingActivityInfoResp = new MarketingActivityInfoResp();
+
+        //营销活动基本信息
+        MarketingActivityDetailResp marketingActivityDetailResp = queryMarketingActivityFor(activityId).getResultData();
+        marketingActivityInfoResp.setMarketingActivityDetailResp(marketingActivityDetailResp);
+        QueryPreSubsidyReqDTO queryPreSubsidyReqDTO = new QueryPreSubsidyReqDTO();
+        queryPreSubsidyReqDTO.setMarketingActivityId(activityId);
+        if (PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode().equals(marketingActivityDetailResp.getActivityType())) {
+            //营销活动优惠券列表信息
+            List<QueryPreSubsidyCouponResqDTO> queryPreSubsidyCouponResqDTOList = new ArrayList<>();
+            List couponList = preSubsidyCouponService.queryPreSubsidyCoupon(queryPreSubsidyReqDTO).getResultData();
+            if (couponList != null && couponList.size() > 0) {
+                for (int i = 0; i < couponList.size(); i++) {
+                    QueryPreSubsidyCouponResqDTO queryPreSubsidyCouponResqDTO = new QueryPreSubsidyCouponResqDTO();
+                    BeanUtils.copyProperties(couponList.get(i), queryPreSubsidyCouponResqDTO);
+                    queryPreSubsidyCouponResqDTOList.add(queryPreSubsidyCouponResqDTO);
+                }
+            }
+            marketingActivityInfoResp.setQueryPreSubsidyCouponResqDTOList(queryPreSubsidyCouponResqDTOList);
+
+            //营销活动产品列表信息
+            List<PreSubsidyProductPromResqDTO> preSubsidyProductPromResqDTOS = new ArrayList<>();
+            List<com.iwhalecloud.retail.rights.dto.response.PreSubsidyProductPromResqDTO> productList =
+                    preSubsidyCouponService.queryPreSubsidyProduct(queryPreSubsidyReqDTO).getResultData();
+            if (productList != null && productList.size() > 0) {
+                for (int i = 0; i < productList.size(); i++) {
+                    PreSubsidyProductPromResqDTO preSubsidyProductPromResqDTO = new PreSubsidyProductPromResqDTO();
+                    BeanUtils.copyProperties(productList.get(i), preSubsidyProductPromResqDTO);
+                    preSubsidyProductPromResqDTO.setNum(productList.get(i).getActivityProductResq().getNum());
+                    preSubsidyProductPromResqDTO.setDiscountAmount(productList.get(i).getActivityProductResq().getDiscountAmount());
+                    preSubsidyProductPromResqDTO.setColor(productList.get(i).getActivityProductResq().getColor());//lws
+                    preSubsidyProductPromResqDTO.setMemory(productList.get(i).getActivityProductResq().getMemory());//lws
+                    preSubsidyProductPromResqDTOS.add(preSubsidyProductPromResqDTO);
+                }
+            }
+            marketingActivityInfoResp.setQueryPreSubsidyProductPromResqDTOList(preSubsidyProductPromResqDTOS);
+        } else if (PromoConst.ACTIVITYTYPE.BOOKING.getCode().equals(marketingActivityDetailResp.getActivityType())) {
+            QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
+            queryMarketingActivityReq.setMarketingActivityId(activityId);
+            ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = activityProductService.queryPreSaleProductInfo(queryMarketingActivityReq);
+            marketingActivityInfoResp.setPreSaleProductInfo(listResultVO.getResultData());
+        }
+        return ResultVO.success(marketingActivityInfoResp);
+    }
+    
     @Override
     public ResultVO<MarketingActivityDTO> queryMarketingActivityById(QueryMarketingActivityReq queryMarketingActivityReq) {
         MarketingActivityDTO marketingActivityDTO = new MarketingActivityDTO();

@@ -15,6 +15,8 @@ public interface MarketingActivityService{
     ResultVO<MarketingActivityAddResp> addMarketingActivity(MarketingActivityAddReq req);
 
     ResultVO<MarketingActivityDetailResp> queryMarketingActivity(String id);
+    
+    ResultVO<MarketingActivityDetailResp> queryMarketingActivityFor(String id);
 
     ResultVO<Page<MarketingActivityListResp>> listMarketingActivity(MarketingActivityListReq req);
 
@@ -72,6 +74,13 @@ public interface MarketingActivityService{
      */
     ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfo(String activityId);
 
+    /**
+     * 根据营销活动ID查询营销活动、优惠券、参与产品详情
+     * @param activityId
+     * @return
+     */
+    ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfor(String activityId);
+    
     /**
      * 据营销活动ID查询营销活动信息
      * @param queryMarketingActivityReq

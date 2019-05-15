@@ -26,6 +26,13 @@ public interface ProductService {
     ResultVO<ProductResp> getProduct(ProductGetByIdReq req);
 
     /**
+     * 根据产品ID获取产品对象
+     * @param req 产品ID
+     * @return 产品对象
+     */
+    ResultVO<ProductResp> getProductInfo(ProductGetByIdReq req);
+    
+    /**
      * 根据产品编码获取产品对象
      * @param sn
      * @return
@@ -138,6 +145,14 @@ public interface ProductService {
      */
     ResultVO<QueryProductInfoResqDTO> getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO);
 
+    /**
+     *查询产品信息
+     * @param queryProductInfoReqDTO
+     * @return
+     */
+    ResultVO<QueryProductInfoResqDTO> getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO);
+
+    
     /**
      * 添加产品标签
      * @param req

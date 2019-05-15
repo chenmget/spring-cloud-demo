@@ -58,4 +58,16 @@ public class PreSubsidyProductRespDTO implements Serializable {
      */
     @ApiModelProperty(value = "活动产品信息")
     private ActivityProductRespDTO activityProductResqDTO;
+    
+    /**
+     * 颜色
+     */
+    @ApiModelProperty(value = "颜色")
+    private String color;
+    
+    /**
+     * 内存
+     */
+    @ApiModelProperty(value = "内存")
+    private String memory;
 }

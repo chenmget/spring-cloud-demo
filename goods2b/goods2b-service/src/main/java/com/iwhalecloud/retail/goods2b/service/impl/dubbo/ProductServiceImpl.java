@@ -72,6 +72,10 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(productManager.getProduct(req.getProductId()));
     }
 
+    @Override
+    public ResultVO<ProductResp> getProductInfo(ProductGetByIdReq req) {
+        return ResultVO.success(productManager.getProductInfo(req.getProductId()));
+    }
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
@@ -413,6 +417,21 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(queryProductInfoResqDTO);
     }
 
+    @Override
+    public ResultVO<QueryProductInfoResqDTO> getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO) {
+        QueryProductInfoResqDTO queryProductInfoResqDTO = new QueryProductInfoResqDTO();
+        ProductPageResp productInfo = productManager.getProductInfor(queryProductInfoReqDTO);
+        log.info("ProductServiceImpl.getProductInfo productManager.getProductInfo productInfo={}", JSON.toJSON(productInfo));
+        if(productInfo != null){
+            BeanUtils.copyProperties(productInfo,queryProductInfoResqDTO);
+            ProductDTO productDTO = new ProductDTO();
+            BeanUtils.copyProperties(productInfo, productDTO);
+            String specName = this.getSpecName(productDTO);
+            queryProductInfoResqDTO.setSpecName(specName);
+        }
+        return ResultVO.success(queryProductInfoResqDTO);
+    }
+    
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public ResultVO<Boolean> addProductTags(ProductTagsAddReq req) {

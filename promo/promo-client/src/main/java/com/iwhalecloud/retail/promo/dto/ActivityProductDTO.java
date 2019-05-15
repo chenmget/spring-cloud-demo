@@ -160,4 +160,40 @@ public class ActivityProductDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "产品参与总数量限制标识")
 	private String numLimitFlg;
+	
+	/**
+	 * 产品类型
+	 */
+	@ApiModelProperty(value = "产品类型")
+	private String typeName;
+	
+	/**
+     * 颜色
+     */
+    @ApiModelProperty(value = "颜色")
+    private String color;
+
+    /**
+     * 容量
+     */
+    @ApiModelProperty(value = "容量")
+    private String memory;
+    
+    /**
+     * 品牌名称
+     */
+    @ApiModelProperty(value = "品牌名称")
+    private String brandName;
+    
+    /**
+     * 型号名称
+     */
+    @ApiModelProperty(value = "型号名称")
+    private String unitTypeName;
+    
+    /**
+     * productName
+     */
+    @ApiModelProperty(value = "产品名称")
+    private String productName;
 }

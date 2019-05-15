@@ -66,6 +66,14 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
     public ProductResp getProduct(@Param("productId")String productId);
+    
+    /**
+     * 根据IdId
+     * @param productId
+     * @return
+     */
+    public ProductResp getProducts(@Param("productId")String productId);
+    
     /**
      * 根据厂商ID获取产品数量
      * @param manufacturerId
@@ -79,7 +87,14 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
      ProductPageResp getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO);
-
+     
+     /**
+      * 根据产品id查询产品信息
+      * @param queryProductInfoReqDTO
+      * @return
+      */
+     ProductPageResp getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO);
+      
     /**
      * 根据产品名称或编码查询产品
      * @param request

@@ -47,6 +47,16 @@
     AND t.is_deleted = '0'
   </select>
 
+	<select id="getProducts" parameterType="java.lang.String"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductResp">
+    Select <include refid="allFields" />,ppb.unit_type_name,pb.name AS brandName,ppb.brand_id,ppb.is_ct_code,ppb.product_name,ppb.product_code,ppb.unit_type,ppb.type_id,pt.type_name
+    FROM prod_product t
+    left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
+    left join prod_type pt on pt.type_id = ppb.type_id
+    left join prod_brand pb on pb.brand_id = ppb.brand_id
+    WHERE t.product_id = #{productId}
+    AND t.is_deleted = '0'
+  </select>
 
   <sql id="pageProductFields">
     p.PRODUCT_ID,
@@ -340,6 +350,19 @@
     from prod_product t
     left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
     left join prod_brand pb on pb.brand_id = ppb.brand_id
+    where 1 = 1 and t.is_deleted = '0' and ppb.is_deleted = '0' and pb.is_deleted = '0'
+    <if test="null!=productId and ''!=productId">
+      and t.product_id = #{productId}
+    </if>
+  </select>
+  
+  <select id="getProductInfor" parameterType="com.iwhalecloud.retail.goods2b.dto.req.QueryProductInfoReqDTO"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
+    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name,ppb.unit_type,pt.type_name
+    from prod_product t
+    left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
+    left join prod_brand pb on pb.brand_id = ppb.brand_id
+    left join prod_type pt on pt.type_id = ppb.type_id
     where 1 = 1 and t.is_deleted = '0' and ppb.is_deleted = '0' and pb.is_deleted = '0'
     <if test="null!=productId and ''!=productId">
       and t.product_id = #{productId}

@@ -41,4 +41,10 @@ public class ResourceUploadTempListResp implements java.io.Serializable {
 	@ApiModelProperty(value = "验证描述，记录出错的原因")
 	private String resultDesc;
 
+	/**
+	 * CT码
+	 */
+	@ApiModelProperty(value = "CT码")
+	private String ctCode;
+
 }

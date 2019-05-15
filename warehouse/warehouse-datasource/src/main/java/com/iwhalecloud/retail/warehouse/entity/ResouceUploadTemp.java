@@ -74,6 +74,12 @@ public class ResouceUploadTemp implements Serializable {
 	@ApiModelProperty(value = "记录首次创建的时间。")
 	private java.util.Date createDate;
 
+	/**
+	 * CT码
+	 */
+	@ApiModelProperty(value = "CT码")
+	private String ctCode;
+
   	//属性 end
 	
     /** 字段名称枚举. */
@@ -98,9 +104,12 @@ public class ResouceUploadTemp implements Serializable {
 		
 		/** 首次创建的用户 */
 		createStaff("createStaff","CREATE_STAFF"),
-		
+
 		/** 首次创建的时间 */
-		createDate("createDate","CREATE_DATE");
+		createDate("createDate","CREATE_DATE"),
+
+		/** ct码 */
+		ctCode("ctCode","CT_CODE");
 
 		private String fieldName;
 		private String tableFieldName;

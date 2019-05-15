@@ -9,6 +9,7 @@
     ,t.MKT_RES_INST_NBR
     ,t.RESULT
     ,t.RESULT_DESC
+    ,t.CT_CODE
 </sql>
 
 

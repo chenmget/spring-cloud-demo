@@ -43,4 +43,11 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
      */
 	void updateFileNameById(@Param("id")String id, @Param("destFileName")String destFileName,
 			@Param("syncBatchId")String syncBatchId);
+
+	/**
+     * 根据保存路径获取当前文件最近的批次
+     * @param sendDir
+     * @return
+     */
+	String getSeqBysendDir(@Param("sendDir")String sendDir);
 }

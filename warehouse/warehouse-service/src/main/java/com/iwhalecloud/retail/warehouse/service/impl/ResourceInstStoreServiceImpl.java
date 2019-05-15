@@ -59,6 +59,16 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     @Value("${ftp.iptvAdd}")
     private String iptvAdd;
     
+    @Value("${ftp.gmModify}")
+    private String gmModify;
+    @Value("${ftp.iptvModify}")
+    private String iptvModify;
+    
+    @Value("${ftp.gmDelete}")
+    private String gmDelete;
+    @Value("${ftp.iptvDelete}")
+    private String iptvDelete;
+    
     @Value("${ftp.gmdirAdd}")
     private String gmdirAdd;
     @Value("${ftp.iptvdirAdd}")
@@ -212,9 +222,10 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      * 光猫：10350143，IPTV：10350148
      * 新增：1001,1003, 修改：1002, 删除：1007,1009
      * 统计时间和序列号都存放在SYS_CONFIG_INFO表中，
-     * 其中统计时间的CF_ID是CONF_STR，一字符串的方式存储；生成文件的序列号的CF_ID是SEQ_CONF_STR，以json格式的字符串存储
+     * 其中统计时间的CF_ID是CONF_STR，一字符串的方式存储；
      *
      * Created by jiyou on 2019/4/24.
+     * updated by xieqi on 2019/5/15
      */
     @Override
     public void syncMktToITMS() {
@@ -224,48 +235,26 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             dir.mkdir();
         }
 
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         // 开始时间
         String startStr = resourceInstMapper.findCfValueByCfId(CONF_STR);
-//        Date startDate = new Date();
-//        if (startStr != null) {
-//			startStr = sdf.format(startDate);
-//		}
 
-//        int num = insertToMRISR(startStr);
+        String sqNum = "";
         
-        //没有待推送数据
-//        if(num == 0){
-//        	return;
-//        }
-//    	log.info(startStr+"成功插入到 MktResItmsSyncRec表 "+num+"条数据。");
-        
-        // 结束时间
-        Date endDate = new Date();
-
-        // 初始化序列号
-        String jsonSeqStr = resourceInstMapper.findCfValueByCfId(SEQ_CONF_STR);
-        JSONObject jsonObject = null;
-        if (jsonSeqStr == null) {
-            jsonObject = initConfJsonStr();
-        } else {
-            jsonObject = JSON.parseObject(jsonSeqStr);
-        }
-
         for (int i = 0; i < brands.length; i++) {
             for (int j = 0; j < types.length; j++) {
-                this.syncMktToITMS(brands[i], types[j], startStr, jsonObject);
+                this.syncMktToITMS(brands[i], types[j], startStr, sqNum);
             }
         }
 
-        if (startStr == null) {
-            //初始化一条数据
-            resourceInstMapper.initConfig(sdf.format(endDate));
+        //更新时间戳
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date startDate = new Date();
+        if (null == startStr) {
+            resourceInstMapper.initConfig(sdf.format(startDate));
         } else {
-            resourceInstMapper.updateCfValueByCfId(CONF_STR, sdf.format(endDate));
+            resourceInstMapper.updateCfValueByCfId(CONF_STR, sdf.format(startDate));
         }
-
+        
         //删除临时文件
         if (dir.isDirectory()) {
             String[] children = dir.list();
@@ -276,35 +265,37 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     }
 
-    public void syncMktToITMS(String brand, String[] ops, String startDate, JSONObject jsonObject) {
+    public void syncMktToITMS(String brand, String[] ops, String startDate, String sqNum) {
 
         List<String> files = new ArrayList<String>();
 
         // 查询所有地市
         List<String> latIdList = resourceInstMapper.findAllLanID();
-
         SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
         String time = sdf.format(new Date());
-        String opsTime = (String) jsonObject.get("ops_time");
-        if (!opsTime.equals(time)) {
-            jsonObject = initConfJsonStr();
-        }
 
         List<Map<String, String>> mktList = null;
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {
-
-//          mktList = resourceInstMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate, endDate);
+        	
+        	String sendDir = getSendDir(brand, ops);
         	mktList = mktResItmsSyncRecMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate);
         	if (mktList.size() <= 0) continue;
-
-            int seqNb = Integer.valueOf(jsonObject.get("ITMS_" + brand + "_" + ops).toString());
-            String seq = getSeqStr(seqNb);
+        	
+        	String seqStr = mktResItmsSyncRecMapper.getSeqBysendDir(sendDir+"/"+latIdList.get(i));
+        	String resStr = "0";
+        	if(StringUtils.isNotBlank(seqStr)){
+        		resStr = seqStr.substring(seqStr.length()-3,seqStr.length());
+        	}
+        	int seqNb = Integer.parseInt(resStr);
+        	seqNb++;
+        	String seq = getSeqStr(seqNb);
+        	
             String destFileName = latIdList.get(i) + "ITMS" + time + seq + ".txt";
             File destFile = new File(basePath + File.separator + destFileName);
             files.add(destFileName);
             pw = getPrintWriter(destFile);
-            String sendDir = "";
+
             for (int j = 0; j < mktList.size(); j++) {
                 if (j > 0 && j % 10000 == 0) {
                     seqNb++;
@@ -316,21 +307,25 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 }
                 pw.write(mktList.get(j).get("itmsStr"));
                 pw.println();
-                sendDir = getSendDir(brand);
+                
                 String syncFileName = sendDir+"/"+destFileName;
                 mktResItmsSyncRecMapper.updateFileNameById(mktList.get(j).get("id"), syncFileName, time + seq);
                 
             }
         }
-        pw.close();
+        if(pw != null){
+        	pw.close();
+        }
 
-        resourceInstMapper.updateCfValueByCfId(SEQ_CONF_STR, jsonObject.toString());
+        if(files.size()>0){
+    	 FTPClient ftpClient = connectedToftpServer();
 
-        FTPClient ftpClient = connectedToftpServer();
+         sendFileToFtp(ftpClient, files, brand, ops);
 
-        sendFileToFtp(ftpClient, files, brand, ops);
-
-        files.clear();
+         files.clear();
+        }
+        
+       
 
     }
 
@@ -398,17 +393,17 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private void sendFileToFtp(FTPClient ftpClient, List<String> files, String brand, String[] ops) {
         String sendDir = null;
         // 判断传送目录
-        sendDir = getSendDir(brand);
+        sendDir = getSendDir(brand, ops);
         InputStream is = null;
         try {
-            ftpClient.changeWorkingDirectory(sendDir);
+            Boolean flag = ftpClient.changeWorkingDirectory(sendDir);
             ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
             //传输模式
             ftpClient.enterLocalPassiveMode();
             for (int i = 0; i < files.size(); i++) {
                 is = new FileInputStream(basePath + File.separator + files.get(i));
                 //字节数组
-                ftpClient.storeFile(new String(), is);
+                ftpClient.storeFile(files.get(i), is);
             }
         } catch (IOException e) {
             log.error(e.getMessage(), e);
@@ -484,14 +479,30 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     	return sendDir;
     }
     
-    public String getSendDir(String brand){
+    public String getSendDir(String brand, String[] ops){
     	String sendDir = "";
     	if (brands[0].equals(brand)) {
             // 光猫
-    		sendDir = gmAdd;
+            if (Arrays.equals(types[0],ops)) {
+                sendDir = gmAdd;
+            }
+            if (Arrays.equals(types[1],ops)) {
+                sendDir = gmModify;
+            }
+            if (Arrays.equals(types[2],ops)) {
+                sendDir = gmDelete;
+            }
         } else {
             // iptv
-        	sendDir = iptvAdd;
+            if (Arrays.equals(types[0],ops)) {
+                sendDir = iptvAdd;
+            }
+            if (Arrays.equals(types[1],ops)) {
+                sendDir = iptvModify;
+            }
+            if (Arrays.equals(types[2],ops)) {
+                sendDir = iptvDelete;
+            }
         }
     	return sendDir;
     }

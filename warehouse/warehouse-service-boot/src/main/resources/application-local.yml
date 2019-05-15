@@ -102,6 +102,10 @@ ftp:
   ftpPassword: xieqi5200
   gmAdd: /data/back/Terminal/add
   iptvAdd: /data/back/IPTV/add
+  gmModify: /data/back/Terminal/modify
+  iptvModify: /data/back/IPTV/modify
+  gmDelete: /data/back/Terminal/delete
+  iptvDelete: /data/back/IPTV/delete
   gmdirAdd: /data/back/Failure/Terminal/add
   iptvdirAdd: /data/back/Failure/IPTV/add
   gmdirModify: /data/back/Failure/Terminal/modify

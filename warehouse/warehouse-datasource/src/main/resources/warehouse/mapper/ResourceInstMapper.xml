@@ -324,5 +324,6 @@
     <insert id="initConfig">
         insert into SYS_CONFIG_INFO values('ITMS_PUSH_MKT_NB','推送到ITMS数据的开始统计时间',#{endDate},'job');
     </insert>
+    
 
 </mapper>

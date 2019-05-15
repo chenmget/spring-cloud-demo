@@ -130,5 +130,5 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst> {
     int updateCfValueByCfId(@Param("cofStr") String cofStr, @Param("dateStr") String dateStr);
 
     int initConfig(@Param("endDate") String endDate);
-
+    
 }

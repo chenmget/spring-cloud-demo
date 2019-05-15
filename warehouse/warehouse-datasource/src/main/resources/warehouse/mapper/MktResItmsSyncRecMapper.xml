@@ -58,5 +58,17 @@
 		WHERE
 			mrisr.MKT_RES_ITMS_SYNC_REC_ID = #{id}
   </update>
+  
+  <select id="getSeqBysendDir" resultType="java.lang.String">
+		SELECT
+			mrisr.SYNC_BATCH_ID 
+		FROM
+			MKT_RES_ITMS_SYNC_REC mrisr 
+		WHERE
+			mrisr.SYNC_FILE_NAME LIKE CONCAT(#{sendDir},'%') 
+		ORDER BY
+			mrisr.SYNC_BATCH_ID DESC 
+		LIMIT 1
+  </select>
 
 </mapper>

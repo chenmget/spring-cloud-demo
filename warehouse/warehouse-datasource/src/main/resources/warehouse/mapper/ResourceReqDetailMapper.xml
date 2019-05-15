@@ -48,6 +48,7 @@
         <if test = "null != req.isInspection and '' != req.isInspection">
             and detail.IS_INSPECTION = #{req.isInspection}
         </if>
+        order by detail.MKT_RES_INST_NBR DESC
     </select>
 
     <select id="getProcessingNbrList" parameterType="java.util.List"
@@ -63,6 +64,20 @@
         <foreach item="item" index="index" open="(" separator="," close=")" collection="nbrList">
             #{item}
         </foreach>
+    </select>
 
+    <select id="resourceRequestCount" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailReq"
+            resultType="java.lang.Integer">
+        select count(rest.MKT_RES_REQ_ID)
+        from MKT_RES_REQUEST rest,MKT_RES_REQ_ITEM item,MKT_RES_REQ_DETAIL detail
+        where 1=1
+        and rest.MKT_RES_REQ_ID = item.MKT_RES_REQ_ID and  item.MKT_RES_REQ_ITEM_ID = detail.MKT_RES_REQ_ITEM_ID
+        and rest.MKT_RES_REQ_ID = #{req.mktResReqId}
+        <if test = "null != req.mktResInstNbr and '' != req.mktResInstNbr">
+            and detail.MKT_RES_INST_NBR = #{req.mktResInstNbr}
+        </if>
+        <if test = "null != req.isInspection and '' != req.isInspection">
+            and detail.IS_INSPECTION = #{req.isInspection}
+        </if>
     </select>
 </mapper>

@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceReqDetail;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceReqDetailMapper;
@@ -63,5 +64,14 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
      */
     public List<String> getProcessingNbrList(List<String> nbrList){
         return resourceReqDetailMapper.getProcessingNbrList(nbrList);
+    }
+
+    /**
+     * 申请单明细总数
+     * @param req
+     * @return
+     */
+    public Integer resourceRequestCount(ResourceReqDetailReq req){
+        return resourceReqDetailMapper.resourceRequestCount(req);
     }
 }

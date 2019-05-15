@@ -40,7 +40,7 @@ public class ResouceInstTrackManager{
     }
 
     /**
-     * 通过串码查询仓库id
+     * 通过串码查仓库id
      * @param nbr
      * @return
      */

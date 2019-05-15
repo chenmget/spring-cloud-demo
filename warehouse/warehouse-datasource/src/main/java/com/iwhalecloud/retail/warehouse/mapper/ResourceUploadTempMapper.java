@@ -30,4 +30,11 @@ public interface ResourceUploadTempMapper extends BaseMapper<ResouceUploadTemp> 
      * @return
      */
     Integer delResourceUploadTemp(ResourceUploadTempDelReq req);
+
+    /**
+     * 查询总数
+     * @param req
+     * @return
+     */
+    Integer countTotal(ResourceUploadTempDelReq req);
 }

@@ -30,13 +30,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.SocketException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -58,7 +53,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private String gmAdd;
     @Value("${ftp.iptvAdd}")
     private String iptvAdd;
-    
+
     @Value("${ftp.gmdirAdd}")
     private String gmdirAdd;
     @Value("${ftp.iptvdirAdd}")
@@ -94,7 +89,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     @Autowired
     private Constant constant;
-    
+
     @Autowired
     private MktResItmsSyncRecMapper mktResItmsSyncRecMapper;
 
@@ -234,13 +229,13 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 //		}
 
 //        int num = insertToMRISR(startStr);
-        
+
         //没有待推送数据
 //        if(num == 0){
 //        	return;
 //        }
 //    	log.info(startStr+"成功插入到 MktResItmsSyncRec表 "+num+"条数据。");
-        
+
         // 结束时间
         Date endDate = new Date();
 
@@ -295,8 +290,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         for (int i = 0; i < latIdList.size(); i++) {
 
 //          mktList = resourceInstMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate, endDate);
-        	mktList = mktResItmsSyncRecMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate);
-        	if (mktList.size() <= 0) continue;
+            mktList = mktResItmsSyncRecMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate);
+            if (mktList.size() <= 0) continue;
 
             int seqNb = Integer.valueOf(jsonObject.get("ITMS_" + brand + "_" + ops).toString());
             String seq = getSeqStr(seqNb);
@@ -319,7 +314,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 sendDir = getSendDir(brand);
                 String syncFileName = sendDir+"/"+destFileName;
                 mktResItmsSyncRecMapper.updateFileNameById(mktList.get(j).get("id"), syncFileName, time + seq);
-                
+
             }
         }
         pw.close();
@@ -436,29 +431,29 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         }
         return ftpClient;
     }
-    
+
     /**
      * 数据插入到MKT_RES_ITMS_SYNC_REC表
      *
      * @return
-     * @throws 
+     * @throws
      */
     private int insertToMRISR(String startDate) {
-    	List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByDate(startDate);
-    	int num = 0;
-    	if(mktResItmsSyncRecList.size()>0){
-    		for(MktResItmsSyncRec mktResItmsSyncRec : mktResItmsSyncRecList){
-    			mktResItmsSyncRecMapper.insert(mktResItmsSyncRec);
-    			num++;
-    		}
-    	}
-    	return num;
+        List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByDate(startDate);
+        int num = 0;
+        if(mktResItmsSyncRecList.size()>0){
+            for(MktResItmsSyncRec mktResItmsSyncRec : mktResItmsSyncRecList){
+                mktResItmsSyncRecMapper.insert(mktResItmsSyncRec);
+                num++;
+            }
+        }
+        return num;
     }
 
     //获取返回的文件路径
     public String getReturnDir(String brand, String[] ops){
-    	String sendDir = "";
-    	if (brands[0].equals(brand)) {
+        String sendDir = "";
+        if (brands[0].equals(brand)) {
             // 光猫
             if (Arrays.equals(types[0],ops)) {
                 sendDir = gmdirAdd;
@@ -481,19 +476,19 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 sendDir = iptvdirDelete;
             }
         }
-    	return sendDir;
+        return sendDir;
     }
-    
+
     public String getSendDir(String brand){
-    	String sendDir = "";
-    	if (brands[0].equals(brand)) {
+        String sendDir = "";
+        if (brands[0].equals(brand)) {
             // 光猫
-    		sendDir = gmAdd;
+            sendDir = gmAdd;
         } else {
             // iptv
-        	sendDir = iptvAdd;
+            sendDir = iptvAdd;
         }
-    	return sendDir;
+        return sendDir;
     }
-    
+
 }

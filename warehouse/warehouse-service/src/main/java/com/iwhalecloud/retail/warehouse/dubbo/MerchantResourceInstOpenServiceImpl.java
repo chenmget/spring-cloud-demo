@@ -13,6 +13,8 @@ import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInstService {
@@ -65,5 +67,18 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     @Override
     public ResultVO exceutorDelNbr(ResourceUploadTempDelReq req){
         return merchantResourceInstService.exceutorDelNbr(req);
+    }
+
+    @Override
+    public List<ResourceUploadTempListResp> exceutorQueryTempNbr(ResourceUploadTempDelReq req){
+        return merchantResourceInstService.exceutorQueryTempNbr(req);
+    }
+
+    @Override
+    public ResultVO addResourceInstByAdmin(ResourceInstAddReq req){
+        ResultVO<ResourceInstAddResp> resp = merchantResourceInstService.addResourceInstByAdmin(req);
+        log.info("MerchantResourceInstOpenServiceImpl.addResourceInstByAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(req));
+        resouceInstTrackService.asynSaveTrackForMerchant(req, resp);
+        return resp;
     }
 }

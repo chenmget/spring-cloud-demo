@@ -20,6 +20,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = WarehouseServiceApplication.class)
@@ -92,7 +93,8 @@ public class ResourceInstServiceImplTest {
         Gson gson = new Gson();
         ResourceInstAddReq req  = gson.fromJson(json, new TypeToken<ResourceInstAddReq>(){}.getType());
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        //resourceInstService.addResourceInstByMerchant(req);
+        CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(req.getMktResInstNbrs());
+        resourceInstService.addResourceInstByMerchant(req, newList);
     }
 
     /**

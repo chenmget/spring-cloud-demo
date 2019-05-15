@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceReqDetail;
 import org.apache.ibatis.annotations.Mapper;
@@ -32,6 +33,13 @@ public interface ResourceReqDetailMapper extends BaseMapper<ResourceReqDetail>{
      * @return
      */
     Page<ResourceReqDetailPageResp> resourceRequestPage(Page<ResourceReqDetailPageResp> page,@Param("req") ResourceReqDetailPageReq req);
+
+    /**
+     * 申请单详情总数
+     * @param req
+     * @return
+     */
+    Integer resourceRequestCount(@Param("req") ResourceReqDetailReq req);
 
     /**
      * 申请单明细处理中的串码

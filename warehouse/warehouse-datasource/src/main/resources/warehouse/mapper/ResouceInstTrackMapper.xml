@@ -38,6 +38,7 @@
     </select>
 
     <select id="getStoreIdByNbr" resultType="java.lang.String">
-        SELECT MKT_RES_STORE_ID from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr}
+         SELECT MKT_RES_STORE_ID from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr}
     </select>
+
 </mapper>

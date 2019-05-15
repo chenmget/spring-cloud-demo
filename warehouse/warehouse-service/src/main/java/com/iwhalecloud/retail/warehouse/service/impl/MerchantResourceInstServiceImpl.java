@@ -8,6 +8,8 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
+import com.iwhalecloud.retail.goods2b.dto.req.MerChantGetProductReq;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
@@ -15,6 +17,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
@@ -37,6 +40,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @Slf4j
@@ -62,6 +66,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     private ResourceInstCheckService resourceInstCheckService;
     @Autowired
     private ResouceInstTrackManager resouceInstTrackManager;
+    @Reference
+    private ProductService productService;
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -123,7 +129,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO addResourceInst(ResourceInstAddReq req) {
-        log.info("MerchantResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
+        log.info("MerchantResourceInstServiceImpl.addResourceInst req={}, nbrSize={}", JSON.toJSONString(req), req.getMktResInstNbrs().size());
         String merchantId = req.getMerchantId();
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
@@ -150,7 +156,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             req.setDestStoreId(mktResStoreId);
         }
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        List<String> mktResInstNbrs = req.getMktResInstNbrs();
         SelectProcessResp selectProcessResp = resourceInstCheckService.selectProcess(req);
         // step2 新增申请单
         ResourceRequestAddReq resourceRequestAddReq = new ResourceRequestAddReq();
@@ -184,7 +189,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         ResourceUploadTempDelReq resourceUploadTempDelReq = new ResourceUploadTempDelReq();
         resourceUploadTempDelReq.setMktResUploadBatch(req.getMktResUploadBatch());
-        resourceUploadTempManager.delResourceUploadTemp(resourceUploadTempDelReq);
+        runableTask.exceutorDelNbr(resourceUploadTempDelReq);
         return ResultVO.success("串码入库提交申请单");
     }
 
@@ -211,5 +216,75 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         return ResultVO.success(resourceUploadTempManager.delResourceUploadTemp(req));
     }
 
+    @Override
+    public List<ResourceUploadTempListResp> exceutorQueryTempNbr(ResourceUploadTempDelReq req) {
+        // 多线程没跑完，返回空
+        return runableTask.exceutorQueryTempNbr(req);
+    }
 
+
+    @Override
+    public ResultVO addResourceInstByAdmin(ResourceInstAddReq req) {
+        log.info("MerchantResourceInstServiceImpl.addResourceInstByAdmin req={}", JSON.toJSONString(req));
+        // 获取产品归属厂商
+        MerChantGetProductReq merChantGetProductReq = new MerChantGetProductReq();
+        merChantGetProductReq.setProductId(req.getMktResId());
+        ResultVO<String> productRespResultVO = this.productService.getMerchantByProduct(merChantGetProductReq);
+        log.info("MerchantResourceInstServiceImpl.addResourceInstByAdmin productService.getMerchantByProduct req={} resp={}", JSON.toJSONString(merChantGetProductReq), JSON.toJSONString(productRespResultVO));
+        if (!productRespResultVO.isSuccess() || StringUtils.isEmpty(productRespResultVO.getResultData())) {
+            return ResultVO.error(constant.getCannotGetMuanfacturerMsg());
+        }
+        // 获取厂商源仓库
+        String sourceStoreMerchantId = productRespResultVO.getResultData();
+        StoreGetStoreIdReq storeManuGetStoreIdReq = new StoreGetStoreIdReq();
+        storeManuGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        storeManuGetStoreIdReq.setMerchantId(sourceStoreMerchantId);
+        String manuResStoreId = resouceStoreService.getStoreId(storeManuGetStoreIdReq);
+        log.info("MerchantResourceInstServiceImpl.addResourceInstByAdmin resouceStoreService.getStoreId req={} resp={}", JSON.toJSONString(storeManuGetStoreIdReq), JSON.toJSONString(manuResStoreId));
+        if (StringUtils.isEmpty(manuResStoreId)) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+        req.setMktResStoreId(manuResStoreId);
+        String merchantId = req.getMerchantId();
+        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(req.getMerchantId());
+        if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
+        }
+        MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
+        req.setMerchantType(merchantDTO.getMerchantType());
+        req.setMerchantName(merchantDTO.getMerchantName());
+        req.setMerchantCode(merchantDTO.getMerchantCode());
+        req.setLanId(merchantDTO.getLanId());
+        req.setRegionId(merchantDTO.getCity());
+        // 获取仓库
+        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        storeGetStoreIdReq.setMerchantId(merchantId);
+        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+        log.info("MerchantResourceInstServiceImpl.addResourceInstByAdmin resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+        if (StringUtils.isBlank(mktResStoreId)) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+        req.setDestStoreId(mktResStoreId);
+        ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
+        ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
+        BeanUtils.copyProperties(req, resourceInstValidReq);
+        CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(req.getMktResInstNbrs());
+        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, newList);
+        List<String> mktResInstNbrs = req.getMktResInstNbrs();
+        resourceInstAddResp.setExistNbrs(existNbrs);
+        mktResInstNbrs.removeAll(existNbrs);
+        if(CollectionUtils.isEmpty(mktResInstNbrs)){
+            return ResultVO.error("该产品串码已在库，请不要重复录入！");
+        }
+
+        req.setDestStoreId(mktResStoreId);
+        req.setSourceType(merchantDTOResultVO.getResultData().getMerchantType());
+        CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>(mktResInstNbrs);
+        Boolean addNum = resourceInstService.addResourceInstByMerchant(req, list);
+        if (!addNum) {
+            return ResultVO.error("串码入库失败");
+        }
+        return ResultVO.success("串码入库完成", resourceInstAddResp);
+    }
 }

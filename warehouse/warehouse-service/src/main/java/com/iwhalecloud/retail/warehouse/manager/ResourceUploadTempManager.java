@@ -41,4 +41,13 @@ public class ResourceUploadTempManager  extends ServiceImpl<ResourceUploadTempMa
         log.info("resourceUploadTempMapper.delResourceUploadTemp req={}, num={}", JSON.toJSONString(req), num);
         return num;
     }
+
+    /**
+     * 查询总数
+     * @param req
+     * @return
+     */
+    public Integer countTotal(ResourceUploadTempDelReq req){
+        return resourceUploadTempMapper.countTotal(req);
+    }
 }

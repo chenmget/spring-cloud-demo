@@ -106,9 +106,10 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
     @Override
     public List<ResourceRequestAddReq.ResourceRequestInst> getReqInst(ResourceInstAddReq req){
-        List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = Lists.newLinkedList();
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         List<String> checkMktResInstNbrs = req.getCheckMktResInstNbrs();
+        List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = new ArrayList<>(mktResInstNbrs.size());
+        log.info("ResourceInstCheckServiceImpl.getReqInst reqNbrSize={}",  mktResInstNbrs.size());
         if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
             mktResInstNbrs.removeAll(checkMktResInstNbrs);
         }
@@ -121,6 +122,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             }
             instDTOList.add(instDTO);
         }
+        log.info("ResourceInstCheckServiceImpl.getReqInst noCheckNbrSize={}",  instDTOList.size());
 
         if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
             for (String nbr : checkMktResInstNbrs) {
@@ -134,7 +136,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                 instDTOList.add(instDTO);
             }
         }
-        log.info("ResourceInstCheckServiceImpl.getReqInst  req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(instDTOList));
+        log.info("ResourceInstCheckServiceImpl.getReqInst req={},totalNbrSize={}", JSON.toJSONString(req), instDTOList.size());
         return instDTOList;
     }
 
@@ -167,6 +169,6 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         SelectProcessResp resp = new SelectProcessResp();
         resp.setProcessId(processId);
         resp.setRequestStatusCd(requestStatusCd);
-        return  resp;
+        return resp;
     }
 }

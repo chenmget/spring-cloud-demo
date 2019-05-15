@@ -1,10 +1,10 @@
 package com.iwhalecloud.retail.warehouse.dto.request;
 
-import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -16,7 +16,7 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "删除商家导入串码请求对象")
-public class ResourceUploadTempDelReq extends PageVO {
+public class ResourceUploadTempDelReq implements Serializable{
 
   	private static final long serialVersionUID = 1L;
 
@@ -27,9 +27,14 @@ public class ResourceUploadTempDelReq extends PageVO {
 	private String mktResUploadBatch;
 
 	/**
-  	 * 记录营销资源实例编码。
+  	 * 串码
   	 */
-	@ApiModelProperty(value = "串码。")
+	@ApiModelProperty(value = "串码")
   	private List<String> mktResInstNbrList;
+	/**
+  	 * 状态
+  	 */
+	@ApiModelProperty(value = "状态")
+  	private String result;
 
 }

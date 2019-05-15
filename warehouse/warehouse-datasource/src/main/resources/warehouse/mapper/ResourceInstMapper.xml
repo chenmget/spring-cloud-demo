@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper">
 
-<sql id="allFields">
+    <sql id="allFields">
     t.MKT_RES_INST_ID 
     ,t.MKT_RES_INST_NBR 
     ,t.CT_CODE 
@@ -126,12 +126,12 @@
         update MKT_RES_INST t
         set t.STATUS_CD = #{statusCd},t.UPDATE_DATE = #{updateDate},t.STATUS_DATE = #{statusDate},t.UPDATE_STAFF = #{updateStaff}
         where MKT_RES_INST_ID in
-            <if test="null!=mktResInstIds and mktResInstIds.size>0">
-                <foreach collection="mktResInstIds" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-            and MKT_RES_STORE_ID = #{mktResStoreId}
+        <if test="null!=mktResInstIds and mktResInstIds.size>0">
+            <foreach collection="mktResInstIds" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and MKT_RES_STORE_ID = #{mktResStoreId}
     </update>
 
     <sql id="commonFields">
@@ -302,15 +302,15 @@
     </select>
 
     <select id="findMKTInfoByLadId" resultType="java.lang.String">
-      select concat(mrced.MKT_RES_INST_NBR, ',', ppb.PRODUCT_NAME, ppb.UNIT_TYPE, ',', '2', ',', mrced.lan_id) as itms_str
-      from mkt_res_event mre
-      inner join mkt_res_chng_evt_detail mrced on mre.MKT_RES_EVENT_ID = mrced.MKT_RES_EVENT_ID and mre.STATUS_CD = #{scd} and mrced.lan_id = #{lanId} and mre.CREATE_DATE &lt; #{endDate}
+        select concat(mrced.MKT_RES_INST_NBR, ',', ppb.PRODUCT_NAME, ppb.UNIT_TYPE, ',', '2', ',', mrced.lan_id) as itms_str
+        from mkt_res_event mre
+        inner join mkt_res_chng_evt_detail mrced on mre.MKT_RES_EVENT_ID = mrced.MKT_RES_EVENT_ID and mre.STATUS_CD = #{scd} and mrced.lan_id = #{lanId} and mre.CREATE_DATE &lt; #{endDate}
         <if test="startDate != '' and startDate != null">
             and mre.CREATE_DATE &gt;= #{startDate}
         </if>
-      inner join prod_product pp on pp.product_id = mre.MKT_RES_ID
-      inner join prod_product_base ppb on ppb.PRODUCT_BASE_ID = pp.PRODUCT_BASE_ID
-      inner join prod_type pt on pt.type_id = ppb.type_id and pt.type_id = #{brand}
+        inner join prod_product pp on pp.product_id = mre.MKT_RES_ID
+        inner join prod_product_base ppb on ppb.PRODUCT_BASE_ID = pp.PRODUCT_BASE_ID
+        inner join prod_type pt on pt.type_id = ppb.type_id and pt.type_id = #{brand}
     </select>
 
     <select id="findCfValueByCfId" resultType="java.lang.String">

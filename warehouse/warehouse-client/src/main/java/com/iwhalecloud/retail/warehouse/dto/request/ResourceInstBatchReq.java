@@ -43,4 +43,9 @@ public class ResourceInstBatchReq implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "产品编码")
 	private List<String> mktResIdList;
+	/**
+	 * 商家id
+	 */
+	@ApiModelProperty(value = "商家id")
+	private String merchantId;
 }

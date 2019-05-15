@@ -17,9 +17,6 @@ public class ResourceUploadTempListResp implements java.io.Serializable {
 
   	private static final long serialVersionUID = 1L;
 
-	@ApiModelProperty(value = "营销资源导入流水号")
-	private String mktResUploadSeq;
-
 	/**
 	 * 营销资源导入批次。
 	 */
@@ -33,12 +30,6 @@ public class ResourceUploadTempListResp implements java.io.Serializable {
 	private String mktResInstNbr;
 
 	/**
-	 * 导入时间
-	 */
-	@ApiModelProperty(value = "导入时间")
-	private java.util.Date uploadDate;
-
-	/**
 	 * 验证结果 1. 通过; 0. 不通过
 	 */
 	@ApiModelProperty(value = "验证结果 1. 通过; 0. 不通过")
@@ -49,17 +40,5 @@ public class ResourceUploadTempListResp implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "验证描述，记录出错的原因")
 	private String resultDesc;
-
-	/**
-	 * 记录首次创建的用户标识。
-	 */
-	@ApiModelProperty(value = "首次创建的用户")
-	private String createStaff;
-
-	/**
-	 * 记录首次创建的时间。
-	 */
-	@ApiModelProperty(value = "记录首次创建的时间。")
-	private java.util.Date createDate;
 
 }

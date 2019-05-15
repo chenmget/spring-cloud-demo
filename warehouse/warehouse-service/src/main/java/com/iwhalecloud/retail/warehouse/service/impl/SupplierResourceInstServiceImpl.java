@@ -188,7 +188,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.error("串码入库失败");
         }
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
-        resourceInstUpdateReq.setTypeId(req.getTypeId());
         resourceInstUpdateReq.setDestStoreId(manuResStoreId);
         resourceInstUpdateReq.setMktResInstNbrs(merchantNbrList);
         resourceInstUpdateReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
@@ -324,7 +323,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
      */
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public synchronized ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req) {
+    public ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req) {
         //根据仓库查使用对象
         ResultVO<MerchantDTO> sourceMerchantVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getMktResStoreId(), JSON.toJSONString(sourceMerchantVO));
@@ -452,7 +451,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             mktResInstNbrs.addAll(item.getMktResInstNbrs());
             productId = item.getProductId();
         }
-
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
         resourceInstUpdateReq.setMktResInstNbrs(mktResInstNbrs);
         resourceInstUpdateReq.setCheckStatusCd(Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode()));
@@ -467,7 +465,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
             productGetByIdReq.setProductId(productId);
             ResultVO<ProductResp> respResultVO = productService.getProduct(productGetByIdReq);
-            log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst productService.getProduct productId={},resp={}", productId, JSON.toJSONString(respResultVO));
             if (respResultVO.isSuccess() && null != respResultVO.getResultData()) {
                 resourceInstUpdateReq.setTypeId(respResultVO.getResultData().getTypeId());
             }

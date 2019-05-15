@@ -70,4 +70,10 @@ public class PreSubsidyProductRespDTO implements Serializable {
      */
     @ApiModelProperty(value = "内存")
     private String memory;
+    
+    /**
+     * 产品类型
+     */
+    @ApiModelProperty(value = "产品类型")
+    private String typeName;
 }

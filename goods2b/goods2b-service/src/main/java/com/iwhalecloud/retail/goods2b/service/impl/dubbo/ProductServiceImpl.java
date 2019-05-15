@@ -412,6 +412,7 @@ public class ProductServiceImpl implements ProductService {
             ProductDTO productDTO = new ProductDTO();
             BeanUtils.copyProperties(productInfo, productDTO);
             String specName = this.getSpecName(productDTO);
+            
             queryProductInfoResqDTO.setSpecName(specName);
         }
         return ResultVO.success(queryProductInfoResqDTO);
@@ -427,7 +428,14 @@ public class ProductServiceImpl implements ProductService {
             ProductDTO productDTO = new ProductDTO();
             BeanUtils.copyProperties(productInfo, productDTO);
             String specName = this.getSpecName(productDTO);
+            String color = productDTO.getColor();
+            String memory = productDTO.getMemory();
+            String typeName = productDTO.getTypeName();
+            
             queryProductInfoResqDTO.setSpecName(specName);
+            queryProductInfoResqDTO.setColor(color);
+            queryProductInfoResqDTO.setMemory(memory);
+            queryProductInfoResqDTO.setTypeName(typeName);
         }
         return ResultVO.success(queryProductInfoResqDTO);
     }

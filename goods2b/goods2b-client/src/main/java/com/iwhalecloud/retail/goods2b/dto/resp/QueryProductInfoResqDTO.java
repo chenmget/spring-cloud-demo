@@ -76,4 +76,22 @@ public class QueryProductInfoResqDTO implements Serializable {
      */
     @ApiModelProperty(value = "产品型号")
     private String unitType;
+    
+    /**
+     * 颜色
+     */
+    @ApiModelProperty(value = "颜色")
+    private String color;
+    
+    /**
+     * 内存
+     */
+    @ApiModelProperty(value = "内存")
+    private String memory;
+    
+    /**
+     * 产品类型
+     */
+    @ApiModelProperty(value = "产品类型")
+    private String typeName;
 }

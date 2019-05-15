@@ -558,4 +558,6 @@ public class ProductBaseAddReq extends AbstractRequest implements Serializable {
      */
     @ApiModelProperty(value = "零售商标签")
     private List<String> tagList;
+
+    private String purchaseType;
 }

@@ -1031,16 +1031,18 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
             //营销活动产品列表信息
             List<PreSubsidyProductPromResqDTO> preSubsidyProductPromResqDTOS = new ArrayList<>();
+          //前置补贴活动
             List<com.iwhalecloud.retail.rights.dto.response.PreSubsidyProductPromResqDTO> productList =
-                    preSubsidyCouponService.queryPreSubsidyProduct(queryPreSubsidyReqDTO).getResultData();
+                    preSubsidyCouponService.queryPreSubsidyProductInfo(queryPreSubsidyReqDTO).getResultData();
             if (productList != null && productList.size() > 0) {
                 for (int i = 0; i < productList.size(); i++) {
                     PreSubsidyProductPromResqDTO preSubsidyProductPromResqDTO = new PreSubsidyProductPromResqDTO();
                     BeanUtils.copyProperties(productList.get(i), preSubsidyProductPromResqDTO);
+//                    preSubsidyProductPromResqDTO.setColor(productList.get(i).getActivityProductResq().getColor());//lws
+//                    preSubsidyProductPromResqDTO.setMemory(productList.get(i).getActivityProductResq().getMemory());//lws
+//                    preSubsidyProductPromResqDTO.setTypeName(productList.get(i).getActivityProductResq().getTypeName());//lws
                     preSubsidyProductPromResqDTO.setNum(productList.get(i).getActivityProductResq().getNum());
                     preSubsidyProductPromResqDTO.setDiscountAmount(productList.get(i).getActivityProductResq().getDiscountAmount());
-                    preSubsidyProductPromResqDTO.setColor(productList.get(i).getActivityProductResq().getColor());//lws
-                    preSubsidyProductPromResqDTO.setMemory(productList.get(i).getActivityProductResq().getMemory());//lws
                     preSubsidyProductPromResqDTOS.add(preSubsidyProductPromResqDTO);
                 }
             }
@@ -1048,6 +1050,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         } else if (PromoConst.ACTIVITYTYPE.BOOKING.getCode().equals(marketingActivityDetailResp.getActivityType())) {
             QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
             queryMarketingActivityReq.setMarketingActivityId(activityId);
+            //预售活动
             ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = activityProductService.queryPreSaleProductInfo(queryMarketingActivityReq);
             marketingActivityInfoResp.setPreSaleProductInfo(listResultVO.getResultData());
         }

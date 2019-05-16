@@ -247,4 +247,7 @@ public class ProductDTO extends PageVO {
 
 	@ApiModelProperty(value = "采购类型")
 	private String purchaseType;
+
+	@ApiModelProperty(value = "产品名称")
+	private String productName;
 }

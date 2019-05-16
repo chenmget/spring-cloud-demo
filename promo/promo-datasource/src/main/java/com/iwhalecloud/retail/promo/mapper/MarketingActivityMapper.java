@@ -44,6 +44,8 @@ public interface MarketingActivityMapper extends BaseMapper<MarketingActivity> {
      * @return
      */
     MarketingActivityDTO getMarketingActivityDtoById(String id);
+    
+    public MarketingActivity queryMarketingActivityTime(@Param("marketingActivityId") String marketingActivityId);
 
     /**
      * 查询生效的前置补贴活动

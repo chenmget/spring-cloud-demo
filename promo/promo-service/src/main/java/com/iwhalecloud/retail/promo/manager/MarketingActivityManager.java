@@ -261,6 +261,19 @@ public class MarketingActivityManager{
     }
 
     /**
+     * 根据活动id查询活动信息
+     * @param marketingActivityId
+     * @return
+     */
+    public MarketingActivity queryMarketingActivityTime(String marketingActivityId){
+//        QueryWrapper queryWrapper = new QueryWrapper();
+//        queryWrapper.eq(MarketingActivity.FieldNames.id.getTableFieldName(),marketingActivityId);
+//        queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(),PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+//        return marketingActivityMapper.selectOne(queryWrapper);
+    	return marketingActivityMapper.queryMarketingActivityTime(marketingActivityId);
+    }
+    
+    /**
      * 更新预售活动的规则
      * @param marketingActivity
      * @return

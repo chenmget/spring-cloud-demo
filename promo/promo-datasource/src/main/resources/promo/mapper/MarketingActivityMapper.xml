@@ -163,4 +163,48 @@
            and  ama.activity_type = #{activityType}
         </if>
     </select>
+    
+    <select id="queryMarketingActivityTime" parameterType="java.lang.String"
+        resultType="com.iwhalecloud.retail.promo.entity.MarketingActivity">
+        SELECT ama.id AS id,
+		ama.code AS CODE,
+		ama.name AS NAME,
+		ama.brief AS brief,
+		ama.description AS description,
+		ama.start_Time AS startTime,
+		ama.end_Time AS endTime,
+		ama.activity_Type AS activityType,
+		ama.activity_Type_Name AS activityTypeName,
+		ama.promotion_Type_Code AS promotionTypeCode,
+		ama.status AS STATUS,
+		ama.related_Task_Id AS related_Task_Id,
+		ama.initiator AS initiator,
+		ama.sequence AS sequence,
+		ama.activity_Url AS activityUrl,
+		ama.page_Img_Url AS pageImgUrl,
+		ama.top_Img_Url AS topImgUrl,
+		ama.is_Recommend AS isRecommend,
+		ama.creator AS creator,
+		ama.gmt_Create AS gmtCreate,
+		ama.modifier AS MODIFIER,
+		ama.gmt_Modified AS gmtModified,
+		ama.is_Deleted AS isDeleted,
+		ama.activity_Scope_Type AS activityScopeType,
+		ama.activity_Participant_Type AS activityParticipantType,
+		ama.pay_Type AS payType,
+		ama.pre_Start_Time AS preStartTime,
+		ama.pre_End_Time AS preEndTime,
+		ama.tail_Pay_Start_Time AS tailPayStartTime,
+		ama.tail_Pay_End_Time AS tailPayEndTime,
+		ama.advance_Pay_Amount AS advancePayAmount,
+		ama.participate_Num AS participateNum,
+		ama.deliver_Start_Time AS deliverStartTime,
+		ama.deliver_End_Time AS deliverEndTime
+	 FROM 
+	 	act_marketing_activity ama 
+	 WHERE 
+	 	1=1 and ama.is_deleted = '0' AND ama.id=#{marketingActivityId}
+        
+    </select>
+    
 </mapper>

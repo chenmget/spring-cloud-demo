@@ -28,7 +28,7 @@ import java.util.List;
 @Slf4j
 public class ResourceInstStoreServiceImplTest {
 
-    @Reference(timeout=100000)
+    @Reference
     private ResourceInstStoreService resourceInstStoreService;
 
     @Test
@@ -65,11 +65,11 @@ public class ResourceInstStoreServiceImplTest {
     }
 
     @Test
-    public void updateResourceInstStore() {
+    public void updateResourceInstStore(){
         ResourceInstStoreDTO req = new ResourceInstStoreDTO();
-        req.setMerchantId("4301811025392");
-        req.setMktResId("10412537");
-        req.setMktResStoreId("11");
+        req.setMerchantId("4301811022885");
+        req.setMktResId("1101089045995012097");
+        req.setMktResStoreId("31");
         req.setQuantity(1L);
         req.setQuantityAddFlag(false);
         req.setStatusCd("1302");
@@ -96,17 +96,9 @@ public class ResourceInstStoreServiceImplTest {
     }
 
     @Test
-    public void getQuantityByMerchantId() {
+    public void getQuantityByMerchantId(){
         ResultVO<Integer> amount = resourceInstStoreService.getQuantityByMerchantId("4300001063072");
         System.out.print("amount==============="+ amount.getResultData());
-    }
-
-    /**
-     * 测试串码入库的
-     */
-    @Test
-    public void syncMktToITMS(){
-        resourceInstStoreService.syncMktToITMS();
     }
 
 }

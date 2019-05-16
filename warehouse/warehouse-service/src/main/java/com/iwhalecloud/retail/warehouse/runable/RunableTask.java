@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.warehouse.runable;
 import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
@@ -28,6 +27,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 /**
@@ -322,15 +322,16 @@ public class RunableTask {
      * @param req
      */
     public List<ResourceUploadTempListResp> exceutorQueryTempNbr(ResourceUploadTempDelReq req) {
+       final AtomicInteger atomicInteger = new AtomicInteger(0);
        try {
            ExecutorService executorService = initExecutorService();
            Integer totalNum = resourceUploadTempManager.countTotal(req);
            log.info("RunableTask.exceutorQueryTempNbr resourceUploadTempManager.listResourceUploadTemp countTotal={}", totalNum);
            Integer pageSize = 5000;
            Integer excutorNum = totalNum%pageSize == 0 ? totalNum/pageSize : (totalNum/pageSize + 1);
-           List<Callable<List<ResourceUploadTempListResp>>> tasks = new ArrayList<>();
+           BlockingQueue<Callable<List<ResourceUploadTempListResp>>> tasks = new LinkedBlockingQueue<>();
            for (Integer i = 0; i < excutorNum; i++) {
-               Callable<List<ResourceUploadTempListResp>> callable = new QueryNbrTask(i, pageSize, req.getMktResUploadBatch(), req.getResult());
+               Callable<List<ResourceUploadTempListResp>> callable = new QueryNbrTask(atomicInteger.getAndIncrement(), pageSize, req.getMktResUploadBatch(), req.getResult());
                tasks.add(callable);
            }
            List<Future<List<ResourceUploadTempListResp>>> futures = executorService.invokeAll(tasks);
@@ -357,6 +358,7 @@ public class RunableTask {
      * @param req
      */
     public List<ResourceReqDetailPageResp> exceutorQueryReqDetail(ResourceReqDetailPageReq req) {
+        final AtomicInteger atomicInteger = new AtomicInteger(0);
         try {
             ExecutorService executorService = initExecutorService();
             ResourceReqDetailReq detailReq = new ResourceReqDetailReq();
@@ -365,9 +367,9 @@ public class RunableTask {
             log.info("RunableTask.exceutorQueryTempNbr detailManager.resourceRequestCount countTotal={}", totalNum);
             Integer pageSize = 5000;
             Integer excutorNum = totalNum%pageSize == 0 ? totalNum/pageSize : (totalNum/pageSize + 1);
-            List<Callable<List<ResourceReqDetailPageResp>>> tasks = new ArrayList<>();
+            BlockingQueue<Callable<List<ResourceReqDetailPageResp>>> tasks = new LinkedBlockingQueue<>();
             for (Integer i = 0; i < excutorNum; i++) {
-                Callable<List<ResourceReqDetailPageResp>> callable = new QueryReqDetailrTask(i, pageSize, req.getMktResReqId());
+                Callable<List<ResourceReqDetailPageResp>> callable = new QueryReqDetailrTask(atomicInteger.getAndIncrement(), pageSize, req.getMktResReqId());
                 tasks.add(callable);
             }
             List<Future<List<ResourceReqDetailPageResp>>> futures = executorService.invokeAll(tasks);
@@ -406,25 +408,29 @@ public class RunableTask {
     class QueryNbrTask implements Callable<List<ResourceUploadTempListResp>> {
         private Integer pageNo;
         private Integer pageSize;
+        private Integer pageStartNo;
         private String mktResUploadBatch;
         private String result;
 
         public QueryNbrTask(Integer pageNo, Integer pageSize, String mktResUploadBatch, String result) {
-            this.pageNo = pageNo;
-            this.pageSize = pageSize;
-            this.mktResUploadBatch = mktResUploadBatch;
-            this.result = result;
+            synchronized(QueryNbrTask.class){
+                this.pageNo = pageNo;
+                this.pageSize = pageSize;
+                this.mktResUploadBatch = mktResUploadBatch;
+                this.result = result;
+                this.pageStartNo = pageNo*pageSize;
+            }
         }
 
         @Override
         public List<ResourceUploadTempListResp> call() throws Exception {
             ResourceUploadTempListPageReq req = new ResourceUploadTempListPageReq();
             req.setPageNo(pageNo);
+            req.setPageStartNo(pageStartNo);
             req.setPageSize(pageSize);
             req.setMktResUploadBatch(mktResUploadBatch);
             req.setResult(result);
-            Page<ResourceUploadTempListResp> page = resourceUploadTempManager.listResourceUploadTemp(req);
-            List<ResourceUploadTempListResp> list = page.getRecords();
+            List<ResourceUploadTempListResp> list = resourceUploadTempManager.executorlistResourceUploadTemp(req);
             Integer listSize = CollectionUtils.isEmpty(list) ? 0 : list.size();
             log.info("RunableTask.exceutorQueryTempNbr resourceUploadTempManager.listResourceUploadTemp req={}, listSize={}", JSON.toJSONString(req), listSize);
             return list;
@@ -434,12 +440,16 @@ public class RunableTask {
     class QueryReqDetailrTask implements Callable<List<ResourceReqDetailPageResp>> {
         private Integer pageNo;
         private Integer pageSize;
+        private Integer pageStartNo;
         private String mktResReqId;
 
         public QueryReqDetailrTask(Integer pageNo, Integer pageSize, String mktResReqId) {
-            this.pageNo = pageNo;
-            this.pageSize = pageSize;
-            this.mktResReqId = mktResReqId;
+            synchronized(QueryReqDetailrTask.class) {
+                this.pageNo = pageNo;
+                this.pageSize = pageSize;
+                this.mktResReqId = mktResReqId;
+                this.pageStartNo = pageNo*pageSize;
+            }
         }
 
         @Override
@@ -447,9 +457,9 @@ public class RunableTask {
             ResourceReqDetailPageReq req = new ResourceReqDetailPageReq();
             req.setPageNo(pageNo);
             req.setPageSize(pageSize);
+            req.setPageStartNo(pageStartNo);
             req.setMktResReqId(mktResReqId);
-            Page<ResourceReqDetailPageResp> page = detailManager.resourceRequestPage(req);
-            List<ResourceReqDetailPageResp> list = page.getRecords();
+            List<ResourceReqDetailPageResp> list = detailManager.executorResourceRequestPage(req);
             Integer listSize = CollectionUtils.isEmpty(list) ? 0 : list.size();
             log.info("RunableTask.exceutorQueryTempNbr detailManager.resourceRequestPage req={}, listSize={}", JSON.toJSONString(req), listSize);
             return list;

@@ -22,4 +22,7 @@ public class ResourceReqDetailPageReq extends PageVO {
     @ApiModelProperty(value = "是否抽检")
     private String isInspection;
 
+    @ApiModelProperty(value = "起始数量")
+    private Integer pageStartNo;
+
 }

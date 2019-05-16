@@ -10,6 +10,8 @@ import com.iwhalecloud.retail.warehouse.entity.ResouceUploadTemp;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @Class: ResourceRequest  Mapper
  * @author he.sw
@@ -37,4 +39,13 @@ public interface ResourceUploadTempMapper extends BaseMapper<ResouceUploadTemp> 
      * @return
      */
     Integer countTotal(ResourceUploadTempDelReq req);
+
+
+
+    /**
+     * 查询校验串码分页
+     * @param req
+     * @return
+     */
+    List<ResourceUploadTempListResp> executorlistResourceUploadTemp(@Param("req") ResourceUploadTempListPageReq req);
 }

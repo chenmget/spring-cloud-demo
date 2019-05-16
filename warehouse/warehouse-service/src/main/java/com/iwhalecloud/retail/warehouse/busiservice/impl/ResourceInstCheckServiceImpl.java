@@ -144,7 +144,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
     public SelectProcessResp selectProcess(ResourceInstAddReq req){
         String requestStatusCd = null;
         String processId = null;
-        // 移动串码审核流程
+        // 固网串码审核流程
         if (ResourceConst.CONSTANT_YES.equals(req.getIsFixedLine())) {
             // 固网串码审核流程 1 集采或入库串码数量小于checkMaxNum（配置值）流程；2 两步抽检流程；3 一步抽检流程
             if (req.getMktResInstNbrs().size() < checkMaxNum || ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
@@ -163,6 +163,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                 }
             }
         }else{
+            // 移动串码审核流程
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
             processId = ResourceConst.MOVE_NBR_WORK_FLOW_INST;
         }

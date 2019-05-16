@@ -80,4 +80,21 @@
             and detail.IS_INSPECTION = #{req.isInspection}
         </if>
     </select>
+
+    <select id="executorResourceRequestPage" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp">
+        select rest.MKT_RES_REQ_ID,detail.CT_CODE,detail.MKT_RES_INST_NBR,item.MKT_RES_ID
+        from MKT_RES_REQUEST rest,MKT_RES_REQ_ITEM item,MKT_RES_REQ_DETAIL detail
+        where 1=1
+        and rest.MKT_RES_REQ_ID = item.MKT_RES_REQ_ID and  item.MKT_RES_REQ_ITEM_ID = detail.MKT_RES_REQ_ITEM_ID
+        and rest.MKT_RES_REQ_ID = #{req.mktResReqId}
+        <if test = "null != req.mktResInstNbr and '' != req.mktResInstNbr">
+            and detail.MKT_RES_INST_NBR = #{req.mktResInstNbr}
+        </if>
+        <if test = "null != req.isInspection and '' != req.isInspection">
+            and detail.IS_INSPECTION = #{req.isInspection}
+        </if>
+        order by detail.MKT_RES_INST_NBR DESC
+        LIMIT #{req.pageStartNo}, #{req.pageSize}
+    </select>
 </mapper>

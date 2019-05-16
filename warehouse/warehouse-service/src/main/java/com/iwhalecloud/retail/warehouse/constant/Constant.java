@@ -157,6 +157,11 @@ public class Constant {
      */
     private String storeDealError;
 
+    /**
+     * 商家查询到多个仓库
+     */
+    private String getRepeatStoreMsg;
+
 
 
 }

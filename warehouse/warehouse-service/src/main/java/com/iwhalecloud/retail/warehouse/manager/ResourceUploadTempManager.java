@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @Component
@@ -49,5 +50,14 @@ public class ResourceUploadTempManager  extends ServiceImpl<ResourceUploadTempMa
      */
     public Integer countTotal(ResourceUploadTempDelReq req){
         return resourceUploadTempMapper.countTotal(req);
+    }
+
+    /**
+     * 查询校验串码分页
+     * @param req
+     * @return
+     */
+    public List<ResourceUploadTempListResp> executorlistResourceUploadTemp(ResourceUploadTempListPageReq req){
+        return resourceUploadTempMapper.executorlistResourceUploadTemp(req);
     }
 }

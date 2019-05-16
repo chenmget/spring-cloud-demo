@@ -4,7 +4,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -76,10 +75,6 @@ public class ResourceInstStoreManager{
 
     public Integer getQuantityByMerchantId(String merchantId, List<String> statusList){
         ResouceStoreDTO resouceStoreDTO = resouceStoreMapper.getStore(merchantId, ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        log.info("ResourceInstStoreManager.getQuantityByMerchantId resouceStoreMapper.getStore merchantId={},resp={}", merchantId, JSON.toJSONString(resouceStoreDTO));
-        if (null == resouceStoreDTO) {
-            return 0;
-        }
         List<String> list = resourceInstStoreMapper.getQuantityByMerchantId(resouceStoreDTO.getMktResStoreId(), merchantId, statusList);
         Integer number = CollectionUtils.isEmpty(list) ? 0 : list.size();
         return number;
@@ -141,18 +136,18 @@ public class ResourceInstStoreManager{
                 onwayQuantity = exixtsOnwayQuantity - changeOnwayQuantity;
             }
 
-            // 无库存时通知商品中心,小于1的话最后一个库存更新不了
-            if (quantity.longValue() < 0) {
+            // 无库存时通知商品中心
+            if (Long.compare(quantity, 0) < 1) {
                 try {
                     GoodsProductRelEditReq goodsProductRelEditReq = new GoodsProductRelEditReq();
                     goodsProductRelEditReq.setMerchantId(resourceInstStoreDTO.getMerchantId());
                     goodsProductRelEditReq.setProductId(resourceInstStoreDTO.getMktResId());
                     goodsProductRelEditReq.setIsHaveStock(false);
-                    ResultVO<Boolean> resultVO = goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
-                    log.info("ResourceInstStoreManager goodsProductRelService.updateIsHaveStock req={}", JSON.toJSONString(goodsProductRelEditReq), JSON.toJSONString(resultVO));
+                    goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
                 } catch (Exception ex) {
                     log.error("通知商品中心异常", ex);
                 }
+
                 return 0;
             }
 
@@ -163,11 +158,7 @@ public class ResourceInstStoreManager{
             UpdateWrapper<ResourceInstStore> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq(ResourceInstStore.FieldNames.mktResInstStoreId.getTableFieldName(), resourceInstStore.getMktResInstStoreId());
             updateWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStore.getMktResStoreId());
-            updateWrapper.eq(ResourceInstStore.FieldNames.merchantId.getTableFieldName(), resourceInstStore.getMerchantId());
-            updateWrapper.eq(ResourceInstStore.FieldNames.mktResId.getTableFieldName(), resourceInstStore.getMktResId());
-            Integer sucessNum = resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
-            log.info("ResourceInstStoreManager.update req={}，resp={}", JSON.toJSONString(updateWrapper), sucessNum);
-            return sucessNum;
+            return resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
         }else{
             Date now = new Date();
             ResourceInstStore addResourceInstStore = new ResourceInstStore();

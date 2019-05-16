@@ -10,6 +10,8 @@ import com.iwhalecloud.retail.warehouse.service.ResourceReqDetailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 /**
  * @Author My
  * @Date 2019/1/10
@@ -27,5 +29,8 @@ public class ResourceRequestDetailOpenServiceImpl implements ResourceReqDetailSe
         return resourceReqDetailService.resourceRequestPage(req);
     }
 
-
+    @Override
+    public ResultVO<List<ResourceReqDetailPageResp>> resourceRequestList(ResourceReqDetailPageReq req){
+        return resourceReqDetailService.resourceRequestList(req);
+    }
 }

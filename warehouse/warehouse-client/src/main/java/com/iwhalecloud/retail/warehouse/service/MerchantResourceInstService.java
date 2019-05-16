@@ -6,6 +6,8 @@ import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 
+import java.util.List;
+
 /**
  * 厂家串码操作
  * @author chengxu
@@ -60,5 +62,19 @@ public interface MerchantResourceInstService {
     ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req);
 
     ResultVO exceutorDelNbr(ResourceUploadTempDelReq req);
+
+    /**
+     * 多线程查询临时串码
+     * @param req
+     * @return
+     */
+    List<ResourceUploadTempListResp> exceutorQueryTempNbr(ResourceUploadTempDelReq req);
+
+    /**
+     * 管理员给厂商增加串码（不走审核，也没有大批量）
+     * @param req
+     * @return
+     */
+    ResultVO addResourceInstByAdmin(ResourceInstAddReq req);
 
 }

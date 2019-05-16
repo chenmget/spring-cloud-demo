@@ -30,13 +30,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.*;
 import java.net.SocketException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -58,17 +53,17 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private String gmAdd;
     @Value("${ftp.iptvAdd}")
     private String iptvAdd;
-    
+ 
     @Value("${ftp.gmModify}")
     private String gmModify;
     @Value("${ftp.iptvModify}")
     private String iptvModify;
-    
+  
     @Value("${ftp.gmDelete}")
     private String gmDelete;
     @Value("${ftp.iptvDelete}")
     private String iptvDelete;
-    
+
     @Value("${ftp.gmdirAdd}")
     private String gmdirAdd;
     @Value("${ftp.iptvdirAdd}")
@@ -104,7 +99,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     @Autowired
     private Constant constant;
-    
+
     @Autowired
     private MktResItmsSyncRecMapper mktResItmsSyncRecMapper;
 
@@ -238,11 +233,21 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         // 开始时间
         String startStr = resourceInstMapper.findCfValueByCfId(CONF_STR);
 
-        String sqNum = "";
-        
+        int num = insertToMRISR(startStr);
+
+        //没有待推送数据
+        if(num == 0){
+        	log.info(startStr+"ITMS没有待推送数据。");
+        	return;
+        }
+    	log.info(startStr+"成功插入到 MktResItmsSyncRec表 "+num+"条数据。");
+
+        // 结束时间
+        Date endDate = new Date();
+
         for (int i = 0; i < brands.length; i++) {
             for (int j = 0; j < types.length; j++) {
-                this.syncMktToITMS(brands[i], types[j], startStr, sqNum);
+                this.syncMktToITMS(brands[i], types[j], startStr);
             }
         }
 
@@ -265,7 +270,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     }
 
-    public void syncMktToITMS(String brand, String[] ops, String startDate, String sqNum) {
+    public void syncMktToITMS(String brand, String[] ops, String startDate) {
 
         List<String> files = new ArrayList<String>();
 
@@ -290,7 +295,6 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         	int seqNb = Integer.parseInt(resStr);
         	seqNb++;
         	String seq = getSeqStr(seqNb);
-        	
             String destFileName = latIdList.get(i) + "ITMS" + time + seq + ".txt";
             File destFile = new File(basePath + File.separator + destFileName);
             files.add(destFileName);
@@ -310,7 +314,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 
                 String syncFileName = sendDir+"/"+destFileName;
                 mktResItmsSyncRecMapper.updateFileNameById(mktList.get(j).get("id"), syncFileName, time + seq);
-                
+
             }
         }
         if(pw != null){
@@ -431,29 +435,29 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         }
         return ftpClient;
     }
-    
+
     /**
      * 数据插入到MKT_RES_ITMS_SYNC_REC表
      *
      * @return
-     * @throws 
+     * @throws
      */
     private int insertToMRISR(String startDate) {
-    	List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByDate(startDate);
-    	int num = 0;
-    	if(mktResItmsSyncRecList.size()>0){
-    		for(MktResItmsSyncRec mktResItmsSyncRec : mktResItmsSyncRecList){
-    			mktResItmsSyncRecMapper.insert(mktResItmsSyncRec);
-    			num++;
-    		}
-    	}
-    	return num;
+        List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByDate(startDate);
+        int num = 0;
+        if(mktResItmsSyncRecList.size()>0){
+            for(MktResItmsSyncRec mktResItmsSyncRec : mktResItmsSyncRecList){
+                mktResItmsSyncRecMapper.insert(mktResItmsSyncRec);
+                num++;
+            }
+        }
+        return num;
     }
 
     //获取返回的文件路径
     public String getReturnDir(String brand, String[] ops){
-    	String sendDir = "";
-    	if (brands[0].equals(brand)) {
+        String sendDir = "";
+        if (brands[0].equals(brand)) {
             // 光猫
             if (Arrays.equals(types[0],ops)) {
                 sendDir = gmdirAdd;
@@ -476,9 +480,9 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 sendDir = iptvdirDelete;
             }
         }
-    	return sendDir;
+        return sendDir;
     }
-    
+
     public String getSendDir(String brand, String[] ops){
     	String sendDir = "";
     	if (brands[0].equals(brand)) {
@@ -504,7 +508,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 sendDir = iptvDelete;
             }
         }
-    	return sendDir;
+        return sendDir;
     }
-    
+
 }

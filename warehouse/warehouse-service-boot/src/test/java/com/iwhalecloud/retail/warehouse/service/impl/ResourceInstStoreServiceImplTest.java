@@ -17,8 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -67,7 +65,7 @@ public class ResourceInstStoreServiceImplTest {
     }
 
     @Test
-    public void updateResourceInstStore(){
+    public void updateResourceInstStore() {
         ResourceInstStoreDTO req = new ResourceInstStoreDTO();
         req.setMerchantId("4301811025392");
         req.setMktResId("10412537");
@@ -98,17 +96,17 @@ public class ResourceInstStoreServiceImplTest {
     }
 
     @Test
-    public void getQuantityByMerchantId(){
+    public void getQuantityByMerchantId() {
         ResultVO<Integer> amount = resourceInstStoreService.getQuantityByMerchantId("4300001063072");
         System.out.print("amount==============="+ amount.getResultData());
     }
-    
+
     /**
      * 测试串码入库的
      */
     @Test
     public void syncMktToITMS(){
-    	resourceInstStoreService.syncMktToITMS();
+        resourceInstStoreService.syncMktToITMS();
     }
 
 }

@@ -42,5 +42,4 @@ public interface ResourceInstCheckService {
      * @return
      */
     SelectProcessResp selectProcess(ResourceInstAddReq req);
-
 }

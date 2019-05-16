@@ -46,10 +46,10 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Autowired
     private Constant constant;
-
+    
     @Autowired
     private CallService callService;
-
+    
     @Autowired
     private ResourceInstManager resourceInstManager;
 
@@ -66,16 +66,17 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         MerchantGetReq merchantGetReq = new MerchantGetReq();
         merchantGetReq.setMerchantId(req.getMerchantId());
         ResultVO<MerchantDetailDTO> merchantDetailDTOResultVO = merchantService.getMerchantDetail(merchantGetReq);
+        log.info("AdminResourceInstServiceImpl.addResourceInst merchantService.getMerchantDetail req={},resp={}", JSON.toJSONString(merchantGetReq), JSON.toJSONString(merchantDetailDTOResultVO));
         if (!merchantDetailDTOResultVO.isSuccess() || null == merchantDetailDTOResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         String merchantType = merchantDetailDTOResultVO.getResultData().getMerchantType();
         if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(merchantType)) {
-            return merchantResourceInstService.addResourceInst(req);
-        }else if(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchantType) || PartnerConst.MerchantTypeEnum.PARTNER.getType().equals(merchantType)) {
+            return merchantResourceInstService.addResourceInstByAdmin(req);
+        }else if(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(merchantType) || PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchantType)) {
             return supplierResourceInstService.addResourceInst(req);
         }else {
-            return ResultVO.error(constant.getCannotGetMerchantMsg());
+            return ResultVO.error("用户类型不正确");
         }
     }
 
@@ -86,24 +87,24 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     }
 
     @Override
-    public ResultVO inventoryChange(InventoryChangeReq req) {
-        log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));
-
+	public ResultVO inventoryChange(InventoryChangeReq req) {
+		log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));
+		
 //		InventoryChangeResp inventoryChangeResp = new InventoryChangeResp();
-        String result = "";
-        List<ResourceInstDTO> resourceInstList = resourceInstManager.listInstsByNbr(req.getDeviceId());
-        if(resourceInstList.size()<=0 || null == resourceInstList){
-            return ResultVO.error("串码不在库中");
-        }
-        try {
-            result = callService.postInvenChangeToWebService(req);
+		String result = "";
+		List<ResourceInstDTO> resourceInstList = resourceInstManager.listInstsByNbr(req.getDeviceId());
+		if(resourceInstList.size()<=0 || null == resourceInstList){
+			return ResultVO.error("串码不在库中");
+		}
+		try {
+			result = callService.postInvenChangeToWebService(req);
 //			inventoryChangeResp.setResult(result);
-        } catch (Exception e) {
-            log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed req={}", JSON.toJSONString(req));
-            return ResultVO.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed");
-        }
-        return ResultVO.success(result);
-    }
-
-
+		} catch (Exception e) {
+			log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed req={}", JSON.toJSONString(req));
+			return ResultVO.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed");
+		}
+		return ResultVO.success(result);
+	}
+    
+    
 }

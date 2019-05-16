@@ -3,12 +3,14 @@ package com.iwhalecloud.retail.warehouse.runable;
 import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Lists;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceUploadTemp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceReqDetail;
 import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
@@ -48,9 +50,7 @@ public class RunableTask {
     private ResourceRequestService requestService;
 
     // 核心线程数
-    private int corePoolSize = 20;
-    // 最大线程数
-    private int maximumPoolSize = 100;
+    private int corePoolSize = Runtime.getRuntime().availableProcessors();
     // 超时时间100秒
     private long keepAliveTime = 100;
 
@@ -75,7 +75,7 @@ public class RunableTask {
 
     public ExecutorService initExecutorService() {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
-        ExecutorService executorService = new ThreadPoolExecutor(corePoolSize, maximumPoolSize, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
+        ExecutorService executorService = new ThreadPoolExecutor(corePoolSize, corePoolSize+1, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
         return executorService;
     }
 
@@ -136,6 +136,9 @@ public class RunableTask {
                                 inst.setMktResUploadBatch(batchId);
                                 inst.setMktResInstNbr(mktResInstNbr);
                                 inst.setResult(ResourceConst.CONSTANT_NO);
+                                if (null != req.getCtCode()) {
+                                    inst.setCtCode(req.getCtCode().get(mktResInstNbr));
+                                }
                                 inst.setUploadDate(now);
                                 inst.setCreateDate(now);
                                 inst.setCreateStaff(req.getCreateStaff());
@@ -204,6 +207,7 @@ public class RunableTask {
         delNbrFutureTask = executorService.submit(callable);
         executorService.shutdown();
     }
+
     /**
      * 串码入库插入多线程处理
      * @param req
@@ -313,6 +317,78 @@ public class RunableTask {
         return null;
     }
 
+    /**
+     * 临时串码查询
+     * @param req
+     */
+    public List<ResourceUploadTempListResp> exceutorQueryTempNbr(ResourceUploadTempDelReq req) {
+       try {
+           ExecutorService executorService = initExecutorService();
+           Integer totalNum = resourceUploadTempManager.countTotal(req);
+           log.info("RunableTask.exceutorQueryTempNbr resourceUploadTempManager.listResourceUploadTemp countTotal={}", totalNum);
+           Integer pageSize = 5000;
+           Integer excutorNum = totalNum%pageSize == 0 ? totalNum/pageSize : (totalNum/pageSize + 1);
+           List<Callable<List<ResourceUploadTempListResp>>> tasks = new ArrayList<>();
+           for (Integer i = 0; i < excutorNum; i++) {
+               Callable<List<ResourceUploadTempListResp>> callable = new QueryNbrTask(i, pageSize, req.getMktResUploadBatch(), req.getResult());
+               tasks.add(callable);
+           }
+           List<Future<List<ResourceUploadTempListResp>>> futures = executorService.invokeAll(tasks);
+           executorService.shutdown();
+
+           List<ResourceUploadTempListResp> allList = new ArrayList<>();
+           if (CollectionUtils.isNotEmpty(futures)) {
+               for (Future<List<ResourceUploadTempListResp>> future: futures) {
+                   List<ResourceUploadTempListResp> list = future.get();
+                   if (CollectionUtils.isNotEmpty(list)) {
+                       allList.addAll(list);
+                   }
+               }
+           }
+           return allList;
+       } catch (Exception e) {
+            log.error("临时串码查询异常", e);
+       }
+       return null;
+    }
+
+    /**
+     * 临时串码查询
+     * @param req
+     */
+    public List<ResourceReqDetailPageResp> exceutorQueryReqDetail(ResourceReqDetailPageReq req) {
+        try {
+            ExecutorService executorService = initExecutorService();
+            ResourceReqDetailReq detailReq = new ResourceReqDetailReq();
+            BeanUtils.copyProperties(req, detailReq);
+            Integer totalNum = detailManager.resourceRequestCount(detailReq);
+            log.info("RunableTask.exceutorQueryTempNbr detailManager.resourceRequestCount countTotal={}", totalNum);
+            Integer pageSize = 5000;
+            Integer excutorNum = totalNum%pageSize == 0 ? totalNum/pageSize : (totalNum/pageSize + 1);
+            List<Callable<List<ResourceReqDetailPageResp>>> tasks = new ArrayList<>();
+            for (Integer i = 0; i < excutorNum; i++) {
+                Callable<List<ResourceReqDetailPageResp>> callable = new QueryReqDetailrTask(i, pageSize, req.getMktResReqId());
+                tasks.add(callable);
+            }
+            List<Future<List<ResourceReqDetailPageResp>>> futures = executorService.invokeAll(tasks);
+            executorService.shutdown();
+
+            List<ResourceReqDetailPageResp> allList = new ArrayList<>();
+            if (CollectionUtils.isNotEmpty(futures)) {
+                for (Future<List<ResourceReqDetailPageResp>> future: futures) {
+                    List<ResourceReqDetailPageResp> list = future.get();
+                    if (CollectionUtils.isNotEmpty(list)) {
+                        allList.addAll(list);
+                    }
+                }
+            }
+            return allList;
+        } catch (Exception e) {
+            log.error("临时串码查询异常", e);
+        }
+        return null;
+    }
+
     public static void main(String[] args) {
         RunableTask task = new RunableTask();
         ExecutorService executorService = task.initExecutorService();
@@ -321,52 +397,62 @@ public class RunableTask {
             public String call() throws Exception {
                 //暂停1s
                 Thread.sleep(1000);
-                List<Future<String>> list = test();
-                System.out.println("excutor result  =====================: "+JSON.toJSONString(list));
                 return null;
             }
         });
-
-
         executorService.shutdown();
     }
 
-    public static List<Future<String>> test(){
-        try {
-            //创建大小为10的线程池
-            ExecutorService executorService = Executors.newFixedThreadPool(10);
-            //存储线程处理结果
-            List<Future<String>> list = new ArrayList<Future<String>>();
-            //线程池只有10，要执行50个线程，分50/10=5次进行，每进行完10个callable后重新调用call(),因此每执行输出10行就会等1s。
-            for (int i = 0; i < 500; i++) {
-                List<Integer> newList = new ArrayList<>(200);
-//                synchronized(RunableTask.class){
-                    for (Integer j = i; j< (i+200); j++) {
-                        newList.add(j);
-                    }
-//                }
-                Future<String> future = executorService.submit(new Callable<String>() {
-                    @Override
-                    public String call() throws Exception {
-                        //暂停1s
-                        Thread.sleep(10);
-                        String name = Thread.currentThread().getName();
-                        System.out.println("name : " + JSON.toJSONString(newList));
-                        List<String> list = Lists.newArrayList("2");
-                        return name;
-                    }
-                });
-                list.add(future);
-            }
+    class QueryNbrTask implements Callable<List<ResourceUploadTempListResp>> {
+        private Integer pageNo;
+        private Integer pageSize;
+        private String mktResUploadBatch;
+        private String result;
 
-            //关闭线程池
-            executorService.shutdown();
-            return list;
-
-        }catch (Exception e){
-
+        public QueryNbrTask(Integer pageNo, Integer pageSize, String mktResUploadBatch, String result) {
+            this.pageNo = pageNo;
+            this.pageSize = pageSize;
+            this.mktResUploadBatch = mktResUploadBatch;
+            this.result = result;
         }
-        return null;
+
+        @Override
+        public List<ResourceUploadTempListResp> call() throws Exception {
+            ResourceUploadTempListPageReq req = new ResourceUploadTempListPageReq();
+            req.setPageNo(pageNo);
+            req.setPageSize(pageSize);
+            req.setMktResUploadBatch(mktResUploadBatch);
+            req.setResult(result);
+            Page<ResourceUploadTempListResp> page = resourceUploadTempManager.listResourceUploadTemp(req);
+            List<ResourceUploadTempListResp> list = page.getRecords();
+            Integer listSize = CollectionUtils.isEmpty(list) ? 0 : list.size();
+            log.info("RunableTask.exceutorQueryTempNbr resourceUploadTempManager.listResourceUploadTemp req={}, listSize={}", JSON.toJSONString(req), listSize);
+            return list;
+        }
     }
 
+    class QueryReqDetailrTask implements Callable<List<ResourceReqDetailPageResp>> {
+        private Integer pageNo;
+        private Integer pageSize;
+        private String mktResReqId;
+
+        public QueryReqDetailrTask(Integer pageNo, Integer pageSize, String mktResReqId) {
+            this.pageNo = pageNo;
+            this.pageSize = pageSize;
+            this.mktResReqId = mktResReqId;
+        }
+
+        @Override
+        public List<ResourceReqDetailPageResp> call() throws Exception {
+            ResourceReqDetailPageReq req = new ResourceReqDetailPageReq();
+            req.setPageNo(pageNo);
+            req.setPageSize(pageSize);
+            req.setMktResReqId(mktResReqId);
+            Page<ResourceReqDetailPageResp> page = detailManager.resourceRequestPage(req);
+            List<ResourceReqDetailPageResp> list = page.getRecords();
+            Integer listSize = CollectionUtils.isEmpty(list) ? 0 : list.size();
+            log.info("RunableTask.exceutorQueryTempNbr detailManager.resourceRequestPage req={}, listSize={}", JSON.toJSONString(req), listSize);
+            return list;
+        }
+    }
 }

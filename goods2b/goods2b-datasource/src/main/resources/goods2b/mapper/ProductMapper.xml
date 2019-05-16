@@ -35,12 +35,13 @@
     ,t.UPDATE_DATE
     ,t.SOURCE_FROM
     ,t.AUDIT_STATE
+    ,t.PURCHASE_TYPE
   </sql>
 
   <!-- getProduct-->
   <select id="getProduct" parameterType="java.lang.String"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductResp">
-    Select <include refid="allFields" />,ppb.brand_id,ppb.is_ct_code,ppb.product_name,ppb.product_code,ppb.unit_type,ppb.type_id
+    Select <include refid="allFields" />,ppb.brand_id,ppb.is_ct_code,ppb.product_name,ppb.product_code,ppb.unit_type,ppb.type_id,ppb.brand_id
     FROM prod_product t
     left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
     WHERE t.product_id = #{productId}

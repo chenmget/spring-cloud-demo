@@ -163,6 +163,8 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         	Date preStartTime = marketingActivityDTO.getPreStartTime();
 //        	String pre_Start_Time = "";
         	Date preEndTime = marketingActivityDTO.getPreEndTime();
+        	Date tailPayStartTime = marketingActivityDTO.getTailPayStartTime();
+        	Date tailPayEndTime = marketingActivityDTO.getTailPayEndTime();
 //        	String pre_End_Time = "";
 //        	if(preStartTime != null){
 //        		pre_Start_Time = preStartTime.toLocaleString();
@@ -183,7 +185,9 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             ActivityProductRespDTO activityProductResqDTO = new ActivityProductRespDTO();
             BeanUtils.copyProperties(activityProduct, activityProductResqDTO);
             activityProductResqDTO.setPreStartTime(preStartTime);
-            activityProductResqDTO.setPreEndTime(preEndTime);
+            activityProductResqDTO.setPreEndTime(preEndTime); 
+            activityProductResqDTO.setTailPayStartTime(tailPayStartTime);
+            activityProductResqDTO.setTailPayEndTime(tailPayEndTime);
             preSubsidyProductResqDTO.setActivityProductResqDTO(activityProductResqDTO);
             preSubsidyProductResqDTOS.add(preSubsidyProductResqDTO);
         }

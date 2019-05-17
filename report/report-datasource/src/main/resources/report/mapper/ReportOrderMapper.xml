@@ -33,7 +33,6 @@
 	       a.SUPPLIER_NAME MERCHANT_NAME,
 	       e.MERCHANT_CODE,
 	       (SELECT pm.merchant_name FROM par_merchant pm WHERE pm.merchant_code=f.MERCHANT_CODE) merchantName1,
-	       a.user_name merchantName1,
 	       f.MERCHANT_CODE merchantCode1,
 	       f.BUSINESS_ENTITY_NAME,
 	       f.LAN_ID,

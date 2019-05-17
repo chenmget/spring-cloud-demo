@@ -83,6 +83,9 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResourceInstCheckServiceImpl.vaildOwnStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
         if (CollectionUtils.isNotEmpty(inst)) {
+            // 删除的串码可再次导入
+            String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
+            inst = inst.stream().filter(t -> !deleteStatus.equals(t.getStatusCd())).collect(Collectors.toList());
             List<String> instNbrs = inst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
             existNbrs = mktResInstNbrs.stream().filter(t -> instNbrs.contains(t)).collect(Collectors.toList());
         }
@@ -100,6 +103,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         manufacturerTypes.add(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
         manufacturerResourceInstsGetReq.setMerchantTypes(manufacturerTypes);
         manufacturerResourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
+        manufacturerResourceInstsGetReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         List<ResourceInstDTO> merchantInst = resourceInstManager.getResourceInsts(manufacturerResourceInstsGetReq);
         log.info("ResourceInstCheckServiceImpl.validMerchantStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(manufacturerResourceInstsGetReq), JSON.toJSONString(merchantInst));
         return  merchantInst;

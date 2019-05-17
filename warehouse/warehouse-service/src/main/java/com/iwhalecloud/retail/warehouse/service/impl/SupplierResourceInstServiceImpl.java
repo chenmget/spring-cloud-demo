@@ -166,10 +166,11 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }catch (Exception e){
             return ResultVO.error(constant.getGetRepeatStoreMsg());
         }
-        req.setDestStoreId(mktResStoreId);
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
+        req.setDestStoreId(mktResStoreId);
         BeanUtils.copyProperties(req, resourceInstValidReq);
+        resourceInstValidReq.setMktResStoreId(mktResStoreId);
         CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(req.getMktResInstNbrs());
         List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, newList);
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
@@ -178,6 +179,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
+        resourceInstValidReq.setMktResStoreId(manuResStoreId);
         List<ResourceInstDTO> merchantInst = resourceInstCheckService.validMerchantStore(resourceInstValidReq);
         if(CollectionUtils.isEmpty(merchantInst)){
             return ResultVO.error("厂商库该机型串码不存在！");

@@ -21,8 +21,10 @@ import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.request.RandomLogAddReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogGetReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogUpdateReq;
+import com.iwhalecloud.retail.system.dto.request.UserGetReq;
 import com.iwhalecloud.retail.system.dto.response.RandomLogGetResp;
 import com.iwhalecloud.retail.system.service.RandomLogService;
+import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.web.annotation.PassToken;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.consts.WebConst;
@@ -71,6 +73,8 @@ public class MemberController extends BaseController {
     private BindingService bindingService;
     @Reference
 	private RandomLogService randomLogService;
+    @Reference
+	private UserService userService;
 
 	/**
 	 * 会员登陆或注册
@@ -470,13 +474,16 @@ public class MemberController extends BaseController {
     public ResultVO<Map<String, String>> checkPayAccount() {
     	
     	String userId = UserContext.getUserId();
+    	UserGetReq req = new UserGetReq();
+    	req.setUserId(userId);
+    	String merchantId = userService.getUser(req).getRelCode();
     	if(StringUtils.isBlank(userId)){
     		ResultVO.error("账号不能为空");
     	}
     	//resultCode 1、账号存在  2、账号不存在
     	Map<String, String> resultCode = new TreeMap<String, String>();
     	resultCode.put("resultCode", "2");
-    	int flag = memberService.checkPayAccount(userId);
+    	int flag = memberService.checkPayAccount(merchantId);
     	if(flag > 0){
     		resultCode.put("resultCode", "1");
     	}

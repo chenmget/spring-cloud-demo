@@ -22,5 +22,7 @@ public class SysUserMessageReq extends AbstractPageReq implements Serializable {
     private Date endTime;
 
     private String messageTitle;
+    
+    private String messageType;
 
 }

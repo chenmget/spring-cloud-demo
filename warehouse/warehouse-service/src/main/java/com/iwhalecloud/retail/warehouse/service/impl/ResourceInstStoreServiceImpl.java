@@ -321,15 +321,11 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         	pw.close();
         }
 
-        if(files.size()>0){
     	 FTPClient ftpClient = connectedToftpServer();
 
          sendFileToFtp(ftpClient, files, brand, ops);
 
          files.clear();
-        }
-        
-       
 
     }
 

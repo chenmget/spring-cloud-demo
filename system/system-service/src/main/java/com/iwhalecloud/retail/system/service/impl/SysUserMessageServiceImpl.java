@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.Period;
 import java.time.ZoneId;
@@ -84,12 +85,17 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
         ZoneId zoneId = ZoneId.systemDefault();
         TaskItemDTO taskItemDTO;
         TaskDTO taskDTO;
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
         for (SysUserMessage sysUserMessage:sysUserMessagePage.getRecords()) {
             SysUserMessageDTO sysUserMessageDTO = new SysUserMessageDTO();
             BeanUtils.copyProperties(sysUserMessage,sysUserMessageDTO);
-            if(!Objects.isNull(sysUserMessageDTO.getEndTime())) {
-                periodToDeliverEndTime = Period.between(LocalDate.now(),sysUserMessageDTO.getEndTime().toInstant().atZone(zoneId).toLocalDate());
-                sysUserMessageDTO.setContent(sysUserMessageDTO.getContent() + String.format(SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT,periodToDeliverEndTime.getDays()));
+            if(sysUserMessageDTO.getMessageType().equals(SysUserMessageConst.MESSAGE_TYPE_WARN)){
+            	if(!Objects.isNull(sysUserMessageDTO.getEndTime())) {
+//                periodToDeliverEndTime = Period.between(LocalDate.now(),sysUserMessageDTO.getEndTime().toInstant().atZone(zoneId).toLocalDate());
+//                sysUserMessageDTO.setContent(sysUserMessageDTO.getContent() + String.format(SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT,periodToDeliverEndTime.getDays()));
+            	  sysUserMessageDTO.setContent(String.format(SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT_NEW, sysUserMessageDTO.getContent() ,sdf.format(sysUserMessageDTO.getEndTime())));
+            	  
+            	}
             }
             taskItemDTO = taskItemService.queryTaskItemByTaskId(sysUserMessageDTO.getTaskId()).getResultData();
             if (Objects.nonNull(taskItemDTO)) {
@@ -140,6 +146,7 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
             }
             sysUserMessage.setUserId(null);
             sysUserMessage.setUpdateTime(DateUtils.currentSysTimeForDate());
+            sysUserMessage.setReadFlag(SysUserMessageConst.READ_FLAG_N);
         }
         sysUserMessageManager.updateUserMessageById(sysUserMessageList);
     }

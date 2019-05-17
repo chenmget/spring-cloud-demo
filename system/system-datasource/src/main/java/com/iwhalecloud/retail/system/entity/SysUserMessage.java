@@ -114,7 +114,20 @@ public class SysUserMessage implements Serializable {
 	@ApiModelProperty(value = "0：无效 1：有效")
   	private java.lang.String status;
   	
-  	
+	/**
+  	 * 0：未读 
+	 * 1：已读
+  	 */
+	@ApiModelProperty(value = "readFlag")
+  	private String readFlag;
+	
+	/**
+  	 * 已读时间
+	 * 
+  	 */
+	@ApiModelProperty(value = "readTime")
+  	private java.util.Date readTime;
+	
   	//属性 end
 	
     /** 字段名称枚举. */
@@ -163,8 +176,19 @@ public class SysUserMessage implements Serializable {
 		
 		/** 0：无效
 		 * 1：有效. */
-		status("status","STATUS");
+		status("status","STATUS"),
 
+    	/**
+      	 * 0：未读 
+    	 * 1：已读
+      	 */
+    	readFlag("readFlag","READ_FLAG"),
+    	
+    	/**
+      	 * 已读时间
+      	 */
+    	readTime("readTime","READ_TIME");
+    	
 		private String fieldName;
 		private String tableFieldName;
 		FieldNames(String fieldName, String tableFieldName){

@@ -44,11 +44,20 @@ public class SysUserMessageManager {
      */
      public IPage<SysUserMessage> selectWarnMessageList(SysUserMessageReq sysUserMessageReq) {
          QueryWrapper<SysUserMessage> queryWrapper = new QueryWrapper<>();
-         Page<SysUserMessage> page = new Page<>(sysUserMessageReq.getPageNo(),sysUserMessageReq.getPageSize());
+         
+         Page<SysUserMessage> page = new Page<>();
+         if (null != sysUserMessageReq.getPageNo() && null != sysUserMessageReq.getPageSize()) {
+        	 page = new Page<>(sysUserMessageReq.getPageNo(),sysUserMessageReq.getPageSize());
+         }
+         
          queryWrapper.eq(SysUserMessage.FieldNames.status.getTableFieldName(),SysUserMessageConst.MessageStatusEnum.VALID.getCode());
-         queryWrapper.eq(SysUserMessage.FieldNames.messageType.getTableFieldName(),SysUserMessageConst.MESSAGE_TYPE_WARN);
+//       queryWrapper.eq(SysUserMessage.FieldNames.messageType.getTableFieldName(),SysUserMessageConst.MESSAGE_TYPE_WARN);
          if (StringUtils.isNotEmpty(sysUserMessageReq.getUserId())) {
              queryWrapper.eq(SysUserMessage.FieldNames.userId.getTableFieldName(),sysUserMessageReq.getUserId());
+         }
+         
+         if (StringUtils.isNotEmpty(sysUserMessageReq.getMessageType())) {
+             queryWrapper.eq(SysUserMessage.FieldNames.messageType.getTableFieldName(),sysUserMessageReq.getMessageType());
          }
 
          // 若结束时间不为空则作为查询条件，否则以当前时间为条件，结束时间应大于当前时间

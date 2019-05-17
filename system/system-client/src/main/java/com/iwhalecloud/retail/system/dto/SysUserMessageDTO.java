@@ -118,5 +118,18 @@ public class SysUserMessageDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "0：无效 1：有效")
   	private String status;
 	
+	/**
+  	 * 0：未读 
+	 * 1：已读
+  	 */
+	@ApiModelProperty(value = "	0：未读 1：已读")
+  	private String readFlag;
+	
+	/**
+  	 * 已读时间
+	 * 
+  	 */
+	@ApiModelProperty(value = "已读时间")
+  	private java.util.Date readTime;
   	
 }

@@ -278,7 +278,7 @@ public class WorkFlowConst {
 
     public enum TASK_SUB_TYPE {
         TASK_SUB_TYPE_1010("1","1010","串码调拨调流程（调出方要审核）"),
-        TASK_SUB_TYPE_1020("1","1020","厂家固网终端抽检流程"),
+        TASK_SUB_TYPE_1020("1","1020","录入移动串码审批流程"),
         TASK_SUB_TYPE_1030("1","1030","供应商库存管理流程"),
         TASK_SUB_TYPE_1040("1","1040","集采终端调货流程"),
         TASK_SUB_TYPE_1050("1","1050","地包商调货流程"),

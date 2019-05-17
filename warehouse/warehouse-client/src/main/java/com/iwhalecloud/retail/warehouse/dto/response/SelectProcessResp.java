@@ -27,5 +27,10 @@ public class SelectProcessResp implements Serializable {
      */
     @ApiModelProperty(value = "processId")
     private String processId;
+    /**
+     * 流程的taskSubType
+     */
+    @ApiModelProperty(value = "taskSubType")
+    private String taskSubType;
 
 }

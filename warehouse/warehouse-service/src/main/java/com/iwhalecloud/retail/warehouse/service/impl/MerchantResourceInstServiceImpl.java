@@ -27,7 +27,6 @@ import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
-import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -179,7 +178,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         processStartDTO.setTitle("串码入库审批流程");
         processStartDTO.setApplyUserId(req.getCreateStaff());
         processStartDTO.setProcessId(selectProcessResp.getProcessId());
-        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3010.getTaskSubType());
+        processStartDTO.setTaskSubType(selectProcessResp.getTaskSubType());
         processStartDTO.setApplyUserName(req.getApplyUserName());
         processStartDTO.setFormId(mktResReqId);
         ResultVO startResultVO = taskService.startProcess(processStartDTO);

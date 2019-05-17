@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
 import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -144,8 +145,10 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
     public SelectProcessResp selectProcess(ResourceInstAddReq req){
         String requestStatusCd = null;
         String processId = null;
+        String taskSubType = null;
         // 固网串码审核流程
         if (ResourceConst.CONSTANT_YES.equals(req.getIsFixedLine())) {
+            taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3010.getTaskSubType();
             // 固网串码审核流程 1 集采或入库串码数量小于checkMaxNum（配置值）流程；2 两步抽检流程；3 一步抽检流程
             if (req.getMktResInstNbrs().size() < checkMaxNum || ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
                 requestStatusCd = ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode();
@@ -164,12 +167,14 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             }
         }else{
             // 移动串码审核流程
+            taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1020.getTaskSubType();
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
             processId = ResourceConst.MOVE_NBR_WORK_FLOW_INST;
         }
         SelectProcessResp resp = new SelectProcessResp();
         resp.setProcessId(processId);
         resp.setRequestStatusCd(requestStatusCd);
+        resp.setTaskSubType(taskSubType);
         return resp;
     }
 }

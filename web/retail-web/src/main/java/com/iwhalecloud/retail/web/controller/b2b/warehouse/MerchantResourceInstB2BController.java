@@ -229,4 +229,15 @@ public class MerchantResourceInstB2BController {
     public ResultVO exceutorDelNbr(@RequestBody ResourceUploadTempDelReq req) {
         return resourceInstService.exceutorDelNbr(req);
     }
+
+    @ApiOperation(value = "多线程查询串码", notes = "导出录入失败串码")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="exceutorQueryTempNbr")
+    public ResultVO exceutorQueryTempNbr(@RequestBody ResourceUploadTempDelReq req) {
+        List<ResourceUploadTempListResp> pageResultVO = resourceInstService.exceutorQueryTempNbr(req);
+        return ResultVO.success(pageResultVO);
+    }
 }

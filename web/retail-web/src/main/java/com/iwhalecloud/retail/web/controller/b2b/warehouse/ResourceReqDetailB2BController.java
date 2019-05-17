@@ -64,10 +64,8 @@ public class ResourceReqDetailB2BController {
     })
     @PostMapping(value="nbrExport")
     public void nbrExport(@RequestBody ResourceReqDetailPageReq req, HttpServletResponse response) {
-        req.setPageNo(0);
-        req.setPageSize(20000);
-        ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.resourceRequestPage(req);
-        List<ResourceReqDetailPageResp> list = resultVO.getResultData().getRecords();
+        ResultVO<List<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.resourceRequestList(req);
+        List<ResourceReqDetailPageResp> list = resultVO.getResultData();
         log.info("ResourceReqDetailB2BController.nbrExport resourceReqDetailService.resourceRequestPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.reqDetailColumn();
         OutputStream output = null;

@@ -221,7 +221,10 @@ public class ProductBaseManager {
                 tagList.add(tagRelDTO.getTagId());
             }
         }
-        productDetailResp.setTagList(tagList);
+        //增加判空
+        if(!CollectionUtils.isEmpty(tagList)){
+            productDetailResp.setTagList(tagList);
+        }
         return productDetailResp;
     }
 

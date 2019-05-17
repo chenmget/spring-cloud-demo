@@ -43,4 +43,19 @@
             and RESULT = #{result}
         </if>
     </select>
+
+    <select id="executorlistResourceUploadTemp" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempListPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp" >
+        Select <include refid="simpleFields" />
+        FROM MKT_RES_UPLOAD_TEMP t
+        WHERE 1=1 and MKT_RES_UPLOAD_BATCH=#{req.mktResUploadBatch}
+        <if test="req.mktResInstNbr != null">
+            and MKT_RES_INST_NBR = #{req.mktResInstNbr}
+        </if>
+        <if test="req.result != null">
+            and RESULT = #{req.result}
+        </if>
+        ORDER BY T.MKT_RES_INST_NBR DESC
+        LIMIT #{req.pageStartNo}, #{req.pageSize}
+    </select>
 </mapper>

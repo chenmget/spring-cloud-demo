@@ -252,6 +252,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public synchronized ResultVO<List<String>> updateResourceInstForTransaction(ResourceInstUpdateReq req) {
         log.info("ResourceInstServiceImpl.updateResourceInstForTransaction req={}", JSON.toJSONString(req));
         Map<String, Object> data = assembleData(req, req.getMktResStoreId());

@@ -1066,6 +1066,14 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     }
 
     @Override
+    public ResultVO<MarketingActivityDTO> queryMarketingActivityByIdtime(QueryMarketingActivityReq queryMarketingActivityReq) {
+        MarketingActivityDTO marketingActivityDTO = new MarketingActivityDTO();
+        MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivityTime(queryMarketingActivityReq.getMarketingActivityId());
+        BeanUtils.copyProperties(marketingActivity, marketingActivityDTO);
+        return ResultVO.success(marketingActivityDTO);
+    }
+    
+    @Override
     public ResultVO updatePreSaleActivityRule(MarketingActivityAddReq marketingActivityAddReq) {
         MarketingActivity marketingActivity = new MarketingActivity();
         BeanUtils.copyProperties(marketingActivityAddReq, marketingActivity);

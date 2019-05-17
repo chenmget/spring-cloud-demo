@@ -29,7 +29,7 @@ public class SysUserMessageController {
     private MarketingActivityService marketingActivityService;
 
 
-    @ApiOperation(value = "查询营销活动未发货记录")
+    @ApiOperation(value = "查询营销活动未发货记录带分页")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
@@ -44,6 +44,8 @@ public class SysUserMessageController {
         return ResultVO.success(page);
 
     }
+    
+    
 
     @PostMapping(value = "/notifyMerchantActivityOrderDelivery")
     public ResultVO<IPage<SysUserMessageDTO>> notifyMerchantActivityOrderDelivery() {

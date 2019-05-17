@@ -321,7 +321,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         	pw.close();
         }
 
-    	 FTPClient ftpClient = connectedToftpServer();
+         FTPClient ftpClient = connectedToftpServer();
 
          sendFileToFtp(ftpClient, files, brand, ops);
 

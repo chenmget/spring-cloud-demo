@@ -74,4 +74,13 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
     public Integer resourceRequestCount(ResourceReqDetailReq req){
         return resourceReqDetailMapper.resourceRequestCount(req);
     }
+
+    /**
+     * 申请单详情分页
+     * @param req
+     * @return
+     */
+    public List<ResourceReqDetailPageResp> executorResourceRequestPage(ResourceReqDetailPageReq req){
+        return resourceReqDetailMapper.executorResourceRequestPage(req);
+    }
 }

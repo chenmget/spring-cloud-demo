@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -91,7 +92,7 @@ public class ResourceInstStoreManager{
      * @param resourceInstStoreDTO
      * @return
      */
-    public int updateResourceInstStore(ResourceInstStoreDTO resourceInstStoreDTO){
+    public synchronized int updateResourceInstStore(ResourceInstStoreDTO resourceInstStoreDTO){
         log.info("ResourceInstStoreManager.updateResourceInstStore req={}", JSON.toJSONString(resourceInstStoreDTO));
         //Step1:当前商户、当前商品、当前仓库的串码实例是否存在
         //step2:存在，修改库存数量
@@ -104,7 +105,7 @@ public class ResourceInstStoreManager{
         queryWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStoreDTO.getMktResStoreId());
         queryWrapper.eq(ResourceInstStore.FieldNames.mktResId.getTableFieldName(), resourceInstStoreDTO.getMktResId());
         ResourceInstStore resourceInstStore = resourceInstStoreMapper.selectOne(queryWrapper);
-        log.info("ResourceInstStoreManager.updateResourceInstStore selectOne req={}, resp={}", JSON.toJSONString(resourceInstStoreDTO),JSON.toJSONString(resourceInstStore));
+        log.info("ResourceInstStoreManager.updateResourceInstStore selectOne req={}, resp={}", JSON.toJSONString(resourceInstStore),JSON.toJSONString(resourceInstStore));
         if(null != resourceInstStore) {
             Long quantity = 0L;
             Long onwayQuantity = 0L;
@@ -137,17 +138,17 @@ public class ResourceInstStoreManager{
             }
 
             // 无库存时通知商品中心
-            if (Long.compare(quantity, 0) < 1) {
+            if (quantity < 0) {
                 try {
                     GoodsProductRelEditReq goodsProductRelEditReq = new GoodsProductRelEditReq();
                     goodsProductRelEditReq.setMerchantId(resourceInstStoreDTO.getMerchantId());
                     goodsProductRelEditReq.setProductId(resourceInstStoreDTO.getMktResId());
                     goodsProductRelEditReq.setIsHaveStock(false);
-                    goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
+                    ResultVO<Boolean> resultVO = goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
+                    log.info("ResourceInstStoreManager.updateResourceInstStore goodsProductRelService.updateIsHaveStock req={}, resp={}", JSON.toJSONString(goodsProductRelEditReq),JSON.toJSONString(resultVO));
                 } catch (Exception ex) {
                     log.error("通知商品中心异常", ex);
                 }
-
                 return 0;
             }
 

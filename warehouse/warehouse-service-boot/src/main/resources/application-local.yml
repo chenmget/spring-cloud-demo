@@ -13,7 +13,7 @@ spring:
       address: zookeeper://localhost:2181
     protocol:
       name: dubbo
-      port: 20885
+      port: 20886
     scan: com.iwhalecloud.retail
 
   #i18n国际化配置
@@ -30,7 +30,7 @@ jmx:
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  url: jdbc:mysql://10.45.46.67:8866/YHJDB_TEST?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
   username: szxtest
   #password: szxtest.2019
   password: kw0KpgWfOpAVqO4sdMTlLIcXrbbZOIXl4gwhUZqqNehmasEh/58907TPY7kguZ91Ke7rGLUVEkX5YpOBemm18g==
@@ -86,26 +86,20 @@ fdfs:
 #能开配置
 zop:
   secret: ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=
-  url: http://134.176.102.33:9080/api/rest
+  url: http://134.176.102.33:9080/api
   timeout: 50000
 
 #webService配置
 webService:
    inventoryUrl: http://ws.webxml.com.cn/WebServices/MobileCodeWS.asmx?wsdl
 
-
+#串码补录
 ftp:
-  basePath: D:/Users/mkt2itms
-  ftpAddress: 127.0.0.1
-  ftpPort: 21
-  ftpUserName: Administrator
-  ftpPassword: xieqi5200
-  gmAdd: /data/back/Terminal/add
-  iptvAdd: /data/back/IPTV/add
-  gmModify: /data/back/Terminal/modify
-  iptvModify: /data/back/IPTV/modify
-  gmDelete: /data/back/Terminal/delete
-  iptvDelete: /data/back/IPTV/delete
+  basePath: /Users/jiyou/Documents/work/hj/mkt2itms
+  ftpAddress: 134.176.1.27
+  ftpPort: 24
+  ftpUserName: admin
+  ftpPassword: admin
   gmdirAdd: /data/back/Failure/Terminal/add
   iptvdirAdd: /data/back/Failure/IPTV/add
   gmdirModify: /data/back/Failure/Terminal/modify

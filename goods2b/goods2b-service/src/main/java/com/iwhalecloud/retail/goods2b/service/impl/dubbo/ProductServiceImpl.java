@@ -13,13 +13,11 @@ import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
+import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
-import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
-import com.iwhalecloud.retail.goods2b.manager.ProductManager;
-import com.iwhalecloud.retail.goods2b.manager.TagTelManager;
-import com.iwhalecloud.retail.goods2b.manager.TagsManager;
+import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -61,6 +59,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private TagTelManager tagTelManager;
+
+    @Autowired
+    private BrandManager brandManager;
 
     @Override
     public ResultVO<String> getMerchantByProduct(MerChantGetProductReq req) {
@@ -260,6 +261,13 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDTO> list = page.getRecords();
         if (!CollectionUtils.isEmpty(list)) {
             for (ProductDTO product : list) {
+                String brandId = product.getBrandId();
+                if(StringUtils.isNotEmpty(brandId)){
+                    Brand brand=brandManager.getBrandByBrandId(brandId);
+                    if(null!=brand){
+                        product.setBrandName(brand.getName());
+                    }
+                }
                 String productId = product.getProductId();
                 // 查询默认图片
                 String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();

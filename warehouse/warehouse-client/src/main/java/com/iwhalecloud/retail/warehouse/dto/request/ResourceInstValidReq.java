@@ -76,4 +76,10 @@ public class ResourceInstValidReq implements java.io.Serializable {
 	@ApiModelProperty(value = "创建对象")
 	private String createStaff;
 
+	/**
+	 * orderId
+	 */
+	@ApiModelProperty(value = "orderId")
+	private String orderId;
+
 }

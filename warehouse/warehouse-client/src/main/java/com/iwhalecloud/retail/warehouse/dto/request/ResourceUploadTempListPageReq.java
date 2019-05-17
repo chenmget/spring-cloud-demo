@@ -36,5 +36,10 @@ public class ResourceUploadTempListPageReq extends PageVO {
 	@ApiModelProperty(value = "状态")
   	private String result;
 
+	/**
+	 * 起始数量
+	 */
+	@ApiModelProperty(value = "起始数量")
+	private Integer pageStartNo;
 
 }

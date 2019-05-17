@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.common.ResultCodeEnum;
 import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.*;
 import com.iwhalecloud.retail.promo.dto.resp.ActivityProductResp;
 import com.iwhalecloud.retail.promo.dto.resp.ActivityProductRespDTO;
@@ -154,6 +155,23 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             return ResultVO.success(preSubsidyProductResqDTOS);
         }
         for (ActivityProduct activityProduct : activityProducts) {
+        	//把支付定金的时间加上lws
+        	QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
+            queryMarketingActivityReq.setMarketingActivityId(activityProduct.getMarketingActivityId());
+        	ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityByIdtime(queryMarketingActivityReq);//获取时间lws
+        	MarketingActivityDTO marketingActivityDTO = marketingActivityDTOResultVO.getResultData();
+        	Date preStartTime = marketingActivityDTO.getPreStartTime();
+//        	String pre_Start_Time = "";
+        	Date preEndTime = marketingActivityDTO.getPreEndTime();
+        	Date tailPayStartTime = marketingActivityDTO.getTailPayStartTime();
+        	Date tailPayEndTime = marketingActivityDTO.getTailPayEndTime();
+//        	String pre_End_Time = "";
+//        	if(preStartTime != null){
+//        		pre_Start_Time = preStartTime.toLocaleString();
+//        	}
+//        	if(preEndTime != null){
+//        		pre_End_Time = preEndTime.toLocaleString();
+//        	}
             PreSubsidyProductRespDTO preSubsidyProductResqDTO = new PreSubsidyProductRespDTO();
             String productId = activityProduct.getProductId();
             QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();
@@ -166,6 +184,10 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             BeanUtils.copyProperties(productInfoResqDTOResultVO.getResultData(), preSubsidyProductResqDTO);
             ActivityProductRespDTO activityProductResqDTO = new ActivityProductRespDTO();
             BeanUtils.copyProperties(activityProduct, activityProductResqDTO);
+            activityProductResqDTO.setPreStartTime(preStartTime);
+            activityProductResqDTO.setPreEndTime(preEndTime); 
+            activityProductResqDTO.setTailPayStartTime(tailPayStartTime);
+            activityProductResqDTO.setTailPayEndTime(tailPayEndTime);
             preSubsidyProductResqDTO.setActivityProductResqDTO(activityProductResqDTO);
             preSubsidyProductResqDTOS.add(preSubsidyProductResqDTO);
         }

@@ -87,7 +87,14 @@ public interface MarketingActivityService{
      * @return
      */
     ResultVO<MarketingActivityDTO> queryMarketingActivityById(QueryMarketingActivityReq queryMarketingActivityReq);
-
+    
+    /**
+     * 据营销活动ID查询营销活动信息
+     * @param queryMarketingActivityReq
+     * @return
+     */
+    ResultVO<MarketingActivityDTO> queryMarketingActivityByIdtime(QueryMarketingActivityReq queryMarketingActivityReq);
+    
     /**
      * 更新预售活动的规则
      * @param marketingActivityAddReq

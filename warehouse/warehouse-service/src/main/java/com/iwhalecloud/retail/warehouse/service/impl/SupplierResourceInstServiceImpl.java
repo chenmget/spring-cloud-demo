@@ -156,10 +156,15 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storeGetStoreIdReq.setMerchantId(merchantId);
-        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("SupplierResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
-        if (StringUtils.isBlank(mktResStoreId)) {
-            return ResultVO.error(constant.getCannotGetStoreMsg());
+        String mktResStoreId = null;
+        try{
+            mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+            log.info("SupplierResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+            if (StringUtils.isBlank(mktResStoreId)) {
+                return ResultVO.error(constant.getCannotGetStoreMsg());
+            }
+        }catch (Exception e){
+            return ResultVO.error(constant.getGetRepeatStoreMsg());
         }
         req.setDestStoreId(mktResStoreId);
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
@@ -438,12 +443,17 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
         storePageReq.setMerchantId(req.getSellerMerchantId());
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        String storeId = resouceStoreService.getStoreId(storePageReq);
-        log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resouceStoreService.getStoreId req={},storeId={}", JSON.toJSONString(storePageReq), JSON.toJSONString(storeId));
-
-        storePageReq.setMerchantId(req.getBuyerMerchantId());
-        String destStoreId = resouceStoreService.getStoreId(storePageReq);
-        log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resouceStoreService.getStoreId req={},destStoreId={}", JSON.toJSONString(storePageReq), JSON.toJSONString(destStoreId));
+        String storeId = null;
+        String destStoreId = null;
+        try{
+            storeId = resouceStoreService.getStoreId(storePageReq);
+            log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resouceStoreService.getStoreId req={},storeId={}", JSON.toJSONString(storePageReq), JSON.toJSONString(storeId));
+            storePageReq.setMerchantId(req.getBuyerMerchantId());
+            destStoreId = resouceStoreService.getStoreId(storePageReq);
+            log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resouceStoreService.getStoreId req={},destStoreId={}", JSON.toJSONString(storePageReq), JSON.toJSONString(destStoreId));
+        }catch (Exception e){
+            return ResultVO.error(constant.getGetRepeatStoreMsg());
+        }
 
         List<String> mktResInstNbrs = new ArrayList<>();
         String productId = null;

@@ -53,6 +53,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
     @Override
     @Transactional(isolation= Isolation.SERIALIZABLE,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public List<String> vaildOwnStore(ResourceInstValidReq req, CopyOnWriteArrayList<String> nbrList){
+        // TODO 改为校验轨迹表
         List<String> existNbrs = new ArrayList<>();
         ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
         productGetByIdReq.setProductId(req.getMktResId());
@@ -78,7 +79,6 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                     PartnerConst.MerchantTypeEnum.PARTNER.getType());
         }
         resourceInstsGetReq.setMerchantTypes(merchantTypes);
-        resourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
         resourceInstsGetReq.setTypeId(typeId);
         List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResourceInstCheckServiceImpl.vaildOwnStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));

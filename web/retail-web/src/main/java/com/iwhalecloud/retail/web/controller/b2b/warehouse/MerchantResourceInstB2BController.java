@@ -33,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
@@ -176,7 +177,7 @@ public class MerchantResourceInstB2BController {
             return;
         }
         List<ResourceInstListPageResp> list = dataVO.getResultData().getRecords();
-        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.merchantColumn();
         try{
             //创建Excel
@@ -208,6 +209,40 @@ public class MerchantResourceInstB2BController {
         req.setCreateStaff(UserContext.getUserId());
         req.setMerchantType(UserContext.getUserOtherMsg().getMerchant().getMerchantType());
         return resourceInstService.validNbr(req);
+    }
+
+    @ApiOperation(value = "导出录入失败串码", notes = "导出录入失败串码")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="nbrFailExport")
+    public void nbrFailExport(@RequestBody ResourceUploadTempDelReq req, HttpServletResponse response) {
+        List<ResourceUploadTempListResp> list = resourceInstService.exceutorQueryTempNbr(req);
+        log.info("MerchantResourceInstB2BController.nbrFailExport req={}", JSON.toJSONString(req));
+        OutputStream output = null;
+        try {
+            Workbook workbook = new HSSFWorkbook();
+            String fileName = "导出失败串码列表";
+            List<ExcelTitleName> failNbrColumn = ResourceInstColum.failNbrColumn();
+            ExcelToNbrUtils.builderOrderExcel(workbook, list, failNbrColumn, false);
+            output = response.getOutputStream();
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
+            response.setContentType("application/msexcel;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+            workbook.write(output);
+        } catch (Exception e) {
+            log.error("串码导出失败", e);
+        } finally {
+            try {
+                if (null != output){
+                    output.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @ApiOperation(value = "校验串码查询", notes = "查询操作")

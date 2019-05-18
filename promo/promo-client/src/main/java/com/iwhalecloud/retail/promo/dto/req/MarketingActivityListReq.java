@@ -96,6 +96,6 @@ public class MarketingActivityListReq extends AbstractPageReq implements Seriali
      * 营销活动结束时间止
      */
     @ApiModelProperty(value = "营销活动结束时间止")
-    private String deliverEndE;
+    private String deliverEndTimeE;
     
 }

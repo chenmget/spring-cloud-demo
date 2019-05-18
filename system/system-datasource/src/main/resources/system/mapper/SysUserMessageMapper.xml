@@ -21,4 +21,36 @@
     ,t.STATUS 
 </sql>
 
+<update id="updateReadFlagByUserId">
+	UPDATE sys_user_message sym 
+		SET sym.READ_FLAG = '1',
+		sym.READ_TIME = NOW( ) 
+	WHERE
+		sym.USER_ID = #{userId}
+		AND sym.READ_FLAG != '1'
+</update>
+
+  <select id="getSysUserMsgCountByUserIdAndMsgType" resultType="java.lang.Long">
+	SELECT
+		count( 1 ) 
+	FROM
+		sys_user_message sum 
+	WHERE
+		sum.USER_ID = #{userId} 
+    <if test="messageType != '' and messageType != null">
+        and sum.MESSAGE_TYPE = #{messageType}
+    </if>
+  </select>
+  
+   <select id="getSysMsgNotReadAcount" resultType="java.lang.Long">
+	SELECT
+		count( 1 ) 
+	FROM
+		sys_user_message sum 
+	WHERE
+		sum.USER_ID = #{userId} 
+    AND
+    	sum.READ_FLAG = '0'
+  </select>
+
 </mapper>

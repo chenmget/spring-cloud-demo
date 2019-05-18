@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.system.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.SysUserMessageDTO;
 import com.iwhalecloud.retail.system.dto.request.SysUserMessageReq;
 
@@ -30,5 +31,23 @@ public interface SysUserMessageService{
      * @return
      */
     List<SysUserMessageDTO> selectValidWarnMessageList(String userId, String taskId);
+
+    /**
+     *根据userId更新消息状态为已读
+     * @return
+     */
+	void updateReadFlagByUserId(String userId);
+
+    /**
+     * 根据userId和消息类型获取消息数量
+     * @return
+     */
+	Long getSysUserMsgCountByUserIdAndMsgType(String userId, String messageType);
+
+	 /**
+     * 根据userId获取未读消息数量
+     * @return
+     */
+	Long getSysMsgNotReadAcount(String userId);
 
 }

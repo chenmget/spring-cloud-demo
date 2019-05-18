@@ -383,7 +383,7 @@
       upper(t.unit_name) = upper(#{unitName})
     </if>
     <if test="null!=productId and ''!=productId">
-      AND t.product_id != #{productId}
+      and t.product_id != #{productId}
     </if>
   </select>
 

@@ -40,6 +40,7 @@
     <if test="messageType != '' and messageType != null">
         and sum.MESSAGE_TYPE = #{messageType}
     </if>
+    	and sum.STATUS = '1'
   </select>
   
    <select id="getSysMsgNotReadAcount" resultType="java.lang.Long">
@@ -51,6 +52,8 @@
 		sum.USER_ID = #{userId} 
     AND
     	sum.READ_FLAG = '0'
+    AND
+        sum.STATUS = '1'
   </select>
 
 </mapper>

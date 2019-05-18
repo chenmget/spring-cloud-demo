@@ -439,11 +439,12 @@ public class ProductServiceImpl implements ProductService {
             String color = productDTO.getColor();
             String memory = productDTO.getMemory();
             String typeName = productDTO.getTypeName();
-            
+            String unitType = productDTO.getUnitType();
             queryProductInfoResqDTO.setSpecName(specName);
             queryProductInfoResqDTO.setColor(color);
             queryProductInfoResqDTO.setMemory(memory);
             queryProductInfoResqDTO.setTypeName(typeName);
+            queryProductInfoResqDTO.setUnitType(unitType);
         }
         return ResultVO.success(queryProductInfoResqDTO);
     }

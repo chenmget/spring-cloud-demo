@@ -563,6 +563,9 @@ public class ProductServiceImpl implements ProductService {
             dto.setSn(req.getSn());
             dto.setUnitName(req.getUnitName());
             dto.setBothNotNull(bothNotNull);
+            if(StringUtils.isNotEmpty(req.getProductId())){
+                dto.setProductId(req.getProductId());
+            }
             num = productManager.getDuplicate(dto);
         }
         return ResultVO.success(num);

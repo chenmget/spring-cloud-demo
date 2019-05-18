@@ -90,4 +90,6 @@ public interface OrderMapper extends BaseMapper<Order> {
 
     public int updatePayTransId(@Param("orderId") String orderId, @Param("reqSeq") String reqSeq);
 
+	int updateStatusByOrderId(@Param("orderId")String orderId, @Param("status")String status);
+
 }

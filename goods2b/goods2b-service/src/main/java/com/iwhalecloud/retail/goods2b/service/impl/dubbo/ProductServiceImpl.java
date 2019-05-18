@@ -554,6 +554,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResultVO<Integer> getDuplicate(ProductGetDuplicateReq req) {
+        log.info("ProductServiceImpl.getDuplicate req={}", req);
         Integer num=0;
         // 产品编码
         if (StringUtils.isNotBlank(req.getSn()) || StringUtils.isNotBlank(req.getUnitName())) {

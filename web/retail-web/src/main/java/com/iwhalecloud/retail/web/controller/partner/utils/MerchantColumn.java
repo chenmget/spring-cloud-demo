@@ -20,6 +20,7 @@ public class MerchantColumn {
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("lanName", "本地网"));
         orderMap.add(new ExcelTitleName("cityName", "市县"));
+        orderMap.add(new ExcelTitleName("loginName", "系统账号"));
         orderMap.add(new ExcelTitleName("merchantId", "商家ID"));
         orderMap.add(new ExcelTitleName("merchantCode", "商家编码"));
         orderMap.add(new ExcelTitleName("merchantName", "商家名称"));

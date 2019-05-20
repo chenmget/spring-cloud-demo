@@ -14,13 +14,14 @@ public class OrderExportUtil {
         orderMap.add(new ExcelTitleName("orderId", "订单号"));
         orderMap.add(new ExcelTitleName("orderTypeName", "订单类型"));
         orderMap.add(new ExcelTitleName("createTime", "下单时间"));
-        orderMap.add(new ExcelTitleName("userName", "买家名称"));
+//        orderMap.add(new ExcelTitleName("userName", "买家名称"));
+        orderMap.add(new ExcelTitleName("buyerName", "买家名称"));
         orderMap.add(new ExcelTitleName("statusName", "订单状态"));
         orderMap.add(new ExcelTitleName("supplierName", "供应商名称"));
         orderMap.add(new ExcelTitleName("paymentName", "付款类型"));
         orderMap.add(new ExcelTitleName("payStatusName", "付款状态"));
         orderMap.add(new ExcelTitleName("payTime", "付款时间"));
-        orderMap.add(new ExcelTitleName("payName", "付款方式"));
+//        orderMap.add(new ExcelTitleName("payName", "付款方式"));
         orderMap.add(new ExcelTitleName("shipTypeName", "物流方式"));
 //        orderMap.add(new ExcelTitleName("goodsAmount", "商品总价"));
 //        orderMap.add(new ExcelTitleName("shipAmount", "物流费用"));

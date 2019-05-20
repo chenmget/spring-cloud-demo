@@ -32,7 +32,7 @@
 	       a.receive_time,
 	       a.SUPPLIER_NAME MERCHANT_NAME,
 	       e.MERCHANT_CODE,
-	       a.user_name merchantName1,
+	       (SELECT pm.merchant_name FROM par_merchant pm WHERE pm.merchant_code=f.MERCHANT_CODE) merchantName1,
 	       f.MERCHANT_CODE merchantCode1,
 	       f.BUSINESS_ENTITY_NAME,
 	       f.LAN_ID,
@@ -76,9 +76,6 @@
   <if test="req.suplierCode!=null and req.suplierCode!=''">
     and e.MERCHANT_CODE  like CONCAT(CONCAT('%',#{req.suplierCode}),'%')
   </if>
-  <if test="req.merchantName!=null and req.merchantName!=''">
-    and a.user_name like CONCAT(CONCAT('%',#{req.merchantName}),'%')
-  </if>
   <if test="req.merchantCode!=null and req.merchantCode!=''">
     and f.MERCHANT_CODE  like CONCAT(CONCAT('%',#{req.merchantCode}),'%')
   </if>
@@ -117,6 +114,9 @@
  	 ) j
  	 LEFT OUTER JOIN ORD_PROMOTION k ON j.order_id =k.order_id
  	 LEFT OUTER JOIN act_marketing_activity l ON k.MKT_ACT_ID = l.id
+ 	 <if test="req.merchantName!=null and req.merchantName!=''">
+    	where j.merchantName1 like CONCAT(CONCAT('%',#{req.merchantName}),'%')
+  	</if>
 	<if test="req.couponActive!=null and req.couponActive!=''">
 	 		WHERE 1=1 AND l.name LIKE CONCAT(CONCAT('%',#{req.couponActive}),'%')
 	</if>

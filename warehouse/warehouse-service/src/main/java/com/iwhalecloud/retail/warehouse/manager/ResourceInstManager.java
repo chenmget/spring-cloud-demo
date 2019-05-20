@@ -300,4 +300,14 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
         return resourceInstMapper.getPrimaryKey();
     }
 
+    /**
+     * 根据条件查询串码实列
+     *
+     * @param req
+     * @return
+     */
+    public List<ResourceInstDTO> validResourceInst(ResourceInstsGetReq req) {
+        return resourceInstMapper.validResourceInst(req);
+    }
+
 }

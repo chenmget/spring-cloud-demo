@@ -264,9 +264,11 @@
 
   <select id="selectProduct" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductGetReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.ProductDTO">
-    select <include refid="allFields" />,ppb.product_code,ppb.unit_type,ppb.type_id,ppb.product_name
+    select <include refid="allFields" />,ppb.product_code,ppb.unit_type,ppb.type_id,ppb.product_name,pt.type_name,pb.name as brandName
     from prod_product t
     left join prod_product_base ppb on ppb.product_base_id = t.product_base_id
+    left join prod_brand pb on pb.BRAND_ID = ppb.BRAND_ID
+    left join prod_type pt on pt.type_id = ppb.type_id
     where 1 = 1 and t.IS_DELETED = '0' and ppb.IS_DELETED = '0'
     <if test="null!=req.productIdList and req.productIdList.size>0" >
       and t.product_id in

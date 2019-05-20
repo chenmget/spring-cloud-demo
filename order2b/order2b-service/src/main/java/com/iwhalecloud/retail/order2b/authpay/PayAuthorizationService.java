@@ -82,7 +82,6 @@ public class PayAuthorizationService {
                 if(advFlag){
                     // 保存订单交易流水
                     advanceOrderMapper.updateAdvanceTransId(orderId, (String)resultCall.get("originalTransSeq"));
-                    orderMapper.updateStatusByOrderId(orderId, "41");
                 }
                 flag = flag & advFlag;
             }

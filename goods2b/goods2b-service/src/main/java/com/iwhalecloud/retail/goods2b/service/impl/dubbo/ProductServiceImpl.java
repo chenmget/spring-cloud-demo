@@ -439,11 +439,12 @@ public class ProductServiceImpl implements ProductService {
             String color = productDTO.getColor();
             String memory = productDTO.getMemory();
             String typeName = productDTO.getTypeName();
-            
+            String unitType = productDTO.getUnitType();
             queryProductInfoResqDTO.setSpecName(specName);
             queryProductInfoResqDTO.setColor(color);
             queryProductInfoResqDTO.setMemory(memory);
             queryProductInfoResqDTO.setTypeName(typeName);
+            queryProductInfoResqDTO.setUnitType(unitType);
         }
         return ResultVO.success(queryProductInfoResqDTO);
     }
@@ -553,6 +554,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResultVO<Integer> getDuplicate(ProductGetDuplicateReq req) {
+        log.info("ProductServiceImpl.getDuplicate req={}", req);
         Integer num=0;
         // 产品编码
         if (StringUtils.isNotBlank(req.getSn()) || StringUtils.isNotBlank(req.getUnitName())) {
@@ -561,6 +563,9 @@ public class ProductServiceImpl implements ProductService {
             dto.setSn(req.getSn());
             dto.setUnitName(req.getUnitName());
             dto.setBothNotNull(bothNotNull);
+            if(StringUtils.isNotEmpty(req.getProductId())){
+                dto.setProductId(req.getProductId());
+            }
             num = productManager.getDuplicate(dto);
         }
         return ResultVO.success(num);

@@ -36,4 +36,7 @@ public class ProductGetDuplicateReq extends PageVO {
 	@ApiModelProperty(value = "机型名称")
 	private String unitName;
 
+	@ApiModelProperty(value = "产品Id")
+	private String productId;
+
 }

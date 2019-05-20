@@ -285,4 +285,8 @@
         update ord_order set pay_trans_id = #{reqSeq} where order_id = #{orderId}
     </insert>
 
+	<insert id="updateStatusByOrderId">
+        update ord_order set status = #{status} where order_id = #{orderId}
+    </insert>
+	
 </mapper>

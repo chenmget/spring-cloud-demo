@@ -382,6 +382,9 @@
     <if test="!bothNotNull and null!=unitName and ''!=unitName">
       upper(t.unit_name) = upper(#{unitName})
     </if>
+    <if test="null!=productId and ''!=productId">
+      and t.product_id != #{productId}
+    </if>
   </select>
 
 

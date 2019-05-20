@@ -1,8 +1,11 @@
 package com.iwhalecloud.retail.order2b.busiservice.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.member.dto.response.MemberAddressRespDTO;
+import com.iwhalecloud.retail.member.service.MemberAddressService;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
 import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.consts.OrderManagerConsts;
@@ -52,6 +55,9 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     @Value("${fdfs.show.url}")
     private String showUrl;
 
+    @Reference
+    private MemberAddressService memberAddressService;
+
     @Override
     public IPage<OrderInfoModel> selectOrderListByOrder(SelectOrderDetailModel req) {
 
@@ -73,6 +79,19 @@ public class SelectOrderServiceImpl implements SelectOrderService {
         IPage<OrderInfoModel> list = orderManager.selectOrderListByOrder(req);
         if (CollectionUtils.isEmpty(list.getRecords())) {
             return list;
+        }
+
+        if (!CollectionUtils.isEmpty(list.getRecords())) {
+            for(OrderInfoModel orderInfoModel:list.getRecords()){
+                String receiveAddrId = orderInfoModel.getReceiveAddrId();
+                if(!StringUtils.isEmpty(receiveAddrId)){
+                    MemberAddressRespDTO memberAddressRespDTO = memberAddressService.queryAddress(receiveAddrId);
+                    if(null!=memberAddressRespDTO){
+                        orderInfoModel.setReceiveAddr(memberAddressRespDTO.getProvince()+memberAddressRespDTO.getCity()+
+                                memberAddressRespDTO.getRegion()+memberAddressRespDTO.getAddr());
+                    }
+                }
+            }
         }
         /**
          * 营销活动

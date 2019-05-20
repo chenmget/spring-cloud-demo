@@ -73,4 +73,29 @@ public class MarketingActivityListReq extends AbstractPageReq implements Seriali
      */
     @ApiModelProperty(value = "创建人")
     private String creator;
+    
+    /**
+     * 活动发货开始时间起
+     */
+    @ApiModelProperty(value = "活动发货开始时间起")
+    private String deliverStartTimeS;
+    
+    /**
+     * 活动发货开始时间止
+     */
+    @ApiModelProperty(value = "活动发货开始时间止")
+    private String deliverStartE;
+    
+    /**
+     * 活动发货截止时间起
+     */
+    @ApiModelProperty(value = "活动发货截止时间起")
+    private String deliverEndTimeS;	
+    
+    /**
+     * 活动发货截止时间止
+     */
+    @ApiModelProperty(value = "活动发货截止时间止")
+    private String deliverEndTimeE;
+    
 }

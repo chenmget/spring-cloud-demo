@@ -140,6 +140,18 @@ public class SysUserMessageManager {
 
     }
 
+	public void updateReadFlagByUserId(String userId) {
+		sysUserMessageMapper.updateReadFlagByUserId(userId);
+	}
+
+	public Long getSysUserMsgCountByUserIdAndMsgType(String userId, String messageType) {
+		return sysUserMessageMapper.getSysUserMsgCountByUserIdAndMsgType(userId, messageType);
+	}
+
+	public Long getSysMsgNotReadAcount(String userId) {
+		return sysUserMessageMapper.getSysMsgNotReadAcount(userId);
+	}
+
 
 
 }

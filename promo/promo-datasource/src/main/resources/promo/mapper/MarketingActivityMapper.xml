@@ -101,16 +101,16 @@
         <if test="req.endTimeE != null and req.endTimeE != '' ">
             and lower(t.END_TIME) &lt;= #{req.endTimeE}
         </if>
-        <if test="req.startTimeS != null and req.startTimeS != '' ">
+        <if test="req.deliverStartTimeS != null and req.deliverStartTimeS != '' ">
             and lower(t.DELIVER_START_TIME) &gt;= #{req.deliverStartTimeS}
         </if>
-        <if test="req.startTimeE != null and req.startTimeE != '' ">
+        <if test="req.deliverStartE != null and req.deliverStartE != '' ">
             and lower(t.DELIVER_START_TIME) &lt;= #{req.deliverStartE}
         </if>
-        <if test="req.endTimeS != null and req.endTimeS != '' ">
+        <if test="req.deliverEndTimeS != null and req.deliverEndTimeS != '' ">
             and lower(t.DELIVER_END_TIME) &gt;= #{req.deliverEndTimeS}
         </if>
-        <if test="req.endTimeE != null and req.endTimeE != '' ">
+        <if test="req.deliverEndTimeE != null and req.deliverEndTimeE != '' ">
             and lower(t.DELIVER_END_TIME) &lt;= #{req.deliverEndTimeE}
         </if>
         <if test="req.activityInitiator != null and req.activityInitiator != '' ">

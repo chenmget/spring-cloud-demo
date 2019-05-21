@@ -436,8 +436,10 @@ public class ProductServiceImpl implements ProductService {
             ProductDTO productDTO = new ProductDTO();
             BeanUtils.copyProperties(productInfo, productDTO);
             String specName = this.getSpecName(productDTO);
-            String color = productDTO.getColor();
-            String memory = productDTO.getMemory();
+//            String color = productDTO.getColor();
+            String color = productDTO.getAttrValue2();
+//            String memory = productDTO.getMemory();
+            String memory = productDTO.getAttrValue3();
             String typeName = productDTO.getTypeName();
             String unitType = productDTO.getUnitType();
             queryProductInfoResqDTO.setSpecName(specName);

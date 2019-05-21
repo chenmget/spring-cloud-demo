@@ -73,10 +73,13 @@ public class CgSearchApplyController extends BaseController {
 		PriCityManagerResp login = purApplyService.getLoginInfo(userId);
 		String userType = login.getUserType();
 		//传过来的APPLY_TYPE看
+		
 		String lanId = login.getLanId();
 		
 		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userType = "+userType);
 		if("2".equals(userType) || "2" == userType){//地市管理员
+//			PurApplyReq req2 = new PurApplyReq();
+			
 			req.setLanId(lanId);
 			return purApplyService.cgSearchApplyLan(req);
 		}

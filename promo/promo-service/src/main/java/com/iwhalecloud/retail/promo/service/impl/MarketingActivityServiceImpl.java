@@ -477,6 +477,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                         activityProductDTOList.get(i).setMemory(respResultVO.getResultData().getMemory());//lws
                         activityProductDTOList.get(i).setUnitTypeName(respResultVO.getResultData().getUnitTypeName());//lws
                         activityProductDTOList.get(i).setBrandName(respResultVO.getResultData().getBrandName());//lws
+                        activityProductDTOList.get(i).setUnitTypeName(respResultVO.getResultData().getUnitTypeName());//lws
                     }
                 }
             }

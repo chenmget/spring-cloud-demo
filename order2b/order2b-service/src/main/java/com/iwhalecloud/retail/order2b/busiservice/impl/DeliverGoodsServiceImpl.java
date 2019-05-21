@@ -310,9 +310,9 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
             deliveryGoodsResp.setNbr(nbr);
             deliveryGoodsResp.setColor(color);
             deliveryGoodsResp.setMemory(memory);
-            deliveryGoodsResp.setGoodNanme(goodName);
-            deliveryGoodsResp.setRusult(result);
-            deliveryGoodsResp.setRusultDesc(resultDesc);
+            deliveryGoodsResp.setGoodName(goodName);
+            deliveryGoodsResp.setResult(result);
+            deliveryGoodsResp.setResultDesc(resultDesc);
             data.add(deliveryGoodsResp);
         }
         return data;

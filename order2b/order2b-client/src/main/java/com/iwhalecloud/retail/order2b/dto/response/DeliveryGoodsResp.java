@@ -14,7 +14,7 @@ public class DeliveryGoodsResp implements Serializable {
     private String nbr;
 
     @ApiModelProperty(value = "商品名称")
-    private String goodNanme;
+    private String goodName;
 
     @ApiModelProperty(value = "颜色")
     private String color;
@@ -23,8 +23,8 @@ public class DeliveryGoodsResp implements Serializable {
     private String memory;
 
     @ApiModelProperty(value = "发货结果 0成功；1异常")
-    private String rusult;
+    private String result;
 
     @ApiModelProperty(value = "发货结果说明")
-    private String rusultDesc;
+    private String resultDesc;
 }

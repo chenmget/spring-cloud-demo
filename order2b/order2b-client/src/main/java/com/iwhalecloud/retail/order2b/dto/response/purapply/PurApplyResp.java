@@ -21,5 +21,6 @@ public class PurApplyResp extends PageVO implements Serializable {
 	private String supplierName;  //供应商名称
 	private String status;	//处理状态
 	private String option;	//操作
+	private String lanId;
 
 }

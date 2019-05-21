@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.busiservice.AfterSalesHHService;
 import com.iwhalecloud.retail.order2b.busiservice.DeliverGoodsService;
@@ -16,6 +17,7 @@ import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.model.HHReceiveGoodsModel;
 import com.iwhalecloud.retail.order2b.model.OrderInfoModel;
 import com.iwhalecloud.retail.order2b.service.OrderDRGoodsOpenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Slf4j
 public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
 
 
@@ -48,6 +51,7 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
 
     @Override
     public ResultVO deliverGoods(SendGoodsRequest request) {
+        log.info("OrderDRGoodsOpenServiceImpl.deliverGoods req={}", JSON.toJSONString(request));
         ResultVO resultVO = new ResultVO();
         Order order = orderManager.getOrderById(request.getOrderId());
         OrderInfoModel orderInfoModel = new OrderInfoModel();
@@ -59,7 +63,6 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
             orderItems.add(orderItem);
         }
         orderInfoModel.setOrderItems(orderItems);
-
         CommonResultResp resp = deliverGoodsService.nbrOutResource(request);
         if (resp.isFailure()) {
             resultVO.setResultCode(resp.getResultCode());

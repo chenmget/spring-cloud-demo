@@ -187,7 +187,10 @@ public class UserController extends BaseController {
             }
         }
         UserLoginResp resp = userService.login(req);
-        
+        // 失败 返回错误信息
+        if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
+            return failResultVO(resp.getErrorMessage());
+        }
         UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
         
         // 登录日志记录
@@ -205,12 +208,6 @@ public class UserController extends BaseController {
             loginLogService.saveLoginLog(loginLogDTO);
             
         }
-       
-        // 失败 返回错误信息
-        if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
-            return failResultVO(resp.getErrorMessage());
-        }
-
         request.getSession().invalidate();//清空session
         Cookie[] cookies = request.getCookies();
         if (Objects.nonNull(cookies) && cookies.length > 0) {
@@ -266,8 +263,12 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/loginWithoutPwd", method = RequestMethod.POST)
     public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req){
         UserLoginResp resp = userService.loginWithoutPwd(req);
+        // 失败 返回错误信息
+        if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
+            return failResultVO(resp.getErrorMessage());
+        }
+
         UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
-        
         // 登录日志记录
         if(StringUtils.isNotBlank(user.getUserId())){
             LoginLogDTO loginLogDTO = new LoginLogDTO();
@@ -281,14 +282,8 @@ public class UserController extends BaseController {
             loginLogDTO.setSourceIp(sourceIp);
             loginLogDTO.setLoginDesc(resp.getErrorMessage());
             loginLogService.saveLoginLog(loginLogDTO);
-            
         }
         
-        // 失败 返回错误信息
-        if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
-            return failResultVO(resp.getErrorMessage());
-        }
-
         // 获取其他信息  并保存
         UserOtherMsgDTO userOtherMsgDTO = saveUserOtherMsg(resp.getUserDTO());
 
@@ -322,7 +317,7 @@ public class UserController extends BaseController {
         Date nowDate = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	loginLogService.updatelogoutTimeByUserId(userId, sdf.format(nowDate));
-    	
+
         //清空session里面的用户信息
         request.getSession().removeAttribute(WebConst.SESSION_TOKEN);
         request.getSession().removeAttribute(WebConst.SESSION_USER_OTHER_MSG);

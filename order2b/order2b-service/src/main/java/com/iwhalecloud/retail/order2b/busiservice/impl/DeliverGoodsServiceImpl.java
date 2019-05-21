@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.busiservice.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
@@ -287,6 +288,7 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
                 }
             }
         }
+        log.info("OrderDRGoodsOpenServiceImpl.valieNbr goodsItemDTOList={}", JSON.toJSONString(goodsItemDTOList));
         request.setShipNum(shipNum);
         request.setGoodsItemDTOList(goodsItemDTOList);
         resp.setResultData(list);

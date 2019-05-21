@@ -19,11 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = WarehouseServiceApplication.class)
@@ -189,9 +186,9 @@ public class SupplierResourceInstServiceImplTest {
 
     @Test
     public void validResourceInst() {
-        String json = "{\"merchantId\":\"4301811025392\",\"productIds\":[{\"mktResInstNbr\":[\"123\"],\"productId\":\"1089765013613895682\"}]}";
+        String json = "{\"merchantId\":\"4301811025392\",\"productIdList\":[\"123\"],\"mktResInstNbrList\":[\"123\"]}";
         Gson gson = new Gson();
-        ValidResourceInstReq req = gson.fromJson(json, new TypeToken<ValidResourceInstReq>(){}.getType());
+        DeliveryValidResourceInstReq req = gson.fromJson(json, new TypeToken<ValidResourceInstReq>(){}.getType());
         ResultVO<Boolean> resultVO = supplierResourceInstService.validResourceInst(req);
         log.info("resultVO={}", JSON.toJSONString(resultVO));
     }

@@ -1,18 +1,15 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iwhalecloud.retail.dto.ResultCodeEnum;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.DeliveryValidResourceInstItemResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ValidResourceInstItemResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ValidResourceInstResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Component
@@ -32,6 +30,8 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
 
     @Autowired
     private Constant constant;
+    @Autowired
+    private ResouceStoreManager resouceStoreManager;
 
     /**
      * 添加串码
@@ -82,130 +82,6 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
     public Page<ResourceInstListPageResp> getResourceInstList(ResourceInstListPageReq req) {
         Page<ResourceInstListPageResp> page = new Page<>(req.getPageNo(), req.getPageSize());
         return resourceInstMapper.getResourceInstList(page, req);
-    }
-
-    public ResultVO validResourceInst(ValidResourceInstReq req) {
-        List<ValidResourceInstItemResp> resultList = new ArrayList<ValidResourceInstItemResp>();
-        boolean result = true;
-        List<ValidResourceInstItem> productIds = req.getProductIds();
-        for (ValidResourceInstItem item : productIds) {
-            String productId = item.getProductId();
-            List<String> mktResInstNbr = item.getMktResInstNbr();
-            QueryWrapper<ResourceInst> queryWrapperSuppler = new QueryWrapper<>();
-            queryWrapperSuppler.in(ResourceInst.FieldNames.mktResInstNbr.getTableFieldName(), mktResInstNbr);
-            List<ResourceInst> resourceInst = resourceInstMapper.selectList(queryWrapperSuppler);
-            ResultVO<List<ValidResourceInstItemResp>> validVO = getValidErrorList(resourceInst, mktResInstNbr,productId,req.getMerchantId());
-            resultList.addAll(validVO.getResultData());
-            if (!validVO.isSuccess()) {
-                result = false;
-            }
-        }
-        if (result) {
-            return ResultVO.success();
-        } else {
-            ResultVO resultVO = ResultVO.error(getValidErrorMsg(resultList));
-            ValidResourceInstResp resp = new ValidResourceInstResp();
-            resp.setResultCode(ResourceConst.RESULE_CODE_FAIL);
-            resp.setValidList(resultList);
-            resultVO.setResultData(resp);
-            return resultVO;
-        }
-    }
-    private String getValidErrorMsg(List<ValidResourceInstItemResp> errorList){
-        StringBuffer errorMsg = new StringBuffer();
-        if(errorList!=null&&!errorList.isEmpty()){
-            for (ValidResourceInstItemResp item : errorList) {
-                errorMsg.append(constant.getPesInstErrorsPre()).append(item.getMktResInstNbr()).append(item.getResultMsg()).append(",");
-            }
-            errorMsg.delete(errorMsg.length()-1,errorMsg.length());
-        }
-
-        return errorMsg.toString();
-
-    }
-
-    /**
-     * 拿到串码列表后，遍历每个串码，计算其出不合法的原因，并返回错误串码列表
-     * 校验3种情况
-     * 一、是否是当前商家
-     * 二、是否是当前产品
-     * 三、是否有效状态
-     * @param resourceInstTemp
-     * @param mktResInstNbr
-     * @param productId
-     * @param merchantId
-     * @return
-     */
-    private ResultVO<List<ValidResourceInstItemResp>> getValidErrorList(List<ResourceInst> resourceInstTemp, List<String> mktResInstNbr,String productId,String merchantId) {
-        ResultVO<List<ValidResourceInstItemResp>> resultVO = new ResultVO<List<ValidResourceInstItemResp>>();
-        List<ValidResourceInstItemResp> errorList = new ArrayList<ValidResourceInstItemResp>();
-        List<ValidResourceInstItemResp> sucList = new ArrayList<ValidResourceInstItemResp>();
-        //串码集合
-        Set<String> allNbSet = new HashSet<String>();
-        //与productId和merchantId符合的数据,原来逻辑是根据sql查询的，现在根据代码进行过滤
-        Set<String> proNbSet = new HashSet<String>();
-        //在库可用的串码
-        Set<String> statusUseSet = new HashSet<String>();
-        if(resourceInstTemp != null && !resourceInstTemp.isEmpty()){
-            for (ResourceInst inst : resourceInstTemp) {
-                allNbSet.add(inst.getMktResInstNbr());
-                if(inst.getMerchantId().equals(merchantId)&&inst.getMktResId().equals(productId)){
-                    proNbSet.add(inst.getMktResInstNbr());
-                    if(ResourceConst.STATUSCD.AVAILABLE.getCode().equals(inst.getStatusCd())){
-                        statusUseSet.add(inst.getMktResInstNbr());
-                    }
-                }
-            }
-        }
-
-        for (String nbr : mktResInstNbr) {
-            //串码不存在
-            if(!allNbSet.contains(nbr)){
-                ValidResourceInstItemResp error = new ValidResourceInstItemResp();
-                error.setResultCode(ResourceConst.RESULE_CODE_FAIL);
-                error.setMktResInstNbr(nbr);
-                error.setResultMsg(constant.getNoResInst());
-                errorList.add(error);
-                continue;
-            }
-            //串码存在，与产品对应不上
-            if(!proNbSet.contains(nbr)){
-                ValidResourceInstItemResp error = new ValidResourceInstItemResp();
-                error.setResultCode(ResourceConst.RESULE_CODE_FAIL);
-                error.setMktResInstNbr(nbr);
-                error.setResultMsg(constant.getPesInstMismatch());
-                errorList.add(error);
-                continue;
-            }
-            //串码存在，且对应的上产品,需要判断状态
-            if(statusUseSet.contains(nbr)){
-                ValidResourceInstItemResp suc = new ValidResourceInstItemResp();
-                suc.setResultCode(ResourceConst.RESULE_CODE_SUCCESS);
-                suc.setMktResInstNbr(nbr);
-                suc.setResultMsg(constant.getPesInstCheckSuc());
-                sucList.add(suc);
-                continue;
-            }
-
-            //其他情况：状态不可用
-            ValidResourceInstItemResp error = new ValidResourceInstItemResp();
-            error.setResultCode(ResourceConst.RESULE_CODE_FAIL);
-            error.setMktResInstNbr(nbr);
-            error.setResultMsg(constant.getPesInstInvalid());
-            errorList.add(error);
-
-        }
-        if (errorList.isEmpty()) {
-            resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
-            resultVO.setResultData(sucList);
-            return resultVO;
-        }
-
-        //校验失败
-        resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
-        resultVO.setResultData(errorList);
-        return resultVO;
-
     }
 
     /**
@@ -308,6 +184,55 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
      */
     public List<ResourceInstDTO> validResourceInst(ResourceInstsGetReq req) {
         return resourceInstMapper.validResourceInst(req);
+    }
+
+    /**
+     * 校验发货串码
+     * @param req
+     * @return
+     */
+    public DeliveryValidResourceInstItemResp validResourceInst(DeliveryValidResourceInstReq req) {
+        List<String> productIds = req.getProductIdList();
+        List<String> mktResInstNbrList = req.getMktResInstNbrList();
+
+        DeliveryValidResourceInstItemResp resp = new DeliveryValidResourceInstItemResp();
+        ResourceInstsGetReq getReq = new ResourceInstsGetReq();
+        getReq.setMktResStoreId(req.getMktResStoreId());
+        getReq.setMktResInstNbrs(mktResInstNbrList);
+        getReq.setMerchantId(req.getMerchantId());
+        List<ResourceInstDTO> exixtsNbrInstList = resourceInstMapper.getResourceInsts(getReq);
+        // 1、不存在的串码
+        List<String> exixtsNbrList = exixtsNbrInstList.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
+        mktResInstNbrList.removeAll(exixtsNbrList);
+        resp.setNotExistsNbrList(mktResInstNbrList);
+        // 2、状态不正确的串码
+        String avalable = ResourceConst.STATUSCD.AVAILABLE.getCode();
+        List<ResourceInstDTO> wrongStatusInst = exixtsNbrInstList.stream().filter(t -> !avalable.equals(t.getStatusCd())).collect(Collectors.toList());
+        List<String> wrongStatusNbrList = wrongStatusInst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
+        resp.setWrongStatusNbrList(wrongStatusNbrList);
+        exixtsNbrInstList.removeAll(wrongStatusInst);
+        // 3、串码不属于该订单商品销售的范畴
+        List<ResourceInstDTO> productIdNotMatchInst = exixtsNbrInstList.stream().filter(t -> !productIds.contains(t.getMktResId())).collect(Collectors.toList());
+        List<String> productIdNotMatchNbrList = productIdNotMatchInst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
+        resp.setNotMatchProductIdNbrList(productIdNotMatchNbrList);
+
+        // 查询出来的串码实列除去产品不符合的
+        exixtsNbrInstList.removeAll(productIdNotMatchInst);
+        exixtsNbrInstList.removeAll(wrongStatusInst);
+        // 根据产品维度组装通过校验的数据
+        Map<String, List<String>> productIdAndNbrList = new HashMap<>();
+        for(ResourceInstDTO dto : exixtsNbrInstList){
+            String mktResId = dto.getMktResId();
+            if (CollectionUtils.isEmpty(productIdAndNbrList.get(mktResId))) {
+                List<String> nbrList = new ArrayList<>();
+                nbrList.add(dto.getMktResInstNbr());
+            }else{
+                List<String> nbrList = productIdAndNbrList.get(mktResId);
+                nbrList.add(dto.getMktResInstNbr());
+            }
+        }
+        resp.setProductIdAndNbrList(productIdAndNbrList);
+        return resp;
     }
 
 }

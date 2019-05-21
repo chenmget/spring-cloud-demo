@@ -38,25 +38,6 @@ public class ResNbrManagerReference {
     private SupplierResourceInstService resourceInstService;
 
     /**
-     * 串码校验
-     */
-    public ResultVO resNbrValidity(SendGoodsRequest request) {
-        ValidResourceInstReq validResourceInstReq = new ValidResourceInstReq();
-        validResourceInstReq.setMerchantId(request.getUserCode());
-        List<ValidResourceInstItem> validResourceInstItems = new ArrayList<>();
-        for (SendGoodsItemDTO dto : request.getGoodsItemDTOList()) {
-            ValidResourceInstItem validResourceInstItem = new ValidResourceInstItem();
-            validResourceInstItem.setProductId(dto.getProductId());
-            validResourceInstItem.setMktResInstNbr(dto.getResNbrList());
-            validResourceInstItems.add(validResourceInstItem);
-        }
-        validResourceInstReq.setProductIds(validResourceInstItems);
-        ResultVO resultVO = supplierResourceInstService.validResourceInst(validResourceInstReq);
-        log.info("gs_10010_resNbrValidity req{},resp{}", JSON.toJSONString(validResourceInstReq), JSON.toJSONString(resultVO));
-        return resultVO;
-    }
-
-    /**
      * 出库
      */
     public ResultVO<Boolean> nbrOutResource(Order order, String recCode, SendGoodsRequest request) {
@@ -248,5 +229,14 @@ public class ResNbrManagerReference {
         }
         resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         return resp;
+    }
+
+    /**
+     * 串码校验
+     */
+    public ResultVO resNbrValidity(DeliveryValidResourceInstReq req) {
+        ResultVO resultVO = supplierResourceInstService.validResourceInst(req);
+        log.info("ResNbrManagerReference.resNbrValidity req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(resultVO));
+        return resultVO;
     }
 }

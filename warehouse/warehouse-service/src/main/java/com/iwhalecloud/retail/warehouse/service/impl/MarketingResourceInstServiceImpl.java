@@ -85,10 +85,6 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
         return null;
     }
 
-    @Override
-    public ResultVO validResourceInst(ValidResourceInstReq req) {
-        return null;
-    }
 
     @Override
     public ResultVO deliveryOutResourceInst(DeliveryResourceInstReq req) {
@@ -237,6 +233,11 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
 
     @Override
     public ResultVO confirmRefuseNbr(ConfirmReciveNbrReq req) {
+        return null;
+    }
+
+    @Override
+    public ResultVO validResourceInst(DeliveryValidResourceInstReq req) {
         return null;
     }
 }

@@ -35,37 +35,20 @@ public class ResourceInstServiceImplTest {
 
     @Test
     public void validResourceInst1(){
-        ValidResourceInstReq req = new ValidResourceInstReq();
+        DeliveryValidResourceInstReq req = new DeliveryValidResourceInstReq();
         List<ValidResourceInstItem> items = new ArrayList<>();
-        ValidResourceInstItem item = new ValidResourceInstItem();
+        List<String> productIdList = new ArrayList<>();
+        List<String> mktResInstNbrlist = new ArrayList<>();
+        mktResInstNbrlist.add("20190116003");
+        mktResInstNbrlist.add("0000000004");
+        productIdList.add("1085133312128376834");
         req.setMerchantId("4301811025392");
-        List<String> list = new ArrayList<>();
-        list.add("20190116003");
-//        list.add("0000000004");
-        item.setMktResInstNbr(list);
-        item.setProductId("1085133312128376834");
-        items.add(item);
-        req.setProductIds(items);
+        req.setProductIdList(productIdList);
+        req.setMktResInstNbrList(mktResInstNbrlist);
         ResultVO<Boolean> resultVO = supplierResourceInstService.validResourceInst(req);
         Assert.assertTrue(resultVO.getResultData());
     }
 
-    @Test
-    public void validResourceInst2(){
-        ValidResourceInstReq req = new ValidResourceInstReq();
-        List<ValidResourceInstItem> items = new ArrayList<>();
-        ValidResourceInstItem item = new ValidResourceInstItem();
-        req.setMerchantId("4301811022885");
-        List<String> list = new ArrayList<>();
-        list.add("838847890437908437");
-//        list.add("0000000004");
-        item.setMktResInstNbr(list);
-        item.setProductId("1082241745046700034");
-        items.add(item);
-        req.setProductIds(items);
-        ResultVO<Boolean> resultVO = supplierResourceInstService.validResourceInst(req);
-        Assert.assertTrue(resultVO.getResultData());
-    }
 
     /**
      * 厂商添加串码 供应商添加串码

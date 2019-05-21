@@ -294,6 +294,19 @@ public class GoodsManagerReference {
         return resp;
     }
 
-
+    /**
+     * 根据产品ID获取产品对象
+     * @param productId 产品ID
+     * @return 产品对象
+     */
+    public ProductResp getProduct(String productId){
+        ProductGetByIdReq req = new ProductGetByIdReq();
+        req.setProductId(productId);
+        ResultVO<ProductResp> respResultVO = productService.getProduct(req);
+        if (respResultVO.isSuccess() && null != respResultVO.getResultData()) {
+            return respResultVO.getResultData();
+        }
+        return null;
+    }
 
 }

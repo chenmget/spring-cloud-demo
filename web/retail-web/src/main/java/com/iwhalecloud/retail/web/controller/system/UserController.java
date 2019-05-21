@@ -227,7 +227,7 @@ public class UserController extends BaseController {
         loginResp.setUserMenu(getUserMenu(resp.getUserDTO().getUserId()));
         loginResp.setLoginStatusCode(WebConst.loginStatusEnum.HAVE_LOGIN.getCode());
         loginResp.setLoginStatusMsg(WebConst.loginStatusEnum.HAVE_LOGIN.getValue());
-
+        loginResp.setChangePwdCount(resp.getUserDTO().getChangePwdCount());
         return successResultVO(loginResp);
     }
 

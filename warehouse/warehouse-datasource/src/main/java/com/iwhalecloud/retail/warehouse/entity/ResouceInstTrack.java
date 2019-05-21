@@ -133,6 +133,12 @@ public class ResouceInstTrack implements Serializable {
 	@ApiModelProperty(value = "是否绿色通道")
 	private java.lang.String ifGreenChannel;
 
+	/**
+	 * 产品类型
+	 */
+	@ApiModelProperty(value = "产品类型")
+	private java.lang.String typeId;
+
 	//属性 end
     /** 字段名称枚举. */
     public enum FieldNames {
@@ -188,7 +194,10 @@ public class ResouceInstTrack implements Serializable {
 		ifGroundSupply("ifGroundSupply","IF_GROUND_SUPPLY"),
 
 		/**是否绿色通道. */
-		ifGreenChannel("ifGreenChannel","IF_GREEN_CHANNEL");
+		ifGreenChannel("ifGreenChannel","IF_GREEN_CHANNEL"),
+
+		/**产品类型. */
+		typeId("typeId","TYPE_ID");
 
 		private String fieldName;
 		private String tableFieldName;

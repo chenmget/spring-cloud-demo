@@ -383,7 +383,10 @@ public class UserServiceImpl implements UserService {
         if (!checkPassword(req.getNewPassword())) {
             return ResultVO.error("密码格式不对，密码应为包含大小写字母、数字、特殊字符的8到20位字符串");
         }
-
+        Integer changePwdCount = user.getChangePwdCount() == null ? 0 : user.getChangePwdCount();
+        changePwdCount += 1;
+        user.setChangePwdCount(changePwdCount);
+        user.setChangePwdTime(new Date());
         user.setLoginPwd(new MD5(req.getNewPassword()).asHex());
         int result = userManager.updateUser(user);
         log.info("UserServiceImpl.updatePassword 出参：更新密码影响的行数={}", result);

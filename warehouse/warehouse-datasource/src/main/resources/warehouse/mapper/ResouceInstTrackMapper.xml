@@ -20,6 +20,7 @@
         ,t.CRM_STATUS
         ,t.SELF_REG_STATUS
         ,t.IF_PRE_SUBSIDY
+        ,t.TYPE_ID
     </sql>
 
     <sql id="nbrSource">

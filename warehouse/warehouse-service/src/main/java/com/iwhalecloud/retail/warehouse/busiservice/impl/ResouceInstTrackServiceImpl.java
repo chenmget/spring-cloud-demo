@@ -423,8 +423,12 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
         storePageReq.setMerchantId(req.getBuyerMerchantId());
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        String storeId = resouceStoreService.getStoreId(storePageReq);
-        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceStoreService.getStoreId req={},storeId={}", JSON.toJSONString(storePageReq), JSON.toJSONString(storeId));
+        String buyerStoreId = resouceStoreService.getStoreId(storePageReq);
+        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceStoreService.getStoreId req={},buyerStoreId={}", JSON.toJSONString(storePageReq), buyerStoreId);
+
+        storePageReq.setMerchantId(req.getSellerMerchantId());
+        String sellerStoreId = resouceStoreService.getStoreId(storePageReq);
+        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceStoreService.getStoreId req={},sellerStoreId={}", JSON.toJSONString(storePageReq), sellerStoreId);
 
         List<String> distinctList = Lists.newArrayList();
         List<DeliveryResourceInstItem> deliveryResourceInstItemList = req.getDeliveryResourceInstItemList();
@@ -441,7 +445,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         // 是否地包供货：地包商交易给零售商时填是
         String ifGroundSupply = ResourceConst.CONSTANT_NO;
         String buyerMerchantId = req.getBuyerMerchantId();
-        resourceInstsGetReq.setMktResStoreId(storeId);
+        resourceInstsGetReq.setMktResStoreId(sellerStoreId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         int count = 0;
@@ -458,6 +462,8 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             resouceInstTrackDTO.setIfDirectSupply(ifDirectSuppLy);
             resouceInstTrackDTO.setIfGroundSupply(ifGroundSupply);
             resouceInstTrackDTO.setMerchantId(buyerMerchantId);
+            resouceInstTrackDTO.setMktResStoreId(buyerStoreId);
+            resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();

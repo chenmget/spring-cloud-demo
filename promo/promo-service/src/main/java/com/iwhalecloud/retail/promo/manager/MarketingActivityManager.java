@@ -44,7 +44,7 @@ public class MarketingActivityManager{
     @Reference
     private UserService userService;
     /**
-     * 添加营销活动
+     * 添加或修改营销活动
      * @param marketingActivity 营销活动实体
      * @return
      */
@@ -54,7 +54,10 @@ public class MarketingActivityManager{
             marketingActivity.setGmtModified(new Date());
             //is_delete 默认为 0-未删
             marketingActivity.setIsDeleted("0");
+            //STATUS_CD_1("1","已保存"),STATUS_CD_10("10","待审核"),STATUS_CD_20("20","审核通过"),
+            //STATUS_CD_30("40","已终止"),STATUS_CD_PLUS_20("30","审核不通过"),STATUS_CD_PLUS_1("0","已取消");
             marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_1.getCode());
+            //PAY_TYPE_1("1","预付定金"),PAY_TYPE_2("2","付全款");
             marketingActivity.setPayType(PromoConst.PayType.PAY_TYPE_1.getCode());
             return marketingActivityMapper.insert(marketingActivity);
         } else{

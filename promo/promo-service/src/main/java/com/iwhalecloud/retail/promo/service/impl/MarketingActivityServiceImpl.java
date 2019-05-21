@@ -845,6 +845,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         if (StringUtils.isNotEmpty(marketingActivityId)){
             //1. 先判断此数据的状态， 审核通过用新逻辑，不通过用原逻辑
             MarketingActivity result = marketingActivityManager.getMarketingActivityById(marketingActivityId);
+            // STATUS_CD_20("20","审核通过")
             if (PromoConst.STATUSCD.STATUS_CD_20.getCode().equals(result.getStatus())){
                 int num = 0;
                 List<MarketingActivityModify> list = marketingActivityManager.queryMarketingActivityModifySize(req.getId());

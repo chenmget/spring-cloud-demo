@@ -15,13 +15,13 @@ public class InventoryQueryReq implements Serializable{
 	* 设备序列号
 	*/
     @ApiModelProperty(value = "设备序列号")
-    private String Nbr;
+    private String deviceId;
 
     
     /**
      * 地区编码
      */
     @ApiModelProperty(value = "地区编码")
-    private String cityCode;
+    private String code;
     
 }

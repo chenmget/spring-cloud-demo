@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.busiservice.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.order2b.busiservice.DeliverGoodsService;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
 import com.iwhalecloud.retail.order2b.busiservice.UpdateOrderFlowService;
@@ -12,6 +13,7 @@ import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
 import com.iwhalecloud.retail.order2b.consts.order.OrderShipType;
 import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
 import com.iwhalecloud.retail.order2b.dto.model.order.SendGoodsItemDTO;
+import com.iwhalecloud.retail.order2b.dto.response.DeliveryGoodsResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SendGoodsRequest;
 import com.iwhalecloud.retail.order2b.entity.Delivery;
 import com.iwhalecloud.retail.order2b.entity.Order;
@@ -23,9 +25,12 @@ import com.iwhalecloud.retail.order2b.model.MemberAddrModel;
 import com.iwhalecloud.retail.order2b.model.OrderInfoModel;
 import com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel;
 import com.iwhalecloud.retail.order2b.model.SelectOrderDetailModel;
+import com.iwhalecloud.retail.order2b.reference.GoodsManagerReference;
 import com.iwhalecloud.retail.order2b.reference.MemberInfoReference;
 import com.iwhalecloud.retail.order2b.reference.ResNbrManagerReference;
 import com.iwhalecloud.retail.order2b.reference.TaskManagerReference;
+import com.iwhalecloud.retail.warehouse.dto.request.DeliveryValidResourceInstReq;
+import com.iwhalecloud.retail.warehouse.dto.response.DeliveryValidResourceInstItemResp;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +42,8 @@ import org.springframework.util.StringUtils;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -67,91 +74,12 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
     @Autowired
     private TaskManagerReference taskManagerReference;
 
-    @Override
-    public CommonResultResp<OrderInfoModel> orderCheck(SendGoodsRequest request) {
-        CommonResultResp resp = new CommonResultResp();
-        Order order = orderManager.getOrderById(request.getOrderId());
-        List<OrderItem> orderItemList = orderManager.selectOrderItemsList(request.getOrderId());
-        if (order == null || CollectionUtils.isEmpty(orderItemList)) {
-            resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            resp.setResultMsg("未查询到订单");
-            return resp;
-        }
+    @Autowired
+    private DeliverGoodsService deliverGoodsService;
 
-        //物流信息校验
-        //如果是配送方式是客户自提，需要录入手机串码
-        OrderShipType shipType= OrderShipType.matchOpCode(order.getShipType());
-        switch (shipType) {
-            case ORDER_SHIP_TYPE_2:
-                if(order.getGetGoodsCode()!=null){
-                    if(!order.getGetGoodsCode().equals(request.getGetCode())){
-                        resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-                        resp.setResultMsg("自提码不匹配");
-                        return resp;
-                    }
-                }
-                break;
-            default:
-                if(StringUtils.isEmpty(request.getLogiNo())){
-                    resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-                    resp.setResultMsg("物流单号不能为空");
-                    return resp;
-                }
-                break;
-        }
+    @Autowired
+    private GoodsManagerReference goodsManagerReference;
 
-        //数量校验
-        List<OrderItem> orderItems = new ArrayList<>();
-        for (SendGoodsItemDTO goodsItemDTO : request.getGoodsItemDTOList()) {
-            for (OrderItem item : orderItemList) {
-                if (item.getDeliveryNum() == null) {
-                    item.setDeliveryNum(0);
-                }
-                if (item.getItemId().equals(goodsItemDTO.getItemId())) {
-                    Integer delivery = item.getNum() - item.getDeliveryNum();
-                    if (goodsItemDTO.getResNbrList().size() <= delivery) {
-                        OrderItem orderItem = new OrderItem();
-                        orderItem.setItemId(item.getItemId());
-                        orderItem.setDeliveryNum(item.getDeliveryNum() + goodsItemDTO.getResNbrList().size());
-                        orderItems.add(orderItem);
-                    } else {
-                        resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-                        resp.setResultMsg("发货数量与未发货的数量不匹配");
-                        return resp;
-                    }
-
-                }
-            }
-        }
-        if (CollectionUtils.isEmpty(orderItems)) {
-            resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            resp.setResultMsg("订单项校验不通过");
-            return resp;
-        }
-
-        resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
-        OrderInfoModel orderInfoModel = new OrderInfoModel();
-        BeanUtils.copyProperties(order, orderInfoModel);
-        orderInfoModel.setOrderItems(orderItems);
-        resp.setResultData(orderInfoModel);
-        return resp;
-    }
-
-    @Override
-    public CommonResultResp resNbrValidity(SendGoodsRequest request) {
-
-        CommonResultResp resp = new CommonResultResp();
-        resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
-
-        ResultVO nbrValidity = resNbrManagerReference.resNbrValidity(request);
-        resp.setResultData(nbrValidity.getResultData());
-        if (nbrValidity.isSuccess()) {
-            return resp;
-        }
-        resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-        resp.setResultMsg("校验串码不通过,"+nbrValidity.getResultMsg());
-        return resp;
-    }
 
     @Override
     public CommonResultResp nbrOutResource(SendGoodsRequest request) {
@@ -205,7 +133,8 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
         delivery.setLogiId(request.getLogiId());
         delivery.setLogiName(request.getLogiName());
         delivery.setLogiNo(request.getLogiNo());
-        delivery.setType("1"); //发货
+        //发货
+        delivery.setType("1");
 
         //串码信息组装
         List<OrderItemDetail> itemDetailList = new ArrayList<>();
@@ -271,5 +200,122 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
         return resp;
     }
 
+    @Override
+    public ResultVO resNbrValidity(DeliveryValidResourceInstReq req) {
+        ResultVO nbrValidity = resNbrManagerReference.resNbrValidity(req);
+        return nbrValidity;
+    }
+
+
+    @Override
+    public ResultVO valieNbr(SendGoodsRequest request) {
+        ResultVO resp = new ResultVO();
+        Order order = orderManager.getOrderById(request.getOrderId());
+        List<OrderItem> orderItemList = orderManager.selectOrderItemsList(request.getOrderId());
+        if (order == null || CollectionUtils.isEmpty(orderItemList)) {
+            resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resp.setResultMsg("未查询到订单");
+            return resp;
+        }
+        //如果是配送方式是客户自提，需要录入手机串码
+        OrderShipType shipType= OrderShipType.matchOpCode(order.getShipType());
+        switch (shipType) {
+            case ORDER_SHIP_TYPE_2:
+                if(order.getGetGoodsCode()!=null){
+                    if(!order.getGetGoodsCode().equals(request.getGetCode())){
+                        resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                        resp.setResultMsg("自提码不匹配");
+                        return resp;
+                    }
+                }
+                break;
+            default:
+                if(StringUtils.isEmpty(request.getLogiNo())){
+                    resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                    resp.setResultMsg("物流单号不能为空");
+                    return resp;
+                }
+                break;
+        }
+        //获取订单项全部不重复的productId
+        List<String> productIdList = orderItemList.stream().map(OrderItem::getProductId).collect(Collectors.toList());
+        productIdList = productIdList.stream().distinct().collect(Collectors.toList());
+
+        DeliveryValidResourceInstReq validResourceInstReq = new DeliveryValidResourceInstReq();
+        validResourceInstReq.setMerchantId(request.getMerchantId());
+        validResourceInstReq.setMktResInstNbrList(request.getResNbrList());
+        validResourceInstReq.setProductIdList(productIdList);
+        ResultVO commonResultResp = deliverGoodsService.resNbrValidity(validResourceInstReq);
+        if (!commonResultResp.isSuccess()) {
+            return commonResultResp;
+        }
+        DeliveryValidResourceInstItemResp validResourceInstItemResp = (DeliveryValidResourceInstItemResp)commonResultResp.getResultData();
+        Map<String, List<String>> productIdAndNbrList = validResourceInstItemResp.getProductIdAndNbrList();
+        List<String> notExistsNbrList = validResourceInstItemResp.getNotExistsNbrList();
+        List<DeliveryGoodsResp> list = new ArrayList<DeliveryGoodsResp>();
+        if (!CollectionUtils.isEmpty(notExistsNbrList)) {
+            list.addAll(deliveryRespData(null, null, notExistsNbrList, "1", "串码不存在"));
+        }
+        List<String> notMatchProductIdNbrList = validResourceInstItemResp.getNotMatchProductIdNbrList();
+        if (!CollectionUtils.isEmpty(notMatchProductIdNbrList)) {
+            list.addAll(deliveryRespData(null, null, notMatchProductIdNbrList, "1", "串码不属于该订单销售的商品范围"));
+        }
+        List<String> wrongStatusNbrList = validResourceInstItemResp.getWrongStatusNbrList();
+        if (!CollectionUtils.isEmpty(wrongStatusNbrList)) {
+            list.addAll(deliveryRespData(null, null, wrongStatusNbrList, "1", "串码状态不正确"));
+        }
+
+        List<SendGoodsItemDTO> goodsItemDTOList = new ArrayList<>();
+        Integer shipNum = 0;
+        for (OrderItem item : orderItemList) {
+            String productId = item.getProductId();
+            List<String> nbrList = productIdAndNbrList.get(productId);
+            if (!CollectionUtils.isEmpty(nbrList)) {
+                Integer delivery = item.getNum() - item.getDeliveryNum();
+                if (nbrList.size() > delivery) {
+                    List aboveNbrList = nbrList.subList(delivery, nbrList.size());
+                    list.addAll(deliveryRespData(productId, null, aboveNbrList, "1", "串码发货数量超出购买数量"));
+                }else {
+                    SendGoodsItemDTO dto = new SendGoodsItemDTO();
+                    dto.setGoodsId(item.getGoodsId());
+                    dto.setItemId(item.getItemId());
+                    dto.setProductId(productId);
+                    dto.setResNbrList(nbrList);
+                    dto.setDeliveryNum(item.getDeliveryNum() + nbrList.size());
+                    goodsItemDTOList.add(dto);
+                    shipNum += 1;
+                }
+            }
+        }
+        request.setShipNum(shipNum);
+        request.setGoodsItemDTOList(goodsItemDTOList);
+        resp.setResultData(list);
+        resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+        return resp;
+    }
+
+    private List<DeliveryGoodsResp> deliveryRespData(String productId, String goodName, List<String> nbrList, String result, String resultDesc) {
+        String color = null;
+        String memory = null;
+        if (!StringUtils.isEmpty(productId)) {
+            ProductResp resp = goodsManagerReference.getProduct(productId);
+            if (null != resp) {
+                color = resp.getAttrValue2();
+                memory = resp.getAttrValue3();
+            }
+        }
+        List<DeliveryGoodsResp> data = new ArrayList<DeliveryGoodsResp>(nbrList.size());
+        for (String nbr : nbrList) {
+            DeliveryGoodsResp deliveryGoodsResp = new DeliveryGoodsResp();
+            deliveryGoodsResp.setNbr(nbr);
+            deliveryGoodsResp.setColor(color);
+            deliveryGoodsResp.setMemory(memory);
+            deliveryGoodsResp.setGoodName(goodName);
+            deliveryGoodsResp.setResult(result);
+            deliveryGoodsResp.setResultDesc(resultDesc);
+            data.add(deliveryGoodsResp);
+        }
+        return data;
+    }
 
 }

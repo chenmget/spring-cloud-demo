@@ -73,14 +73,6 @@ public class AfterSalesHHServiceImpl implements AfterSalesHHService {
         }
 
         /**
-         * 串码校验
-         */
-        resp = deliverGoodsService.resNbrValidity(request);
-        if (resp.isFailure()) {
-            return resp;
-        }
-
-        /**
          * 出库
          */
         resp = deliverGoodsService.nbrOutResource(request);

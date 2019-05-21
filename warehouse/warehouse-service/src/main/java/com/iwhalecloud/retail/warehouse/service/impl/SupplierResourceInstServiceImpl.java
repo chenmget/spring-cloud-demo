@@ -427,17 +427,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         return ResultVO.success(successMessage+reqCode);
     }
 
-    @Override
-    public ResultVO validResourceInst(ValidResourceInstReq req) {
-        ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(req.getMerchantId());
-        log.info("SupplierResourceInstServiceImpl.validResourceInst merchantService.getMerchantById req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(merchantResultVO));
-        if (merchantResultVO != null && merchantResultVO.isSuccess() && merchantResultVO.getResultData() != null && merchantResultVO.getResultData().getMerchantType() != null) {
-            req.setMerchantType(merchantResultVO.getResultData().getMerchantType());
-            return resourceInstManager.validResourceInst(req);
-        } else {
-            return ResultVO.error("商家不存在");
-        }
-    }
 
     @Override
     public ResultVO deliveryOutResourceInst(DeliveryResourceInstReq req) {
@@ -788,29 +777,14 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         return ResultVO.success();
     }
 
-    /**
-     * 调拨串码是否有两种类型
-     * @param nbrList
-     * @return
-     */
-//    private Boolean twoNbrType(List<String> nbrList, String merchantId){
-//        Boolean hasDirectSuppLy = false;
-//        Boolean hasGroundSupply = false;
-//        for (String nbr : nbrList) {
-//            ResultVO<ResouceInstTrackDTO> resouceInstTrackDTOVO = resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId(nbr, merchantId);
-//            log.info("SupplierResourceInstServiceImpl.twoNbrType resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId nbr={}, resp={}", nbr, JSON.toJSONString(resouceInstTrackDTOVO));
-//            if (!resouceInstTrackDTOVO.isSuccess() || null == resouceInstTrackDTOVO.getResultData()) {
-//                return true;
-//            }
-//            ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOVO.getResultData();
-//            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGreenChannel()) ||ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfDirectSuppLy())) {
-//                hasDirectSuppLy = true;
-//            }
-//            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGroundSupply())) {
-//                hasGroundSupply = true;
-//            }
-//        }
-//        return hasDirectSuppLy && hasGroundSupply;
-//
-//    }
+    @Override
+    public ResultVO validResourceInst(DeliveryValidResourceInstReq req) {
+        ResouceStoreDTO storeDTO = resouceStoreManager.getStore(req.getMerchantId(), ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        log.info("SupplierResourceInstServiceImpl.validResourceInst resouceStoreManager.getStore req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(storeDTO));
+        if (null == storeDTO) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+        req.setMktResStoreId(storeDTO.getMktResStoreId());
+        return ResultVO.success(resourceInstManager.validResourceInst(req));
+    }
 }

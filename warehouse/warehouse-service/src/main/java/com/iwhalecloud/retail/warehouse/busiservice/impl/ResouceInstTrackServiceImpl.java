@@ -146,6 +146,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             }
             BeanUtils.copyProperties(req, resouceInstTrackDTO);
             resouceInstTrackDTO.setMktResInstNbr(mktResInstNbr);
+            resouceInstTrackDTO.setMktResStoreId(req.getDestStoreId());
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynSaveTrackForMerchant resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
@@ -171,6 +172,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         List<String> distinctList = mktResInstNbrs.stream().distinct().collect(Collectors.toList());
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
+        resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
         }

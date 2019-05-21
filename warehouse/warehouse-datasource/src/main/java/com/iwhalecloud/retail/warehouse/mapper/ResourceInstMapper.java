@@ -131,4 +131,11 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst> {
 
     int initConfig(@Param("endDate") String endDate);
 
+    /**
+     * 根据条件校验串码实列
+     * @param req
+     * @return
+     */
+    List<ResourceInstDTO> validResourceInst(ResourceInstsGetReq req);
+
 }

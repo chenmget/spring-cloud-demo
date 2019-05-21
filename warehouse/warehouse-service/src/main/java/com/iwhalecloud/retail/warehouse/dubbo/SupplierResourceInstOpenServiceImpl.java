@@ -84,11 +84,6 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
         return resp;
     }
 
-    @Override
-    public ResultVO validResourceInst(ValidResourceInstReq req) {
-        log.info("SupplierResourceInstOpenServiceImpl.validResourceInst req={}", JSON.toJSONString(req));
-        return supplierResourceInstService.validResourceInst(req);
-    }
 
     @Override
     public ResultVO<Boolean> deliveryOutResourceInst(DeliveryResourceInstReq req) {
@@ -177,4 +172,12 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
         resouceInstTrackService.allocateResourceIntsWarehousingCancelForRetail(req, resp);
         return resp;
     }
+
+    @Override
+    public ResultVO validResourceInst(DeliveryValidResourceInstReq req) {
+        ResultVO resp = supplierResourceInstService.validResourceInst(req);
+        log.info("SupplierResourceInstOpenServiceImpl.validResourceInst req={}", JSON.toJSONString(req), JSON.toJSONString(resp));
+        return resp;
+    }
+
 }

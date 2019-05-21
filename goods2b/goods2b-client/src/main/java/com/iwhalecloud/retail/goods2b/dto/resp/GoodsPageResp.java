@@ -116,4 +116,13 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "内存")
     private String memory;
+
+    @ApiModelProperty(value = "attrValue1")
+    private String attrValue1;
+
+    @ApiModelProperty(value = "attrValue2")
+    private String attrValue2;
+
+    @ApiModelProperty(value = "attrValue3")
+    private String attrValue3;
 }

@@ -18,6 +18,7 @@ import com.iwhalecloud.retail.member.service.MemberService;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.RandomLogAddReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogGetReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogUpdateReq;
@@ -474,9 +475,8 @@ public class MemberController extends BaseController {
     public ResultVO<Map<String, String>> checkPayAccount() {
     	
     	String userId = UserContext.getUserId();
-    	UserGetReq req = new UserGetReq();
-    	req.setUserId(userId);
-    	String merchantId = userService.getUser(req).getRelCode();
+    	UserDTO userDTO = userService.getUserByUserId(userId);
+    	String merchantId = userDTO.getRelCode();
     	if(StringUtils.isBlank(userId)){
     		ResultVO.error("账号不能为空");
     	}

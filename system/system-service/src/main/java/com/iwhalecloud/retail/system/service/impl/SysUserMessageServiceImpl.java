@@ -81,8 +81,8 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
         IPage<SysUserMessageDTO> page = new Page();
         BeanUtils.copyProperties(sysUserMessagePage,page);
         List<SysUserMessageDTO> sysUserMessageDTOList = Lists.newArrayList();
-        Period periodToDeliverEndTime;
-        ZoneId zoneId = ZoneId.systemDefault();
+//      Period periodToDeliverEndTime;
+//      ZoneId zoneId = ZoneId.systemDefault();
         TaskItemDTO taskItemDTO;
         TaskDTO taskDTO;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy年MM月dd日 HH时mm分ss秒");
@@ -170,5 +170,20 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
         }
         return  sysUserMessageDTOList;
     }
+
+	@Override
+	public void updateReadFlagByUserId(String userId) {
+		sysUserMessageManager.updateReadFlagByUserId(userId);
+	}
+
+	@Override
+	public Long getSysUserMsgCountByUserIdAndMsgType(String userId, String messageType) {
+		return sysUserMessageManager.getSysUserMsgCountByUserIdAndMsgType(userId, messageType);
+	}
+
+	@Override
+	public Long getSysMsgNotReadAcount(String userId) {
+		return sysUserMessageManager.getSysMsgNotReadAcount(userId);
+	}
     
 }

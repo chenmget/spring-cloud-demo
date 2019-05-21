@@ -324,6 +324,39 @@
     <insert id="initConfig">
         insert into SYS_CONFIG_INFO values('ITMS_PUSH_MKT_NB','推送到ITMS数据的开始统计时间',#{endDate},'job');
     </insert>
-    
+
+    <select id="validResourceInst" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO">
+        select <include refid="allFields" />
+        from mkt_res_inst t
+        where 1 = 1
+        <if test="null!=mktResInstNbrs and mktResInstNbrs.size>0">
+            and t.mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstNbrs">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=statusCd and ''!=statusCd">
+            and t.status_cd = #{statusCd}
+        </if>
+        <if test="null!=merchantId and ''!=merchantId">
+            and t.merchant_id = #{merchantId}
+        </if>
+        <if test="null!=mktResId and ''!=mktResId">
+            and t.mkt_res_id = #{mktResId}
+        </if>
+        <if test="null!=typeId and ''!=typeId">
+            and t.type_id = #{typeId}
+        </if>
+        <if test="null!=merchantTypes and merchantTypes.size>0">
+            and t.merchant_type in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="merchantTypes">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=mktResStoreId and ''!=mktResStoreId">
+            and t.mkt_res_store_id = #{mktResStoreId}
+        </if>
+    </select>
 
 </mapper>

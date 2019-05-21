@@ -330,4 +330,13 @@ public class ProductBaseGetResp implements Serializable {
 
     @ApiModelProperty(value = "状态")
     private String status;
+
+    @ApiModelProperty(value = "attrValue1")
+    private String attrValue1;
+
+    @ApiModelProperty(value = "attrValue2")
+    private String attrValue2;
+
+    @ApiModelProperty(value = "attrValue3")
+    private String attrValue3;
 }

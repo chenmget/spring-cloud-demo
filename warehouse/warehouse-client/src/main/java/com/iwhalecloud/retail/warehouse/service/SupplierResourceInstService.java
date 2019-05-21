@@ -52,14 +52,6 @@ public interface SupplierResourceInstService {
 
 
     /**
-     * 订单发货 判断串码有效性
-     *
-     * @param req
-     * @return
-     */
-    ResultVO validResourceInst(ValidResourceInstReq req);
-
-    /**
      * 订单发货 串码出库
      *
      * @param req
@@ -128,4 +120,13 @@ public interface SupplierResourceInstService {
      * @return
      */
     public ResultVO confirmRefuseNbr(ConfirmReciveNbrReq req);
+
+    /**
+     * 订单发货 判断串码有效性
+     *
+     * @param req
+     * @return
+     */
+    ResultVO validResourceInst(DeliveryValidResourceInstReq req);
+
 }

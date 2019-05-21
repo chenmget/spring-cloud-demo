@@ -4,6 +4,9 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
@@ -58,6 +61,9 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
 
     @Autowired
     private RunableTask runableTask;
+
+    @Reference
+    private ProductService productService;
     
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
@@ -76,6 +82,15 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         });
         ResourceReqDetailDTO detailDTO = reqDetailDTOS.get(0);
 
+        ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+        productGetByIdReq.setProductId(detailDTO.getMktResId());
+        ResultVO<ProductResp> producttVO = productService.getProduct(productGetByIdReq);
+        log.info("MerchantAddNbrProcessingPassActionImpl.run productService.getProduct mktResId={} resp={}", detailDTO.getMktResId(), JSON.toJSONString(producttVO));
+        String typeId = "";
+        if (producttVO.isSuccess() && null != producttVO.getResultData()) {
+            typeId = producttVO.getResultData().getTypeId();
+        }
+
         // step2 根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
         ResourceInstAddReq addReq = new ResourceInstAddReq();
         addReq.setMktResInstNbrs(mktResInstNbrs);
@@ -89,6 +104,7 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         addReq.setMktResId(detailDTO.getMktResId());
         addReq.setCtCode(ctCodeMap);
         addReq.setCreateStaff(detailDTO.getCreateStaff());
+        addReq.setTypeId(typeId);
 
         ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
         String merchantId = null;

@@ -12,8 +12,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @Slf4j
@@ -59,6 +63,38 @@ public class SysUserMessageController {
         sysUserMessageService.updateSysUserMessage();
         return ResultVO.success();
 
+    }
+    
+    @ApiOperation(value = "修改消息状态为已读")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value = "/updateSysReadFlag")
+    public ResultVO updateSysReadFlag(@RequestBody SysUserMessageReq sysUserMessageReq) {
+        log.info("SysUserMessageController updateSysReadFlag actSupDetailReq={}", JSON.toJSON(sysUserMessageReq));
+        if(Objects.isNull(sysUserMessageReq)) {
+            return ResultVO.successMessage("user message is null");
+        }
+    	sysUserMessageService.updateReadFlagByUserId(sysUserMessageReq.getUserId());
+        return ResultVO.success();
+    }
+    
+    @ApiOperation(value = "获取所有未读消息")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value = "/getSysMessageCount")
+    public ResultVO getSysMessageCount(@RequestBody SysUserMessageReq sysUserMessageReq) {
+        log.info("SysUserMessageController updateSysReadFlag actSupDetailReq={}", JSON.toJSON(sysUserMessageReq));
+        if(Objects.isNull(sysUserMessageReq)) {
+            return ResultVO.successMessage("user message is null");
+        }
+        Long count = sysUserMessageService.getSysMsgNotReadAcount(sysUserMessageReq.getUserId());
+        Map<String, Long> countMap = new HashMap<String, Long>();
+        countMap.put("sysUserMsgCount", count);
+        return ResultVO.success(countMap);
     }
 
 

@@ -205,9 +205,7 @@ public class OrderAfterSaleOpenServiceImpl implements OrderAfterSaleOpenService 
     @Override
     public ResultVO sellerDeliverGoods(SendGoodsRequest request) {
         ResultVO resultVO = new ResultVO();
-        /**
-         * 校验
-         */
+         // 校验
         CommonResultResp resp = afterSalesHHService.sellerCheckDeliverGoods(request);
         if (resp.isFailure()) {
             resultVO.setResultCode(resp.getResultCode());
@@ -215,7 +213,7 @@ public class OrderAfterSaleOpenServiceImpl implements OrderAfterSaleOpenService 
             resultVO.setResultData(resp.getResultData());
             return resultVO;
         }
-        //发货
+        // 发货
         resp = afterSalesHHService.sellerDeliverGoods(request);
         resultVO.setResultCode(resp.getResultCode());
         resultVO.setResultMsg(resp.getResultMsg());

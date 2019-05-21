@@ -80,7 +80,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         }
         resourceInstsGetReq.setMerchantTypes(merchantTypes);
         resourceInstsGetReq.setTypeId(typeId);
-        List<ResourceInstDTO> inst = resourceInstManager.getResourceInsts(resourceInstsGetReq);
+        List<ResourceInstDTO> inst = resourceInstManager.validResourceInst(resourceInstsGetReq);
         log.info("ResourceInstCheckServiceImpl.vaildOwnStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
         if (CollectionUtils.isNotEmpty(inst)) {
             // 删除的串码可再次导入

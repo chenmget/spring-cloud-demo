@@ -270,7 +270,7 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
         for (OrderItem item : orderItemList) {
             String productId = item.getProductId();
             List<String> nbrList = productIdAndNbrList.get(productId);
-            if (CollectionUtils.isEmpty(nbrList)) {
+            if (!CollectionUtils.isEmpty(nbrList)) {
                 Integer delivery = item.getNum() - item.getDeliveryNum();
                 if (nbrList.size() > delivery) {
                     List aboveNbrList = nbrList.subList(delivery, nbrList.size());

@@ -44,7 +44,6 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
         log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         ResultVO<ResourceInstAddResp> resp = merchantResourceInstService.addResourceInst(req);
         log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={} resp={}", JSON.toJSONString(req), JSON.toJSONString(resp));
-        resouceInstTrackService.asynSaveTrackForMerchant(req, resp);
         return resp;
     }
 

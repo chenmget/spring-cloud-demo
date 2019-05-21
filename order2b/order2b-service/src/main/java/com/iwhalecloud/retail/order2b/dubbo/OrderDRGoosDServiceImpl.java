@@ -43,7 +43,7 @@ public class OrderDRGoosDServiceImpl implements OrderDRGoodsOpenService {
             return valieNbrResultVO;
         }
         List<DeliveryGoodsResp> list = (List<DeliveryGoodsResp>)valieNbrResultVO.getResultData();
-        if (CollectionUtils.isEmpty(list)) {
+        if (!CollectionUtils.isEmpty(list)) {
             return ResultVO.success(list);
         }
 

@@ -51,7 +51,7 @@
 	WHERE
 		sum.USER_ID = #{userId} 
     AND
-    	sum.READ_FLAG = '0'
+    	sum.READ_FLAG != '1'
     AND
         sum.STATUS = '1'
   </select>

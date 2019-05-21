@@ -226,6 +226,7 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
             if (CollectionUtils.isEmpty(productIdAndNbrList.get(mktResId))) {
                 List<String> nbrList = new ArrayList<>();
                 nbrList.add(dto.getMktResInstNbr());
+                productIdAndNbrList.put(mktResId, nbrList);
             }else{
                 List<String> nbrList = productIdAndNbrList.get(mktResId);
                 nbrList.add(dto.getMktResInstNbr());

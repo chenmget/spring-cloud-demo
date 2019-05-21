@@ -39,10 +39,9 @@ public class ResourceInstServiceImplTest {
         List<ValidResourceInstItem> items = new ArrayList<>();
         List<String> productIdList = new ArrayList<>();
         List<String> mktResInstNbrlist = new ArrayList<>();
-        mktResInstNbrlist.add("20190116003");
-        mktResInstNbrlist.add("0000000004");
-        productIdList.add("1085133312128376834");
-        req.setMerchantId("4301811025392");
+        mktResInstNbrlist.add("4444444455555");
+        productIdList.add("10114880");
+        req.setMerchantId("4301811022885");
         req.setProductIdList(productIdList);
         req.setMktResInstNbrList(mktResInstNbrlist);
         ResultVO<Boolean> resultVO = supplierResourceInstService.validResourceInst(req);

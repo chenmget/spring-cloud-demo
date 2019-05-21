@@ -396,6 +396,8 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             ResourceInstDTO resourceInstDTO = insts.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
+            resouceInstTrackDTO.setMktResStoreId(storeId);
+            resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynShipTrackForSupplier resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();

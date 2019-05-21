@@ -288,7 +288,7 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
                 }
             }
         }
-        log.info("OrderDRGoodsOpenServiceImpl.valieNbr goodsItemDTOList={}", JSON.toJSONString(goodsItemDTOList));
+        log.info("OrderDRGoodsOpenServiceImpl.valieNbr goodsItemDTOList={}", JSON.toJSONString(goodsItemDTOList) , JSON.toJSONString(list));
         request.setShipNum(shipNum);
         request.setGoodsItemDTOList(goodsItemDTOList);
         resp.setResultData(list);

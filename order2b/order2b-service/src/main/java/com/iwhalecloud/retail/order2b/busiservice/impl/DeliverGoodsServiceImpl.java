@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.order2b.config.WhaleCloudKeyGenerator;
 import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
 import com.iwhalecloud.retail.order2b.consts.order.OrderShipType;
+import com.iwhalecloud.retail.order2b.consts.order.TypeStatus;
 import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
 import com.iwhalecloud.retail.order2b.dto.model.order.SendGoodsItemDTO;
 import com.iwhalecloud.retail.order2b.dto.response.DeliveryGoodsResp;
@@ -273,7 +274,7 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
             List<String> nbrList = productIdAndNbrList.get(productId);
             if (!CollectionUtils.isEmpty(nbrList)) {
                 Integer delivery = item.getNum() - item.getDeliveryNum();
-                if (nbrList.size() > delivery) {
+                if (nbrList.size() > delivery && !TypeStatus.TYPE_34.getCode().equals(request.getType())) {
                     List aboveNbrList = nbrList.subList(delivery, nbrList.size());
                     list.addAll(deliveryRespData(productId, null, aboveNbrList, "1", "串码发货数量超出购买数量"));
                 }else {

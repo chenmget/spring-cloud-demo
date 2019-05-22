@@ -92,8 +92,8 @@ public class ExcelToNbrUtils {
 				// 2种模板
 				if(lastCellNum > firstCellNum) {
 					resp.setCorporationPrice(getCellValue(row.getCell(firstCellNum + 1)));
-					String productPrice = getCellValue(row.getCell(firstCellNum)) +"|"+ getCellValue(row.getCell(firstCellNum + 1));
-					resp.setProductPrice(productPrice);
+//					String snPrice = getCellValue(row.getCell(firstCellNum)) +"|"+ getCellValue(row.getCell(firstCellNum + 1));
+//					resp.setSnPrice(snPrice);
 				}
 				data.add(resp);
 			}

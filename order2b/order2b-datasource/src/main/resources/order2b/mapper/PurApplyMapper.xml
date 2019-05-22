@@ -432,5 +432,20 @@
   			sn = #{req.sn}
   </select>
   
+  <select id="commitPriceExcel" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq" >
+ 		update 
+ 			prod_product 
+ 		set 
+ 			corporation_price = 
+		<foreach item="snItem" index="index"  collection="req.snList">
+			#{snItem} 
+		</foreach>	
+ 		where 
+ 			sn = 
+		<foreach item="priceItem" index="index"  collection="req.priceList">
+			#{priceItem}
+		</foreach>	
+  </select>
+  
 </mapper>
 

@@ -136,7 +136,7 @@ public class GovernmentPriceManageController extends BaseController {
 		return purApplyService.updatePrice(req);
     }
 	
-	@ApiOperation(value = "上传串码文件", notes = "支持xlsx、xls格式")
+	@ApiOperation(value = "上传政企价格文件", notes = "支持xlsx、xls格式")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
@@ -164,6 +164,16 @@ public class GovernmentPriceManageController extends BaseController {
             log.error("excel解析失败",e);
         }
         return resultVO;
+    }
+	
+	@ApiOperation(value = "政企价格批量提交", notes = "政企价格批量提交")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/commitPriceExcel")
+    public ResultVO commitPriceExcel(@RequestBody UpdateCorporationPriceReq req) {
+		return purApplyService.commitPriceExcel(req);
     }
 	
 }

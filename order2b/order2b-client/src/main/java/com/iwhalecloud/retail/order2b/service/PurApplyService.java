@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.order2b.service;
 
 import java.util.List;
 
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
@@ -72,5 +71,6 @@ public interface PurApplyService {
 	
 	public ResultVO updatePrice(UpdateCorporationPriceReq req);
 
+	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req);
 
 }

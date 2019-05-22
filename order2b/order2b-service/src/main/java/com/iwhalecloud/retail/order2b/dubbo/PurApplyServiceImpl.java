@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.dubbo.config.annotation.Reference;
@@ -239,6 +240,37 @@ public class PurApplyServiceImpl implements PurApplyService {
 		purApplyManager.updatePrice(req);
 		return ResultVO.success();
 	}
+	
+	//需要优化  怎么改为批量更新
+	@Override
+	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
+		List<String> snPriceList = req.getSnPrice();
+		for(int i=0;i<snPriceList.size();i++){
+			String snPrice = snPriceList.get(i);
+			String[] splits = snPrice.split("\\|");
+			req.setSn(splits[0]);
+			req.setCorporationPrice(splits[1]);
+			purApplyManager.updatePrice(req);
+		}
+		return ResultVO.success();
+	}
+	
+//	@Override
+//	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
+//		List<String> snPriceList = req.getSnPrice();
+//		List<String> snList = new ArrayList<String>();
+//		List<String> priceList = new ArrayList<String>();
+//		for(int i=0;i<snPriceList.size();i++){
+//			String snPrice = snPriceList.get(i);
+//			String[] splits = snPrice.split("\\|");
+//			snList.add(splits[0]);
+//			priceList.add(splits[1]);
+//		}
+//		req.setSnList(snList);
+//		req.setPriceList(priceList);
+//		purApplyManager.commitPriceExcel(req);
+//		return ResultVO.success();
+//	}
 	
 }
 

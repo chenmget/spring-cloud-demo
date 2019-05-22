@@ -103,4 +103,11 @@ public class ProductsPageReq extends PageVO {
 
     @ApiModelProperty(value = "采购类型")
     private String purchaseType;
+    
+    @ApiModelProperty(value = "政企价格下限")
+    private String corporationPriceLower;
+
+    @ApiModelProperty(value = "政企价格上限")
+    private String corporationPriceUpper;
+    
 }

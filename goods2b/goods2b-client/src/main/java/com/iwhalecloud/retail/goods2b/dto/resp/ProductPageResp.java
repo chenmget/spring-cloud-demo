@@ -145,9 +145,7 @@ public class ProductPageResp implements Serializable {
     @ApiModelProperty(value = "采购类型")
     private String purchaseType;
 
-    @ApiModelProperty(value = "非地包供货价下限")
-    private String localSupplyFeeLower;
-
-    @ApiModelProperty(value = "非地包供货价上限")
-    private String localSupplyFeeUpper;
+    @ApiModelProperty(value = "政企价格")
+    private String corporationPrice;
+    
 }

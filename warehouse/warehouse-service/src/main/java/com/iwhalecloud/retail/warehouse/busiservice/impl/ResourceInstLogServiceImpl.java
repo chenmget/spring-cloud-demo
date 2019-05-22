@@ -7,10 +7,7 @@ import com.iwhalecloud.retail.warehouse.dto.ResouceEventDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceBatchRecDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceChngEvtDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstPutInReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
 import com.iwhalecloud.retail.warehouse.manager.ResouceEventManager;
@@ -182,7 +179,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
 
     @Async
     @Override
-    public void delResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstDTO> resourceInsts) {
+    public void delResourceInstLog(ResourceInstSupplierUpdateReq req, List<ResourceInstDTO> resourceInsts) {
         log.info("ResourceInstLogServiceImpl.delResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
         List<String> productList = new ArrayList<>();
         for (ResourceInstDTO resourceInst : resourceInsts) {

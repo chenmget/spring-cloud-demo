@@ -3,15 +3,8 @@ package com.iwhalecloud.retail.warehouse.busiservice;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 
 public interface ResouceInstTrackService {
-
-    /**
-     * 管理员录入
-     * @param req
-     */
-    void asynSaveTrackForAddmin(ResourceInstAddReq req, ResultVO<ResourceInstAddResp>  resp);
 
     /**
      * 管理员修改
@@ -44,7 +37,7 @@ public interface ResouceInstTrackService {
      * @param req
      * @param resp
      */
-    void asynDeleteTrackForSupplier(ResourceInstUpdateReq req, ResultVO resp);
+    void asynDeleteTrackForSupplier(ResourceInstSupplierUpdateReq req, ResultVO resp);
 
     /**
      * 供应商修改可用

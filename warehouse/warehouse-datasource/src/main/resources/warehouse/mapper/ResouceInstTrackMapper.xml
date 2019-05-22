@@ -42,4 +42,33 @@
          SELECT MKT_RES_STORE_ID from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr}
     </select>
 
+    <select id="listResourceInstsTrack" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackGetReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO">
+        select <include refid="allFields" />
+        from mkt_res_inst_track t
+        where 1 = 1
+        and t.mkt_res_inst_nbr in
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstNbrList">
+            #{item}
+        </foreach>
+        <if test="null!=statusCd and ''!=statusCd">
+            and t.status_cd = #{statusCd}
+        </if>
+        <if test="null!=merchantId and ''!=merchantId">
+            and t.merchant_id = #{merchantId}
+        </if>
+        <if test="null!=mktResId and ''!=mktResId">
+            and t.mkt_res_id = #{mktResId}
+        </if>
+        <if test="null!=typeId and ''!=typeId">
+            and t.type_id = #{typeId}
+        </if>
+        <if test="null!=merchantType and ''!=merchantType">
+            and t.merchant_type = #{merchantType}
+        </if>
+        <if test="null!=mktResStoreId and ''!=mktResStoreId">
+            and t.mkt_res_store_id = #{mktResStoreId}
+        </if>
+    </select>
+
 </mapper>

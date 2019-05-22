@@ -3,9 +3,12 @@ package com.iwhalecloud.retail.warehouse.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackGetReq;
 import com.iwhalecloud.retail.warehouse.entity.ResouceInstTrack;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @Class: ResouceInstTrackMapper
@@ -30,4 +33,11 @@ public interface ResouceInstTrackMapper extends BaseMapper<ResouceInstTrack>{
      * @return
      */
     String getStoreIdByNbr(@Param("nbr") String nbr);
+
+    /**
+     * 查询串码轨迹列表
+     * @param req
+     * @return
+     */
+    List<ResouceInstTrackDTO> listResourceInstsTrack(ResourceInstsTrackGetReq req);
 }

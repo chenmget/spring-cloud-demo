@@ -10,5 +10,6 @@ public class UpdateCorporationPriceReq extends PageVO {
 	private static final long serialVersionUID = 1L;
 	private String productId;	//产品ID
 	private String corporationPrice;  //政企价格
+	private String productPrice;	//产品ID和政企价格合起来	
 
 }

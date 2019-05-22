@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.web.controller.b2b.warehouse.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
@@ -64,7 +65,45 @@ public class ExcelToNbrUtils {
 		return data;
     }
 
-
+    public static List<UpdateCorporationPriceReq> getPriceData(InputStream inputStream) throws Exception {
+		List<UpdateCorporationPriceReq> data = new ArrayList<UpdateCorporationPriceReq>();
+        try {
+			// 这种方式 Excel2003/2007/2010都是可以处理的
+            Workbook workbook = WorkbookFactory.create(inputStream);
+            // 只读第一页
+			Sheet sheet = workbook.getSheetAt(0);
+			//获得当前sheet的开始行
+			int firstRowNum  = sheet.getFirstRowNum();
+			//获得当前sheet的结束行
+			int lastRowNum = sheet.getLastRowNum();
+			//循环除了第一行的所有行
+			for(int rowNum = firstRowNum+1;rowNum <= lastRowNum;rowNum++){
+				//获得当前行
+				Row row = sheet.getRow(rowNum);
+				if(row == null){
+					continue;
+				}
+				//获得当前行的开始列
+				int firstCellNum = row.getFirstCellNum();
+				//获得当前行的列数
+				int lastCellNum = row.getPhysicalNumberOfCells();
+				UpdateCorporationPriceReq resp = new UpdateCorporationPriceReq();
+				resp.setProductId(getCellValue(row.getCell(firstCellNum)));
+				// 2种模板
+				if(lastCellNum > firstCellNum) {
+					resp.setCorporationPrice(getCellValue(row.getCell(firstCellNum + 1)));
+					String productPrice = getCellValue(row.getCell(firstCellNum)) +"|"+ getCellValue(row.getCell(firstCellNum + 1));
+					resp.setProductPrice(productPrice);
+				}
+				data.add(resp);
+			}
+		} catch (Exception e) {
+			log.error("解析excel异常", e);
+			throw new Exception(e);
+		}
+		return data;
+    }
+    
 	public static String getCellValue(Cell cell){
 		String cellValue = "";
 		if(cell == null){

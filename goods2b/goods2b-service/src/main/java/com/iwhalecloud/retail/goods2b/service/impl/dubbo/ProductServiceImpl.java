@@ -335,6 +335,12 @@ public class ProductServiceImpl implements ProductService {
         	Double cost = resp.getCost();
         	resp.setCorporationPrice(corporationPrice/100);
         	resp.setCost(cost/100);
+        	String purchaseType = resp.getPurchaseType();
+        	if("1".equals(purchaseType)){
+        		resp.setPurchaseType("集采");
+        	}else if("2".equals(purchaseType)){
+        		resp.setPurchaseType("社采");
+        	}
             MerchantGetReq merchantGetReq = new MerchantGetReq();
             merchantGetReq.setMerchantId(resp.getManufacturerId());
             ResultVO<MerchantDTO> result = merchantService.getMerchant(merchantGetReq);

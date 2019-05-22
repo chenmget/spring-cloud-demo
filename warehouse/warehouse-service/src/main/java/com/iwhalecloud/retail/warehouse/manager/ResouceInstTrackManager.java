@@ -2,12 +2,14 @@ package com.iwhalecloud.retail.warehouse.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackGetReq;
 import com.iwhalecloud.retail.warehouse.entity.ResouceInstTrack;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 @Component
 public class ResouceInstTrackManager{
@@ -46,5 +48,20 @@ public class ResouceInstTrackManager{
      */
     public String getStoreIdByNbr(String nbr){
         return resouceInstTrackMapper.getStoreIdByNbr(nbr);
+    }
+
+    /**
+     * 查询串码轨迹列表
+     * @param req
+     * @return
+     */
+    public List<ResouceInstTrackDTO> listResourceInstsTrack(ResourceInstsTrackGetReq req){
+        return resouceInstTrackMapper.listResourceInstsTrack(req);
+    }
+
+    public int updateById(ResouceInstTrackDTO resouceInstTrackDTO){
+        ResouceInstTrack resouceInstTrack = new ResouceInstTrack();
+        BeanUtils.copyProperties(resouceInstTrackDTO, resouceInstTrack);
+        return resouceInstTrackMapper.updateById(resouceInstTrack);
     }
 }

@@ -15,10 +15,7 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ConfirmReciveNbrReqDTO;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAllocateReqDTO;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstUpdateReqDTO;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.*;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ResourceInstColum;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -75,9 +72,9 @@ public class SupplierResourceInstB2BController {
     })
     @DeleteMapping(value="delResourceInst")
     @UserLoginToken
-    public ResultVO<List<String>> delResourceInst(@RequestBody ResourceInstUpdateReqDTO dto) {
+    public ResultVO<List<String>> delResourceInst(@RequestBody ResourceInstSupplierUpdateReqDTO dto) {
         String userId = UserContext.getUserId();
-        ResourceInstUpdateReq req = new ResourceInstUpdateReq();
+        ResourceInstSupplierUpdateReq req = new ResourceInstSupplierUpdateReq();
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
         List<String> checkStatusCd = new ArrayList<String>(1);

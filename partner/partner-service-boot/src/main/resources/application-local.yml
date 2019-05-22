@@ -100,3 +100,8 @@ spring.datasource:
 #    username: fdfs
 #    password: cl3AO&UXBdip
 #    port: 21
+
+
+#零售商交易平台登陆开关 0：可以登录；1：提示BSS3.0登陆
+retailer:
+    login: 1

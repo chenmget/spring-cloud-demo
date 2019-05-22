@@ -186,27 +186,29 @@ public class UserController extends BaseController {
                 return resultVO;
             }
         }
-        UserLoginResp resp = userService.login(req);
+            UserLoginResp resp = userService.login(req);
+
+            UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
+            // 登录日志记录
+            if(StringUtils.isNotBlank(user.getUserId())){
+                LoginLogDTO loginLogDTO = new LoginLogDTO();
+                loginLogDTO.setUserId(user.getUserId());
+                Date nowDate = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                loginLogDTO.setLoginTime(sdf.format(nowDate));
+                loginLogDTO.setLoginType("3");
+                loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
+                String sourceIp = getUserLoginIp(request);
+                loginLogDTO.setSourceIp(sourceIp);
+                loginLogDTO.setLoginDesc(resp.getErrorMessage());
+                loginLogService.saveLoginLog(loginLogDTO);
+
+            }
+//        }
+
         // 失败 返回错误信息
         if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
             return failResultVO(resp.getErrorMessage());
-        }
-        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
-        
-        // 登录日志记录
-        if(StringUtils.isNotBlank(user.getUserId())){
-            LoginLogDTO loginLogDTO = new LoginLogDTO();
-            loginLogDTO.setUserId(user.getUserId());
-            Date nowDate = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            loginLogDTO.setLoginTime(sdf.format(nowDate));
-            loginLogDTO.setLoginType("3");
-            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
-            String sourceIp = getUserLoginIp(request);
-            loginLogDTO.setSourceIp(sourceIp);
-            loginLogDTO.setLoginDesc(resp.getErrorMessage());
-            loginLogService.saveLoginLog(loginLogDTO);
-            
         }
         request.getSession().invalidate();//清空session
         Cookie[] cookies = request.getCookies();
@@ -263,27 +265,28 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/loginWithoutPwd", method = RequestMethod.POST)
     public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req){
         UserLoginResp resp = userService.loginWithoutPwd(req);
-        // 失败 返回错误信息
-        if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
-            return failResultVO(resp.getErrorMessage());
-        }
 
-        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
         // 登录日志记录
-        if(StringUtils.isNotBlank(user.getUserId())){
+        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
+        if(StringUtils.isNotBlank(user.getUserId())) {
             LoginLogDTO loginLogDTO = new LoginLogDTO();
             loginLogDTO.setUserId(user.getUserId());
             Date nowDate = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             loginLogDTO.setLoginTime(sdf.format(nowDate));
-            loginLogDTO.setLoginType("portal".equals(req.getLoginType())? "2":"3");
-            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
+            loginLogDTO.setLoginType("portal".equals(req.getLoginType()) ? "2" : "3");
+            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess() ? "1" : "0");
             String sourceIp = getUserLoginIp(request);
             loginLogDTO.setSourceIp(sourceIp);
             loginLogDTO.setLoginDesc(resp.getErrorMessage());
             loginLogService.saveLoginLog(loginLogDTO);
         }
-        
+
+        // 失败 返回错误信息
+        if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
+            return failResultVO(resp.getErrorMessage());
+        }
+
         // 获取其他信息  并保存
         UserOtherMsgDTO userOtherMsgDTO = saveUserOtherMsg(resp.getUserDTO());
 

@@ -24,15 +24,7 @@ public interface SupplierResourceInstService {
      * @param req
      * @return
      */
-    ResultVO delResourceInst(ResourceInstUpdateReq req);
-
-    /**
-     * 还原串码
-     *
-     * @param req
-     * @return
-     */
-    ResultVO resetResourceInst(ResourceInstUpdateReq req);
+    ResultVO delResourceInst(ResourceInstSupplierUpdateReq req);
 
     /**
      * 获取列表

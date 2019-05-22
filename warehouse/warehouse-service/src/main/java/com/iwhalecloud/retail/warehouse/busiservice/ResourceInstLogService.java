@@ -1,10 +1,7 @@
 package com.iwhalecloud.retail.warehouse.busiservice;
 
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstPutInReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
 
@@ -48,5 +45,12 @@ public interface ResourceInstLogService {
      * @param req
      * @param resourceInsts
      */
-    void delResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstDTO> resourceInsts);
+    void delResourceInstLog(ResourceInstSupplierUpdateReq req, List<ResourceInstDTO> resourceInsts);
+
+    /**
+     * 供应商删除串码写事件、事件明细
+     * @param req
+     * @param resourceInsts
+     */
+    void supplierDeliveryOutResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstDTO> resourceInsts);
 }

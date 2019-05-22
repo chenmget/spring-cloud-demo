@@ -55,18 +55,10 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     }
 
     @Override
-    public ResultVO delResourceInst(ResourceInstUpdateReq req) {
+    public ResultVO delResourceInst(ResourceInstSupplierUpdateReq req) {
         log.info("SupplierResourceInstOpenServiceImpl.delResourceInst req={}", JSON.toJSONString(req));
         ResultVO resp = supplierResourceInstService.delResourceInst(req);
         resouceInstTrackService.asynDeleteTrackForSupplier(req, resp);
-        return resp;
-    }
-
-    @Override
-    public ResultVO resetResourceInst(ResourceInstUpdateReq req) {
-        log.info("SupplierResourceInstOpenServiceImpl.resetResourceInst req={}", JSON.toJSONString(req));
-        ResultVO resp = supplierResourceInstService.resetResourceInst(req);
-        resouceInstTrackService.asynResetTrackForSupplier(req, resp);
         return resp;
     }
 

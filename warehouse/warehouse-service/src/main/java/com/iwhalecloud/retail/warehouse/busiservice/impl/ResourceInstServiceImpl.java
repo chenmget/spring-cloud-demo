@@ -31,7 +31,6 @@ import com.iwhalecloud.retail.warehouse.dto.request.markresswap.EBuyTerminalItem
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.EBuyTerminalSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalItemSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalSwapReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
@@ -246,79 +245,64 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             }
             log.info("ResourceInstServiceImpl.updateResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         }
-
         return ResultVO.success();
-
     }
 
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public synchronized ResultVO<List<String>> updateResourceInstForTransaction(ResourceInstUpdateReq req) {
         log.info("ResourceInstServiceImpl.updateResourceInstForTransaction req={}", JSON.toJSONString(req));
-        Map<String, Object> data = assembleData(req, req.getMktResStoreId());
-        Map<String, List<ResourceInstListPageResp>> insts = (HashMap<String, List<ResourceInstListPageResp>>)data.get("productNbr");
-        List<String> unavailbaleNbrs = (List<String>)data.get("unavailbaleNbrs");
-        List<String> availbaleNbrs = (List<String>)data.get("availbaleNbrs");
-        if (CollectionUtils.isEmpty(availbaleNbrs)) {
-            return ResultVO.success("失败串码", unavailbaleNbrs);
-        }
+        // step1:源修改状态，即串码源属供应商修改成出库状态
+        List<String> mktResInstNbrList = req.getMktResInstNbrs();
+        ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
+        BeanUtils.copyProperties(req, updateReq);
+        Integer successNum = resourceInstManager.updateResourceInst(updateReq);
+        log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), successNum);
 
-        // step2:源修改状态，即串码源属供应商修改成出库状态
-        Integer successNum = 0;
-        if (!availbaleNbrs.isEmpty()) {
-            ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
-            BeanUtils.copyProperties(req, updateReq);
-            updateReq.setMktResInstNbrs(availbaleNbrs.stream().distinct().collect(Collectors.toList()));
-            successNum = resourceInstManager.updateResourceInst(updateReq);
-            log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
-        }
-
-        for (Map.Entry<String, List<ResourceInstListPageResp>> entry : insts.entrySet()) {
-            List<ResourceInstListPageResp> dtoList = entry.getValue();
-            ResourceInstListPageResp inst = dtoList.get(0);
-            List<ResourceInstListPageResp> updatedInstList = new ArrayList<>(dtoList.size());
-            for (ResourceInstListPageResp dto : dtoList) {
-                ResourceInstDTO resourceInstDTO = resourceInstManager.selectById(dto.getMktResInstId());
-                String statusCd = resourceInstDTO.getStatusCd();
-                String changeStatusCd = req.getStatusCd();
-                // 修改不成功的返回，不加事件
-                if (!statusCd.equals(changeStatusCd)) {
-                    continue;
-                }
-                updatedInstList.add(dto);
+        List<ResourceInstDTO> updatedInstList = new ArrayList<>(mktResInstNbrList.size());
+        for (String mktResInstNbr : mktResInstNbrList) {
+            ResourceInstsGetReq getReq = new ResourceInstsGetReq();
+            getReq.setMktResId(req.getMktResId());
+            getReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
+            getReq.setMktResInstNbrs(Lists.newArrayList(mktResInstNbr));
+            getReq.setMktResStoreId(req.getMktResStoreId());
+            List<ResourceInstDTO> resourceInstDTO = resourceInstManager.getResourceInsts(getReq);
+            // 修改不成功的返回，不加事件
+            if (CollectionUtils.isEmpty(resourceInstDTO)) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "发货出库失败");
             }
-            // step3 记录事件
-            resourceInstLogService.updateResourceInstLog(req, updatedInstList);
-            // step 4:修改库存(出库)
-            ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
-            BeanUtils.copyProperties(inst, resourceInstStoreDTO);
-            resourceInstStoreDTO.setQuantity(Long.valueOf(successNum));
-            String statusCd = req.getStatusCd();
-            // 出库类型，库存减少
+            resourceInstDTO.get(0);
+            updatedInstList.add(resourceInstDTO.get(0));
+        }
+        // step3 记录事件
+        resourceInstLogService.supplierDeliveryOutResourceInstLog(req, updatedInstList);
+        // step 4:修改库存(出库)
+        ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
+        BeanUtils.copyProperties(updatedInstList.get(0), resourceInstStoreDTO);
+        resourceInstStoreDTO.setQuantity(Long.valueOf(successNum));
+        String statusCd = req.getStatusCd();
+        // 出库类型，库存减少
+        resourceInstStoreDTO.setQuantityAddFlag(false);
+        if (ResourceConst.STATUSCD.AVAILABLE.getCode().equals(statusCd)) {
+            // 入库类型，库存增加
+            resourceInstStoreDTO.setQuantityAddFlag(true);
+        }else if (ResourceConst.STATUSCD.ALLOCATIONING.getCode().equals(statusCd) || ResourceConst.STATUSCD.RESTORAGEING.getCode().equals(statusCd)) {
+            // 调拨、退库中类型，库存不变，增加在途库存
+            resourceInstStoreDTO.setOnwayQuantityAddFlag(true);
+        }else if (ResourceConst.STATUSCD.ALLOCATIONED.getCode().equals(statusCd) || ResourceConst.STATUSCD.RESTORAGED.getCode().equals(statusCd)) {
+            // 已调拨、已退库类型，库存减少，减少在途库存
             resourceInstStoreDTO.setQuantityAddFlag(false);
-            if (ResourceConst.STATUSCD.AVAILABLE.getCode().equals(statusCd)) {
-                // 入库类型，库存增加
-                resourceInstStoreDTO.setQuantityAddFlag(true);
-            }else if (ResourceConst.STATUSCD.ALLOCATIONING.getCode().equals(statusCd) || ResourceConst.STATUSCD.RESTORAGEING.getCode().equals(statusCd)) {
-                // 调拨、退库中类型，库存不变，增加在途库存
-                resourceInstStoreDTO.setOnwayQuantityAddFlag(true);
-            }else if (ResourceConst.STATUSCD.ALLOCATIONED.getCode().equals(statusCd) || ResourceConst.STATUSCD.RESTORAGED.getCode().equals(statusCd)) {
-                // 已调拨、已退库类型，库存减少，减少在途库存
-                resourceInstStoreDTO.setQuantityAddFlag(false);
-                resourceInstStoreDTO.setOnwayQuantityAddFlag(false);
-            }else if (ResourceConst.STATUSCD.SALED.getCode().equals(statusCd) || ResourceConst.STATUSCD.DELETED.getCode().equals(statusCd)) {
-                // 已销售、已删除类型，库存减少
-                resourceInstStoreDTO.setQuantityAddFlag(false);
-            }
-
-            int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
-            log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={} resp={}", JSON.toJSONString(resourceInstStoreDTO), updateResInstStore);
-            if (updateResInstStore < 1) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
-            }
-            log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
+            resourceInstStoreDTO.setOnwayQuantityAddFlag(false);
+        }else if (ResourceConst.STATUSCD.SALED.getCode().equals(statusCd) || ResourceConst.STATUSCD.DELETED.getCode().equals(statusCd)) {
+            // 已销售、已删除类型，库存减少
+            resourceInstStoreDTO.setQuantityAddFlag(false);
         }
-
+        int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
+        log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={} resp={}", JSON.toJSONString(resourceInstStoreDTO), updateResInstStore);
+        if (updateResInstStore < 1) {
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+        }
+        log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         return ResultVO.success();
     }
 
@@ -410,27 +394,14 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
-    public synchronized ResultVO<ResourceInstAddResp> addResourceInstForTransaction(ResourceInstAddReq req) {
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public synchronized ResultVO addResourceInstForTransaction(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInstForTransaction req={}", JSON.toJSONString(req));
-        ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
-        // 要入库的串码
-        List<String> putInNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
-        // 串码已经存在
-        List<String> mktResInstNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
-        // 一去重
-        ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
-        BeanUtils.copyProperties(req, resourceInstValidReq);
-        resourceInstValidReq.setMktResStoreId(req.getDestStoreId());
-        CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(req.getMktResInstNbrs());
-        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, newList);
-        mktResInstNbrs.removeAll(existNbrs);
-        if(CollectionUtils.isEmpty(mktResInstNbrs)){
-            return ResultVO.error("全部是重复串码");
-        }
         String batchId = resourceInstManager.getPrimaryKey();
-        List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(putInNbrs.size());
+        List<String> mktResInstNbrList = req.getMktResInstNbrs();
+        List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(mktResInstNbrList.size());
         Date now = new Date();
-        for (String mktResInstNbr : putInNbrs) {
+        for (String mktResInstNbr : mktResInstNbrList) {
             ResourceInst resourceInst = new ResourceInst();
             BeanUtils.copyProperties(req, resourceInst);
             resourceInst.setMktResInstId(resourceInstManager.getPrimaryKey());
@@ -454,7 +425,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
-        resourceInstStoreDTO.setQuantity(Long.valueOf(putInNbrs.size()));
+        resourceInstStoreDTO.setQuantity(Long.valueOf(mktResInstNbrList.size()));
         resourceInstStoreDTO.setQuantityAddFlag(true);
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
         resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
@@ -464,11 +435,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
         }
         resourceInstLogService.addResourceInstLog(req, resourceInsts, batchId);
-        resourceInstAddResp.setExistNbrs(existNbrs);
-        List<String> putInFailNbrs = Lists.newArrayList(req.getMktResInstNbrs());
-        putInFailNbrs.removeAll(putInNbrs);
-        resourceInstAddResp.setPutInFailNbrs(putInFailNbrs);
-        return ResultVO.success("串码入库完成", resourceInstAddResp);
+        return ResultVO.success();
     }
 
 

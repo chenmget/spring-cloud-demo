@@ -3,9 +3,11 @@ package com.iwhalecloud.retail.system.service.impl;
 import com.iwhalecloud.retail.system.dto.LoginLogDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.entity.LoginLog;
+import com.iwhalecloud.retail.system.entity.User;
 import com.iwhalecloud.retail.system.manager.LoginlogManager;
 import com.iwhalecloud.retail.system.manager.UserManager;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,7 +36,11 @@ public class LoginLogServiceImpl implements LoginLogService {
 	@Override
 	public UserDTO getUserByLoginName(String loginName) {
 		UserDTO userDTO = new UserDTO();
-		BeanUtils.copyProperties(userManager.login(loginName), userDTO);
+		User userinfo = userManager.login(loginName);
+		if(null == userinfo){
+			return userDTO;
+		}
+		BeanUtils.copyProperties(userinfo, userDTO);
 		return userDTO;
 	}
 

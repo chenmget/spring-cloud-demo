@@ -126,6 +126,12 @@ public class ResouceInstTrackDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "是否绿色通道")
 	private java.lang.String ifGreenChannel;
+
+	/**
+	 * typeId
+	 */
+	@ApiModelProperty(value = "typeId")
+	private java.lang.String typeId;
 	
   	
 }

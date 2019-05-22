@@ -216,4 +216,44 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             log.info("ResourceInstLogServiceImpl.delResourceInstLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
         }
     }
+
+    @Async
+    @Override
+    public void supplierDeliveryOutResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstDTO> resourceInsts) {
+        log.info("ResourceInstLogServiceImpl.delResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
+        List<String> productList = new ArrayList<>();
+        for (ResourceInstDTO resourceInst : resourceInsts) {
+            String productId = resourceInst.getMktResId();
+            String eventId = "";
+            if (!productList.contains(productId)) {
+                // step2 记录事件(根据产品维度)
+                ResouceEventDTO eventDTO = new ResouceEventDTO();
+                BeanUtils.copyProperties(resourceInst, eventDTO);
+                eventDTO.setEventType(req.getEventType());
+                eventId = resouceEventManager.insertResouceEvent(eventDTO);
+                log.info("ResourceInstLogServiceImpl.delResourceInstLog resourceInstManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
+                productList.add(productId);
+            }
+
+            String chngType = ResourceConst.STATUSCD.AVAILABLE.getCode().equals(req.getStatusCd()) ? ResourceConst.PUT_IN_STOAGE : ResourceConst.OUT_PUT_STOAGE;
+            String eventStatusCd = ResourceConst.STATUSCD.AVAILABLE.getCode().equals(req.getStatusCd()) ? ResourceConst.StatusCdEnum.STATUS_CD_VALD.getCode() : ResourceConst.StatusCdEnum.STATUS_CD_INVALD.getCode();
+            // 增加事件明细
+            ResourceChngEvtDetailDTO detailDTO = new ResourceChngEvtDetailDTO();
+            BeanUtils.copyProperties(req, detailDTO);
+            BeanUtils.copyProperties(resourceInst, detailDTO);
+            detailDTO.setMktResEventId(eventId);
+            detailDTO.setChngType(chngType);
+            detailDTO.setStatusCd(eventStatusCd);
+            if (StringUtils.isEmpty(req.getUpdateStaff())) {
+                detailDTO.setCreateStaff("1");
+            } else {
+                detailDTO.setCreateStaff(req.getUpdateStaff());
+            }
+            detailDTO.setMktResStoreId(resourceInst.getMktResStoreId());
+            detailDTO.setMktResInstNbr(resourceInst.getMktResInstNbr());
+            detailDTO.setCreateDate(new Date());
+            int addChngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
+            log.info("ResourceInstLogServiceImpl.delResourceInstLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
+        }
+    }
 }

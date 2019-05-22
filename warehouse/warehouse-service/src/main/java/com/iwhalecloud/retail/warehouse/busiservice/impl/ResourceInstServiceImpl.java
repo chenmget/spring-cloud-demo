@@ -276,7 +276,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             updatedInstList.add(resourceInstDTO.get(0));
         }
         // step3 记录事件
-        resourceInstLogService.delResourceInstLog(req, updatedInstList);
+        resourceInstLogService.supplierDeliveryOutResourceInstLog(req, updatedInstList);
         // step 4:修改库存(出库)
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(updatedInstList.get(0), resourceInstStoreDTO);

@@ -12,5 +12,11 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface ActivityChangeMapper extends BaseMapper<ActivityChange>{
+    /**
+     * 获取主键
+     *
+     * @return
+     */
+    String getPrimaryKey();
 
 }

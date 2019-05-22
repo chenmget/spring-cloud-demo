@@ -2,6 +2,8 @@ package com.iwhalecloud.retail.order2b.authpay.service;
 
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.order2b.authpay.handler.BestpayHandler;
+import com.iwhalecloud.retail.order2b.authpay.util.ZopClientUtil;
+import com.ztesoft.zop.common.message.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import net.sf.json.JsonConfig;
@@ -31,10 +33,13 @@ public abstract class BestpayServiceTemp {
         this.bestpayHandler = bestpayHandler;
     }
 
-    public final Map<String, Object> invoke(String url, Object object, String platformCode, String iv) throws Exception {
-        String request = doConvert(object, platformCode, iv);
-        log.info("请求翼支付报文：" + request);
-        String response = doService(url, request);
+    public final Map<String, Object> invoke(String method, Object object, String platformCode, String iv, String zopSecret, String zopUrl) throws Exception {
+        Map<String, Object> request = zopConvert(object, platformCode, iv);
+//      String request = doConvert(object, platformCode, iv);
+//      log.info("请求翼支付报文：" + request);
+        log.info("请求能开翼支付报文：" + JSONObject.fromObject(request).toString());
+//      String response = doService("http://116.228.151.160:18183/preAuthorizationApply", request);
+        String response = zopService(method, zopUrl, request, zopSecret);
         log.info("翼支付响应报文：" + response);
         boolean verifyResult = doVerify(response);
         log.info("验签结果:" + verifyResult);
@@ -55,6 +60,8 @@ public abstract class BestpayServiceTemp {
 
         return result;
     }
+
+    protected abstract Map<String,Object> zopConvert(Object object, String platformCode, String iv)throws Exception;
 
     protected abstract String doConvert(Object object, String platformCode, String iv) throws Exception;
 
@@ -78,6 +85,18 @@ public abstract class BestpayServiceTemp {
             e.printStackTrace();
         }
         return responseStr;
+    }
+
+    private String zopService(String method, String zopUrl, Object request, String zopSecret) {
+        String version = "1.0";
+        ResponseResult responseResult = ZopClientUtil.callRest(zopSecret, zopUrl, method, version, request);
+        String resCode = "00000";
+        String returnStr = null;
+        if (resCode.equals(responseResult.getRes_code())) {
+            Object result = responseResult.getResult();
+            returnStr = String.valueOf(result);
+        }
+       return returnStr;
     }
 
 }

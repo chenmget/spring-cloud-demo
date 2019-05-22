@@ -28,6 +28,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 
@@ -155,7 +156,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Override
 	public CkProcureApplyResp ckApplyData1(PurApplyReq req) {
-		return purApplyManager.ckApplyData1(req);
+		CkProcureApplyResp ckProcureApplyResp  = purApplyManager.ckApplyData1(req);
+		String createDate = ckProcureApplyResp.getCreateDate();
+		createDate = createDate.substring(0, createDate.length()-2);
+		ckProcureApplyResp.setCreateDate(createDate);
+		 return ckProcureApplyResp;
 	}
 	
 	@Override
@@ -227,6 +232,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	public void addShippingAddress(MemMemberAddressReq req){
 		purApplyManager.addShippingAddress(req);
+	}
+	
+	@Override
+	public ResultVO updatePrice(UpdateCorporationPriceReq req){
+		purApplyManager.updatePrice(req);
+		return ResultVO.success();
 	}
 	
 }

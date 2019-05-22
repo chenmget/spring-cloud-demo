@@ -19,6 +19,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.mapper.CartMapper;
 import com.iwhalecloud.retail.order2b.mapper.PurApplyMapper;
@@ -127,6 +128,10 @@ public class PurApplyManager {
 	
 	public void addShippingAddress(MemMemberAddressReq req){
 		purApplyMapper.addShippingAddress(req);
+	}
+	
+	public void updatePrice(UpdateCorporationPriceReq req){
+		purApplyMapper.updatePrice(req);
 	}
 	
 }

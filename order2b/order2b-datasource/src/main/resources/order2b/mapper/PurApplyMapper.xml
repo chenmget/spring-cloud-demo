@@ -185,6 +185,7 @@
   	SELECT 
   		a.apply_id as applyId,
 		a.apply_code as applyCode,
+		a.content AS content,
 		a.apply_merchant_code  AS applyMerchantCode,
 		a.apply_merchant_id AS applyMerchantId,
 		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_CODE=a.apply_merchant_code) AS applyMerchantName,
@@ -264,6 +265,7 @@
 	PUR_APPLY SET status_cd= #{req.statusCd},
 	apply_name=#{req.applyName},
 	phone=#{req.applyContact},
+	content=#{req.content},
 	merchant_code=#{req.supplierCode},
 	merchant_id=#{req.supplierId},
 	update_date=#{req.updateDate},
@@ -408,7 +410,7 @@
   			CREATE_DATE,
   			UPDATE_STAFF,
   			UPDATE_DATE
-  		) VALUES(
+  		) VALUES (
   			#{req.applyId},
   			#{req.consigeeName},
   			#{req.addr},
@@ -419,6 +421,15 @@
   			#{req.updateStaff},
   			#{req.updateDate}
   		)
+  </select>
+  
+  <select id="updatePrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq" >
+  		update 
+  			prod_product 
+  		set 
+  			corporation_price = #{req.corporationPrice} 
+  		where 
+  			product_id = #{req.productId}
   </select>
   
 </mapper>

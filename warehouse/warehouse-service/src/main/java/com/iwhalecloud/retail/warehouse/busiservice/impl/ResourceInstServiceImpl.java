@@ -31,7 +31,6 @@ import com.iwhalecloud.retail.warehouse.dto.request.markresswap.EBuyTerminalItem
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.EBuyTerminalSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalItemSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalSwapReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
@@ -395,27 +394,14 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     }
 
     @Override
-    public synchronized ResultVO<ResourceInstAddResp> addResourceInstForTransaction(ResourceInstAddReq req) {
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public synchronized ResultVO addResourceInstForTransaction(ResourceInstAddReq req) {
         log.info("ResourceInstServiceImpl.addResourceInstForTransaction req={}", JSON.toJSONString(req));
-        ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
-        // 要入库的串码
-        List<String> putInNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
-        // 串码已经存在
-        List<String> mktResInstNbrs =  Lists.newArrayList(req.getMktResInstNbrs());
-        // 一去重
-        ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
-        BeanUtils.copyProperties(req, resourceInstValidReq);
-        resourceInstValidReq.setMktResStoreId(req.getDestStoreId());
-        CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(req.getMktResInstNbrs());
-        List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, newList);
-        mktResInstNbrs.removeAll(existNbrs);
-        if(CollectionUtils.isEmpty(mktResInstNbrs)){
-            return ResultVO.error("全部是重复串码");
-        }
         String batchId = resourceInstManager.getPrimaryKey();
-        List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(putInNbrs.size());
+        List<String> mktResInstNbrList = req.getMktResInstNbrs();
+        List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(mktResInstNbrList.size());
         Date now = new Date();
-        for (String mktResInstNbr : putInNbrs) {
+        for (String mktResInstNbr : mktResInstNbrList) {
             ResourceInst resourceInst = new ResourceInst();
             BeanUtils.copyProperties(req, resourceInst);
             resourceInst.setMktResInstId(resourceInstManager.getPrimaryKey());
@@ -439,7 +425,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
-        resourceInstStoreDTO.setQuantity(Long.valueOf(putInNbrs.size()));
+        resourceInstStoreDTO.setQuantity(Long.valueOf(mktResInstNbrList.size()));
         resourceInstStoreDTO.setQuantityAddFlag(true);
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
         resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
@@ -449,11 +435,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
         }
         resourceInstLogService.addResourceInstLog(req, resourceInsts, batchId);
-        resourceInstAddResp.setExistNbrs(existNbrs);
-        List<String> putInFailNbrs = Lists.newArrayList(req.getMktResInstNbrs());
-        putInFailNbrs.removeAll(putInNbrs);
-        resourceInstAddResp.setPutInFailNbrs(putInFailNbrs);
-        return ResultVO.success("串码入库完成", resourceInstAddResp);
+        return ResultVO.success();
     }
 
 

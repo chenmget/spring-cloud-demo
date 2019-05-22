@@ -84,7 +84,7 @@ public class UserServiceImpl implements UserService {
             return resp;
         }
         String retailerLoginPass = "0";
-        if(!retailerLoginPass.equals(retailerLoginPass) && SystemConst.USER_FOUNDER_1 == user.getUserFounder()){
+        if(!retailerLoginPass.equals(retailerLogin) && SystemConst.USER_FOUNDER_3 == user.getUserFounder()){
             resp.setErrorMessage("零售商请通过BSS3.0平台登陆！");
             log.info("UserServiceImpl.login 出参：UserLoginResp-{}", JSON.toJSON(resp));
             return resp;

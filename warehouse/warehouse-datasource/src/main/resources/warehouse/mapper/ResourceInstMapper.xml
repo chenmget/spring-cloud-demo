@@ -120,6 +120,9 @@
         <if test="null!=typeId and '' !=typeId">
             and t.type_id = #{typeId}
         </if>
+        <if test="null!=mktResId and ''!=mktResId">
+            and t.mkt_res_id = #{mktResId}
+        </if>
     </update>
 
     <update id="updateResourceInstByIds" parameterType="com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq">

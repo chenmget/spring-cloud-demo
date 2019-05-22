@@ -8,10 +8,8 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.dto.req.MerChantGetProductReq;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -398,43 +396,26 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.error(constant.getGetRepeatStoreMsg());
         }
 
-        List<String> mktResInstNbrs = new ArrayList<>();
-        String productId = null;
         for (DeliveryResourceInstItem item : req.getDeliveryResourceInstItemList()) {
-            mktResInstNbrs.addAll(item.getMktResInstNbrs());
-            productId = item.getProductId();
+            ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
+            resourceInstUpdateReq.setMktResInstNbrs(item.getMktResInstNbrs());
+            resourceInstUpdateReq.setCheckStatusCd(Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode()));
+            resourceInstUpdateReq.setMktResStoreId(storeId);
+            resourceInstUpdateReq.setDestStoreId(destStoreId);
+            resourceInstUpdateReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
+            resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());
+            resourceInstUpdateReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
+            resourceInstUpdateReq.setObjId(req.getOrderId());
+            resourceInstUpdateReq.setMerchantId(req.getSellerMerchantId());
+            resourceInstUpdateReq.setMktResId(item.getProductId());
+            ResultVO delRS = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
+            log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resourceInstService.delResourceInst req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(delRS));
         }
-        ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
-        resourceInstUpdateReq.setMktResInstNbrs(mktResInstNbrs);
-        resourceInstUpdateReq.setCheckStatusCd(Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode()));
-        resourceInstUpdateReq.setMktResStoreId(storeId);
-        resourceInstUpdateReq.setDestStoreId(destStoreId);
-        resourceInstUpdateReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
-        resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());
-        resourceInstUpdateReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
-        resourceInstUpdateReq.setObjId(req.getOrderId());
-        resourceInstUpdateReq.setMerchantId(req.getSellerMerchantId());
-        if (StringUtils.isNotBlank(productId)) {
-            ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
-            productGetByIdReq.setProductId(productId);
-            ResultVO<ProductResp> respResultVO = productService.getProduct(productGetByIdReq);
-            if (respResultVO.isSuccess() && null != respResultVO.getResultData()) {
-                resourceInstUpdateReq.setTypeId(respResultVO.getResultData().getTypeId());
-            }
-        }
-        ResultVO delRS = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
-        log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resourceInstService.delResourceInst req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(delRS));
-
         // 下单是增加了在途数量，发货时减去
         if (null != req.getUpdateStockReq()) {
             resourceInstStoreService.updateStock(req.getUpdateStockReq());
         }
-
-        if (delRS == null || !delRS.isSuccess()) {
-            return ResultVO.success(false);
-        } else {
-            return ResultVO.success(true);
-        }
+        return ResultVO.success(true);
     }
 
     @Override

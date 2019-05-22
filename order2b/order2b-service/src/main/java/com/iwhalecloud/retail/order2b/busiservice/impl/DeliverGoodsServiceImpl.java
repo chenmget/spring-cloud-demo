@@ -258,15 +258,11 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
         if (!CollectionUtils.isEmpty(notExistsNbrList)) {
             list.addAll(deliveryRespData(null, null, notExistsNbrList, "1", "串码不存在"));
         }
-        List<String> notMatchProductIdNbrList = validResourceInstItemResp.getNotMatchProductIdNbrList();
-        if (!CollectionUtils.isEmpty(notMatchProductIdNbrList)) {
-            list.addAll(deliveryRespData(null, null, notMatchProductIdNbrList, "1", "串码不属于该订单销售的商品范围"));
-        }
         List<String> wrongStatusNbrList = validResourceInstItemResp.getWrongStatusNbrList();
         if (!CollectionUtils.isEmpty(wrongStatusNbrList)) {
             list.addAll(deliveryRespData(null, null, wrongStatusNbrList, "1", "串码状态不正确"));
         }
-
+        List<String> notMatchProductIdNbrList = validResourceInstItemResp.getNotMatchProductIdNbrList();
         List<SendGoodsItemDTO> goodsItemDTOList = new ArrayList<>();
         Integer shipNum = 0;
         for (OrderItem item : orderItemList) {
@@ -287,9 +283,19 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
                     goodsItemDTOList.add(dto);
                     shipNum += 1;
                 }
+                // 现在串码唯一性是按产品类型为维度，送去库存校验的串码如果有两个串码值是一样但产品类型不一样，那边区分不出来
+                // 而且会返回两条，一条校验通过，令一条产品id匹配不上，校验不过会导致发货不了，暂时这么处理
+                for (String mktResInstNbr : nbrList) {
+                    if (!CollectionUtils.isEmpty(notMatchProductIdNbrList) && notMatchProductIdNbrList.contains(mktResInstNbr)) {
+                        notMatchProductIdNbrList.remove(mktResInstNbr);
+                    }
+                }
             }
         }
         log.info("OrderDRGoodsOpenServiceImpl.valieNbr goodsItemDTOList={}", JSON.toJSONString(goodsItemDTOList) , JSON.toJSONString(list));
+        if (!CollectionUtils.isEmpty(notMatchProductIdNbrList)) {
+            list.addAll(deliveryRespData(null, null, notMatchProductIdNbrList, "1", "串码不属于该订单销售的商品范围"));
+        }
         request.setShipNum(shipNum);
         request.setGoodsItemDTOList(goodsItemDTOList);
         resp.setResultData(list);

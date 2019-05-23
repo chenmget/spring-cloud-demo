@@ -852,13 +852,21 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         Boolean notSucess = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) || (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess());
         if (notSucess) {
-            String errorMsg1 = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
-            String errorMsg2 = (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
-            return ResultVO.error(errorMsg1 + errorMsg2);
+            String errorMsg = "";
+            if (null == syncTerminalResultVO) {
+                errorMsg = (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
+            } else {
+                errorMsg = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
+            }
+            return ResultVO.error(errorMsg);
         }else {
-            String sucessMsg1 = (syncTerminalResultVO != null && syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
-            String sucessMsg2 = (eBuyTerminalResultVO != null && eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
-            return ResultVO.success(sucessMsg1 + sucessMsg2);
+            String sucessMsg = "";
+            if (null == syncTerminalResultVO) {
+                sucessMsg = (eBuyTerminalResultVO != null && eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
+            } else {
+                sucessMsg = (syncTerminalResultVO != null && syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
+            }
+            return ResultVO.success(sucessMsg);
         }
 
     }

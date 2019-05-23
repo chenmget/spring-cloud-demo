@@ -47,4 +47,10 @@ public class MarketingAndPromotionResp implements Serializable{
      */
     @ApiModelProperty(value = "优惠名称")
     private java.lang.String mktResName;
+    
+    /**
+     * 优惠数量
+     */
+    @ApiModelProperty(value = "活动限制的数量")
+    private java.lang.Long num;
 }

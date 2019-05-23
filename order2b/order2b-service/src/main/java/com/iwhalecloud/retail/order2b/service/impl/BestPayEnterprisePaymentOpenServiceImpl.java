@@ -30,6 +30,7 @@ import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantAccountDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantAccountListReq;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,6 +38,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -114,6 +116,17 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
 
         // 预授权支付
         if ("pay_auth".equals(payType)) {
+            //查找到当前用户的翼支付账户
+            String loginCode = payAuthorizationService.findPayAccountByOrderId(req.getOrderId()); //account
+            if(StringUtils.isBlank(loginCode)){
+                return ResultVO.error("买家翼支付账号没有配置。");
+            }
+            // 通过订单找到供应商订单账号，金额
+            Map<String, Object> resultMap = payAuthorizationService.findReptAccountAndMoneyByOrderId(req.getOrderId());
+            if(StringUtils.isBlank(resultMap.get("account").toString())){
+                return ResultVO.error("商家翼支付账号没有配置。");
+            }
+
             boolean flag = payAuthorizationService.authorizationApplication(req.getOrderId(), operationType);
             if(flag){
                 ToPayResp tpr = new ToPayResp();

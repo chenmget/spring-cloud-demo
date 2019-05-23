@@ -186,9 +186,9 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
         } else {
             String errorMsg = "";
             if (null == syncTerminalResultVO) {
-                errorMsg = (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
+                errorMsg = eBuyTerminalResultVO.getResultMsg();
             } else {
-                errorMsg = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
+                errorMsg = syncTerminalResultVO.getResultMsg();
             }
             return ResultVO.error(errorMsg);
         }

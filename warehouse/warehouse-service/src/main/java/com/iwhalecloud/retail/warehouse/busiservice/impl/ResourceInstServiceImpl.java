@@ -854,17 +854,17 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (notSucess) {
             String errorMsg = "";
             if (null == syncTerminalResultVO) {
-                errorMsg = (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
+                errorMsg = eBuyTerminalResultVO.getResultMsg();
             } else {
-                errorMsg = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
+                errorMsg = syncTerminalResultVO.getResultMsg();
             }
             return ResultVO.error(errorMsg);
         }else {
             String sucessMsg = "";
             if (null == syncTerminalResultVO) {
-                sucessMsg = (eBuyTerminalResultVO != null && eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
+                sucessMsg =  eBuyTerminalResultVO.getResultMsg();
             } else {
-                sucessMsg = (syncTerminalResultVO != null && syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
+                sucessMsg = syncTerminalResultVO.getResultMsg();
             }
             return ResultVO.success(sucessMsg);
         }

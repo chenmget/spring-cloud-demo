@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.authpay;
 
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.authpay.handler.BestpayHandler;
 import com.iwhalecloud.retail.order2b.authpay.handler.TradeCertificate;
 import com.iwhalecloud.retail.order2b.authpay.service.v3.BestpayServiceV3;
@@ -14,6 +15,7 @@ import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.model.SaveLogModel;
 import com.iwhalecloud.retail.order2b.reference.TaskManagerReference;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -201,7 +203,7 @@ public class PayAuthorizationService {
         TradeCertificate certificate = CertificateUtil.getTradeCertificate(CertificateUtil.KEYSTORETYPE_JKS, true);
         BestpayHandler bestpayHandler = new BestpayHandler(certificate);
         BestpayServiceV3 bestpayService = new BestpayServiceV3(bestpayHandler);
-
+        Map<String, Object> resultInvoke = new HashMap<String, Object>();
         //查找到当前用户的翼支付账户
         String loginCode = orderMapper.findPayAccountByOrderId(orderId); //account
 
@@ -223,7 +225,7 @@ public class PayAuthorizationService {
         preAuthorizationApplyRequest.setOriginalTransSeq(originalTransSeq);
 
         boolean b = false;
-        Map<String, Object> resultInvoke = new HashMap<String, Object>();
+
         try {
             resultInvoke = bestpayService.invoke(callUrl, preAuthorizationApplyRequest, platformCode, certificate.getIv(), zopSecret, zopUrl);
             b = (boolean)resultInvoke.get("flag");
@@ -242,4 +244,11 @@ public class PayAuthorizationService {
         return resultInvoke;
     }
 
+    public String findPayAccountByOrderId(String orderId) {
+        return orderMapper.findPayAccountByOrderId(orderId);
+    }
+
+    public Map<String,Object> findReptAccountAndMoneyByOrderId(String orderId) {
+        return orderMapper.findReptAccountAndMoneyByOrderId(orderId);
+    }
 }

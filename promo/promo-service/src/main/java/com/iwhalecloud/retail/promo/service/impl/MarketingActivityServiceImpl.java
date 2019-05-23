@@ -614,6 +614,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                         marketingAndPromotionResp.setId(marketingActivity.getId());
                         marketingAndPromotionResp.setPromotionPrice(String.valueOf(activityGoodsList.get(k).getDiscountAmount()));
                         marketingAndPromotionResp.setProductId(activityGoodsList.get(k).getProductId());
+                        marketingAndPromotionResp.setNum(activityGoodsList.get(k).getNum());
                         respList.add(marketingAndPromotionResp);
                     }
                 }

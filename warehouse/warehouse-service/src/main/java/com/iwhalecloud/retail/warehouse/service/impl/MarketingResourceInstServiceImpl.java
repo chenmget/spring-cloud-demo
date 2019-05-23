@@ -184,9 +184,13 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
             log.info("ResourceInstServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
             return ResultVO.success(true);
         } else {
-            String errorMsg1 = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
-            String errorMsg2 = (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
-            return ResultVO.error(errorMsg1 + errorMsg2);
+            String errorMsg = "";
+            if (null == syncTerminalResultVO) {
+                errorMsg = eBuyTerminalResultVO.getResultMsg();
+            } else {
+                errorMsg = syncTerminalResultVO.getResultMsg();
+            }
+            return ResultVO.error(errorMsg);
         }
     }
 

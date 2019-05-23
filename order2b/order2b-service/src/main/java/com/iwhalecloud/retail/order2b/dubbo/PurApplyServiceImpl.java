@@ -249,7 +249,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			String snPrice = snPriceList.get(i);
 			String[] splits = snPrice.split("\\|");
 			req.setSn(splits[0]);
-			req.setCorporationPrice(splits[1]);
+			req.setCorporationPrice(splits[1]+"00");
 			purApplyManager.updatePrice(req);
 		}
 		return ResultVO.success();

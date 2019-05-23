@@ -73,4 +73,6 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public void updatePrice(@Param("req") UpdateCorporationPriceReq req);
 	
+	public void commitPriceExcel(@Param("req") UpdateCorporationPriceReq req);
+	
 }

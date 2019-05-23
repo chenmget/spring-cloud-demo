@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.mapper.AdvanceOrderMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.model.SaveLogModel;
+import com.iwhalecloud.retail.order2b.reference.TaskManagerReference;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -50,6 +51,21 @@ public class PayAuthorizationService {
     @Value("${pay.ipStr}")
     private String ipStr;
 
+    @Value("${zop.secret}")
+    private String zopSecret;
+
+    @Value("${zop.url}")
+    private String zopUrl;
+
+    @Value("${zop.payAuthMethod}")
+    private String payAuthMethod;
+
+    @Value("${zop.payConfirmMethod}")
+    private String payConfirmMethod;
+
+    @Value("${zop.payCancelMethod}")
+    private String payCancelMethod;
+
     @Autowired
     private OrderMapper orderMapper;
 
@@ -59,6 +75,8 @@ public class PayAuthorizationService {
     @Autowired
     private BPEPPayLogService bpepPayLogService;
 
+    @Autowired
+    private TaskManagerReference taskManagerReference;
     /**
      * 授权申请
      */
@@ -77,11 +95,12 @@ public class PayAuthorizationService {
                 String payAdvanceMoney = resAdvanceOrder.getAdvanceAmount().toString();
                 String payAdvMoney = payAdvanceMoney.substring(0, payAdvanceMoney.indexOf('.'));
                 String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                Map<String, Object> resultCall = call(payAuthUrl, orderId, operationType, reqSeq, null, payAdvMoney);
+                Map<String, Object> resultCall = call(payAuthMethod, orderId, operationType, reqSeq, null, payAdvMoney);
                 boolean advFlag = (boolean)resultCall.get("flag");
                 if(advFlag){
                     // 保存订单交易流水
                     advanceOrderMapper.updateAdvanceTransId(orderId, (String)resultCall.get("originalTransSeq"));
+                    orderMapper.updateStatusByOrderId(orderId, OrderAllStatus.ORDER_STATUS_14.getCode());
                 }
                 flag = flag & advFlag;
             }
@@ -89,11 +108,12 @@ public class PayAuthorizationService {
                 String payRestMoney = resAdvanceOrder.getRestPayMoney().toString();
                 String payResMoney = payRestMoney.substring(0, payRestMoney.indexOf('.'));
                 String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                Map<String, Object> resultCall = call(payAuthUrl, orderId, operationType, reqSeq, null, payResMoney);
+                Map<String, Object> resultCall = call(payAuthMethod, orderId, operationType, reqSeq, null, payResMoney);
                 boolean resFlag = (boolean)resultCall.get("flag");
                 if(resFlag){
                     // 保存订单交易流水
                     advanceOrderMapper.updateRestTransId(orderId, (String)resultCall.get("originalTransSeq"));
+                    orderMapper.updateStatusByOrderId(orderId, OrderAllStatus.ORDER_STATUS_4.getCode());
                 }
                 flag = flag & resFlag;
             }
@@ -102,11 +122,12 @@ public class PayAuthorizationService {
             String payMoney = resOrder.getOrderAmount().toString();
             String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
             String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-            Map<String, Object> resultCall = call(payAuthUrl, orderId, operationType, reqSeq, null, resPayMoney);
+            Map<String, Object> resultCall = call(payAuthMethod, orderId, operationType, reqSeq, null, resPayMoney);
             boolean advFlag = (boolean)resultCall.get("flag");
             if(advFlag){
                 // 保存订单交易流水
                 orderMapper.updatePayTransId(orderId, (String)resultCall.get("originalTransSeq"));
+                orderMapper.updateStatusByOrderId(orderId, OrderAllStatus.ORDER_STATUS_4.getCode());
             }
             return advFlag;
         }
@@ -117,14 +138,14 @@ public class PayAuthorizationService {
      * 授权确认
      */
     public boolean authorizationConfirmation(String orderId){
-        return this.AuthorizationConfAndCancellation(orderId, payConfirmUrl);
+        return this.AuthorizationConfAndCancellation(orderId, payConfirmMethod);
     }
 
     /**
      * 授权取消
      */
     public boolean AuthorizationCancellation(String orderId) {
-        return this.AuthorizationConfAndCancellation(orderId, payCancelUrl);
+        return this.AuthorizationConfAndCancellation(orderId, payCancelMethod);
     }
 
     public boolean AuthorizationConfAndCancellation(String orderId, String callUrl) {
@@ -204,17 +225,16 @@ public class PayAuthorizationService {
         boolean b = false;
         Map<String, Object> resultInvoke = new HashMap<String, Object>();
         try {
-            resultInvoke = bestpayService.invoke(callUrl, preAuthorizationApplyRequest, platformCode, certificate.getIv());
+            resultInvoke = bestpayService.invoke(callUrl, preAuthorizationApplyRequest, platformCode, certificate.getIv(), zopSecret, zopUrl);
             b = (boolean)resultInvoke.get("flag");
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-
         SaveLogModel saveLogModel = new SaveLogModel();
         saveLogModel.setPayId(reqSeq);
         saveLogModel.setOrderId(orderId);
         saveLogModel.setOrderAmount(payMoney);
-        saveLogModel.setPayStatus(PayConsts.PAY_STATUS_0);
+        saveLogModel.setPayStatus(b?PayConsts.PAY_STATUS_1:PayConsts.PAY_STATUS_0);
         saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1004);
         saveLogModel.setOperationType(operationType);
         bpepPayLogService.saveLog(saveLogModel);

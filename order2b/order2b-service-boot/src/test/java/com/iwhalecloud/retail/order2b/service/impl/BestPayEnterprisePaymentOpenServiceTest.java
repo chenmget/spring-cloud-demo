@@ -1,6 +1,11 @@
 package com.iwhalecloud.retail.order2b.service.impl;
 
 import com.iwhalecloud.retail.order2b.TestBase;
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
+import com.iwhalecloud.retail.order2b.authpay.handler.BestpayHandler;
+import com.iwhalecloud.retail.order2b.authpay.handler.TradeCertificate;
+import com.iwhalecloud.retail.order2b.authpay.service.BestpayServiceTemp;
+import com.iwhalecloud.retail.order2b.authpay.service.v3.BestpayServiceV3;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.ToPayReq;
 import com.iwhalecloud.retail.order2b.service.BestPayEnterprisePaymentService;
@@ -18,11 +23,15 @@ public class BestPayEnterprisePaymentOpenServiceTest extends TestBase {
     @Resource(name = "bestPayEnterprisePaymentOpenServiceImpl")
     private BestPayEnterprisePaymentService bestPayEnterprisePaymentService;
 
+    @Resource
+    private PayAuthorizationService payAuthorizationService;
+
+
     @Test
     public void toPay(){
         ToPayReq toPayReq = new ToPayReq();
 
-        String orderId="20190129194501799913682";
+        String orderId="201905212210000546";
         String orderAmount="500";
         toPayReq.setOrderId(orderId);
         toPayReq.setOrderAmount(orderAmount);
@@ -40,4 +49,27 @@ public class BestPayEnterprisePaymentOpenServiceTest extends TestBase {
         req.setSIGNSTR("Xay2yHzvAo6Hy7KG6f6qDF2qyAussWf5/F2BXi0/b7aVMmsdkPYNmyBKq0JqPUvpVUGR46SkdH6A7D509nZLINhin6NtW73i5AMobAWQFgI1+QfYS5epy4b7YAOT6jro75O0YD2LmOZEZLQNc/5+5D5i6sSYO9yCS2KikDDcdvaqcpQhhLUt3e06IdR1qEdvWs3HkJSkkSCTmvB5pDgpPGa01wqzpZutfxUFqSvShoUvYdoZDGPjLgAgqgpqzRNTFVubbTf+p/n0OYpfgTf531qw5eR8W1PAw6hvBgvyXhxxLe4V3UqcYGkDUtcicbskJA0u5FTkNZp7u6HfxNBjLA==");
         bestPayEnterprisePaymentService.asynNotify(req);
     }
+
+    @Test
+    public void authorizationApplication(){
+        String orderId = "201905229410000556";
+        payAuthorizationService.authorizationApplication(orderId, "C");
+    }
+    @Test
+    public void AuthorizationCancellation(){
+        String orderId = "201905229410000556";
+        payAuthorizationService.AuthorizationCancellation(orderId);
+    }
+    @Test
+    public void authorizationConfirmation(){
+        String orderId = "201905229410000556";
+        payAuthorizationService.authorizationConfirmation(orderId);
+    }
+
+
+    public static void main(String[] args) {
+        String date = "{\"data\":{\"msg\":\"解密AES密钥密文失败\",\"code\":\"010069\"},\"sign\":\"ab26b5To4o8OMN6PS2OZGu9IXkFucWKbc0BYk1jak9/wIdGSj4Gdr1cy+QuUlYwGWF+dlhTlDfQMB+ffRlUeGW9i89GqusSa1cjQBwCsjYSJTQOUk6sZimeDBFDsPRbUm1EN8XU+SaTKfdX+smU3aFHxf93w7W1jTzlSnpHYz9pG6Xh+4Q205Z58pbI1c5jIvEDH0j2XQenuIAMnqZ+GavAODZ4AILkHaVtTbYXewNVCTfego87Qm3BCfNe4qjleilOnMcpYURgkNd+1yWHrlGLm3Bh/7FeDVW60ezCqib0ElTDl4emt/O3svI7ihfdVgotzZjEE/bvmNa0qEIOadQ==\"}";
+
+    }
+
 }

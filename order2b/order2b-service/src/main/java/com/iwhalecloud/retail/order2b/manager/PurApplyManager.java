@@ -134,4 +134,8 @@ public class PurApplyManager {
 		purApplyMapper.updatePrice(req);
 	}
 	
+	public void commitPriceExcel(UpdateCorporationPriceReq req){
+		purApplyMapper.commitPriceExcel(req);
+	}
+	
 }

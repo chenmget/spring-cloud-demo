@@ -146,6 +146,6 @@ public class ProductPageResp implements Serializable {
     private String purchaseType;
 
     @ApiModelProperty(value = "政企价格")
-    private String corporationPrice;
+    private double corporationPrice;
     
 }

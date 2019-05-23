@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.b2b.cgmanage;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,12 +10,17 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
@@ -25,6 +31,7 @@ import com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
+import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
@@ -38,6 +45,8 @@ import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 
 import io.swagger.annotations.ApiOperation;
@@ -65,6 +74,9 @@ public class GovernmentPriceManageController extends BaseController {
 	@Reference
     private PurApplyService purApplyService;
 	
+	@Value("${fdfs.suffix.allowUpload}")
+    private String allowUploadSuffix;
+	
 	@Autowired
     private DeliveryGoodsResNberExcel deliveryGoodsResNberExcel;
 	
@@ -73,59 +85,29 @@ public class GovernmentPriceManageController extends BaseController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="dcSearchPriceApply")
+    @PostMapping("/dcSearchPriceApply")
     @UserLoginToken
     public void dcSearchPriceApply(@RequestBody ProductsPageReq req, HttpServletResponse response) {
 		req.setPageNo(1);
         //数据量控制在1万条
         req.setPageSize(60000);
-        Boolean isAdminType = UserContext.isAdminType();
-        String merchantId = null;
-        ResultVO<Page<ProductPageResp>> productPageRespPage = null ;
         Integer userFounder = UserContext.getUser().getUserFounder();
-        if (UserContext.getUserOtherMsg() != null && UserContext.getUserOtherMsg().getMerchant() != null && !isAdminType && SystemConst.USER_FOUNDER_8 != userFounder) {
-            merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
-        }else if(isAdminType){
+        
             // 管理员查看所有
-            productPageRespPage = productService.selectPageProductAdmin(req);
-        }else if(SystemConst.USER_FOUNDER_8 == userFounder){
-            // 厂商查看自己的产品
-            merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
-            req.setManufacturerId(merchantId);
-            productPageRespPage = productService.selectPageProductAdmin(req);
-        }
+        ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdminDc(req);
 
-        // 供应商、零售商
-        ResultVO<List<String>> productIdListVO = merchantRulesService.getProductAndBrandPermission(merchantId);
-        log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, merchantId={}", merchantId, JSON.toJSONString(productIdListVO));
-        if (productIdListVO.isSuccess() && !CollectionUtils.isEmpty(productIdListVO.getResultData())) {
-            // // 设置机型权限
-            List<String> productIdList = productIdListVO.getResultData();
-            List<String> originProductList = req.getProductIdList();
-            if (!CollectionUtils.isEmpty(originProductList)) {
-                String nullListValue = "null";
-                originProductList = originProductList.stream().filter(t -> productIdList.contains(t)).collect(Collectors.toList());
-                originProductList = CollectionUtils.isEmpty(originProductList) ? Lists.newArrayList(nullListValue) : originProductList;
-                req.setProductIdList(originProductList);
-            }else {
-                req.setProductIdList(productIdList);
-            }
-            productPageRespPage = productService.selectPageProductAdmin(req);
-        }
-        
-        List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
-        log.info("GoodsProductB2BController.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
-        
         List<ProductPageResp> data = productPageRespPage.getResultData().getRecords();
-        
         
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("productName", "产品名称"));
         orderMap.add(new ExcelTitleName("typeName", "产品类型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
-        orderMap.add(new ExcelTitleName("unitTypeName", "产品型号"));
-        orderMap.add(new ExcelTitleName("color", "颜色"));
-        orderMap.add(new ExcelTitleName("memory", "内存版本"));
+//        orderMap.add(new ExcelTitleName("unitTypeName", "产品型号"));
+        orderMap.add(new ExcelTitleName("unitType", "产品型号"));
+//        orderMap.add(new ExcelTitleName("color", "颜色"));
+//        orderMap.add(new ExcelTitleName("memory", "内存版本"));
+        orderMap.add(new ExcelTitleName("attrValue2", "颜色"));
+        orderMap.add(new ExcelTitleName("attrValue3", "内存版本"));
         orderMap.add(new ExcelTitleName("sn", "营销资源编码"));
         orderMap.add(new ExcelTitleName("cost", "零售价格"));
         orderMap.add(new ExcelTitleName("corporationPrice", "政企价格"));
@@ -133,7 +115,6 @@ public class GovernmentPriceManageController extends BaseController {
         orderMap.add(new ExcelTitleName("effDate", "产品生效期"));
         orderMap.add(new ExcelTitleName("expDate", "产品失效期"));
         orderMap.add(new ExcelTitleName("manufacturerName", "所属厂家"));
-        
         
       //创建Excel
         Workbook workbook = new HSSFWorkbook();
@@ -155,6 +136,44 @@ public class GovernmentPriceManageController extends BaseController {
 		return purApplyService.updatePrice(req);
     }
 	
+	@ApiOperation(value = "上传政企价格文件", notes = "支持xlsx、xls格式")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/uploadPriceExcel",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
+    public ResultVO uploadPriceExcel(@RequestParam("file") MultipartFile file) {
+
+        String suffix = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        //如果不在允许范围内的附件后缀直接抛出错误
+        if (allowUploadSuffix.indexOf(suffix) <= -1) {
+            return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
+        }
+
+        ResultVO resultVO = new ResultVO();
+        InputStream is = null;
+        try {
+            is = file.getInputStream();
+//            List<ResInsExcleImportResp> data = ExcelToNbrUtils.getData(is);
+            List<UpdateCorporationPriceReq> data = ExcelToNbrUtils.getPriceData(is);
+            resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
+            resultVO.setResultData(data);
+        } catch (Exception e) {
+            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
+            resultVO.setResultMsg(e.getMessage());
+            log.error("excel解析失败",e);
+        }
+        return resultVO;
+    }
 	
+	@ApiOperation(value = "政企价格批量提交", notes = "政企价格批量提交")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/commitPriceExcel")
+    public ResultVO commitPriceExcel(@RequestBody UpdateCorporationPriceReq req) {
+		return purApplyService.commitPriceExcel(req);
+    }
 	
 }

@@ -83,6 +83,12 @@ public class AdminResourceInstB2BController {
         if (StringUtils.isEmpty(dto.getMerchantId())) {
             return ResultVO.error("商家不能为空");
         }
+        if (StringUtils.isEmpty(dto.getTypeId())) {
+            return ResultVO.error("产品类型不能为空");
+        }
+        if (StringUtils.isEmpty(dto.getMktResId())) {
+            return ResultVO.error("产品不能为空");
+        }
         String userId = UserContext.getUserId();
         ResourceInstAddReq req = new ResourceInstAddReq();
         req.setCreateStaff(userId);

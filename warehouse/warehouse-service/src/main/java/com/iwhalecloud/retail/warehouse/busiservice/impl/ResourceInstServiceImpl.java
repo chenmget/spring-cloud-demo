@@ -626,7 +626,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         // 找出串码实列
         ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
         selectReq.setMktResInstIdList(distinctList);
-        selectReq.setMktResStoreId(req.getMktResStoreId());
+        selectReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
         log.info("ResourceInstServiceImpl.assembleData resourceInstManager.selectByIds req={},resp={}", JSON.toJSONString(distinctList), JSON.toJSONString(insts));
         // 筛选出状态不正确的串码实列(状态在校验的状态集中的数据)

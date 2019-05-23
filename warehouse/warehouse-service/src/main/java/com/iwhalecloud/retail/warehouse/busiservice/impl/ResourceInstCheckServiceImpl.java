@@ -3,9 +3,6 @@ package com.iwhalecloud.retail.warehouse.busiservice.impl;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
-import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
@@ -53,17 +50,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
     @Override
     @Transactional(isolation= Isolation.SERIALIZABLE,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public List<String> vaildOwnStore(ResourceInstValidReq req, CopyOnWriteArrayList<String> nbrList){
-        // TODO 改为校验轨迹表
         List<String> existNbrs = new ArrayList<>();
-        ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
-        productGetByIdReq.setProductId(req.getMktResId());
-        ResultVO<ProductResp> producttVO = productService.getProduct(productGetByIdReq);
-        log.info("ResourceInstServiceImpl.vaildOwnStore productService.getProduct mktResId={} resp={}", req.getMktResId(), JSON.toJSONString(producttVO));
-        String typeId = "";
-        if (producttVO.isSuccess() && null != producttVO.getResultData()) {
-            typeId = producttVO.getResultData().getTypeId();
-            req.setTypeId(typeId);
-        }
         // 一去重：串码存在不再导入
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
         List<String> mktResInstNbrs = Lists.newArrayList(nbrList);
@@ -79,7 +66,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                     PartnerConst.MerchantTypeEnum.PARTNER.getType());
         }
         resourceInstsGetReq.setMerchantTypes(merchantTypes);
-        resourceInstsGetReq.setTypeId(typeId);
+        resourceInstsGetReq.setTypeId(req.getTypeId());
         List<ResourceInstDTO> inst = resourceInstManager.validResourceInst(resourceInstsGetReq);
         log.info("ResourceInstCheckServiceImpl.vaildOwnStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(inst));
         if (CollectionUtils.isNotEmpty(inst)) {

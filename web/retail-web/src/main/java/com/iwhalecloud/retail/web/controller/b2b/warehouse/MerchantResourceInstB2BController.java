@@ -101,6 +101,12 @@ public class MerchantResourceInstB2BController {
     @PostMapping(value="addResourceInst")
     @UserLoginToken
     public ResultVO<ResourceInstAddResp> addResourceInst(@RequestBody ResourceInstAddReqDTO dto) {
+        if (StringUtils.isEmpty(dto.getTypeId())) {
+            return ResultVO.error("产品类型不能为空");
+        }
+        if (StringUtils.isEmpty(dto.getMktResId())) {
+            return ResultVO.error("产品不能为空");
+        }
         String userId = UserContext.getUserId();
         ResourceInstAddReq req = new ResourceInstAddReq();
         req.setCreateStaff(userId);
@@ -210,6 +216,7 @@ public class MerchantResourceInstB2BController {
         req.setMerchantType(UserContext.getUserOtherMsg().getMerchant().getMerchantType());
         return resourceInstService.validNbr(req);
     }
+
 
     @ApiOperation(value = "导出录入失败串码", notes = "导出录入失败串码")
     @ApiResponses({

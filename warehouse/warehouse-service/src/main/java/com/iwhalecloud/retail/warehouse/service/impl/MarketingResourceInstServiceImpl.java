@@ -156,13 +156,13 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
             SyncTerminalSwapReq syncTerminalSwapReq = new SyncTerminalSwapReq();
             syncTerminalSwapReq.setMktResList(syncTerminalItemSwapReqs);
             syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
-            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalResultVO));
+            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}, resp={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalResultVO));
         }
         if (CollectionUtils.isNotEmpty(eBuyTerminalItemReqs)) {
             EBuyTerminalSwapReq eBuyTerminalSwapReq = new EBuyTerminalSwapReq();
             eBuyTerminalSwapReq.setMktResList(eBuyTerminalItemReqs);
             eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
-            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.ebuyTerminal req={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
+            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.ebuyTerminal req={}, resp={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
         }
         Boolean notSucess = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) || (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess());
         if (!notSucess) {

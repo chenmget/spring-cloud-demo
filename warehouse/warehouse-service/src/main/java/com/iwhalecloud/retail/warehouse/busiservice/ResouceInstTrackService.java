@@ -4,6 +4,8 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 
+import java.util.concurrent.CopyOnWriteArrayList;
+
 public interface ResouceInstTrackService {
 
     /**
@@ -17,7 +19,7 @@ public interface ResouceInstTrackService {
      * 商家员录入
      * @param req
      */
-    void asynSaveTrackForMerchant(ResourceInstAddReq req, ResultVO resp);
+    void asynSaveTrackForMerchant(ResourceInstAddReq req, ResultVO resp, CopyOnWriteArrayList<String> newlist);
 
     /**
      * 商家员修改

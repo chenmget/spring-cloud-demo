@@ -4,6 +4,8 @@ import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -72,6 +74,9 @@ public class RunableTask {
 
     @Autowired
     private ResourceReqDetailManager detailManager;
+
+    @Autowired
+    private ResouceInstTrackService resouceInstTrackService;
 
     public ExecutorService initExecutorService() {
         ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
@@ -389,6 +394,32 @@ public class RunableTask {
             log.error("临时串码查询异常", e);
         }
         return null;
+    }
+
+    /**
+     * * 串码轨迹表多线程处理
+    * @param req
+    */
+    public void exceutorAddNbrTrack(ResourceInstAddReq req) {
+        ExecutorService executorService = initExecutorService();
+        List<String> nbrList = req.getMktResInstNbrs();
+        Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
+        for (Integer i = 0; i < excutorNum; i++) {
+            Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
+            log.info("RunableTask.exceutorAddNbrTrack maxNum={}", maxNum);
+            List subList = nbrList.subList(perNum*i, maxNum);
+            CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
+            ResultVO resultVO = ResultVO.success();
+            Callable callable = new Callable<Boolean>() {
+                @Override
+                public Boolean call() throws Exception {
+                    resouceInstTrackService.asynSaveTrackForMerchant(req, resultVO, newList);
+                    return true;
+                }
+            };
+            addNbrFutureTask = executorService.submit(callable);
+        }
+        executorService.shutdown();
     }
 
     public static void main(String[] args) {

@@ -122,7 +122,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     public ResultVO addResourceInstByGreenChannel(ResourceInstAddReq req) {
         // step1 绿色通道额度校验
         String merchantId = req.getMerchantId();
-        String targetId = req.getMktResId();
         Long limitNum = Long.valueOf(req.getMktResInstNbrs().size());
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {

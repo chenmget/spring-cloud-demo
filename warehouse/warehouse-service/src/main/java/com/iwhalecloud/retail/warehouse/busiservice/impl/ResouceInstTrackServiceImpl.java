@@ -17,7 +17,6 @@ import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackDetailManager;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
@@ -35,6 +34,7 @@ import org.springframework.stereotype.Service;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Service("asyncTaskService")
@@ -110,15 +110,15 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
 
     @Async
     @Override
-    public void asynSaveTrackForMerchant(ResourceInstAddReq req, ResultVO resp) {
+    public void asynSaveTrackForMerchant(ResourceInstAddReq req, ResultVO resp, CopyOnWriteArrayList<String> newlist) {
         log.info("ResouceInstTrackServiceImpl.asynSaveTrackForMerchant req={}", JSON.toJSONString(req));
         if (!resp.isSuccess()) {
             return;
         }
         Map<String, String> ctCodeMap = req.getCtCode();
         int count = 0;
-        for (int i = 0; i < req.getMktResInstNbrs().size(); i++) {
-            String mktResInstNbr = req.getMktResInstNbrs().get(i);
+        for (int i = 0; i < newlist.size(); i++) {
+            String mktResInstNbr = newlist.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             if (null != ctCodeMap) {
                 resouceInstTrackDTO.setCtCode(ctCodeMap.get(mktResInstNbr));
@@ -619,36 +619,48 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (!resp.isSuccess()) {
             return;
         }
+        String merchantId = req.getMerchantId();
+        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
+        log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail merchantService.getMerchantById req={},resp={}", merchantId, JSON.toJSONString(merchantDTOResultVO));
+        if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
+            return;
+        }
+        MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
         // 获取仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        storeGetStoreIdReq.setMerchantId(req.getMerchantId());
+        storeGetStoreIdReq.setMerchantId(merchantId);
         String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
         log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
 
-        ResourceInstBatchReq resourceInstsGetReq = new ResourceInstBatchReq();
-        BeanUtils.copyProperties(req, resourceInstsGetReq);
-        resourceInstsGetReq.setMktResStoreId(mktResStoreId);
-
-        ResultVO<List<ResourceInstListPageResp>> listResultVO = retailerResourceInstService.getBatch(resourceInstsGetReq);
-        log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(listResultVO));
-        List<ResourceInstListPageResp> insts = listResultVO.getResultData();
-        int count = 0;
-        for (int i = 0; i < insts.size(); i++) {
-            ResourceInstListPageResp resourceInstDTO = insts.get(i);
+        List<String> mktResInstNbrList = req.getMktResInstNbrs();
+        int countTrack = 0;
+        int countTrackDetail = 0;
+        for (String mktResInstNbr : mktResInstNbrList) {
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
-            BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
+            resouceInstTrackDTO.setTypeId(req.getTypeId());
+            resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+            resouceInstTrackDTO.setMktResStoreId(mktResStoreId);
             resouceInstTrackDTO.setIfGreenChannel(ResourceConst.CONSTANT_YES);
             resouceInstTrackDTO.setMerchantId(req.getMerchantId());
-            count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
-            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
+            resouceInstTrackDTO.setLanId(merchantDTO.getLanId());
+            resouceInstTrackDTO.setSourceType(merchantDTO.getMerchantType());
+            resouceInstTrackDTO.setMktResId(req.getMktResId());
+            resouceInstTrackDTO.setMktResInstNbr(mktResInstNbr);
+            resouceInstTrackDTO.setRegionId(merchantDTO.getCity());
+            resouceInstTrackDTO.setMktResInstType(ResourceConst.MKTResInstType.NONTRANSACTION.getCode());
+            countTrack += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
+            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrack);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
-            BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDetailDTO);
+            resouceInstTrackDetailDTO.setInTime(new Date());
+            resouceInstTrackDetailDTO.setTargetLanId(merchantDTO.getLanId());
+            resouceInstTrackDetailDTO.setTargetRegionId(merchantDTO.getCity());
+            resouceInstTrackDetailDTO.setTargetMerchantId(merchantDTO.getMerchantId());
+            resouceInstTrackDetailDTO.setTargetStoreId(mktResStoreId);
             resouceInstTrackDetailDTO.setStorageType(ResourceConst.STORAGETYPE.GREEN_CHANNEL.getCode());
-            count += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
-            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
+            countTrackDetail += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
+            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrackDetail);
         }
-        return;
     }
 
     @Async
@@ -683,7 +695,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             count += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
             log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
         }
-        return;
     }
 
     @Async

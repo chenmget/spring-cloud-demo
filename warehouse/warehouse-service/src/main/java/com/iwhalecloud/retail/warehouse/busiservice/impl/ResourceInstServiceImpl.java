@@ -519,10 +519,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 //step 3:修改状态
                 AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
                 BeanUtils.copyProperties(req, adminResourceInstDelReq);
-                List<String> mktResInstList = new ArrayList<>();
                 adminResourceInstDelReq.setMktResStoreId(dto.getMktResStoreId());
-                mktResInstList.add(dto.getMktResInstId());
-                adminResourceInstDelReq.setMktResInstIds(mktResInstList);
+                adminResourceInstDelReq.setMktResInstIds(Lists.newArrayList(dto.getMktResInstId()));
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
                 log.info("ResourceInstServiceImpl.updateResourceInstByIds resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(sucessNum));
                 if(num < 1){

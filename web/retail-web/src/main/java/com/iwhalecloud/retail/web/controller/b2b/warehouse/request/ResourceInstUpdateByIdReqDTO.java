@@ -17,7 +17,7 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "对应模型mkt_res_inst, 对应实体ResourceInst类")
-public class ResourceInstSupplierUpdateReqDTO implements Serializable {
+public class ResourceInstUpdateByIdReqDTO implements Serializable {
 
   	private static final long serialVersionUID = 1L;
 

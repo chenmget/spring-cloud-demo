@@ -203,6 +203,12 @@ public class ResourceInstDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "商家类型")
 	private java.lang.String merchantType;
 
+	/**
+	 * 产品类型
+	 */
+	@ApiModelProperty(value = "产品类型")
+	private String typeId;
+
 
 
 }

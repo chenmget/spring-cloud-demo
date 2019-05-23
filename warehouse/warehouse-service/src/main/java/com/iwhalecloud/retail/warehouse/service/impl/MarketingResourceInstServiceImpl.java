@@ -66,12 +66,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     }
 
     @Override
-    public ResultVO delResourceInst(ResourceInstUpdateReq req) {
-        return null;
-    }
-
-    @Override
-    public ResultVO resetResourceInst(ResourceInstUpdateReq req) {
+    public ResultVO delResourceInst(AdminResourceInstDelReq req) {
         return null;
     }
 

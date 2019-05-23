@@ -22,7 +22,6 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
-import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
@@ -215,7 +214,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO delResourceInst(ResourceInstSupplierUpdateReq req) {
+    public ResultVO delResourceInst(AdminResourceInstDelReq req) {
         AdminResourceInstDelReq delReq = new AdminResourceInstDelReq();
         BeanUtils.copyProperties(req, delReq);
         // 获取仓库
@@ -224,46 +223,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         storeGetStoreIdReq.setMerchantId(req.getMerchantId());
         String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
         log.info("SupplierResourceInstServiceImpl.delResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
-        // 串码实列状态更新为删除,现在支持导入删除，前端传不了主键
-        delReq.setMktResStoreId(mktResStoreId);
-        Integer num = resourceInstManager.updateResourceInstByIds(delReq);
-        List<String> mktResInstIdList = req.getMktResInstIdList();
-        List<ResourceInstDTO> resourceInsts = new ArrayList<>(mktResInstIdList.size());
-        List<String> unSucessMktResInstIdList = req.getMktResInstIdList();
-        for (String mktResInstId : mktResInstIdList) {
-            String changeStatusCd = req.getStatusCd();
-            ResourceInstsGetByIdListAndStoreIdReq queryReq = new ResourceInstsGetByIdListAndStoreIdReq();
-            queryReq.setMktResInstIdList(Lists.newArrayList(mktResInstId));
-            queryReq.setMktResStoreId(mktResStoreId);
-            List<ResourceInstDTO> instOneList = resourceInstManager.selectByIds(queryReq);
-            log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstManager.getResourceInst req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(instOneList));
-            // 没删除成功的，不加日志及更新库存
-            if (CollectionUtils.isEmpty(instOneList) || !changeStatusCd.equals(instOneList.get(0).getStatusCd())) {
-                unSucessMktResInstIdList.add(mktResInstId);
-                continue;
-            }
-            ResourceInstDTO inst = instOneList.get(0);
-            resourceInsts.add(inst);
-            // 更新库存,可能是不同产品，不能一起更新
-            ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
-            BeanUtils.copyProperties(req, resourceInstStoreDTO);
-            resourceInstStoreDTO.setMktResId(inst.getMktResId());
-            resourceInstStoreDTO.setMktResStoreId(mktResStoreId);
-            resourceInstStoreDTO.setQuantity(Long.valueOf(num));
-            resourceInstStoreDTO.setQuantityAddFlag(false);
-            resourceInstStoreDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-            int restInstStoreCnt = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
-            if (restInstStoreCnt < 1) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
-            }
-            log.info("SupplierResourceInstServiceImpl.delResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(restInstStoreCnt));
-        }
-        mktResInstIdList.removeAll(unSucessMktResInstIdList);
-        req.setMktResInstIdList(mktResInstIdList);
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         req.setDestStoreId(mktResStoreId);
-        resourceInstLogService.delResourceInstLog(req, resourceInsts);
-        return ResultVO.success(num);
+        return resourceInstService.updateResourceInstByIds(req);
     }
 
 

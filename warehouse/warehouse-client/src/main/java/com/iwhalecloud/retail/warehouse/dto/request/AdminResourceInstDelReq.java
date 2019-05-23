@@ -97,4 +97,10 @@ public class AdminResourceInstDelReq implements Serializable{
 	 */
 	@ApiModelProperty(value = "营销资源仓库标识")
 	private String mktResStoreId;
+
+	/**
+	 * 商家id
+	 */
+	@ApiModelProperty(value = "商家id")
+	private String merchantId;
 }

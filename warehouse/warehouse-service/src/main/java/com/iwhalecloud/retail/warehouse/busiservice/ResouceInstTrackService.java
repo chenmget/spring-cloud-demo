@@ -37,14 +37,7 @@ public interface ResouceInstTrackService {
      * @param req
      * @param resp
      */
-    void asynDeleteTrackForSupplier(ResourceInstSupplierUpdateReq req, ResultVO resp);
-
-    /**
-     * 供应商修改可用
-     * @param req
-     * @param resp
-     */
-    void asynResetTrackForSupplier(ResourceInstUpdateReq req, ResultVO resp);
+    void asynDeleteTrackForSupplier(AdminResourceInstDelReq req, ResultVO resp);
 
     /**
      * 退换货场景下，冻结/解冻操作

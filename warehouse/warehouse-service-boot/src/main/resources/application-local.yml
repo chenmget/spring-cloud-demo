@@ -117,3 +117,5 @@ ftp:
 addNbrService:
   typeId: 10350158,
   checkMaxNum: 10
+
+zopServiceEnv: Test

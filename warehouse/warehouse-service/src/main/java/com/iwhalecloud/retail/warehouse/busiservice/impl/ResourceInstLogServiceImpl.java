@@ -179,7 +179,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
 
     @Async
     @Override
-    public void delResourceInstLog(ResourceInstSupplierUpdateReq req, List<ResourceInstDTO> resourceInsts) {
+    public void delResourceInstLog(AdminResourceInstDelReq req, List<ResourceInstDTO> resourceInsts) {
         log.info("ResourceInstLogServiceImpl.delResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
         List<String> productList = new ArrayList<>();
         for (ResourceInstDTO resourceInst : resourceInsts) {

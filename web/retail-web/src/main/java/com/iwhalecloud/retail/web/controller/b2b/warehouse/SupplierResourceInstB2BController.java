@@ -72,9 +72,9 @@ public class SupplierResourceInstB2BController {
     })
     @DeleteMapping(value="delResourceInst")
     @UserLoginToken
-    public ResultVO<List<String>> delResourceInst(@RequestBody ResourceInstSupplierUpdateReqDTO dto) {
+    public ResultVO<List<String>> delResourceInst(@RequestBody ResourceInstUpdateByIdReqDTO dto) {
         String userId = UserContext.getUserId();
-        ResourceInstSupplierUpdateReq req = new ResourceInstSupplierUpdateReq();
+        AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
         List<String> checkStatusCd = new ArrayList<String>(1);

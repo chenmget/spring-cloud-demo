@@ -143,7 +143,7 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         batchAndEventAddReq.setCreateStaff(merchantId);
         resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
         log.info("MerchantAddNbrProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
-
+        runableTask.exceutorAddNbrTrack(addReq);
         return ResultVO.success();
     }
 

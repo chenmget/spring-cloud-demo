@@ -296,5 +296,9 @@ public class ResourceInstListPageResp implements java.io.Serializable {
 	@ApiModelProperty(value = "规格")
 	private String specName;
 
-
+	/**
+	 * 产品类型
+	 */
+	@ApiModelProperty(value = "产品类型")
+	private String typeId;
 }

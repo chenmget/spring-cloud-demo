@@ -45,7 +45,7 @@ public interface ResourceInstLogService {
      * @param req
      * @param resourceInsts
      */
-    void delResourceInstLog(ResourceInstSupplierUpdateReq req, List<ResourceInstDTO> resourceInsts);
+    void delResourceInstLog(AdminResourceInstDelReq req, List<ResourceInstDTO> resourceInsts);
 
     /**
      * 供应商删除串码写事件、事件明细

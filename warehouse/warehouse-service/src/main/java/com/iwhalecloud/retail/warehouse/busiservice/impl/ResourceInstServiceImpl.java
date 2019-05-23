@@ -519,10 +519,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 //step 3:修改状态
                 AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
                 BeanUtils.copyProperties(req, adminResourceInstDelReq);
-                List<String> mktResInstList = new ArrayList<>();
                 adminResourceInstDelReq.setMktResStoreId(dto.getMktResStoreId());
-                mktResInstList.add(dto.getMktResInstId());
-                adminResourceInstDelReq.setMktResInstIds(mktResInstList);
+                adminResourceInstDelReq.setMktResInstIds(Lists.newArrayList(dto.getMktResInstId()));
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
                 log.info("ResourceInstServiceImpl.updateResourceInstByIds resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(sucessNum));
                 if(num < 1){
@@ -854,13 +852,21 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         Boolean notSucess = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) || (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess());
         if (notSucess) {
-            String errorMsg1 = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
-            String errorMsg2 = (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
-            return ResultVO.error(errorMsg1 + errorMsg2);
+            String errorMsg = "";
+            if (null == syncTerminalResultVO) {
+                errorMsg = eBuyTerminalResultVO.getResultMsg();
+            } else {
+                errorMsg = syncTerminalResultVO.getResultMsg();
+            }
+            return ResultVO.error(errorMsg);
         }else {
-            String sucessMsg1 = (syncTerminalResultVO != null && syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
-            String sucessMsg2 = (eBuyTerminalResultVO != null && eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
-            return ResultVO.success(sucessMsg1 + sucessMsg2);
+            String sucessMsg = "";
+            if (null == syncTerminalResultVO) {
+                sucessMsg =  eBuyTerminalResultVO.getResultMsg();
+            } else {
+                sucessMsg = syncTerminalResultVO.getResultMsg();
+            }
+            return ResultVO.success(sucessMsg);
         }
 
     }

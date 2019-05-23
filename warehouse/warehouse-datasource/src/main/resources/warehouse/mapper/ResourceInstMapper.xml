@@ -36,6 +36,7 @@
     ,t.CRM_STATUS 
     ,t.SELF_REG_STATUS
     ,t.STORAGE_TYPE
+    ,t.TYPE_ID
 </sql>
 
     <select id="getResourceInstList" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq"
@@ -105,6 +106,9 @@
         <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
             #{item}
         </foreach>
+        <if test="null!=req.typeId and ''!=req.typeId">
+            and t.type_id = #{req.typeId}
+        </if>
         order by create_date desc
     </select>
 

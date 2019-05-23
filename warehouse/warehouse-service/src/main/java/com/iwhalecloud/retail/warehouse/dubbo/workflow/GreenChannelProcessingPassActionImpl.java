@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -57,7 +58,10 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
 
     @Autowired
     private ResourceBatchRecService resourceBatchRecService;
-    
+
+    @Autowired
+    private ResouceInstTrackService resouceInstTrackService;
+
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
         //对应申请单ID
@@ -123,6 +127,7 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("GreenChannelProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         }
+        resouceInstTrackService.asynGreenChannelForRetail(addReq, addRespResultVO);
         return ResultVO.success();
     }
 

@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -112,4 +113,10 @@ public class ResourceInstUpdateReq implements Serializable {
 	 */
 	@ApiModelProperty(value = "产品类型")
 	private String typeId;
+
+	/**
+	 * 串码、产品类型键值对
+	 */
+	@ApiModelProperty(value = "串码、产品类型键值对")
+	private Map<String, String> nbrAndTypeId;
 }

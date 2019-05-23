@@ -95,6 +95,8 @@ public abstract class BestpayServiceTemp {
         if (resCode.equals(responseResult.getRes_code())) {
             Object result = responseResult.getResult();
             returnStr = String.valueOf(result);
+        }else{
+            log.info("能开请求失败：method：" +method+"zopUrl:"+ zopUrl+"resCode:"+responseResult.getRes_code());
         }
        return returnStr;
     }

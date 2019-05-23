@@ -153,4 +153,10 @@ public class ResourceInstListPageReq extends PageVO {
 	 */
 	@ApiModelProperty(value = "入库类型")
 	private String storageType;
+
+	/**
+	 * 产品类型
+	 */
+	@ApiModelProperty(value = "产品类型")
+	private String typeId;
 }

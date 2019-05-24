@@ -177,7 +177,7 @@ public class ActivityManagerReference {
                         double disTotal=Double.parseDouble(promotionResp.getPromotionPrice());
                         //orderiMT.getNum()  下单的商品的数量
                         long limitNum = promotionResp.getNum();
-                        if(limitNum >= orderiMT.getNum()){// 活动限制的数量 > 下单的数量
+                        if(limitNum >= orderiMT.getNum() || limitNum==-1){// 活动限制的数量 > 下单的数量
                         	disTotal =CurrencyUtil.mul(disTotal,orderiMT.getNum());
                         }else{// 活动数量  < 下单数
                         	disTotal = CurrencyUtil.mul(disTotal,limitNum);

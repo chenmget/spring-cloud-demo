@@ -117,14 +117,12 @@ public class GoodsB2BController extends GoodsBaseController {
         req.setRegionId(regionId);
 
         //如果是预售商品，强制变更是否分货为否
-        if (GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(req.getIsAdvanceSale())) {
-            req.setIsAllot(GoodsConst.IsAllotEnum.IS_ALLOT.getCode());
-            List<GoodsProductRelDTO> goodsProductRelDTOs = req.getGoodsProductRelList();
-            //商品产品关联关系上增加预付款金额
-            ResultVO attacheAdvancePayAmountResultVO = attacheAdvancePayAmount(goodsProductRelDTOs,req.getGoodsActs());
-            if (!attacheAdvancePayAmountResultVO.isSuccess()) {
-                return attacheAdvancePayAmountResultVO;
-            }
+        req.setIsAllot(GoodsConst.IsAllotEnum.IS_ALLOT.getCode());
+        List<GoodsProductRelDTO> goodsProductRelDTOs = req.getGoodsProductRelList();
+        //商品产品关联关系上增加预付款金额
+        ResultVO attacheAdvancePayAmountResultVO = attacheAdvancePayAmount(goodsProductRelDTOs,req.getGoodsActs());
+        if (!attacheAdvancePayAmountResultVO.isSuccess()) {
+            return attacheAdvancePayAmountResultVO;
         }
 
         ResultVO<GoodsAddResp> resultVO = goodsService.addGoods(req);

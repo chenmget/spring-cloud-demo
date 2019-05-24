@@ -1,20 +1,13 @@
 package com.iwhalecloud.retail.order2b.busiservice;
 
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SendGoodsRequest;
 import com.iwhalecloud.retail.order2b.model.OrderInfoModel;
+import com.iwhalecloud.retail.warehouse.dto.request.DeliveryValidResourceInstReq;
 
 public interface DeliverGoodsService {
 
-    /**
-     *
-     */
-    CommonResultResp<OrderInfoModel> orderCheck(SendGoodsRequest request);
-
-    /**
-     * 串码有效性
-     */
-    CommonResultResp resNbrValidity(SendGoodsRequest request);
 
     /**
      * 出库
@@ -31,6 +24,14 @@ public interface DeliverGoodsService {
      */
     CommonResultResp sendGoodsFinish(SendGoodsRequest request);
 
+    /**
+     * 串码有效性
+     */
+    ResultVO resNbrValidity(DeliveryValidResourceInstReq req);
 
+    /**
+     * 串码有效性并把校验结果赋值到请求参数
+     */
+    ResultVO valieNbr(SendGoodsRequest request);
 
 }

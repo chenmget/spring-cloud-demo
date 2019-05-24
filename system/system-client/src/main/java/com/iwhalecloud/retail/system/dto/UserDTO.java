@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.system.dto;
 
-import com.iwhalecloud.retail.system.common.DesensitizedUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -174,6 +173,9 @@ public class UserDTO implements java.io.Serializable {
 
 	@ApiModelProperty(value = "工号来源")
 	private Integer userSource;
+
+	@ApiModelProperty(value = "changePwdCount")
+	private Integer changePwdCount;
 
 	/**
 	 * 重写脱敏

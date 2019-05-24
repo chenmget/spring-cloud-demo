@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.alibaba.dubbo.config.annotation.Reference;
@@ -28,6 +29,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 
@@ -155,7 +157,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Override
 	public CkProcureApplyResp ckApplyData1(PurApplyReq req) {
-		return purApplyManager.ckApplyData1(req);
+		CkProcureApplyResp ckProcureApplyResp  = purApplyManager.ckApplyData1(req);
+		String createDate = ckProcureApplyResp.getCreateDate();
+		createDate = createDate.substring(0, createDate.length()-2);
+		ckProcureApplyResp.setCreateDate(createDate);
+		 return ckProcureApplyResp;
 	}
 	
 	@Override
@@ -228,6 +234,43 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public void addShippingAddress(MemMemberAddressReq req){
 		purApplyManager.addShippingAddress(req);
 	}
+	
+	@Override
+	public ResultVO updatePrice(UpdateCorporationPriceReq req){
+		purApplyManager.updatePrice(req);
+		return ResultVO.success();
+	}
+	
+	//需要优化  怎么改为批量更新
+	@Override
+	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
+		List<String> snPriceList = req.getSnPrice();
+		for(int i=0;i<snPriceList.size();i++){
+			String snPrice = snPriceList.get(i);
+			String[] splits = snPrice.split("\\|");
+			req.setSn(splits[0]);
+			req.setCorporationPrice(splits[1]+"00");
+			purApplyManager.updatePrice(req);
+		}
+		return ResultVO.success();
+	}
+	
+//	@Override
+//	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
+//		List<String> snPriceList = req.getSnPrice();
+//		List<String> snList = new ArrayList<String>();
+//		List<String> priceList = new ArrayList<String>();
+//		for(int i=0;i<snPriceList.size();i++){
+//			String snPrice = snPriceList.get(i);
+//			String[] splits = snPrice.split("\\|");
+//			snList.add(splits[0]);
+//			priceList.add(splits[1]);
+//		}
+//		req.setSnList(snList);
+//		req.setPriceList(priceList);
+//		purApplyManager.commitPriceExcel(req);
+//		return ResultVO.success();
+//	}
 	
 }
 

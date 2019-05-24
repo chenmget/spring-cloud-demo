@@ -122,7 +122,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     public ResultVO addResourceInstByGreenChannel(ResourceInstAddReq req) {
         // step1 绿色通道额度校验
         String merchantId = req.getMerchantId();
-        String targetId = req.getMktResId();
         Long limitNum = Long.valueOf(req.getMktResInstNbrs().size());
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
@@ -240,8 +239,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
         log.info("RetailerResourceInstServiceImpl.delResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
 
+        req.setMktResStoreId(mktResStoreId);
         List<String> nbrList = req.getMktResInstNbrs();
-
         SynMktInstStatusSwapReq synMktInstStatusReq = new SynMktInstStatusSwapReq();
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(req.getMerchantId());
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {

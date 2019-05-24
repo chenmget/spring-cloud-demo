@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.util.Date;
 import java.util.List;
@@ -45,6 +46,9 @@ public class UserServiceImpl implements UserService {
 
     @Reference
     private MerchantService merchantService;
+
+    @Value("${retailer.login}")
+    private String retailerLogin;
 
 
     @Override
@@ -79,7 +83,12 @@ public class UserServiceImpl implements UserService {
             log.info("UserServiceImpl.login 出参：UserLoginResp-{}", JSON.toJSON(resp));
             return resp;
         }
-
+        String retailerLoginPass = "0";
+        if(!retailerLoginPass.equals(retailerLogin) && SystemConst.USER_FOUNDER_3 == user.getUserFounder()){
+            resp.setErrorMessage("零售商请通过BSS3.0平台登陆！");
+            log.info("UserServiceImpl.login 出参：UserLoginResp-{}", JSON.toJSON(resp));
+            return resp;
+        }
         //3、判断状态是否被禁用
         if(user.getStatusCd() != SystemConst.USER_STATUS_VALID){
             resp.setErrorMessage("此用户状态为非有效，请联系管理员！");
@@ -383,7 +392,10 @@ public class UserServiceImpl implements UserService {
         if (!checkPassword(req.getNewPassword())) {
             return ResultVO.error("密码格式不对，密码应为包含大小写字母、数字、特殊字符的8到20位字符串");
         }
-
+        Integer changePwdCount = user.getChangePwdCount() == null ? 0 : user.getChangePwdCount();
+        changePwdCount += 1;
+        user.setChangePwdCount(changePwdCount);
+        user.setChangePwdTime(new Date());
         user.setLoginPwd(new MD5(req.getNewPassword()).asHex());
         int result = userManager.updateUser(user);
         log.info("UserServiceImpl.updatePassword 出参：更新密码影响的行数={}", result);

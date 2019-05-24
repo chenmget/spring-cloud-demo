@@ -109,6 +109,13 @@ public interface ProductService {
      * @return
      */
     ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req);
+    
+    /**
+     * 条件分页查询(政企价格导出)
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ProductPageResp>> selectPageProductAdminDc(ProductsPageReq req);
 
     /**
      * 条件分页查询-All

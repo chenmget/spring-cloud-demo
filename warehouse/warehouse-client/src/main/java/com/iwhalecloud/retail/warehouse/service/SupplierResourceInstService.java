@@ -24,15 +24,7 @@ public interface SupplierResourceInstService {
      * @param req
      * @return
      */
-    ResultVO delResourceInst(ResourceInstUpdateReq req);
-
-    /**
-     * 还原串码
-     *
-     * @param req
-     * @return
-     */
-    ResultVO resetResourceInst(ResourceInstUpdateReq req);
+    ResultVO delResourceInst(AdminResourceInstDelReq req);
 
     /**
      * 获取列表
@@ -50,14 +42,6 @@ public interface SupplierResourceInstService {
      */
     ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req);
 
-
-    /**
-     * 订单发货 判断串码有效性
-     *
-     * @param req
-     * @return
-     */
-    ResultVO validResourceInst(ValidResourceInstReq req);
 
     /**
      * 订单发货 串码出库
@@ -128,4 +112,13 @@ public interface SupplierResourceInstService {
      * @return
      */
     public ResultVO confirmRefuseNbr(ConfirmReciveNbrReq req);
+
+    /**
+     * 订单发货 判断串码有效性
+     *
+     * @param req
+     * @return
+     */
+    ResultVO validResourceInst(DeliveryValidResourceInstReq req);
+
 }

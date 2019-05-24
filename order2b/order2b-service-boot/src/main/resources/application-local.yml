@@ -106,3 +106,13 @@ ftp:
   order:
     dataPathAgo: /tmp/order/ago
     dataPathMid: /tmp/order/mid
+
+#能开配置
+zop:
+  secret: ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=
+  url: http://134.176.102.33:8081/api/rest
+  timeout: 50000
+  #翼支付测试地址
+  payAuthMethod: ord.operbalance.preAuthApply
+  payConfirmMethod: ord.operbalance.preAuthConfirm
+  payCancelMethod: ord.operbalance.preAuthCancel

@@ -66,12 +66,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     }
 
     @Override
-    public ResultVO delResourceInst(ResourceInstUpdateReq req) {
-        return null;
-    }
-
-    @Override
-    public ResultVO resetResourceInst(ResourceInstUpdateReq req) {
+    public ResultVO delResourceInst(AdminResourceInstDelReq req) {
         return null;
     }
 
@@ -85,10 +80,6 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
         return null;
     }
 
-    @Override
-    public ResultVO validResourceInst(ValidResourceInstReq req) {
-        return null;
-    }
 
     @Override
     public ResultVO deliveryOutResourceInst(DeliveryResourceInstReq req) {
@@ -165,13 +156,13 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
             SyncTerminalSwapReq syncTerminalSwapReq = new SyncTerminalSwapReq();
             syncTerminalSwapReq.setMktResList(syncTerminalItemSwapReqs);
             syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
-            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalResultVO));
+            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}, resp={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalResultVO));
         }
         if (CollectionUtils.isNotEmpty(eBuyTerminalItemReqs)) {
             EBuyTerminalSwapReq eBuyTerminalSwapReq = new EBuyTerminalSwapReq();
             eBuyTerminalSwapReq.setMktResList(eBuyTerminalItemReqs);
             eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
-            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.ebuyTerminal req={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
+            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.ebuyTerminal req={}, resp={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
         }
         Boolean notSucess = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) || (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess());
         if (!notSucess) {
@@ -193,9 +184,13 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
             log.info("ResourceInstServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
             return ResultVO.success(true);
         } else {
-            String errorMsg1 = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) ? "" : syncTerminalResultVO.getResultMsg();
-            String errorMsg2 = (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess()) ? "" : eBuyTerminalResultVO.getResultMsg();
-            return ResultVO.error(errorMsg1 + errorMsg2);
+            String errorMsg = "";
+            if (null == syncTerminalResultVO) {
+                errorMsg = eBuyTerminalResultVO.getResultMsg();
+            } else {
+                errorMsg = syncTerminalResultVO.getResultMsg();
+            }
+            return ResultVO.error(errorMsg);
         }
     }
 
@@ -237,6 +232,11 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
 
     @Override
     public ResultVO confirmRefuseNbr(ConfirmReciveNbrReq req) {
+        return null;
+    }
+
+    @Override
+    public ResultVO validResourceInst(DeliveryValidResourceInstReq req) {
         return null;
     }
 }

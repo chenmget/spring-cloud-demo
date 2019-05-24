@@ -8,6 +8,9 @@ import com.iwhalecloud.retail.order2b.dto.resquest.order.SendGoodsRequest;
 public interface OrderDRGoodsOpenService {
 
 
+    /**
+     * 正常发货校验
+     */
     ResultVO deliverGoods(SendGoodsRequest request);
 
 

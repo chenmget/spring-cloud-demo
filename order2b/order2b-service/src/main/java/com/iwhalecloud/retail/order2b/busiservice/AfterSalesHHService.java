@@ -10,7 +10,7 @@ import com.iwhalecloud.retail.order2b.model.HHReceiveGoodsModel;
 public interface AfterSalesHHService {
 
     /**
-     * 发货校验
+     * 换货发货校验
      */
     CommonResultResp sellerCheckDeliverGoods(SendGoodsRequest request);
 

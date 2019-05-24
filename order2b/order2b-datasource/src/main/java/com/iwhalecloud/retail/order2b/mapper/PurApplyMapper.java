@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.entity.PurApply;
 
@@ -69,5 +70,9 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public String hqSeqItemId();
 	
 	public void addShippingAddress(@Param("req") MemMemberAddressReq req);
+	
+	public void updatePrice(@Param("req") UpdateCorporationPriceReq req);
+	
+	public void commitPriceExcel(@Param("req") UpdateCorporationPriceReq req);
 	
 }

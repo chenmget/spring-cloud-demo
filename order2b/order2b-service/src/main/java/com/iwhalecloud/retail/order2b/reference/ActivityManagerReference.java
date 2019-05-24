@@ -175,7 +175,14 @@ public class ActivityManagerReference {
                     if (promotionResp.getPromotionPrice() != null) {
 
                         double disTotal=Double.parseDouble(promotionResp.getPromotionPrice());
-                        disTotal =CurrencyUtil.mul(disTotal,orderiMT.getNum());
+                        //orderiMT.getNum()  下单的商品的数量
+                        long limitNum = promotionResp.getNum();
+                        if(limitNum >= orderiMT.getNum() || limitNum==-1){// 活动限制的数量 > 下单的数量
+                        	disTotal =CurrencyUtil.mul(disTotal,orderiMT.getNum());
+                        }else{// 活动数量  < 下单数
+                        	disTotal = CurrencyUtil.mul(disTotal,limitNum);
+                        }
+                        
                         log.info("gs_10010_discuontTotal,disTotal",disTotal);
                         if(disTotal>=goodAmount){
                             isContinueUse = false;

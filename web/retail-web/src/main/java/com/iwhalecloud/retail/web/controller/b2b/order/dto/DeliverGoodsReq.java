@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.b2b.order.dto;
 
+import com.iwhalecloud.retail.oms.dto.response.FileManagerRespDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -21,7 +22,12 @@ public class DeliverGoodsReq implements Serializable {
     @ApiModelProperty(value = "物流ID")
     private String logiId;
 
-    List<DeliverGoodsItemDTO> goodsList;
+    /**
+     * 串码id
+     */
+    private List<String> resNbrList;
+
+    private FileManagerRespDTO resNbrFile;
 
     @ApiModelProperty("申请单")
     private String orderApplyId;

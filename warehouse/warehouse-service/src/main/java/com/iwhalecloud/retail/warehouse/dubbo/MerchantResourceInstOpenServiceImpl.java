@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
 @Slf4j
@@ -44,7 +45,6 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
         log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         ResultVO<ResourceInstAddResp> resp = merchantResourceInstService.addResourceInst(req);
         log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={} resp={}", JSON.toJSONString(req), JSON.toJSONString(resp));
-        resouceInstTrackService.asynSaveTrackForMerchant(req, resp);
         return resp;
     }
 
@@ -78,7 +78,8 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     public ResultVO addResourceInstByAdmin(ResourceInstAddReq req){
         ResultVO<ResourceInstAddResp> resp = merchantResourceInstService.addResourceInstByAdmin(req);
         log.info("MerchantResourceInstOpenServiceImpl.addResourceInstByAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(req));
-        resouceInstTrackService.asynSaveTrackForMerchant(req, resp);
+        CopyOnWriteArrayList<String> newlist = new CopyOnWriteArrayList<String>(req.getMktResInstNbrs());
+        resouceInstTrackService.asynSaveTrackForMerchant(req, resp, newlist);
         return resp;
     }
 }

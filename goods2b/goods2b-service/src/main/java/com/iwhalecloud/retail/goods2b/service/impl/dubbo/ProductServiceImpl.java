@@ -327,6 +327,61 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResultVO<Page<ProductPageResp>> selectPageProductAdminDc(ProductsPageReq req) {
+        Page<ProductPageResp> page = productManager.selectPageProductAdmin(req);
+        List<ProductPageResp> respList = page.getRecords();
+        for (ProductPageResp resp : respList){
+        	Double corporationPrice = resp.getCorporationPrice();
+        	Double cost = resp.getCost();
+        	resp.setCorporationPrice(corporationPrice/100);
+        	resp.setCost(cost/100);
+        	String purchaseType = resp.getPurchaseType();
+        	if("1".equals(purchaseType)){
+        		resp.setPurchaseType("集采");
+        	}else if("2".equals(purchaseType)){
+        		resp.setPurchaseType("社采");
+        	}
+            MerchantGetReq merchantGetReq = new MerchantGetReq();
+            merchantGetReq.setMerchantId(resp.getManufacturerId());
+            ResultVO<MerchantDTO> result = merchantService.getMerchant(merchantGetReq);
+            MerchantDTO dto = result.getResultData();
+            resp.setManufacturerName(null!=dto? dto.getMerchantName():null);
+            // 设置规格名
+            ProductDTO productDTO = new ProductDTO();
+            BeanUtils.copyProperties(resp, productDTO);
+            String specName = this.getSpecName(productDTO);
+            resp.setSpecName(specName);
+
+            // 查询缩略图图片
+            String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
+            String nailType = FileConst.ProductSubType.NAIL_SUB.getType();
+            List<ProdFileDTO> nailImages =  fileManager.getFile(resp.getProductId(), targetType,nailType);
+            if(null == nailImages || nailImages.isEmpty()){
+                // // 没有缩略图图片，查询默认图片
+                String defaultType = FileConst.ProductSubType.DEFAULT_SUB.getType();
+                nailImages =  fileManager.getFile(resp.getProductId(), targetType,defaultType);
+            }
+
+            if(null == nailImages || nailImages.isEmpty()){
+                continue;
+            }
+            StringBuilder url = new StringBuilder();
+            for (int i = 0;  i< nailImages.size(); i++){
+                ProdFileDTO file = nailImages.get(i);
+                if (i == (nailImages.size() - 1)){
+                    url.append(file.getFileUrl());
+                }else {
+                    url.append(file.getFileUrl()).append(",");
+                }
+            }
+            resp.setDefaultImages(url.toString());
+        }
+        page.setRecords(respList);
+        log.info("ProductServiceImpl.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respList));
+        return ResultVO.success(page);
+    }
+    
+    @Override
     public ResultVO<Page<ProductPageResp>> selectPageProductAdminAll(ProductsPageReq req) {
         Page<ProductPageResp> page = productManager.selectPageProductAdminAll(req);
         List<ProductPageResp> respList = page.getRecords();
@@ -436,8 +491,10 @@ public class ProductServiceImpl implements ProductService {
             ProductDTO productDTO = new ProductDTO();
             BeanUtils.copyProperties(productInfo, productDTO);
             String specName = this.getSpecName(productDTO);
-            String color = productDTO.getColor();
-            String memory = productDTO.getMemory();
+//            String color = productDTO.getColor();
+            String color = productDTO.getAttrValue2();
+//            String memory = productDTO.getMemory();
+            String memory = productDTO.getAttrValue3();
             String typeName = productDTO.getTypeName();
             String unitType = productDTO.getUnitType();
             queryProductInfoResqDTO.setSpecName(specName);

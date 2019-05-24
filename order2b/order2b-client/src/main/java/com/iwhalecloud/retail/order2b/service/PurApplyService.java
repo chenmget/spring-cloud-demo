@@ -15,6 +15,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 
 /**
@@ -67,6 +68,9 @@ public interface PurApplyService {
 	public String hqSeqItemId();
 	//添加收货地址
 	public void addShippingAddress(MemMemberAddressReq req);
+	
+	public ResultVO updatePrice(UpdateCorporationPriceReq req);
 
+	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req);
 
 }

@@ -15,10 +15,7 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ConfirmReciveNbrReqDTO;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAllocateReqDTO;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstUpdateReqDTO;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.*;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ResourceInstColum;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -75,9 +72,9 @@ public class SupplierResourceInstB2BController {
     })
     @DeleteMapping(value="delResourceInst")
     @UserLoginToken
-    public ResultVO<List<String>> delResourceInst(@RequestBody ResourceInstUpdateReqDTO dto) {
+    public ResultVO<List<String>> delResourceInst(@RequestBody ResourceInstUpdateByIdReqDTO dto) {
         String userId = UserContext.getUserId();
-        ResourceInstUpdateReq req = new ResourceInstUpdateReq();
+        AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
         List<String> checkStatusCd = new ArrayList<String>(1);
@@ -89,26 +86,6 @@ public class SupplierResourceInstB2BController {
         return supplierResourceInstService.delResourceInst(req);
     }
 
-    @ApiOperation(value = "串码还原在库可用", notes = "串码还原在库可用")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping(value="resetResourceInst")
-    @UserLoginToken
-    public ResultVO<List<String>> resetResourceInst(@RequestBody ResourceInstUpdateReqDTO dto) {
-        String userId = UserContext.getUserId();
-        ResourceInstUpdateReq req = new ResourceInstUpdateReq();
-        BeanUtils.copyProperties(dto, req);
-        req.setUpdateStaff(userId);
-        List<String> checkStatusCd = new ArrayList<String>(1);
-        checkStatusCd.add(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        req.setEventType(ResourceConst.EVENTTYPE.RECYCLE.getCode());
-        req.setCheckStatusCd(checkStatusCd);
-        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        req.setMerchantId(UserContext.getMerchantId());
-        return supplierResourceInstService.resetResourceInst(req);
-    }
 
     @ApiOperation(value = "串码入库", notes = "添加操作")
     @ApiResponses({

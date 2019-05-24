@@ -30,5 +30,13 @@ public class SendGoodsRequest extends UpdateOrderStatusRequest implements Serial
     @ApiModelProperty("正常发货：1，换货发货：3")
     private String type;
 
+    @ApiModelProperty("商家Id")
+    private String merchantId;
+
+    /**
+     * 串码id
+     */
+    private List<String> resNbrList;
+
 
 }

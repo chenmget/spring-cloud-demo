@@ -186,31 +186,30 @@ public class UserController extends BaseController {
                 return resultVO;
             }
         }
-        UserLoginResp resp = userService.login(req);
-        
-        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
-        
-        // 登录日志记录
-        if(StringUtils.isNotBlank(user.getUserId())){
-            LoginLogDTO loginLogDTO = new LoginLogDTO();
-            loginLogDTO.setUserId(user.getUserId());
-            Date nowDate = new Date();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            loginLogDTO.setLoginTime(sdf.format(nowDate));
-            loginLogDTO.setLoginType("3");
-            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
-            String sourceIp = getUserLoginIp(request);
-            loginLogDTO.setSourceIp(sourceIp);
-            loginLogDTO.setLoginDesc(resp.getErrorMessage());
-            loginLogService.saveLoginLog(loginLogDTO);
-            
-        }
-       
+            UserLoginResp resp = userService.login(req);
+
+            UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
+            // 登录日志记录
+            if(StringUtils.isNotBlank(user.getUserId())){
+                LoginLogDTO loginLogDTO = new LoginLogDTO();
+                loginLogDTO.setUserId(user.getUserId());
+                Date nowDate = new Date();
+                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                loginLogDTO.setLoginTime(sdf.format(nowDate));
+                loginLogDTO.setLoginType("3");
+                loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
+                String sourceIp = getUserLoginIp(request);
+                loginLogDTO.setSourceIp(sourceIp);
+                loginLogDTO.setLoginDesc(resp.getErrorMessage());
+                loginLogService.saveLoginLog(loginLogDTO);
+
+            }
+//        }
+
         // 失败 返回错误信息
         if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
             return failResultVO(resp.getErrorMessage());
         }
-
         request.getSession().invalidate();//清空session
         Cookie[] cookies = request.getCookies();
         if (Objects.nonNull(cookies) && cookies.length > 0) {
@@ -230,7 +229,7 @@ public class UserController extends BaseController {
         loginResp.setUserMenu(getUserMenu(resp.getUserDTO().getUserId()));
         loginResp.setLoginStatusCode(WebConst.loginStatusEnum.HAVE_LOGIN.getCode());
         loginResp.setLoginStatusMsg(WebConst.loginStatusEnum.HAVE_LOGIN.getValue());
-
+        loginResp.setChangePwdCount(resp.getUserDTO().getChangePwdCount());
         return successResultVO(loginResp);
     }
 
@@ -266,24 +265,23 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/loginWithoutPwd", method = RequestMethod.POST)
     public ResultVO<LoginResp> userLoginWithoutPwd(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginWithoutPwdReq req){
         UserLoginResp resp = userService.loginWithoutPwd(req);
-        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
-        
+
         // 登录日志记录
-        if(StringUtils.isNotBlank(user.getUserId())){
+        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
+        if(StringUtils.isNotBlank(user.getUserId())) {
             LoginLogDTO loginLogDTO = new LoginLogDTO();
             loginLogDTO.setUserId(user.getUserId());
             Date nowDate = new Date();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             loginLogDTO.setLoginTime(sdf.format(nowDate));
-            loginLogDTO.setLoginType("portal".equals(req.getLoginType())? "2":"3");
-            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
+            loginLogDTO.setLoginType("portal".equals(req.getLoginType()) ? "2" : "3");
+            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess() ? "1" : "0");
             String sourceIp = getUserLoginIp(request);
             loginLogDTO.setSourceIp(sourceIp);
             loginLogDTO.setLoginDesc(resp.getErrorMessage());
             loginLogService.saveLoginLog(loginLogDTO);
-            
         }
-        
+
         // 失败 返回错误信息
         if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
             return failResultVO(resp.getErrorMessage());
@@ -322,7 +320,7 @@ public class UserController extends BaseController {
         Date nowDate = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     	loginLogService.updatelogoutTimeByUserId(userId, sdf.format(nowDate));
-    	
+
         //清空session里面的用户信息
         request.getSession().removeAttribute(WebConst.SESSION_TOKEN);
         request.getSession().removeAttribute(WebConst.SESSION_USER_OTHER_MSG);

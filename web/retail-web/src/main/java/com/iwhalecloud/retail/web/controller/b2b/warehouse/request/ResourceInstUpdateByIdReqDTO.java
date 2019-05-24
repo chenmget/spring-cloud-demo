@@ -7,7 +7,6 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.Map;
 
 
 /**
@@ -18,27 +17,21 @@ import java.util.Map;
  */
 @Data
 @ApiModel(value = "对应模型mkt_res_inst, 对应实体ResourceInst类")
-public class ResourceInstUpdateReqDTO implements Serializable {
+public class ResourceInstUpdateByIdReqDTO implements Serializable {
 
   	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 记录营销资源实例编码。
 	 */
-	@NotEmpty(message = "串码不能为空")
+	@NotEmpty(message = "串码主键不能为空")
 	@ApiModelProperty(value = "记录营销资源实例编码。")
-	private List<String> mktResInstNbrs;
+	private List<String> mktResInstIdList;
 
 	/**
 	 * 商家Id
 	 */
-	@ApiModelProperty(value = "商家Id。")
+	@ApiModelProperty(value = "商家Id")
 	private String merchantId;
-
-	/**
-	 * 串码、产品类型键值对
-	 */
-	@ApiModelProperty(value = "串码、产品类型键值对")
-	private Map<String, String> nbrAndTypeId;
 
 }

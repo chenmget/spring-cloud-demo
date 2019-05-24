@@ -93,13 +93,19 @@ zop:
 webService:
    inventoryUrl: http://ws.webxml.com.cn/WebServices/MobileCodeWS.asmx?wsdl
 
-#串码补录
+#ITMS文件入库
 ftp:
-  basePath: /Users/jiyou/Documents/work/hj/mkt2itms
-  ftpAddress: 134.176.1.27
-  ftpPort: 24
-  ftpUserName: admin
-  ftpPassword: admin
+  basePath: D:/Users/mkt2itms
+  ftpAddress: 127.0.0.1
+  ftpPort: 21
+  ftpUserName: Administrator
+  ftpPassword: xieqi5200
+  gmAdd: /data/back/Terminal/add
+  iptvAdd: /data/back/IPTV/add
+  gmModify: /data/back/Terminal/modify
+  iptvModify: /data/back/IPTV/modify
+  gmDelete: /data/back/Terminal/delete
+  iptvDelete: /data/back/IPTV/delete
   gmdirAdd: /data/back/Failure/Terminal/add
   iptvdirAdd: /data/back/Failure/IPTV/add
   gmdirModify: /data/back/Failure/Terminal/modify
@@ -111,3 +117,5 @@ ftp:
 addNbrService:
   typeId: 10350158,
   checkMaxNum: 10
+
+zopServiceEnv: Test

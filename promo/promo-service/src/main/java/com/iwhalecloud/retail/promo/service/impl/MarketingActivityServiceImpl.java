@@ -477,6 +477,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                         activityProductDTOList.get(i).setMemory(respResultVO.getResultData().getMemory());//lws
                         activityProductDTOList.get(i).setUnitTypeName(respResultVO.getResultData().getUnitTypeName());//lws
                         activityProductDTOList.get(i).setBrandName(respResultVO.getResultData().getBrandName());//lws
+                        activityProductDTOList.get(i).setUnitTypeName(respResultVO.getResultData().getUnitTypeName());//lws
                     }
                 }
             }
@@ -613,6 +614,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                         marketingAndPromotionResp.setId(marketingActivity.getId());
                         marketingAndPromotionResp.setPromotionPrice(String.valueOf(activityGoodsList.get(k).getDiscountAmount()));
                         marketingAndPromotionResp.setProductId(activityGoodsList.get(k).getProductId());
+                        marketingAndPromotionResp.setNum(activityGoodsList.get(k).getNum());
                         respList.add(marketingAndPromotionResp);
                     }
                 }

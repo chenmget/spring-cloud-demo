@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
@@ -13,6 +14,8 @@ import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatComplexService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsService;
+import com.iwhalecloud.retail.partner.common.PartnerConst;
+import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
@@ -96,6 +99,19 @@ public class CatComplexB2BController extends GoodsBaseController {
                 req.setTargetCodeList(targetCodeList);
             }
             log.info("CatComplexB2BController.queryCategoryRanking userFounder={},targetCodeList={}", userFounder, JSON.toJSONString(targetCodeList));
+            userFounder = UserContext.getUser().getUserFounder();
+            if (null == userFounder) {
+                throw new UserNoMerchantException(ResultCodeEnum.ERROR.getCode(), "用户没有商家类型，请确认");
+            }else if (userFounder == SystemConst.USER_FOUNDER_3) {
+                // 如果用户是零售商，只能查到地包商品
+                req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
+            } else if (userFounder == SystemConst.USER_FOUNDER_5) {
+                // 如果用户是地包供应商，只能查到省包商品
+                req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+            } else {
+                // 省包供应商、厂商查询不到任何商品
+                req.setSourceFrom("-1");
+            }
         }
         return goodsService.queryGoodsForPage(req);
     }

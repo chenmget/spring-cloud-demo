@@ -366,7 +366,7 @@ public class GoodsB2BController extends GoodsBaseController {
                 // 省包供应商查询不到任何商品
                 req.setSourceFrom("-1");
             }
-        }  else {
+        } else {
             req.setSortType(GoodsConst.SortTypeEnum.MKTPRICE_ASC.getValue());
         }
         if (!StringUtils.isEmpty(attrSpecValues)) {

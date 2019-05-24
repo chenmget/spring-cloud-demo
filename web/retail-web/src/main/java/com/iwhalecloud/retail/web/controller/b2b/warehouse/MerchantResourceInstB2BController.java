@@ -80,7 +80,6 @@ public class MerchantResourceInstB2BController {
         ResourceInstUpdateReq req = new ResourceInstUpdateReq();
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
-        req.setMerchantId(UserContext.getMerchantId());
         req.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
         req.setCheckStatusCd(Lists.newArrayList(
                 ResourceConst.STATUSCD.AUDITING.getCode(),

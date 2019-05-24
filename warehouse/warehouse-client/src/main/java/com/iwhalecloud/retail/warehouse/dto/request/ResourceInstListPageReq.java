@@ -144,11 +144,6 @@ public class ResourceInstListPageReq extends PageVO {
 	private String merchantType;
 
 	/**
-	 * 商家id
-	 */
-	@ApiModelProperty(value = "商家id")
-	private String merchantId;
-	/**
 	 * 入库类型
 	 */
 	@ApiModelProperty(value = "入库类型")

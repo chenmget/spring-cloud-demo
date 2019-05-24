@@ -199,7 +199,6 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
         ResourceInstsGetReq getReq = new ResourceInstsGetReq();
         getReq.setMktResStoreId(req.getMktResStoreId());
         getReq.setMktResInstNbrs(mktResInstNbrList);
-        getReq.setMerchantId(req.getMerchantId());
         List<ResourceInstDTO> exixtsNbrInstList = resourceInstMapper.getResourceInsts(getReq);
         // 1、不存在的串码
         List<String> exixtsNbrList = exixtsNbrInstList.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());

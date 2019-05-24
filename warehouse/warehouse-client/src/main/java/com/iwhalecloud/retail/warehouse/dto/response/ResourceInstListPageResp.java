@@ -311,4 +311,7 @@ public class ResourceInstListPageResp implements java.io.Serializable {
 	@ApiModelProperty(value = "规格3")
 	private String attrValue3;
 
+	@ApiModelProperty(value = "内存规格")
+	private String memorySpec;
+
 }

@@ -325,7 +325,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 resourceInst.setCtCode(req.getCtCode().get(mktResInstNbr));
             }
             resourceInst.setCreateDate(now);
-            resourceInst.setCreateTime(now);
+            resourceInst.setMerchantId(null);
+            resourceInst.setMerchantName(null);
+            resourceInst.setMerchantCode(null);
             resourceInst.setSourceType(req.getSourceType());
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             resourceInsts.add(resourceInst);
@@ -369,9 +371,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 resourceInst.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
             }
             resourceInst.setCreateDate(now);
-            resourceInst.setCreateTime(now);
             resourceInst.setSourceType(req.getSourceType());
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+            resourceInst.setMerchantId(null);
             resourceInsts.add(resourceInst);
         }
         Boolean addResInstCnt = resourceInstManager.saveBatch(resourceInsts);
@@ -413,7 +415,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 resourceInst.setCtCode(req.getCtCode().get(mktResInstNbr));
             }
             resourceInst.setCreateDate(now);
-            resourceInst.setCreateTime(now);
             resourceInst.setSourceType(req.getSourceType());
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             resourceInsts.add(resourceInst);

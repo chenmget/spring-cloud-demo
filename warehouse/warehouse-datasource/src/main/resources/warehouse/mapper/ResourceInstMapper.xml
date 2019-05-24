@@ -90,9 +90,6 @@
                 #{item}
             </foreach>
         </if>
-        <if test="null!=req.merchantId and ''!=req.merchantId">
-            and t.merchant_id = #{req.merchantId}
-        </if>
         <if test="null!=req.storageType and ''!=req.storageType">
             and t.storage_type = #{req.storageType}
         </if>
@@ -114,6 +111,30 @@
 
     <update id="updateResourceInst"  parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq">
         update mkt_res_inst t set t.status_cd = #{statusCd},t.status_date = #{statusDate},t.update_date = #{updateDate}
+        <if test="null!=merchantName and '' !=merchantName">
+            ,t.merchant_name = #{merchantName}
+        </if>
+        <if test="null!=merchantCode and '' !=merchantCode">
+            ,t.merchant_code = #{merchantCode}
+        </if>
+        <if test="null!=supplierName and '' !=supplierName">
+            ,t.supplier_name = #{supplierName}
+        </if>
+        <if test="null!=supplierCode and '' !=supplierCode">
+            ,t.supplier_code = #{supplierCode}
+        </if>
+        <if test="null!=lanId and '' !=lanId">
+            ,t.lan_id = #{lanId}
+        </if>
+        <if test="null!=regionId and '' !=regionId">
+            ,t.region_id = #{regionId}
+        </if>
+        <if test="null!=orderId and '' !=orderId">
+            ,t.order_id = #{orderId}
+        </if>
+        <if test="null!=createTime and '' !=createTime">
+            ,t.create_time = #{createTime}
+        </if>
         where t.MKT_RES_STORE_ID = #{mktResStoreId}
         and mkt_res_inst_nbr in
         <if test="null!=mktResInstNbrs and mktResInstNbrs.size>0">
@@ -169,9 +190,6 @@
         <if test="null!=statusCd and ''!=statusCd">
             and t.status_cd = #{statusCd}
         </if>
-        <if test="null!=merchantId and ''!=merchantId">
-            and t.merchant_id = #{merchantId}
-        </if>
         <if test="null!=merchantTypes and merchantTypes.size>0">
             and t.merchant_type in
             <foreach item="item" index="index" open="(" separator="," close=")" collection="merchantTypes">
@@ -194,9 +212,6 @@
         </if>
         <if test="null!=statusCd and ''!=statusCd">
             and t.status_cd = #{statusCd}
-        </if>
-        <if test="null!=merchantId and ''!=merchantId">
-            and t.merchant_id = #{merchantId}
         </if>
         <if test="null!=mktResId and ''!=mktResId">
             and t.mkt_res_id = #{mktResId}
@@ -288,9 +303,6 @@
         <if test="null!=req.statusCd and ''!=req.statusCd">
             and t.status_cd = #{req.statusCd}
         </if>
-        <if test="null!=req.merchantId and ''!=req.merchantId">
-            and t.merchant_id = #{req.merchantId}
-        </if>
         <if test="null!=req.storageType and ''!=req.storageType">
             and t.storage_type = #{req.storageType}
         </if>
@@ -345,9 +357,6 @@
         </if>
         <if test="null!=statusCd and ''!=statusCd">
             and t.status_cd = #{statusCd}
-        </if>
-        <if test="null!=merchantId and ''!=merchantId">
-            and t.merchant_id = #{merchantId}
         </if>
         <if test="null!=mktResId and ''!=mktResId">
             and t.mkt_res_id = #{mktResId}

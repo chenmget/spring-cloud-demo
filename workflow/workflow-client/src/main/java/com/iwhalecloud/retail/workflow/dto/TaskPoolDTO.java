@@ -23,31 +23,31 @@ public class TaskPoolDTO implements java.io.Serializable {
   	 * id  
   	 */
 	@ApiModelProperty(value = "id  ")
-  	private java.lang.String poolId;
+  	private String poolId;
 	
 	/**
   	 * 路由实例表  
   	 */
 	@ApiModelProperty(value = "路由实例表  ")
-  	private java.lang.String taskItemId;
+  	private String taskItemId;
 	
 	/**
   	 * 任务ID  
   	 */
 	@ApiModelProperty(value = "任务ID  ")
-  	private java.lang.String taskId;
+  	private String taskId;
 	
 	/**
   	 * 用户id  
   	 */
 	@ApiModelProperty(value = "用户id  ")
-  	private java.lang.String userId;
+  	private String userId;
 	
 	/**
   	 * 用户名称  
   	 */
 	@ApiModelProperty(value = "用户名称  ")
-  	private java.lang.String userName;
+  	private String userName;
 	
   	
 }

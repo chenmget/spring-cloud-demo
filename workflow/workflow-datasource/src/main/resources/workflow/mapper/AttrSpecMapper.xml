@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.workflow.mapper.AttrSpecMapper">
+
+<sql id="allFields">
+    t.ATTR_ID 
+    ,t.ATTR_NAME 
+    ,t.ATTR_TYPE 
+    ,t.STATUS_CD 
+    ,t.REMARK 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE
+    ,t.attr_code
+</sql>
+    <select id="selectAttrSpecByAttrIds" resultType="com.iwhalecloud.retail.workflow.entity.AttrSpec"
+            parameterType="list">
+        SELECT
+        <include refid="allFields" />
+        FROM
+        WF_ATTR_SPEC t WHERE  t.ATTR_ID IN
+        <foreach collection="list" item="item" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+    </select>
+
+</mapper>

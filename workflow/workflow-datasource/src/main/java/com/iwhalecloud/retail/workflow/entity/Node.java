@@ -42,7 +42,7 @@ public class Node implements Serializable {
   	/**
   	 * 所属类型 
   	 */
-	@ApiModelProperty(value = "所属类型 ")
+	@ApiModelProperty(value = "所属类型: 1. 处理节点 2. 判断节点 ")
   	private String type;
   	
   	/**

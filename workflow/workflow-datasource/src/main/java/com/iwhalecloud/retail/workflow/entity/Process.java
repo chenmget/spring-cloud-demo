@@ -51,19 +51,19 @@ public class Process implements Serializable {
             1：有效
   	 */
 	@ApiModelProperty(value = "状态 0：无效 1：有效")
-  	private java.lang.String processStatus;
+  	private String processStatus;
   	
   	/**
   	 * 版本号 
   	 */
 	@ApiModelProperty(value = "版本号 ")
-  	private java.lang.Long version;
+  	private Long version;
   	
   	/**
   	 * 描述 
   	 */
 	@ApiModelProperty(value = "描述 ")
-  	private java.lang.String processDesc;
+  	private String processDesc;
   	
   	/**
   	 * 创建时间 
@@ -75,7 +75,7 @@ public class Process implements Serializable {
   	 * 创建用户ID 
   	 */
 	@ApiModelProperty(value = "创建用户ID ")
-  	private java.lang.String createUserId;
+  	private String createUserId;
   	
   	/**
   	 * 修改时间 
@@ -87,7 +87,7 @@ public class Process implements Serializable {
   	 * 修改用户ID 
   	 */
 	@ApiModelProperty(value = "修改用户ID ")
-  	private java.lang.String updateUserId;
+  	private String updateUserId;
   	
   	
   	//属性 end

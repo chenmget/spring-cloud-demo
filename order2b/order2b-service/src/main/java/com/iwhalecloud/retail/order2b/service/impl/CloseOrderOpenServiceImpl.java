@@ -182,7 +182,10 @@ public class CloseOrderOpenServiceImpl implements CloseOrderOpenService {
         log.info("----->> 关闭流程结束，返参为: {}", resultVO);
 
         // 翼支付取消预授权
-        payAuthorizationService.AuthorizationCancellation(orderId);
+        Boolean flag = payAuthorizationService.AuthorizationCancellation(orderId);
+        if(!flag){
+            return ResultVO.error("翼支付取消预授权失败。");
+        }
 
         return ResultVO.success();
     }

@@ -12,10 +12,8 @@ import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import com.iwhalecloud.retail.workflow.dto.TaskItemDTO;
 import com.iwhalecloud.retail.workflow.dto.req.*;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskPageResp;
-import com.iwhalecloud.retail.workflow.entity.Service;
-import com.iwhalecloud.retail.workflow.entity.TaskItem;
-import com.iwhalecloud.retail.workflow.manager.NodeRightsManager;
-import com.iwhalecloud.retail.workflow.manager.TaskItemManager;
+import com.iwhalecloud.retail.workflow.entity.*;
+import com.iwhalecloud.retail.workflow.manager.*;
 import com.iwhalecloud.retail.workflow.service.TaskItemService;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import org.junit.Assert;
@@ -26,7 +24,9 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @SpringBootTest(classes = WorkFlowServiceApplication.class)
 @RunWith(SpringRunner.class)
@@ -47,17 +47,28 @@ public class TaskServiceImplTest {
     @Resource
     private NodeRightsManager nodeRightsManager;
 
+    @Resource
+    private ProcessParamManager processParamManager;
+
+    @Resource
+    private AttrSpecManager attrSpecManager;
+
+    @Resource
+    private RuleDefManager ruleDefManager;
+
     @Test
     public void startProcess() {
         ProcessStartReq req = new ProcessStartReq();
-        req.setProcessId("3");
+        req.setProcessId("20190521");
         req.setTaskSubType("1130");
-        req.setFormId("201905080000001");
-        req.setTitle("商品审核测试");
+        req.setFormId("2019".concat(System.currentTimeMillis()+""));
+        req.setTitle("流程匹配测试");
 //        req.setApplyUserId("1");
 //        req.setApplyUserName("admin");
         req.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
-        req.setParamsValue("{'brandId':'1001'}");
+        Map map=new HashMap();
+        map.put("PP","huawei");
+        req.setParamsValue(JSON.toJSONString(map));
         ResultVO resultVO = taskService.startProcess(req);
         System.out.println(resultVO.isSuccess());
         Assert.assertEquals("0", resultVO.getResultCode());
@@ -78,11 +89,11 @@ public class TaskServiceImplTest {
     @Test
     public void nextRoute() {
         RouteNextReq req = new RouteNextReq();
-        req.setTaskId("10135143");
-        req.setTaskItemId("10135146");
-        req.setHandlerUserId("100163600");
-        req.setHandlerUserName("陈德");
-        req.setHandlerMsg("处理完成");
+        req.setTaskId("12213824");
+        req.setTaskItemId("12213825");
+        req.setHandlerUserId("1345");
+        req.setHandlerUserName("12322");
+        req.setHandlerMsg("选择");
         req.setRouteId("19");
         req.setNextNodeId("1007");
 //        List<HandlerUser> userList = Lists.newArrayList();
@@ -207,6 +218,24 @@ public class TaskServiceImplTest {
     @Test
     public void getHandlerUserByRemote() {
 
+    }
+    @Test
+    public void queryProcessParamByProcessId(){
+        List<ProcessParam> processParam = processParamManager.queryProcessParamByProcessId("20190521");
+        System.out.println(JSON.toJSONString(processParam));
+    }
+    @Test
+    public void selectAttrSpecByAttrIds(){
+        List<String> list = new ArrayList<>();
+        list.add("1");
+        list.add("2");
+        List<AttrSpec> attrSpec = attrSpecManager.selectAttrSpecByAttrIds(list);
+        System.out.println(JSON.toJSONString(attrSpec));
+    }
+    @Test
+    public void queryRuleDefByParams(){
+        List<RuleDef> ruleDef = ruleDefManager.queryRuleDefByParams("1","huawei");
+        System.out.println(JSON.toJSONString(ruleDef));
     }
 
 }

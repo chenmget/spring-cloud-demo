@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class AuditNotPassActionImpl implements AuditNotPassActionService {
+public class AuditNotPassActionServiceImpl implements AuditNotPassActionService {
 
     @Reference
     private ResourceRequestService requestService;
@@ -31,7 +31,7 @@ public class AuditNotPassActionImpl implements AuditNotPassActionService {
         updateReq.setMktResReqId(businessId);
         updateReq.setStatusCd(ResourceConst.MKTRESSTATE.CANCEL.getCode());
         ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(updateReq);
-        log.info("AuditNotPassActionImpl.run requestService.updateResourceRequestState updateReq={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updatRequestVO));
+        log.info("AuditNotPassActionServiceImpl.run requestService.updateResourceRequestState updateReq={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updatRequestVO));
         // 申请单ID->明细
         return ResultVO.success();
     }

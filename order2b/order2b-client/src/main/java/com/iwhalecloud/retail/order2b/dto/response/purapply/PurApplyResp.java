@@ -22,7 +22,7 @@ public class PurApplyResp extends PageVO implements Serializable {
 	private String status;	//处理状态
 	private String option;	//操作
 	private String lanId; // 地址id
-//	private String applyMerchantName; //申请名称
+	private String applyMerchantName; //申请名称
 
 
 }

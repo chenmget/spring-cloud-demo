@@ -11,11 +11,11 @@
 			a.CREATE_DATE AS applyTime,
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
-			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.APPLY_MERCHANT_ID) as applyMerchantName,
+			b.merchant_name as applyMerchantName,
 			a.STATUS_CD AS STATUS,
 			'' AS `option`
-			 FROM PUR_APPLY a
-			 WHERE 1=1
+			 FROM PUR_APPLY a,par_merchant b
+			 WHERE 1=1 and a.APPLY_MERCHANT_ID=b.MERCHANT_ID
 			 and a.STATUS_CD != '1100'
 		<if test="req.lanId != null and req.lanId != ''">
             and a.LAN_ID = #{req.lanId}
@@ -34,6 +34,9 @@
 		</if>
 		<if test='req.applyMerchantId!=null and req.applyMerchantId!=""'>
 			and a.apply_merchant_id= #{req.applyMerchantId}
+		</if>
+		<if test='req.applyMerchantName!=null and req.applyMerchantName!=""'>
+			and b.merchant_name like  CONCAT(CONCAT('%',#{req.applyMerchantName}),'%')
 		</if>
 		
   </select>

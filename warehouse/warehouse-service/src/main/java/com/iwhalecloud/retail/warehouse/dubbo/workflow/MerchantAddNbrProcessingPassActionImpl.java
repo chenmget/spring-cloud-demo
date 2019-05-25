@@ -116,6 +116,7 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
             merchantId = merchantDTO.getMerchantId();
             addReq.setLanId(merchantDTO.getLanId());
             addReq.setRegionId(merchantDTO.getCity());
+            addReq.setMerchantId(merchantId);
         }
         runableTask.exceutorAddNbr(addReq);
         log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}", addReq);

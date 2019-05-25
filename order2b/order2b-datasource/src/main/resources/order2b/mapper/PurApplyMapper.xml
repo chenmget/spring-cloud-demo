@@ -11,14 +11,18 @@
 			a.CREATE_DATE AS applyTime,
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
-			a.STATUS_CD AS STATUS,
+			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.APPLY_MERCHANT_ID) as applyMerchantName,
+			a.STATUS_CD AS statusCd,
 			'' AS `option`
-			 FROM PUR_APPLY a
+			 FROM PUR_APPLY a,PAR_MERCHANT b
 			 WHERE 1=1
 			 and a.STATUS_CD != '1100'
 		<if test="req.lanId != null and req.lanId != ''">
             and a.LAN_ID = #{req.lanId}
         </if>
+		<if test='req.applyMerchantName!=null and req.applyMerchantName!=""'>
+			and b.MERCHANT_NAME = #{req.applyMerchantName}
+		</if>
 		<if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode} 
 		</if>

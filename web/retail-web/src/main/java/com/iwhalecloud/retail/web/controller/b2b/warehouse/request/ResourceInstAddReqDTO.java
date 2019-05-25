@@ -126,6 +126,7 @@ public class ResourceInstAddReqDTO implements java.io.Serializable {
 	/**
 	 * 产品类型
 	 */
+	@NotBlank(message = "产品类型不能为空")
 	@ApiModelProperty(value = "产品类型")
 	private String typeId;
 

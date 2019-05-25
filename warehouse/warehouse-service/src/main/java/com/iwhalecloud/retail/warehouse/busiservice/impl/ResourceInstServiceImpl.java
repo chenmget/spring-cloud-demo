@@ -412,6 +412,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInst.setCreateDate(now);
             resourceInst.setSourceType(req.getSourceType());
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+            resourceInst.setMerchantId(null);
+            resourceInst.setMerchantName(null);
+            resourceInst.setMerchantCode(null);
             resourceInsts.add(resourceInst);
         }
         Boolean addResInstCnt = resourceInstManager.saveBatch(resourceInsts);

@@ -219,6 +219,7 @@ public class SupplierResourceInstB2BController {
         req.setUpdateStaff(userId);
         String confirmRecive = "0";
         BeanUtils.copyProperties(dto, req);
+        req.setMerchantId(UserContext.getMerchantId());
         if (confirmRecive.equals(dto.getIsPass())) {
             return supplierResourceInstService.confirmReciveNbr(req);
         }else{

@@ -181,7 +181,11 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	if(payType != null){
 	    		if("1".equals(payType)){
 	    			rr.setPayType("翼支付");
+	    		}else if("2".equals(payType)){
+	    			rr.setPayType("微信支付");
 	    		}else if("3".equals(payType)){
+	    			rr.setPayType("支付宝支付");
+	    		}else if("4".equals(payType)){
 	    			rr.setPayType("线下支付");
 	    		}
 	    	}

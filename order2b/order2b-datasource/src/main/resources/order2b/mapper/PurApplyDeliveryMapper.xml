@@ -42,4 +42,8 @@
 
 </sql>
 
+	<select id="getSeqApplyItemDetailBatchId" resultType="java.lang.String">
+		SELECT SEQ_APPLY_ITEM_DETAIL_BATCH_ID.nextval 
+	</select>
+
 </mapper>

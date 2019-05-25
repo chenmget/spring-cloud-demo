@@ -57,6 +57,11 @@ public class TagsServiceImpl implements TagsService {
     }
 
     @Override
+    public ResultVO<List<TagsDTO>> listProdTagsChannel() {
+        return ResultVO.success(tagsManager.listProdTagsChannel());
+    }
+    
+    @Override
     public ResultVO<String> addProdTags(TagsDTO tagsDTO) {
         log.info("TagsServiceImpl.addProdTags tagsDTO={}", JSON.toJSON(tagsDTO));
         if (tagsDTO == null) {

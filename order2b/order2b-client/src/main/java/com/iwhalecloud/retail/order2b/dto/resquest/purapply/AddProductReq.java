@@ -33,5 +33,7 @@ public class AddProductReq extends PageVO implements Serializable {
 	private String isFixedLine;//是否固网产品
 	private String typeName;//产品类型
 	private String productId;//产品ID
+	private String attrValue2;//颜色
+	private String attrValue3;//内存
 	
 }

@@ -11,6 +11,7 @@
 			a.CREATE_DATE AS applyTime,
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
+			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.APPLY_MERCHANT_ID) as applyMerchantName,
 			a.STATUS_CD AS STATUS,
 			'' AS `option`
 			 FROM PUR_APPLY a
@@ -225,8 +226,8 @@
 				a.APPLY_ITEM_ID AS applyItemId,
 				a.STATUS_CD AS statusCd,
 				b.product_base_id,
-				b.MEMORY AS specName,	
-				b.COLOR AS color,	
+				b.attr_value3 AS attrValue3,	
+				b.attr_value2 AS attrValue2,	
 				b.COST AS cost,
 				b.SN AS sn,		
 				a.PUR_NUM AS snCount,	

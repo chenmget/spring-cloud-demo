@@ -6,6 +6,8 @@ import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface PurApplyDeliveryMapper extends BaseMapper<PurApplyDelivery> {
+	
+	public String getSeqApplyItemDetailBatchId();
 
 
 }

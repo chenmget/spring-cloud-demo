@@ -25,6 +25,12 @@ public interface TagsService {
     ResultVO<List<TagsDTO>> listProdTags();
 
     /**
+     * 查询标签列表 没有参数
+     * @return
+     */
+    ResultVO<List<TagsDTO>> listProdTagsChannel();
+    
+    /**
      * 添加标签
      * @return
      */

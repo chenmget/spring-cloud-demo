@@ -38,6 +38,10 @@ public class PurApplyDeliveryManager {
         return purApplyDeliveryMapper.insert(purApplyDelivery);
     }
 
+    public String getSeqApplyItemDetailBatchId(){
+    	return purApplyDeliveryMapper.getSeqApplyItemDetailBatchId();
+    }
+    
     public int updatePurApplyStatus(PurApplyReq req) {
         String applyId = req.getApplyId();
         PurApply purApply = new PurApply();

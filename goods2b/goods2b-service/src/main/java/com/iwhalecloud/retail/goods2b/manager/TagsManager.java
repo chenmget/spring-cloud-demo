@@ -31,6 +31,10 @@ public class TagsManager {
         return tagsMapper.listProdTags();
     }
 
+    public List<TagsDTO> listProdTagsChannel(){
+        return tagsMapper.listProdTagsChannel();
+    }
+    
     public int addProdTags(Tags tags) {
         tags.setIsDeleted(GoodsConst.NO_DELETE);
         tags.setCreateDate(new Date());

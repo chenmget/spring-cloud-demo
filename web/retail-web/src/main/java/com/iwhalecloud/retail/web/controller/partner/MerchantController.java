@@ -103,6 +103,15 @@ public class MerchantController {
         //数据量控制在1万条
         req.setPageSize(EXPORT_PAGE_SIZE);
         ResultVO<Page<MerchantPageResp>> resultVO = merchantService.pageMerchant(req);
+        if (null != resultVO && resultVO.isSuccess() && null != resultVO.getResultData()) {
+            List<MerchantPageResp> merchantDTOS = resultVO.getResultData().getRecords();
+
+            if (!CollectionUtils.isEmpty(merchantDTOS)) {
+                merchantDTOS.forEach(merchantDTO -> {
+                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+                });
+            }
+        }
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         OutputStream output = null;
         try {

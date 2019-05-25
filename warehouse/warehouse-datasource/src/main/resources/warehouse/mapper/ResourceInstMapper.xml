@@ -132,7 +132,7 @@
         <if test="null!=orderId and '' !=orderId">
             ,t.order_id = #{orderId}
         </if>
-        <if test="null!=createTime and '' !=createTime">
+        <if test="null!=createTime">
             ,t.create_time = #{createTime}
         </if>
         where t.MKT_RES_STORE_ID = #{mktResStoreId}

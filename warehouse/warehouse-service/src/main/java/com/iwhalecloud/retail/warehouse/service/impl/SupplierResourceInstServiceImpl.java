@@ -365,8 +365,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (!merchantVO.isSuccess() || null == merchantVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
-        log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resouceStoreService.getMerchantById req={},destStoreId={}", req.getBuyerMerchantId(), JSON.toJSONString(merchantVO));
         MerchantDTO merchantDTO = merchantVO.getResultData();
+        log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resouceStoreService.getMerchantById req={},destStoreId={}", req.getBuyerMerchantId(), JSON.toJSONString(merchantVO));
         for (DeliveryResourceInstItem item : req.getDeliveryResourceInstItemList()) {
             ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
             resourceInstUpdateReq.setMktResInstNbrs(item.getMktResInstNbrs());
@@ -381,8 +381,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             if (PartnerConst.MerchantTypeEnum.PARTNER.getType().equals(merchantDTO.getMerchantType())) {
                 resourceInstUpdateReq.setMerchantName(merchantDTO.getMerchantName());
                 resourceInstUpdateReq.setMerchantCode(merchantDTO.getMerchantCode());
-                resourceInstUpdateReq.setLanId(merchantDTO.getLanId());
-                resourceInstUpdateReq.setRegionId(merchantDTO.getCity());
             }
             resourceInstUpdateReq.setMktResId(item.getProductId());
             resourceInstUpdateReq.setMerchantId(merchantDTO.getMerchantId());
@@ -405,6 +403,13 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         MerchantDTO merchantDTO = merchantResultVO.getResultData();
+        log.info("SupplierResourceInstServiceImpl.deliveryInResourceInst merchantService.getMerchantById req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(merchantResultVO));
+
+        ResultVO<MerchantDTO> buyerResultVO = merchantService.getMerchantById(req.getBuyerMerchantId());
+        if (!buyerResultVO.isSuccess() || null == buyerResultVO.getResultData()) {
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
+        }
+        MerchantDTO buyer = buyerResultVO.getResultData();
         log.info("SupplierResourceInstServiceImpl.deliveryInResourceInst merchantService.getMerchantById req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(merchantResultVO));
         // 源仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
@@ -439,6 +444,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstAddReq.setSupplierName(merchantDTO.getMerchantName());
             resourceInstAddReq.setSupplierCode(merchantDTO.getMerchantCode());
             resourceInstAddReq.setMerchantId(req.getBuyerMerchantId());
+            resourceInstAddReq.setLanId(buyer.getLanId());
+            resourceInstAddReq.setRegionId(buyer.getCity());
             ResultVO addRS = this.resourceInstService.addResourceInstForTransaction(resourceInstAddReq);
             log.info("SupplierResourceInstServiceImpl.deliveryInResourceInst resourceInstService.addResourceInst req={},resp={}", JSON.toJSONString(resourceInstAddReq), JSON.toJSONString(addRS));
             if (addRS == null || !addRS.isSuccess()) {

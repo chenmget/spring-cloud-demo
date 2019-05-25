@@ -438,6 +438,14 @@ public class ProductServiceImpl implements ProductService {
             ProductDTO productDTO = new ProductDTO();
             BeanUtils.copyProperties(resp, productDTO);
             String specName = this.getSpecName(productDTO);
+            if (StringUtils.isNotBlank(resp.getAttrValue1()) && StringUtils.isNotBlank(resp.getAttrValue3())) {
+                String memorySpec = resp.getAttrValue3() + " + " + resp.getAttrValue1();
+                resp.setMemorySpec(memorySpec);
+            }else if(StringUtils.isNotBlank(resp.getAttrValue1()) && StringUtils.isBlank(resp.getAttrValue3())){
+                resp.setMemorySpec(resp.getAttrValue1());
+            }else if(StringUtils.isBlank(resp.getAttrValue1()) && StringUtils.isNotBlank(resp.getAttrValue3())){
+                resp.setMemorySpec(resp.getAttrValue3());
+            }
             resp.setSpecName(specName);
         }
         return ResultVO.success(respList);

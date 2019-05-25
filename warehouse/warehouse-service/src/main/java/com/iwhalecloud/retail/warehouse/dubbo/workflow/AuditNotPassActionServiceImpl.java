@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
-import com.iwhalecloud.retail.warehouse.service.GreenChannelProcessingNotPassActionService;
+import com.iwhalecloud.retail.warehouse.service.AuditNotPassActionService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class GreenChannelProcessingNotPassActionImpl implements GreenChannelProcessingNotPassActionService {
+public class AuditNotPassActionServiceImpl implements AuditNotPassActionService {
 
     @Reference
     private ResourceRequestService requestService;
@@ -31,7 +31,7 @@ public class GreenChannelProcessingNotPassActionImpl implements GreenChannelProc
         updateReq.setMktResReqId(businessId);
         updateReq.setStatusCd(ResourceConst.MKTRESSTATE.CANCEL.getCode());
         ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(updateReq);
-        log.info("GreenChannelProcessingNotPassActionImpl.run requestService.updateResourceRequestState updateReq={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updatRequestVO));
+        log.info("AuditNotPassActionServiceImpl.run requestService.updateResourceRequestState updateReq={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updatRequestVO));
         // 申请单ID->明细
         return ResultVO.success();
     }

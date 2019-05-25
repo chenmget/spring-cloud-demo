@@ -56,6 +56,7 @@ public abstract class BestpayServiceTemp {
             result.put("originalTransSeq", JSONObject.fromObject(data).get("result"));
         } else {
             result.put("flag", false);
+            result.put("msg", JSONObject.fromObject(data).get("msg"));
         }
 
         return result;
@@ -96,7 +97,8 @@ public abstract class BestpayServiceTemp {
             Object result = responseResult.getResult();
             returnStr = String.valueOf(result);
         }else{
-            log.info("能开请求失败：method：" +method+"zopUrl:"+ zopUrl+"resCode:"+responseResult.getRes_code());
+            log.info("能开请求失败：method：" +method+"，zopUrl:"+ zopUrl+"，resCode:"
+                    +responseResult.getRes_code()+"，msg:"+responseResult.getRes_message());
         }
        return returnStr;
     }

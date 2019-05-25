@@ -81,6 +81,12 @@ public class Route implements Serializable {
   	 */
 	@ApiModelProperty(value = "顺序 ")
   	private Long sort;
+
+	/**
+	 * 路由条件
+	 */
+	@ApiModelProperty(value = "路由条件")
+	private String routeCondition;
   	
   	/**
   	 * 描述 

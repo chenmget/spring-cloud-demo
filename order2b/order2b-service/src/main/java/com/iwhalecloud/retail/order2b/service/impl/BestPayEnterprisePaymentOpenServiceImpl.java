@@ -127,13 +127,13 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
                 return ResultVO.error("商家翼支付账号没有配置。");
             }
 
-            boolean flag = payAuthorizationService.authorizationApplication(req.getOrderId(), operationType);
-            if(flag){
+            Map<String, Object> resultCall = payAuthorizationService.authorizationApplication(req.getOrderId(), operationType);
+            if((Boolean) resultCall.get("flag")){
                 ToPayResp tpr = new ToPayResp();
                 tpr.setOrderId(req.getOrderId());
                 return ResultVO.success(tpr);
             }else{
-                return ResultVO.error("支付失败");
+                return ResultVO.error(resultCall.get("flag").toString());
             }
         } else {
             ToPayResp resp = bpepPayLogService.handlePayData(order.getOrderId(), amount, orgLoginCode, operationType);

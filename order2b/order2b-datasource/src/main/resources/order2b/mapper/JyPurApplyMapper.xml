@@ -9,10 +9,12 @@
 		a.APPLY_NAME as applyName,
 		a.APPLY_MERCHANT_ID as applyMerchantId,
 		(SELECT b.region_name FROM sys_common_region b WHERE b.region_id=a.LAN_ID) as lanId,
+		(SELECT c.merchant_name FROM par_merchant c WHERE c.merchant_id=a.APPLY_MERCHANT_ID) as applyMerchantName,
 		a.STATUS_CD as statusCd,
 		a.CREATE_DATE as createDate
 		FROM pur_apply a
 		where 1=1
+		and a.STATUS_CD != '1100'
 		<if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode}
 		</if>
@@ -24,9 +26,6 @@
 		</if>
 		<if test='req.statusCd!=null and req.statusCd!=""'>  
 			and a.STATUS_CD = #{req.statusCd}
-		</if>
-		<if test='req.applyType!=null and req.applyType!=""'>  
-			and a.APPLY_TYPE = #{req.applyType}
 		</if>
 		<if test='req.lanId!=null and req.lanId!=""'>  
 			and a.lan_id = #{req.lanId}

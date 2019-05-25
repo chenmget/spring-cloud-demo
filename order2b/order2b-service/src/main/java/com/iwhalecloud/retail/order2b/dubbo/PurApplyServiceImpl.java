@@ -60,10 +60,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 			PurApplyResp purApplyResps = list.get(i);
 			String applyId = purApplyResps.getApplyId();
 			WfTaskResp wfTaskResp = purApplyManager.getTaskItemId(applyId);
-			
-			purApplyResps.setTaskId(wfTaskResp.getTaskId());
-			purApplyResps.setTaskItemId(wfTaskResp.getTaskItemId());
-			
+			if(wfTaskResp != null){
+				purApplyResps.setTaskId(wfTaskResp.getTaskId());
+				purApplyResps.setTaskItemId(wfTaskResp.getTaskItemId());
+			}
 		}
 		return ResultVO.success(purApplyResp);
 	}

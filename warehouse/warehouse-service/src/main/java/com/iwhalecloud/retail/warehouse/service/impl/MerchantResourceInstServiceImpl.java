@@ -277,7 +277,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
 
-        req.setDestStoreId(mktResStoreId);
         req.setSourceType(merchantDTOResultVO.getResultData().getMerchantType());
         CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>(mktResInstNbrs);
         Boolean addNum = resourceInstService.addResourceInstByMerchant(req, list);

@@ -21,6 +21,7 @@ import com.iwhalecloud.retail.warehouse.manager.CallService;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
+import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,6 +54,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Autowired
     private ResourceInstManager resourceInstManager;
 
+    @Reference
+    private ResouceStoreService resouceStoreService;
+
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("AdminResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
@@ -64,14 +68,15 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         log.info("AdminResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         // 管理员只能给厂商和零售商增加串码
         MerchantGetReq merchantGetReq = new MerchantGetReq();
-        merchantGetReq.setMerchantId(req.getMerchantId());
-        ResultVO<MerchantDetailDTO> merchantDetailDTOResultVO = merchantService.getMerchantDetail(merchantGetReq);
+        merchantGetReq.setMerchantId(req.getMktResStoreId());
+        ResultVO<MerchantDetailDTO> merchantDetailDTOResultVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
         log.info("AdminResourceInstServiceImpl.addResourceInst merchantService.getMerchantDetail req={},resp={}", JSON.toJSONString(merchantGetReq), JSON.toJSONString(merchantDetailDTOResultVO));
         if (!merchantDetailDTOResultVO.isSuccess() || null == merchantDetailDTOResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         String merchantType = merchantDetailDTOResultVO.getResultData().getMerchantType();
         if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(merchantType)) {
+            req.setMerchantId(merchantDetailDTOResultVO.getResultData().getMerchantId());
             return merchantResourceInstService.addResourceInstByAdmin(req);
         }else if(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(merchantType) || PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchantType)) {
             return supplierResourceInstService.addResourceInst(req);

@@ -17,6 +17,7 @@
 	       a.ORDER_CAT TYPE,
 	       a.order_type,
 	       a.payment_type,
+	       a.payment_name,
 	       a.pay_type,
 	       h.type_name CAT_ID,
 	       g.name BRAND_ID,
@@ -85,7 +86,10 @@
   <if test="req.orderId!=null and req.orderId!=''">
     and a.order_id  like CONCAT(CONCAT('%',#{req.orderId}),'%')
   </if>
-  <if test="req.payType!=null and req.payType!='' and req.payType!='0'">  
+  <if test="req.paymentName!=null and req.paymentName!=''">  
+       and a.payment_name=#{req.paymentName}
+  </if>
+  <if test="req.payType!=null and req.payType!=''">  
        and a.pay_type=#{req.payType}
   </if>
   <if test="req.brandName!=null and req.brandName!=''">

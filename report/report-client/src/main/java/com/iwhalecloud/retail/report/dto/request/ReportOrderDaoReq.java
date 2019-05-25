@@ -20,6 +20,7 @@ public class ReportOrderDaoReq extends PageVO {
 	private String type;//订单类型	 当前都为普通分销
 	private String couponActive;// 营销活动
 	private String paymentType;// 支付类型
+	private String paymentName;
 	private String payType;// 支付方式
 	private String lanId;//地市
 	private String city;//区县

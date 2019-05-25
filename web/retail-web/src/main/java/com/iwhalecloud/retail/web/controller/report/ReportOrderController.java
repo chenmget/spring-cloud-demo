@@ -149,7 +149,7 @@ public class ReportOrderController extends BaseController {
 	        orderMap.add(new ExcelTitleName("sourceFrom", "订单来源"));
 	        orderMap.add(new ExcelTitleName("orderType", "订单类型"));
 	        orderMap.add(new ExcelTitleName("type", "交易类型"));
-	        orderMap.add(new ExcelTitleName("paymentType", "支付类型"));
+	        orderMap.add(new ExcelTitleName("paymentName", "支付类型"));
 	        orderMap.add(new ExcelTitleName("payType", "支付方式"));
 	        orderMap.add(new ExcelTitleName("catId", "产品类型"));
 	        orderMap.add(new ExcelTitleName("brandId", "品牌"));

@@ -22,6 +22,7 @@ public class ReportOrderResp implements Serializable {
 	//private String outTime;//出库时间
 	
 	private String paymentType;//支付类型
+	private String paymentName;//支付类型
 	private String payTime;//付款时间
 	private String payType;//支付方式
 	private String catId;//产品类型

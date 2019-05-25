@@ -63,7 +63,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO delivery(PurApplyDeliveryReq req) {
         //生成batchId
-        String batchId = UUID.randomUUID().toString().replace("-", "");
+//        String batchId = UUID.randomUUID().toString().replace("-", "");
+        String batchId = purApplyDeliveryManager.getSeqApplyItemDetailBatchId();
         req.setBatchId(batchId);
         //插入采购申请单发货记录
         int i = purApplyDeliveryManager.insertPurApplyDelivery(req);

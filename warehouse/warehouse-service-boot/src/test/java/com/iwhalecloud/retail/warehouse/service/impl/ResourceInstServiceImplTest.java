@@ -19,6 +19,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -130,6 +131,38 @@ public class ResourceInstServiceImplTest {
 //        mktResInstNbrs.add("0066");
 //        req.setMktResInstNbrs(mktResInstNbrs);
         ResultVO<List<ResourceInstListResp>> listResultVO = resourceInstService.listResourceInst(req);
+    }
+
+    @Test
+    public void ResourceInstAddReq(){
+
+        // "checkMktResInstNbrs":["20191641","20191643","20191646","20191648","20191649","20191651","20191652","20191653","20191655","20191656"],
+        // "createDate":1558751355742,"createStaff":"10000571",
+        // "eventType":"1001","isFixedLine":"1",
+        // "merchantId":"10000575",
+        // "mktResId":"10629238",
+        // "mktResInstNbrs":[],"mktResInstType":"1",
+        // "mktResUploadBatch":"10632037",
+        // "regionId":"73101","sourceType":"1",
+        // "statusCd":"1202",
+        // "storageType":"100402",
+        // "typeId":"10627513"
+        ResourceInstAddReq req = new ResourceInstAddReq();
+        req.setCreateDate(new Date());
+        req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+        req.setMktResId("10629238");
+        req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
+        req.setRegionId("73101");
+        req.setLanId("731");
+        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        req.setSourceType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
+        req.setTypeId("10627513");
+        req.setMerchantId("10000575");
+        req.setDestStoreId("1");
+        req.setCreateStaff("10000571");
+        List<String> list = Lists.newArrayList("20191657","20191656","20191655","20191654","20191653","20191652","20191651","20191650","20191649","20191648","20191647","20191646","20191645","20191644","20191643","20191642","20191641","20191640");
+        CopyOnWriteArrayList<String> mktResInstNbrs = new CopyOnWriteArrayList<String>(list);
+        Boolean listResultVO = resourceInstService.addResourceInstByMerchant(req, mktResInstNbrs);
     }
 
 }

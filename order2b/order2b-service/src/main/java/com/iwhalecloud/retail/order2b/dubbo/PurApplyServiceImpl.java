@@ -21,8 +21,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
@@ -52,6 +54,17 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
 		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApply(req);
+		List<PurApplyResp> list = purApplyResp.getRecords();
+		
+		for(int i=0;i<list.size();i++){
+			PurApplyResp purApplyResps = list.get(i);
+			String applyId = purApplyResps.getApplyId();
+			WfTaskResp wfTaskResp = purApplyManager.getTaskItemId(applyId);
+			
+			purApplyResps.setTaskId(wfTaskResp.getTaskId());
+			purApplyResps.setTaskItemId(wfTaskResp.getTaskItemId());
+			
+		}
 		return ResultVO.success(purApplyResp);
 	}
 	

@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
@@ -36,6 +37,9 @@ public class PurApplyManager {
 		return pageReport;
 	}
 	
+	public WfTaskResp getTaskItemId(String applyId){
+		return purApplyMapper.getTaskItemId(applyId);
+	}
 	public Page<PurApplyResp> cgSearchApplyLan(PurApplyReq req) {
 		Page<PurApplyResp> page=new Page<>(req.getPageNo(),req.getPageSize());
 		Page<PurApplyResp> pageReport =purApplyMapper.cgSearchApplyLan(page,req);

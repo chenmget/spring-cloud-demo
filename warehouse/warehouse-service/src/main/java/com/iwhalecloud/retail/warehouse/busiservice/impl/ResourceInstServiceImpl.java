@@ -187,7 +187,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (CollectionUtils.isEmpty(availbaleNbrs)) {
             return ResultVO.error("失败串码" + unavailbaleNbrs);
         }
-
         // step2:源修改状态，即串码源属供应商修改成出库状态
         Integer successNum = 0;
         if (!availbaleNbrs.isEmpty()) {
@@ -198,13 +197,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             successNum = resourceInstManager.updateResourceInst(updateReq);
             log.info("ResourceInstServiceImpl.updateResourceInst resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(successNum));
         }
-
         for (Map.Entry<String, List<ResourceInstListPageResp>> entry : insts.entrySet()) {
-            String productId = entry.getKey();
             List<ResourceInstListPageResp> dtoList = entry.getValue();
             ResourceInstListPageResp inst = dtoList.get(0);
-            Double salePrice = inst.getSalesPrice() == null ? 0D : inst.getSalesPrice();
-
             List<ResourceInstListPageResp> updatedInstList = new ArrayList<>(dtoList.size());
             for (ResourceInstListPageResp dto : dtoList) {
                 ResourceInstDTO resourceInstDTO = resourceInstManager.selectById(dto.getMktResInstId());

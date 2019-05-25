@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Service
-public class GreenChannelProcessingNotPassActionImpl implements GreenChannelProcessingNotPassActionService {
+public class AuditNotPassActionImpl implements GreenChannelProcessingNotPassActionService {
 
     @Reference
     private ResourceRequestService requestService;

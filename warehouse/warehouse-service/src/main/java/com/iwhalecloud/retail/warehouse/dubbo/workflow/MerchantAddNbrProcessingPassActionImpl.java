@@ -114,10 +114,6 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         } else {
             MerchantDTO merchantDTO = resultVO.getResultData();
             merchantId = merchantDTO.getMerchantId();
-            addReq.setMerchantId(merchantDTO.getMerchantId());
-            addReq.setMerchantType(merchantDTO.getMerchantType());
-            addReq.setMerchantName(merchantDTO.getMerchantName());
-            addReq.setMerchantCode(merchantDTO.getMerchantCode());
             addReq.setLanId(merchantDTO.getLanId());
             addReq.setRegionId(merchantDTO.getCity());
         }

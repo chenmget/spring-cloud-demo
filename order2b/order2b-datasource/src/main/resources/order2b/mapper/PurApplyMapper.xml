@@ -451,5 +451,15 @@
 		</foreach>	
   </select>
   
+  <select id="getTaskItemId" parameterType="String"
+            resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp">
+ 	 SELECT a.task_id AS taskId,
+	 	 b.task_item_id AS taskItemId
+	 	  FROM wf_task a,wf_task_item b 
+	 	  WHERE a.process_id = '17' 
+	 	  AND a.task_id = b.task_id 
+	 	  AND a.form_id=#{applyId}
+  	</select>
+  
 </mapper>
 

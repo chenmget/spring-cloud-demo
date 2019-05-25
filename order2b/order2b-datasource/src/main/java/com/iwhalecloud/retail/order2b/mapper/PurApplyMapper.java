@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
@@ -26,6 +27,8 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 
 	public Page<PurApplyResp> cgSearchApply(Page<PurApplyResp> page,@Param("req") PurApplyReq purApplyReq) ;
 	
+	public WfTaskResp getTaskItemId(@Param("applyId") String applyId);
+
 	public Page<PurApplyResp> cgSearchApplyLan(Page<PurApplyResp> page,@Param("req") PurApplyReq purApplyReq) ;
 
 	public void tcProcureApply(@Param("req") ProcureApplyReq procureApplyReq);

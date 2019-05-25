@@ -11,23 +11,23 @@ import lombok.Data;
 public class TaskItemDetailModel {
 
     @ApiModelProperty(value = "任务ID")
-    private java.lang.String taskId;
+    private String taskId;
 
     @ApiModelProperty(value = "任务项ID")
-    private java.lang.String taskItemId;
+    private String taskItemId;
 
     @ApiModelProperty(value = "任务状态")
-    private java.lang.String taskStatus;
+    private String taskStatus;
 
     @ApiModelProperty(value = "任务项状态")
-    private java.lang.String itemStatus;
+    private String itemStatus;
 
     @ApiModelProperty(value = "标题")
-    private java.lang.String taskTitle;
+    private String taskTitle;
 
     @ApiModelProperty(value = "流程大类[流程：1\n" +
             "工单：2")
-    private java.lang.String taskType;
+    private String taskType;
 
     @ApiModelProperty(value = "流程类型[ " +
             "      1010：厂家串码管理流程 " +
@@ -57,13 +57,13 @@ public class TaskItemDetailModel {
             "      1250：2C固网售后维修流程 " +
             "      1260：售后返厂流程 " +
             "      2010：2B订单销售]")
-    private java.lang.String taskSubType;
+    private String taskSubType;
 
     /**
      * 第一个发起流程的用户名称
      */
     @ApiModelProperty(value = "申请人")
-    private java.lang.String createUserName;
+    private String createUserName;
 
     /**
      * 创建流程的时间
@@ -72,8 +72,8 @@ public class TaskItemDetailModel {
     private java.util.Date createTime;
 
     @ApiModelProperty(value = "流程ID")
-    private java.lang.String processId;
+    private String processId;
 
     @ApiModelProperty(value = "当前节点ID")
-    private java.lang.String curNodeId;
+    private String curNodeId;
 }

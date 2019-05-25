@@ -14,19 +14,19 @@ public class TaskListResp implements Serializable {
      * taskId
      */
     @ApiModelProperty(value = "任务ID")
-    private java.lang.String taskId;
+    private String taskId;
 
     /**
      * formId
      */
     @ApiModelProperty(value = "主单ID")
-    private java.lang.String formId;
+    private String formId;
 
     /**
      * taskTitle
      */
     @ApiModelProperty(value = "标题")
-    private java.lang.String taskTitle;
+    private String taskTitle;
 
     /**
      * 流程：1
@@ -34,7 +34,7 @@ public class TaskListResp implements Serializable {
      */
     @ApiModelProperty(value = "流程大类[流程：1\n" +
             "工单：2")
-    private java.lang.String taskType;
+    private String taskType;
 
     /**
      * 任务类型为1流程时
@@ -96,13 +96,13 @@ public class TaskListResp implements Serializable {
             "      1250：2C固网售后维修流程 " +
             "      1260：售后返厂流程 " +
             "      2010：2B订单销售]")
-    private java.lang.String taskSubType;
+    private String taskSubType;
 
     /**
      * 第一个发起流程的用户名称
      */
     @ApiModelProperty(value = "申请人")
-    private java.lang.String createUserName;
+    private String createUserName;
 
     /**
      * 创建流程的时间
@@ -111,13 +111,13 @@ public class TaskListResp implements Serializable {
     private java.util.Date createTime;
 
     @ApiModelProperty(value = "任务项ID  ")
-    private java.lang.String taskItemId;
+    private String taskItemId;
 
     /**
      * 当前节点名称  任务类型不为1（流程类时为空）
      */
     @ApiModelProperty(value = "当前环节")
-    private java.lang.String curNodeName;
+    private String curNodeName;
 
     /**
      * 状态  1：待领取
@@ -127,7 +127,7 @@ public class TaskListResp implements Serializable {
     @ApiModelProperty(value = "状态  1：待领取\n" +
             "2：待处理\n" +
             "3：已处理")
-    private java.lang.String itemStatus;
+    private String itemStatus;
 
     /**
      * 任务分派时间  任务领取的时间

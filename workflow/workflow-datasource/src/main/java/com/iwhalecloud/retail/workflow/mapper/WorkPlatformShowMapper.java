@@ -15,7 +15,7 @@ public interface WorkPlatformShowMapper extends BaseMapper {
      * @param statusList
      * @return
      */
-    int getUnhandledItemCount(@Param("userId")String userId, @Param("statusList")List<String> statusList);
+    int getUnhandledItemCount(@Param("userId") String userId, @Param("statusList") List<String> statusList);
 
     /**
      * 获取所申请流程数量
@@ -23,5 +23,5 @@ public interface WorkPlatformShowMapper extends BaseMapper {
      * @param statusList
      * @return
      */
-    int getAppliedItemCount(@Param("userId")String userId, @Param("statusList")List<String> statusList);
+    int getAppliedItemCount(@Param("userId") String userId, @Param("statusList") List<String> statusList);
 }

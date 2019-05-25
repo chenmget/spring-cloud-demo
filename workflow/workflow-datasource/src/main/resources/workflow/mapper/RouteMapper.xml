@@ -18,7 +18,8 @@
     ,t.CREATE_TIME 
     ,t.CREATE_USER_ID 
     ,t.UPDATE_TIME 
-    ,t.UPDATE_USER_ID 
+    ,t.UPDATE_USER_ID
+    ,t.route_condition
 </sql>
 
 </mapper>

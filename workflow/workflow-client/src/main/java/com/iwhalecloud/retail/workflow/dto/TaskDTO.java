@@ -23,19 +23,19 @@ public class TaskDTO implements java.io.Serializable {
   	 * taskId
   	 */
 	@ApiModelProperty(value = "taskId")
-  	private java.lang.String taskId;
+  	private String taskId;
 	
 	/**
   	 * formId
   	 */
 	@ApiModelProperty(value = "formId")
-  	private java.lang.String formId;
+  	private String formId;
 	
 	/**
   	 * taskTitle
   	 */
 	@ApiModelProperty(value = "taskTitle")
-  	private java.lang.String taskTitle;
+  	private String taskTitle;
 	
 	/**
   	 * 流程：1
@@ -43,7 +43,7 @@ public class TaskDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "流程：1\n" +
             "工单：2")
-  	private java.lang.String taskType;
+  	private String taskType;
 	
 	/**
   	 * 任务类型为1流程时
@@ -107,13 +107,13 @@ public class TaskDTO implements java.io.Serializable {
 
             "任务类型为2工单时 " +
             "2010：2B订单销售")
-  	private java.lang.String taskSubType;
+  	private String taskSubType;
 	
 	/**
   	 * 如果task_type非流程类为-1
   	 */
 	@ApiModelProperty(value = "如果task_type非流程类为-1")
-  	private java.lang.String processId;
+  	private String processId;
 	
 	/**
   	 * 1:处理中
@@ -121,19 +121,19 @@ public class TaskDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "1:处理中 \n" +
             "2：办结")
-  	private java.lang.String taskStatus;
+  	private String taskStatus;
 	
 	/**
   	 * 第一个发起流程的用户ID
   	 */
 	@ApiModelProperty(value = "第一个发起流程的用户ID")
-  	private java.lang.String createUserId;
+  	private String createUserId;
 	
 	/**
   	 * 第一个发起流程的用户名称
   	 */
 	@ApiModelProperty(value = "第一个发起流程的用户名称")
-  	private java.lang.String createUserName;
+  	private String createUserName;
 	
 	/**
   	 * 创建流程的时间
@@ -142,14 +142,14 @@ public class TaskDTO implements java.io.Serializable {
   	private java.util.Date createTime;
 
     @ApiModelProperty(value = "当前节点ID")
-    private java.lang.String curNodeId;
+    private String curNodeId;
 
     @ApiModelProperty(value = "当前节点名称")
-    private java.lang.String curNodeName;
+    private String curNodeName;
 
     @ApiModelProperty(value = "最后处理时间")
     private java.util.Date lastDealTime;
 
     @ApiModelProperty(value = "扩展信息1")
-    private java.lang.String extends1;
+    private String extends1;
 }

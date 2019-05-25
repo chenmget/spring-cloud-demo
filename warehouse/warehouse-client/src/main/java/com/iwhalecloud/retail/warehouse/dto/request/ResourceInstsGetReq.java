@@ -21,12 +21,6 @@ public class ResourceInstsGetReq implements Serializable{
   	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 商家ID
-	 */
-	@ApiModelProperty(value = "商家ID")
-	private String merchantId;
-
-	/**
 	 * 默认查询可用状态
 	 */
 	@ApiModelProperty(value = "状态")

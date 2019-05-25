@@ -59,7 +59,7 @@ public class HandleTaskDetailGetResp implements Serializable {
      */
     @ApiModelProperty(value = "1:处理中 \n" +
             "2：办结")
-    private java.lang.String taskStatus;
+    private String taskStatus;
 
     /**
      * 第一个发起流程的用户名称
@@ -106,7 +106,7 @@ public class HandleTaskDetailGetResp implements Serializable {
         @ApiModelProperty(value = "状态  1：待领取\n" +
                 "2：待处理\n" +
                 "3：已处理")
-        private java.lang.String itemStatus;
+        private String itemStatus;
     }
 
 

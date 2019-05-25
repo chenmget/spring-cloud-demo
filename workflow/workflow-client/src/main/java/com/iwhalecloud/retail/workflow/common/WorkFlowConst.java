@@ -28,6 +28,15 @@ public class WorkFlowConst {
     public static final String RelType = "RECOMMEND";
 
     /**
+     * 执行节点
+     */
+    public static final String NODE_TYPE_1="1";
+    /**
+     * 执行判断节点
+     */
+    public static final String NODE_TYPE_2="2";
+
+    /**
      * 系统来源
      */
     public static final String SourceFrom = "MM";

@@ -18,7 +18,7 @@ public class TaskItemDTO implements java.io.Serializable {
   	private static final long serialVersionUID = 1L;
 
 	@ApiModelProperty(value = "任务项ID  ")
-	private java.lang.String taskItemId;
+	private String taskItemId;
 
 	@ApiModelProperty(value = "处理结果")
 	private String routeName;
@@ -43,7 +43,7 @@ public class TaskItemDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "状态  1：待领取\n" +
 			"2：待处理\n" +
 			"3：已处理")
-	private java.lang.String itemStatus;
+	private String itemStatus;
 	
   	
 }

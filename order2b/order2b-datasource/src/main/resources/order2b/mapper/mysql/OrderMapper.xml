@@ -286,7 +286,7 @@
     </insert>
 
 	<insert id="updateStatusByOrderId">
-        update ord_order set status = #{status} where order_id = #{orderId}
+        update ord_order set status = #{status}, pay_type = #{status} where order_id = #{orderId}
     </insert>
 	
 </mapper>

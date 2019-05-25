@@ -19,10 +19,10 @@ public class PurApplyResp extends PageVO implements Serializable {
 	private String applyTime;	//申请时间
 	private String applyAddress; 	//申请地市名称
 	private String supplierName;  //供应商名称
-	private String statusCd;	//处理状态
+	private String status;	//处理状态
 	private String option;	//操作
 	private String lanId; // 地址id
-	private String applyMerchantName; //申请名称
+//	private String applyMerchantName; //申请名称
 
 
 }

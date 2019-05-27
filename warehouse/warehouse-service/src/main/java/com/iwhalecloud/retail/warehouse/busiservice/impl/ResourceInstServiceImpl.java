@@ -367,6 +367,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             }
             resourceInst.setCreateDate(now);
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+            resourceInst.setMktResInstNbr(mktResInstNbr);
             resourceInst.setMerchantId(null);
             resourceInsts.add(resourceInst);
         }

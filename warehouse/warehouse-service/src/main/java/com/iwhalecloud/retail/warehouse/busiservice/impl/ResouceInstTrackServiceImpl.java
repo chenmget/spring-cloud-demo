@@ -201,6 +201,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             getReq.setTypeId(req.getTypeId());
             getReq.setMktResInstNbrList(Lists.newArrayList(mktResInstNbr));
             List<ResouceInstTrackDTO> trackInst = resouceInstTrackManager.listResourceInstsTrack(getReq);
+            log.info("ResouceInstTrackServiceImpl.asynSaveTrackForSupplier resouceInstTrackManager.listResourceInstsTrack storeId={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(trackInst));
             if (CollectionUtils.isNotEmpty(trackInst)) {
                 continue;
             }

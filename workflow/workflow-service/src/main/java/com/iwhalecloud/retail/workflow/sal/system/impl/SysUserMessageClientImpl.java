@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,6 +44,9 @@ public class SysUserMessageClientImpl implements SysUserMessageClient {
         if("3".equals(taskItem.getItemStatus())){
             return 0;
         }
+        if(null == taskItem.getHandlerUserId()){
+            return 0;
+        }
         WorkTaskAddReq taskAddReq = new WorkTaskAddReq();
         WorkTaskAddReq.UserInfo userInfo = new WorkTaskAddReq.UserInfo();
         List<WorkTaskAddReq.UserInfo> userInfoList = new ArrayList<>();
@@ -52,7 +56,6 @@ public class SysUserMessageClientImpl implements SysUserMessageClient {
         taskAddReq.setTaskTitle(task.getResultData().getTaskTitle());
         taskAddReq.setPreNodeName(taskItem.getCurNodeName());
         taskAddReq.setHandlerUsers(userInfoList);
-
         return sysUserMessageService.insertByTaskWorkTask(taskAddReq, taskItem.getTaskId());
     }
 

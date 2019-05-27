@@ -1373,4 +1373,10 @@ public class MerchantServiceImpl implements MerchantService {
         this.merchantManager.updateMerchant(merchant);
         return ResultVO.success();
     }
+
+    @Override
+    public SupplierResistResp resistSupplier(SupplierListReq req) {
+
+        return null;
+    }
 }

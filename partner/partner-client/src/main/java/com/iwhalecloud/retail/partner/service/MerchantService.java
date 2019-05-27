@@ -133,6 +133,10 @@ public interface MerchantService{
      */
     ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req);
 
+
+
+    SupplierResistResp resistSupplier(SupplierListReq req);
+
     /**
      * 获取商家ID列表
      * @param

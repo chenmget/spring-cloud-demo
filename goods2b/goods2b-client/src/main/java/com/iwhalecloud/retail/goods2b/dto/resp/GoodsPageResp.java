@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.goods2b.dto.resp;
 
+import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRegionRelDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -125,4 +126,7 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "attrValue3")
     private String attrValue3;
+
+    @ApiModelProperty(value = "attrDTOS")
+    List<AttrSpecDTO> attrSpecDTOs;
 }

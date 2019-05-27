@@ -3,15 +3,15 @@ package com.iwhalecloud.retail.warehouse.busiservice.impl;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
+import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -45,6 +45,9 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
     @Value("${addNbrService.checkMaxNum}")
     private Integer checkMaxNum;
+
+    @Autowired
+    private ResouceInstTrackService resouceInstTrackService;
 
 
     @Override
@@ -81,19 +84,21 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
 
     @Override
-    public List<ResourceInstDTO> validMerchantStore(ResourceInstValidReq req){
+    public List<String> validMerchantStore(ResourceInstValidReq req){
         List<String> validNbrList = req.getMktResInstNbrs();
-        ResourceInstsGetReq manufacturerResourceInstsGetReq = new ResourceInstsGetReq();
-        manufacturerResourceInstsGetReq.setMktResInstNbrs(validNbrList);
-        manufacturerResourceInstsGetReq.setMktResId(req.getMktResId());
-        List<String> manufacturerTypes = new ArrayList<>();
-        manufacturerTypes.add(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
-        manufacturerResourceInstsGetReq.setMerchantTypes(manufacturerTypes);
-        manufacturerResourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
-        manufacturerResourceInstsGetReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        List<ResourceInstDTO> merchantInst = resourceInstManager.getResourceInsts(manufacturerResourceInstsGetReq);
-        log.info("ResourceInstCheckServiceImpl.validMerchantStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(manufacturerResourceInstsGetReq), JSON.toJSONString(merchantInst));
-        return  merchantInst;
+        ResourceInstsTrackGetReq resourceInstsTrackGetReq = new ResourceInstsTrackGetReq();
+        CopyOnWriteArrayList<String> mktResInstNbrList = new CopyOnWriteArrayList<String>(validNbrList);
+        resourceInstsTrackGetReq.setSourceType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
+        resourceInstsTrackGetReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+
+        ResultVO<List<ResouceInstTrackDTO>> trackListVO = resouceInstTrackService.listResourceInstsTrack(resourceInstsTrackGetReq, mktResInstNbrList);
+        log.info("ResourceInstCheckServiceImpl.validMerchantStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsTrackGetReq), JSON.toJSONString(trackListVO));
+        if (!trackListVO.isSuccess() && null != trackListVO.getResultData()) {
+            List<ResouceInstTrackDTO> trackList = trackListVO.getResultData();
+            List<String> nbrList = trackList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
+            return nbrList;
+        }
+        return  null;
     }
 
     @Override

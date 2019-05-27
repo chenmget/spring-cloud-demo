@@ -101,7 +101,7 @@ public class RunableTask {
             ExecutorService executorService = initExecutorService();
             List<String> nbrList = req.getMktResInstNbrs();
             String batchId = resourceInstService.getPrimaryKey();
-            Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
+            Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
             validFutureTaskResult = new ArrayList<>(excutorNum);
             for (Integer i = 0; i < excutorNum; i++) {
                 Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
@@ -109,7 +109,7 @@ public class RunableTask {
                 CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 BeanUtils.copyProperties(req, getReq);
-                log.info("RunableTask.exceutorValid newList={}", JSON.toJSONString(newList));
+                log.info("RunableTask.exceutorValid newList={}, validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
                 Callable<Boolean> callable = new Callable<Boolean>() {
                     @Override
                     public Boolean call() throws Exception {
@@ -172,6 +172,7 @@ public class RunableTask {
                 };
                 Future<Boolean> validFutureTask = executorService.submit(callable);
                 validFutureTaskResult.add(validFutureTask);
+                log.info("RunableTask.exceutorValid validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
             }
             executorService.shutdown();
             return batchId;

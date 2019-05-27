@@ -26,6 +26,7 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.manager.*;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.*;
@@ -117,6 +118,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Autowired
     private RunableTask runableTask;
+
+    @Autowired
+    private ResourceUploadTempManager resourceUploadTempManager;
 
 
     @Override
@@ -701,5 +705,16 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         } else{
             return ResultVO.success();
         }
+    }
+
+    @Override
+    public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
+        // 多线程没跑完，返回空
+        if (runableTask.validForSupplierHasDone()) {
+            return ResultVO.success(resourceUploadTempManager.listResourceUploadTemp(req));
+        } else{
+            return ResultVO.success();
+        }
+
     }
 }

@@ -722,7 +722,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     }
 
     @Override
-    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO addResourceInstByAdmin(ResourceInstAddReq req) {
         log.info("SupplierResourceInstServiceImpl.addResourceInstByAdmin req={}", JSON.toJSONString(req));
         // 获取产品归属厂商

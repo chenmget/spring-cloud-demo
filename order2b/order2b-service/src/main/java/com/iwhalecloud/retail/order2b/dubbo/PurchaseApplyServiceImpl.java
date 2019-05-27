@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * @auther lin.wenhui@iwhalecloud.com
@@ -135,7 +134,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             resourceInstAddReq.setStorageType(req.getStorageType());
             resourceInstAddReq.setSourceType(req.getSourceType());
             resourceInstAddReq.setCreateStaff(req.getCreateStaff());
-            ResultVO resultVO = supplierResourceInstService.addResourceInst(resourceInstAddReq);
+            ResultVO resultVO = supplierResourceInstService.addResourceInstByAdmin(resourceInstAddReq);
             if(!resultVO.isSuccess()){
                 return ResultVO.error(resultVO.getResultMsg());
             }

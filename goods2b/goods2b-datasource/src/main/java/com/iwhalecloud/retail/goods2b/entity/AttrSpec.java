@@ -201,6 +201,9 @@ public class AttrSpec implements Serializable {
 
 	@ApiModelProperty(value = "查询条件排序")
 	private int filterOrder;
+
+	@ApiModelProperty(value = "是否展示")
+	private String isDisplay;
   	
   	//属性 end
 	
@@ -299,6 +302,8 @@ public class AttrSpec implements Serializable {
 
 		/**是否为默认查询条件*/
 		isDefaultFilter("isDefaultFilter","IS_DEFAULT_FILTER"),
+
+		isDisplay("isDisplay","IS_DISPLAY"),
 
 		/**查询条件排序*/
 		filterOrder("filterOrder","FILTER_ORDER");

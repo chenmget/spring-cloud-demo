@@ -7,6 +7,8 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.system.manager.CommonFileManager;
 import com.iwhalecloud.retail.system.service.CommonFileService;
 
+import java.util.List;
+
 /**
  * CommonFile
  * @author generator
@@ -18,7 +20,6 @@ public class CommonFileServiceImpl implements CommonFileService {
 
     @Autowired
     private CommonFileManager commonFileManager;
-
 
     @Override
     public ResultVO saveCommonFile(CommonFileDTO req) {
@@ -33,18 +34,18 @@ public class CommonFileServiceImpl implements CommonFileService {
     @Override
     public ResultVO<CommonFileDTO> getCommonFile(CommonFileDTO req) {
         CommonFileDTO commonFileDTO = commonFileManager.getCommonFile(req);
-        if (null == commonFileDTO) {
-            return ResultVO.error();
-        }
         return ResultVO.success(commonFileDTO);
     }
 
     @Override
     public ResultVO<CommonFileDTO> getCommonFileById(String fileId) {
         CommonFileDTO commonFileDTO = commonFileManager.getCommonFileById(fileId);
-        if (null == commonFileDTO) {
-            return ResultVO.error();
-        }
         return ResultVO.success(commonFileDTO);
+    }
+
+    @Override
+    public ResultVO<List<CommonFileDTO>> getCommonFileByIds(String[] fileIds) {
+        List<CommonFileDTO> list = commonFileManager.getCommonFileByIds(fileIds);
+        return ResultVO.success(list);
     }
 }

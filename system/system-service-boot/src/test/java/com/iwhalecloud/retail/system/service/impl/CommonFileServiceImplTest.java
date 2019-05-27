@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Date;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -51,6 +52,12 @@ public class CommonFileServiceImplTest {
     @Test
     public void getCommonFileById() {
         ResultVO<CommonFileDTO> resultVO = commonFileService.getCommonFileById("1132918208934498306");
+        log.info("resultVO:{}", JSON.toJSONString(resultVO));
+    }
+
+    @Test
+    public void getCommonFileByIds() {
+        ResultVO<List<CommonFileDTO>>  resultVO = commonFileService.getCommonFileByIds(new String[]{"1132918208934498306"});
         log.info("resultVO:{}", JSON.toJSONString(resultVO));
     }
 }

@@ -3,6 +3,8 @@ package com.iwhalecloud.retail.system.service;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.CommonFileDTO;
 
+import java.util.List;
+
 /**
  * CommonFile
  * @author generator
@@ -31,4 +33,11 @@ public interface CommonFileService{
      * @return
      */
     ResultVO<CommonFileDTO> getCommonFileById(String fileId);
+
+    /**
+     * 获取通用附件列表
+     * @param fileIds
+     * @return
+     */
+    ResultVO<List<CommonFileDTO>> getCommonFileByIds(String[] fileIds);
 }

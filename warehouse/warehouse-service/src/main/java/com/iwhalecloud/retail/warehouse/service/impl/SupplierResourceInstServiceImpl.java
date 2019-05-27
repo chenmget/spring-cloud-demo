@@ -768,11 +768,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
         resourceInstValidReq.setMktResStoreId(manuResStoreId);
-        List<ResourceInstDTO> merchantInst = resourceInstCheckService.validMerchantStore(resourceInstValidReq);
-        if(CollectionUtils.isEmpty(merchantInst)){
+        List<String> merchantNbrList = resourceInstCheckService.validMerchantStore(resourceInstValidReq);
+        if(CollectionUtils.isEmpty(merchantNbrList)){
             return ResultVO.error("厂商库该机型串码不存在！");
         }
-        List<String> merchantNbrList = merchantInst.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
         req.setMktResInstNbrs(merchantNbrList);
         req.setDestStoreId(req.getMktResStoreId());
         req.setMktResStoreId(manuResStoreId);

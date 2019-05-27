@@ -39,4 +39,10 @@ public class RouteNextReq implements Serializable {
     @ApiModelProperty(value = "下一环节处理用户")
     private List<HandlerUser> nextHandlerUser;
 
+    @ApiModelProperty("附件url")
+    private String appendixUrl;
+
+    @ApiModelProperty("附件类型：1：图片，2文件")
+    private String appendixType;
+
 }

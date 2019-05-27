@@ -107,6 +107,11 @@ public class HandleTaskDetailGetResp implements Serializable {
                 "2：待处理\n" +
                 "3：已处理")
         private String itemStatus;
+
+        @ApiModelProperty("附件url")
+        private String appendixUrl;
+        @ApiModelProperty(value = "任务项ID  ")
+        private String taskItemId;
     }
 
 

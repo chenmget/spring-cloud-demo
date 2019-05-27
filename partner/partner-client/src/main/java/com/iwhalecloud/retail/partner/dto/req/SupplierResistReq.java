@@ -10,6 +10,7 @@ import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Date;
 
+import java.io.Serializable;
 @Data
 @ApiModel(value = "供应商注册请求参数")
 public class SupplierResistReq implements Serializable {
@@ -87,6 +88,50 @@ public class SupplierResistReq implements Serializable {
     @ApiModelProperty(value = "收款账号名称")
     private String bankAccount;
 
+    //商户
+    @NotEmpty(message = "用户账号不能为空")
+    @ApiModelProperty(value = "公司名称")
+    private String MERCHANT_NAME;
+
+    @NotEmpty(message = "地址不能为空")
+    @ApiModelProperty(value = "公司地址")
+    private String ADDRESS;
+
+    @NotEmpty(message = "法人姓名不能为空")
+    @ApiModelProperty(value = "法人姓名")
+    private String LEGAL_PERSON;
+
+    @NotEmpty(message = "营业执照号不能为空")
+    @ApiModelProperty(value = "营业执照号")
+    private String BUSI_LICENCE_CODE;
+
+    @NotEmpty(message = "合同有效期不能为空")
+    @ApiModelProperty(value = "合同有效期")
+    private String CONTRACT_EFF_DATE;
+
+    @NotEmpty(message = "营业执照号失效期不能为空")
+    @ApiModelProperty(value = "营业执照号失效期")
+    private String BUSI_LICENCE_EXP_DATE;
+
+
+
+    //商户银行账号信息
+    @ApiModelProperty(value = "账号类型")
+    private String ACCOUNT_TYPE;
+
+    @ApiModelProperty(value = "是否默认")
+    private String IS_DEFAULT;
+
+    @ApiModelProperty(value = "状态")
+    private String STATE;
+
+    @NotEmpty(message = "开户银行不能为空")
+    @ApiModelProperty(value = "开户银行")
+    private String BANK;
+
+    @NotEmpty(message = "账户名称不能为空")
+    @ApiModelProperty(value = "账户名称")
+    private String bank_account;
 
 
     //用户基本信息 sys-user
@@ -94,6 +139,9 @@ public class SupplierResistReq implements Serializable {
      * 登陆用户名
      */
 
+    @NotEmpty(message = "账号名不能为空")
+    @ApiModelProperty(value = "账号名")
+    private java.lang.String loginName;
     @ApiModelProperty(value = "用户id")
     private String userId;
 
@@ -104,6 +152,9 @@ public class SupplierResistReq implements Serializable {
     /**
      * 登陆密码
      */
+    @NotEmpty(message = "用户密码不能为空")
+    @ApiModelProperty(value = "密码")
+    private java.lang.String loginPwd;
     @ApiModelProperty(value = "密码")
     private String loginPwd;
 

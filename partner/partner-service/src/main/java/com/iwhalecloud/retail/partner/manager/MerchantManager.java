@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
+import com.iwhalecloud.retail.partner.comm.MerchantConst;
 import com.iwhalecloud.retail.partner.common.ParInvoiceConst;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;

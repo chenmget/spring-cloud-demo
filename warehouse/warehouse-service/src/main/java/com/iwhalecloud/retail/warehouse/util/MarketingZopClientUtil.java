@@ -179,7 +179,7 @@ public class MarketingZopClientUtil {
     }
 
     private ResultVO dealZopHead(String token, String method, String version, Object params) {
-        log.info(MarketingZopClientUtil.class.getName() + ", req={}", params == null ? "" : JSON.toJSON(params));
+        log.info(MarketingZopClientUtil.class.getName() + ", req={}, token={}, method={}, version={}", params == null ? "" : JSON.toJSON(params), token, method, version);
         ResponseResult result = ZopClientUtil.callRest(token, getZopUrl(), method, version, getTimeout(), params);
         log.info(MarketingZopClientUtil.class.getName() + ",resp={}", result == null ? "" : JSON.toJSON(result));
         //返回为空，能开返回为空

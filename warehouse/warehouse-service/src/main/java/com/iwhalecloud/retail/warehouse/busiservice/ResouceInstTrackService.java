@@ -4,6 +4,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 
+import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface ResouceInstTrackService {
@@ -134,4 +135,12 @@ public interface ResouceInstTrackService {
      * @return
      */
     ResultVO<ResouceInstTrackDTO> getResourceInstTrackByNbrAndMerchantId(String nbr,String merchantId);
+
+    /**
+     * 查询串码轨迹列表
+     * @param req
+     * @param mktResInstNbrList
+     * @return
+     */
+    ResultVO<List<ResouceInstTrackDTO>> listResourceInstsTrack(ResourceInstsTrackGetReq req, CopyOnWriteArrayList<String> mktResInstNbrList);
 }

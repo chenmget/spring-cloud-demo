@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
-import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
@@ -69,17 +69,17 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         // 管理员只能给厂商和零售商增加串码
         MerchantGetReq merchantGetReq = new MerchantGetReq();
         merchantGetReq.setMerchantId(req.getMktResStoreId());
-        ResultVO<MerchantDetailDTO> merchantDetailDTOResultVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
-        log.info("AdminResourceInstServiceImpl.addResourceInst merchantService.getMerchantDetail req={},resp={}", JSON.toJSONString(merchantGetReq), JSON.toJSONString(merchantDetailDTOResultVO));
-        if (!merchantDetailDTOResultVO.isSuccess() || null == merchantDetailDTOResultVO.getResultData()) {
+        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
+        log.info("AdminResourceInstServiceImpl.addResourceInst merchantService.getMerchantDetail req={},resp={}", JSON.toJSONString(merchantGetReq), JSON.toJSONString(merchantResultVO));
+        if (!merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
-        String merchantType = merchantDetailDTOResultVO.getResultData().getMerchantType();
+        String merchantType = merchantResultVO.getResultData().getMerchantType();
         if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(merchantType)) {
-            req.setMerchantId(merchantDetailDTOResultVO.getResultData().getMerchantId());
+            req.setMerchantId(merchantResultVO.getResultData().getMerchantId());
             return merchantResourceInstService.addResourceInstByAdmin(req);
         }else if(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(merchantType) || PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchantType)) {
-            req.setMerchantId(merchantDetailDTOResultVO.getResultData().getMerchantId());
+            req.setMerchantId(merchantResultVO.getResultData().getMerchantId());
             return supplierResourceInstService.addResourceInst(req);
         }else {
             return ResultVO.error("用户类型不正确");

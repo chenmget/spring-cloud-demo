@@ -915,4 +915,11 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
     public ResultVO<ResouceInstTrackDTO> getResourceInstTrackByNbrAndMerchantId(String nbr, String merchantId){
         return ResultVO.success(resouceInstTrackManager.getResourceInstTrackByNbrAndMerchantId(nbr, merchantId));
     }
+
+
+    @Override
+    public ResultVO<List<ResouceInstTrackDTO>> listResourceInstsTrack(ResourceInstsTrackGetReq req, CopyOnWriteArrayList<String> mktResInstNbrList){
+        req.setMktResInstNbrList(mktResInstNbrList);
+        return ResultVO.success(resouceInstTrackManager.listResourceInstsTrack(req));
+    }
 }

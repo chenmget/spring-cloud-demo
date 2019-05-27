@@ -62,4 +62,10 @@ public class ResourceInstsTrackGetReq implements Serializable{
 	@ApiModelProperty(value = "产品类型")
 	private String typeId;
 
+	/**
+	 * 记录串码来源，01  厂商 02  供应商 03  零售商
+	 */
+	@ApiModelProperty(value = "记录串码来源，01  厂商 02  供应商 03  零售商")
+	private java.lang.String sourceType;
+
 }

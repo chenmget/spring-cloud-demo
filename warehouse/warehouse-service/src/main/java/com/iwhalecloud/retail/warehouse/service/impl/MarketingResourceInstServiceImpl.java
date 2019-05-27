@@ -239,4 +239,13 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     public ResultVO validResourceInst(DeliveryValidResourceInstReq req) {
         return null;
     }
+
+    @Override
+    public ResultVO validNbr(ResourceInstValidReq req) {
+        return null;
+    }
+    @Override
+    public ResultVO getResourceInstListForTask(ResourceInstListPageReq req) {
+        return null;
+    }
 }

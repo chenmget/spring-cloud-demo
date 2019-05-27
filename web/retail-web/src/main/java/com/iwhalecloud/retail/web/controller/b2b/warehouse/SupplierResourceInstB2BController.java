@@ -12,10 +12,14 @@ import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceAllocateResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.*;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ConfirmReciveNbrReqDTO;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAllocateReqDTO;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstUpdateByIdReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ResourceInstColum;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -52,7 +56,7 @@ public class SupplierResourceInstB2BController {
     @Reference
     private MerchantRulesService merchantRulesService;
 
-    @ApiOperation(value = "厂商串码管理页面", notes = "条件分页查询")
+    @ApiOperation(value = "供应商串码管理页面", notes = "条件分页查询")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
@@ -225,5 +229,32 @@ public class SupplierResourceInstB2BController {
         }else{
             return supplierResourceInstService.confirmRefuseNbr(req);
         }
+    }
+
+    @ApiOperation(value = "校验串码", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="validNbr")
+    @UserLoginToken
+    public ResultVO<Page<ResourceUploadTempListResp>> validNbr(@RequestBody ResourceInstValidReq req) {
+        req.setMerchantId(UserContext.getMerchantId());
+        req.setCreateStaff(UserContext.getUserId());
+        req.setMerchantType(UserContext.getUserOtherMsg().getMerchant().getMerchantType());
+        return supplierResourceInstService.validNbr(req);
+    }
+
+    @ApiOperation(value = "新增串码后查询串码列表", notes = "条件分页查询")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="getResourceInstListForTask")
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstListForTask(@RequestBody ResourceInstListPageReq req) {
+        if (StringUtils.isEmpty(req.getMktResStoreIds())) {
+            return ResultVO.error("仓库为空");
+        }
+        return supplierResourceInstService.getResourceInstListForTask(req);
     }
 }

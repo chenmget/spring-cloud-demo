@@ -348,15 +348,14 @@ public class ResourceInstServiceImpl implements ResourceInstService {
 
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public synchronized Boolean addResourceInst(ResourceInstAddReq req, List<ResourceInstDTO> instDTOList) {
-        log.info("supplierAddResourceInst.addResourceInst req={}, instDTOList={}", JSON.toJSONString(req), JSON.toJSONString(instDTOList));
+    public synchronized Boolean addResourceInst(ResourceInstAddReq req) {
+        log.info("supplierAddResourceInst.addResourceInst req={}", JSON.toJSONString(req));
         String batchId = resourceInstManager.getPrimaryKey();
         List<String> nbrList = req.getMktResInstNbrs();
         List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(nbrList.size());
         Date now = new Date();
-        for (ResourceInstDTO inst : instDTOList) {
+        for (String mktResInstNbr : nbrList) {
             ResourceInst resourceInst = new ResourceInst();
-            BeanUtils.copyProperties(inst, resourceInst);
             BeanUtils.copyProperties(req, resourceInst);
             resourceInst.setMktResInstId(resourceInstManager.getPrimaryKey());
             resourceInst.setMktResBatchId(batchId);
@@ -366,7 +365,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 resourceInst.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
             }
             resourceInst.setCreateDate(now);
-            resourceInst.setSourceType(req.getSourceType());
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             resourceInst.setMerchantId(null);
             resourceInsts.add(resourceInst);

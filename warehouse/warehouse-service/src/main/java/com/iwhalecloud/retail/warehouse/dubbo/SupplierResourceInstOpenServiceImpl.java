@@ -172,4 +172,18 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
         return resp;
     }
 
+    @Override
+    public ResultVO validNbr(ResourceInstValidReq req) {
+        ResultVO resp = supplierResourceInstService.validNbr(req);
+        log.info("SupplierResourceInstOpenServiceImpl.validNbr req={}", JSON.toJSONString(req), JSON.toJSONString(resp));
+        return resp;
+    }
+
+    @Override
+    public ResultVO getResourceInstListForTask(ResourceInstListPageReq req) {
+        ResultVO resp = supplierResourceInstService.getResourceInstListForTask(req);
+        log.info("SupplierResourceInstOpenServiceImpl.getResourceInstListForTask req={}", JSON.toJSONString(req), JSON.toJSONString(resp));
+        return resp;
+    }
+
 }

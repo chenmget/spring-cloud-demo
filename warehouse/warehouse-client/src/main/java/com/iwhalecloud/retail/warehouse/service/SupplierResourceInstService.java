@@ -121,4 +121,19 @@ public interface SupplierResourceInstService {
      */
     ResultVO validResourceInst(DeliveryValidResourceInstReq req);
 
+    /**
+     * 供应商新增串码
+     *
+     * @param req
+     * @return
+     */
+    ResultVO validNbr(ResourceInstValidReq req);
+
+    /**
+     * 新增串码后查询串码列表
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ResourceInstListPageResp>> getResourceInstListForTask(ResourceInstListPageReq req);
+
 }

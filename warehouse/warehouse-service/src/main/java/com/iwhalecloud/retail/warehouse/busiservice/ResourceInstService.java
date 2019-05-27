@@ -24,10 +24,9 @@ public interface ResourceInstService {
     /**
      * 非厂商添加串码
      * @param req
-     * @param instDTOList 存在于厂商库的串码列表
      * @return
      */
-    Boolean addResourceInst(ResourceInstAddReq req, List<ResourceInstDTO> instDTOList);
+    Boolean addResourceInst(ResourceInstAddReq req);
 
     /**
      * 添加串码（交易）

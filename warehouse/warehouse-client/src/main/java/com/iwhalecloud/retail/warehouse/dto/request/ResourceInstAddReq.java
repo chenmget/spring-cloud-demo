@@ -129,9 +129,9 @@ public class ResourceInstAddReq implements java.io.Serializable {
   	private String statusCd;
 
 	/**
-	 * 商家标识
+	 * 零售商商家标识
 	 */
-	@ApiModelProperty(value = "商家标识")
+	@ApiModelProperty(value = "零售商商家标识")
 	private String merchantId;
 
 	/**
@@ -219,13 +219,13 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	/**
 	 * 商家编码
 	 */
-	@ApiModelProperty(value = "商家编码")
+	@ApiModelProperty(value = "零售商编码")
 	private String merchantCode;
 
 	/**
 	 * 商家名称
 	 */
-	@ApiModelProperty(value = "商家名称")
+	@ApiModelProperty(value = "零售商名称")
 	private String merchantName;
 
 	/**
@@ -242,4 +242,15 @@ public class ResourceInstAddReq implements java.io.Serializable {
 
 	@ApiModelProperty(value = "是否固网终端")
 	private String isFixedLine;
+	/**
+	 * 源商家标识
+	 */
+	@ApiModelProperty(value = "源商家标识")
+	private String sourcemerchantId;
+
+	/**
+	 * 固网终端需要CT码管理时，记录CT码
+	 */
+	@ApiModelProperty(value = "记录CT码")
+	private String singlectCode;
 }

@@ -69,6 +69,9 @@
         <if test="null!=mktResStoreId and ''!=mktResStoreId">
             and t.mkt_res_store_id = #{mktResStoreId}
         </if>
+        <if test="null!=sourceType and ''!=sourceType">
+            and t.source_type = #{sourceType}
+        </if>
     </select>
 
 </mapper>

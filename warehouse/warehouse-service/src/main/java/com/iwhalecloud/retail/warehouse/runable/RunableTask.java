@@ -464,7 +464,7 @@ public class RunableTask {
                         Date now = new Date();
                         List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
                         ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq, newList);
-                        log.info("RunableTask.exceutorValidForSupplier resouceInstTrackService.listResourceInstsTrack req={}, resp={}", JSON.toJSONString(getReq),  JSON.toJSONString(newList));
+                        log.info("RunableTask.exceutorValidForSupplier resouceInstTrackService.listResourceInstsTrack req={}, newList={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(newList),  JSON.toJSONString(newList));
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                             String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();

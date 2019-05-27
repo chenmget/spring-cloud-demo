@@ -39,7 +39,6 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req) {
         log.info("AdminResourceInstOpenServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         ResultVO<ResourceInstAddResp> resp = adminResourceInstService.addResourceInst(req);
-//        resouceInstTrackService.asynSaveTrackForAddmin(req, resp);
         log.info("AdminResourceInstOpenServiceImpl.addResourceInst req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(resp));
         return resp;
     }

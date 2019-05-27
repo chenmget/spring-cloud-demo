@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.warehouse.util.ProfileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -49,6 +50,14 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     @Override
     public ResultVO addResourceInst(ResourceInstAddReq req) {
         log.info("SupplierResourceInstOpenServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
+        ResultVO resp = supplierResourceInstService.addResourceInst(req);
+        resouceInstTrackService.asynSaveTrackForSupplier(req, resp);
+        return resp;
+    }
+
+    @Override
+    public ResultVO addResourceInstByAdmin(ResourceInstAddReq req) {
+        log.info("SupplierResourceInstOpenServiceImpl.addResourceInstByAdmin req={}", JSON.toJSONString(req));
         ResultVO resp = supplierResourceInstService.addResourceInst(req);
         resouceInstTrackService.asynSaveTrackForSupplier(req, resp);
         return resp;
@@ -183,6 +192,12 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     public ResultVO getResourceInstListForTask(ResourceInstListPageReq req) {
         ResultVO resp = supplierResourceInstService.getResourceInstListForTask(req);
         log.info("SupplierResourceInstOpenServiceImpl.getResourceInstListForTask req={}", JSON.toJSONString(req), JSON.toJSONString(resp));
+        return resp;
+    }
+
+    @Override
+    public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req){
+        ResultVO resp = supplierResourceInstService.listResourceUploadTemp(req);
         return resp;
     }
 

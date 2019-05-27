@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 
 import java.util.List;
 
@@ -12,11 +13,17 @@ public interface SupplierResourceInstService {
 
     /**
      * 添加串码
-     *
      * @param req
      * @return
      */
     ResultVO addResourceInst(ResourceInstAddReq req);
+
+    /**
+     * 管理员添加串码
+     * @param req
+     * @return
+     */
+    ResultVO addResourceInstByAdmin(ResourceInstAddReq req);
 
     /**
      * 删除串码
@@ -135,5 +142,12 @@ public interface SupplierResourceInstService {
      * @return
      */
     ResultVO<Page<ResourceInstListPageResp>> getResourceInstListForTask(ResourceInstListPageReq req);
+
+    /**
+     * 查询校验串码
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req);
 
 }

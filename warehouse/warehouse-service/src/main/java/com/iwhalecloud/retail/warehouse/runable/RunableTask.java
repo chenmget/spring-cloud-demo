@@ -66,6 +66,8 @@ public class RunableTask {
 
     private List<Future<Boolean>> validFutureTaskResult;
 
+    private List<Future<Boolean>> validForSupplierFutureTaskResult;
+
     private Future<Boolean> addNbrFutureTask;
 
     private Future<Boolean> addReqDetailtFutureTask;
@@ -101,7 +103,7 @@ public class RunableTask {
             ExecutorService executorService = initExecutorService();
             List<String> nbrList = req.getMktResInstNbrs();
             String batchId = resourceInstService.getPrimaryKey();
-            Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
+            Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
             validFutureTaskResult = new ArrayList<>(excutorNum);
             for (Integer i = 0; i < excutorNum; i++) {
                 Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
@@ -109,7 +111,7 @@ public class RunableTask {
                 CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 BeanUtils.copyProperties(req, getReq);
-                log.info("RunableTask.exceutorValid newList={}", JSON.toJSONString(newList));
+                log.info("RunableTask.exceutorValid newList={}, validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
                 Callable<Boolean> callable = new Callable<Boolean>() {
                     @Override
                     public Boolean call() throws Exception {
@@ -172,6 +174,7 @@ public class RunableTask {
                 };
                 Future<Boolean> validFutureTask = executorService.submit(callable);
                 validFutureTaskResult.add(validFutureTask);
+                log.info("RunableTask.exceutorValid validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
             }
             executorService.shutdown();
             return batchId;
@@ -192,7 +195,7 @@ public class RunableTask {
             Boolean hasDone = true;
             log.info("RunableTask.validHasDone validFutureTaskResult={}", JSON.toJSONString(validFutureTaskResult));
             if (CollectionUtils.isEmpty(validFutureTaskResult)) {
-                return hasDone;
+                return false;
             }
             for (Future<Boolean> future : validFutureTaskResult) {
                 if (!future.isDone()) {
@@ -447,7 +450,7 @@ public class RunableTask {
             List<String> nbrList = req.getMktResInstNbrs();
             String batchId = resourceInstService.getPrimaryKey();
             Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
-            List<Future<Boolean>> futures = new ArrayList<>(excutorNum);
+            validForSupplierFutureTaskResult = new ArrayList<>(excutorNum);
             for (Integer i = 0; i < excutorNum; i++) {
                 Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
                 List<String> subList = nbrList.subList(perNum * i, maxNum);
@@ -509,7 +512,7 @@ public class RunableTask {
                     }
                 };
                 Future<Boolean> validFutureTask = executorService.submit(callable);
-                futures.add(validFutureTask);
+                validForSupplierFutureTaskResult.add(validFutureTask);
             }
             executorService.shutdown();
             return batchId;
@@ -522,6 +525,30 @@ public class RunableTask {
         return null;
     }
 
+    /**
+     * 串码校验多线程处理是否完成
+     */
+    public Boolean validForSupplierHasDone() {
+        try{
+            Boolean hasDone = true;
+            log.info("RunableTask.validHasDone validForSupplierFutureTaskResult={}", JSON.toJSONString(validForSupplierFutureTaskResult));
+            if (CollectionUtils.isEmpty(validForSupplierFutureTaskResult)) {
+                return false;
+            }
+            for (Future<Boolean> future : validForSupplierFutureTaskResult) {
+                if (!future.isDone()) {
+                    return future.isDone();
+                }
+            }
+            return hasDone;
+        }catch (Throwable e) {
+            if (e instanceof ExecutionException) {
+                e = e.getCause();
+            }
+            log.error("error happen", e);
+        }
+        return null;
+    }
 
     /**
      * 零售商串码入库多线程处理

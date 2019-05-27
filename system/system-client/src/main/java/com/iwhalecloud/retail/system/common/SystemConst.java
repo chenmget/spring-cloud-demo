@@ -318,4 +318,74 @@ public class SystemConst {
             return code;
         }
     }
+
+    /**
+     * 文件类型
+     */
+    public enum FileType {
+        IMG_FILE("1", "图片"),
+        TXT_FILE("2", "文件");
+        private String value;
+        private String code;
+        FileType(String code,String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+    }
+
+    /**
+     * 文件业务类型
+     */
+    public enum FileClass {
+        BUSINESS_LICENSE("1", "营业执照"),
+        IDENTITY_CARD_PHOTOS("2", "身份证照片"),
+        AUTHORIZATION_CERTIFICATE("3", "授权证书"),
+        CONTRACT_TEXT("4", "合同文本");
+        private String value;
+        private String code;
+        FileClass(String code,String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+    }
+
+    /**
+     * 状态常量
+     */
+    public enum StatusCdEnum {
+        STATUS_CD_VALD("1000","有效"),
+        STATUS_CD_INVALD("1100","失效");
+
+        private String code;
+        private String value;
+
+        StatusCdEnum(String code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 }

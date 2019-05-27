@@ -1,41 +1,26 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
+import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
+import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
-import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.alibaba.dubbo.config.annotation.Service;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.JyPurApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
-import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
-import com.iwhalecloud.retail.order2b.service.PurApplyService;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -78,59 +63,62 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
 		purApplyManager.tcProcureApply(req);
-		String isSave = req.getIsSave();
+//		String isSave = req.getIsSave();
 		//提交时发起流程审核
-		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PUR_APPLY_TYPE)) {
-			//启动流程
-			ProcessStartReq processStartDTO = new ProcessStartReq();
-			processStartDTO.setTitle("采购申请单审核流程");
-			processStartDTO.setFormId(req.getApplyId());
-			processStartDTO.setProcessId(PurApplyConsts.PUR_APPLY_AUDIT_PROCESS_ID);
-			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3020.getTaskSubType());
-			processStartDTO.setApplyUserId(req.getCreateStaff());
-			//根据用户id查询名称
-			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
-			String userName = "";
-			if (userDetailDTO.isSuccess()) {
-				userName = userDetailDTO.getResultData().getUserName();
-			}
-			processStartDTO.setApplyUserName(userName);
-			ResultVO resultVO = new ResultVO();
-			try {
-				resultVO = taskService.startProcess(processStartDTO);
-			} catch (Exception e) {
-				log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
-				return ResultVO.error();
-			} finally {
-				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
-						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
-			}
-		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PURCHASE_TYPE)) {
-			//启动流程
-			ProcessStartReq processStartDTO = new ProcessStartReq();
-			processStartDTO.setTitle("采购单审核流程");
-			processStartDTO.setFormId(req.getApplyId());
-			processStartDTO.setProcessId(PurApplyConsts.PURCHASE_AUDIT_PROCESS_ID);
-			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3030.getTaskSubType());
-			processStartDTO.setApplyUserId(req.getCreateStaff());
-			//根据用户id查询名称
-			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
-			String userName = "";
-			if (userDetailDTO.isSuccess()) {
-				userName = userDetailDTO.getResultData().getUserName();
-			}
-			processStartDTO.setApplyUserName(userName);
-			ResultVO resultVO = new ResultVO();
-			try {
-				resultVO = taskService.startProcess(processStartDTO);
-			} catch (Exception e) {
-				log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
-				return ResultVO.error();
-			} finally {
-				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
-						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
-			}
+		//启动流程
+		ProcessStartReq processStartDTO = new ProcessStartReq();
+		processStartDTO.setTitle("采购申请单审核流程");
+		processStartDTO.setFormId(req.getApplyId());
+		processStartDTO.setProcessId(PurApplyConsts.PUR_APPLY_AUDIT_PROCESS_ID);
+		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3020.getTaskSubType());
+		processStartDTO.setApplyUserId(req.getCreateStaff());
+		//根据用户id查询名称
+		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
+		String userName = "";
+		if (userDetailDTO.isSuccess()) {
+			userName = userDetailDTO.getResultData().getUserName();
 		}
+		processStartDTO.setApplyUserName(userName);
+		ResultVO resultVO = new ResultVO();
+		try {
+			resultVO = taskService.startProcess(processStartDTO);
+		} catch (Exception e) {
+			log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
+			return ResultVO.error();
+		} finally {
+			log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
+					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
+		}
+
+
+//		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PUR_APPLY_TYPE)) {
+//
+//		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PURCHASE_TYPE)) {
+//			//启动流程
+//			ProcessStartReq processStartDTO = new ProcessStartReq();
+//			processStartDTO.setTitle("采购单审核流程");
+//			processStartDTO.setFormId(req.getApplyId());
+//			processStartDTO.setProcessId(PurApplyConsts.PURCHASE_AUDIT_PROCESS_ID);
+//			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3030.getTaskSubType());
+//			processStartDTO.setApplyUserId(req.getCreateStaff());
+//			//根据用户id查询名称
+//			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
+//			String userName = "";
+//			if (userDetailDTO.isSuccess()) {
+//				userName = userDetailDTO.getResultData().getUserName();
+//			}
+//			processStartDTO.setApplyUserName(userName);
+//			ResultVO resultVO = new ResultVO();
+//			try {
+//				resultVO = taskService.startProcess(processStartDTO);
+//			} catch (Exception e) {
+//				log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
+//				return ResultVO.error();
+//			} finally {
+//				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
+//						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
+//			}
+//		}
 		return ResultVO.successMessage("修改采购申请单成功");
 	}
 	

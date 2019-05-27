@@ -1070,11 +1070,15 @@ public class GoodsServiceImpl implements GoodsService {
             GoodsProductRel goodsProductRel = goodsProductRelManager.queryGoodsProductRel(resp.getGoodsId());
             log.info("GoodsServiceImpl.queryPageByConditionAdmin queryGoodsProductRel rsp={},goodsProductRel={}", resp.getGoodsId(), goodsProductRel);
             if(null!=goodsProductRel){
-                ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
+//                ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
                 ProductDetailResp productDetail = productBaseManager.getProductDetail(goodsProductRel.getProductBaseId());
                 if(null!=productDetail){
                     resp.setTypeId(productDetail.getTypeId());
                     resp.setTypeName(productDetail.getTypeName());
+                    List<AttrSpecDTO> attrSpecDTOS = attrSpecManager.queryAttrSpecList(productDetail.getTypeId());
+                    if(CollectionUtils.isNotEmpty(attrSpecDTOS)){
+                        resp.setAttrSpecDTOs(attrSpecDTOS);
+                    }
                 }
             }
             // 添加营销活动名称
@@ -1352,6 +1356,7 @@ public class GoodsServiceImpl implements GoodsService {
                             goodsParamResp.setParamName(attrSpecDto.getAttrName());
                             goodsParamResp.setParamValue(paramValue);
                             goodsParamResp.setAttrGroupId(attrSpecDto.getAttrGroupId());
+                            goodsParamResp.setIsDisplay(attrSpecDto.getIsDisplay());
                             goodsParamRespList.add(goodsParamResp);
                         }
                     }
@@ -1361,6 +1366,7 @@ public class GoodsServiceImpl implements GoodsService {
                     GoodsAttrResp goodsAttrResp = new GoodsAttrResp();
                     goodsAttrResp.setAttrName(attrSpecDto.getAttrName());
                     goodsAttrResp.setAttrValue(attrValue);
+                    goodsAttrResp.setIsDisplay(attrSpecDto.getIsDisplay());
                     goodsAttrRespList.add(goodsAttrResp);
                 }
             }

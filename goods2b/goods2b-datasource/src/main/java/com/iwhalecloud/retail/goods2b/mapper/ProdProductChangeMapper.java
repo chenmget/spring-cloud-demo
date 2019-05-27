@@ -1,0 +1,14 @@
+package com.iwhalecloud.retail.goods2b.mapper;
+
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.iwhalecloud.retail.goods2b.entity.ProdProductChange;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+/**
+ * Created by Administrator on 2019/5/14.
+ */
+@Mapper
+public interface ProdProductChangeMapper extends BaseMapper<ProdProductChange> {
+
+    String selectVerNumByProductBaseId(@Param("productBaseId") String productBaseId);
+}

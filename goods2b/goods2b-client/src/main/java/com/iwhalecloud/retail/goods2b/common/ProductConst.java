@@ -110,6 +110,28 @@ public class ProductConst {
     }
 
     /**
+     * 是否被删除
+     */
+    public enum operType {
+        ADD("ADD","新增"),
+        MOD("MOD","修改"),
+        DEL("DEL","删除");
+        private String value;
+        private String code;
+        operType(String code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
+    /**
      * 采购类型
      */
     public enum purchaseType {

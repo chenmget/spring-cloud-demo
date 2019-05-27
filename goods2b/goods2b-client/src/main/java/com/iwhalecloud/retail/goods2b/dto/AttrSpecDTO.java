@@ -195,4 +195,7 @@ public class AttrSpecDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "删除标识，有值则表示删除")
 	private String isDeleted;
 
+	@ApiModelProperty(value = "是否展示")
+	private String isDisplay;
+
 }

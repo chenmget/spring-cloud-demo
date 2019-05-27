@@ -36,4 +36,7 @@ public class GoodsParamResp implements Serializable {
      */
     @ApiModelProperty(value = "属性所属的分组")
     private java.lang.String attrGroupId;
+
+    @ApiModelProperty(value = "是否展示")
+    private String isDisplay;
 }

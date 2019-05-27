@@ -25,4 +25,7 @@ public class GoodsAttrResp implements Serializable {
      */
     @ApiModelProperty(value = "商品规格值")
     private String attrValue;
+
+    @ApiModelProperty(value = "是否展示")
+    private String isDisplay;
 }

@@ -209,11 +209,16 @@ public class ProductBaseUpdateReq extends AbstractRequest implements Serializabl
     private String typeId;
 
     /**
-     * 是否需要抽检
+     * 是否固网产品
      */
     @ApiModelProperty(value = "是否固网产品")
     private String isFixedLine;
 
+    /**
+     * 是否需要抽检
+     */
+    @ApiModelProperty(value = "是否需要抽检")
+    private String IsInspection;
     /**
      * 平均供货价
      */

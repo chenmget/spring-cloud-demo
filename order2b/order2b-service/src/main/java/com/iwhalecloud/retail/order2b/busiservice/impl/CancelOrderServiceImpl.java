@@ -67,10 +67,14 @@ public class CancelOrderServiceImpl implements CancelOrderService {
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             return resp;
         }
-
+        //TODO 2已付定金未付尾款，时间超过自动确认定金金额
         //  已付定金，未付尾款
         if(!OrderAllStatus.ORDER_STATUS_13.getCode().equals(order.getStatus()) && OrderAllStatus.ORDER_STATUS_14.getCode().equals(order.getStatus())){
-            payAuthorizationService.authorizationConfirmation(order.getOrderId());
+            Boolean flag = payAuthorizationService.authorizationConfirmation(order.getOrderId());
+            if(!flag){
+                resp.setResultMsg("关闭订单，翼支付预授权确认失败。");
+                resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            }
         }
 
         updateOrderFlowService.cancelOrder(request);

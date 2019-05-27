@@ -6,8 +6,10 @@ import com.iwhalecloud.retail.order2b.authpay.handler.TradeCertificate;
 import com.iwhalecloud.retail.order2b.authpay.service.v3.BestpayServiceV3;
 import com.iwhalecloud.retail.order2b.authpay.util.CertificateUtil;
 import com.iwhalecloud.retail.order2b.busiservice.BPEPPayLogService;
+import com.iwhalecloud.retail.order2b.busiservice.PayService;
 import com.iwhalecloud.retail.order2b.consts.PayConsts;
 import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
+import com.iwhalecloud.retail.order2b.dto.resquest.order.PayOrderRequest;
 import com.iwhalecloud.retail.order2b.entity.AdvanceOrder;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.mapper.AdvanceOrderMapper;
@@ -102,7 +104,6 @@ public class PayAuthorizationService {
                 if(advFlag){
                     // 保存订单交易流水
                     advanceOrderMapper.updateAdvanceTransId(orderId, (String)resultCall.get("originalTransSeq"));
-                    orderMapper.updateStatusByOrderId(orderId, OrderAllStatus.ORDER_STATUS_14.getCode(), "1");
                 }
 
                 flag = flag & advFlag;
@@ -115,8 +116,7 @@ public class PayAuthorizationService {
                 boolean resFlag = (boolean)resultCall.get("flag");
                 if(resFlag){
                     // 保存订单交易流水
-                    advanceOrderMapper.updateRestTransId(orderId, (String)resultCall.get("originalTransSeq"));
-                    orderMapper.updateStatusByOrderId(orderId, OrderAllStatus.ORDER_STATUS_4.getCode(), "1");
+                    taskManagerReference.updateTask(orderId, resOrder.getCreateUserId());
                 }
                 flag = flag & resFlag;
             }
@@ -131,8 +131,6 @@ public class PayAuthorizationService {
             if(advFlag){
                 // 保存订单交易流水
                 orderMapper.updatePayTransId(orderId, (String)resultCall.get("originalTransSeq"));
-                orderMapper.updateStatusByOrderId(orderId, OrderAllStatus.ORDER_STATUS_4.getCode(), "1");
-
             }
             return resultCall;
         }
@@ -238,14 +236,14 @@ public class PayAuthorizationService {
         } catch (Exception e) {
             log.error(e.getMessage());
         }
-        SaveLogModel saveLogModel = new SaveLogModel();
-        saveLogModel.setPayId(reqSeq);
-        saveLogModel.setOrderId(orderId);
-        saveLogModel.setOrderAmount(payMoney);
-        saveLogModel.setPayStatus(b?PayConsts.PAY_STATUS_1:PayConsts.PAY_STATUS_0);
-        saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1004);
-        saveLogModel.setOperationType(operationType);
-        bpepPayLogService.saveLog(saveLogModel);
+//        SaveLogModel saveLogModel = new SaveLogModel();
+//        saveLogModel.setPayId(reqSeq);
+//        saveLogModel.setOrderId(orderId);
+//        saveLogModel.setOrderAmount(payMoney);
+//        saveLogModel.setPayStatus(b?PayConsts.PAY_STATUS_1:PayConsts.PAY_STATUS_0);
+//        saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1004);
+//        saveLogModel.setOperationType(operationType);
+//        bpepPayLogService.saveLog(saveLogModel);
 
         return resultInvoke;
     }

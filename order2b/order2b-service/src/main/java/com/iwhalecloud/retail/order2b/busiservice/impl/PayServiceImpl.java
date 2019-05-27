@@ -100,6 +100,19 @@ public class PayServiceImpl implements PayService {
         }
         switch (orderPayType) {
             case PAY_TYPE_1: //翼支付
+                // TODO 1、预授权支付 谢杞
+                OffLinePayReq req = new OffLinePayReq();
+                req.setOrderId(order.getOrderId());
+                req.setOrderAmount(String.valueOf(order.getOrderAmount()));
+                req.setOperationType(request.getFlowType());
+                resultVO = bpepPayLogService.authAppPay(req);
+                if(!resultVO.isSuccess()){
+                    return resultVO;
+                }
+                break;
+
+            case PAY_TYPE_5: //翼支付预授权
+
                 break;
             case PAY_TYPE_4: //线下支付
                 OffLinePayReq offLinePayReq = new OffLinePayReq();

@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.AfterSalesHHService;
 import com.iwhalecloud.retail.order2b.busiservice.DeliverGoodsService;
 import com.iwhalecloud.retail.order2b.busiservice.ReceiveGoodsService;
@@ -47,6 +48,8 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
     @Autowired
     private OrderManager orderManager;
 
+    @Autowired
+    private PayAuthorizationService payAuthorizationService;
 
 
     @Override
@@ -80,6 +83,8 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
 
     @Override
     public ResultVO receiveGoods(ReceiveGoodsReq request) {
+        //TODO 2、预授权支付确认 调用不成功，收货失败 谢杞
+
         ResultVO resultVO = new ResultVO();
 
         /**
@@ -123,6 +128,7 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
                 orderAfterSaleOpenService.userReceiveGoods(req);
             }
         }
+
 
         resultVO.setResultCode(commonResultResp.getResultCode());
         resultVO.setResultMsg(commonResultResp.getResultMsg());

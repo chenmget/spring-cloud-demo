@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.busiservice;
 
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.OrderPayInfoResp;
 import com.iwhalecloud.retail.order2b.dto.response.ToPayResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
@@ -59,5 +60,11 @@ public interface BPEPPayLogService {
      */
     public OrderPayInfoResp qryOrderPayInfo(OrderPayInfoReq req);
 
+    /**
+     * 翼支付预授权支付
+     * @param req
+     * @return
+     */
+    public ResultVO authAppPay(OffLinePayReq req);
 
 }

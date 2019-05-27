@@ -2,7 +2,10 @@ package com.iwhalecloud.retail.order2b.busiservice.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
+import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.BPEPPayLogService;
+import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.consts.PayConsts;
 import com.iwhalecloud.retail.order2b.dto.model.pay.PayLogDTO;
 import com.iwhalecloud.retail.order2b.dto.model.pay.PayOperationLogDTO;
@@ -27,6 +30,8 @@ import org.springframework.stereotype.Service;
 
 import javax.crypto.Cipher;
 import java.util.Date;
+import java.util.Map;
+
 @Slf4j
 @Service
 public class PayLogServiceImpl implements BPEPPayLogService {
@@ -39,6 +44,8 @@ public class PayLogServiceImpl implements BPEPPayLogService {
 
     @Autowired
     private PayOperationLogManager payOperationLogManager;
+
+
 
     @Override
     public ToPayResp handlePayData(String orderId, String orderAmount, String orgLoginCode,String operationType) {
@@ -188,6 +195,41 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     @Override
     public OrderPayInfoResp qryOrderPayInfo(OrderPayInfoReq req) {
         return payLogManager.qryOrderPayInfo(req);
+    }
+
+    @Autowired
+    private PayAuthorizationService payAuthorizationService;
+
+    @Override
+    public ResultVO authAppPay(OffLinePayReq req) {
+        // TODO:1、预授权支付 谢杞
+        ResultVO resultVO = new ResultVO();
+        log.info("BestPayEnterprisePaymentOpenServiceImpl.authAppPay req={}", JSON.toJSONString(req));
+        Map<String, Object> resultMap = payAuthorizationService.authorizationApplication(req.getOrderId(), req.getOperationType());
+        if(!(Boolean) resultMap.get("flag")){
+            resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resultVO.setResultMsg((String)resultMap.get("msg"));
+            return resultVO;
+        }
+
+        Double orderAmout = (Double.parseDouble(req.getOrderAmount()));
+        SaveLogModel saveLogModel = new SaveLogModel();
+        saveLogModel.setPayId(IdWorker.getIdStr());
+        saveLogModel.setOrderId(req.getOrderId());
+        saveLogModel.setOrderAmount(String.valueOf(orderAmout.longValue()));
+        saveLogModel.setPayStatus(req.getPayStatus());
+        saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1004);
+        saveLogModel.setPayData(req.getPayData());
+        saveLogModel.setPayDataMd(req.getPayDataMd());
+        saveLogModel.setRecBankId(req.getRecBankId());
+        saveLogModel.setRecAccount(req.getRecAccount());
+        saveLogModel.setOperationType(req.getOperationType());
+        saveLogModel.setRecAccountName(req.getRecAccountName());
+        saveLog(saveLogModel);
+
+        resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+        resultVO.setResultMsg("支付成功");
+        return resultVO;
     }
 
     @Override

@@ -175,6 +175,7 @@ public class AfterSalesHHServiceImpl implements AfterSalesHHService {
         model.setDetailList(reqList);
         model.setState(OrderAllStatus.ORDER_STATUS_6.getCode());
         orderManager.updateResNbr(model);
+        //TODO 2 确认收货状态修改时修改 翼支付确认授权接口
 
         resp=hhFinish(request);
         resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);

@@ -6,8 +6,11 @@ import com.iwhalecloud.retail.order2b.authpay.handler.BestpayHandler;
 import com.iwhalecloud.retail.order2b.authpay.handler.TradeCertificate;
 import com.iwhalecloud.retail.order2b.authpay.service.BestpayServiceTemp;
 import com.iwhalecloud.retail.order2b.authpay.service.v3.BestpayServiceV3;
+import com.iwhalecloud.retail.order2b.consts.PayConsts;
+import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.ToPayReq;
+import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.service.BestPayEnterprisePaymentService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +29,8 @@ public class BestPayEnterprisePaymentOpenServiceTest extends TestBase {
     @Resource
     private PayAuthorizationService payAuthorizationService;
 
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Test
     public void toPay(){
@@ -55,21 +60,28 @@ public class BestPayEnterprisePaymentOpenServiceTest extends TestBase {
         String orderId = "201905229410000556";
         payAuthorizationService.authorizationApplication(orderId, "C");
     }
-    @Test
-    public void AuthorizationCancellation(){
-        String orderId = "201905229410000556";
-        payAuthorizationService.AuthorizationCancellation(orderId);
-    }
+
+
     @Test
     public void authorizationConfirmation(){
         String orderId = "201905229410000556";
         payAuthorizationService.authorizationConfirmation(orderId);
     }
 
-
-    public static void main(String[] args) {
-        String date = "{\"data\":{\"msg\":\"解密AES密钥密文失败\",\"code\":\"010069\"},\"sign\":\"ab26b5To4o8OMN6PS2OZGu9IXkFucWKbc0BYk1jak9/wIdGSj4Gdr1cy+QuUlYwGWF+dlhTlDfQMB+ffRlUeGW9i89GqusSa1cjQBwCsjYSJTQOUk6sZimeDBFDsPRbUm1EN8XU+SaTKfdX+smU3aFHxf93w7W1jTzlSnpHYz9pG6Xh+4Q205Z58pbI1c5jIvEDH0j2XQenuIAMnqZ+GavAODZ4AILkHaVtTbYXewNVCTfego87Qm3BCfNe4qjleilOnMcpYURgkNd+1yWHrlGLm3Bh/7FeDVW60ezCqib0ElTDl4emt/O3svI7ihfdVgotzZjEE/bvmNa0qEIOadQ==\"}";
-
+    @Test
+    public void AuthorizationCancellation(){
+        String orderId = "201905229410000556";
+        payAuthorizationService.AuthorizationCancellation(orderId);
     }
+
+
+
+    @Test
+    public void updateOrder(){
+        String orderId = "201904196910000326";
+        orderMapper.updateStatusByOrderId(orderId, "1", "1");
+    }
+
+
 
 }

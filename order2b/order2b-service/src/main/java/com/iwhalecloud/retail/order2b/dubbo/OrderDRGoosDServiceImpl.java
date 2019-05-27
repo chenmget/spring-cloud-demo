@@ -25,9 +25,6 @@ public class OrderDRGoosDServiceImpl implements OrderDRGoodsOpenService {
     @Autowired
     private OrderDRGoodsOpenService orderDRGoodsOpenService;
 
-    @Autowired
-    private PayAuthorizationService payAuthorizationService;
-
     @Reference
     private OrderAfterSaleOpenService orderAfterSaleOpenService;
 
@@ -72,21 +69,13 @@ public class OrderDRGoosDServiceImpl implements OrderDRGoodsOpenService {
     public ResultVO receiveGoods(ReceiveGoodsReq request) {
         //默认正常收货
         if (StringUtils.isEmpty(request.getType())) {
-            ResultVO rvo = orderDRGoodsOpenService.receiveGoods(request);
-            if("0".equals(rvo.getResultCode())){//调用翼支付确认
-                payAuthorizationService.authorizationConfirmation(request.getOrderId());
-            }
-            return rvo;
+            return orderDRGoodsOpenService.receiveGoods(request);
         } else {
             TypeStatus typeStatus = TypeStatus.matchOpCode(request.getType(), TypeStatus.APPLY_HH);
             switch (typeStatus) {
                 case TYPE_14:
                     //正常收货
-                    ResultVO rvo = orderDRGoodsOpenService.receiveGoods(request);
-                    if("0".equals(rvo.getResultCode())){//调用翼支付确认
-                        payAuthorizationService.authorizationConfirmation(request.getOrderId());
-                    }
-                    return rvo;
+                    return orderDRGoodsOpenService.receiveGoods(request);
                 case TYPE_34:
                     //换货收货
                     return orderAfterSaleOpenService.userReceiveGoods(request);

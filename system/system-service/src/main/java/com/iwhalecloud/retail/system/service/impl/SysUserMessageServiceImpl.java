@@ -16,6 +16,7 @@ import com.iwhalecloud.retail.system.service.SysUserMessageService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.TaskDTO;
 import com.iwhalecloud.retail.workflow.dto.TaskItemDTO;
+import com.iwhalecloud.retail.workflow.dto.req.WorkTaskAddReq;
 import com.iwhalecloud.retail.workflow.service.TaskItemService;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -146,7 +147,6 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
             }
             sysUserMessage.setUserId(null);
             sysUserMessage.setUpdateTime(DateUtils.currentSysTimeForDate());
-            sysUserMessage.setReadFlag(SysUserMessageConst.READ_FLAG_N);
         }
         sysUserMessageManager.updateUserMessageById(sysUserMessageList);
     }
@@ -185,5 +185,27 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
 	public Long getSysMsgNotReadAcount(String userId) {
 		return sysUserMessageManager.getSysMsgNotReadAcount(userId);
 	}
-    
+
+    @Override
+    public int insertByTaskWorkTask(WorkTaskAddReq taskAddReq, String taskId) {
+        SysUserMessage sysUserMessage = new SysUserMessage();
+        List<WorkTaskAddReq.UserInfo> handlerUsers = taskAddReq.getHandlerUsers();
+        sysUserMessage.setTaskId(taskId);
+        sysUserMessage.setTitle(taskAddReq.getTaskTitle()+"信息通知");
+        sysUserMessage.setContent(taskAddReq.getPreNodeName());
+        int num = 0;
+        for(WorkTaskAddReq.UserInfo userInfo : handlerUsers){
+            sysUserMessage.setUserId(userInfo.getUserId());
+            sysUserMessageManager.addSysUserMessageNotice(sysUserMessage);
+        }
+
+        return num;
+    }
+
+    @Override
+    public int updateSysMesByTaskId(String taskId) {
+
+        return sysUserMessageManager.updateSysMesByTaskId(taskId);
+    }
+
 }

@@ -2,9 +2,9 @@ package com.iwhalecloud.retail.system.service;
 
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.SysUserMessageDTO;
 import com.iwhalecloud.retail.system.dto.request.SysUserMessageReq;
+import com.iwhalecloud.retail.workflow.dto.req.WorkTaskAddReq;
 
 import java.util.List;
 
@@ -50,4 +50,16 @@ public interface SysUserMessageService{
      */
 	Long getSysMsgNotReadAcount(String userId);
 
+    /**
+     * 创建工单的时候添加用户消息
+     * @return
+     */
+    int insertByTaskWorkTask(WorkTaskAddReq taskAddReq, String taskId);
+
+
+    /**
+     * 工单流转时改变消息状态
+     * @return
+     */
+    int updateSysMesByTaskId(String taskId);
 }

@@ -30,6 +30,7 @@ public class SysUserMessageManager {
      * @param sysUserMessage
      */
     public void addSysUserMessage(SysUserMessage sysUserMessage) {
+        sysUserMessage.setReadFlag(SysUserMessageConst.READ_FLAG_N);
         sysUserMessage.setMessageType(SysUserMessageConst.MESSAGE_TYPE_WARN);
         sysUserMessage.setCreateTime(Date.from(Instant.now()));
         sysUserMessage.setBeginTime(sysUserMessage.getCreateTime());
@@ -61,12 +62,15 @@ public class SysUserMessageManager {
          }
 
          // 若结束时间不为空则作为查询条件，否则以当前时间为条件，结束时间应大于当前时间
-         if (Objects.nonNull(sysUserMessageReq.getBeginTime()) && Objects.nonNull(sysUserMessageReq.getEndTime())) {
-             queryWrapper.and(wrapper -> wrapper.between(SysUserMessage.FieldNames.beginTime.getTableFieldName(),sysUserMessageReq.getBeginTime(),sysUserMessageReq.getEndTime())
-                     .or()
-                     .between(SysUserMessage.FieldNames.endTime.getTableFieldName(),sysUserMessageReq.getBeginTime(),sysUserMessageReq.getEndTime()));
-         } else {
-             queryWrapper.ge(SysUserMessage.FieldNames.endTime.getTableFieldName(), LocalDate.now());
+//         if (Objects.nonNull(sysUserMessageReq.getBeginTime()) && Objects.nonNull(sysUserMessageReq.getEndTime())) {
+//             queryWrapper.and(wrapper -> wrapper.between(SysUserMessage.FieldNames.beginTime.getTableFieldName(),sysUserMessageReq.getBeginTime(),sysUserMessageReq.getEndTime())
+//                     .or()
+//                     .between(SysUserMessage.FieldNames.endTime.getTableFieldName(),sysUserMessageReq.getBeginTime(),sysUserMessageReq.getEndTime()));
+//         } else {
+//             queryWrapper.ge(SysUserMessage.FieldNames.endTime.getTableFieldName(), LocalDate.now());
+//         }
+         if (Objects.nonNull(sysUserMessageReq.getBeginTime()) && Objects.nonNull(sysUserMessageReq.getEndTime())){
+             queryWrapper.between(SysUserMessage.FieldNames.createTime.getTableFieldName(),sysUserMessageReq.getBeginTime(),sysUserMessageReq.getEndTime());
          }
          queryWrapper.like(Objects.nonNull(sysUserMessageReq.getMessageTitle()),SysUserMessage.FieldNames.title.getTableFieldName(),sysUserMessageReq.getMessageTitle());
          queryWrapper.isNotNull(SysUserMessage.FieldNames.taskId.getTableFieldName());
@@ -152,6 +156,22 @@ public class SysUserMessageManager {
 		return sysUserMessageMapper.getSysMsgNotReadAcount(userId);
 	}
 
+    /**
+     * 新增业务通知类用户消息
+     * @param sysUserMessage
+     */
+    public void addSysUserMessageNotice(SysUserMessage sysUserMessage) {
+        sysUserMessage.setReadFlag(SysUserMessageConst.READ_FLAG_N);
+        sysUserMessage.setMessageType(SysUserMessageConst.MESSAGE_TYPE_REMIND);
+        sysUserMessage.setCreateTime(Date.from(Instant.now()));
+        sysUserMessage.setBeginTime(sysUserMessage.getCreateTime());
+        sysUserMessage.setCreateUserId("system");
+        sysUserMessage.setStatus(SysUserMessageConst.MessageStatusEnum.VALID.getCode());
+        sysUserMessageMapper.insert(sysUserMessage);
+    }
 
 
+    public int updateSysMesByTaskId(String taskId) {
+        return sysUserMessageMapper.updateSysMesByTaskId(taskId);
+    }
 }

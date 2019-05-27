@@ -8,6 +8,7 @@ import com.iwhalecloud.retail.system.dto.*;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.UserLoginResp;
 import com.iwhalecloud.retail.system.service.*;
+import com.iwhalecloud.retail.workflow.dto.req.WorkTaskAddReq;
 import com.twmacinta.util.MD5;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -42,6 +43,9 @@ public class UserServerTest {
 
     @Autowired
     private BssInfoSyncService bssInfoSyncService;
+
+    @Autowired
+    private SysUserMessageService sysUserMessageService;
 
 
     @org.junit.Test
@@ -304,4 +308,24 @@ public class UserServerTest {
         String result = bssInfoSyncService.userInfoSync(stringJson);
         log.info("==================" + result + "==================");
     }
+
+    @org.junit.Test
+    public void insertByTaskWorkTaskTest() {
+        WorkTaskAddReq taskAddReq = new WorkTaskAddReq();
+        taskAddReq.setFormId("00101");
+        List<WorkTaskAddReq.UserInfo> handlerUser = new ArrayList<>();
+        WorkTaskAddReq.UserInfo userInfo1 = new WorkTaskAddReq.UserInfo();
+        WorkTaskAddReq.UserInfo userInfo2 = new WorkTaskAddReq.UserInfo();
+        userInfo1.setUserId("1");
+        userInfo2.setUserId("1077839559879852033");
+        handlerUser.add(userInfo1);
+        handlerUser.add(userInfo2);
+        taskAddReq.setHandlerUsers(handlerUser);
+        taskAddReq.setTaskTitle("待发货");
+        String taskId = "110";
+        sysUserMessageService.insertByTaskWorkTask(taskAddReq, taskId);
+
+    }
+
+
 }

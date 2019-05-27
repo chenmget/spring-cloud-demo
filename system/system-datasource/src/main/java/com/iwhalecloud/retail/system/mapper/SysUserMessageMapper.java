@@ -18,6 +18,7 @@ public interface SysUserMessageMapper extends BaseMapper<SysUserMessage>{
 
 	Long getSysUserMsgCountByUserIdAndMsgType(@Param("userId")String userId, @Param("messageType")String messageType);
 
-	Long getSysMsgNotReadAcount(String userId);
+	Long getSysMsgNotReadAcount(@Param("userId")String userId);
 
+    int updateSysMesByTaskId(@Param("taskId")String taskId);
 }

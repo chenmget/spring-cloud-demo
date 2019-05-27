@@ -56,4 +56,11 @@
         sum.STATUS = '1'
   </select>
 
+<update id="updateSysMesByTaskId">
+    UPDATE sys_user_message sym
+    SET sym.STATUS = '0',
+    sym.END_TIME = NOW( )
+    WHERE
+    sym.TASK_ID = #{taskId}
+</update>
 </mapper>

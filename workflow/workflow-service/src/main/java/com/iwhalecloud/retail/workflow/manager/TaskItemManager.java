@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.entity.TaskItem;
 import com.iwhalecloud.retail.workflow.mapper.TaskItemMapper;
+import com.iwhalecloud.retail.workflow.sal.system.SysUserMessageClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -23,6 +25,8 @@ import java.util.List;
 public class TaskItemManager {
     @Resource
     private TaskItemMapper taskItemMapper;
+    @Autowired
+    private SysUserMessageClient sysUserMessageClient;
 
     /**
      * 添加任务项信息
@@ -33,6 +37,8 @@ public class TaskItemManager {
     public String addTaskItem(TaskItem taskItem) {
         taskItem.setCreateTime(new Date());
         taskItemMapper.insert(taskItem);
+        //添加任务项时候添加用户消息
+        sysUserMessageClient.insertByTaskWorkTask(taskItem);
         return taskItem.getTaskItemId();
     }
 
@@ -120,7 +126,8 @@ public class TaskItemManager {
         taskItem.setHandlerUserId(handlerUserId);
         taskItem.setHandlerUserName(handlerUserName);
         taskItem.setHandlerMsg(handlerMsg);
-
+        //修改用户消息改成无效
+        sysUserMessageClient.updateSysMesByTaskId(taskId);
         UpdateWrapper<TaskItem> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq(TaskItem.FieldNames.taskItemId.getTableFieldName(),taskItemId);
         updateWrapper.eq(TaskItem.FieldNames.taskId.getTableFieldName(),taskId);

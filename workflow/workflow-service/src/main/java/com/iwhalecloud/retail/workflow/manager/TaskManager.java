@@ -11,13 +11,16 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.dto.CommonFileDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
+import com.iwhalecloud.retail.system.service.CommonFileService;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.bizservice.RunRouteService;
 import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import com.iwhalecloud.retail.workflow.dto.req.*;
+import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskDetailGetResp;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskPageResp;
 import com.iwhalecloud.retail.workflow.dto.resp.TaskPageResp;
 import com.iwhalecloud.retail.workflow.entity.*;
@@ -29,6 +32,7 @@ import com.iwhalecloud.retail.workflow.model.TaskItemDetailModel;
 import com.iwhalecloud.retail.workflow.sal.system.UserClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.junit.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -92,6 +96,9 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
     @Autowired
     private RuleDefManager ruleDefManager;
 
+    @Reference
+    private CommonFileService commonFileService;
+
     /**
      * 启动工作流
      *
@@ -136,7 +143,6 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
         log.info("TaskManager.startProcess route_id={},routeServiceList={}", routeId, JSON.toJSONString(routeServiceList));
         log.info("5、构造服务运行的容器对象，调用配置的服务");
         invokeRouteService(task, applyUserId, applyUserName, routeServiceList);
-
         log.info("6、如果下一个节点为结束节点，修改任务实例表的状态、办结时间，忽略后面的步骤");
         if (WorkFlowConst.WF_NODE.NODE_END.getId().equals(nextNodeId)) {
             nodeEndHandle(applyUserId, applyUserName, task.getTaskId(), route);
@@ -244,7 +250,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
                 }
             }
         }
-        if(CollectionUtils.isEmpty(conditionNodeRights)){
+        if (CollectionUtils.isEmpty(conditionNodeRights)) {
             conditionNodeRights.addAll(nodeRightsList);
         }
         for (NodeRights nodeRights : conditionNodeRights) {
@@ -413,6 +419,11 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
         Route route = routeManager.queryRouteById(routeId);
         log.info("nextRoute routeManager.queryRouteById routeId={}, route={}", routeId, JSON.toJSONString(route));
 
+        /**
+         * 保存附件url
+         */
+        saveAppendix(routeNextDTO);
+
 
         log.info("5、如果下一个节点为结束节点，修改任务实例表的状态、办结时间，忽略后面的步骤");
         if (WorkFlowConst.WF_NODE.NODE_END.getId().equals(noteNextId)) {
@@ -442,6 +453,47 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
         log.info("7、添加下个环节处理");
         addNextTaskItem(nextRoute, task, handlerUserList);
         return ResultVO.success();
+    }
+
+    private void saveAppendix(RouteNextReq req) {
+        if (StringUtils.isEmpty(req.getAppendixUrl())) {
+            return;
+        }
+        CommonFileDTO commonFileDTO = new CommonFileDTO();
+        commonFileDTO.setFileType(req.getAppendixType());
+        commonFileDTO.setFileClass("5");
+        commonFileDTO.setObjId(req.getTaskItemId());
+        commonFileDTO.setFileUrl(req.getAppendixUrl());
+        commonFileDTO.setCreateDate(new Date());
+        commonFileDTO.setCreateStaff(req.getHandlerUserId());
+        commonFileDTO.setStatusCd(SystemConst.StatusCdEnum.STATUS_CD_VALD.getCode());
+        commonFileService.saveCommonFile(commonFileDTO);
+    }
+
+    /**
+     * 根据task_item_id 查询附件
+     *
+     */
+    public void selectAppendix( List<HandleTaskDetailGetResp.TaskItemInfo> taskItems) {
+
+        List<String> taskIds=new ArrayList<>(taskItems.size());
+        for (HandleTaskDetailGetResp.TaskItemInfo taskItem:taskItems){
+            taskIds.add(taskItem.getTaskItemId());
+        }
+        String[] strings=taskIds.toArray(new String[taskIds.size()]);
+        List<CommonFileDTO> resultVOData=commonFileService.getCommonFileByIds(strings).getResultData();
+        if(CollectionUtils.isEmpty(resultVOData)){
+            return;
+        }
+        for (HandleTaskDetailGetResp.TaskItemInfo taskItem:taskItems){
+
+            for (CommonFileDTO dto:resultVOData){
+                if(taskItem.getTaskItemId().equals(dto.getObjId())){
+                    taskItem.setAppendixUrl(dto.getFileUrl());
+                    break;
+                }
+            }
+        }
     }
 
 
@@ -492,8 +544,8 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
     private List<RuleDef> selectRuleByTaskParams(Task task) {
         List<RuleDef> checkedRuleList = new ArrayList<>();
 
-        if (!WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode() .equals( task.getParamsType())
-                || StringUtils.isEmpty(task.getParamsValue())){
+        if (!WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode().equals(task.getParamsType())
+                || StringUtils.isEmpty(task.getParamsValue())) {
             return checkedRuleList;
         }
 
@@ -517,10 +569,10 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
             Object value = paramsMap.get(attrSpec.getAttrCode());
             if (value != null) {
 //                通过attrId，属性值 查询 条件规则表,找出ruleid
-               List<RuleDef> ruleDefs=ruleDefManager.queryRuleDefByParams(attrSpec.getAttrId(),value.toString());
-               if(CollectionUtils.isNotEmpty(ruleDefs)){
-                   checkedRuleList.add(ruleDefs.get(0));
-               }
+                List<RuleDef> ruleDefs = ruleDefManager.queryRuleDefByParams(attrSpec.getAttrId(), value.toString());
+                if (CollectionUtils.isNotEmpty(ruleDefs)) {
+                    checkedRuleList.add(ruleDefs.get(0));
+                }
             }
         }
         return checkedRuleList;

@@ -58,7 +58,7 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     @Override
     public ResultVO addResourceInstByAdmin(ResourceInstAddReq req) {
         log.info("SupplierResourceInstOpenServiceImpl.addResourceInstByAdmin req={}", JSON.toJSONString(req));
-        ResultVO resp = supplierResourceInstService.addResourceInst(req);
+        ResultVO resp = supplierResourceInstService.addResourceInstByAdmin(req);
         resouceInstTrackService.asynSaveTrackForSupplier(req, resp);
         return resp;
     }

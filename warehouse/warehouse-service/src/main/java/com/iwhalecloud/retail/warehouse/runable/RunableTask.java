@@ -455,7 +455,7 @@ public class RunableTask {
                 Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
                 List<String> subList = nbrList.subList(perNum * i, maxNum);
                 CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
-                log.info("RunableTask.exceutorValid newList={}", JSON.toJSONString(newList));
+                log.info("RunableTask.exceutorValidForSupplier newList={}", JSON.toJSONString(newList));
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 getReq.setTypeId(req.getTypeId());
                 Callable<Boolean> callable = new Callable<Boolean>() {
@@ -464,6 +464,7 @@ public class RunableTask {
                         Date now = new Date();
                         List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
                         ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq, newList);
+                        log.info("RunableTask.exceutorValidForSupplier resouceInstTrackService.listResourceInstsTrack req={}, newList={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(newList),  JSON.toJSONString(newList));
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                             String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
@@ -507,7 +508,7 @@ public class RunableTask {
                             }
                         }
                         Boolean addResult = resourceUploadTempManager.saveBatch(instList);
-                        log.info("RunableTask.exceutorValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
+                        log.info("RunableTask.exceutorValidForSupplier resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
                         return addResult;
                     }
                 };

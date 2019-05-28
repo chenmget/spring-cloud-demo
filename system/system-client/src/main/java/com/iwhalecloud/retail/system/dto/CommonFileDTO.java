@@ -1,8 +1,11 @@
 package com.iwhalecloud.retail.system.dto;
 
+import com.iwhalecloud.retail.system.common.SystemConst;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Date;
 
 
 /**
@@ -84,6 +87,14 @@ public class CommonFileDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "记录每次修改的时间。")
   	private java.util.Date updateDate;
-	
-  	
+
+	public CommonFileDTO(String fileType, String fileClass, String objId, String fileUrl) {
+		this.fileType = fileType;
+		this.fileClass = fileClass;
+		this.objId = objId;
+		this.fileUrl = fileUrl;
+		this.createDate = new Date();
+		this.createStaff = "1";
+		this.statusCd = SystemConst.StatusCdEnum.STATUS_CD_VALD.getCode();
+	}
 }

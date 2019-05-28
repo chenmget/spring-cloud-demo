@@ -57,6 +57,7 @@ public class SysUserMessageClientImpl implements SysUserMessageClient {
             Context = "工单号："+taskItem.getTaskId()+":"+taskItem.getCurNodeName();
         }
         taskAddReq.setPreNodeName(Context);
+        taskAddReq.setTaskTitle(task.getResultData().getTaskTitle());
         taskAddReq.setHandlerUsers(userInfoList);
         return sysUserMessageService.insertByTaskWorkTask(taskAddReq, taskItem.getTaskId());
     }

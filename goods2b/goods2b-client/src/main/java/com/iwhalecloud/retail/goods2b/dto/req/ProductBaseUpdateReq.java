@@ -209,6 +209,18 @@ public class ProductBaseUpdateReq extends AbstractRequest implements Serializabl
     private String typeId;
 
     /**
+     * 是否推送ITMS
+     */
+    @ApiModelProperty(value = "是否推送ITMS")
+    private String isItms;
+
+    /**
+     * 是否需要CT码
+     */
+    @ApiModelProperty(value = "是否需要CT码")
+    private String isCtCode;
+
+    /**
      * 是否固网产品
      */
     @ApiModelProperty(value = "是否固网产品")

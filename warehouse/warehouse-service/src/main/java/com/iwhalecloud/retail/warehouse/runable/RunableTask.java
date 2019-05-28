@@ -589,7 +589,6 @@ public class RunableTask {
                                 req.setSourcemerchantId(dtoList.get(0).getMerchantId());
                                 req.setSinglectCode(dto.getCtCode());
                                 req.setMktResId(dto.getMktResId());
-                                BeanUtils.copyProperties(dto, req);
                                 ResultVO resultVO = supplierResourceInstService.addResourceInst(req);
                                 if (!resultVO.isSuccess()) {
                                     return false;

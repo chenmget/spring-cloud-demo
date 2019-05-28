@@ -61,11 +61,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Autowired
     private TagRelService tagRelService;
 
-    @Value("${zop.secret}")
-    private String zopSecret;
-
-    @Value("${zop.url}")
-    private String zopUrl;
+//    @Value("${zop.secret}")
+//    private String zopSecret;
+//
+//    @Value("${zop.url}")
+//    private String zopUrl;
 
     @Override
     public ResultVO<ProductBaseGetResp> getProductBase(ProductBaseGetByIdReq req){

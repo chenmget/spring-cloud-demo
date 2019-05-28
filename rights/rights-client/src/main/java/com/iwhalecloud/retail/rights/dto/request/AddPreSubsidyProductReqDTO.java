@@ -66,4 +66,10 @@ public class AddPreSubsidyProductReqDTO extends AbstractRequest implements Seria
      */
     @ApiModelProperty(value = "产品参与总数量限制标识")
     private String numLimitFlg;
+
+    /**
+     *  活动中的商品价格，前置补贴活动保存产品的地包强制供货价
+     */
+    @ApiModelProperty(value = "活动中的商品价格，前置补贴活动保存产品的地包强制供货价")
+    private Long price;
 }

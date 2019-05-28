@@ -773,7 +773,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
-        resourceInstValidReq.setMktResStoreId(manuResStoreId);
         List<String> merchantNbrList = resourceInstCheckService.validMerchantStore(resourceInstValidReq);
         if(CollectionUtils.isEmpty(merchantNbrList)){
             return ResultVO.error("厂商库该机型串码不存在！");

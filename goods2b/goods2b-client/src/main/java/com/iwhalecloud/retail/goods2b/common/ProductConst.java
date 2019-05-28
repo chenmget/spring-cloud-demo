@@ -82,6 +82,26 @@ public class ProductConst {
         }
     }
 
+    public enum isInspection {
+        NO("0","不需要"),
+        YES("1","需要");
+
+        private String code;
+        private String value;
+
+        isInspection(String code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
     /**
      * 是否被删除
      */

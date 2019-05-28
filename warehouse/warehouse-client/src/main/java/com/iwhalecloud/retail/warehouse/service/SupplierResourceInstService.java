@@ -150,4 +150,11 @@ public interface SupplierResourceInstService {
      */
     ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req);
 
+    /**
+     * 零售商串码入库多线程处理
+     * @param req
+     * @return
+     */
+    ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req);
+
 }

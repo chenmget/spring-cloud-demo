@@ -559,7 +559,6 @@ public class RunableTask {
         try {
             ExecutorService executorService = initExecutorService();
             List<String> nbrList = req.getMktResInstNbrs();
-            String batchId = resourceInstService.getPrimaryKey();
             Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
             addNbrForSupplierFutureTaskResult = new ArrayList<>(excutorNum);
             for (Integer i = 0; i < excutorNum; i++) {
@@ -591,7 +590,10 @@ public class RunableTask {
                                 req.setSinglectCode(dto.getCtCode());
                                 req.setMktResId(dto.getMktResId());
                                 BeanUtils.copyProperties(dto, req);
-                                supplierResourceInstService.addResourceInst(req);
+                                ResultVO resultVO = supplierResourceInstService.addResourceInst(req);
+                                if (!resultVO.isSuccess()) {
+                                    return false;
+                                }
                             }
                         }
                         return true;
@@ -601,7 +603,6 @@ public class RunableTask {
                 addNbrForSupplierFutureTaskResult.add(validFutureTask);
             }
             executorService.shutdown();
-            return batchId;
         }catch (Throwable e) {
             if (e instanceof ExecutionException) {
                 e = e.getCause();
@@ -612,7 +613,7 @@ public class RunableTask {
     }
 
     /**
-     * 串码校验多线程处理是否完成
+     * 串码入库多线程处理是否完成
      */
     public Boolean addNbrForSupplierHasDone() {
         try{

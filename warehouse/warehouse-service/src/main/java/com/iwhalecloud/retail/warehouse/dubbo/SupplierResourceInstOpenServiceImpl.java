@@ -201,4 +201,10 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
         return resp;
     }
 
+    @Override
+    public ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req){
+        ResultVO resp = supplierResourceInstService.exceutorAddNbrForSupplier(req);
+        return resp;
+    }
+
 }

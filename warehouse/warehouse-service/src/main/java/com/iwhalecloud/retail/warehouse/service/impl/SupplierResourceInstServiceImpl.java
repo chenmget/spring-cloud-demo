@@ -711,7 +711,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     }
 
     @Override
-    public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
+    public ResultVO listResourceUploadTemp(ResourceUploadTempListPageReq req) {
         // 多线程没跑完，返回空
         if (runableTask.validForSupplierHasDone()) {
             return ResultVO.success(resourceUploadTempManager.listResourceUploadTemp(req));
@@ -719,6 +719,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.success();
         }
 
+    }
+
+    @Override
+    public ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req) {
+        runableTask.exceutorAddNbrForSupplier(req);
+        return ResultVO.success();
     }
 
     @Override

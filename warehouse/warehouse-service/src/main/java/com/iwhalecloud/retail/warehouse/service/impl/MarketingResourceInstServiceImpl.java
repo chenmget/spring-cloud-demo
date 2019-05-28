@@ -259,4 +259,9 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     public ResultVO addResourceInstByAdmin(ResourceInstAddReq req){
         return null;
     }
+
+    @Override
+    public ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req){
+        return null;
+    }
 }

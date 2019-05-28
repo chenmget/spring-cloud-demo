@@ -28,7 +28,6 @@ import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.manager.*;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.*;
@@ -182,6 +181,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                 ResourceConst.STATUSCD.DELETED.getCode()));
         resourceInstUpdateReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
         resourceInstUpdateReq.setTypeId(req.getTypeId());
+        resourceInstUpdateReq.setMerchantId(req.getSourcemerchantId());
         ResultVO updateResourceresultVO = resourceInstService.updateResourceInst(resourceInstUpdateReq);
         if (!updateResourceresultVO.isSuccess()) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), updateResourceresultVO.getResultMsg());

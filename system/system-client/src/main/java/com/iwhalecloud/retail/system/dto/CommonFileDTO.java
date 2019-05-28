@@ -88,6 +88,10 @@ public class CommonFileDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "记录每次修改的时间。")
   	private java.util.Date updateDate;
 
+	public CommonFileDTO() {
+
+	}
+
 	public CommonFileDTO(String fileType, String fileClass, String objId, String fileUrl) {
 		this.fileType = fileType;
 		this.fileClass = fileClass;

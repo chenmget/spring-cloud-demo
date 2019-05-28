@@ -252,6 +252,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         List<String> mktResInstNbrList = req.getMktResInstNbrs();
         ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
         BeanUtils.copyProperties(req, updateReq);
+        updateReq.setMktResStoreId(req.getDestStoreId());
         Integer successNum = resourceInstManager.updateResourceInst(updateReq);
         log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), successNum);
 

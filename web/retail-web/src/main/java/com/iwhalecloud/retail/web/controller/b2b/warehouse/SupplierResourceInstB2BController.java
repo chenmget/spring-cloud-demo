@@ -108,6 +108,7 @@ public class SupplierResourceInstB2BController {
         BeanUtils.copyProperties(dto, req);
         req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
         req.setMerchantId(UserContext.getMerchantId());
+        log.info("SupplierResourceInstB2BController.addResourceInst req={}", JSON.toJSONString(req));
         return supplierResourceInstService.exceutorAddNbrForSupplier(req);
     }
     @ApiOperation(value = "调拨串码", notes = "调拨串码")
@@ -147,7 +148,7 @@ public class SupplierResourceInstB2BController {
 
         String  merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
         ResultVO<TransferPermissionGetResp> transferPermissionVO = merchantRulesService.getTransferPermission(merchantId);
-        log.info("RetailerResourceInstB2BController.getBatch merchantRulesService.getTransferPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
+        log.info("SupplierResourceInstB2BController.getBatch merchantRulesService.getTransferPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
         if (null == transferPermissionVO || !transferPermissionVO.isSuccess() || null == transferPermissionVO.getResultData()) {
             // 没有权限，直接返回不能查到数据
             return ResultVO.success(resourceAllocateResp);
@@ -156,7 +157,7 @@ public class SupplierResourceInstB2BController {
         TransferPermissionGetResp resp = transferPermissionVO.getResultData();
         List mktResIdList = CollectionUtils.isEmpty(resp.getProductIdList()) ? Lists.newArrayList("-1") : resp.getProductIdList();
         ResultVO<List<ResourceInstListPageResp>> respListVO = supplierResourceInstService.getBatch(req);
-        log.info("RetailerResourceInstB2BController.getBatch retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respListVO));
+        log.info("SupplierResourceInstB2BController.getBatch retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respListVO));
         List<ResourceInstListPageResp> respList = respListVO.getResultData();
         // 有机型权限的串码
         List<ResourceInstListPageResp> resourceInstRespList = respList.stream().filter(s -> mktResIdList.contains(s.getMktResId())).collect(Collectors.toList());

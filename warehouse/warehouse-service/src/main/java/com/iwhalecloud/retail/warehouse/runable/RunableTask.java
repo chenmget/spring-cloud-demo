@@ -110,8 +110,8 @@ public class RunableTask {
                 List<String> subList = nbrList.subList(perNum * i, maxNum);
                 CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
-                BeanUtils.copyProperties(req, getReq);
-                log.info("RunableTask.exceutorValid newList={}, validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
+                getReq.setTypeId(req.getTypeId());
+                log.info("RunableTask.exceutorValid newList={}, validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
                 Callable<Boolean> callable = new Callable<Boolean>() {
                     @Override
                     public Boolean call() throws Exception {

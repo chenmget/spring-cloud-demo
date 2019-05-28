@@ -5,7 +5,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
@@ -568,7 +567,6 @@ public class RunableTask {
                 log.info("RunableTask.exceutorAddNbrForSupplier newList={}", JSON.toJSONString(newList));
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 getReq.setTypeId(req.getTypeId());
-                getReq.setSourceType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
                 getReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
                 Callable<Boolean> callable = new Callable<Boolean>() {
                     @Override
@@ -577,6 +575,8 @@ public class RunableTask {
                         log.info("RunableTask.exceutorAddNbrForSupplier resouceInstTrackService.listResourceInstsTrack getReq={},newList={},instsTrackvO={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), JSON.toJSONString(instsTrackvO));
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> trackList = instsTrackvO.getResultData();
+                            // sourceType为空才是厂商的串码
+                            trackList = trackList.stream().filter(t -> StringUtils.isBlank(t.getSourceType())).collect(Collectors.toList());
                             CopyOnWriteArrayList<ResouceInstTrackDTO> trackListSafe = new CopyOnWriteArrayList(trackList);
                             // 按串码归属维度组装数据
                             Map<String, List<ResouceInstTrackDTO>> map = trackListSafe.stream().collect(Collectors.groupingBy(t -> t.getMktResStoreId()));

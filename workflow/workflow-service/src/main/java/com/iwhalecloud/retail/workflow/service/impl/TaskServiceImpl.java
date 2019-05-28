@@ -187,6 +187,7 @@ public class TaskServiceImpl implements TaskService {
                 BeanUtils.copyProperties(taskItem, taskItemInfo);
                 taskItemInfos.add(taskItemInfo);
             }
+            taskManager.selectAppendix2(taskItemInfos);
             resp.setTaskItemInfos(taskItemInfos);
             log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}", JSON.toJSONString(taskItemInfos));
         }
@@ -245,7 +246,7 @@ public class TaskServiceImpl implements TaskService {
             /**
              * 组装附件信息
              */
-            taskManager.selectAppendix(taskItemInfos);
+            taskManager.selectAppendix1(taskItemInfos);
             resp.setTaskItemInfos(taskItemInfos);
             log.info("TaskServiceImpl.getTaskDetail taskItemInfos={}", JSON.toJSONString(taskItemInfos));
         }

@@ -21,4 +21,19 @@
     ,t.RESULT_DATA 
 </sql>
 
+
+  <select id="UpdateOrdOrderStatus" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.pay.UpdateOrdOrderReq">
+	  UPDATE 
+	  	ord_order 
+	  SET 
+	  	pay_type=#{req.payType},
+	  	payment_name=#{req.paymentName},
+	  	payment_type=#{req.paymentType},
+	  	pay_status=#{req.payStatus},
+	  	status=#{req.status}
+	  WHERE 
+	  	order_id = #{req.orderId}
+  </select>
+
+
 </mapper>

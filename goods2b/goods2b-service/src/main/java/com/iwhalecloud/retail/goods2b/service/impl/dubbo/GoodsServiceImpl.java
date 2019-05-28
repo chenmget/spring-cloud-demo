@@ -190,7 +190,8 @@ public class GoodsServiceImpl implements GoodsService {
         goodsManager.addGoods(goods);
 
         //添加分货规则
-        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot())) {
+        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot()) &&
+                CollectionUtils.isNotEmpty(req.getEntityList())) {
             ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
             prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
             ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());
@@ -206,10 +207,9 @@ public class GoodsServiceImpl implements GoodsService {
                 errors.add(checkResult.getResultMsg());
                 throw new GoodsRulesException(errors);
             }
+            log.info("添加分货规则成功");
         }
-        log.info("添加分货规则成功");
-
-
+        
         String goodsId = goods.getGoodsId();
         String targetType = req.getTargetType();
         if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_REGION.equals(targetType)) {
@@ -389,7 +389,8 @@ public class GoodsServiceImpl implements GoodsService {
         String targetType = req.getTargetType();
 
         //添加分货规则
-        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot())) {
+        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot()) &&
+                CollectionUtils.isNotEmpty(req.getEntityList())) {
             ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
             prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
             ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());

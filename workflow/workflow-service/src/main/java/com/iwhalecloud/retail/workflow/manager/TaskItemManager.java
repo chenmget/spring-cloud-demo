@@ -38,7 +38,7 @@ public class TaskItemManager {
         taskItem.setCreateTime(new Date());
         taskItemMapper.insert(taskItem);
         //添加任务项时候添加用户消息
-        sysUserMessageClient.insertByTaskWorkTask(taskItem);
+       sysUserMessageClient.insertByTaskWorkTask(taskItem);
         return taskItem.getTaskItemId();
     }
 

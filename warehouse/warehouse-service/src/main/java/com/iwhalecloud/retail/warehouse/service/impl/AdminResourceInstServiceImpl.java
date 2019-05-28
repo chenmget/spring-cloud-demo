@@ -80,7 +80,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             return merchantResourceInstService.addResourceInstByAdmin(req);
         }else if(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(merchantType) || PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchantType)) {
             req.setMerchantId(merchantResultVO.getResultData().getMerchantId());
-            return supplierResourceInstService.addResourceInst(req);
+            return supplierResourceInstService.addResourceInstByAdmin(req);
         }else {
             return ResultVO.error("用户类型不正确");
         }

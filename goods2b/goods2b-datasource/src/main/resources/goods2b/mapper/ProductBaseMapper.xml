@@ -17,6 +17,7 @@
     ,t.IS_IMEI 
     ,t.IS_ITMS 
     ,t.IS_CT_CODE
+    ,IS_INSPECTION
     ,t.IS_FIXED_LINE
     ,t.PRODUCT_CODE 
     ,t.UNIT

@@ -18,6 +18,7 @@ import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.model.MerchantInfByNbrModel;
 import com.iwhalecloud.retail.warehouse.service.MarketingResStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
@@ -246,6 +247,21 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     }
     @Override
     public ResultVO getResourceInstListForTask(ResourceInstListPageReq req) {
+        return null;
+    }
+
+    @Override
+    public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
+        return null;
+    }
+
+    @Override
+    public ResultVO addResourceInstByAdmin(ResourceInstAddReq req){
+        return null;
+    }
+
+    @Override
+    public ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req){
         return null;
     }
 }

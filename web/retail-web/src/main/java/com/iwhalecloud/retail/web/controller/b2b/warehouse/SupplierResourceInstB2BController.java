@@ -108,7 +108,7 @@ public class SupplierResourceInstB2BController {
         BeanUtils.copyProperties(dto, req);
         req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
         req.setMerchantId(UserContext.getMerchantId());
-        return supplierResourceInstService.addResourceInst(req);
+        return supplierResourceInstService.exceutorAddNbrForSupplier(req);
     }
     @ApiOperation(value = "调拨串码", notes = "调拨串码")
     @ApiResponses({

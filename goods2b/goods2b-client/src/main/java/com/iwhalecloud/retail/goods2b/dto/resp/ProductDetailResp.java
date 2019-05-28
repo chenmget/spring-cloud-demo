@@ -97,6 +97,12 @@ public class ProductDetailResp extends PageVO {
     /**
      * 是否需要抽检
      */
+    @ApiModelProperty(value = "是否需要抽检")
+    private String IsInspection;
+
+    /**
+     * 是否固网产品
+     */
     @ApiModelProperty(value = "是否固网产品")
     private String isFixedLine;
 

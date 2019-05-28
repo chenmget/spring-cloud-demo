@@ -13,11 +13,17 @@ public interface SupplierResourceInstService {
 
     /**
      * 添加串码
-     *
      * @param req
      * @return
      */
     ResultVO addResourceInst(ResourceInstAddReq req);
+
+    /**
+     * 管理员添加串码
+     * @param req
+     * @return
+     */
+    ResultVO addResourceInstByAdmin(ResourceInstAddReq req);
 
     /**
      * 删除串码
@@ -143,5 +149,12 @@ public interface SupplierResourceInstService {
      * @return
      */
     ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req);
+
+    /**
+     * 零售商串码入库多线程处理
+     * @param req
+     * @return
+     */
+    ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req);
 
 }

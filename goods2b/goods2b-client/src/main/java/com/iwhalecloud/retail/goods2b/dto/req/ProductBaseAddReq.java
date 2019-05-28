@@ -85,6 +85,12 @@ public class ProductBaseAddReq extends AbstractRequest implements Serializable {
      * 是否需要抽检
      */
     @ApiModelProperty(value = "是否固网产品")
+    private String IsInspection;
+
+    /**
+     * 是否固网产品
+     */
+    @ApiModelProperty(value = "是否固网产品")
     private String isFixedLine;
     /**
      * 产品编码

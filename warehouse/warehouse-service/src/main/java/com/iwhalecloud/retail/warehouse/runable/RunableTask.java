@@ -23,6 +23,7 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -455,7 +456,7 @@ public class RunableTask {
                 Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
                 List<String> subList = nbrList.subList(perNum * i, maxNum);
                 CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
-                log.info("RunableTask.exceutorValid newList={}", JSON.toJSONString(newList));
+                log.info("RunableTask.exceutorValidForSupplier newList={}", JSON.toJSONString(newList));
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 getReq.setTypeId(req.getTypeId());
                 Callable<Boolean> callable = new Callable<Boolean>() {
@@ -464,10 +465,10 @@ public class RunableTask {
                         Date now = new Date();
                         List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
                         ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq, newList);
+                        log.info("RunableTask.exceutorValidForSupplier resouceInstTrackService.listResourceInstsTrack req={}, newList={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(newList),  JSON.toJSONString(newList));
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                             String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
-                            String manufacturer = PartnerConst.MerchantTypeEnum.MANUFACTURER.getType();
                             List<String> instExitstNbr = instTrackDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
                             for (ResouceInstTrackDTO dto : instTrackDTOList) {
                                 ResouceUploadTemp inst = new ResouceUploadTemp();
@@ -477,10 +478,10 @@ public class RunableTask {
                                 inst.setCreateDate(now);
                                 inst.setCreateStaff(req.getCreateStaff());
                                 // 非厂商的串码且状态为非删除(非厂商删除的串码可再次导入)
-                                if (!deleteStatus.equals(dto.getStatusCd()) && !manufacturer.equals(dto.getSourceType())) {
+                                if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
                                     inst.setResult(ResourceConst.CONSTANT_YES);
                                     inst.setResultDesc("库中已存在");
-                                } else if(deleteStatus.equals(dto.getStatusCd()) && manufacturer.equals(dto.getSourceType())){
+                                } else if(deleteStatus.equals(dto.getStatusCd()) && StringUtils.isBlank(dto.getSourceType())){
                                     inst.setResult(ResourceConst.CONSTANT_YES);
                                     inst.setResultDesc("厂商库不存在");
                                 }else{
@@ -507,7 +508,7 @@ public class RunableTask {
                             }
                         }
                         Boolean addResult = resourceUploadTempManager.saveBatch(instList);
-                        log.info("RunableTask.exceutorValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
+                        log.info("RunableTask.exceutorValidForSupplier resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
                         return addResult;
                     }
                 };
@@ -558,7 +559,6 @@ public class RunableTask {
         try {
             ExecutorService executorService = initExecutorService();
             List<String> nbrList = req.getMktResInstNbrs();
-            String batchId = resourceInstService.getPrimaryKey();
             Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
             addNbrForSupplierFutureTaskResult = new ArrayList<>(excutorNum);
             for (Integer i = 0; i < excutorNum; i++) {
@@ -588,8 +588,12 @@ public class RunableTask {
                                 req.setMktResInstNbrs(addNbrList);
                                 req.setSourcemerchantId(dtoList.get(0).getMerchantId());
                                 req.setSinglectCode(dto.getCtCode());
+                                req.setMktResId(dto.getMktResId());
                                 BeanUtils.copyProperties(dto, req);
-                                supplierResourceInstService.addResourceInst(req);
+                                ResultVO resultVO = supplierResourceInstService.addResourceInst(req);
+                                if (!resultVO.isSuccess()) {
+                                    return false;
+                                }
                             }
                         }
                         return true;
@@ -599,7 +603,6 @@ public class RunableTask {
                 addNbrForSupplierFutureTaskResult.add(validFutureTask);
             }
             executorService.shutdown();
-            return batchId;
         }catch (Throwable e) {
             if (e instanceof ExecutionException) {
                 e = e.getCause();
@@ -610,7 +613,7 @@ public class RunableTask {
     }
 
     /**
-     * 串码校验多线程处理是否完成
+     * 串码入库多线程处理是否完成
      */
     public Boolean addNbrForSupplierHasDone() {
         try{

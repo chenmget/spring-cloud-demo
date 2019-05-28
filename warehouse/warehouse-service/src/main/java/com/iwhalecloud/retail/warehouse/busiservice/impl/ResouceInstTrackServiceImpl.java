@@ -126,6 +126,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             BeanUtils.copyProperties(req, resouceInstTrackDTO);
             resouceInstTrackDTO.setMktResInstNbr(mktResInstNbr);
             resouceInstTrackDTO.setMktResStoreId(req.getDestStoreId());
+            resouceInstTrackDTO.setSourceType(null);
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynSaveTrackForMerchant resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
@@ -189,7 +190,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         }
 
         ResultVO<MerchantDTO> resultVO = merchantService.getMerchantById(req.getMerchantId());
-        log.info("ResouceInstTrackServiceImpl.asynSaveTrackForSupplier merchantService.getMerchantById storeId={}, resp={}", req.getMerchantId(), JSON.toJSONString(resultVO));
+        log.info("ResouceInstTrackServiceImpl.asynSaveTrackForSupplier merchantService.getMerchantById merchantId={}, resp={}", req.getMerchantId(), JSON.toJSONString(resultVO));
         MerchantDTO merchantDTO = null;
         if (resultVO.isSuccess()) {
             merchantDTO = resultVO.getResultData();
@@ -201,7 +202,8 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             getReq.setTypeId(req.getTypeId());
             getReq.setMktResInstNbrList(Lists.newArrayList(mktResInstNbr));
             List<ResouceInstTrackDTO> trackInst = resouceInstTrackManager.listResourceInstsTrack(getReq);
-            if (CollectionUtils.isNotEmpty(trackInst)) {
+            log.info("ResouceInstTrackServiceImpl.asynSaveTrackForSupplier resouceInstTrackManager.listResourceInstsTrack storeId={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(trackInst));
+            if (CollectionUtils.isEmpty(trackInst)) {
                 continue;
             }
             ResouceInstTrackDTO resouceInstTrackDTO = trackInst.get(0);

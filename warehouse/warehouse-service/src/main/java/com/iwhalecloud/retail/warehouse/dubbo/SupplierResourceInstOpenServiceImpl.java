@@ -56,6 +56,14 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     }
 
     @Override
+    public ResultVO addResourceInstByAdmin(ResourceInstAddReq req) {
+        log.info("SupplierResourceInstOpenServiceImpl.addResourceInstByAdmin req={}", JSON.toJSONString(req));
+        ResultVO resp = supplierResourceInstService.addResourceInstByAdmin(req);
+        resouceInstTrackService.asynSaveTrackForSupplier(req, resp);
+        return resp;
+    }
+
+    @Override
     public ResultVO delResourceInst(AdminResourceInstDelReq req) {
         log.info("SupplierResourceInstOpenServiceImpl.delResourceInst req={}", JSON.toJSONString(req));
         ResultVO resp = supplierResourceInstService.delResourceInst(req);
@@ -190,6 +198,12 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     @Override
     public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req){
         ResultVO resp = supplierResourceInstService.listResourceUploadTemp(req);
+        return resp;
+    }
+
+    @Override
+    public ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req){
+        ResultVO resp = supplierResourceInstService.exceutorAddNbrForSupplier(req);
         return resp;
     }
 

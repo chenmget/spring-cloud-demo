@@ -17,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -46,15 +47,18 @@ public class AttrSpecServiceImpl implements AttrSpecService {
         if (CollectionUtils.isEmpty(attrSpecDTOs)) {
             return ResultVOUtils.genQueryResultVO(attrSpecDTOs);
         }
+        List<AttrSpecDTO> attrSpecList = new ArrayList<AttrSpecDTO>();
         for (AttrSpecDTO dto : attrSpecDTOs) {
+            // 只返回attrValue的对象
             String attrValue = AttrSpecConst.getAttrValue(dto.getFiledName());
             if (StringUtils.isEmpty(attrValue)) {
                 continue;
             }
             dto.setFiledName(attrValue);
+            attrSpecList.add(dto);
         }
-        log.info("AttrSpecServiceImpl.queryAttrSpecList attrSpecDTOs={}", JSON.toJSON(attrSpecDTOs));
-        return ResultVOUtils.genQueryResultVO(attrSpecDTOs);
+        log.info("AttrSpecServiceImpl.queryAttrSpecList attrSpecDTOs={}", JSON.toJSON(attrSpecList));
+        return ResultVOUtils.genQueryResultVO(attrSpecList);
     }
 
     /**

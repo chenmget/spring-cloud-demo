@@ -38,6 +38,12 @@ public class CommonFileServiceImpl implements CommonFileService {
     }
 
     @Override
+    public ResultVO<List<CommonFileDTO>> listCommonFile(CommonFileDTO req) {
+        List<CommonFileDTO> list = commonFileManager.listCommonFile(req);
+        return ResultVO.success(list);
+    }
+
+    @Override
     public ResultVO<CommonFileDTO> getCommonFileById(String fileId) {
         CommonFileDTO commonFileDTO = commonFileManager.getCommonFileById(fileId);
         return ResultVO.success(commonFileDTO);

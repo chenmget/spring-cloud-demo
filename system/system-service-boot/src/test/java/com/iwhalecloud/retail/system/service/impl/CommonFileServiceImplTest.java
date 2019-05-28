@@ -31,8 +31,8 @@ public class CommonFileServiceImplTest {
         CommonFileDTO commonFileDTO = new CommonFileDTO();
         commonFileDTO.setFileType(SystemConst.FileType.IMG_FILE.getCode());
         commonFileDTO.setFileClass(SystemConst.FileClass.BUSINESS_LICENSE.getCode());
-        commonFileDTO.setObjId("10101");
-        commonFileDTO.setFileUrl("http://www.baidu.com");
+        commonFileDTO.setObjId("10104");
+        commonFileDTO.setFileUrl("https://gy.ztesoft.com/group1/xx.jpg");
         commonFileDTO.setCreateDate(new Date());
         commonFileDTO.setCreateStaff("1");
         commonFileDTO.setStatusCd(SystemConst.StatusCdEnum.STATUS_CD_VALD.getCode());
@@ -44,7 +44,7 @@ public class CommonFileServiceImplTest {
         CommonFileDTO commonFileDTO = new CommonFileDTO();
         commonFileDTO.setFileType(SystemConst.FileType.IMG_FILE.getCode());
         commonFileDTO.setFileClass(SystemConst.FileClass.BUSINESS_LICENSE.getCode());
-        commonFileDTO.setObjId("10101");
+        commonFileDTO.setObjId("10104");
         ResultVO<CommonFileDTO> resultVO = commonFileService.getCommonFile(commonFileDTO);
         log.info("resultVO:{}", JSON.toJSONString(resultVO));
     }
@@ -58,6 +58,16 @@ public class CommonFileServiceImplTest {
     @Test
     public void getCommonFileByIds() {
         ResultVO<List<CommonFileDTO>>  resultVO = commonFileService.getCommonFileByIds(new String[]{"1132918208934498306"});
+        log.info("resultVO:{}", JSON.toJSONString(resultVO));
+    }
+
+    @Test
+    public void listCommonFileByIds() {
+        CommonFileDTO commonFileDTO = new CommonFileDTO();
+        commonFileDTO.setFileType(SystemConst.FileType.IMG_FILE.getCode());
+        commonFileDTO.setFileClass(SystemConst.FileClass.BUSINESS_LICENSE.getCode());
+        commonFileDTO.setObjId("10101,10102,10104");
+        ResultVO<List<CommonFileDTO>>  resultVO = commonFileService.listCommonFile(commonFileDTO);
         log.info("resultVO:{}", JSON.toJSONString(resultVO));
     }
 }

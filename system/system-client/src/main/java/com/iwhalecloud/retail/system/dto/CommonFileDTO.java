@@ -26,8 +26,7 @@ public class CommonFileDTO implements java.io.Serializable {
   	private java.lang.String fileId;
 	
 	/**
-  	 * 1：图片
- 2：文件
+  	 * 1：图片 2：文件
   	 */
 	@ApiModelProperty(value = "1：图片 2：文件")
   	private java.lang.String fileType;
@@ -39,7 +38,7 @@ public class CommonFileDTO implements java.io.Serializable {
   	private java.lang.String fileClass;
 	
 	/**
-  	 * 附件归属的对象ID，如商家ID、用户ID等
+  	 * 附件归属的对象ID，如商家ID、用户ID等，查询时可以表示多个用,分割
   	 */
 	@ApiModelProperty(value = "附件归属的对象ID，如商家ID、用户ID等")
   	private java.lang.String objId;

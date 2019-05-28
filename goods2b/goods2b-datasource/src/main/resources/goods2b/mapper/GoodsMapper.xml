@@ -315,6 +315,11 @@
             <if test="null!=req.sourceFrom">
                 and g.SOURCE_FROM=#{req.sourceFrom}
             </if>
+            <if test="null!=req.typeId and req.typeId!='' and '-1'!=req.typeId">
+                and g.GOODS_ID in (select GOODS_ID from prod_product_base a,PROD_GOODS_PRODUCT_REL b
+                where a.PRODUCT_BASE_ID = b.PRODUCT_BASE_ID
+                and a.TYPE_ID=#{req.typeId})
+            </if>
             <if test="null!=req.payments">
                 and g.PAYMENTS like CONCAT(CONCAT('%', #{req.payments}), '%')
             </if>

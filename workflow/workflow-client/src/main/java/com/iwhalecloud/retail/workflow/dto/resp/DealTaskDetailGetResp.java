@@ -127,6 +127,9 @@ public class DealTaskDetailGetResp implements Serializable {
                 "2：待处理\n" +
                 "3：已处理")
         private java.lang.String itemStatus;
+
+        @ApiModelProperty("附件url")
+        private String appendixUrl;
     }
 
     /**

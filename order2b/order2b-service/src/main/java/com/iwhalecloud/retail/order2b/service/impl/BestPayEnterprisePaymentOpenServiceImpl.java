@@ -151,8 +151,6 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
         	payReq.setOperationType(req.getOperationType());
             resultVO = bpepPayLogService.openToBookingPay(payReq);
             
-//            taskManagerReference.updateTask(order.getOrderId(), request.getUserId());
-//            taskManagerReference.addTaskByHandleList("待发货",order.getOrderId(), request.getUserId(), order.getMerchantId());
             taskManagerReference.updateTask(order.getOrderId(), order.getUserId());
             taskManagerReference.addTaskByHandleList("待发货",order.getOrderId(), order.getUserId(), order.getMerchantId());
             
@@ -164,7 +162,7 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
             updateOrdOrderReq.setPaymentName("线上支付");
             updateOrdOrderReq.setPaymentType("1");
             updateOrdOrderReq.setPayStatus("1");
-            updateOrdOrderReq.setStatus("14");
+            updateOrdOrderReq.setStatus("4");
             bpepPayLogService.UpdateOrdOrderStatus(updateOrdOrderReq);
             
           //更新订单数据
@@ -179,11 +177,11 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
 //            orderManager.updateOrderAttr(updateAttrModel);
 
             //更新流程
-            OrderZFlowDTO zFlowDTO = new OrderZFlowDTO();
-            zFlowDTO.setOrderId(order.getOrderId());
-            zFlowDTO.setHandlerId(order.getUserId());
-            zFlowDTO.setFlowType(req.getOperationType());
-            orderZFlowManager.updateFlowList(zFlowDTO);
+//            OrderZFlowDTO zFlowDTO = new OrderZFlowDTO();
+//            zFlowDTO.setOrderId(order.getOrderId());
+//            zFlowDTO.setHandlerId(order.getUserId());
+//            zFlowDTO.setFlowType(req.getOperationType());
+//            orderZFlowManager.updateFlowList(zFlowDTO);
             
             
             if((Boolean) resultCall.get("flag")){

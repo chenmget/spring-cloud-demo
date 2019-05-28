@@ -222,17 +222,13 @@ public class PayAuthorizationService {
         preAuthorizationApplyRequest.setReqIp(ipStr);
         preAuthorizationApplyRequest.setTrsSummary("summary");
         preAuthorizationApplyRequest.setTrsMemo("memo");
-        preAuthorizationApplyRequest.setExternalId("EXT_ORDER_ID_" + orderId); // 订单号
+        preAuthorizationApplyRequest.setExternalId("EXT_ORDER_ID28_" + orderId); // 订单号
         preAuthorizationApplyRequest.setCurrencyCode("RMB");
         preAuthorizationApplyRequest.setTransactionAmount(payMoney); // 交易金额
         preAuthorizationApplyRequest.setPayeeLoginCode(result.get("account").toString()); //收款方登录号
         preAuthorizationApplyRequest.setOriginalTransSeq(originalTransSeq);
-
-        boolean b = false;
-
         try {
             resultInvoke = bestpayService.invoke(callUrl, preAuthorizationApplyRequest, platformCode, certificate.getIv(), zopSecret, zopUrl);
-            b = (boolean)resultInvoke.get("flag");
         } catch (Exception e) {
             log.error(e.getMessage());
         }

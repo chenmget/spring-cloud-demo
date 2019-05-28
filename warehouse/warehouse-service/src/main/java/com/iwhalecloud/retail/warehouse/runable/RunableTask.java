@@ -574,7 +574,7 @@ public class RunableTask {
                     @Override
                     public Boolean call() throws Exception {
                         ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq, newList);
-                        log.info("RunableTask.exceutorAddNbrForSupplier resouceInstTrackService.listResourceInstsTrack getReq={},newList={}", JSON.toJSONString(getReq), JSON.toJSONString(newList));
+                        log.info("RunableTask.exceutorAddNbrForSupplier resouceInstTrackService.listResourceInstsTrack getReq={},newList={},instsTrackvO={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), JSON.toJSONString(instsTrackvO));
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> trackList = instsTrackvO.getResultData();
                             CopyOnWriteArrayList<ResouceInstTrackDTO> trackListSafe = new CopyOnWriteArrayList(trackList);

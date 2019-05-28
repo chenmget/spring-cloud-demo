@@ -25,6 +25,7 @@ import com.iwhalecloud.retail.partner.manager.InvoiceManager;
 import com.iwhalecloud.retail.partner.manager.MerchantAccountManager;
 import com.iwhalecloud.retail.partner.manager.MerchantManager;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.common.SysUserMessageConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonFileDTO;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
@@ -32,6 +33,8 @@ import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
+import com.iwhalecloud.retail.system.service.CommonFileService;
+import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.service.CommonFileService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.OrganizationService;
@@ -77,6 +80,9 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Reference
     private MerchantTagRelService merchantTagRelService;
+
+    @Reference
+    private CommonFileService commonFileService;
 
     @Autowired
     private InvoiceManager invoiceManager;
@@ -1375,8 +1381,134 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public SupplierResistResp resistSupplier(SupplierListReq req) {
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO<String> resistSupplier(SupplierResistReq req) {
+        MerchantAccount account = new MerchantAccount();
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req,account);
 
+        Boolean ifLocalSuccess = true;
+        ResultVO<UserDTO> rt = null;
+        try {
+            //插入商户信息
+            String merchanId = merchantManager.addMerchan(req);
+            //插入附件表
+            insertAttachment(req,merchanId);
+
+            account.setMerchantId(merchanId);
+            //插入银行收款信息
+            account = fillBankAccount(req,account);
+            merchantAccountManager.insert(account);
+            //插入翼支付收款信息
+            account = fillWindPayAccount(req,account);
+            merchantAccountManager.insert(account);
+            //插入系统用户
+            userAddReq.setRelCode(merchanId); //关联商户信息和系统用户
+            //刚注册用户处于禁用状态
+            userAddReq.setStatusCd(SystemConst.SysUserStatusCdEnum.STATUS_CD_INVALD.getCode());
+            rt = userService.addUser(userAddReq);
+        }catch (Exception e){
+            ifLocalSuccess = false;
+            log.error(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }finally {
+            if(!ifLocalSuccess){
+                return ResultVO.error("注册失败");
+            }else if(rt.isSuccess()){
+                //短信接口
+                //工作流
+                return ResultVO.success("注册成功");
+            }
+        }
+        return ResultVO.error("注册服务异常");
+    }
+
+    /**
+     * 插入附件信息
+     * @param req
+     * @param merchanId
+     */
+    private String insertAttachment(SupplierResistReq req,String merchanId) {
+        CommonFileDTO commonFileDTO =null;
+
+        //营业执照正本
+        String businessLicenseUrl = req.getBusinessLicense();
+        if(StringUtils.isNotBlank(businessLicenseUrl)){
+            String fileClass = SystemConst.FileClass.BUSINESS_LICENSE.getCode();
+            String fileType = SystemConst.FileType.IMG_FILE.getCode();
+            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,businessLicenseUrl);
+            if(commonFileService.saveCommonFile(commonFileDTO).isSuccess()) ResultVO.error("");
+
+        }
+        //营业执照副本
+        String businessLicenseCopyUrl = req.getBusinessLicenseCopy();
+        if(StringUtils.isNotBlank(businessLicenseCopyUrl)){
+            String fileClass = SystemConst.FileClass.BUSINESS_LICENSE.getCode();
+            String fileType = SystemConst.FileType.IMG_FILE.getCode();
+            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,businessLicenseCopyUrl);
+            commonFileService.saveCommonFile(commonFileDTO);
+        }
+        //法人身份证正面
+        String personUrl = req.getLegalPersonIdCardFont();
+        if(StringUtils.isNotBlank(personUrl)){
+            String fileClass = SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode();
+            String fileType = SystemConst.FileType.IMG_FILE.getCode();
+            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,businessLicenseCopyUrl);
+            commonFileService.saveCommonFile(commonFileDTO);
+        }
+        //法人身份证反面
+        String personBackUrl = req.getLegalPersonIdCardBack();
+        if(StringUtils.isNotBlank(personBackUrl)){
+            String fileClass = SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode();
+            String fileType = SystemConst.FileType.IMG_FILE.getCode();
+            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,personBackUrl);
+            commonFileService.saveCommonFile(commonFileDTO);
+        }
+        //授权证明
+        String authorizationUrl = req.getAuthorizationCertificate();
+        if(StringUtils.isNotBlank(personBackUrl)){
+            String fileClass = SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode();
+            String fileType = SystemConst.FileType.IMG_FILE.getCode();
+            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,authorizationUrl);
+            commonFileService.saveCommonFile(commonFileDTO);
+        }
+
+        //合同文件
+        String contractUrl = req.getContract();
+        commonFileDTO.setFileUrl(contractUrl);
+        if(StringUtils.isNotBlank(contractUrl)){
+            String fileClass = SystemConst.FileClass.CONTRACT_TEXT.getCode();
+            String fileType = SystemConst.FileType.TXT_FILE.getCode();
+            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,contractUrl);
+            commonFileService.saveCommonFile(commonFileDTO);
+        }
         return null;
+    }
+
+
+
+
+
+    @Override
+    public ResultVO<String> resistManufacturer(ManufacturerResistReq req) {
+        return null;
+    }
+
+
+    private MerchantAccount fillWindPayAccount(SupplierResistReq resistReq, MerchantAccount account) {
+        account.setAccount(resistReq.getAccount());
+        account.setBankAccount(resistReq.getWindPayCount());
+        //支付类型为---翼支付
+        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BEST_PAY.getType());
+        return account;
+    }
+
+    private MerchantAccount fillBankAccount(SupplierResistReq resistReq,MerchantAccount account) {
+        account.setAccount(resistReq.getAccount());
+        account.setBank(resistReq.getBank());
+        account.setBankAccount(resistReq.getBankAccount());
+        //支付类型为---银行
+        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BANK_ACCOUNT.getType());
+        return account;
     }
 }

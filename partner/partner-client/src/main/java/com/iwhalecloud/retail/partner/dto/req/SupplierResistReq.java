@@ -90,48 +90,73 @@ public class SupplierResistReq implements Serializable {
 
     //商户
     @NotEmpty(message = "用户账号不能为空")
+    //商户信息
+    @NotEmpty(message = "公司名称不能为空")
     @ApiModelProperty(value = "公司名称")
-    private String MERCHANT_NAME;
+    private String merchantName;
+
+    //对应字段没找到
+    //@NotEmpty(message = "供货地市不能为空")
+    @ApiModelProperty(value = "供货地市")
+    private String ghds;
 
     @NotEmpty(message = "地址不能为空")
     @ApiModelProperty(value = "公司地址")
-    private String ADDRESS;
+    private String address;
 
     @NotEmpty(message = "法人姓名不能为空")
     @ApiModelProperty(value = "法人姓名")
-    private String LEGAL_PERSON;
+    private String legalPerson;
 
     @NotEmpty(message = "营业执照号不能为空")
     @ApiModelProperty(value = "营业执照号")
-    private String BUSI_LICENCE_CODE;
+    private String busiLicenceCode;
 
     @NotEmpty(message = "合同有效期不能为空")
     @ApiModelProperty(value = "合同有效期")
-    private String CONTRACT_EFF_DATE;
+    private String contractEffDate;
 
     @NotEmpty(message = "营业执照号失效期不能为空")
     @ApiModelProperty(value = "营业执照号失效期")
-    private String BUSI_LICENCE_EXP_DATE;
+    private String busiLicenceExpDate;
+
+    @ApiModelProperty(value = "商家类型:  1 厂商    2 地包商    3 省包商   4 零售商")
+    private java.lang.String merchantType;
 
 
+    //商家账户
+    /**
+     * 账号类型:   1 翼支付   2 微信支付   3 支付宝   4 银行账户
+     */
+    @ApiModelProperty(value = "账号类型:   1 翼支付   2 微信支付   3 支付宝   4 银行账户")
+    private String accountType;
 
-    //商户银行账号信息
-    @ApiModelProperty(value = "账号类型")
-    private String ACCOUNT_TYPE;
+    @NotEmpty(message = "翼支付收款商户账号不能为空")
+    @ApiModelProperty(value = "翼支付收款商户账号")
+    private String windPayCount;
 
-    @ApiModelProperty(value = "是否默认")
-    private String IS_DEFAULT;
+    @NotEmpty(message = "收款账号名称不能为空")
+    @ApiModelProperty(value = "收款账号名称")
+    private String account;
 
-    @ApiModelProperty(value = "状态")
-    private String STATE;
+    @NotEmpty(message = "开户银行名称不能为空")
+    @ApiModelProperty(value = "开户银行名称")
+    private String bank;
 
-    @NotEmpty(message = "开户银行不能为空")
-    @ApiModelProperty(value = "开户银行")
-    private String BANK;
+    @NotEmpty(message = "收款银行账号不能为空")
+    @ApiModelProperty(value = "收款银行账号")
+    private String bankAccount;
 
-    @NotEmpty(message = "账户名称不能为空")
-    @ApiModelProperty(value = "账户名称")
-    private String bank_account;
+
+/*    @ApiModelProperty(value = "是否默认:  1 是   0否")
+    private String isDefault;
+
+    @ApiModelProperty(value = "状态:   	1 有效、 0失效")
+    private String state;
+
+    @ApiModelProperty(value = "来源平台")
+    private java.lang.String sourceFrom;
+  */
 
 
     //用户基本信息 sys-user
@@ -181,7 +206,7 @@ public class SupplierResistReq implements Serializable {
      */
     @ApiModelProperty(value = "1超级管理员 2普通管理员  3零售商(门店、店中商)  4省包供应商  5地包供应商  " +
             " 6 代理商店员  7经营主体  8厂商 ")
-    private Integer userFounder;
+    private java.lang.Integer userFounder;
 
     /**
      * 关联代理商ID  或 供应商ID
@@ -218,6 +243,28 @@ public class SupplierResistReq implements Serializable {
 
     @ApiModelProperty(value = "合同")
     private String contract;
+
+
+    //附件信息
+    @ApiModelProperty(value = "营业执照正本")
+    private String businessLicense;
+
+    @ApiModelProperty(value = "营业执照副本")
+    private String businessLicenseCopy;
+
+    @ApiModelProperty(value = "法人身份证正面")
+    private String legalPersonIdCardFont;
+
+    @ApiModelProperty(value = "法人身份证背面")
+    private String legalPersonIdCardBack;
+
+    @NotEmpty(message = "授权证明不能为空")
+    @ApiModelProperty(value = "授权证明")
+    private String authorizationCertificate;
+
+    @ApiModelProperty(value = "合同")
+    private String contract;
+
 
 }
 

@@ -27,10 +27,9 @@ import com.iwhalecloud.retail.order2b.model.MemberAddrModel;
 import com.iwhalecloud.retail.order2b.model.OrderInfoModel;
 import com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel;
 import com.iwhalecloud.retail.order2b.model.SelectOrderDetailModel;
-import com.iwhalecloud.retail.order2b.reference.GoodsManagerReference;
-import com.iwhalecloud.retail.order2b.reference.MemberInfoReference;
-import com.iwhalecloud.retail.order2b.reference.ResNbrManagerReference;
-import com.iwhalecloud.retail.order2b.reference.TaskManagerReference;
+import com.iwhalecloud.retail.order2b.reference.*;
+import com.iwhalecloud.retail.promo.common.PromoConst;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.DeliveryValidResourceInstReq;
 import com.iwhalecloud.retail.warehouse.dto.response.DeliveryValidResourceInstItemResp;
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +80,9 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
 
     @Autowired
     private GoodsManagerReference goodsManagerReference;
+
+    @Autowired
+    private ActivityManagerReference activityManagerReference;
 
 
     @Override
@@ -241,7 +243,16 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
         }
         //获取订单项全部不重复的productId
         List<String> productIdList = orderItemList.stream().map(OrderItem::getProductId).collect(Collectors.toList());
+
         productIdList = productIdList.stream().distinct().collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(productIdList)) {
+            MarketingActivityDTO activityDTO = activityManagerReference.validActivityEndTimeByProductId(productIdList, PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
+            if (null != activityDTO) {
+                resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                resp.setResultMsg("该订单参加的"+activityDTO.getName()+"营销活动，无法进行串码上传，未发货的商品请线下协调退款重新下单发货");
+                return resp;
+            }
+        }
 
         DeliveryValidResourceInstReq validResourceInstReq = new DeliveryValidResourceInstReq();
         validResourceInstReq.setMerchantId(request.getMerchantId());

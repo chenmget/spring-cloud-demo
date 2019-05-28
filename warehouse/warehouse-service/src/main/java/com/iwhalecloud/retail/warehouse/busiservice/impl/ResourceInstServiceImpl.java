@@ -350,7 +350,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public synchronized Boolean addResourceInst(ResourceInstAddReq req) {
-        log.info("supplierAddResourceInst.addResourceInst req={}", JSON.toJSONString(req));
+        log.info("ResourceInstServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
         String batchId = resourceInstManager.getPrimaryKey();
         List<String> nbrList = req.getMktResInstNbrs();
         List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(nbrList.size());
@@ -372,7 +372,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInsts.add(resourceInst);
         }
         Boolean addResInstCnt = resourceInstManager.saveBatch(resourceInsts);
-        log.info("supplierAddResourceInst.addResourceInst resourceInstManager.saveBatch req={} resp={}", JSON.toJSONString(resourceInsts), addResInstCnt);
+        log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.saveBatch req={} resp={}", JSON.toJSONString(resourceInsts), addResInstCnt);
         if (!addResInstCnt) {
             return false;
         }
@@ -383,7 +383,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
         resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         int num = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
-        log.info("supplierAddResourceInst.addResourceInst resourceInstStoreManager.updateResourceInstStore req={} num={}", JSON.toJSONString(resourceInstStoreDTO), num);
+        log.info("ResourceInstServiceImpl.addResourceInst resourceInstStoreManager.updateResourceInstStore req={} num={}", JSON.toJSONString(resourceInstStoreDTO), num);
         if (num < 1) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
         }

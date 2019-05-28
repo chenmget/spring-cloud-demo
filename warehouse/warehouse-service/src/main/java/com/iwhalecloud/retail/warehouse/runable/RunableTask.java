@@ -23,6 +23,7 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -468,7 +469,6 @@ public class RunableTask {
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                             String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
-                            String manufacturer = PartnerConst.MerchantTypeEnum.MANUFACTURER.getType();
                             List<String> instExitstNbr = instTrackDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
                             for (ResouceInstTrackDTO dto : instTrackDTOList) {
                                 ResouceUploadTemp inst = new ResouceUploadTemp();
@@ -478,10 +478,10 @@ public class RunableTask {
                                 inst.setCreateDate(now);
                                 inst.setCreateStaff(req.getCreateStaff());
                                 // 非厂商的串码且状态为非删除(非厂商删除的串码可再次导入)
-                                if (!deleteStatus.equals(dto.getStatusCd()) && !manufacturer.equals(dto.getSourceType())) {
+                                if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
                                     inst.setResult(ResourceConst.CONSTANT_YES);
                                     inst.setResultDesc("库中已存在");
-                                } else if(deleteStatus.equals(dto.getStatusCd()) && manufacturer.equals(dto.getSourceType())){
+                                } else if(deleteStatus.equals(dto.getStatusCd()) && StringUtils.isBlank(dto.getSourceType())){
                                     inst.setResult(ResourceConst.CONSTANT_YES);
                                     inst.setResultDesc("厂商库不存在");
                                 }else{
@@ -589,6 +589,7 @@ public class RunableTask {
                                 req.setMktResInstNbrs(addNbrList);
                                 req.setSourcemerchantId(dtoList.get(0).getMerchantId());
                                 req.setSinglectCode(dto.getCtCode());
+                                req.setMktResId(dto.getMktResId());
                                 BeanUtils.copyProperties(dto, req);
                                 supplierResourceInstService.addResourceInst(req);
                             }

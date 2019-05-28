@@ -121,10 +121,10 @@ public class ResourceInstListPageReq extends PageVO {
 	@ApiModelProperty(value = "产品基本信息表里的型号名称")
   	private String unitTypeName;
 	/**
-  	 * 产品表里的产品名称
+  	 * 产品基本表里的产品名称
   	 */
-	@ApiModelProperty(value = "产品表里的产品名称")
-  	private String unitName;
+	@ApiModelProperty(value = "产品基本表里的产品名称")
+  	private String productName;
 	/**
   	 * 产品ID
   	 */

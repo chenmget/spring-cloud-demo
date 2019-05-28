@@ -262,7 +262,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             getReq.setMktResId(req.getMktResId());
             getReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
             getReq.setMktResInstNbrs(Lists.newArrayList(mktResInstNbr));
-            getReq.setMktResStoreId(req.getMktResStoreId());
+            getReq.setMktResStoreId(req.getDestStoreId());
             List<ResourceInstDTO> resourceInstDTO = resourceInstManager.getResourceInsts(getReq);
             // 修改不成功的返回，不加事件
             if (CollectionUtils.isEmpty(resourceInstDTO)) {
@@ -447,7 +447,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
      * @return
      */
     private ResourceInstListPageReq setProductIds(ResourceInstListPageReq req){
-        if(StringUtils.isNotBlank(req.getUnitName()) || StringUtils.isNotBlank(req.getBrandId()) || StringUtils.isNotBlank(req.getSn())) {
+        if(StringUtils.isNotBlank(req.getProductName()) || StringUtils.isNotBlank(req.getBrandId()) || StringUtils.isNotBlank(req.getSn())) {
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
             BeanUtils.copyProperties(req, queryReq);
             ResultVO<List<ProductResourceResp>> resultVO = productService.getProductResource(queryReq);

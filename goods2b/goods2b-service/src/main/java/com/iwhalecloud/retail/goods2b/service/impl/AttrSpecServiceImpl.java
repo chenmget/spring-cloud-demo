@@ -1,9 +1,11 @@
 package com.iwhalecloud.retail.goods2b.service.impl;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.AttrSpecConst;
 import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.AttrSpecAddReq;
 import com.iwhalecloud.retail.goods2b.dto.req.AttrSpecUpdateReq;
@@ -41,6 +43,12 @@ public class AttrSpecServiceImpl implements AttrSpecService {
         }
 
         List<AttrSpecDTO> attrSpecDTOs =  attrSpecManager.queryAttrSpecList(typeId);
+        if (CollectionUtils.isNotEmpty(attrSpecDTOs)) {
+            for (AttrSpecDTO dto : attrSpecDTOs) {
+                String attrValue = AttrSpecConst.getAttrValue(dto.getFiledName());
+                dto.setFiledName(attrValue);
+            }
+        }
         log.info("AttrSpecServiceImpl.queryAttrSpecList attrSpecDTOs={}", JSON.toJSON(attrSpecDTOs));
         return ResultVOUtils.genQueryResultVO(attrSpecDTOs);
     }

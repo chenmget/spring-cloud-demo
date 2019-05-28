@@ -8,8 +8,10 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.dto.req.MerChantGetProductReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -417,7 +419,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstAddReq.setObjId(item.getOrderItemId());
             resourceInstAddReq.setMktResId(item.getProductId());
             resourceInstAddReq.setOrderId(req.getOrderId());
-            resourceInstAddReq.setCreateDate(new Date());
+            resourceInstAddReq.setCreateTime(new Date());
             resourceInstAddReq.setMktResStoreId(mktResStoreId);
             resourceInstAddReq.setDestStoreId(destStoreId);
             resourceInstAddReq.setSupplierName(merchantDTO.getMerchantName());
@@ -425,6 +427,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstAddReq.setMerchantId(req.getBuyerMerchantId());
             resourceInstAddReq.setLanId(buyer.getLanId());
             resourceInstAddReq.setRegionId(buyer.getCity());
+            ProductGetByIdReq productReq = new ProductGetByIdReq();
+            ResultVO<ProductResp> productRespResultVO = productService.getProductInfo(productReq);
+            log.info("SupplierResourceInstServiceImpl.deliveryInResourceInst productService.getProductInfo productId={},resp={}", item.getProductId(), JSON.toJSONString(productRespResultVO));
+            if (productRespResultVO.isSuccess() && null != productRespResultVO.getResultData()) {
+                resourceInstAddReq.setTypeId(productRespResultVO.getResultData().getTypeId());
+            }
             ResultVO addRS = this.resourceInstService.addResourceInstForTransaction(resourceInstAddReq);
             log.info("SupplierResourceInstServiceImpl.deliveryInResourceInst resourceInstService.addResourceInst req={},resp={}", JSON.toJSONString(resourceInstAddReq), JSON.toJSONString(addRS));
             if (addRS == null || !addRS.isSuccess()) {
@@ -481,6 +489,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (null == merchantResultVO || !merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
             return ResultVO.error("查无该商家");
         }
+        MerchantDTO merchantDTO = merchantResultVO.getResultData();
         // 仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
@@ -503,12 +512,21 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstAddReq.setObjId(item.getOrderItemId());
             resourceInstAddReq.setMktResId(item.getProductId());
             resourceInstAddReq.setOrderId(req.getOrderId());
-            resourceInstAddReq.setCreateDate(new Date());
+            resourceInstAddReq.setCreateTime(new Date());
             resourceInstAddReq.setMktResStoreId(sourceStoreId);
             resourceInstAddReq.setDestStoreId(destStoreId);
             resourceInstAddReq.setMerchantId(req.getSellerMerchantId());
+            resourceInstAddReq.setLanId(merchantDTO.getLanId());
+            resourceInstAddReq.setRegionId(merchantDTO.getCity());
+            ProductGetByIdReq productReq = new ProductGetByIdReq();
+            productReq.setProductId(item.getProductId());
+            ResultVO<ProductResp> productRespResultVO = productService.getProductInfo(productReq);
+            log.info("SupplierResourceInstServiceImpl.backDeliveryInResourceInst productService.getProductInfo productId={},resp={}", item.getProductId(), JSON.toJSONString(productRespResultVO));
+            if (productRespResultVO.isSuccess() && null != productRespResultVO.getResultData()) {
+                resourceInstAddReq.setTypeId(productRespResultVO.getResultData().getTypeId());
+            }
             ResultVO addRS = this.resourceInstService.addResourceInstForTransaction(resourceInstAddReq);
-            log.info("SupplierResourceInstServiceImpl.deliveryInResourceInst resourceInstService.addResourceInstForTransaction req={},resp={}", JSON.toJSONString(resourceInstAddReq), JSON.toJSONString(addRS));
+            log.info("SupplierResourceInstServiceImpl.backDeliveryInResourceInst resourceInstService.addResourceInstForTransaction req={},resp={}", JSON.toJSONString(resourceInstAddReq), JSON.toJSONString(addRS));
             if (addRS == null || !addRS.isSuccess()) {
                 return ResultVO.error(addRS.getResultMsg());
             }

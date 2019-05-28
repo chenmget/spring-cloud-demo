@@ -334,6 +334,9 @@
     <if test="null!=unitTypeName and ''!=unitTypeName">
       and upper(ppb.unit_type_name) like CONCAT(CONCAT('%',upper(#{unitTypeName})),'%')
     </if>
+    <if test="null!=productName and ''!=productName">
+      and upper(ppb.product_name) like CONCAT(CONCAT('%',upper(#{productName})),'%')
+    </if>
   </select>
 
   <!--根据产品ID产归属商家-->

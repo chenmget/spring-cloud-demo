@@ -124,6 +124,23 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         if (null == t.getExpDate()){
             t.setExpDate(DateUtil.getNextYearTime(now, 3));
         }
+        //固网产品需要提交串码到itms
+//        String isInspection = req.getIsInspection();
+//        if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
+//            String SerialCode = req.getParam20();
+//            if(StringUtils.isEmpty(SerialCode)){
+//                ResultVO.error("固网产品必须录入串码");
+//            }
+//
+//            String b = "";
+//            String callUrl = "";
+//            Map request = new HashMap<>();
+//            try {
+//                b = this.zopService(callUrl,zopUrl,request,zopSecret);
+//            } catch (Exception e) {
+//                log.error(e.getMessage());
+//            }
+//        }
         Integer num = productBaseManager.addProductBase(t);
         String productBaseId = t.getProductBaseId();
         // 添加产品拓展属性
@@ -135,7 +152,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         List<ProductAddReq> productAddReqs = req.getProductAddReqs();
         String status = "";
         Boolean addResult = true;
-        String isInspection = req.getIsInspection();
         if (null != productAddReqs && !productAddReqs.isEmpty()){
             for (ProductAddReq par : productAddReqs){
                 String sn = par.getSn();
@@ -156,23 +172,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setCreateStaff(t.getCreateStaff());
                 par.setAuditState(auditState);
                 productService.addProduct(par);
-                //固网产品需要提交串码到itms
-//                if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
-//                    String SerialCode = par.getAttrValue9();
-//                    if(StringUtils.isEmpty(SerialCode)){
-//                        ResultVO.error("固网产品必须录入串码");
-//                    }
-//
-//                    String b = "";
-//                    String callUrl = "";
-//                    Map request = new HashMap<>();
-//                    try {
-//                        b = this.zopService(callUrl,zopUrl,request,zopSecret);
-//                    } catch (Exception e) {
-//                        log.error(e.getMessage());
-//                    }
-//
-//                }
             }
         }
 
@@ -434,7 +433,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         return ResultVO.success(true);
     }
 
-    private String zopService(String method, String zopUrl, Object request, String zopSecret) {
+    public String zopService(String method, String zopUrl, Object request, String zopSecret) {
         String version = "1.0";
         ResponseResult responseResult = ZopClientUtil.callRest(zopSecret, zopUrl, method, version, request);
         String resCode = "00000";

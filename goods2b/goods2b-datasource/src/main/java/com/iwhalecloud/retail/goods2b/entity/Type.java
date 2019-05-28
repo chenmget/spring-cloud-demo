@@ -40,6 +40,12 @@ public class Type implements Serializable {
     private java.lang.String typeName;
 
     /**
+     * 上级类型ID
+     */
+    @ApiModelProperty(value = "上级类型ID")
+    private java.lang.String parentTypeId;
+
+    /**
      * 排序
      */
     @ApiModelProperty(value = "排序")
@@ -91,6 +97,9 @@ public class Type implements Serializable {
 
         /** 类型名称. */
         typeName("typeName","TYPE_NAME"),
+
+        /** 上级类型ID. */
+        parentTypeId("parentTypeId","PARENT_TYPE_ID"),
 
         /** 排序. */
         typeOrder("typeOrder","TYPE_ORDER"),

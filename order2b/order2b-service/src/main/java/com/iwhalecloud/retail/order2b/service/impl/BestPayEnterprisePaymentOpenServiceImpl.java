@@ -141,7 +141,7 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
             if(StringUtils.isBlank(resultMap.get("account").toString())){
                 return ResultVO.error("商家翼支付账号没有配置。");
             }
-//----lws
+            //----lws
             Map<String, Object> resultCall = payAuthorizationService.authorizationApplication(req.getOrderId(), operationType);
             
             ResultVO resultVO = new ResultVO();
@@ -151,10 +151,7 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
         	payReq.setOperationType(req.getOperationType());
             resultVO = bpepPayLogService.openToBookingPay(payReq);
             
-            taskManagerReference.updateTask(order.getOrderId(), order.getUserId());
-            taskManagerReference.addTaskByHandleList("待发货",order.getOrderId(), order.getUserId(), order.getMerchantId());
-            
-            //更新订单状态
+          //更新订单状态
             UpdateOrdOrderReq updateOrdOrderReq = new UpdateOrdOrderReq();
             updateOrdOrderReq.setOrderId(order.getOrderId());
             updateOrdOrderReq.setPayTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
@@ -165,16 +162,8 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
             updateOrdOrderReq.setStatus("4");
             bpepPayLogService.UpdateOrdOrderStatus(updateOrdOrderReq);
             
-          //更新订单数据
-//            OrderUpdateAttrModel updateAttrModel = new OrderUpdateAttrModel();
-//            updateAttrModel.setOrderId(order.getOrderId());
-//            updateAttrModel.setPayTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
-//            updateAttrModel.setStatus(OrderAllStatus.ORDER_STATUS_4.getCode());
-//            updateAttrModel.setPayType("1");
-//            updateAttrModel.setPayMoney(request.getPaymoney());
-//            updateAttrModel.setPayStatus("1");
-//            updateAttrModel.setPayCode(request.getPayCode());
-//            orderManager.updateOrderAttr(updateAttrModel);
+            taskManagerReference.updateTask(order.getOrderId(), order.getUserId());
+            taskManagerReference.addTaskByHandleList("待发货",order.getOrderId(), order.getUserId(), order.getMerchantId());
 
             //更新流程
 //            OrderZFlowDTO zFlowDTO = new OrderZFlowDTO();

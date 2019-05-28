@@ -30,7 +30,8 @@
 	  	payment_name=#{req.paymentName},
 	  	payment_type=#{req.paymentType},
 	  	pay_status=#{req.payStatus},
-	  	status=#{req.status}
+	  	status=#{req.status},
+	  	pay_time=#{req.payTime}
 	  WHERE 
 	  	order_id = #{req.orderId}
   </select>

@@ -38,7 +38,7 @@ public class TaskItemManager {
         taskItem.setCreateTime(new Date());
         taskItemMapper.insert(taskItem);
         //添加任务项时候添加用户消息
-//       sysUserMessageClient.insertByTaskWorkTask(taskItem);
+       sysUserMessageClient.insertByTaskWorkTask(taskItem);
         return taskItem.getTaskItemId();
     }
 
@@ -127,7 +127,7 @@ public class TaskItemManager {
         taskItem.setHandlerUserName(handlerUserName);
         taskItem.setHandlerMsg(handlerMsg);
         //修改用户消息改成无效
-//        sysUserMessageClient.updateSysMesByTaskId(taskId);
+        sysUserMessageClient.updateSysMesByTaskId(taskId);
         UpdateWrapper<TaskItem> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq(TaskItem.FieldNames.taskItemId.getTableFieldName(),taskItemId);
         updateWrapper.eq(TaskItem.FieldNames.taskId.getTableFieldName(),taskId);

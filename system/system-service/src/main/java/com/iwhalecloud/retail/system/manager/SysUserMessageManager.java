@@ -160,14 +160,14 @@ public class SysUserMessageManager {
      * 新增业务通知类用户消息
      * @param sysUserMessage
      */
-    public void addSysUserMessageNotice(SysUserMessage sysUserMessage) {
+    public int addSysUserMessageNotice(SysUserMessage sysUserMessage) {
         sysUserMessage.setReadFlag(SysUserMessageConst.READ_FLAG_N);
         sysUserMessage.setMessageType(SysUserMessageConst.MESSAGE_TYPE_REMIND);
         sysUserMessage.setCreateTime(Date.from(Instant.now()));
         sysUserMessage.setBeginTime(sysUserMessage.getCreateTime());
         sysUserMessage.setCreateUserId("system");
         sysUserMessage.setStatus(SysUserMessageConst.MessageStatusEnum.VALID.getCode());
-        sysUserMessageMapper.insert(sysUserMessage);
+        return sysUserMessageMapper.insert(sysUserMessage);
     }
 
 

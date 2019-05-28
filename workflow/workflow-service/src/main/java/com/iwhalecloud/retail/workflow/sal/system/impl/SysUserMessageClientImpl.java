@@ -44,17 +44,19 @@ public class SysUserMessageClientImpl implements SysUserMessageClient {
         if("3".equals(taskItem.getItemStatus())){
             return 0;
         }
-        if(null == taskItem.getHandlerUserId()){
-            return 0;
-        }
         WorkTaskAddReq taskAddReq = new WorkTaskAddReq();
         WorkTaskAddReq.UserInfo userInfo = new WorkTaskAddReq.UserInfo();
         List<WorkTaskAddReq.UserInfo> userInfoList = new ArrayList<>();
         userInfo.setUserId(taskItem.getHandlerUserId());
         userInfoList.add(userInfo);
         ResultVO<TaskDTO> task = taskService.getTaskById(taskItem.getTaskId());
-        taskAddReq.setTaskTitle(task.getResultData().getTaskTitle());
-        taskAddReq.setPreNodeName(taskItem.getCurNodeName());
+        String Context = "";
+        if(org.apache.commons.lang3.StringUtils.isNotBlank(task.getResultData().getFormId())){
+            Context = "订单号："+task.getResultData().getFormId()+":"+taskItem.getCurNodeName();
+        }else {
+            Context = "工单号："+taskItem.getTaskId()+":"+taskItem.getCurNodeName();
+        }
+        taskAddReq.setPreNodeName(Context);
         taskAddReq.setHandlerUsers(userInfoList);
         return sysUserMessageService.insertByTaskWorkTask(taskAddReq, taskItem.getTaskId());
     }

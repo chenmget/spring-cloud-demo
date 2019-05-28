@@ -117,22 +117,26 @@ public class RunableTask {
                     public Boolean call() throws Exception {
                         Date now = new Date();
                         ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq, newList);
+                        log.info("RunableTask.exceutorValid resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(instsTrackvO));
                         List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
                         List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                             // 删除的串码可再次导入
                             String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
-                            instTrackDTOList = instTrackDTOList.stream().filter(t -> !deleteStatus.equals(t.getStatusCd())).collect(Collectors.toList());
                             List<String> mktResInstNbrList = instTrackDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
-                            for (String mktResInstNbr : mktResInstNbrList) {
+                            for (ResouceInstTrackDTO dto : instTrackDTOList) {
                                 ResouceUploadTemp inst = new ResouceUploadTemp();
                                 inst.setMktResUploadBatch(batchId);
-                                inst.setMktResInstNbr(mktResInstNbr);
-                                inst.setResult(ResourceConst.CONSTANT_YES);
                                 inst.setUploadDate(now);
                                 inst.setCreateDate(now);
-                                inst.setResultDesc("库中已存在");
+                                if (!deleteStatus.equals(dto.getStatusCd())) {
+                                    inst.setResultDesc("库中已存在");
+                                    inst.setResult(ResourceConst.CONSTANT_YES);
+                                }else{
+                                    inst.setResult(ResourceConst.CONSTANT_NO);
+                                }
+                                inst.setMktResInstNbr(dto.getMktResInstNbr());
                                 inst.setCreateStaff(req.getCreateStaff());
                                 instList.add(inst);
                             }
@@ -174,7 +178,6 @@ public class RunableTask {
                 };
                 Future<Boolean> validFutureTask = executorService.submit(callable);
                 validFutureTaskResult.add(validFutureTask);
-                log.info("RunableTask.exceutorValid validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
             }
             executorService.shutdown();
             return batchId;

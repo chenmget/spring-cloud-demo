@@ -62,6 +62,7 @@ public class OrderHandlerB2BController {
         return resultVO;
     }
 
+    //线下支付
     @RequestMapping(value = "/pay", method = RequestMethod.PUT)
     @UserLoginToken
     public ResultVO pay(@RequestBody PayOrderRequest request) {

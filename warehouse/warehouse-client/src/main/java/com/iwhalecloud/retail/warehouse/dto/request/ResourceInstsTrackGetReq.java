@@ -45,12 +45,6 @@ public class ResourceInstsTrackGetReq implements Serializable{
 	private String mktResId;
 
 	/**
-	 * 商家类型
-	 */
-	@ApiModelProperty(value = "商家类型")
-	private String merchantType;
-
-	/**
 	 * 记录营销资源实例编码。
 	 */
 	@ApiModelProperty(value = "记录营销资源实例编码。")

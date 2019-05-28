@@ -47,7 +47,7 @@ public class PayServiceImpl implements PayService {
     @Autowired
     private BPEPPayLogService bpepPayLogService;
 
-
+    //线下
     @Override
     public ResultVO pay(PayOrderRequest request) {
         ResultVO resultVO = new ResultVO();
@@ -99,21 +99,22 @@ public class PayServiceImpl implements PayService {
             order.setPayMoney(0.0);
         }
         switch (orderPayType) {
-            case PAY_TYPE_1: //翼支付
+            case PAY_TYPE_1: //翼支付（翼支付的预授权支付 pay_type=1,线上支付）
+            	OffLinePayReq payReq = new OffLinePayReq();
+            	payReq.setOrderId(order.getOrderId());
+            	payReq.setOrderAmount(String.valueOf(order.getOrderAmount()));
+            	payReq.setOperationType(request.getFlowType());
+                resultVO = bpepPayLogService.openToBookingPay(payReq);
+                break;
                 // TODO 1、预授权支付 谢杞
-                OffLinePayReq req = new OffLinePayReq();
-                req.setOrderId(order.getOrderId());
-                req.setOrderAmount(String.valueOf(order.getOrderAmount()));
-                req.setOperationType(request.getFlowType());
-                resultVO = bpepPayLogService.authAppPay(req);
-                if(!resultVO.isSuccess()){
-                    return resultVO;
-                }
-                break;
-
-            case PAY_TYPE_5: //翼支付预授权
-
-                break;
+//                OffLinePayReq req = new OffLinePayReq();
+//                req.setOrderId(order.getOrderId());
+//                req.setOrderAmount(String.valueOf(order.getOrderAmount()));
+//                req.setOperationType(request.getFlowType());
+//                resultVO = bpepPayLogService.authAppPay(req);
+//                if(!resultVO.isSuccess()){
+//                    return resultVO;
+//                }
             case PAY_TYPE_4: //线下支付
                 OffLinePayReq offLinePayReq = new OffLinePayReq();
                 offLinePayReq.setOrderId(order.getOrderId());

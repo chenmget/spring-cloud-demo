@@ -80,13 +80,20 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
         return resultVO;
     }
 
-
+    //收货确认
     @Override
     public ResultVO receiveGoods(ReceiveGoodsReq request) {
         //TODO 2、预授权支付确认 调用不成功，收货失败 谢杞
 
         ResultVO resultVO = new ResultVO();
 
+      //TODO 2修改订单状态时调用翼支付确认支付接口 谢杞
+        Boolean flag = payAuthorizationService.authorizationConfirmation(request.getOrderId());
+        if(!flag){
+        	resultVO.setResultMsg("关闭订单，翼支付预授权确认失败。");
+        	resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+        }
+        
         /**
          * 找出换货的串码
          */

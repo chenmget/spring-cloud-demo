@@ -103,3 +103,9 @@ fdfs:
 goodsRule:
     goodsMktPrice: 159900D
     avgSupllyPrice: 0.03
+
+#能开配置
+zop:
+  secret: ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=
+  url: http://134.176.102.33:8081/api/rest
+  timeout: 50000

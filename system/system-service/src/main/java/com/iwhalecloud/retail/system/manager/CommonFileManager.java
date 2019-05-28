@@ -2,16 +2,15 @@ package com.iwhalecloud.retail.system.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.CommonFileDTO;
 import com.iwhalecloud.retail.system.entity.CommonFile;
+import com.iwhalecloud.retail.system.mapper.CommonFileMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.system.mapper.CommonFileMapper;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 @Component

@@ -29,6 +29,13 @@ public interface CommonFileService{
 
     /**
      * 获取单个通用附件
+     * @param req
+     * @return
+     */
+    ResultVO<List<CommonFileDTO>> listCommonFile(CommonFileDTO req);
+
+    /**
+     * 获取单个通用附件
      * @param fileId
      * @return
      */

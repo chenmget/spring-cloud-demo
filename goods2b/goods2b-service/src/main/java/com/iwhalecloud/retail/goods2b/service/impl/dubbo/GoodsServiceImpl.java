@@ -389,7 +389,8 @@ public class GoodsServiceImpl implements GoodsService {
         String targetType = req.getTargetType();
 
         //添加分货规则
-        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot())) {
+        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot()) &&
+                CollectionUtils.isNotEmpty(req.getEntityList())) {
             ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
             prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
             ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());

@@ -18,21 +18,26 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.DateUtil;
 import com.iwhalecloud.retail.goods2b.utils.GenerateCodeUtil;
 import com.iwhalecloud.retail.goods2b.utils.ReflectUtils;
+import com.iwhalecloud.retail.goods2b.utils.ZopClientUtil;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
+import com.ztesoft.zop.common.message.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -56,6 +61,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Autowired
     private TagRelService tagRelService;
 
+    @Value("${zop.secret}")
+    private String zopSecret;
+
+    @Value("${zop.url}")
+    private String zopUrl;
 
     @Override
     public ResultVO<ProductBaseGetResp> getProductBase(ProductBaseGetByIdReq req){
@@ -125,6 +135,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         List<ProductAddReq> productAddReqs = req.getProductAddReqs();
         String status = "";
         Boolean addResult = true;
+        String isInspection = req.getIsInspection();
         if (null != productAddReqs && !productAddReqs.isEmpty()){
             for (ProductAddReq par : productAddReqs){
                 String sn = par.getSn();
@@ -145,6 +156,23 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setCreateStaff(t.getCreateStaff());
                 par.setAuditState(auditState);
                 productService.addProduct(par);
+                //固网产品需要提交串码到itms
+//                if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
+//                    String SerialCode = par.getAttrValue9();
+//                    if(StringUtils.isEmpty(SerialCode)){
+//                        ResultVO.error("固网产品必须录入串码");
+//                    }
+//
+//                    String b = "";
+//                    String callUrl = "";
+//                    Map request = new HashMap<>();
+//                    try {
+//                        b = this.zopService(callUrl,zopUrl,request,zopSecret);
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage());
+//                    }
+//
+//                }
             }
         }
 
@@ -406,4 +434,18 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         return ResultVO.success(true);
     }
 
+    private String zopService(String method, String zopUrl, Object request, String zopSecret) {
+        String version = "1.0";
+        ResponseResult responseResult = ZopClientUtil.callRest(zopSecret, zopUrl, method, version, request);
+        String resCode = "00000";
+        String returnStr = null;
+        if (resCode.equals(responseResult.getRes_code())) {
+            Object result = responseResult.getResult();
+            returnStr = String.valueOf(result);
+        }else{
+            log.info("能开请求失败：method：" +method+"，zopUrl:"+ zopUrl+"，resCode:"
+                    +responseResult.getRes_code()+"，msg:"+responseResult.getRes_message());
+        }
+        return returnStr;
+    }
 }

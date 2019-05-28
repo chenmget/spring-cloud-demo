@@ -217,6 +217,7 @@ public class ResNbrManagerReference {
         instItem.setMktResInstNbrs(goodsItemDTO.getResNbrList());
         list.add(instItem);
 
+        validResourceInstReq.setBuyerMerchantId(apply.getApplicantId());
         validResourceInstReq.setDeliveryResourceInstItemList(list);
         ResultVO<Boolean> resultVO = supplierResourceInstService.backDeliveryInResourceInst(validResourceInstReq);
         log.info("gs_10010_backDeliveryOutResourceInst req{},resp{}", JSON.toJSONString(validResourceInstReq), JSON.toJSONString(resultVO));

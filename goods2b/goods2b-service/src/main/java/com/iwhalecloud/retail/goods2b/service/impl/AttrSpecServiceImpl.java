@@ -43,11 +43,15 @@ public class AttrSpecServiceImpl implements AttrSpecService {
         }
 
         List<AttrSpecDTO> attrSpecDTOs =  attrSpecManager.queryAttrSpecList(typeId);
-        if (CollectionUtils.isNotEmpty(attrSpecDTOs)) {
-            for (AttrSpecDTO dto : attrSpecDTOs) {
-                String attrValue = AttrSpecConst.getAttrValue(dto.getFiledName());
-                dto.setFiledName(attrValue);
+        if (CollectionUtils.isEmpty(attrSpecDTOs)) {
+            return ResultVOUtils.genQueryResultVO(attrSpecDTOs);
+        }
+        for (AttrSpecDTO dto : attrSpecDTOs) {
+            String attrValue = AttrSpecConst.getAttrValue(dto.getFiledName());
+            if (StringUtils.isEmpty(attrValue)) {
+                continue;
             }
+            dto.setFiledName(attrValue);
         }
         log.info("AttrSpecServiceImpl.queryAttrSpecList attrSpecDTOs={}", JSON.toJSON(attrSpecDTOs));
         return ResultVOUtils.genQueryResultVO(attrSpecDTOs);

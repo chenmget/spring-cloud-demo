@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.goods2b.common;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,9 +54,6 @@ public class AttrSpecConst {
         map.put("ATTR_VALUE9", "attrValue9");
         map.put("ATTR_VALUE10", "attrValue10");
         String attrValue = map.get(attrName);
-        if (StringUtils.isNotBlank(attrValue)) {
-            return attrValue;
-        }
-        return attrName;
+        return attrValue;
     }
 }

@@ -193,13 +193,11 @@ public class SysUserMessageServiceImpl implements SysUserMessageService {
         sysUserMessage.setTaskId(taskId);
         sysUserMessage.setTitle(taskAddReq.getTaskTitle()+"信息通知");
         sysUserMessage.setContent(taskAddReq.getPreNodeName());
-        int num = 0;
-        for(WorkTaskAddReq.UserInfo userInfo : handlerUsers){
-            sysUserMessage.setUserId(userInfo.getUserId());
-            sysUserMessageManager.addSysUserMessageNotice(sysUserMessage);
+        sysUserMessage.setUserId(handlerUsers.get(0).getUserId());
+        if(StringUtils.isBlank(sysUserMessage.getUserId())){
+            return 0;
         }
-
-        return num;
+        return sysUserMessageManager.addSysUserMessageNotice(sysUserMessage);
     }
 
     @Override

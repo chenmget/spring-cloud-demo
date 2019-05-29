@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.web.controller.partner;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.TagsConst;
 import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
@@ -102,8 +103,12 @@ public class MerchantController {
     })
     @RequestMapping(value = "/pageWithRule", method = RequestMethod.POST)
     public ResultVO<Page<MerchantPageResp>> pageMerchantWithRule(@RequestBody MerchantPageReq req) {
+        UserDTO curLoginUserDTO = UserContext.getUser();
+        if(curLoginUserDTO == null){
+            return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
+        }
         MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
-        merchantTagRelListReq.setMerchantId(req.getMerchantId());
+        merchantTagRelListReq.setMerchantId(curLoginUserDTO.getRelCode());
         ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(merchantTagRelListReq);
         log.info("MerchantController.pageMerchantWithRule() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(merchantTagRelListReq), JSON.toJSONString(listResultVO));
         if (null == listResultVO || !listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
@@ -564,9 +569,13 @@ public class MerchantController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/governmentEnterpriseSuppliers", method = RequestMethod.GET)
-    public ResultVO<Boolean> governmentEnterpriseSuppliers(@RequestParam(value = "merchantId") String merchantId) {
+    public ResultVO<Boolean> governmentEnterpriseSuppliers() {
+        UserDTO curLoginUserDTO = UserContext.getUser();
+        if(curLoginUserDTO == null){
+            return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
+        }
         MerchantTagRelListReq req = new MerchantTagRelListReq();
-        req.setMerchantId(merchantId);
+        req.setMerchantId(curLoginUserDTO.getRelCode());
         ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(req);
         log.info("MerchantController.governmentEnterpriseSuppliers() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(req), JSON.toJSONString(listResultVO));
         if (null == listResultVO || !listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {

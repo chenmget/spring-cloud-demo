@@ -90,7 +90,7 @@ public class MerchantController {
 
     @ApiOperation(value = "商家列表导出", notes = "商家列表导出")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "accountId", value = "商家账户ID", paramType = "query", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "accountId", value = "商家账户ID", paramType = "query", required = true, dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
@@ -128,7 +128,7 @@ public class MerchantController {
         } catch (Exception e) {
             log.error("商家列表导出失败 error={}", e);
         } finally {
-            if (null != output){
+            if (null != output) {
                 try {
                     output.close();
                 } catch (IOException e) {
@@ -190,7 +190,7 @@ public class MerchantController {
         } catch (Exception e) {
             log.error("零售商列表导出失败 error={}", e);
         } finally {
-            if (null != output){
+            if (null != output) {
                 try {
                     output.close();
                 } catch (IOException e) {
@@ -228,6 +228,7 @@ public class MerchantController {
 
     /**
      * 获取用户登录名称
+     *
      * @param merchantId 商家ID
      * @return
      */
@@ -272,7 +273,7 @@ public class MerchantController {
         } catch (Exception e) {
             log.error("供应商列表导出失败 error={}", e);
         } finally {
-            if (null != output){
+            if (null != output) {
                 try {
                     output.close();
                 } catch (IOException e) {
@@ -333,7 +334,7 @@ public class MerchantController {
         } catch (Exception e) {
             log.error("厂商列表导出失败 error={}", e);
         } finally {
-            if (null != output){
+            if (null != output) {
                 try {
                     output.close();
                 } catch (IOException e) {
@@ -351,7 +352,7 @@ public class MerchantController {
      */
     @ApiOperation(value = "获取商家详情", notes = "获取商家详情")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "merchantId", value = "商家ID", paramType = "query", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "merchantId", value = "商家ID", paramType = "query", required = true, dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
@@ -524,6 +525,7 @@ public class MerchantController {
 
     /**
      * 获取商家分页列表
+     *
      * @param req
      * @return
      */

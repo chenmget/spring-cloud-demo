@@ -101,32 +101,12 @@ public class PayServiceImpl implements PayService {
         }
         switch (orderPayType) {
             case PAY_TYPE_1: //翼支付（翼支付的预授权支付 pay_type=1,线上支付）
-//            	OffLinePayReq payReq = new OffLinePayReq();
-//            	payReq.setOrderId(order.getOrderId());
-//            	payReq.setOrderAmount(String.valueOf(order.getOrderAmount()));
-//            	payReq.setOperationType(request.getFlowType());
-//              resultVO = bpepPayLogService.openToBookingPay(payReq);
-//                break;
-                // TODO 1、预授权支付 谢杞
                 OffLinePayReq req = new OffLinePayReq();
                 req.setOrderId(order.getOrderId());
                 req.setOrderAmount(String.valueOf(order.getOrderAmount()));
                 req.setOperationType(request.getFlowType());
-                resultVO = bpepPayLogService.authAppPay(req);
-                //更新订单状态
-                UpdateOrdOrderReq updateOrdOrderReq = new UpdateOrdOrderReq();
-                updateOrdOrderReq.setOrderId(order.getOrderId());
-                updateOrdOrderReq.setPayTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
-                updateOrdOrderReq.setPayType("1");
-                updateOrdOrderReq.setPaymentName("线上支付");
-                updateOrdOrderReq.setPaymentType("1");
-                updateOrdOrderReq.setPayStatus("1");
-                updateOrdOrderReq.setStatus("4");
-                bpepPayLogService.UpdateOrdOrderStatus(updateOrdOrderReq);
-                
-                if(!resultVO.isSuccess()){
-                    return resultVO;
-                }
+                resultVO = bpepPayLogService.openToBookingPay(req);
+                break;
             case PAY_TYPE_4: //线下支付
                 OffLinePayReq offLinePayReq = new OffLinePayReq();
                 offLinePayReq.setOrderId(order.getOrderId());
@@ -198,6 +178,11 @@ public class PayServiceImpl implements PayService {
         switch (orderPayType) {
             //翼支付
             case PAY_TYPE_1:
+            	OffLinePayReq req = new OffLinePayReq();
+                req.setOrderId(order.getOrderId());
+                req.setOrderAmount(String.valueOf(order.getOrderAmount()));
+                req.setOperationType(request.getFlowType());
+                resultVO = bpepPayLogService.openToBookingPay(req);
                 break;
             //线下支付
             case PAY_TYPE_4:
@@ -285,6 +270,11 @@ public class PayServiceImpl implements PayService {
         switch (orderPayType) {
             //翼支付
             case PAY_TYPE_1:
+            	OffLinePayReq req = new OffLinePayReq();
+                req.setOrderId(order.getOrderId());
+                req.setOrderAmount(String.valueOf(order.getOrderAmount()));
+                req.setOperationType(request.getFlowType());
+                resultVO = bpepPayLogService.openToBookingPay(req);
                 break;
             //线下支付
             case PAY_TYPE_4:

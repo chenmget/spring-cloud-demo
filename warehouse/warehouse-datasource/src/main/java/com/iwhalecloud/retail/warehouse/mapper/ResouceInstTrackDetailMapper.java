@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.warehouse.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackDetailGetReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceInstTrackDetail;
 import org.apache.ibatis.annotations.Mapper;
@@ -17,8 +18,8 @@ public interface ResouceInstTrackDetailMapper extends BaseMapper<ResouceInstTrac
 
     /**
      * 通过串码查轨迹明细
-     * @param nbr
+     * @param req
      * @return
      */
-    List<ResourceInstTrackDetailListResp> getResourceInstTrackDetailByNbr(String nbr);
+    List<ResourceInstTrackDetailListResp> getResourceInstTrackDetailByNbr(ResourceInstsTrackDetailGetReq req);
 }

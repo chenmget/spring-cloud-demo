@@ -15,6 +15,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.order.SendGoodsRequest;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.entity.OrderItem;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
+import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.model.HHReceiveGoodsModel;
 import com.iwhalecloud.retail.order2b.model.OrderInfoModel;
 import com.iwhalecloud.retail.order2b.service.OrderDRGoodsOpenService;
@@ -50,7 +51,9 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
 
     @Autowired
     private PayAuthorizationService payAuthorizationService;
-
+    
+    @Autowired
+    private OrderMapper orderMapper;
 
     @Override
     public ResultVO deliverGoods(SendGoodsRequest request) {
@@ -86,13 +89,23 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
         //TODO 2、预授权支付确认 调用不成功，收货失败 谢杞
 
         ResultVO resultVO = new ResultVO();
+        if(request.getOrderId() == null) {
+        	return ResultVO.error("订单号为空！");
+        }
 
       //TODO 2修改订单状态时调用翼支付确认支付接口 谢杞
-        Boolean flag = payAuthorizationService.authorizationConfirmation(request.getOrderId());
-        if(!flag){
-        	resultVO.setResultMsg("关闭订单，翼支付预授权确认失败。");
-        	resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+        Order order = new Order();
+        order.setOrderId(request.getOrderId());
+        Order resOrder = orderMapper.getOrderById(order);
+        if("1".equals(resOrder.getPayType())) {//判断是不是翼支付
+        	Boolean flag = payAuthorizationService.authorizationConfirmation(request.getOrderId());
+        	if(!flag){
+            	resultVO.setResultMsg("关闭订单，翼支付预授权确认失败。");
+            	resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            	return resultVO;
+            }
         }
+        
         
         /**
          * 找出换货的串码
@@ -100,14 +113,14 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
         HHReceiveGoodsModel hhReceiveGoodsModel=afterSalesHHService.hhResNbrNumList(request);
 
         request=hhReceiveGoodsModel.getReceiveGoodsReq();
-
+        //收货校验
         CommonResultResp commonResultResp = receiveGoodsService.receiveGoodsCheck(request);
         if (commonResultResp.isFailure()) {
             resultVO.setResultCode(commonResultResp.getResultCode());
             resultVO.setResultMsg(commonResultResp.getResultMsg());
             return resultVO;
         }
-        commonResultResp = receiveGoodsService.inResource(request);
+        commonResultResp = receiveGoodsService.inResource(request);//串码入库
         if (commonResultResp.isFailure()) {
             resultVO.setResultCode(commonResultResp.getResultCode());
             resultVO.setResultMsg(commonResultResp.getResultMsg());
@@ -120,7 +133,7 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
             resultVO.setResultMsg(commonResultResp.getResultMsg());
             return resultVO;
         }
-        commonResultResp = receiveGoodsService.receiveGoodsFinish(request);
+        commonResultResp = receiveGoodsService.receiveGoodsFinish(request);//订单完成
 
         if(commonResultResp.isFailure()){
             resultVO.setResultCode(commonResultResp.getResultCode());

@@ -41,13 +41,6 @@ public interface BPEPPayLogService {
     public int offLinePay(OffLinePayReq req);
     
     /**
-     * 翼支付预授权支付LWS
-     * @param req
-     * @return
-     */
-    public ResultVO openToBookingPay(OffLinePayReq req);
-
-    /**
      * 翼支付预授权支付更新订单状态LWS
      * @param req
      * @return
@@ -59,7 +52,7 @@ public interface BPEPPayLogService {
      * @param req
      * @return
      */
-    public ResultVO authAppPay(OffLinePayReq req);
+    public ResultVO openToBookingPay(OffLinePayReq req);
 
     /**
      * 校验通知支付结果

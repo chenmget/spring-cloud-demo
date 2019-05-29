@@ -22,8 +22,11 @@
     ,t.ORDER_TIME 
 </sql>
 
-    <select id="getResourceInstTrackDetailByNbr" parameterType="java.lang.String"
+    <select id="getResourceInstTrackDetailByNbr" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackDetailGetReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp">
-        SELECT <include refid="allFields" /> from mkt_res_inst_track_detail t where MKT_RES_INST_NBR=#{nbr}
+        SELECT <include refid="allFields" /> from mkt_res_inst_track_detail t where MKT_RES_INST_NBR=#{mktResInstNbr}
+        <if test="null!=req.targetMerchantId and ''!=req.targetMerchantId">
+            and target_merchant_id = #{req.targetMerchantId}
+        </if>
     </select>
 </mapper>

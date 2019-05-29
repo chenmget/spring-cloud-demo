@@ -8,6 +8,7 @@ import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackDetailGetReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackDetailManager;
 import com.iwhalecloud.retail.warehouse.service.ResouceInstTrackDetailService;
@@ -30,8 +31,8 @@ public class ResouceInstTrackDetailServiceImpl implements ResouceInstTrackDetail
     private CommonRegionService commonRegionService;
 
     @Override
-    public ResultVO<List<ResourceInstTrackDetailListResp>> getResourceInstTrackDetailByNbr(String nbr){
-        List<ResourceInstTrackDetailListResp> detailList = resouceInstTrackDetailManager.getResourceInstTrackDetailByNbr(nbr);
+    public ResultVO<List<ResourceInstTrackDetailListResp>> getResourceInstTrackDetailByNbr(ResourceInstsTrackDetailGetReq req){
+        List<ResourceInstTrackDetailListResp> detailList = resouceInstTrackDetailManager.getResourceInstTrackDetailByNbr(req);
         if (CollectionUtils.isEmpty(detailList)) {
             return ResultVO.success();
         }

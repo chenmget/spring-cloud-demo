@@ -23,13 +23,13 @@
 			now() as CREATE_DATE  
 		FROM
 			MKT_RES_EVENT mre
-			LEFT JOIN mkt_res_chng_evt_detail mrced ON mre.MKT_RES_EVENT_ID = mrced.MKT_RES_EVENT_ID
-			INNER JOIN PROD_PRODUCT_BASE ppb ON mre.mkt_res_id = ppb.PRODUCT_BASE_ID
+	 		INNER JOIN mkt_res_chng_evt_detail mrced ON mre.MKT_RES_EVENT_ID = mrced.MKT_RES_EVENT_ID
+	 		INNER JOIN PROD_PRODUCT pp ON pp.PRODUCT_ID = mre.mkt_res_id
+	 		INNER JOIN PROD_PRODUCT_BASE ppb ON mre.mkt_res_id = ppb.PRODUCT_BASE_ID
 			INNER JOIN PROD_BRAND pr ON pr.brand_id = ppb.brand_id 
 			<if test="startDate != '' and startDate != null">
             AND mre.CREATE_DATE >= #{startDate}
         	</if>
-			AND mrced.MKT_RES_CHNG_EVT_DETAIL_ID IS NOT NULL
   </select>
   
   <select id="findMKTInfoByLadId" resultType="java.util.HashMap">

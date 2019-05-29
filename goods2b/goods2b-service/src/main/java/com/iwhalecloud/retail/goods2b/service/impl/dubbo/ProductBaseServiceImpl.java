@@ -28,16 +28,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 @Service
@@ -334,6 +331,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                      startProductFlowReq.setDealer(req.getUpdateStaff());
                      startProductFlowReq.setProductName(product.getResultData().getProductName());
                      startProductFlowReq.setProcessId(processId);
+                     startProductFlowReq.setParamsValue(req.getBrandId());
                      ResultVO flowResltVO =productFlowService.startProductFlow(startProductFlowReq);
                      if(!flowResltVO.isSuccess()){
                          throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());

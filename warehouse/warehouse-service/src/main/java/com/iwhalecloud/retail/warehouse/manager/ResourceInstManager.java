@@ -64,7 +64,7 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
      */
     public Integer updateResourceInstByIds(AdminResourceInstDelReq req) {
 //        修改一定要注意条件 防范全表更新
-        if (req.getMktResInstIds() == null || req.getMktResInstIds().size() < 1) {
+        if (req.getMktResInstIdList() == null || req.getMktResInstIdList().size() < 1) {
             return 0;
         }
         Date now = new Date();

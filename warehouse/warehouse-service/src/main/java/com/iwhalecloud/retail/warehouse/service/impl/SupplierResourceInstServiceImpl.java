@@ -367,6 +367,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstUpdateReq.setMerchantId(merchantDTO.getMerchantId());
             resourceInstUpdateReq.setOrderId(req.getOrderId());
             resourceInstUpdateReq.setCreateTime(new Date());
+            resourceInstUpdateReq.setMerchantId(req.getSellerMerchantId());
             ResultVO delRS = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
             log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resourceInstService.delResourceInst req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(delRS));
         }
@@ -428,6 +429,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstAddReq.setLanId(buyer.getLanId());
             resourceInstAddReq.setRegionId(buyer.getCity());
             ProductGetByIdReq productReq = new ProductGetByIdReq();
+            productReq.setProductId(item.getProductId());
             ResultVO<ProductResp> productRespResultVO = productService.getProductInfo(productReq);
             log.info("SupplierResourceInstServiceImpl.deliveryInResourceInst productService.getProductInfo productId={},resp={}", item.getProductId(), JSON.toJSONString(productRespResultVO));
             if (productRespResultVO.isSuccess() && null != productRespResultVO.getResultData()) {
@@ -510,7 +512,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                 continue;
             }
             AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
-            adminResourceInstDelReq.setMktResInstIds(resourceInstDTOList.stream().map(ResourceInstDTO::getMktResInstId).collect(Collectors.toList()));
+            adminResourceInstDelReq.setMktResInstIdList(resourceInstDTOList.stream().map(ResourceInstDTO::getMktResInstId).collect(Collectors.toList()));
             // 设置状态校验条件
             List<String> checkStatusCd = Lists.newArrayList(
                     ResourceConst.STATUSCD.DELETED.getCode(),
@@ -605,7 +607,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                 ResourceConst.STATUSCD.RESTORAGED.getCode(),
                 ResourceConst.STATUSCD.SALED.getCode(),
                 ResourceConst.STATUSCD.DELETED.getCode());
-        updateReq.setMktResInstIds(mktResInstIds);
+        updateReq.setMktResInstIdList(mktResInstIds);
         updateReq.setCheckStatusCd(checkStatusCd);
         updateReq.setStatusCd(ResourceConst.STATUSCD.ALLOCATIONED.getCode());
         updateReq.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
@@ -674,7 +676,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         updateReq.setCheckStatusCd(checkStatusCd);
         updateReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         updateReq.setEventType(ResourceConst.EVENTTYPE.RECYCLE.getCode());
-        updateReq.setMktResInstIds(mktResInstIds);
+        updateReq.setMktResInstIdList(mktResInstIds);
         updateReq.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(req.getResReqId());

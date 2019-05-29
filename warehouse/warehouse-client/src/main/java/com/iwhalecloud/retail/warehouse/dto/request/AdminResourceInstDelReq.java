@@ -39,7 +39,7 @@ public class AdminResourceInstDelReq implements Serializable{
 	 * 串码主键。
 	 */
 	@ApiModelProperty(value = "串码主键")
-	private List<String> mktResInstIds;
+	private List<String> mktResInstIdList;
 
 	/**
 	 * 更新后状态

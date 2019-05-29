@@ -238,7 +238,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
                 ResourceConst.STATUSCD.RESTORAGED.getCode(),
                 ResourceConst.STATUSCD.SALED.getCode(),
                 ResourceConst.STATUSCD.DELETED.getCode());
-        updateReq.setMktResInstIds(mktResInstIds);
+        updateReq.setMktResInstIdList(mktResInstIds);
         updateReq.setCheckStatusCd(checkStatusCd);
         updateReq.setStatusCd(ResourceConst.STATUSCD.ALLOCATIONED.getCode());
         updateReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
@@ -303,7 +303,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         updateReq.setCheckStatusCd(checkStatusCd);
         updateReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         updateReq.setEventType(ResourceConst.EVENTTYPE.RECYCLE.getCode());
-        updateReq.setMktResInstIds(mktResInstIds);
+        updateReq.setMktResInstIdList(mktResInstIds);
         updateReq.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(req.getResReqId());

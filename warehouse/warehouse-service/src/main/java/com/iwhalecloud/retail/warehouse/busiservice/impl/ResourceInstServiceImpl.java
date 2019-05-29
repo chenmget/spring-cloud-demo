@@ -520,7 +520,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
                 BeanUtils.copyProperties(req, adminResourceInstDelReq);
                 adminResourceInstDelReq.setMktResStoreId(dto.getMktResStoreId());
-                adminResourceInstDelReq.setMktResInstIds(Lists.newArrayList(dto.getMktResInstId()));
+                adminResourceInstDelReq.setMktResInstIdList(Lists.newArrayList(dto.getMktResInstId()));
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
                 log.info("ResourceInstServiceImpl.updateResourceInstByIds resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(sucessNum));
                 if(num < 1){
@@ -577,7 +577,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 BeanUtils.copyProperties(req, adminResourceInstDelReq);
                 List<String> mktResInstList = new ArrayList<>();
                 mktResInstList.add(dto.getMktResInstId());
-                adminResourceInstDelReq.setMktResInstIds(mktResInstList);
+                adminResourceInstDelReq.setMktResInstIdList(mktResInstList);
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
                 log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(num));
                 if(num < 1){
@@ -619,7 +619,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
      * @return
      */
     private void assembleData(AdminResourceInstDelReq req){
-        List<String> mktResInstIds = req.getMktResInstIds();
+        List<String> mktResInstIds = req.getMktResInstIdList();
         List<String> checkStatusCd = req.getCheckStatusCd();
         // 去重
         List<String> distinctList = mktResInstIds.stream().distinct().collect(Collectors.toList());
@@ -640,7 +640,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         // 按产品维度组装数据
         Map<String, List<ResourceInstDTO>> map = insts.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
         req.setInsts(map);
-        req.setMktResInstIds(useMktResInstId);
+        req.setMktResInstIdList(useMktResInstId);
         req.setUnUse(unStatusCdinstIds);
     }
 

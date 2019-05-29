@@ -100,7 +100,7 @@ public class PayAuthorizationService {
         }
         return resultCall;
         
-        //以下逻辑感觉有问题
+        //以下逻辑感觉有问题，在PayServiceImpl里面做了判断，以下代码先全部屏蔽
 //        if("1".equals(resOrder.getOrderCat())){ //预售
 //            AdvanceOrder advanceOrder = new AdvanceOrder();
 //            advanceOrder.setOrderId(orderId);

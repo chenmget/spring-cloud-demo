@@ -276,6 +276,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         // step 4:修改库存(出库)
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(updatedInstList.get(0), resourceInstStoreDTO);
+        resourceInstStoreDTO.setMerchantId(req.getMerchantId());
         resourceInstStoreDTO.setQuantity(Long.valueOf(successNum));
         String statusCd = req.getStatusCd();
         // 出库类型，库存减少

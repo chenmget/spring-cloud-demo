@@ -28,7 +28,7 @@ public class ResourceInstTrackDetailB2BController {
     @GetMapping(value = "getResourceInstTrackDetailByNbr")
     public ResultVO getResourceInstTrackDetailByNbr(@RequestParam(value = "nbr", required = true) String nbr) {
         ResourceInstsTrackDetailGetReq req = new ResourceInstsTrackDetailGetReq();
-        if (UserContext.isUserLogin()) {
+        if (UserContext.isUserLogin() && !UserContext.isAdminType()) {
             req.setTargetMerchantId(UserContext.getMerchantId());
         }
         req.setMktResInstNbr(nbr);

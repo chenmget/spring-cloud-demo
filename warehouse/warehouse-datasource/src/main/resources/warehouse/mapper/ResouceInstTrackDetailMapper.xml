@@ -24,9 +24,9 @@
 
     <select id="getResourceInstTrackDetailByNbr" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackDetailGetReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp">
-        SELECT <include refid="allFields" /> from mkt_res_inst_track_detail t where MKT_RES_INST_NBR=#{mktResInstNbr}
-        <if test="null!=req.targetMerchantId and ''!=req.targetMerchantId">
-            and target_merchant_id = #{req.targetMerchantId}
+        SELECT <include refid="allFields" /> from mkt_res_inst_track_detail t where MKT_RES_INST_NBR = #{mktResInstNbr}
+        <if test="null!=targetMerchantId and ''!=targetMerchantId">
+            and target_merchant_id = #{targetMerchantId}
         </if>
     </select>
 </mapper>

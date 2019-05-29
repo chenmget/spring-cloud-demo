@@ -216,6 +216,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             // step 4:修改库存(出库)
             ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
             BeanUtils.copyProperties(inst, resourceInstStoreDTO);
+            resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
             resourceInstStoreDTO.setQuantity(Long.valueOf(successNum));
             resourceInstStoreDTO.setMerchantId(req.getMerchantId());
             String statusCd = req.getStatusCd();
@@ -275,8 +276,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         resourceInstLogService.supplierDeliveryOutResourceInstLog(req, updatedInstList);
         // step 4:修改库存(出库)
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
-        BeanUtils.copyProperties(updatedInstList.get(0), resourceInstStoreDTO);
-        resourceInstStoreDTO.setMerchantId(req.getMerchantId());
+        BeanUtils.copyProperties(req, resourceInstStoreDTO);
+        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         resourceInstStoreDTO.setQuantity(Long.valueOf(successNum));
         String statusCd = req.getStatusCd();
         // 出库类型，库存减少
@@ -337,6 +338,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
+        resourceInstStoreDTO.setMktResId(req.getMktResId());
+        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         resourceInstStoreDTO.setQuantity(Long.valueOf(mktResInstNbrs.size()));
         resourceInstStoreDTO.setQuantityAddFlag(true);
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
@@ -380,6 +383,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
+        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         resourceInstStoreDTO.setQuantity(Long.valueOf(nbrList.size()));
         resourceInstStoreDTO.setQuantityAddFlag(true);
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
@@ -426,6 +430,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
+        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         resourceInstStoreDTO.setQuantity(Long.valueOf(mktResInstNbrList.size()));
         resourceInstStoreDTO.setQuantityAddFlag(true);
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());

@@ -82,7 +82,7 @@ public class RetailerResourceInstServiceImplTest {
     public void updateResourceInstByIds() {
         AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         req.setUpdateStaff("99999");
-        req.setMktResInstIds(Lists.newArrayList("6999688484883835B"));
+        req.setMktResInstIdList(Lists.newArrayList("6999688484883835B"));
         req.setDestStoreId("102654034");
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());

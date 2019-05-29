@@ -77,7 +77,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             return;
         }
         List<String> unavailbaleNbrs = (List<String>) resp.getResultData();
-        List<String> mktResInstIds = req.getMktResInstIds();
+        List<String> mktResInstIds = req.getMktResInstIdList();
         List<String> distinctList = mktResInstIds.stream().distinct().collect(Collectors.toList());
         if (CollectionUtils.isEmpty(distinctList)) {
             return;
@@ -242,7 +242,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         }
         ResourceInstsGetByIdListAndStoreIdReq resourceInstsGetReq = new ResourceInstsGetByIdListAndStoreIdReq();
         BeanUtils.copyProperties(req, resourceInstsGetReq);
-        resourceInstsGetReq.setMktResInstIdList(req.getMktResInstIds());
+        resourceInstsGetReq.setMktResInstIdList(req.getMktResInstIdList());
         resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> insts = resourceInstManager.selectByIds(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynDeleteTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(insts));

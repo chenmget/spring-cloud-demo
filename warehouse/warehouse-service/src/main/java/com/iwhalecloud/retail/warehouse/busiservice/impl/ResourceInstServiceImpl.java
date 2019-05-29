@@ -216,6 +216,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             // step 4:修改库存(出库)
             ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
             BeanUtils.copyProperties(inst, resourceInstStoreDTO);
+            resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
             resourceInstStoreDTO.setQuantity(Long.valueOf(successNum));
             resourceInstStoreDTO.setMerchantId(req.getMerchantId());
             String statusCd = req.getStatusCd();
@@ -252,6 +253,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         List<String> mktResInstNbrList = req.getMktResInstNbrs();
         ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
         BeanUtils.copyProperties(req, updateReq);
+        updateReq.setMktResStoreId(req.getDestStoreId());
         Integer successNum = resourceInstManager.updateResourceInst(updateReq);
         log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), successNum);
 
@@ -261,7 +263,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             getReq.setMktResId(req.getMktResId());
             getReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
             getReq.setMktResInstNbrs(Lists.newArrayList(mktResInstNbr));
-            getReq.setMktResStoreId(req.getMktResStoreId());
+            getReq.setMktResStoreId(req.getDestStoreId());
             List<ResourceInstDTO> resourceInstDTO = resourceInstManager.getResourceInsts(getReq);
             // 修改不成功的返回，不加事件
             if (CollectionUtils.isEmpty(resourceInstDTO)) {
@@ -274,7 +276,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         resourceInstLogService.supplierDeliveryOutResourceInstLog(req, updatedInstList);
         // step 4:修改库存(出库)
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
-        BeanUtils.copyProperties(updatedInstList.get(0), resourceInstStoreDTO);
+        BeanUtils.copyProperties(req, resourceInstStoreDTO);
+        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         resourceInstStoreDTO.setQuantity(Long.valueOf(successNum));
         String statusCd = req.getStatusCd();
         // 出库类型，库存减少
@@ -335,6 +338,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
+        resourceInstStoreDTO.setMktResId(req.getMktResId());
+        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         resourceInstStoreDTO.setQuantity(Long.valueOf(mktResInstNbrs.size()));
         resourceInstStoreDTO.setQuantityAddFlag(true);
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
@@ -378,6 +383,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
+        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         resourceInstStoreDTO.setQuantity(Long.valueOf(nbrList.size()));
         resourceInstStoreDTO.setQuantityAddFlag(true);
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
@@ -424,6 +430,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
+        resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
         resourceInstStoreDTO.setQuantity(Long.valueOf(mktResInstNbrList.size()));
         resourceInstStoreDTO.setQuantityAddFlag(true);
         resourceInstStoreDTO.setCreateStaff(req.getMerchantId());
@@ -446,7 +453,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
      * @return
      */
     private ResourceInstListPageReq setProductIds(ResourceInstListPageReq req){
-        if(StringUtils.isNotBlank(req.getUnitName()) || StringUtils.isNotBlank(req.getBrandId()) || StringUtils.isNotBlank(req.getSn())) {
+        if(StringUtils.isNotBlank(req.getProductName()) || StringUtils.isNotBlank(req.getBrandId()) || StringUtils.isNotBlank(req.getSn())) {
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
             BeanUtils.copyProperties(req, queryReq);
             ResultVO<List<ProductResourceResp>> resultVO = productService.getProductResource(queryReq);
@@ -519,7 +526,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
                 BeanUtils.copyProperties(req, adminResourceInstDelReq);
                 adminResourceInstDelReq.setMktResStoreId(dto.getMktResStoreId());
-                adminResourceInstDelReq.setMktResInstIds(Lists.newArrayList(dto.getMktResInstId()));
+                adminResourceInstDelReq.setMktResInstIdList(Lists.newArrayList(dto.getMktResInstId()));
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
                 log.info("ResourceInstServiceImpl.updateResourceInstByIds resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(sucessNum));
                 if(num < 1){
@@ -576,7 +583,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 BeanUtils.copyProperties(req, adminResourceInstDelReq);
                 List<String> mktResInstList = new ArrayList<>();
                 mktResInstList.add(dto.getMktResInstId());
-                adminResourceInstDelReq.setMktResInstIds(mktResInstList);
+                adminResourceInstDelReq.setMktResInstIdList(mktResInstList);
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
                 log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(num));
                 if(num < 1){
@@ -618,7 +625,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
      * @return
      */
     private void assembleData(AdminResourceInstDelReq req){
-        List<String> mktResInstIds = req.getMktResInstIds();
+        List<String> mktResInstIds = req.getMktResInstIdList();
         List<String> checkStatusCd = req.getCheckStatusCd();
         // 去重
         List<String> distinctList = mktResInstIds.stream().distinct().collect(Collectors.toList());
@@ -639,7 +646,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         // 按产品维度组装数据
         Map<String, List<ResourceInstDTO>> map = insts.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
         req.setInsts(map);
-        req.setMktResInstIds(useMktResInstId);
+        req.setMktResInstIdList(useMktResInstId);
         req.setUnUse(unStatusCdinstIds);
     }
 

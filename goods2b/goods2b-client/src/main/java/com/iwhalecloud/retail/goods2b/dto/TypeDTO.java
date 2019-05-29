@@ -35,6 +35,12 @@ public class TypeDTO implements Serializable {
     private java.lang.String typeName;
 
     /**
+     * 上级类型ID
+     */
+    @ApiModelProperty(value = "上级类型ID")
+    private java.lang.String parentTypeId;
+
+    /**
      * 排序
      */
     @ApiModelProperty(value = "排序")

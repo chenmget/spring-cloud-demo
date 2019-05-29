@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.partner.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.SupplierDTO;
@@ -31,11 +32,6 @@ public class SupplierServiceImpl implements SupplierService {
     @Autowired
     private SupplierManager supplierManager;
 
-//    @Override
-//    public List<SupplierDTO> listSupplier() {
-//        return supplierManager.listSupplier();
-//    }
-
     @Override
     public Page<SupplierDTO> pageSupplier(SupplierQueryReq supplierQueryReq) {
         return supplierManager.pageSupplier(supplierQueryReq);
@@ -44,25 +40,28 @@ public class SupplierServiceImpl implements SupplierService {
 
     @Override
     public List<SupplierDTO> getSupplierListByIds(List<String> supplierIds) {
+        log.info("SupplierServiceImpl.getSupplierListByIds(), 入参supplierIds={} ", JSON.toJSONString(supplierIds));
+
         List<Supplier> supplierList = supplierManager.getSupplierListByIds(supplierIds);
-        if (CollectionUtils.isEmpty(supplierList)){
-            return new ArrayList<>();
-        }
+
         List<SupplierDTO> supplierDTOList = new ArrayList<>();
-        for (Supplier supplier:supplierList){
-            SupplierDTO supplierDTO = new SupplierDTO();
-            BeanUtils.copyProperties(supplier, supplierDTO);
-            supplierDTOList.add(supplierDTO);
+        if (!CollectionUtils.isEmpty(supplierList)) {
+            for (Supplier supplier : supplierList) {
+                SupplierDTO supplierDTO = new SupplierDTO();
+                BeanUtils.copyProperties(supplier, supplierDTO);
+                supplierDTOList.add(supplierDTO);
+            }
         }
+        log.info("SupplierServiceImpl.getSupplierListByIds(), output:  supplierDTOList={}", JSON.toJSONString(supplierDTOList));
         return supplierDTOList;
     }
 
     @Override
-    public ResultVO<SupplierDTO> getSupplier(SupplierGetReq req){
+    public ResultVO<SupplierDTO> getSupplier(SupplierGetReq req) {
         log.info("SupplierServiceImpl.getSupplier(), 入参SupplierGetReq={} ", req);
         SupplierDTO supplierDTO = new SupplierDTO();
         Supplier supplier = supplierManager.getSupplier(req);
-        if(supplier == null){
+        if (supplier == null) {
             supplierDTO = null;
         } else {
             BeanUtils.copyProperties(supplier, supplierDTO);
@@ -73,11 +72,11 @@ public class SupplierServiceImpl implements SupplierService {
 
 
     @Override
-    public ResultVO<List<SupplierDTO>> listSupplier(SupplierListReq supplierListReq){
+    public ResultVO<List<SupplierDTO>> listSupplier(SupplierListReq supplierListReq) {
         log.info("SupplierServiceImpl.listSupplier(), 入参supplierListReq={} ", supplierListReq);
         List<Supplier> supplierList = supplierManager.listSupplier(supplierListReq);
         List<SupplierDTO> supplierDTOList = new ArrayList<>();
-        for (Supplier supplier:supplierList){
+        for (Supplier supplier : supplierList) {
             SupplierDTO supplierDTO = new SupplierDTO();
             BeanUtils.copyProperties(supplier, supplierDTO);
             supplierDTOList.add(supplierDTO);

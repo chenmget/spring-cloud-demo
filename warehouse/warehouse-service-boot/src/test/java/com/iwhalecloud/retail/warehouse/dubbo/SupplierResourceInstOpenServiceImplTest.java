@@ -46,7 +46,7 @@ public class SupplierResourceInstOpenServiceImplTest {
     @Test
     public void delResourceInst() {
         AdminResourceInstDelReq req = new AdminResourceInstDelReq();
-        req.setMktResInstIds(Lists.newArrayList("20190314180401","20190314180401"));
+        req.setMktResInstIdList(Lists.newArrayList("20190314180401","20190314180401"));
         req.setCheckStatusCd(Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
                 ResourceConst.STATUSCD.AUDITING.getCode(),
                 ResourceConst.STATUSCD.ALLOCATIONED.getCode(),

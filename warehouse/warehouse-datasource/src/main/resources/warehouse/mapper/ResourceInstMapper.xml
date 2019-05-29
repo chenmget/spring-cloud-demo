@@ -154,8 +154,8 @@
         update MKT_RES_INST t
         set t.STATUS_CD = #{statusCd},t.UPDATE_DATE = #{updateDate},t.STATUS_DATE = #{statusDate},t.UPDATE_STAFF = #{updateStaff}
         where MKT_RES_INST_ID in
-        <if test="null!=mktResInstIds and mktResInstIds.size>0">
-            <foreach collection="mktResInstIds" index="index" item="item" open="(" separator="," close=")">
+        <if test="null!=mktResInstIdList and mktResInstIdList.size>0">
+            <foreach collection="mktResInstIdList" index="index" item="item" open="(" separator="," close=")">
                 #{item}
             </foreach>
         </if>

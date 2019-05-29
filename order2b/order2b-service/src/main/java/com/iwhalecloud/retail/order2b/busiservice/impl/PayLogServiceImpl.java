@@ -197,7 +197,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         saveLogModel.setOrderId(req.getOrderId());
         saveLogModel.setOrderAmount(String.valueOf(orderAmout.longValue()));
         saveLogModel.setPayStatus(req.getPayStatus());
-        saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1004);
+        saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1006);
         saveLogModel.setPayData(req.getPayData());
         saveLogModel.setPayDataMd(req.getPayDataMd());
         saveLogModel.setRecBankId(req.getRecBankId());

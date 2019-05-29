@@ -476,7 +476,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         qryMktInstInfoByConditionReq.setInstoreEndTime(req.getCreateTimeEnd());
         String mktResId = CollectionUtils.isEmpty(req.getMktResIds()) ? null : req.getMktResIds().get(0);
         qryMktInstInfoByConditionReq.setMktResId(mktResId);
-        qryMktInstInfoByConditionReq.setMktResName(req.getUnitName());
+        qryMktInstInfoByConditionReq.setMktResName(req.getProductName());
         qryMktInstInfoByConditionReq.setMktResNbr(req.getSn());
         String mktResStoreId = CollectionUtils.isEmpty(req.getMktResStoreIds()) ? null : req.getMktResStoreIds().get(0);
         qryMktInstInfoByConditionReq.setStoreId(mktResStoreId);

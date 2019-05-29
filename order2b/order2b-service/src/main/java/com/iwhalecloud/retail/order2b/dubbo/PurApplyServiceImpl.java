@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,9 +19,13 @@ import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.transaction.annotation.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+
 
 @Service
 @Slf4j
@@ -61,16 +66,38 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Override
 	@Transactional
-	public ResultVO tcProcureApply(ProcureApplyReq req) {
+	public ResultVO tcProcureApply(ProcureApplyReq req,Integer priceInStoreMax) {
+
+
+
+
+		//如果采购价大于政企价格 要省公司审核
+		int count = purApplyManager.comparePrice(String.valueOf(priceInStoreMax));
+		log.info("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
+		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
+		if(count>0) {
+			req.setStatusCd("21");
+		}
 		purApplyManager.tcProcureApply(req);
 //		String isSave = req.getIsSave();
 		//提交时发起流程审核
 		//启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
+
+		//如果采购价大于政企价格 要省公司审核
+		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+		Map map=new HashMap();
+        if(count>0) {
+            map.put("CGJ","0");//
+        }else{
+			map.put("CGJ","1");
+		}
+		processStartDTO.setParamsValue(JSON.toJSONString(map));
+
 		processStartDTO.setTitle("采购申请单审核流程");
 		processStartDTO.setFormId(req.getApplyId());
-		processStartDTO.setProcessId(PurApplyConsts.PUR_APPLY_AUDIT_PROCESS_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3020.getTaskSubType());
+		processStartDTO.setProcessId(PurApplyConsts.PUR_APPLY_AUDIT_SGS_PROCESS_ID);
+		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040.getTaskSubType());
 		processStartDTO.setApplyUserId(req.getCreateStaff());
 		//根据用户id查询名称
 		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());

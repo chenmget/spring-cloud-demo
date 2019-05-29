@@ -85,6 +85,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         }
         req.setProductIdList(productIdList);
         req.setMktResInstNbrList(mktResInstNbrList);
+        //通过采购申请单查询采购申请单项
         List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
 
         //新增采购申请单项明细

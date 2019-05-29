@@ -149,40 +149,13 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     }
     
     @Override
-    public ResultVO openToBookingPay(OffLinePayReq req) {
-    	ResultVO resultVO = new ResultVO();
-        log.info("BestPayEnterprisePaymentOpenServiceImpl.authAppPay req={}", JSON.toJSONString(req));
-            ToPayResp tpr = new ToPayResp();
-            tpr.setOrderId(req.getOrderId());
-            
-            Double orderAmout = (Double.parseDouble(req.getOrderAmount()));
-            SaveLogModel saveLogModel = new SaveLogModel();
-            saveLogModel.setPayId(IdWorker.getIdStr());
-            saveLogModel.setOrderId(req.getOrderId());
-            saveLogModel.setOrderAmount(String.valueOf(orderAmout.longValue()));
-            saveLogModel.setPayStatus(req.getPayStatus());
-            saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1006);//翼支付预授权支付
-            saveLogModel.setPayData(req.getPayData());
-            saveLogModel.setPayDataMd(req.getPayDataMd());
-            saveLogModel.setRecBankId(req.getRecBankId());
-            saveLogModel.setRecAccount(req.getRecAccount());
-            saveLogModel.setOperationType(req.getOperationType());
-            saveLogModel.setRecAccountName(req.getRecAccountName());
-            saveLog(saveLogModel);
-            resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
-            resultVO.setResultMsg("支付成功");
-            resultVO.setResultData(tpr);
-            return resultVO;
-    }
-    
-    @Override
     public void UpdateOrdOrderStatus(UpdateOrdOrderReq req){
     	this.payOperationLogManager.UpdateOrdOrderStatus(req);
     }
     
  // TODO:1、预授权支付 谢杞
     @Override
-    public ResultVO authAppPay(OffLinePayReq req) {
+    public ResultVO openToBookingPay(OffLinePayReq req) {
         ResultVO resultVO = new ResultVO();
         log.info("BestPayEnterprisePaymentOpenServiceImpl.authAppPay req={}", JSON.toJSONString(req));
         Map<String, Object> resultMap = payAuthorizationService.authorizationApplication(req.getOrderId(), req.getOperationType());
@@ -205,7 +178,6 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         saveLogModel.setOperationType(req.getOperationType());
         saveLogModel.setRecAccountName(req.getRecAccountName());
         saveLog(saveLogModel);
-
         resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         resultVO.setResultMsg("支付成功");
         return resultVO;

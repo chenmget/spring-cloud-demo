@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.TagsConst;
 import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
@@ -74,6 +75,51 @@ public class MerchantController {
     @RequestMapping(value = "/page", method = RequestMethod.POST)
     public ResultVO<Page<MerchantPageResp>> pageMerchant(@RequestBody MerchantPageReq req) {
         log.info("MerchantController.pageMerchant() input: MerchantPageReq={}", JSON.toJSONString(req));
+        ResultVO<Page<MerchantPageResp>> pageResultVO = merchantService.pageMerchant(req);
+        // 追加用户登录帐号
+        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
+            List<MerchantPageResp> merchantDTOS = pageResultVO.getResultData().getRecords();
+
+            if (!CollectionUtils.isEmpty(merchantDTOS)) {
+                merchantDTOS.forEach(merchantDTO -> {
+                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+                });
+            }
+        }
+        return pageResultVO;
+    }
+
+    /**
+     * 获取商家分页列表
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "获取商家分页列表接口", notes = "前置条件：只有政企供货标签的供应商可以做政企供货，可以根据商家名称、编码、类型条件进行筛选查询")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/pageWithRule", method = RequestMethod.POST)
+    public ResultVO<Page<MerchantPageResp>> pageMerchantWithRule(@RequestBody MerchantPageReq req) {
+        MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
+        merchantTagRelListReq.setMerchantId(req.getMerchantId());
+        ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(merchantTagRelListReq);
+        log.info("MerchantController.pageMerchantWithRule() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(merchantTagRelListReq), JSON.toJSONString(listResultVO));
+        if (null == listResultVO || !listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
+            return ResultVO.error("只有政企供货标签的供应商可以做政企供货");
+        }
+        MerchantTagRelDTO merchantTagRelRule = null;
+        for (MerchantTagRelDTO merchantTagRelDTO : listResultVO.getResultData()) {
+            if (TagsConst.GOVERNMENT_ENTERPRISE_STORES.equals(merchantTagRelDTO.getTagId())) {
+                merchantTagRelRule = merchantTagRelDTO;
+                break;
+            }
+        }
+        if (null == merchantTagRelRule) {
+            return ResultVO.error("只有政企供货标签的供应商可以做政企供货");
+        }
+        log.info("MerchantController.pageMerchantWithRule() input: MerchantPageReq={}", JSON.toJSONString(req));
         ResultVO<Page<MerchantPageResp>> pageResultVO = merchantService.pageMerchant(req);
         // 追加用户登录帐号
         if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
@@ -500,6 +546,40 @@ public class MerchantController {
         MerchantTagRelListReq req = new MerchantTagRelListReq();
         req.setMerchantId(merchantId);
         return merchantTagRelService.listMerchantTagRel(req);
+    }
+
+
+    /**
+     * 获取商家标签列表
+     *
+     * @param merchantId
+     * @return
+     */
+    @ApiOperation(value = "获取商家标签列表接口", notes = "获取商家是否含有政企供应商标签列表接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "merchantId", value = "商家ID", paramType = "query", required = true, dataType = "String"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/governmentEnterpriseSuppliers", method = RequestMethod.GET)
+    public ResultVO<Boolean> governmentEnterpriseSuppliers(@RequestParam(value = "merchantId") String merchantId) {
+        MerchantTagRelListReq req = new MerchantTagRelListReq();
+        req.setMerchantId(merchantId);
+        ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(req);
+        log.info("MerchantController.governmentEnterpriseSuppliers() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(req), JSON.toJSONString(listResultVO));
+        if (null == listResultVO || !listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
+            return ResultVO.success(false);
+        }
+        MerchantTagRelDTO merchantTagRelRule = null;
+        for (MerchantTagRelDTO merchantTagRelDTO : listResultVO.getResultData()) {
+            if (TagsConst.GOVERNMENT_ENTERPRISE_SUPPLIERS.equals(merchantTagRelDTO.getTagId())) {
+                merchantTagRelRule = merchantTagRelDTO;
+                return ResultVO.success(true);
+            }
+        }
+        return ResultVO.success(false);
     }
 
     /**

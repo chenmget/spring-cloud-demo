@@ -20,6 +20,7 @@ import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import com.iwhalecloud.retail.workflow.dto.req.*;
+import com.iwhalecloud.retail.workflow.dto.resp.DealTaskDetailGetResp;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskDetailGetResp;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskPageResp;
 import com.iwhalecloud.retail.workflow.dto.resp.TaskPageResp;
@@ -166,7 +167,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
 
 
         log.info("7、根据路由信息的下一环节ID查询环节权限表（wf_node_rights）,获取允许处理当前环节的用户列表");
-        List<HandlerUser> handlerUserList = getHandlerUsers(task, nextNodeId, processStartDTO.getNextHandlerUser(), ruleDefs);
+        List<HandlerUser> handlerUserList = getHandlerUsers(task, nextRoute.getNextNodeId(), processStartDTO.getNextHandlerUser(), ruleDefs);
 
         log.info("8、添加下个环节处理");
         addNextTaskItem(nextRoute, task, handlerUserList);
@@ -449,7 +450,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
 
 
         log.info("6、根据路由信息的下一环节ID查询环节权限表（wf_node_rights）,获取允许处理当前环节的用户列表");
-        List<HandlerUser> handlerUserList = getHandlerUsers(task, noteNextId, routeNextDTO.getNextHandlerUser(), checkedRule);
+        List<HandlerUser> handlerUserList = getHandlerUsers(task, nextRoute.getNextNodeId(), routeNextDTO.getNextHandlerUser(), checkedRule);
         log.info("7、添加下个环节处理");
         addNextTaskItem(nextRoute, task, handlerUserList);
         return ResultVO.success();
@@ -472,23 +473,48 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
 
     /**
      * 根据task_item_id 查询附件
-     *
      */
-    public void selectAppendix( List<HandleTaskDetailGetResp.TaskItemInfo> taskItems) {
+    public void selectAppendix1(List<HandleTaskDetailGetResp.TaskItemInfo> taskItems) {
 
-        List<String> taskIds=new ArrayList<>(taskItems.size());
-        for (HandleTaskDetailGetResp.TaskItemInfo taskItem:taskItems){
-            taskIds.add(taskItem.getTaskItemId());
+        String taskIds = "";
+        for (HandleTaskDetailGetResp.TaskItemInfo taskItem : taskItems) {
+            taskIds = taskIds.concat(taskItem.getTaskItemId()).concat(",");
         }
-        String[] strings=taskIds.toArray(new String[taskIds.size()]);
-        List<CommonFileDTO> resultVOData=commonFileService.getCommonFileByIds(strings).getResultData();
-        if(CollectionUtils.isEmpty(resultVOData)){
+        CommonFileDTO fileDTO = new CommonFileDTO();
+        fileDTO.setObjId(taskIds);
+        List<CommonFileDTO> resultVOData = commonFileService.listCommonFile(fileDTO).getResultData();
+        if (CollectionUtils.isEmpty(resultVOData)) {
             return;
         }
-        for (HandleTaskDetailGetResp.TaskItemInfo taskItem:taskItems){
+        for (HandleTaskDetailGetResp.TaskItemInfo taskItem : taskItems) {
 
-            for (CommonFileDTO dto:resultVOData){
-                if(taskItem.getTaskItemId().equals(dto.getObjId())){
+            for (CommonFileDTO dto : resultVOData) {
+                if (taskItem.getTaskItemId().equals(dto.getObjId())) {
+                    taskItem.setAppendixUrl(dto.getFileUrl());
+                    break;
+                }
+            }
+        }
+    }
+    /**
+     * 根据task_item_id 查询附件
+     */
+    public void selectAppendix2(List<DealTaskDetailGetResp.TaskItemInfo> taskItems) {
+
+        String taskIds = "";
+        for (DealTaskDetailGetResp.TaskItemInfo taskItem : taskItems) {
+            taskIds = taskIds.concat(taskItem.getTaskItemId()).concat(",");
+        }
+        CommonFileDTO fileDTO = new CommonFileDTO();
+        fileDTO.setObjId(taskIds);
+        List<CommonFileDTO> resultVOData = commonFileService.listCommonFile(fileDTO).getResultData();
+        if (CollectionUtils.isEmpty(resultVOData)) {
+            return;
+        }
+        for (DealTaskDetailGetResp.TaskItemInfo taskItem : taskItems) {
+
+            for (CommonFileDTO dto : resultVOData) {
+                if (taskItem.getTaskItemId().equals(dto.getObjId())) {
                     taskItem.setAppendixUrl(dto.getFileUrl());
                     break;
                 }

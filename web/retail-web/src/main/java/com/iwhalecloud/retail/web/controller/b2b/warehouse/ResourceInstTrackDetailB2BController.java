@@ -2,7 +2,9 @@ package com.iwhalecloud.retail.web.controller.b2b.warehouse;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackDetailGetReq;
 import com.iwhalecloud.retail.warehouse.service.ResouceInstTrackDetailService;
+import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
@@ -25,7 +27,12 @@ public class ResourceInstTrackDetailB2BController {
     })
     @GetMapping(value = "getResourceInstTrackDetailByNbr")
     public ResultVO getResourceInstTrackDetailByNbr(@RequestParam(value = "nbr", required = true) String nbr) {
-        return resouceInstTrackDetailService.getResourceInstTrackDetailByNbr(nbr);
+        ResourceInstsTrackDetailGetReq req = new ResourceInstsTrackDetailGetReq();
+        if (UserContext.isUserLogin() && !UserContext.isAdminType()) {
+            req.setTargetMerchantId(UserContext.getMerchantId());
+        }
+        req.setMktResInstNbr(nbr);
+        return resouceInstTrackDetailService.getResourceInstTrackDetailByNbr(req);
     }
 
 

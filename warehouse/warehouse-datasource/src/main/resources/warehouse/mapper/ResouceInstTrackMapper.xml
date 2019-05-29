@@ -63,9 +63,6 @@
         <if test="null!=typeId and ''!=typeId">
             and t.type_id = #{typeId}
         </if>
-        <if test="null!=merchantType and ''!=merchantType">
-            and t.merchant_type = #{merchantType}
-        </if>
         <if test="null!=mktResStoreId and ''!=mktResStoreId">
             and t.mkt_res_store_id = #{mktResStoreId}
         </if>

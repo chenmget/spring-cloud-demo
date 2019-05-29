@@ -10,14 +10,14 @@ public class PayConsts {
     public final static String PLATFORM_TYPE_HNSQD = "hnsqd";
 
     /**
-     * 记录支付类型：1001 线下支付，1002 扫码支付，1003 POS支付，1004 收银台支付，1005 云货架2B线下支付
+     * 记录支付类型：1001 线下支付，1002 扫码支付，1003 POS支付，1004 收银台支付，1005 云货架2B线下支付,1006 翼支付预授权支付
      */
     public final static String REQUEST_TYPE_1001 = "1001";
     public final static String REQUEST_TYPE_1002 = "1002";
     public final static String REQUEST_TYPE_1003 = "1003";
     public final static String REQUEST_TYPE_1004 = "1004";
     public final static String REQUEST_TYPE_1005 = "1005";
-
+    public final static String REQUEST_TYPE_1006 = "1006";
     /**
      * 用于区分支付对接平台：1001 翼支付，1002 巨龙支付，1003 翼支付企业版
      */
@@ -26,12 +26,13 @@ public class PayConsts {
     public final static String PAY_PLATFORM_ID_1003 = "1003";
 
     /**
-     * 记录支付接口类型：1001 聚合支付码GET方式，1002 聚合支付码POST方式，1003 收银台支付（专用于云货架2B支付），1004 线下支付
+     * 记录支付接口类型：1001 聚合支付码GET方式，1002 聚合支付码POST方式，1003 收银台支付（专用于云货架2B支付），1004 线下支付,1006 翼支付
      */
     public final static String PAY_TYPE_1001 = "1001";
     public final static String PAY_TYPE_1002 = "1002";
     public final static String PAY_TYPE_1003 = "1003";
     public final static String PAY_TYPE_1004 = "1004";
+    public final static String PAY_TYPE_1006 = "1006";
 
     /**
      * 用于区分付费/退费：1001 收费，1002 退费，1003 预付费

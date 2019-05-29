@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.order2b.dto.response.ToPayResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.OffLinePayReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.OrderPayInfoReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.pay.UpdateOrdOrderReq;
 import com.iwhalecloud.retail.order2b.model.SaveLogModel;
 
 public interface BPEPPayLogService {
@@ -38,6 +39,20 @@ public interface BPEPPayLogService {
      * @return
      */
     public int offLinePay(OffLinePayReq req);
+    
+    /**
+     * 翼支付预授权支付更新订单状态LWS
+     * @param req
+     * @return
+     */
+    public void UpdateOrdOrderStatus(UpdateOrdOrderReq req);
+    
+    /**
+     * 翼支付预授权支付
+     * @param req
+     * @return
+     */
+    public ResultVO openToBookingPay(OffLinePayReq req);
 
     /**
      * 校验通知支付结果
@@ -59,12 +74,5 @@ public interface BPEPPayLogService {
      * @return
      */
     public OrderPayInfoResp qryOrderPayInfo(OrderPayInfoReq req);
-
-    /**
-     * 翼支付预授权支付
-     * @param req
-     * @return
-     */
-    public ResultVO authAppPay(OffLinePayReq req);
 
 }

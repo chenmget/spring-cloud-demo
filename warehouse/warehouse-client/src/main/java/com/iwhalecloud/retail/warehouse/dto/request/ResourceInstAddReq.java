@@ -253,4 +253,10 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "记录CT码")
 	private String singlectCode;
+
+	/**
+	 * 下单时间
+	 */
+	@ApiModelProperty(value = "下单时间")
+	private java.util.Date createTime;
 }

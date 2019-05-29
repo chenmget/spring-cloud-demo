@@ -18,6 +18,7 @@ import com.iwhalecloud.retail.order2b.entity.Promotion;
 import com.iwhalecloud.retail.order2b.model.BuilderOrderModel;
 import com.iwhalecloud.retail.order2b.model.CreateOrderLogModel;
 import com.iwhalecloud.retail.order2b.util.CurrencyUtil;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.PromotionWithMarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActHistoryPurChaseAddReq;
 import com.iwhalecloud.retail.promo.dto.req.ActHistoryPurChaseUpReq;
@@ -34,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -270,5 +272,27 @@ public class ActivityManagerReference {
         log.info("gs_10010_rollActivityPromotion,req{},resp{}", JSON.toJSONString(req), JSON.toJSONString(resultVO));
         resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         return resultVO;
+    }
+
+    /**
+     * 订单关联的前置补贴活动是否超过要求的发货截至时间
+     */
+    public MarketingActivityDTO validActivityEndTimeByProductId(List<String> productIdList,String activityType) {
+        for (String productId : productIdList) {
+            ResultVO<List<MarketingActivityDTO>> resultVO = marketingActivityService.queryActivityByProductId(productId, activityType);
+            if (!resultVO.isSuccess() || CollectionUtils.isEmpty(resultVO.getResultData())) {
+                continue;
+            }
+            List<MarketingActivityDTO> list = resultVO.getResultData();
+            for (MarketingActivityDTO dto : list) {
+                Date endTime = dto.getDeliverEndTime();
+                Date now = new Date();
+                // 前置补贴活动要求的发货截至时间小于当前时间
+                if (endTime.before(now)) {
+                    return dto;
+                }
+            }
+        }
+        return null;
     }
 }

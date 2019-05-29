@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.order2b.consts.order.TypeStatus;
 import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.PayOrderRequest;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.OffLinePayReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.pay.UpdateOrdOrderReq;
 import com.iwhalecloud.retail.order2b.entity.AdvanceOrder;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.manager.AdvanceOrderManager;
@@ -47,7 +48,7 @@ public class PayServiceImpl implements PayService {
     @Autowired
     private BPEPPayLogService bpepPayLogService;
 
-
+    //线下
     @Override
     public ResultVO pay(PayOrderRequest request) {
         ResultVO resultVO = new ResultVO();
@@ -99,21 +100,22 @@ public class PayServiceImpl implements PayService {
             order.setPayMoney(0.0);
         }
         switch (orderPayType) {
-            case PAY_TYPE_1: //翼支付
-                // TODO 1、预授权支付 谢杞
+            case PAY_TYPE_1: //翼支付（翼支付的预授权支付 pay_type=1,线上支付）
                 OffLinePayReq req = new OffLinePayReq();
                 req.setOrderId(order.getOrderId());
                 req.setOrderAmount(String.valueOf(order.getOrderAmount()));
                 req.setOperationType(request.getFlowType());
-                resultVO = bpepPayLogService.authAppPay(req);
-                if(!resultVO.isSuccess()){
-                    return resultVO;
-                }
-                break;
-
-            case PAY_TYPE_5: //翼支付预授权
-
-                break;
+                resultVO = bpepPayLogService.openToBookingPay(req);
+                //更新订单状态
+//                UpdateOrdOrderReq updateOrdOrderReq = new UpdateOrdOrderReq();
+//                updateOrdOrderReq.setOrderId(order.getOrderId());
+//                updateOrdOrderReq.setPayTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
+//                updateOrdOrderReq.setPayType("1");
+//                updateOrdOrderReq.setPaymentName("线上支付");
+//                updateOrdOrderReq.setPaymentType("1");
+//                updateOrdOrderReq.setPayStatus("1");
+//                updateOrdOrderReq.setStatus("4");
+//                bpepPayLogService.UpdateOrdOrderStatus(updateOrdOrderReq);
             case PAY_TYPE_4: //线下支付
                 OffLinePayReq offLinePayReq = new OffLinePayReq();
                 offLinePayReq.setOrderId(order.getOrderId());

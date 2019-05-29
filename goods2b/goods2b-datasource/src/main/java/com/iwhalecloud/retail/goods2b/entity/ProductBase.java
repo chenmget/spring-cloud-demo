@@ -333,6 +333,12 @@ public class ProductBase implements Serializable {
 		
 		/** 是否需要CT码. */
 		isCtCode("isCtCode","IS_CT_CODE"),
+
+		/** 是否需要抽检. */
+		isInspection("isInspection","IS_INSPECTION"),
+
+		/** 是否固网产品. */
+		isFixedLine("isFixedLine","IS_FIXED_LINE"),
 		
 		/** 产品编码. */
 		productCode("productCode","PRODUCT_CODE"),

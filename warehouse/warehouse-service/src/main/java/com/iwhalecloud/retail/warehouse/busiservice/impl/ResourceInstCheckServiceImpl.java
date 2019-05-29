@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -88,13 +89,14 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         List<String> validNbrList = req.getMktResInstNbrs();
         ResourceInstsTrackGetReq resourceInstsTrackGetReq = new ResourceInstsTrackGetReq();
         CopyOnWriteArrayList<String> mktResInstNbrList = new CopyOnWriteArrayList<String>(validNbrList);
-        resourceInstsTrackGetReq.setSourceType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
         resourceInstsTrackGetReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         resourceInstsTrackGetReq.setTypeId(req.getTypeId());
         ResultVO<List<ResouceInstTrackDTO>> trackListVO = resouceInstTrackService.listResourceInstsTrack(resourceInstsTrackGetReq, mktResInstNbrList);
         log.info("ResourceInstCheckServiceImpl.validMerchantStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsTrackGetReq), JSON.toJSONString(trackListVO));
         if (trackListVO.isSuccess() && null != trackListVO.getResultData()) {
             List<ResouceInstTrackDTO> trackList = trackListVO.getResultData();
+            // 串码来源是空的为厂商串码
+            trackList = trackList.stream().filter(t -> StringUtils.isBlank(t.getSourceType())).collect(Collectors.toList());
             List<String> nbrList = trackList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
             return nbrList;
         }

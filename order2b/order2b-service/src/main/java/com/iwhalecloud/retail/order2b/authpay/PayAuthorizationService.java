@@ -156,10 +156,9 @@ public class PayAuthorizationService {
         Order order = new Order();
         order.setOrderId(orderId);
         Order resOrder = orderMapper.getOrderById(order);
-        if(!"1".equals(resOrder.getPayType())){//判断是否是翼支付的订单
-            return true;
-        }
-
+//        if(!"1".equals(resOrder.getPayType())){//判断是否是翼支付的订单。现在在外层做判断，如果不是翼支付的支付方式，不进入此方法
+//            return true;
+//        }
         if("1".equals(resOrder.getOrderCat())){ //预售
             AdvanceOrder advanceOrder = new AdvanceOrder();
             advanceOrder.setOrderId(orderId);
@@ -222,17 +221,13 @@ public class PayAuthorizationService {
         preAuthorizationApplyRequest.setReqIp(ipStr);
         preAuthorizationApplyRequest.setTrsSummary("summary");
         preAuthorizationApplyRequest.setTrsMemo("memo");
-        preAuthorizationApplyRequest.setExternalId("EXT_ORDER_ID_" + orderId); // 订单号
+        preAuthorizationApplyRequest.setExternalId("EXT_ORDER_ID29_" + orderId); // 订单号
         preAuthorizationApplyRequest.setCurrencyCode("RMB");
         preAuthorizationApplyRequest.setTransactionAmount(payMoney); // 交易金额
         preAuthorizationApplyRequest.setPayeeLoginCode(result.get("account").toString()); //收款方登录号
         preAuthorizationApplyRequest.setOriginalTransSeq(originalTransSeq);
-
-        boolean b = false;
-
         try {
             resultInvoke = bestpayService.invoke(callUrl, preAuthorizationApplyRequest, platformCode, certificate.getIv(), zopSecret, zopUrl);
-            b = (boolean)resultInvoke.get("flag");
         } catch (Exception e) {
             log.error(e.getMessage());
         }

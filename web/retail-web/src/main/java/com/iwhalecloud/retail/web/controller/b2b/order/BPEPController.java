@@ -23,7 +23,7 @@ public class BPEPController {
     private BestPayEnterprisePaymentService bestPayEnterprisePaymentService;
 
     /**
-     *  去支付
+     *  线上支付，去支付
      */
     @RequestMapping(value="/toPay",method = RequestMethod.POST)
     public ResultVO toPay(@RequestBody ToPayReq req){

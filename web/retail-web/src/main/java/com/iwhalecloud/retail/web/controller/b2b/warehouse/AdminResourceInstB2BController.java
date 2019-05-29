@@ -112,7 +112,7 @@ public class AdminResourceInstB2BController {
         String userId = UserContext.getUserId();
         AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         req.setUpdateStaff(userId);
-        req.setMktResInstIds(delReq.getMktResInstIdList());
+        req.setMktResInstIdList(delReq.getMktResInstIdList());
         req.setDestStoreId(delReq.getMktResStoreId());
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
@@ -148,7 +148,7 @@ public class AdminResourceInstB2BController {
         String userId = UserContext.getUserId();
         AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         req.setUpdateStaff(userId);
-        req.setMktResInstIds(idList);
+        req.setMktResInstIdList(idList);
         req.setStatusCd(statusCd);
         req.setEventType(ResourceConst.EVENTTYPE.RECYCLE.getCode());
         List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());

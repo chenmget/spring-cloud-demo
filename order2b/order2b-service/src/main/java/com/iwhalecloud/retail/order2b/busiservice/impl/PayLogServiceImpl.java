@@ -14,6 +14,7 @@ import com.iwhalecloud.retail.order2b.dto.response.ToPayResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.OffLinePayReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.OrderPayInfoReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.pay.UpdateOrdOrderReq;
 import com.iwhalecloud.retail.order2b.manager.PayLogManager;
 import com.iwhalecloud.retail.order2b.manager.PayOperationLogManager;
 import com.iwhalecloud.retail.order2b.model.BestpayConfigModel;
@@ -146,7 +147,42 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         saveLogModel.setRecAccountName(req.getRecAccountName());
         return saveLog(saveLogModel);
     }
-
+    
+    @Override
+    public void UpdateOrdOrderStatus(UpdateOrdOrderReq req){
+    	this.payOperationLogManager.UpdateOrdOrderStatus(req);
+    }
+    
+ // TODO:1、预授权支付 谢杞
+    @Override
+    public ResultVO openToBookingPay(OffLinePayReq req) {
+        ResultVO resultVO = new ResultVO();
+        log.info("BestPayEnterprisePaymentOpenServiceImpl.authAppPay req={}", JSON.toJSONString(req));
+        Map<String, Object> resultMap = payAuthorizationService.authorizationApplication(req.getOrderId(), req.getOperationType());
+        if(!(Boolean) resultMap.get("flag")){
+            resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resultVO.setResultMsg((String)resultMap.get("msg"));
+            return resultVO;
+        }
+        Double orderAmout = (Double.parseDouble(req.getOrderAmount()));
+        SaveLogModel saveLogModel = new SaveLogModel();
+        saveLogModel.setPayId(IdWorker.getIdStr());
+        saveLogModel.setOrderId(req.getOrderId());
+        saveLogModel.setOrderAmount(String.valueOf(orderAmout.longValue()));
+        saveLogModel.setPayStatus(req.getPayStatus());
+        saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1006);
+        saveLogModel.setPayData(req.getPayData());
+        saveLogModel.setPayDataMd(req.getPayDataMd());
+        saveLogModel.setRecBankId(req.getRecBankId());
+        saveLogModel.setRecAccount(req.getRecAccount());
+        saveLogModel.setOperationType(req.getOperationType());
+        saveLogModel.setRecAccountName(req.getRecAccountName());
+        saveLog(saveLogModel);
+        resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+        resultVO.setResultMsg("支付成功");
+        return resultVO;
+    }
+    
     @Override
     public boolean checkNotifyData(AsynNotifyReq req) {
         try {
@@ -200,37 +236,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     @Autowired
     private PayAuthorizationService payAuthorizationService;
 
-    @Override
-    public ResultVO authAppPay(OffLinePayReq req) {
-        // TODO:1、预授权支付 谢杞
-        ResultVO resultVO = new ResultVO();
-        log.info("BestPayEnterprisePaymentOpenServiceImpl.authAppPay req={}", JSON.toJSONString(req));
-        Map<String, Object> resultMap = payAuthorizationService.authorizationApplication(req.getOrderId(), req.getOperationType());
-        if(!(Boolean) resultMap.get("flag")){
-            resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            resultVO.setResultMsg((String)resultMap.get("msg"));
-            return resultVO;
-        }
-
-        Double orderAmout = (Double.parseDouble(req.getOrderAmount()));
-        SaveLogModel saveLogModel = new SaveLogModel();
-        saveLogModel.setPayId(IdWorker.getIdStr());
-        saveLogModel.setOrderId(req.getOrderId());
-        saveLogModel.setOrderAmount(String.valueOf(orderAmout.longValue()));
-        saveLogModel.setPayStatus(req.getPayStatus());
-        saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1004);
-        saveLogModel.setPayData(req.getPayData());
-        saveLogModel.setPayDataMd(req.getPayDataMd());
-        saveLogModel.setRecBankId(req.getRecBankId());
-        saveLogModel.setRecAccount(req.getRecAccount());
-        saveLogModel.setOperationType(req.getOperationType());
-        saveLogModel.setRecAccountName(req.getRecAccountName());
-        saveLog(saveLogModel);
-
-        resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
-        resultVO.setResultMsg("支付成功");
-        return resultVO;
-    }
+    
 
     @Override
     public int saveLog(SaveLogModel saveLogModel) {
@@ -240,9 +246,9 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         payLogDTO.setOrderId(saveLogModel.getOrderId());
         payLogDTO.setChargeMoney(Long.parseLong(saveLogModel.getOrderAmount()));
         payLogDTO.setPlatformType(PayConsts.PLATFORM_TYPE_HNYHJ_B2B);
-        payLogDTO.setRequestType(PayConsts.REQUEST_TYPE_1004);
+        payLogDTO.setRequestType(PayConsts.REQUEST_TYPE_1006);
         payLogDTO.setPayPlatformId(PayConsts.PAY_PLATFORM_ID_1001);
-        payLogDTO.setPayType(PayConsts.PAY_TYPE_1004);
+        payLogDTO.setPayType(PayConsts.PAY_TYPE_1006);
         payLogDTO.setOperationType(saveLogModel.getOperationType());
         payLogDTO.setTerminalId(PayConsts.TERMINAL_TYPE_1003);
         payLogDTO.setPayStatus(saveLogModel.getPayStatus());
@@ -266,7 +272,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         payOperationLogDTO.setCreateDate(new Date());
         int j = this.payOperationLogManager.savaPayOperationLog(payOperationLogDTO);
         log.info("PayLogServiceImpl.saveLog payOperationLogManager.savaPayOperationLog req={}, resp={}", JSON.toJSONString(payOperationLogDTO), i);
-        return 0;
+        return j;
     }
 
     private String d2l(String d) {

@@ -8,8 +8,11 @@ import com.iwhalecloud.retail.order2b.busiservice.PayService;
 import com.iwhalecloud.retail.order2b.busiservice.UpdateOrderFlowService;
 import com.iwhalecloud.retail.order2b.consts.PayConsts;
 import com.iwhalecloud.retail.order2b.consts.order.ActionFlowType;
+import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
 import com.iwhalecloud.retail.order2b.consts.order.OrderPayType;
+import com.iwhalecloud.retail.order2b.consts.order.TypeStatus;
 import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
+import com.iwhalecloud.retail.order2b.dto.model.order.OrderZFlowDTO;
 import com.iwhalecloud.retail.order2b.dto.response.OffLinePayResp;
 import com.iwhalecloud.retail.order2b.dto.response.OrderPayInfoResp;
 import com.iwhalecloud.retail.order2b.dto.response.ToPayResp;
@@ -19,13 +22,18 @@ import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.OffLinePayReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.OrderPayInfoReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.ToPayReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.pay.UpdateOrdOrderReq;
 import com.iwhalecloud.retail.order2b.entity.AdvanceOrder;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.manager.AdvanceOrderManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
+import com.iwhalecloud.retail.order2b.manager.OrderZFlowManager;
+import com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel;
 import com.iwhalecloud.retail.order2b.model.SaveLogModel;
 import com.iwhalecloud.retail.order2b.reference.MemberInfoReference;
+import com.iwhalecloud.retail.order2b.reference.TaskManagerReference;
 import com.iwhalecloud.retail.order2b.service.BestPayEnterprisePaymentService;
+import com.iwhalecloud.retail.order2b.util.CurrencyUtil;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantAccountDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantAccountListReq;
@@ -37,6 +45,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -65,6 +74,12 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
     @Autowired
     private PayAuthorizationService payAuthorizationService;
 
+    @Autowired
+    private TaskManagerReference taskManagerReference;
+    
+    @Autowired
+    private OrderZFlowManager orderZFlowManager;
+    
     @Value("${pay.type}")
     private String payType;
 
@@ -81,7 +96,7 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
         }
 
         /**
-         * 校验订单状态
+         * 校验订单状态（线上）
          */
         UpdateOrderStatusRequest statusRequest = new UpdateOrderStatusRequest();
         BeanUtils.copyProperties(req, statusRequest);
@@ -126,8 +141,38 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
             if(StringUtils.isBlank(resultMap.get("account").toString())){
                 return ResultVO.error("商家翼支付账号没有配置。");
             }
-
+            //----lws
             Map<String, Object> resultCall = payAuthorizationService.authorizationApplication(req.getOrderId(), operationType);
+            
+            ResultVO resultVO = new ResultVO();
+            OffLinePayReq payReq = new OffLinePayReq();
+        	payReq.setOrderId(order.getOrderId());
+        	payReq.setOrderAmount(String.valueOf(order.getOrderAmount()));
+        	payReq.setOperationType(req.getOperationType());
+            resultVO = bpepPayLogService.openToBookingPay(payReq);
+            
+          //更新订单状态
+            UpdateOrdOrderReq updateOrdOrderReq = new UpdateOrdOrderReq();
+            updateOrdOrderReq.setOrderId(order.getOrderId());
+            updateOrdOrderReq.setPayTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
+            updateOrdOrderReq.setPayType("1");
+            updateOrdOrderReq.setPaymentName("线上支付");
+            updateOrdOrderReq.setPaymentType("1");
+            updateOrdOrderReq.setPayStatus("1");
+            updateOrdOrderReq.setStatus("4");
+            bpepPayLogService.UpdateOrdOrderStatus(updateOrdOrderReq);
+            
+            taskManagerReference.updateTask(order.getOrderId(), order.getUserId());
+            taskManagerReference.addTaskByHandleList("待发货",order.getOrderId(), order.getUserId(), order.getMerchantId());
+
+            //更新流程
+//            OrderZFlowDTO zFlowDTO = new OrderZFlowDTO();
+//            zFlowDTO.setOrderId(order.getOrderId());
+//            zFlowDTO.setHandlerId(order.getUserId());
+//            zFlowDTO.setFlowType(req.getOperationType());
+//            orderZFlowManager.updateFlowList(zFlowDTO);
+            
+            
             if((Boolean) resultCall.get("flag")){
                 ToPayResp tpr = new ToPayResp();
                 tpr.setOrderId(req.getOrderId());

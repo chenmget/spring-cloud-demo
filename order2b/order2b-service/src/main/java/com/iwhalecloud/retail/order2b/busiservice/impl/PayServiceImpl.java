@@ -106,6 +106,7 @@ public class PayServiceImpl implements PayService {
                 req.setOrderAmount(String.valueOf(order.getOrderAmount()));
                 req.setOperationType(request.getFlowType());
                 resultVO = bpepPayLogService.openToBookingPay(req);
+                break;
                 //更新订单状态
 //                UpdateOrdOrderReq updateOrdOrderReq = new UpdateOrdOrderReq();
 //                updateOrdOrderReq.setOrderId(order.getOrderId());

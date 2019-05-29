@@ -192,7 +192,7 @@ public class CgSearchApplyController extends BaseController {
 			}
 
 		}else{
-
+            Integer PriceInStoreMax=0;
 			List<AddProductReq> list = req.getAddProductReq();
 			for(int i=0;i<list.size();i++){
 				AddProductReq addProductReq = list.get(i);
@@ -207,8 +207,14 @@ public class CgSearchApplyController extends BaseController {
 				addProductReq.setStatusDate(statusDate);
 				//写表PUR_APPLY_ITEM(采购申请单项)
 				purApplyService.crPurApplyItem(addProductReq);
+				Integer tempPrice = Integer.valueOf(addProductReq.getPriceInStore());
+				if(tempPrice>PriceInStoreMax) {
+                    PriceInStoreMax = tempPrice;
+                }
+
 			}
-			purApplyService.tcProcureApply(req);
+
+			purApplyService.tcProcureApply(req,PriceInStoreMax);
 		}
 		
 		//表里面没记录的话

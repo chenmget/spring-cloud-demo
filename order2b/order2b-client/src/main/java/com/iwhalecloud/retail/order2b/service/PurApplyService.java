@@ -34,7 +34,7 @@ public interface PurApplyService {
 	//采购申请的添加产商品的写表
 	public void crPurApplyItem(AddProductReq req);
 	////采购申请单单号写表
-	public ResultVO tcProcureApply(ProcureApplyReq req);
+	public ResultVO tcProcureApply(ProcureApplyReq req, Integer priceInStoreMax);
 	//采购申请的附件的写表
 	public void crPurApplyFile(AddFileReq req);
 	//采购申请查询的删除操作

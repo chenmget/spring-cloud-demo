@@ -59,16 +59,17 @@ public class TaskServiceImplTest {
     @Test
     public void startProcess() {
         ProcessStartReq req = new ProcessStartReq();
-        req.setProcessId("20190521");
-        req.setTaskSubType("1130");
-        req.setFormId("2019".concat(System.currentTimeMillis()+""));
-        req.setTitle("流程匹配测试");
-//        req.setApplyUserId("1");
-//        req.setApplyUserName("admin");
-        req.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+        req.setProcessId("17");
+        req.setTaskSubType("3020");
+        req.setFormId("1652");
+        req.setTitle("采购申请单审核流程");
+
+        req.setApplyUserId("1");
+        req.setApplyUserName("admin");
+//        req.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
         Map map=new HashMap();
-        map.put("PP","huawei");
-        req.setParamsValue(JSON.toJSONString(map));
+//        map.put("PP","huawei");
+//        req.setParamsValue(JSON.toJSONString(map));
         ResultVO resultVO = taskService.startProcess(req);
         System.out.println(resultVO.isSuccess());
         Assert.assertEquals("0", resultVO.getResultCode());

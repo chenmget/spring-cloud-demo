@@ -96,7 +96,7 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
             resp.setResultCode(resultVO.getResultCode());
         }else{
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            resp.setResultMsg("出库失败");
+            resp.setResultMsg("出库失败, "+ resultVO.getResultMsg());
         }
 
         return resp;

@@ -57,6 +57,25 @@ public class ProductResp implements Serializable {
      */
     @ApiModelProperty(value = "提货价")
     private Double deliveryPrice;
+
+    /**
+     * 初始提货价
+     */
+    @ApiModelProperty(value = "初始提货价")
+    private Double initialPrice;
+
+    /**
+     * 活动中的商品价格，前置补贴活动保存产品的地包强制供货价
+     */
+    @ApiModelProperty(value = "活动中的商品价格，前置补贴活动产品的地包强制供货价")
+    private Long unifiedSupplierPrice;
+
+    /**
+     * 是否前置补贴
+     */
+    @ApiModelProperty(value = "是否前置补贴 1:是  0：否")
+    private Integer isSubsidy;
+
     /**
      * 上架数量
      */

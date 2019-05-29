@@ -66,19 +66,19 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Override
 	@Transactional
-	public ResultVO tcProcureApply(ProcureApplyReq req) {
+	public ResultVO tcProcureApply(ProcureApplyReq req,Integer priceInStoreMax) {
 
-		purApplyManager.tcProcureApply(req);
+
 
 
 		//如果采购价大于政企价格 要省公司审核
-		int count = purApplyManager.comparePrice(req.getApplyId());
+		int count = purApplyManager.comparePrice(String.valueOf(priceInStoreMax));
 		log.info("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 		if(count>0) {
 			req.setStatusCd("21");
 		}
-
+		purApplyManager.tcProcureApply(req);
 //		String isSave = req.getIsSave();
 		//提交时发起流程审核
 		//启动流程

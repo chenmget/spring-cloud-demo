@@ -265,11 +265,8 @@
   </select>
 
 	<select id="comparePrice" parameterType="String" resultType="Integer">
-		SELECT COUNT(a.APPLY_ID) FROM pur_apply a,PUR_APPLY_ITEM i,PROD_PRODUCT p
+		SELECT COUNT(PRODUCT_ID) from PROD_PRODUCT WHERE PRODUCT_ID=100006163 AND CORPORATION_PRICE&lt;#{priceInStoreMax}
 
-		WHERE a.APPLY_ID=i.APPLY_ID AND p.PRODUCT_ID=i.PRODUCT_ID
-		AND p.CORPORATION_PRICE &lt; i.PUR_PRICE
-			AND a.APPLY_ID=#{applyId}
 	</select>
   
   <select id="updatePurApply"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
@@ -464,7 +461,7 @@
  	 SELECT a.task_id AS taskId,
 	 	 b.task_item_id AS taskItemId
 	 	  FROM wf_task a,wf_task_item b 
-	 	  WHERE a.process_id = '17' 
+	 	  WHERE a.process_id = '528' 
 	 	  AND a.task_id = b.task_id 
 	 	  AND a.form_id=#{applyId}
   	</select>

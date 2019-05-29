@@ -168,48 +168,58 @@ public class PayAuthorizationService {
         Order order = new Order();
         order.setOrderId(orderId);
         Order resOrder = orderMapper.getOrderById(order);
+        String payMoney = resOrder.getOrderAmount().toString();
+        String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
+        String payTransId = resOrder.getPayTransId();
+        if(payTransId != null && !"".equals(payTransId)){
+            String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+            Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, payTransId, resPayMoney);
+            return (boolean)resultCall.get("flag");
+        }
+        
 //        if(!"1".equals(resOrder.getPayType())){//判断是否是翼支付的订单。现在在外层做判断，如果不是翼支付的支付方式，不进入此方法
 //            return true;
 //        }
-        if("1".equals(resOrder.getOrderCat())){ //预售
-            AdvanceOrder advanceOrder = new AdvanceOrder();
-            advanceOrder.setOrderId(orderId);
-            AdvanceOrder resAdvanceOrder = advanceOrderMapper.selectAdvanceOrderByOrderId(advanceOrder);
-
-            // 预售确认标识
-            boolean flag = true;
-
-            String advanceTransId = resAdvanceOrder.getAdvanceTransId();
-            if("1".equals(resAdvanceOrder.getAdvancePayStatus()) && advanceTransId != null && !"".equals(advanceTransId)){ // 已授权定金,确认／取消定金
-                String payAdvanceMoney = resAdvanceOrder.getAdvanceAmount().toString();
-                String payAdvMoney = payAdvanceMoney.substring(0, payAdvanceMoney.indexOf('.'));
-                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getAdvanceTransId(), payAdvMoney);
-                boolean advFlag = (boolean)resultCall.get("flag");
-                flag = advFlag & flag;
-            }
-
-            String restTransId = resAdvanceOrder.getRestTransId();
-            if("1".equals(resAdvanceOrder.getRestPayStatus()) && restTransId != null && !"".equals(restTransId)){   // 已授权尾款,确认／取消尾款
-                String payRestMoney = resAdvanceOrder.getRestPayMoney().toString();
-                String payResMoney = payRestMoney.substring(0, payRestMoney.indexOf('.'));
-                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getRestTransId(), payResMoney);
-                boolean resFlag = (boolean)resultCall.get("flag");
-                flag = resFlag & flag;
-            }
-            return flag;
-        }else { // 普通
-            String payMoney = resOrder.getOrderAmount().toString();
-            String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
-            String payTransId = resOrder.getPayTransId();
-            if(payTransId != null && !"".equals(payTransId)){
-                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, payTransId, resPayMoney);
-                return (boolean)resultCall.get("flag");
-            }
-        }
-
+        //以下逻辑感觉有问题，屏蔽掉lws
+//        if("1".equals(resOrder.getOrderCat())){ //预售
+//            AdvanceOrder advanceOrder = new AdvanceOrder();
+//            advanceOrder.setOrderId(orderId);
+//            AdvanceOrder resAdvanceOrder = advanceOrderMapper.selectAdvanceOrderByOrderId(advanceOrder);
+//
+//            // 预售确认标识
+//            boolean flag = true;
+//
+//            String advanceTransId = resAdvanceOrder.getAdvanceTransId();
+//            if("1".equals(resAdvanceOrder.getAdvancePayStatus()) && advanceTransId != null && !"".equals(advanceTransId)){ // 已授权定金,确认／取消定金
+//                String payAdvanceMoney = resAdvanceOrder.getAdvanceAmount().toString();
+//                String payAdvMoney = payAdvanceMoney.substring(0, payAdvanceMoney.indexOf('.'));
+//                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+//                Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getAdvanceTransId(), payAdvMoney);
+//                boolean advFlag = (boolean)resultCall.get("flag");
+//                flag = advFlag & flag;
+//            }
+//
+//            String restTransId = resAdvanceOrder.getRestTransId();
+//            if("1".equals(resAdvanceOrder.getRestPayStatus()) && restTransId != null && !"".equals(restTransId)){   // 已授权尾款,确认／取消尾款
+//                String payRestMoney = resAdvanceOrder.getRestPayMoney().toString();
+//                String payResMoney = payRestMoney.substring(0, payRestMoney.indexOf('.'));
+//                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+//                Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, resAdvanceOrder.getRestTransId(), payResMoney);
+//                boolean resFlag = (boolean)resultCall.get("flag");
+//                flag = resFlag & flag;
+//            }
+//            return flag;
+//        }else { // 普通
+//            String payMoney = resOrder.getOrderAmount().toString();
+//            String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
+//            String payTransId = resOrder.getPayTransId();
+//            if(payTransId != null && !"".equals(payTransId)){
+//                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+//                Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, payTransId, resPayMoney);
+//                return (boolean)resultCall.get("flag");
+//            }
+//        }
+//
         return false;
     }
 

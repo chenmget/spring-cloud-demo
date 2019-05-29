@@ -531,8 +531,8 @@ public class UserServiceImpl implements UserService {
                 SystemConst.USER_FOUNDER_1,
                 SystemConst.USER_FOUNDER_12,
                 SystemConst.USER_FOUNDER_24,
-                SystemConst.USER_FOUNDER_2
-
+                SystemConst.USER_FOUNDER_2,
+                SystemConst.USER_FOUNDER_9
         );
         return list.contains(userFounder);
     }

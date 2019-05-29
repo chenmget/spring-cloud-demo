@@ -167,7 +167,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
 
 
         log.info("7、根据路由信息的下一环节ID查询环节权限表（wf_node_rights）,获取允许处理当前环节的用户列表");
-        List<HandlerUser> handlerUserList = getHandlerUsers(task, nextNodeId, processStartDTO.getNextHandlerUser(), ruleDefs);
+        List<HandlerUser> handlerUserList = getHandlerUsers(task, nextRoute.getNextNodeId(), processStartDTO.getNextHandlerUser(), ruleDefs);
 
         log.info("8、添加下个环节处理");
         addNextTaskItem(nextRoute, task, handlerUserList);
@@ -450,7 +450,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
 
 
         log.info("6、根据路由信息的下一环节ID查询环节权限表（wf_node_rights）,获取允许处理当前环节的用户列表");
-        List<HandlerUser> handlerUserList = getHandlerUsers(task, noteNextId, routeNextDTO.getNextHandlerUser(), checkedRule);
+        List<HandlerUser> handlerUserList = getHandlerUsers(task, nextRoute.getNextNodeId(), routeNextDTO.getNextHandlerUser(), checkedRule);
         log.info("7、添加下个环节处理");
         addNextTaskItem(nextRoute, task, handlerUserList);
         return ResultVO.success();

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.web.controller.partner;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.TagsConst;
@@ -114,15 +115,22 @@ public class MerchantController {
         if (null == listResultVO || !listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
             return ResultVO.error("只有政企供货标签的供应商可以做政企供货");
         }
-        MerchantTagRelDTO merchantTagRelRule = null;
+        List<String> merchantIds = Lists.newArrayList();
         for (MerchantTagRelDTO merchantTagRelDTO : listResultVO.getResultData()) {
             if (TagsConst.GOVERNMENT_ENTERPRISE_STORES.equals(merchantTagRelDTO.getTagId())) {
-                merchantTagRelRule = merchantTagRelDTO;
-                break;
+                merchantIds.add(merchantTagRelDTO.getMerchantId());
+                continue;
             }
         }
-        if (null == merchantTagRelRule) {
-            return ResultVO.error("只有政企供货标签的供应商可以做政企供货");
+        if (CollectionUtils.isEmpty(merchantIds)) {
+            return ResultVO.error("没有政企供货标签的供应商可以做政企供货");
+        }
+        if (StringUtils.isNotEmpty(req.getMerchantId())) {
+            if (!merchantIds.contains(req.getMerchantId())) {
+                return ResultVO.error("没有政企供货标签的供应商可以做政企供货");
+            }
+        } else {
+            req.setMerchantIdList(merchantIds);
         }
         log.info("MerchantController.pageMerchantWithRule() input: MerchantPageReq={}", JSON.toJSONString(req));
         ResultVO<Page<MerchantPageResp>> pageResultVO = merchantService.pageMerchant(req);
@@ -481,7 +489,6 @@ public class MerchantController {
         }
     }
 
-
     /**
      * 保存商家标签
      *
@@ -553,11 +560,9 @@ public class MerchantController {
         return merchantTagRelService.listMerchantTagRel(req);
     }
 
-
     /**
      * 获取商家标签列表
      *
-     * @param merchantId
      * @return
      */
     @ApiOperation(value = "获取商家标签列表接口", notes = "获取商家是否含有政企供应商标签列表接口")

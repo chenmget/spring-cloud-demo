@@ -153,7 +153,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     	this.payOperationLogManager.UpdateOrdOrderStatus(req);
     }
     
- // TODO:1、预授权支付 谢杞
+ // TODO:1、预授权支付 
     @Override
     public ResultVO openToBookingPay(OffLinePayReq req) {
         ResultVO resultVO = new ResultVO();

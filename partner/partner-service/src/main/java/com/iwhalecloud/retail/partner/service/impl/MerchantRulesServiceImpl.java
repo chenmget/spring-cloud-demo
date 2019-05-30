@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.ProductConst;
+import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
@@ -20,6 +22,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
+import com.iwhalecloud.retail.partner.entity.Merchant;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import com.iwhalecloud.retail.partner.manager.MerchantManager;
 import com.iwhalecloud.retail.partner.manager.MerchantRulesManager;
@@ -109,7 +112,52 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         if (resultInt <= 0) {
             return ResultVO.error("新增商家权限信息失败，请确认参数");
         }
+        if(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType().equals(req.getRuleType()) &&
+                PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType().equals(req.getTargetType())){
+            MerchantGetReq merchantGetReq = new MerchantGetReq();
+            merchantGetReq.setMerchantId(req.getMerchantId());
+            Merchant merchant = merchantManager.getMerchant(merchantGetReq);
+            //没有赋权
+            if(null!=merchant && PartnerConst.AssignedFlgEnum.NO.getType().equals(merchant.getAssignedFlg())){
+                this.merchantAssigned(merchant.getMerchantId());
+            }
+        }
         return ResultVO.success(resultInt);
+    }
+
+    private void merchantAssigned(String merchantId){
+        ProductGetReq productGetReq = new ProductGetReq();
+        productGetReq.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+        ResultVO<Page<ProductDTO>> resultVO = productService.selectProduct(productGetReq);
+        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+            List<ProductDTO> productDTOs = resultVO.getResultData().getRecords();
+            List<String> productIds  = new ArrayList<>();
+            if(!CollectionUtils.isEmpty(productDTOs)){
+                for(ProductDTO productDTO:productDTOs){
+                    productIds.add(productDTO.getProductId());
+                }
+                MerchantRulesSaveReq merchantRulesSaveReq = new MerchantRulesSaveReq();
+                merchantRulesSaveReq.setMerchantId(merchantId);
+                merchantRulesSaveReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
+                merchantRulesSaveReq.setTargetType(PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType());
+                int listSize=productIds.size();
+                int toIndex=300;
+                log.info("MerchantRulesServiceImpl.merchantAssigned(),商家id={} 添加产品权限数={} ", merchantId,listSize);
+                for(int i=0;i<listSize;i+=300){
+                    if(i+300>listSize){
+                        toIndex=listSize-i;
+                    }
+                    List newlist = productIds.subList(i,i+toIndex);
+                    merchantRulesSaveReq.setTargetIdList(newlist);
+                    this.saveMerchantRules(merchantRulesSaveReq);
+                    Merchant merchant = new Merchant();
+                    merchant.setMerchantId(merchantId);
+                    merchant.setAssignedFlg(PartnerConst.AssignedFlgEnum.YES.getType());
+                    merchantManager.updateMerchant(merchant);
+                    log.info("MerchantRulesServiceImpl.merchantAssigned(),商家id={} 添加产品权限第={}次，总共={}次 ", merchantId,i,listSize/500+1);
+                }
+            }
+        }
     }
 
     /**

@@ -226,6 +226,7 @@
             </foreach>
         </if>
         and t.mkt_res_store_id = #{mktResStoreId}
+        order by create_date desc
     </select>
 
     <select id="selectByIds" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetByIdListAndStoreIdReq"
@@ -375,4 +376,74 @@
         </if>
     </select>
 
+    <select id="getResourceInstListManual" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp">
+        select <include refid="allFields" />
+        from mkt_res_inst t
+        where 1 = 1
+        <if test="null!=req.createTimeStart and ''!=req.createTimeStart">
+            and t.create_time &gt;= #{req.createTimeStart}
+        </if>
+        <if test="null!=req.createTimeEnd and ''!=req.createTimeEnd">
+            and t.create_time &lt;= #{req.createTimeEnd}
+        </if>
+        <if test="null!=req.instInDateStart and ''!=req.instInDateStart">
+            and t.create_date &gt;= #{req.instInDateStart}
+        </if>
+        <if test="null!=req.instInDateEnd and ''!=req.instInDateEnd">
+            and t.create_date &lt;= #{req.instInDateEnd}
+        </if>
+        <if test="null!=req.instOutDateStart and ''!=req.instOutDateStart">
+            and t.update_date &gt;= #{req.instOutDateStart}
+        </if>
+        <if test="null!=req.instOutDateEnd and ''!=req.instOutDateEnd">
+            and t.update_date &lt;= #{req.instOutDateEnd}
+        </if>
+
+        <if test="null!=req.crmStatus and ''!=req.crmStatus">
+            and t.crm_status = #{req.crmStatus}
+        </if>
+        <if test="null!=req.selfRegStatus and ''!=req.selfRegStatus">
+            and t.self_reg_status = #{req.selfRegStatus}
+        </if>
+        <if test="null!=req.mktResInstType and ''!=req.mktResInstType">
+            and t.mkt_res_inst_type = #{req.mktResInstType}
+        </if>
+        <if test="null!=req.sourceType and ''!=req.sourceType">
+            and t.source_type = #{req.sourceType}
+        </if>
+        <if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">
+            and t.mkt_res_inst_nbr = #{req.mktResInstNbr}
+        </if>
+        <if test="null!=req.orderId and ''!=req.orderId">
+            and t.order_id = #{req.orderId}
+        </if>
+        <if test="null!=req.statusCd and ''!=req.statusCd">
+            and t.status_cd = #{req.statusCd}
+        </if>
+        <if test="null!=req.mktResIds and req.mktResIds.size>0">
+            and t.mkt_res_id in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResIds">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=req.storageType and ''!=req.storageType">
+            and t.storage_type = #{req.storageType}
+        </if>
+        <if test="null!=req.mktResInstNbrs and req.mktResInstNbrs.size>0">
+            and t.mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResInstNbrs">
+                #{item}
+            </foreach>
+        </if>
+        and t.mkt_res_store_id in
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
+            #{item}
+        </foreach>
+        <if test="null!=req.typeId and ''!=req.typeId">
+            and t.type_id = #{req.typeId}
+        </if>
+        order by create_date desc
+        LIMIT #{req.pageStartNo}, #{req.pageSize}
+    </select>
 </mapper>

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityScopeDTO;
+import com.iwhalecloud.retail.promo.entity.ActivityParticipant;
 import com.iwhalecloud.retail.promo.entity.ActivityScope;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -22,6 +23,21 @@ public class ActivityScopeManager{
     private ActivityScopeMapper activityScopeMapper;
 
     /**
+     * 获取主键
+     * @return
+     */
+    public String getPrimaryKey(){
+        return activityScopeMapper.getPrimaryKey();
+    }
+
+    /**插入参与活动范围
+     * @param activityScope 活动范围实体
+     * @return
+     */
+    public int insertActivityScope(ActivityScope activityScope) {
+        return activityScopeMapper.insert(activityScope);
+    }
+    /**
      * 添加参与活动范围
      * @param activityScopeList 参与活动范围
      * @return
@@ -29,14 +45,10 @@ public class ActivityScopeManager{
     public void addActivityScopeBatch(List<ActivityScope> activityScopeList) {
         if (!CollectionUtils.isEmpty(activityScopeList)) {
             for (ActivityScope activityScope : activityScopeList) {
-                if (StringUtils.isEmpty(activityScope.getId())) {
-
-                    Date date = new Date();
-                    activityScope.setGmtCreate(date);
-                    activityScope.setGmtModified(date);
-                    activityScope.setIsDeleted("0");
-                    activityScopeMapper.insert(activityScope);
+                if (activityScope.getId()==null){
+                    activityScope.setId(activityScopeMapper.getPrimaryKey());
                 }
+                activityScopeMapper.insert(activityScope);
             }
         }
     }
@@ -120,5 +132,39 @@ public class ActivityScopeManager{
         queryWrapper.eq(ActivityScope.FieldNames.isDeleted.getTableFieldName(),PromoConst.UNDELETED);
         queryWrapper.eq(ActivityScope.FieldNames.city.getTableFieldName(), cityId);
         return activityScopeMapper.selectOne(queryWrapper);
+    }
+
+    public List<ActivityScopeDTO> queryActivityScopeByMktIdAndStatus(String activityId,String status) {
+        log.info("ActivityScopeManager.queryActivityScopeByMktIdAndStatus activityId={},status={}", activityId);
+        if (StringUtils.isNotEmpty(activityId)&&StringUtils.isNotEmpty(status)){
+            List<ActivityScopeDTO> activityScopeDTOList= activityScopeMapper.queryActivityScopeByMktIdAndStatus(activityId,status);
+            return  activityScopeDTOList;
+        }
+        return null;
+    }
+
+    /**
+     * 批量更新活动范围
+     * @param activityScopeList 参与活动范围列表
+     * @return
+     */
+    public void updateActivityScopeBatch(List<ActivityScope> activityScopeList) {
+        if (!CollectionUtils.isEmpty(activityScopeList)) {
+            for (ActivityScope activityScope : activityScopeList) {
+                if (StringUtils.isNotEmpty(activityScope.getId())) {
+                    activityScope.setGmtModified(new Date());
+                    activityScopeMapper.updateById(activityScope);
+                }
+            }
+        }
+    }
+
+    /**
+     * 根据id查询参与活动范围
+     * @param scopeId 活动范围id
+     * @return
+     */
+    public ActivityScope queryActivityScopeById(String scopeId) {
+        return activityScopeMapper.selectById(scopeId);
     }
 }

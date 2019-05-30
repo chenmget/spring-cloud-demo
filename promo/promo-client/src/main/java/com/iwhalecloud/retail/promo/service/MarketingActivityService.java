@@ -53,6 +53,14 @@ public interface MarketingActivityService{
      * @return
      */
     ResultVO<Boolean> updateMarketingActivity(MarketingActivityAddReq req);
+
+    /**
+     * 销活动变更审核
+     * @param originalActivity
+     * @param changedActivity
+     * @return
+     */
+    ResultVO marketingActivityChangeAuitProcess(MarketingActivityDTO originalActivity,MarketingActivityAddReq changedActivity);
     /**
      * 营销活动审核
      * @param userId  invoiceId

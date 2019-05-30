@@ -132,7 +132,7 @@ public class ActivityProduct implements Serializable {
 	 */
 	@ApiModelProperty(value = "产品参与总数量限制标识")
 	private String numLimitFlg;
-  	
+
   	//属性 end
 	
     /** 字段名称枚举. */

@@ -155,5 +155,11 @@ public class ActivityParticipantDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "是否删除：0未删、1删除。")
 	private String isDeleted;
-  	
+
+	/**
+	 * 状态,0：待审核,1：有效,-1：审核不通过
+	 */
+	@ApiModelProperty(value = "状态,0：待审核,1：有效,-1：审核不通过")
+	private java.lang.String status;
+
 }

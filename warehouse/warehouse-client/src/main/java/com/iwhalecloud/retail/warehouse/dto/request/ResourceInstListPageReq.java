@@ -154,4 +154,10 @@ public class ResourceInstListPageReq extends PageVO {
 	 */
 	@ApiModelProperty(value = "产品类型")
 	private String typeId;
+
+	/**
+	 * 查询起始数
+	 */
+	@ApiModelProperty(value = "查询起始数")
+	private Integer pageStartNo;
 }

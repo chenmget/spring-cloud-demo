@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.order2b.busiservice.impl;
 
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.BPEPPayLogService;
 import com.iwhalecloud.retail.order2b.busiservice.PayService;
 import com.iwhalecloud.retail.order2b.busiservice.UpdateOrderFlowService;
@@ -27,6 +28,7 @@ import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.Map;
 import java.util.Objects;
 
 @Service
@@ -47,6 +49,9 @@ public class PayServiceImpl implements PayService {
 
     @Autowired
     private BPEPPayLogService bpepPayLogService;
+    
+    @Autowired
+    private PayAuthorizationService payAuthorizationService;
 
     //支付方式的入口
     @Override
@@ -101,6 +106,15 @@ public class PayServiceImpl implements PayService {
         }
         switch (orderPayType) {
             case PAY_TYPE_1: //翼支付（翼支付的预授权支付 pay_type=1,线上支付）
+            	String loginCode = payAuthorizationService.findPayAccountByOrderId(order.getOrderId()); //account
+                if(loginCode == null){
+                    return ResultVO.error("买家翼支付账号没有配置。");
+                }
+                // 通过订单找到供应商订单账号，金额
+                Map<String, Object> resultMap = payAuthorizationService.findReptAccountAndMoneyByOrderId(order.getOrderId());
+                if(resultMap.get("account").toString() == null){
+                    return ResultVO.error("商家翼支付账号没有配置。");
+                }
                 OffLinePayReq req = new OffLinePayReq();
                 req.setOrderId(order.getOrderId());
                 req.setOrderAmount(String.valueOf(order.getOrderAmount()));

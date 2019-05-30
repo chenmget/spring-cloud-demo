@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.promo.dto.resp;
 
 
+import com.iwhalecloud.retail.promo.dto.ActivityChangeDetailDTO;
 import com.iwhalecloud.retail.promo.dto.PreSubsidyProductPromResqDTO;
 import com.iwhalecloud.retail.promo.dto.QueryPreSubsidyCouponResqDTO;
 import io.swagger.annotations.ApiModel;
@@ -44,4 +45,5 @@ public class MarketingActivityInfoResp implements Serializable {
      */
     @ApiModelProperty(value = "预售补贴产品列表")
     List<PreSubsidyProductRespDTO> preSaleProductInfo;
+
 }

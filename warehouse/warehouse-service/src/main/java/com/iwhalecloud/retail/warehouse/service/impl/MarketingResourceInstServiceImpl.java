@@ -276,5 +276,8 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     public ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req){
         return null;
     }
-
+    @Override
+    public ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req) {
+        return null;
+    }
 }

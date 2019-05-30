@@ -27,6 +27,7 @@
     ,t.UPDATE_DATE
     ,t.SYS_POST_ID
     ,t.SYS_POST_NAME
+    ,CHANGE_PWD_COUNT
 </sql>
 
     <select id="getUserDetail" parameterType="String"

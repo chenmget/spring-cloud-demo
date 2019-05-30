@@ -31,6 +31,7 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.manager.*;
+import com.iwhalecloud.retail.warehouse.runable.QueryResourceInstRunableTask;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.*;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -125,6 +126,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Autowired
     private ResourceUploadTempManager resourceUploadTempManager;
+
+    @Autowired
+    private QueryResourceInstRunableTask queryResourceInstRunableTask;
 
 
     @Override
@@ -836,5 +840,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), updateResourceresultVO.getResultMsg());
         }
         return ResultVO.success("串码入库完成", resourceInstAddResp);
+    }
+
+    @Override
+    public ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req){
+        return ResultVO.success(queryResourceInstRunableTask.exceutorQueryResourceInst(req));
     }
 }

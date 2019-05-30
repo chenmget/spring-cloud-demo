@@ -8,10 +8,12 @@ import com.iwhalecloud.retail.goods2b.dto.GoodsActRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsActRelListReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsActRelService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
+import com.iwhalecloud.retail.promo.dto.ActivityChangeDetailDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityScopeDTO;
 import com.iwhalecloud.retail.promo.dto.req.*;
 import com.iwhalecloud.retail.promo.dto.resp.*;
+import com.iwhalecloud.retail.promo.service.ActivityChangeService;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import com.iwhalecloud.retail.rights.dto.request.OrderCouponListReq;
 import com.iwhalecloud.retail.rights.dto.response.OrderCouponListResp;
@@ -53,6 +55,9 @@ public class MarketingActivityB2BController {
     @Reference
     private GoodsActRelService goodsActRelService;
 
+    @Reference
+    ActivityChangeService activityChangeService;
+
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
 
@@ -67,39 +72,12 @@ public class MarketingActivityB2BController {
         log.info("MarketingActivityB2BController addMarketingActivity req={} ", JSON.toJSON(req));
         //随机生成营销活动code   日期+随机数
         String str =  new SimpleDateFormat("yyyyMMddhhmmss").format(new Date());
-        int rannum = (int) (new Random().nextDouble() * (9999 - 1000 + 1)) + 1000;// 获取4位随机数
+        // 获取4位随机数
+        int rannum = (int) (new Random().nextDouble() * (9999 - 1000 + 1)) + 1000;
         //将code添加到入库参数中
         req.setCode(str+rannum);
-        List<ActivityScopeDTO> scopeList = req.getActivityScopeList();
-        List<ActivityParticipantDTO> activityParticipantList = req.getActivityParticipantList();
-        if(scopeList != null && scopeList.size() > 0){
-            for (int i = 0; i < scopeList.size(); i++) {
-                if(PromoConst.ActivityScopeType.ACTIVITY_SCOPE_TYPE_20.getCode().equals(req.getActivityScopeType())) {
-                    scopeList.get(i).setSupplierName(scopeList.get(i).getMerchantName());
-                    scopeList.get(i).setSupplierCode(scopeList.get(i).getMerchantCode());
-                }else {
-                    if (scopeList.get(i).getRegionId().length() > 3) {
-                        scopeList.get(i).setCity(scopeList.get(i).getRegionId());
-                    } else {
-                        scopeList.get(i).setLanId(scopeList.get(i).getRegionId());
-                    }
-                }
-            }
-        }
-        if(activityParticipantList != null && activityParticipantList.size() > 0){
-            for (int i = 0; i < activityParticipantList.size(); i++) {
-                if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(req.getActivityParticipantType())) {
-                    activityParticipantList.get(i).setShopName(activityParticipantList.get(i).getMerchantName());
-                    activityParticipantList.get(i).setShopCode(activityParticipantList.get(i).getMerchantCode());
-                }else {
-                    if (activityParticipantList.get(i).getRegionId().length() > 3) {
-                        activityParticipantList.get(i).setCity(activityParticipantList.get(i).getRegionId());
-                    } else {
-                        activityParticipantList.get(i).setLanId(activityParticipantList.get(i).getRegionId());
-                    }
-                }
-            }
-        }
+        //处理活动范围对象和活动参与对象
+        handleActivityScopeAndParticipant(req);
         UserDTO userDTO = UserContext.getUser();
         if (!Objects.isNull(userDTO)){
             req.setUserId(userDTO.getUserId());
@@ -226,10 +204,69 @@ public class MarketingActivityB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/updateMarketingActivity")
+    @UserLoginToken
     public ResultVO<Boolean> updateMarketingActivity(@RequestBody MarketingActivityAddReq req) {
         log.info("MarketingActivityB2BController updateMarketingActivity req={} ", JSON.toJSON(req));
+        //处理活动范围对象和活动参与对象
+        handleActivityScopeAndParticipant(req);
+        UserDTO userDTO = UserContext.getUser();
+        req.setUserId(userDTO.getUserId());
+        req.setUserName(userDTO.getUserName());
+        req.setSysPostName(userDTO.getSysPostName());
+        req.setOrgId(userDTO.getOrgId());
+        if (!StringUtils.isEmpty(req.getPageImgUrl())) {
+            req.setPageImgUrl(req.getPageImgUrl().replaceAll(dfsShowIp,""));
+        }
+        if (!StringUtils.isEmpty(req.getActivityUrl())) {
+            req.setActivityUrl(req.getActivityUrl().replaceAll(dfsShowIp, ""));
+        }
+        if (!StringUtils.isEmpty(req.getTopImgUrl())) {
+            req.setTopImgUrl(req.getTopImgUrl().replaceAll(dfsShowIp,""));
+        }
         return marketingActivityService.updateMarketingActivity(req);
     }
+
+    /**
+     * 处理活动范围对象和活动参与对象
+     * @param req
+     */
+    private void handleActivityScopeAndParticipant(MarketingActivityAddReq req) {
+        //从入参中获取活动范围对象
+        List<ActivityScopeDTO> scopeList = req.getActivityScopeList();
+        //从入参中获取活动参与对象
+        List<ActivityParticipantDTO> activityParticipantList = req.getActivityParticipantList();
+        //解析处理活动范围对象，范围类型分为：10地区，20商家。
+        if(scopeList != null && scopeList.size() > 0){
+            for (int i = 0; i < scopeList.size(); i++) {
+                if(PromoConst.ActivityScopeType.ACTIVITY_SCOPE_TYPE_20.getCode().equals(req.getActivityScopeType())) {
+                    scopeList.get(i).setSupplierName(scopeList.get(i).getMerchantName());
+                    scopeList.get(i).setSupplierCode(scopeList.get(i).getMerchantCode());
+                }else {
+                    if (scopeList.get(i).getRegionId().length() > 3) {
+                        scopeList.get(i).setCity(scopeList.get(i).getRegionId());
+                    } else {
+                        scopeList.get(i).setLanId(scopeList.get(i).getRegionId());
+                    }
+                }
+            }
+        }
+        //解析处理活动范围对象，参与类型分为：10地区，20商家。
+        if(activityParticipantList != null && activityParticipantList.size() > 0){
+            for (int i = 0; i < activityParticipantList.size(); i++) {
+                if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(req.getActivityParticipantType())) {
+                    activityParticipantList.get(i).setShopName(activityParticipantList.get(i).getMerchantName());
+                    activityParticipantList.get(i).setShopCode(activityParticipantList.get(i).getMerchantCode());
+                }else {
+                    if (activityParticipantList.get(i).getRegionId().length() > 3) {
+                        activityParticipantList.get(i).setCity(activityParticipantList.get(i).getRegionId());
+                    } else {
+                        activityParticipantList.get(i).setLanId(activityParticipantList.get(i).getRegionId());
+                    }
+                }
+            }
+        }
+    }
+
     @ApiOperation(value = "商品适用活动查询", notes = "查询B2B商品适用活动")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
@@ -338,6 +375,37 @@ public class MarketingActivityB2BController {
     public ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfor(@RequestParam String activityId){
         log.info("MarketingActivityB2BController queryMarketingActivityInfo marketingActivityCode={} ", activityId);
         return marketingActivityService.queryMarketingActivityInfor(activityId);
+    }
+
+    /**
+     * 查询活动变更详情
+     * @param activityId
+     * @return
+     */
+    @ApiOperation(value = "查询活动变更详情", notes = "查询活动变更详情")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value="/queryMarketingActivityChangeInfo",method = RequestMethod.GET)
+    public ResultVO<ActivityChangeResp> queryMarketingActivityChangeInfo(@RequestParam String activityId){
+        log.info("MarketingActivityB2BController queryMarketingActivityChangeInfo activityId={} ", activityId);
+        ResultVO<ActivityChangeResp> activityChangeResp = activityChangeService.queryMarketingActivityChangeInfo(activityId);
+        //补充图片字段全路径
+        List<ActivityChangeDetailDTO> activityChangeDetailDTOList = null;
+        if(activityChangeResp!=null&&activityChangeResp.getResultData()!=null){
+            activityChangeDetailDTOList = activityChangeResp.getResultData().getActivityChangeDetailDTOList();
+        }
+        if(activityChangeDetailDTOList!=null){
+            for (ActivityChangeDetailDTO detailDTO:activityChangeDetailDTOList) {
+                if(detailDTO.getChangeField()!=null&&detailDTO.getChangeField().contains("Url")){
+                    detailDTO.setOldValue(FastDFSImgStrJoinUtil.fullImageUrl(detailDTO.getOldValue(), dfsShowIp, true));
+                    detailDTO.setNewValue(FastDFSImgStrJoinUtil.fullImageUrl(detailDTO.getNewValue(), dfsShowIp, true));
+                }
+            }
+        }
+
+        return activityChangeResp;
     }
 
     @ApiOperation(value = "查询供货商允许参加的活动", notes = "查询供货商允许参加的活动")

@@ -443,6 +443,12 @@ public class Merchant implements Serializable {
   	 */
 	@ApiModelProperty(value = "(商家)失效时间	")
   	private java.util.Date expDate;
+
+	/**
+	 * TOP商级别
+	 */
+	@ApiModelProperty(value = "是否已赋权")
+	private java.lang.String assignedFlg;
   	
   	
   	//属性 end
@@ -669,6 +675,9 @@ public class Merchant implements Serializable {
 		
 		/** TOP商级别	. */
 		topLevel("topLevel","TOP_LEVEL"),
+
+		/** 是否已赋权	. */
+		assignedFlg("assignedFlg","ASSIGNED_FLG"),
 		
 		/** (商家)生效时间	. */
 		effDate("effDate","EFF_DATE"),

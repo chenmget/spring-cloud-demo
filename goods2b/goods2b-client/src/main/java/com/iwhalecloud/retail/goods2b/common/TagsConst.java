@@ -13,7 +13,7 @@ public class TagsConst {
     public static final String GOVERNMENT_ENTERPRISE_STORES = "2019052901";
 
     /**
-     * 政企供应商
+     * 政企供货
      */
     public static final String GOVERNMENT_ENTERPRISE_SUPPLIERS = "2019052902";
 

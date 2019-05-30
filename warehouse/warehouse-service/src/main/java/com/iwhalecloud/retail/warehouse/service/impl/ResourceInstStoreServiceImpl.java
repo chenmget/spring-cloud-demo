@@ -321,14 +321,9 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         	pw.close();
         }
 
-         FTPClient ftpClient = connectedToftpServer();
-
-        getFileFromFtp(ftpClient, files, brand, ops);
-
-
+        FTPClient ftpClient = connectedToftpServer();
         sendFileToFtp(ftpClient, files, brand, ops);
-
-         files.clear();
+        files.clear();
 
     }
 
@@ -419,42 +414,45 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      * @param ftpClient
      * @param files
      */
-    private void getFileFromFtp(FTPClient ftpClient, List<String> files, String brand, String[] ops) {
-        String sendDir = null;
+    private List<String> getFileFromFtp(FTPClient ftpClient, List<String> files, String getDir) {
+//        String sendDir = null;
         // 判断传送目录
-        sendDir = getSendDir(brand, ops);
+//        sendDir = getSendDir(brand, ops);
         InputStream is = null;
+        List<String> lineList = null;
         try {
-            Boolean flag = ftpClient.changeWorkingDirectory(sendDir);
+            Boolean flag = ftpClient.changeWorkingDirectory(getDir);
             ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
             //传输模式
             ftpClient.enterLocalPassiveMode();
             for (int i = 0; i < files.size(); i++) {
-                readFile(ftpClient, files.get(i));
+                lineList.addAll(readFile(ftpClient, files.get(i)));
             }
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
-
+        return lineList;
     }
 
-    public String readFile(FTPClient ftpClient, String fileName) {
+    public List<String> readFile(FTPClient ftpClient, String fileName) {
         InputStream ins = null;
         StringBuilder builder = null;
+        List<String> lineLists = null;
         try {
             // 从服务器上读取指定的文件
             ins = ftpClient.retrieveFileStream(fileName);
             BufferedReader reader = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
             String line;
-            builder = new StringBuilder(150);
+//            builder = new StringBuilder(150);
             while ((line = reader.readLine()) != null) {
-                System.out.println(line);
-                builder.append(line);
+                lineLists.add(line);
+//                System.out.println(line);
+//                builder.append(line);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return builder.toString();
+        return lineLists;
     }
     /**
      * 创建FTPClient客户端
@@ -555,4 +553,90 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         return baseDir+sendDir;
     }
 
+    /**
+     * 从mkt_res_itms_sync_rec表查询未更新过的文件
+     * 根据文件路径和文件名到服务器上读取相关文件
+     * 将读取到的数据更新到mkt_res_itms_sync_rec表
+     */
+    @Override
+    public void syncMktToITMSBack(){
+        FTPClient ftpClient = connectedToftpServer();
+        String date = null;
+        String getFtpDir = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
+        date = sdf.format(new Date());
+        List<MktResItmsSyncRec> syncFileNameList = mktResItmsSyncRecMapper.getFileNameByDate(date);
+        if (!CollectionUtils.isEmpty(syncFileNameList)){
+            for(MktResItmsSyncRec syncFileName : syncFileNameList){
+                String syncFileDir = syncFileName.getSyncFileName();
+                //获取ftp目录
+                getFtpDir = getDir(syncFileDir);
+                //文件名List
+                List<String> fileNameList = null;
+                //文件内容List
+                List<String> lineList = null;
+                //ftp文件名List
+                fileNameList = getFileName(syncFileDir);
+                //成功目录获取到信息
+                lineList = getFileFromFtp(ftpClient, fileNameList, getFtpDir);
+                //更新数据
+                if(!CollectionUtils.isEmpty(lineList)){
+                    updateBatch(lineList, syncFileDir);
+                }
+            }
+        }
+    }
+
+    /**
+     * 获取文件目录
+     * @param syncFileName
+     * @return
+     */
+    private String getDir(String syncFileName){
+        String sendDir = syncFileName.replace("/back/","/back/Failure/");
+        sendDir = sendDir.substring(0,sendDir.length()-23);
+        return sendDir;
+    }
+
+    /**
+     * 获取成功和失败的文件名
+     * @param syncFileName
+     * @return
+     */
+    private List<String> getFileName(String syncFileName){
+
+        List<String> fileName = null;
+        try {
+            if(!syncFileName.isEmpty()){
+                String[] sort = syncFileName.split("/");
+                fileName.add(sort[8]);
+                fileName.add(sort[8].replace("ITMS","ITMSSuccess"));
+            }
+        }catch (Exception e){
+
+        }
+        return fileName;
+    }
+
+    /**
+     * 更新数据库
+     * @param lineList
+     * @param syncFileName
+     */
+    private void updateBatch(List<String> lineList,String syncFileName){
+
+        List<MktResItmsSyncRec> dataList = new ArrayList<>();
+        MktResItmsSyncRec data;
+        String[] line;
+        for(int i = 0; i <= lineList.size(); i++){
+            line = null;
+            data = null;
+            line = lineList.get(i).split(",");
+            data.setSyncFileName(syncFileName);
+            data.setMktResInstNbr(line[0]);
+            data.setStatusCd(line[1]);
+            dataList.add(data);
+        }
+        mktResItmsSyncRecMapper.batchUpdateMRIyFileName(dataList);
+    }
 }

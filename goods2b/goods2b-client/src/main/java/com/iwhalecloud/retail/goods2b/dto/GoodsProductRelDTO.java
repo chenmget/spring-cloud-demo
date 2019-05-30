@@ -84,4 +84,10 @@ public class GoodsProductRelDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "活动预付款，如预售活动的定金。冗余用字段")
 	private Long advancePayAmount;
+
+	/**
+	 * 初始提货价
+	 */
+	@ApiModelProperty(value = "初始提货价")
+	private Double initialPrice;
 }

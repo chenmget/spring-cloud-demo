@@ -50,4 +50,18 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
      * @return
      */
 	String getSeqBysendDir(@Param("sendDir")String sendDir);
+
+	/**
+	 * 获取当天未更新文件路径
+	 * @param date
+	 * @return
+	 */
+	List<MktResItmsSyncRec> getFileNameByDate(String date);
+
+	/**
+	 * 根据回传文件，串码批量更新推送状态
+	 * @param mktResItmsSyncRecRep
+	 * @return
+	 */
+	int batchUpdateMRIyFileName(@Param("list")List<MktResItmsSyncRec> mktResItmsSyncRecRep);
 }

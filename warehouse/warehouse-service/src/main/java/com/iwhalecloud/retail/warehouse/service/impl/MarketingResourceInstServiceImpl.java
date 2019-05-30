@@ -99,17 +99,25 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storeGetStoreIdReq.setMerchantId(merchantId);
         String destStroeId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId merchantId={},destStroeId={}", merchantId, destStroeId);
+        log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst resouceStoreService.getStoreId merchantId={},destStroeId={}", merchantId, destStroeId);
         if (StringUtils.isBlank(destStroeId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
         // 获取源仓库
         storeGetStoreIdReq.setMerchantId(req.getSellerMerchantId());
         String mktResStroeId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel resouceStoreService.getStoreId merchantId={},mktResStroeId={}", merchantId, mktResStroeId);
+        log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst resouceStoreService.getStoreId merchantId={},mktResStroeId={}", req.getSellerMerchantId(), mktResStroeId);
         if (StringUtils.isBlank(mktResStroeId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
+        // 获取源仓库
+        storeGetStoreIdReq.setMerchantId(req.getSellerMerchantId());
+        ResultVO<MerchantDTO> sellerMerchantResultVO = merchantService.getMerchantById(req.getSellerMerchantId());
+        log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst merchantService.getMerchantById merchantId={},resp={}", req.getSellerMerchantId(), JSON.toJSONString(sellerMerchantResultVO));
+        if (!sellerMerchantResultVO.isSuccess() || null == sellerMerchantResultVO.getResultData()) {
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
+        }
+        MerchantDTO seller = sellerMerchantResultVO.getResultData();
         List<String> nbrList = new ArrayList<>();
         Map<String, List<String>> mktResIdAndNbrMap = new HashMap<>();
         for (DeliveryResourceInstItem deliveryResourceInstItem : req.getDeliveryResourceInstItemList()) {
@@ -147,23 +155,27 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
                     EBuyTerminalItemSwapReq eBuyTerminalItemSwapReq = new EBuyTerminalItemSwapReq();
                     BeanUtils.copyProperties(syncTerminalItemSwapReq, eBuyTerminalItemSwapReq);
                     eBuyTerminalItemSwapReq.setMktId(sn);
+                    eBuyTerminalItemSwapReq.setSupplyCode(seller.getMerchantCode());
+                    eBuyTerminalItemSwapReq.setSupplyName(seller.getMerchantName());
+                    String price = null == deliveryResourceInstItem.getSalesPrice() ? "0" : String.valueOf(deliveryResourceInstItem.getSalesPrice());
+                    eBuyTerminalItemSwapReq.setSalesPrice(price);
                     eBuyTerminalItemReqs.add(eBuyTerminalItemSwapReq);
                 }
             }
         }
         ResultVO syncTerminalResultVO = null;
         ResultVO eBuyTerminalResultVO = null;
-        if (CollectionUtils.isNotEmpty(syncTerminalItemSwapReqs)) {
-            SyncTerminalSwapReq syncTerminalSwapReq = new SyncTerminalSwapReq();
-            syncTerminalSwapReq.setMktResList(syncTerminalItemSwapReqs);
-            syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
-            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}, resp={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalResultVO));
-        }
         if (CollectionUtils.isNotEmpty(eBuyTerminalItemReqs)) {
             EBuyTerminalSwapReq eBuyTerminalSwapReq = new EBuyTerminalSwapReq();
             eBuyTerminalSwapReq.setMktResList(eBuyTerminalItemReqs);
             eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
             log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.ebuyTerminal req={}, resp={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
+        }
+        if (CollectionUtils.isNotEmpty(syncTerminalItemSwapReqs) && CollectionUtils.isEmpty(eBuyTerminalItemReqs)) {
+            SyncTerminalSwapReq syncTerminalSwapReq = new SyncTerminalSwapReq();
+            syncTerminalSwapReq.setMktResList(syncTerminalItemSwapReqs);
+            syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
+            log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}, resp={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalResultVO));
         }
         Boolean notSucess = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) || (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess());
         if (!notSucess) {
@@ -264,4 +276,5 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     public ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req){
         return null;
     }
+
 }

@@ -15,9 +15,10 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Objects;
 
 @Component
-public class GoodsProductRelManager{
+public class GoodsProductRelManager {
     @Resource
     private GoodsProductRelMapper goodsProductRelMapper;
 
@@ -26,22 +27,27 @@ public class GoodsProductRelManager{
 
     /**
      * 查询产商品关联表
+     *
      * @param goodsId
      * @return
      */
-    public GoodsProductRel queryGoodsProductRel(String goodsId){
+    public GoodsProductRel queryGoodsProductRel(String goodsId) {
 
         QueryWrapper queryWrapper = new QueryWrapper();
 //        queryWrapper.eq("is_deleted", GoodsConst.NO_DELETE);
-        queryWrapper.eq("goods_id",goodsId);
+        queryWrapper.eq("goods_id", goodsId);
         List<GoodsProductRel> goodsProductRels = goodsProductRelMapper.selectList(queryWrapper);
-        if(CollectionUtils.isEmpty(goodsProductRels)){
+        if (CollectionUtils.isEmpty(goodsProductRels)) {
             return null;
         }
         return goodsProductRels.get(0);
     }
 
     public int addGoodsProductRel(GoodsProductRel goodsProductRel) {
+//        if (Objects.isNull(goodsProductRel.getInitialPrice())) {
+//            // 设置初始上架价格
+//            goodsProductRel.setInitialPrice(goodsProductRel.getDeliveryPrice());
+//        }
         return goodsProductRelMapper.insert(goodsProductRel);
     }
 
@@ -51,22 +57,23 @@ public class GoodsProductRelManager{
         return goodsProductRelMapper.selectList(wrapper);
     }
 
-    public Double getLowestPriceByGoodsId(String goodsId){
+    public Double getLowestPriceByGoodsId(String goodsId) {
         return goodsProductRelMapper.getLowestPriceByGoodsId(goodsId);
     }
 
     /**
      * 根据产品ID查询商品
+     *
      * @param productId
      * @return
      */
-    public List<GoodsDetailDTO> qryGoodsByProductId(String productId){
+    public List<GoodsDetailDTO> qryGoodsByProductId(String productId) {
         return goodsProductRelMapper.qryGoodsByProductId(productId);
     }
 
     public int delGoodsProductRelByGoodsId(String goodsId) {
         UpdateWrapper<GoodsProductRel> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("GOODS_ID",goodsId);
+        updateWrapper.eq("GOODS_ID", goodsId);
         return goodsProductRelMapper.delete(updateWrapper);
     }
 
@@ -94,8 +101,8 @@ public class GoodsProductRelManager{
         return goodsProductRelMapper.selectOne(wrapper);
     }
 
-    public GoodsDetailDTO qryGoodsByProductIdAndGoodsId(String productId, String goodsId){
-        return goodsProductRelMapper.qryGoodsByProductIdAndGoodsId(productId,goodsId);
+    public GoodsDetailDTO qryGoodsByProductIdAndGoodsId(String productId, String goodsId) {
+        return goodsProductRelMapper.qryGoodsByProductIdAndGoodsId(productId, goodsId);
     }
 
     public List<GoodsProductRel> queryRelByGoodsIds(List<String> goodsIds) {
@@ -113,13 +120,13 @@ public class GoodsProductRelManager{
         return goodsProductRelMapper.update(goodsProductRel, updateWrapper);
     }
 
-    public List<ActivityGoodsDTO> qryActivityGoodsId(ActivityGoodsReq req){
+    public List<ActivityGoodsDTO> qryActivityGoodsId(ActivityGoodsReq req) {
         List<ActivityGoodsDTO> activityGoodsDTOs = goodsProductRelMapper.qryActivityGoodsId(req);
-        if(org.apache.commons.collections.CollectionUtils.isNotEmpty(activityGoodsDTOs)){
-            for(ActivityGoodsDTO activityGoodsDTO:activityGoodsDTOs){
+        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(activityGoodsDTOs)) {
+            for (ActivityGoodsDTO activityGoodsDTO : activityGoodsDTOs) {
                 String imageUrl = activityGoodsDTO.getImageUrl();
-                if(StringUtils.isNotEmpty(imageUrl)){
-                    activityGoodsDTO.setImageUrl(dfsShowIp+imageUrl);
+                if (StringUtils.isNotEmpty(imageUrl)) {
+                    activityGoodsDTO.setImageUrl(dfsShowIp + imageUrl);
                 }
             }
         }
@@ -131,6 +138,7 @@ public class GoodsProductRelManager{
         wrapper.in(GoodsProductRel.FieldNames.productId.getTableFieldName(), productIds);
         return goodsProductRelMapper.selectList(wrapper);
     }
+
     public List<String> listGoodsBySupplierId(String supplierId, String productId) {
         return goodsProductRelMapper.listGoodsBySupplierId(supplierId, productId);
     }

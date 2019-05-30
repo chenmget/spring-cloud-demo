@@ -106,7 +106,7 @@ public class MerchantController {
     @RequestMapping(value = "/pageWithRule", method = RequestMethod.POST)
     public ResultVO<Page<MerchantPageResp>> pageMerchantWithRule(@RequestBody MerchantPageReq req) {
         MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
-        merchantTagRelListReq.setTagId(TagsConst.GOVERNMENT_ENTERPRISE_STORES);
+        merchantTagRelListReq.setTagId(TagsConst.GOVERNMENT_ENTERPRISE_SUPPLIERS);
         ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(merchantTagRelListReq);
         log.info("MerchantController.pageMerchantWithRule() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(merchantTagRelListReq), JSON.toJSONString(listResultVO));
         if (null == listResultVO || !listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
@@ -575,7 +575,7 @@ public class MerchantController {
         }
         MerchantTagRelListReq req = new MerchantTagRelListReq();
         req.setMerchantId(curLoginUserDTO.getRelCode());
-        req.setTagId(TagsConst.GOVERNMENT_ENTERPRISE_SUPPLIERS);
+        req.setTagId(TagsConst.GOVERNMENT_ENTERPRISE_STORES);
         ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(req);
         log.info("MerchantController.governmentEnterpriseSuppliers() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(req), JSON.toJSONString(listResultVO));
         if (null != listResultVO && listResultVO.isSuccess() && !CollectionUtils.isEmpty(listResultVO.getResultData())) {

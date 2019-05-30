@@ -70,5 +70,24 @@
 			mrisr.SYNC_BATCH_ID DESC 
 		LIMIT 1
   </select>
+	<select id="getFileNameByDate" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
+    SELECT DISTINCT
+      ( t.SYNC_FILE_NAME ) SYNC_FILE_NAME
+    FROM
+      mkt_res_itms_sync_rec t
+    WHERE
+      t.status_cd = 0
+    AND t.CREATE_DATE LIKE #{date}
+  </select>
+
+	<update id="batchUpdateMRIyFileName" parameterType="java.util.List">
+		<foreach collection="list" separator=";" item="rep">
+			update mkt_res_itms_sync_rec
+			<set>
+			status_cd =#{rep.status_cd}
+			</set>
+			where SYNC_FILE_NAME=#{rep.syncFileName} and MKT_RES_INST_NBR=#{rep.mktResInstNbr}
+		</foreach>
+	</update>
 
 </mapper>

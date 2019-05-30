@@ -48,7 +48,7 @@ public class PayServiceImpl implements PayService {
     @Autowired
     private BPEPPayLogService bpepPayLogService;
 
-    //线下
+    //支付方式的入口
     @Override
     public ResultVO pay(PayOrderRequest request) {
         ResultVO resultVO = new ResultVO();

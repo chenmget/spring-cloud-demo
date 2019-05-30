@@ -72,29 +72,33 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             return ResultVO.error("新增采购发货记录失败");
         }
         //处理前端录入的串码数据
-        String productIdAndMktResInstNbr = req.getProductIdAndMktResInstNbr();
-        List<String> result = Arrays.asList(productIdAndMktResInstNbr.split(";"));
-        List<String> productIdList = Lists.newArrayList();
-        List<String> mktResInstNbrList = Lists.newArrayList();
-        for (int l = 0; l < result.size(); l++) {
-            if (l % 2 == 0) {
-                productIdList.add(result.get(l));
-            } else {
-                mktResInstNbrList.add(result.get(l));
-            }
+        //String productIdAndMktResInstNbr = req.getProductIdAndMktResInstNbr();
+      // List<String> result = Arrays.asList(productIdAndMktResInstNbr.split(";"));
+       // List<String> productIdList = Lists.newArrayList();
+        List<String> mktResInstNbr = Lists.newArrayList();
+        mktResInstNbr = req.getMktResInstNbr();
+        if(mktResInstNbr==null || mktResInstNbr.size()<=0) {
+            return ResultVO.error("没有收到串码记录");
         }
-        req.setProductIdList(productIdList);
-        req.setMktResInstNbrList(mktResInstNbrList);
+//        for (int l = 0; l < result.size(); l++) {
+//            if (l % 2 == 0) {
+//                productIdList.add(result.get(l));
+//            } else {
+//                mktResInstNbrList.add(result.get(l));
+//            }
+//        }
+//        req.setProductIdList(productIdList);
+//        req.setMktResInstNbrList(mktResInstNbrList);
         //通过采购申请单查询采购申请单项
         List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
 
         //新增采购申请单项明细
         List<PurApplyItemDetail> purApplyItemDetailList = Lists.newArrayList();
         for (int m = 0; m < purApplyItem.size(); m++) {
-            for (int n = 0; n < mktResInstNbrList.size(); n++) {
+            for (int n = 0; n < mktResInstNbr.size(); n++) {
                 PurApplyItemDetail purApplyItemDetail = new PurApplyItemDetail();
                 BeanUtils.copyProperties(req, purApplyItemDetail);
-                purApplyItemDetail.setMktResInstNbr(mktResInstNbrList.get(n));
+                purApplyItemDetail.setMktResInstNbr(mktResInstNbr.get(n));
                 purApplyItemDetail.setProductId(purApplyItem.get(m).getProductId());
                 purApplyItemDetail.setApplyItemId(purApplyItem.get(m).getApplyItemId());
                 purApplyItemDetailList.add(purApplyItemDetail);

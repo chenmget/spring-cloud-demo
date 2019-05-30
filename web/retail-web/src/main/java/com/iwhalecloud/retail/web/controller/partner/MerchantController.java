@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -104,12 +105,8 @@ public class MerchantController {
     })
     @RequestMapping(value = "/pageWithRule", method = RequestMethod.POST)
     public ResultVO<Page<MerchantPageResp>> pageMerchantWithRule(@RequestBody MerchantPageReq req) {
-        UserDTO curLoginUserDTO = UserContext.getUser();
-        if(curLoginUserDTO == null){
-            return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
-        }
         MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
-        merchantTagRelListReq.setMerchantId(curLoginUserDTO.getRelCode());
+        merchantTagRelListReq.setTagId(TagsConst.GOVERNMENT_ENTERPRISE_SUPPLIERS);
         ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(merchantTagRelListReq);
         log.info("MerchantController.pageMerchantWithRule() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(merchantTagRelListReq), JSON.toJSONString(listResultVO));
         if (null == listResultVO || !listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
@@ -117,10 +114,7 @@ public class MerchantController {
         }
         List<String> merchantIds = Lists.newArrayList();
         for (MerchantTagRelDTO merchantTagRelDTO : listResultVO.getResultData()) {
-            if (TagsConst.GOVERNMENT_ENTERPRISE_STORES.equals(merchantTagRelDTO.getTagId())) {
-                merchantIds.add(merchantTagRelDTO.getMerchantId());
-                continue;
-            }
+            merchantIds.add(merchantTagRelDTO.getMerchantId());
         }
         if (CollectionUtils.isEmpty(merchantIds)) {
             return ResultVO.error("没有政企供货标签的供应商可以做政企供货");
@@ -576,22 +570,16 @@ public class MerchantController {
     @RequestMapping(value = "/governmentEnterpriseSuppliers", method = RequestMethod.GET)
     public ResultVO<Boolean> governmentEnterpriseSuppliers() {
         UserDTO curLoginUserDTO = UserContext.getUser();
-        if(curLoginUserDTO == null){
+        if( curLoginUserDTO == null ){
             return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
         }
         MerchantTagRelListReq req = new MerchantTagRelListReq();
         req.setMerchantId(curLoginUserDTO.getRelCode());
+        req.setTagId(TagsConst.GOVERNMENT_ENTERPRISE_STORES);
         ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(req);
         log.info("MerchantController.governmentEnterpriseSuppliers() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(req), JSON.toJSONString(listResultVO));
-        if (null == listResultVO || !listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
-            return ResultVO.success(false);
-        }
-        MerchantTagRelDTO merchantTagRelRule = null;
-        for (MerchantTagRelDTO merchantTagRelDTO : listResultVO.getResultData()) {
-            if (TagsConst.GOVERNMENT_ENTERPRISE_SUPPLIERS.equals(merchantTagRelDTO.getTagId())) {
-                merchantTagRelRule = merchantTagRelDTO;
-                return ResultVO.success(true);
-            }
+        if (null != listResultVO && listResultVO.isSuccess() && !CollectionUtils.isEmpty(listResultVO.getResultData())) {
+            return ResultVO.success(true);
         }
         return ResultVO.success(false);
     }

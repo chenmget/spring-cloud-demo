@@ -29,7 +29,7 @@ public class PurApplyServiceImplTest  extends TestBase {
     @Test
     public void tcProcureApply() {
 //        System.out.println("1111"+purApplyService);
-        String applyId="1695";
+        String applyId="1694";
         ProcureApplyReq req = new ProcureApplyReq();
         req.setIsSave("2");
         req.setApplyId(applyId);

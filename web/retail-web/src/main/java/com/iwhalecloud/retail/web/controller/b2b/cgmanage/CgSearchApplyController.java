@@ -174,13 +174,46 @@ public class CgSearchApplyController extends BaseController {
 			purApplyService.delApplyFile(req);
 			
 			purApplyService.delPurApplyExt(req);
-			
+
+			List<AddProductReq> list = req.getAddProductReq();
+			for(int i=0;i<list.size();i++){
+				AddProductReq addProductReq = list.get(i);
+				String itemId = purApplyService.hqSeqItemId();
+				addProductReq.setApplyItemId(itemId);
+				addProductReq.setApplyId(req.getApplyId());
+				addProductReq.setStatusCd("1000");
+				addProductReq.setCreateStaff(createStaff);
+				addProductReq.setCreateDate(createDate);
+				addProductReq.setUpdateStaff(updateStaff);
+				addProductReq.setUpdateDate(updateDate);
+				addProductReq.setStatusDate(statusDate);
+				//写表PUR_APPLY_ITEM(采购申请单项)
+				purApplyService.crPurApplyItem(addProductReq);
+			}
+
 		}else{
+			List<AddProductReq> list = req.getAddProductReq();
+			for(int i=0;i<list.size();i++){
+				AddProductReq addProductReq = list.get(i);
+				String itemId = purApplyService.hqSeqItemId();
+				addProductReq.setApplyItemId(itemId);
+				addProductReq.setApplyId(req.getApplyId());
+				addProductReq.setStatusCd("1000");
+				addProductReq.setCreateStaff(createStaff);
+				addProductReq.setCreateDate(createDate);
+				addProductReq.setUpdateStaff(updateStaff);
+				addProductReq.setUpdateDate(updateDate);
+				addProductReq.setStatusDate(statusDate);
+				//写表PUR_APPLY_ITEM(采购申请单项)
+				purApplyService.crPurApplyItem(addProductReq);
+
+			}
+
 			purApplyService.tcProcureApply(req);
 		}
 		
 		//表里面没记录的话
-		
+
 		MemMemberAddressReq memMeneberAddr = purApplyService.selectMemMeneberAddr(req);
 		memMeneberAddr.setApplyId(applyId);
 		memMeneberAddr.setCreateStaff(createStaff);
@@ -188,23 +221,23 @@ public class CgSearchApplyController extends BaseController {
 		memMeneberAddr.setUpdateStaff(updateStaff);
 		memMeneberAddr.setUpdateDate(updateDate);
 		purApplyService.insertPurApplyExt(memMeneberAddr);
-		
-		List<AddProductReq> list = req.getAddProductReq();
-		for(int i=0;i<list.size();i++){
-			AddProductReq addProductReq = list.get(i);
-			String itemId = purApplyService.hqSeqItemId();
-			addProductReq.setApplyItemId(itemId);
-			addProductReq.setApplyId(req.getApplyId());
-			addProductReq.setStatusCd("1000");
-			addProductReq.setCreateStaff(createStaff);
-			addProductReq.setCreateDate(createDate);
-			addProductReq.setUpdateStaff(updateStaff);
-			addProductReq.setUpdateDate(updateDate);
-			addProductReq.setStatusDate(statusDate);
-			//写表PUR_APPLY_ITEM(采购申请单项)
-			purApplyService.crPurApplyItem(addProductReq);
-		}
-		
+
+//		List<AddProductReq> list = req.getAddProductReq();
+//		for(int i=0;i<list.size();i++){
+//			AddProductReq addProductReq = list.get(i);
+//			String itemId = purApplyService.hqSeqItemId();
+//			addProductReq.setApplyItemId(itemId);
+//			addProductReq.setApplyId(req.getApplyId());
+//			addProductReq.setStatusCd("1000");
+//			addProductReq.setCreateStaff(createStaff);
+//			addProductReq.setCreateDate(createDate);
+//			addProductReq.setUpdateStaff(updateStaff);
+//			addProductReq.setUpdateDate(updateDate);
+//			addProductReq.setStatusDate(statusDate);
+//			//写表PUR_APPLY_ITEM(采购申请单项)
+//			purApplyService.crPurApplyItem(addProductReq);
+//		}
+
 		List<AddFileReq> fileList = req.getAddFileReq();
 		if(fileList != null){
 			for(int i=0;i<fileList.size();i++){

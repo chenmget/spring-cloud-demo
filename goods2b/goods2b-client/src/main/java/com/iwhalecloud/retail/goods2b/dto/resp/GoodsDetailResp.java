@@ -258,7 +258,7 @@ public class GoodsDetailResp implements Serializable {
     private Integer isAdvanceSale;
 
     /**
-     * 是否预售商品
+     * 是否前置补贴商品
      */
     @ApiModelProperty(value = "是否前置补贴商品 1.是 0.否")
     private Integer isSubsidy;

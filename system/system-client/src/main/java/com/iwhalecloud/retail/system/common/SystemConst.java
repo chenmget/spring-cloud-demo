@@ -40,13 +40,14 @@ public class SystemConst {
     // 用户 founder 类型
     public static final int USER_FOUNDER_0 = 0; // 电信员工(终端公司运营人员)
     public static final int USER_FOUNDER_1 = 1; // 超级管理员
-    public static final int USER_FOUNDER_2 = 2; // 普通管理员
+    public static final int USER_FOUNDER_2 = 2; // 省管理员
     public static final int USER_FOUNDER_3 = 3; // 零售商（店中商）
     public static final int USER_FOUNDER_4 = 4; // 供货商：省包
     public static final int USER_FOUNDER_5 = 5; // 供货商：地包
     public static final int USER_FOUNDER_6 = 6; // 代理商：店员
     public static final int USER_FOUNDER_7 = 7; // 经营主体
     public static final int USER_FOUNDER_8 = 8; // 厂商
+    public static final int USER_FOUNDER_9 = 9; // 地市管理员
 
     // 商家相关人员
     public static final int USER_FOUNDER_11 = 11; // 销售人员

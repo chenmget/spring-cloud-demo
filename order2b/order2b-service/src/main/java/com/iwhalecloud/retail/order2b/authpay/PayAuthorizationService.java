@@ -89,6 +89,8 @@ public class PayAuthorizationService {
         Order order = new Order();
         order.setOrderId(orderId);
         Order resOrder = orderMapper.getOrderById(order);
+        
+        //预售付两次钱
         if("1".equals(resOrder.getOrderCat())){ //预售
             AdvanceOrder advanceOrder = new AdvanceOrder();
             advanceOrder.setOrderId(orderId);
@@ -138,7 +140,7 @@ public class PayAuthorizationService {
     }
 
     /**
-     * 授权确认
+                  * 授权确认
      */
     public boolean authorizationConfirmation(String orderId){
         return this.AuthorizationConfAndCancellation(orderId, payConfirmMethod);
@@ -156,9 +158,19 @@ public class PayAuthorizationService {
         Order order = new Order();
         order.setOrderId(orderId);
         Order resOrder = orderMapper.getOrderById(order);
+//        String payMoney = resOrder.getOrderAmount().toString();
+//        String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
+//        String payTransId = resOrder.getPayTransId();
+//        if(payTransId != null && !"".equals(payTransId)){
+//            String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+//            Map<String, Object> resultCall = call(callUrl, orderId, null, reqSeq, payTransId, resPayMoney);
+//            return (boolean)resultCall.get("flag");
+//        }
+        
 //        if(!"1".equals(resOrder.getPayType())){//判断是否是翼支付的订单。现在在外层做判断，如果不是翼支付的支付方式，不进入此方法
 //            return true;
 //        }
+        //预售的话定金和尾款有两次钱
         if("1".equals(resOrder.getOrderCat())){ //预售
             AdvanceOrder advanceOrder = new AdvanceOrder();
             advanceOrder.setOrderId(orderId);
@@ -221,7 +233,7 @@ public class PayAuthorizationService {
         preAuthorizationApplyRequest.setReqIp(ipStr);
         preAuthorizationApplyRequest.setTrsSummary("summary");
         preAuthorizationApplyRequest.setTrsMemo("memo");
-        preAuthorizationApplyRequest.setExternalId("EXT_ORDER_ID29_" + orderId); // 订单号
+        preAuthorizationApplyRequest.setExternalId("EXT_ORDER_ID_" + orderId); // 订单号
         preAuthorizationApplyRequest.setCurrencyCode("RMB");
         preAuthorizationApplyRequest.setTransactionAmount(payMoney); // 交易金额
         preAuthorizationApplyRequest.setPayeeLoginCode(result.get("account").toString()); //收款方登录号

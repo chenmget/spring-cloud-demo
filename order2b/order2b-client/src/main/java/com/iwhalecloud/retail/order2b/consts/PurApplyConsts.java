@@ -35,6 +35,11 @@ public class PurApplyConsts {
     /**
      * 采购申请单审核流程
      */
+    public final static String PUR_APPLY_AUDIT_SGS_PROCESS_ID = "528";
+
+    /**
+     * 采购申请单审核流程
+     */
     public final static String PURCHASE_AUDIT_PROCESS_ID = "18";
 
     /**
@@ -46,6 +51,11 @@ public class PurApplyConsts {
      * 申请单状态：审核通过
      */
     public final static String PUR_APPLY_STATUS_PASS = "70";
+
+    /**
+     * 申请单状态省公司审核 ：审核通过
+     */
+    public final static String SGS_PUR_APPLY_STATUS_PASS = "21";
 
     /**
      * 申请单状态：审核不通过

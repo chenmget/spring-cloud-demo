@@ -86,29 +86,14 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
     //收货确认
     @Override
     public ResultVO receiveGoods(ReceiveGoodsReq request) {
-        //TODO 2、预授权支付确认 调用不成功，收货失败 谢杞
 
         ResultVO resultVO = new ResultVO();
         if(request.getOrderId() == null) {
         	return ResultVO.error("订单号为空！");
         }
-
-      //TODO 2修改订单状态时调用翼支付确认支付接口 谢杞
-        Order order = new Order();
-        order.setOrderId(request.getOrderId());
-        Order resOrder = orderMapper.getOrderById(order);
-        if("1".equals(resOrder.getPayType())) {//判断是不是翼支付
-        	Boolean flag = payAuthorizationService.authorizationConfirmation(request.getOrderId());
-        	if(!flag){
-            	resultVO.setResultMsg("关闭订单，翼支付预授权确认失败。");
-            	resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            	return resultVO;
-            }
-        }
-        
         
         /**
-         * 找出换货的串码
+                              * 找出换货的串码
          */
         HHReceiveGoodsModel hhReceiveGoodsModel=afterSalesHHService.hhResNbrNumList(request);
 
@@ -149,7 +134,26 @@ public class OrderDRGoodsOpenServiceImpl implements OrderDRGoodsOpenService {
             }
         }
 
-
+        //TODO 2修改订单状态时调用翼支付确认支付接口
+        Order order = new Order();
+        order.setOrderId(request.getOrderId());
+        Order resOrder = orderMapper.getOrderById(order);
+        List<OrderItem> list = orderManager.selectOrderItemsList(order.getOrderId());
+        int num = 0;
+        int receiveNum = 0;
+        for(int i=0;i<list.size();i++) {
+        	OrderItem orderItem = list.get(i);
+        	num += orderItem.getNum();
+        	receiveNum += orderItem.getReceiveNum();
+        }
+        if("1".equals(resOrder.getPayType()) && num == receiveNum) {//判断是不是翼支付,判断是不是最后一笔收货订单
+        	Boolean flag = payAuthorizationService.authorizationConfirmation(request.getOrderId());
+        	if(!flag){
+            	resultVO.setResultMsg("关闭订单，翼支付预授权确认失败。");
+            	resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            	return resultVO;
+            }
+        }
         resultVO.setResultCode(commonResultResp.getResultCode());
         resultVO.setResultMsg(commonResultResp.getResultMsg());
         return resultVO;

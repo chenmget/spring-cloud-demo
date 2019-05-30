@@ -140,7 +140,7 @@ public class PayAuthorizationService {
     }
 
     /**
-     * 授权确认
+                  * 授权确认
      */
     public boolean authorizationConfirmation(String orderId){
         return this.AuthorizationConfAndCancellation(orderId, payConfirmMethod);

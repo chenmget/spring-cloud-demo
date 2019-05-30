@@ -261,7 +261,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         for (String mktResInstNbr : mktResInstNbrList) {
             ResourceInstsGetReq getReq = new ResourceInstsGetReq();
             getReq.setMktResId(req.getMktResId());
-            getReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
+            getReq.setStatusCd(req.getStatusCd());
             getReq.setMktResInstNbrs(Lists.newArrayList(mktResInstNbr));
             getReq.setMktResStoreId(req.getDestStoreId());
             List<ResourceInstDTO> resourceInstDTO = resourceInstManager.getResourceInsts(getReq);
@@ -581,9 +581,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 //step 3:修改状态
                 AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
                 BeanUtils.copyProperties(req, adminResourceInstDelReq);
-                List<String> mktResInstList = new ArrayList<>();
-                mktResInstList.add(dto.getMktResInstId());
-                adminResourceInstDelReq.setMktResInstIdList(mktResInstList);
+                List<String> mktResInstIdList = new ArrayList<>();
+                mktResInstIdList.add(dto.getMktResInstId());
+                adminResourceInstDelReq.setMktResInstIdList(mktResInstIdList);
+                adminResourceInstDelReq.setMktResStoreId(req.getDestStoreId());
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
                 log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(num));
                 if(num < 1){
@@ -598,6 +599,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             // step 4:修改库存
             ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
             BeanUtils.copyProperties(inst, resourceInstStoreDTO);
+            resourceInstStoreDTO.setMerchantId(req.getMerchantId());
             resourceInstStoreDTO.setQuantity(Long.valueOf(sucessNum));
             String statusCd = req.getStatusCd();
             if (ResourceConst.STATUSCD.AVAILABLE.getCode().equals(statusCd)) {

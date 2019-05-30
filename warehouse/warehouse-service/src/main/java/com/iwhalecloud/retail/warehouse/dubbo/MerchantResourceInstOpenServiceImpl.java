@@ -82,4 +82,9 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
         resouceInstTrackService.asynSaveTrackForMerchant(req, resp, newlist);
         return resp;
     }
+
+    @Override
+    public ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req){
+        return merchantResourceInstService.queryForExport(req);
+    }
 }

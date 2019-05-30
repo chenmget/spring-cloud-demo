@@ -235,4 +235,11 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
         return resp;
     }
 
+    /**
+     * 根据查询条件串码实列(手动分页，插件自带的线程不安全)
+     * @return
+     */
+    public List<ResourceInstListPageResp> getResourceInstListManual(ResourceInstListPageReq req){
+        return resourceInstMapper.getResourceInstListManual(req);
+    }
 }

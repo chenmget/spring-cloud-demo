@@ -77,4 +77,11 @@ public interface MerchantResourceInstService {
      */
     ResultVO addResourceInstByAdmin(ResourceInstAddReq req);
 
+    /**
+     * 查询导出的串码
+     * @param req
+     * @return
+     */
+    ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req);
+
 }

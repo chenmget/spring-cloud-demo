@@ -20,15 +20,13 @@ import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ConfirmRecive
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAllocateReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstUpdateByIdReqDTO;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExportCSVUtils;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ResourceInstColum;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -37,6 +35,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -186,25 +185,22 @@ public class SupplierResourceInstB2BController {
     @PostMapping(value="nbrExport")
     @UserLoginToken
     public void nbrExport(@RequestBody ResourceInstListPageReq req, HttpServletResponse response) {
-        ResultVO<Page<ResourceInstListPageResp>> dataVO = supplierResourceInstService.getResourceInstList(req);
+        ResultVO<List<ResourceInstListPageResp>> dataVO = supplierResourceInstService.queryForExport(req);
         if (!dataVO.isSuccess()) {
             return;
         }
-        List<ResourceInstListPageResp> list = dataVO.getResultData().getRecords();
-        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
+        List<ResourceInstListPageResp> list = dataVO.getResultData();
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.queryForExport req={}, num={}", JSON.toJSONString(req), list.size());
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.supplierColumn();
         try{
-            //创建Excel
-            Workbook workbook = new HSSFWorkbook();
-            String fileName = "串码列表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames, false);
-
             OutputStream output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
+            String fileName = "串码列表";
+            ExportCSVUtils.doExport(output, list, excelTitleNames, false);
+            response.setContentType("application/ms-txt.numberformat:@");
             response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
+            response.setHeader("Pragma", "public");
+            response.setHeader("Cache-Control", "max-age=30");
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
             output.close();
         }catch (Exception e){
             log.error("串码导出失败",e);

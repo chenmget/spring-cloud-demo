@@ -881,4 +881,39 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         return resourceInstManager.getPrimaryKey();
     }
 
+    @Override
+    public synchronized List<ResourceInstListPageResp> getResourceInstListManual(ResourceInstListPageReq req) {
+        req = setProductIds(req);
+        List<ResourceInstListPageResp> list = resourceInstManager.getResourceInstListManual(req);
+        log.info("ResourceInstServiceImpl.getResourceInstList resourceInstManager.getResourceInstListManual req={}", JSON.toJSONString(req));
+        if (CollectionUtils.isEmpty(list)) {
+            return list;
+        }
+        // 添加产品信息
+        for (ResourceInstListPageResp resp : list) {
+            ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
+            log.info("ResourceInstServiceImpl.getResourceInstList  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
+            MerchantDTO merchantDTO = merchantResultVO.getResultData();
+            if (null != merchantDTO) {
+                resp.setRegionName(merchantDTO.getCityName());
+                resp.setLanName(merchantDTO.getLanName());
+                resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+            }
+            String productId = resp.getMktResId();
+            if (StringUtils.isBlank(productId)) {
+                continue;
+            }
+            ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
+            queryReq.setProductId(productId);
+            ResultVO<List<ProductResourceResp>> resultVO = productService.getProductResource(queryReq);
+            log.info("ResourceInstServiceImpl.getResourceInstList productService.getProductResource req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(resultVO));
+            List<ProductResourceResp> prodList = resultVO.getResultData();
+            if (null != prodList && !prodList.isEmpty()) {
+                ProductResourceResp prodResp = prodList.get(0);
+                BeanUtils.copyProperties(prodResp, resp);
+            }
+        }
+        return list;
+    }
+
 }

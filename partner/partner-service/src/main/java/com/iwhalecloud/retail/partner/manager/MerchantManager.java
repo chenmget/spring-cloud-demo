@@ -125,6 +125,10 @@ public class MerchantManager {
     public List<MerchantDTO> listMerchant(MerchantListReq req){
         QueryWrapper<Merchant> queryWrapper = new QueryWrapper<Merchant>();
         Boolean hasParam = false;
+        if(!StringUtils.isEmpty(req.getAssignedFlg())){
+            hasParam = true;
+            queryWrapper.eq(Merchant.FieldNames.assignedFlg.getTableFieldName(), req.getAssignedFlg());
+        }
         if(!StringUtils.isEmpty(req.getMerchantCode())){
             hasParam = true;
             queryWrapper.like(Merchant.FieldNames.merchantCode.getTableFieldName(), req.getMerchantCode());
@@ -185,7 +189,8 @@ public class MerchantManager {
                 Merchant.FieldNames.parCrmOrgId.getTableFieldName(),
                 Merchant.FieldNames.parCrmOrgCode.getTableFieldName(),
                 Merchant.FieldNames.linkman.getTableFieldName(),
-                Merchant.FieldNames.phoneNo.getTableFieldName()
+                Merchant.FieldNames.phoneNo.getTableFieldName(),
+                Merchant.FieldNames.assignedFlg.getFieldName()
         );
 
         List<MerchantDTO> merchantDTOList = Lists.newArrayList();

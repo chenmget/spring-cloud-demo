@@ -72,4 +72,9 @@ public class MerchantListReq implements Serializable {
     @ApiModelProperty(value = "(商家)CRM组织ID集合")
     private List<String> parCrmOrgIdList;
 
+    /**
+     * 是否已赋权
+     */
+    @ApiModelProperty(value = "是否已赋权")
+    private java.lang.String assignedFlg;
 }

@@ -453,8 +453,10 @@ public class PromoConst {
     public enum AuditState {
         AuditState_1("1","待提交"),
         AuditState_2("2","审核中"),
-        AuditState_3("3","审核通过"),
-        AuditState_4("4","审核不通过");
+        AuditState_3("3","初审通过"),
+        AuditState_4("4","初审不通过"),
+        AuditState_5("5","终审通过"),
+        AuditState_6("6","终审不通过");
 
         private String code;
         private String name;
@@ -579,4 +581,37 @@ public class PromoConst {
             this.code = code;
         }
     }
+
+    /**
+     * 营销活动是否修改审批中
+     */
+    public enum ActivityIsModifying {
+        NO("0","不在修改审批中"),
+        YES("1","在修改审批中");
+
+        private String code;
+        private String name;
+
+        ActivityIsModifying(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
 }

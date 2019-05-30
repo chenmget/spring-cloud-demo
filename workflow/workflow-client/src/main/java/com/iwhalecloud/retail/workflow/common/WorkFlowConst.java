@@ -321,7 +321,12 @@ public class WorkFlowConst {
         TASK_SUB_TYPE_3010("1","3010","录入固网串码审批流程"),
         TASK_SUB_TYPE_3020("1","3020","采购申请单审核流程"),
         TASK_SUB_TYPE_3040("1","3040","采购申请单审核流程"),
-        TASK_SUB_TYPE_3030("1","3030","采购申审核流程");
+        TASK_SUB_TYPE_3030("1","3030","采购申审核流程"),
+        TASK_SUB_TYPE_3040301("1","3040301","地包商管理"),
+        TASK_SUB_TYPE_3040501("1","3040501","厂商管理"),
+        TASK_SUB_TYPE_3040601("1","3040601","国/省包管理3"),
+        TASK_SUB_TYPE_1142("1","1142","变更营销活动流程");
+
 
         private String taskType;
         private String taskSubType;

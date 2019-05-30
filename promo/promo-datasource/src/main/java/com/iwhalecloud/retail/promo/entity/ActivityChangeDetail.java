@@ -27,7 +27,7 @@ public class ActivityChangeDetail implements Serializable {
   	/**
   	 * 产品变更明细id
   	 */
-	@TableId(type = IdType.ID_WORKER)
+	@TableId(type = IdType.ID_WORKER_STR)
 	@ApiModelProperty(value = "产品变更明细id")
   	private java.lang.String changeDetailId;
   	

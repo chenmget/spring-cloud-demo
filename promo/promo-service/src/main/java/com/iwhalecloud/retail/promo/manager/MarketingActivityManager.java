@@ -238,17 +238,17 @@ public class MarketingActivityManager{
         queryWrapper.in(MarketingActivity.FieldNames.id.getTableFieldName(), idList);
         return marketingActivityMapper.selectList(queryWrapper);
     }
-    /**
-     * 根据活动ID更新状态
-     * @param marketingActivityId
-     * @return
-     */
-    public ResultVO<Boolean> updateMarketingActivityStatus(String marketingActivityId){
-        MarketingActivity marketingActivity = new MarketingActivity();
-        marketingActivity.setId(marketingActivityId);
-        marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_10.getCode());
-        return ResultVO.success(marketingActivityMapper.updateById(marketingActivity) > 0);
-    }
+//    /**
+//     * 根据活动ID更新状态
+//     * @param marketingActivityId
+//     * @return
+//     */
+//    public ResultVO<Boolean> updateMarketingActivityStatus(String marketingActivityId){
+//        MarketingActivity marketingActivity = new MarketingActivity();
+//        marketingActivity.setId(marketingActivityId);
+//        marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_10.getCode());
+//        return ResultVO.success(marketingActivityMapper.updateById(marketingActivity) > 0);
+//    }
 
 
     /**
@@ -395,5 +395,27 @@ public class MarketingActivityManager{
 
         }
         return marketingActivityMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 更新营销活动
+     * @param marketingActivity
+     * @return
+     */
+    public Integer updateMarketingActivity(MarketingActivity marketingActivity) {
+        return marketingActivityMapper.updateById(marketingActivity);
+    }
+
+    /**
+     * 更新营销活动修改状态标识
+     * @param activityId 营销活动id
+     * @param isModifying 营销活动修改标识
+     * @return
+     */
+    public Integer updateMarketingActivityToModifiying(String activityId,String isModifying) {
+        MarketingActivity marketingActivity = new MarketingActivity();
+        marketingActivity.setId(activityId);
+        marketingActivity.setIsModifiying(isModifying);
+        return marketingActivityMapper.updateById(marketingActivity);
     }
 }

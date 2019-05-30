@@ -19,4 +19,10 @@ public interface ActivityChangeMapper extends BaseMapper<ActivityChange>{
      */
     String getPrimaryKey();
 
+    /**
+     * 根据营销活动id查找最新的一次活动修改记录
+     * @param activityId
+     * @return
+     */
+    ActivityChange queryLatestActivityChangeByActivityId(String activityId);
 }

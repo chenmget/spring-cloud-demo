@@ -46,7 +46,7 @@ public class ActivityChange implements Serializable {
   	/**
   	 * 审核状态：1 待提交，2 审核中，3 审核通过，4 审核不通过
   	 */
-	@ApiModelProperty(value = "审核状态：1 待提交，2 审核中，3 审核通过，4 审核不通过")
+	@ApiModelProperty(value = "审核状态：1 待提交，2 审核中，3 审核通过，4初审不通过，5 终审不通过")
   	private java.lang.String auditState;
   	
   	/**

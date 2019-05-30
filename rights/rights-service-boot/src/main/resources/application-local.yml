@@ -2,7 +2,7 @@ project:
   name: 本机环境
 
 server:
-  port: 8084
+  port: 8074
 
 spring:
   dubbo:
@@ -13,7 +13,7 @@ spring:
       address: zookeeper://localhost:2181
     protocol:
       name: dubbo
-      port: 20884
+      port: 20874
     scan: com.iwhalecloud.retail
 
   #i18n国际化配置

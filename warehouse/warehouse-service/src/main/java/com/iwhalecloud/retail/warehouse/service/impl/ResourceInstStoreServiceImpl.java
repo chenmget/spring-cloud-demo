@@ -53,12 +53,12 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private String gmAdd;
     @Value("${ftp.iptvAdd}")
     private String iptvAdd;
- 
+
     @Value("${ftp.gmModify}")
     private String gmModify;
     @Value("${ftp.iptvModify}")
     private String iptvModify;
-  
+
     @Value("${ftp.gmDelete}")
     private String gmDelete;
     @Value("${ftp.iptvDelete}")
@@ -259,7 +259,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         } else {
             resourceInstMapper.updateCfValueByCfId(CONF_STR, sdf.format(startDate));
         }
-        
+
         //删除临时文件
         if (dir.isDirectory()) {
             String[] children = dir.list();
@@ -282,11 +282,11 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         List<Map<String, String>> mktList = null;
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {
-        	
+
         	String sendDir = getSendDir(brand, ops);
         	mktList = mktResItmsSyncRecMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate);
         	if (mktList.size() <= 0) continue;
-        	
+
         	String seqStr = mktResItmsSyncRecMapper.getSeqBysendDir(sendDir+"/"+latIdList.get(i));
         	String resStr = "0";
         	if(StringUtils.isNotBlank(seqStr)){
@@ -311,7 +311,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 }
                 pw.write(mktList.get(j).get("itmsStr"));
                 pw.println();
-                
+
                 String syncFileName = sendDir+"/"+destFileName;
                 mktResItmsSyncRecMapper.updateFileNameById(mktList.get(j).get("id"), syncFileName, time + seq);
 

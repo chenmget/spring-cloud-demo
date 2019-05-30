@@ -214,7 +214,7 @@ public class PayAuthorizationService {
         return false;
     }
 
-    private Map<String, Object> call(String callUrl, String orderId, String operationType, String reqSeq, String originalTransSeq, String payMoney){
+    public Map<String, Object> call(String callUrl, String orderId, String operationType, String reqSeq, String originalTransSeq, String payMoney){
 
         TradeCertificate certificate = CertificateUtil.getTradeCertificate(CertificateUtil.KEYSTORETYPE_JKS, true);
         BestpayHandler bestpayHandler = new BestpayHandler(certificate);

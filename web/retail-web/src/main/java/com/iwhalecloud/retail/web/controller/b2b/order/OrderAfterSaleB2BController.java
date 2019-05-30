@@ -48,7 +48,7 @@ public class OrderAfterSaleB2BController {
         return orderAfterSaleOpenService.createAfter(request);
     }
     /**
-     * 创建换货申请单时，查询换货用户的名称
+                 * 创建换货申请单时，查询换货用户的名称
      */
     @RequestMapping(value = "/getHHUserInfo", method = RequestMethod.POST)
     @UserLoginToken

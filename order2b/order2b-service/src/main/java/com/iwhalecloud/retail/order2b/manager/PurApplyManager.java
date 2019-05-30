@@ -141,7 +141,12 @@ public class PurApplyManager {
 	public void commitPriceExcel(UpdateCorporationPriceReq req){
 		purApplyMapper.commitPriceExcel(req);
 	}
-	public int comparePrice(String priceInStoreMax){
-		return purApplyMapper.comparePrice(priceInStoreMax);
+	public int comparePrice(String applyId){
+		return purApplyMapper.comparePrice(applyId);
 	}
+
+	public void updatePurApplyStatusCd(ProcureApplyReq req){
+		purApplyMapper.updatePurApplyStatusCd(req);
+	}
+
 }

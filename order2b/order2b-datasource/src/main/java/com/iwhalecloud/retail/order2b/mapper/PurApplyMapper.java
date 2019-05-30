@@ -78,6 +78,8 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public void commitPriceExcel(@Param("req") UpdateCorporationPriceReq req);
 
-	public int comparePrice(@Param("priceInStoreMax") String applyId);
+	public int comparePrice(@Param("applyId") String applyId);
+
+	public void updatePurApplyStatusCd(@Param("req") ProcureApplyReq req);
 
 }

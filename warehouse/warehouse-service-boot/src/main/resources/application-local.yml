@@ -10,7 +10,7 @@ spring:
       name: warehouse-provider
     registry:
 #      address: zookeeper://10.45.47.87:2285
-      address: zookeeper://localhost:2181
+      address: zookeeper://127.0.0.1:2181
     protocol:
       name: dubbo
       port: 20886
@@ -95,11 +95,11 @@ webService:
 
 #ITMS文件入库
 ftp:
-  basePath: D:/Users/mkt2itms
-  ftpAddress: 127.0.0.1
+  basePath: src/main/resources/mkt2itms
+  ftpAddress: 134.176.97.50
   ftpPort: 21
-  ftpUserName: Administrator
-  ftpPassword: xieqi5200
+  ftpUserName: itsm_y
+  ftpPassword: AerxygC4n88#
   gmAdd: /data/back/Terminal/add
   iptvAdd: /data/back/IPTV/add
   gmModify: /data/back/Terminal/modify

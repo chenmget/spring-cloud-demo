@@ -323,7 +323,10 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
          FTPClient ftpClient = connectedToftpServer();
 
-         sendFileToFtp(ftpClient, files, brand, ops);
+        getFileFromFtp(ftpClient, files, brand, ops);
+
+
+        sendFileToFtp(ftpClient, files, brand, ops);
 
          files.clear();
 
@@ -411,6 +414,49 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     }
 
     /**
+     * 回传文件
+     *
+     * @param ftpClient
+     * @param files
+     */
+    private void getFileFromFtp(FTPClient ftpClient, List<String> files, String brand, String[] ops) {
+        String sendDir = null;
+        // 判断传送目录
+        sendDir = getSendDir(brand, ops);
+        InputStream is = null;
+        try {
+            Boolean flag = ftpClient.changeWorkingDirectory(sendDir);
+            ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+            //传输模式
+            ftpClient.enterLocalPassiveMode();
+            for (int i = 0; i < files.size(); i++) {
+                readFile(ftpClient, files.get(i));
+            }
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+
+    }
+
+    public String readFile(FTPClient ftpClient, String fileName) {
+        InputStream ins = null;
+        StringBuilder builder = null;
+        try {
+            // 从服务器上读取指定的文件
+            ins = ftpClient.retrieveFileStream(fileName);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
+            String line;
+            builder = new StringBuilder(150);
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+                builder.append(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return builder.toString();
+    }
+    /**
      * 创建FTPClient客户端
      *
      * @return
@@ -452,6 +498,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     //获取返回的文件路径
     public String getReturnDir(String brand, String[] ops){
+        String baseDir = "/home/itsm_y/itmsfile";
         String sendDir = "";
         if (brands[0].equals(brand)) {
             // 光猫
@@ -480,6 +527,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     }
 
     public String getSendDir(String brand, String[] ops){
+        String baseDir = "/home/itsm_y/itmsfile";
     	String sendDir = "";
     	if (brands[0].equals(brand)) {
             // 光猫
@@ -504,7 +552,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 sendDir = iptvDelete;
             }
         }
-        return sendDir;
+        return baseDir+sendDir;
     }
 
 }

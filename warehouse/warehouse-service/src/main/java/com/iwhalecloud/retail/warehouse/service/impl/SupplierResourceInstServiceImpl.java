@@ -370,6 +370,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstUpdateReq.setMerchantId(req.getSellerMerchantId());
             ResultVO delRS = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
             log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resourceInstService.delResourceInst req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(delRS));
+            if (delRS == null || !delRS.isSuccess()) {
+                return ResultVO.error(delRS.getResultMsg());
+            }
         }
         // 下单是增加了在途数量，发货时减去
         if (null != req.getUpdateStockReq()) {

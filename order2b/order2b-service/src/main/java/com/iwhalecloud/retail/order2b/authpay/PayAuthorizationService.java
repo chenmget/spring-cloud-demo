@@ -97,11 +97,12 @@ public class PayAuthorizationService {
             AdvanceOrder resAdvanceOrder = advanceOrderMapper.selectAdvanceOrderByOrderId(advanceOrder);
             Map<String, Object> resultCall = null;
             boolean flag = true;
-            if("0".equals(resAdvanceOrder.getAdvancePayStatus())){ // 支付定金
+            if("0".equals(resAdvanceOrder.getAdvancePayStatus())){ // 支付定金，定金直接扣掉
                 String payAdvanceMoney = resAdvanceOrder.getAdvanceAmount().toString();
                 String payAdvMoney = payAdvanceMoney.substring(0, payAdvanceMoney.indexOf('.'));
                 String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
-                resultCall = call(payAuthMethod, orderId, operationType, reqSeq, null, payAdvMoney);
+                resultCall = djCall(payAuthMethod, orderId, operationType, reqSeq, null, payAdvMoney);
+                resultCall = djCall(payConfirmMethod, orderId, operationType, reqSeq, null, payAdvMoney);
                 boolean advFlag = (boolean)resultCall.get("flag");
                 if(advFlag){
                     // 保存订单交易流水
@@ -255,6 +256,48 @@ public class PayAuthorizationService {
         return resultInvoke;
     }
 
+    private Map<String, Object> djCall(String callUrl, String orderId, String operationType, String reqSeq, String originalTransSeq, String payMoney){
+
+        TradeCertificate certificate = CertificateUtil.getTradeCertificate(CertificateUtil.KEYSTORETYPE_JKS, true);
+        BestpayHandler bestpayHandler = new BestpayHandler(certificate);
+        BestpayServiceV3 bestpayService = new BestpayServiceV3(bestpayHandler);
+        Map<String, Object> resultInvoke = new HashMap<String, Object>();
+        //查找到当前用户的翼支付账户
+        String loginCode = orderMapper.findPayAccountByOrderId(orderId); //account
+
+        // 通过订单找到供应商订单账号，金额
+        Map<String, Object> result = orderMapper.findReptAccountAndMoneyByOrderId(orderId);
+
+        PreAuthorizationApplyDTO preAuthorizationApplyRequest = new PreAuthorizationApplyDTO();
+        preAuthorizationApplyRequest.setReqSeq(reqSeq);
+        preAuthorizationApplyRequest.setLoginCode(loginCode);// 登录号
+        preAuthorizationApplyRequest.setPlatCode(platCode);
+        preAuthorizationApplyRequest.setRequestTime(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.now()));
+        preAuthorizationApplyRequest.setReqIp(ipStr);
+        preAuthorizationApplyRequest.setTrsSummary("summary");
+        preAuthorizationApplyRequest.setTrsMemo("memo");
+        preAuthorizationApplyRequest.setExternalId("DJ_EXT_ORDER_ID_" + orderId); // 订单号
+        preAuthorizationApplyRequest.setCurrencyCode("RMB");
+        preAuthorizationApplyRequest.setTransactionAmount(payMoney); // 交易金额
+        preAuthorizationApplyRequest.setPayeeLoginCode(result.get("account").toString()); //收款方登录号
+        preAuthorizationApplyRequest.setOriginalTransSeq(originalTransSeq);
+        try {
+            resultInvoke = bestpayService.invoke(callUrl, preAuthorizationApplyRequest, platformCode, certificate.getIv(), zopSecret, zopUrl);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+//        SaveLogModel saveLogModel = new SaveLogModel();
+//        saveLogModel.setPayId(reqSeq);
+//        saveLogModel.setOrderId(orderId);
+//        saveLogModel.setOrderAmount(payMoney);
+//        saveLogModel.setPayStatus(b?PayConsts.PAY_STATUS_1:PayConsts.PAY_STATUS_0);
+//        saveLogModel.setRequestType(PayConsts.REQUEST_TYPE_1004);
+//        saveLogModel.setOperationType(operationType);
+//        bpepPayLogService.saveLog(saveLogModel);
+
+        return resultInvoke;
+    }
+    
     public String findPayAccountByOrderId(String orderId) {
         return orderMapper.findPayAccountByOrderId(orderId);
     }

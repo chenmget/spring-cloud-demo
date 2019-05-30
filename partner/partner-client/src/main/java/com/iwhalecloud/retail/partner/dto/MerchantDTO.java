@@ -157,4 +157,9 @@ public class MerchantDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "旧平台客户编号")
 	private java.lang.String oldCustId;
 
+	/**
+	 * TOP商级别
+	 */
+	@ApiModelProperty(value = "是否已赋权")
+	private java.lang.String assignedFlg;
 }

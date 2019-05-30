@@ -157,7 +157,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     @Override
     public ResultVO openToBookingPay(OffLinePayReq req) {
         ResultVO resultVO = new ResultVO();
-        log.info("BestPayEnterprisePaymentOpenServiceImpl.authAppPay req={}", JSON.toJSONString(req));
+        log.info("BestPayEnterprisePaymentOpenServiceImpl.openToBookingPay req={}", JSON.toJSONString(req));
         Map<String, Object> resultMap = payAuthorizationService.authorizationApplication(req.getOrderId(), req.getOperationType());
         if(!(Boolean) resultMap.get("flag")){
             resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);

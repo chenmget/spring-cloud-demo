@@ -117,8 +117,9 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             MerchantGetReq merchantGetReq = new MerchantGetReq();
             merchantGetReq.setMerchantId(req.getMerchantId());
             Merchant merchant = merchantManager.getMerchant(merchantGetReq);
-            //没有赋权
-            if(null!=merchant && PartnerConst.AssignedFlgEnum.NO.getType().equals(merchant.getAssignedFlg())){
+            //是地包 并且 没有赋权
+            if(null!=merchant && PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchant.getMerchantType()) &&
+                    PartnerConst.AssignedFlgEnum.NO.getType().equals(merchant.getAssignedFlg())){
                 this.merchantAssigned(merchant.getMerchantId());
             }
         }

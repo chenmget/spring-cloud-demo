@@ -627,6 +627,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                         marketingAndPromotionResp.setPromotionPrice(String.valueOf(activityGoodsList.get(k).getDiscountAmount()));
                         marketingAndPromotionResp.setProductId(activityGoodsList.get(k).getProductId());
                         marketingAndPromotionResp.setNum(activityGoodsList.get(k).getNum());
+
                         respList.add(marketingAndPromotionResp);
                     }
                 }
@@ -1250,7 +1251,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         processStartDTO.setFormId(activityId);
         processStartDTO.setParamsType(2);
         processStartDTO.setParamsValue(changeId);
-        //TASK_SUB_TYPE_1142("1","1142","变更营销活动流程");
+        //TASK_SUB_TYPE_1142("1","1142","营销活动变更流程");
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1142.getTaskSubType());
         log.info("MarketingActivityServiceImpl.activityChangeAuitStartProcess req={}",JSON.toJSONString(processStartDTO));
         //开启流程

@@ -233,7 +233,7 @@ public class PayAuthorizationService {
         preAuthorizationApplyRequest.setReqIp(ipStr);
         preAuthorizationApplyRequest.setTrsSummary("summary");
         preAuthorizationApplyRequest.setTrsMemo("memo");
-        preAuthorizationApplyRequest.setExternalId("EXT_ORDER_ID29_" + orderId); // 订单号
+        preAuthorizationApplyRequest.setExternalId("EXT_ORDER_ID_" + orderId); // 订单号
         preAuthorizationApplyRequest.setCurrencyCode("RMB");
         preAuthorizationApplyRequest.setTransactionAmount(payMoney); // 交易金额
         preAuthorizationApplyRequest.setPayeeLoginCode(result.get("account").toString()); //收款方登录号

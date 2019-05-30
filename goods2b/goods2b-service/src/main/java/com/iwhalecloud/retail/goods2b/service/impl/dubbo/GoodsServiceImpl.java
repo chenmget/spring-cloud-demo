@@ -1535,30 +1535,16 @@ public class GoodsServiceImpl implements GoodsService {
             }
 
             if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode().equals(goods.getIsSubsidy())) {
-                // 构造请求判断 当前用户是否参加
+                // 构造请求判断 当前用户是否参加 前置补贴活动
                 activityQueryByGoodsReq.setProductId(goodsProductRel.getProductId());
-                ResultVO<List<MarketingGoodsActivityQueryResp>> resultVO = marketingActivityService.listGoodsMarketingActivitys(activityQueryByGoodsReq);
-                if (resultVO.isSuccess() && CollectionUtils.isNotEmpty(resultVO.getResultData())) {
-                    // 取第一条
-                    MarketingGoodsActivityQueryResp marketingGoodsActivityQueryResp = resultVO.getResultData().get(0);
-                    // 取活动产品关联信息
-                    ActivityProductListReq activityProductListReq = new ActivityProductListReq();
-                    activityProductListReq.setProductId(goodsProductRel.getProductId());
-                    activityProductListReq.setMarketingActivityIds(Lists.newArrayList(marketingGoodsActivityQueryResp.getId()));
-                    ResultVO<List<ActivityProductDTO>> activityProductResultVO = activityProductService.queryActivityProducts(activityProductListReq);
-                    if (activityProductResultVO.isSuccess() && CollectionUtils.isNotEmpty(activityProductResultVO.getResultData())) {
-                        // 取第一个
-                        ActivityProductDTO activityProductDTO = activityProductResultVO.getResultData().get(0);
+                ResultVO<ActivityProductDTO> resultVO = marketingActivityService.getActivityProduct(activityQueryByGoodsReq);
+                if (resultVO.isSuccess() && Objects.nonNull(resultVO.getResultData())) {
+                        ActivityProductDTO activityProductDTO = resultVO.getResultData();
                         // 设置需要的值
-                        // 是否前置补贴
-                        resp.setIsSubsidy(GoodsConst.IsSubsidy.IS_SUBSIDY.getCode());
-                        // 前置补贴活动的统一货价
-                        resp.setUnifiedSupplierPrice(activityProductDTO.getPrice());
-                    } else {
-                        log.info("GoodsServiceImpl.getProductResps() 调用服务 activityProductService.queryActivityProducts 返回结果为空");
-                    }
+                        // 前置补贴活动的统一货价(转换为Double)
+                        resp.setDeliveryPrice(activityProductDTO.getPrice() * 1D);
                 } else {
-                    log.info("GoodsServiceImpl.getProductResps() 调用服务 marketingActivityService.listGoodsMarketingActivitys 返回结果为空");
+                    log.info("GoodsServiceImpl.getProductResps() 调用服务 marketingActivityService.getActivityProduct 返回结果为空");
                 }
             }
 

@@ -535,6 +535,37 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     }
 
     /**
+     * 查询B2B产品适用活动
+     * 逻辑：先检查商家是否有可以参加的活动 ，可以参加  就返回 活动产品 关联对象（主要是获取活动价格）
+     * @param req 入参数
+     * @return 活动产品 关联对象
+     */
+    @Override
+    public ResultVO<ActivityProductDTO> getActivityProduct(MarketingActivityQueryByGoodsReq req) {
+        log.info("MarketingActivityServiceImpl.getActivityProduct req={}", JSON.toJSONString(req));
+        ResultVO<ActivityProductDTO> resp = ResultVO.success(null);
+        ResultVO<List<MarketingGoodsActivityQueryResp>> resultVO = listGoodsMarketingActivitys(req);
+        if (resultVO.isSuccess() && !CollectionUtils.isEmpty(resultVO.getResultData())) {
+            // 取第一条
+            MarketingGoodsActivityQueryResp marketingGoodsActivityQueryResp = resultVO.getResultData().get(0);
+            // 取活动产品关联信息
+            ActivityProductListReq activityProductListReq = new ActivityProductListReq();
+            activityProductListReq.setProductId(req.getProductId());
+            activityProductListReq.setMarketingActivityIds(Lists.newArrayList(marketingGoodsActivityQueryResp.getId()));
+            ResultVO<List<ActivityProductDTO>> activityProductResultVO = activityProductService.queryActivityProducts(activityProductListReq);
+            if (activityProductResultVO.isSuccess() && !CollectionUtils.isEmpty(activityProductResultVO.getResultData())) {
+                // 取第一个
+                ActivityProductDTO activityProductDTO = activityProductResultVO.getResultData().get(0);
+                // 设置返回值
+                resp.setResultData(activityProductDTO);
+            }
+        }
+        log.info("MarketingActivityServiceImpl.getActivityProduct out={}", JSON.toJSONString(resp));
+        return resp;
+    }
+
+
+    /**
      * 查询商品详情页面中的适用活动
      *
      * @param req 商品参数

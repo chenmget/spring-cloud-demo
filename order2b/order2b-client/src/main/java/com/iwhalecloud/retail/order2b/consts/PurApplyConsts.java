@@ -55,7 +55,7 @@ public class PurApplyConsts {
     /**
      * 申请单状态省公司审核 ：审核通过
      */
-    public final static String SGS_PUR_APPLY_STATUS_PASS = "21";
+    public final static String SGS_PUR_APPLY_STATUS_PASS = "20";
 
     /**
      * 申请单状态：审核不通过

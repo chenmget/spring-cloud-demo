@@ -32,12 +32,12 @@ public class PurchaseApplyServiceImplTest extends TestBase {
 
     @Test
     public void getDeliveryInfoByApplyID(){
-        PurApplyDeliveryReq req = new PurApplyDeliveryReq();
-        req.setApplyId("1723");
-        ResultVO<List<PurApplyDeliveryResp>> listResultVO = purchaseApplyService.getDeliveryInfoByApplyID(req);
-        List<PurApplyDeliveryResp> l = listResultVO.getResultData();
-        for(PurApplyDeliveryResp p:l) {
-            System.out.println(p.getBatchId()+p.getUnitName()+p.getMktResInstNbr()+p.getCreateDate());
-        }
+//        PurApplyDeliveryReq req = new PurApplyDeliveryReq();
+//        req.setApplyId("1723");
+//        ResultVO<List<PurApplyDeliveryResp>> listResultVO = purchaseApplyService.getDeliveryInfoByApplyID(req);
+//        List<PurApplyDeliveryResp> l = listResultVO.getResultData();
+//        for(PurApplyDeliveryResp p:l) {
+//            System.out.println(p.getBatchId()+p.getUnitName()+p.getMktResInstNbr()+p.getCreateDate());
+//        }
     }
 }

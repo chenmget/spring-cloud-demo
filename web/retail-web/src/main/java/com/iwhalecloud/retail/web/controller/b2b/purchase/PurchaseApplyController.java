@@ -1,11 +1,13 @@
 package com.iwhalecloud.retail.web.controller.b2b.purchase;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -115,13 +117,13 @@ public class PurchaseApplyController extends BaseController {
 
     @PostMapping("/getDeliveryInfoByApplyID")
     @UserLoginToken
-    public ResultVO<List<PurApplyDeliveryResp>> getDeliveryInfoByApplyID(@RequestBody PurApplyDeliveryReq req) {
+    public ResultVO<Page<PurApplyDeliveryResp>> getDeliveryInfoByApplyID(@RequestBody PurApplyReq req) {
 
 //        String userId = UserContext.getUserId();
 //		String userId = "100028487";
 
 //        发货信息
-        ResultVO<List<PurApplyDeliveryResp>> DeliveryItemInfo =purchaseApplyService.getDeliveryInfoByApplyID(req);
+        ResultVO<Page<PurApplyDeliveryResp>> DeliveryItemInfo =purchaseApplyService.getDeliveryInfoByApplyID(req);
 
         return DeliveryItemInfo;
     }

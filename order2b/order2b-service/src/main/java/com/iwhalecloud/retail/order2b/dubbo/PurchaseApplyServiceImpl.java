@@ -2,6 +2,9 @@ package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 
+
+import com.alibaba.dubbo.config.annotation.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
@@ -22,7 +25,7 @@ import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -192,9 +195,9 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     }
 
     @Override
-    public ResultVO<List<PurApplyDeliveryResp>> getDeliveryInfoByApplyID(PurApplyDeliveryReq req) {
+    public ResultVO<Page<PurApplyDeliveryResp>>  getDeliveryInfoByApplyID(PurApplyReq req) {
 
-        List<PurApplyDeliveryResp> list = purApplyDeliveryManager.getDeliveryInfoByApplyID(req.getApplyId());
+        Page<PurApplyDeliveryResp> list = purApplyDeliveryManager.getDeliveryInfoByApplyID(req);
         return ResultVO.success(list);
     }
 

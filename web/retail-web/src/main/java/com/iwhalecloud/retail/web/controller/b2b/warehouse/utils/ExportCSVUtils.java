@@ -75,31 +75,32 @@ public class ExportCSVUtils {
 		final String NBR = "mktResInstNbr";
 		final String SN = "sn";
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
+		String finalValue = (value == null || "null".equals(value))? "" : value;
 		if (MKT_RES_INST_TYPE.equals(filedName)) {
-			return ResourceConst.MKTResInstType.getMKTResInstTypeName(value);
+			finalValue = ResourceConst.MKTResInstType.getMKTResInstTypeName(value);
 		}
 
 		if (STORAGE_TYPE.equals(filedName)) {
-			return ResourceConst.STORAGETYPE.getStorageTypeName(value);
+			finalValue = ResourceConst.STORAGETYPE.getStorageTypeName(value);
 		}
 
 		if (STATUS_CD.equals(filedName)) {
 			log.info("STATUS_CD={}", value);
 			if (isRetailer) {
-				return ResourceConst.CRM_STATUS.getCrmStatusName(value);
+				finalValue = ResourceConst.CRM_STATUS.getCrmStatusName(value);
 			}
-			return ResourceConst.STATUSCD.getName(value);
+			finalValue = ResourceConst.STATUSCD.getName(value);
 		}
 
 		if (SOURCE_TYPE.equals(filedName)) {
-			return ResourceConst.SOURCE_TYPE.getName(value);
+			finalValue = ResourceConst.SOURCE_TYPE.getName(value);
 		}
 
 		if (CREATE_TIME.equals(filedName) || CREATE_DATE.equals(filedName)) {
 			try {
 				Date date = new Date(Long.valueOf(value));
 				String StringDate = format.format(date);
-				return StringDate  + CSV_T;
+				finalValue =  StringDate;
 			}catch (Exception e){
 				log.error("时间解析错误",e);
 			}
@@ -107,15 +108,12 @@ public class ExportCSVUtils {
 
 		if (RESULT.equals(filedName)) {
 			if (ResourceConst.CONSTANT_YES.equals(value)) {
-				return "是";
+				finalValue = "是";
 			}else {
-				return "否";
+				finalValue = "否";
 			}
 		}
-		if (NBR.equals(filedName) || SN.equals(filedName)) {
-			return value + CSV_T;
-		}
-		String finalValue = (value == null || "null".equals(value))? "" : value;
+		finalValue = finalValue == "" ? finalValue : finalValue + CSV_T;
 		return finalValue;
 	}
 

@@ -1,10 +1,13 @@
 package com.iwhalecloud.retail.order2b.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+
+import java.util.List;
 
 public interface PurchaseApplyService {
 
@@ -45,5 +48,14 @@ public interface PurchaseApplyService {
      * @return
      */
     ResultVO updatePurApplyExtInfo(PurApplyExtReq req);
+
+    /**
+     * 获取发货信息
+     * @param req
+     * @return
+     */
+    ResultVO<List<PurApplyDeliveryResp>> getDeliveryInfoByApplyID(PurApplyDeliveryReq req);
+
+
 
 }

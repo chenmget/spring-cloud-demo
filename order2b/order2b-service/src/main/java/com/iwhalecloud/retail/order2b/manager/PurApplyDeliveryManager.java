@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.entity.PurApply;
@@ -13,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @auther lin.wenhui@iwhalecloud.com
@@ -52,6 +54,11 @@ public class PurApplyDeliveryManager {
         UpdateWrapper<PurApply> userUpdateWrapper = new UpdateWrapper<>();
         userUpdateWrapper.eq("APPLY_ID", applyId);
         return purApplyMapper.update(purApply, userUpdateWrapper);
+    }
+
+
+    public List<PurApplyDeliveryResp> getDeliveryInfoByApplyID(String applyId) {
+        return purApplyDeliveryMapper.getDeliveryInfoByApplyID(applyId);
     }
 
 }

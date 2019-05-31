@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.TestBase;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
+import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import org.junit.Test;
 
 import javax.annotation.Resource;
@@ -26,6 +26,8 @@ public class PurApplyServiceImplTest  extends TestBase {
 //                    isFixedLine=null, typeName=null, productId=100006163)], addFileReq=[])
     @Resource
     private PurApplyService purApplyService;
+    @Resource
+    private PurchaseApplyService purchaseApplyService;
     @Test
     public void tcProcureApply() {
 //        System.out.println("1111"+purApplyService);
@@ -91,4 +93,5 @@ public class PurApplyServiceImplTest  extends TestBase {
 
 
     }
+
 }

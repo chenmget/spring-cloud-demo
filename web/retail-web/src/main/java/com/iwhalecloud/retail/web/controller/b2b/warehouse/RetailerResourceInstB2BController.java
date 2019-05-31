@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
+import com.iwhalecloud.retail.goods2b.service.AttrSpecService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
@@ -19,8 +21,10 @@ import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.*;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExportCSVUtils;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ResourceInstColum;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
+import com.sun.deploy.net.URLEncoder;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -56,6 +60,8 @@ public class RetailerResourceInstB2BController {
     private MerchantService merchantService;
     @Reference
     private ProductService productService;
+    @Reference
+    private AttrSpecService attrSpecService;
 
     @ApiOperation(value = "零售商串码管理页面", notes = "条件分页查询")
     @ApiResponses({
@@ -223,35 +229,30 @@ public class RetailerResourceInstB2BController {
     @PostMapping(value="nbrExport")
     @UserLoginToken
     public void nbrExport(@RequestBody ResourceInstListPageReq req, HttpServletResponse response) {
+        ResultVO<List<AttrSpecDTO>> attrSpecListVO= attrSpecService.queryAttrSpecList(req.getTypeId());
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.queryForExport req={}, num={}", JSON.toJSONString(req), JSON.toJSONString(attrSpecListVO));
+        if (!attrSpecListVO.isSuccess() || CollectionUtils.isEmpty(attrSpecListVO.getResultData())) {
+            return;
+        }
         ResultVO<Page<ResourceInstListPageResp>> dataVO = retailerResourceInstService.listResourceInst(req);
-        if (!dataVO.isSuccess() || dataVO.getResultData() == null) {
+        if (!dataVO.isSuccess() || CollectionUtils.isEmpty(dataVO.getResultData().getRecords())) {
             return;
         }
         List<ResourceInstListPageResp> list = dataVO.getResultData().getRecords();
         log.info("RetailerResourceInstB2BController.nbrExport retailerResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.retailerColumn();
-        OutputStream output = null;
         try{
-            //创建Excel
-            Workbook workbook = new HSSFWorkbook();
+            OutputStream output = response.getOutputStream();
             String fileName = "串码列表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames, true);
-            output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
+            ExportCSVUtils.doExport(output, list, excelTitleNames, attrSpecListVO.getResultData(), false);
+            response.setContentType("application/ms-txt.numberformat:@");
             response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
+            response.setHeader("Pragma", "public");
+            response.setHeader("Cache-Control", "max-age=30");
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+            output.close();
         }catch (Exception e){
             log.error("串码导出失败",e);
-        } finally {
-            try {
-                if (null != output) {
-                    output.close();
-                }
-            } catch (Exception e) {
-                log.error("error:", e);
-            }
         }
     }
 

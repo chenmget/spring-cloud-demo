@@ -191,9 +191,9 @@ public class SupplierResourceInstB2BController {
     @UserLoginToken
     public void nbrExport(@RequestBody ResourceInstListPageReq req, HttpServletResponse response) {
         ResultVO<List<AttrSpecDTO>> attrSpecListVO= attrSpecService.queryAttrSpecList(req.getTypeId());
-        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.queryForExport req={}, num={}", req.getTypeId(), JSON.toJSONString(attrSpecListVO));
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.queryForExport req={}, num={}", JSON.toJSONString(req), JSON.toJSONString(attrSpecListVO));
         ResultVO<List<ResourceInstListPageResp>> dataVO = supplierResourceInstService.queryForExport(req);
-        if (!dataVO.isSuccess()) {
+        if (!dataVO.isSuccess() || CollectionUtils.isEmpty(dataVO.getResultData())) {
             return;
         }
         if (!attrSpecListVO.isSuccess() || CollectionUtils.isEmpty(attrSpecListVO.getResultData())) {

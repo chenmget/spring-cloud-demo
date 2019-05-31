@@ -130,6 +130,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
             String serialCode = req.getParam20(); //串码  xxxx-1234556612
             String params = req.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
+            String userName = req.getParam18();  //login_name
             if(StringUtils.isEmpty(serialCode)){
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "固网产品必须录入串码");
             }
@@ -138,7 +139,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             String callUrl = "ord.operres.OrdInventoryChange";
             Map request = new HashMap<>();
             request.put("deviceId",serialCode);
-            request.put("userName","username");
+            request.put("userName",userName);
             request.put("code","ITMS_ADD");
             request.put("params",params);
             try {

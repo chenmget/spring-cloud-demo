@@ -132,7 +132,16 @@ public class ActivityProduct implements Serializable {
 	 */
 	@ApiModelProperty(value = "产品参与总数量限制标识")
 	private String numLimitFlg;
-
+	/**
+	 * 活动图片应用方式
+	 */
+	@ApiModelProperty(value = "活动图片应用方式")
+	private String productPicUseType;
+	/**
+	 * 活动图片
+	 */
+	@ApiModelProperty(value = "活动图片")
+	private String productPic;
   	//属性 end
 	
     /** 字段名称枚举. */
@@ -193,7 +202,15 @@ public class ActivityProduct implements Serializable {
 		/**是否限制产品参与总数量
 		 1.限制
 		 0.不限制*/
-		numLimitFlg("numLimitFlg","NUM_LIMIT_FLG");
+		numLimitFlg("numLimitFlg","NUM_LIMIT_FLG"),
+    	/**
+    	 * 活动图片
+    	 */
+    	productPic("productPic","PRODUCT_PIC"),
+    	/**
+    	 * 活动图片应用方式
+    	 */
+    	productPicUseType("productPicUseType","PRODUCT_PIC_USE_TYPE");  
 
 		private String fieldName;
 		private String tableFieldName;

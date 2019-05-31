@@ -17,6 +17,13 @@ public class PurApplyDeliveryResp implements Serializable {
 
     private static final long serialVersionUID = 1563989075663069549L;
 
+    private String unitName;
+    private String mktResInstNbr;
+    private String batchId;
+    private String createDate;
+
+
+
 
 
 }

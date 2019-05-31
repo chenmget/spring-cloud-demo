@@ -1,10 +1,14 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+
+
 import com.alibaba.dubbo.config.annotation.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
@@ -21,6 +25,7 @@ import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -187,6 +192,13 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             return ResultVO.error("更新采购申请单扩展失败");
         }
         return ResultVO.success();
+    }
+
+    @Override
+    public ResultVO<Page<PurApplyDeliveryResp>>  getDeliveryInfoByApplyID(PurApplyReq req) {
+
+        Page<PurApplyDeliveryResp> list = purApplyDeliveryManager.getDeliveryInfoByApplyID(req);
+        return ResultVO.success(list);
     }
 
     public static void main(String[] args) {

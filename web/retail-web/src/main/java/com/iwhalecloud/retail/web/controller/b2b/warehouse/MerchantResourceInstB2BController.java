@@ -1,11 +1,14 @@
 package com.iwhalecloud.retail.web.controller.b2b.warehouse;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
+import com.iwhalecloud.retail.goods2b.service.AttrSpecService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
@@ -51,6 +54,9 @@ public class MerchantResourceInstB2BController {
 
     @Reference
     private MerchantResourceInstService resourceInstService;
+
+    @Reference
+    private AttrSpecService attrSpecService;
 
     @Value("${fdfs.suffix.allowUpload}")
     private String allowUploadSuffix;
@@ -179,8 +185,13 @@ public class MerchantResourceInstB2BController {
     @PostMapping(value="nbrExport")
     @UserLoginToken
     public void nbrExport(@RequestBody ResourceInstListPageReq req, HttpServletResponse response) {
+        ResultVO<List<AttrSpecDTO>> attrSpecListVO= attrSpecService.queryAttrSpecList(req.getTypeId());
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.queryForExport req={}, num={}", JSON.toJSONString(req), JSON.toJSONString(attrSpecListVO));
         ResultVO<List<ResourceInstListPageResp>> dataVO = resourceInstService.queryForExport(req);
-        if (!dataVO.isSuccess()) {
+        if (!dataVO.isSuccess() || CollectionUtils.isEmpty(dataVO.getResultData())) {
+            return;
+        }
+        if (!attrSpecListVO.isSuccess() || CollectionUtils.isEmpty(attrSpecListVO.getResultData())) {
             return;
         }
         List<ResourceInstListPageResp> list = dataVO.getResultData();
@@ -190,7 +201,7 @@ public class MerchantResourceInstB2BController {
             //创建Excel
             OutputStream output = response.getOutputStream();
             String fileName = "串码列表";
-            ExportCSVUtils.doExport(output, list, excelTitleNames, false);
+            ExportCSVUtils.doExport(output, list, excelTitleNames, attrSpecListVO.getResultData(), false);
             response.setContentType("application/ms-txt.numberformat:@");
             response.setCharacterEncoding("UTF-8");
             response.setHeader("Pragma", "public");

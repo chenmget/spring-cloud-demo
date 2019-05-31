@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
+import com.iwhalecloud.retail.goods2b.service.AttrSpecService;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -54,6 +56,9 @@ public class SupplierResourceInstB2BController {
 
     @Reference
     private MerchantRulesService merchantRulesService;
+
+    @Reference
+    private AttrSpecService attrSpecService;
 
     @ApiOperation(value = "供应商串码管理页面", notes = "条件分页查询")
     @ApiResponses({
@@ -185,8 +190,13 @@ public class SupplierResourceInstB2BController {
     @PostMapping(value="nbrExport")
     @UserLoginToken
     public void nbrExport(@RequestBody ResourceInstListPageReq req, HttpServletResponse response) {
+        ResultVO<List<AttrSpecDTO>> attrSpecListVO= attrSpecService.queryAttrSpecList(req.getTypeId());
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.queryForExport req={}, num={}", JSON.toJSONString(req), JSON.toJSONString(attrSpecListVO));
         ResultVO<List<ResourceInstListPageResp>> dataVO = supplierResourceInstService.queryForExport(req);
-        if (!dataVO.isSuccess()) {
+        if (!dataVO.isSuccess() || CollectionUtils.isEmpty(dataVO.getResultData())) {
+            return;
+        }
+        if (!attrSpecListVO.isSuccess() || CollectionUtils.isEmpty(attrSpecListVO.getResultData())) {
             return;
         }
         List<ResourceInstListPageResp> list = dataVO.getResultData();
@@ -195,7 +205,7 @@ public class SupplierResourceInstB2BController {
         try{
             OutputStream output = response.getOutputStream();
             String fileName = "串码列表";
-            ExportCSVUtils.doExport(output, list, excelTitleNames, false);
+            ExportCSVUtils.doExport(output, list, excelTitleNames, attrSpecListVO.getResultData(), false);
             response.setContentType("application/ms-txt.numberformat:@");
             response.setCharacterEncoding("UTF-8");
             response.setHeader("Pragma", "public");

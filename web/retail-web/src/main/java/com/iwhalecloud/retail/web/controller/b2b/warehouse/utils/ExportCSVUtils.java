@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.web.controller.b2b.warehouse.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import lombok.extern.slf4j.Slf4j;
@@ -25,18 +26,22 @@ public class ExportCSVUtils {
 	/** CSV文件列分隔符 */
 	private static final String CSV_T = "\t";
 
+	/** CSV文件动态显示字段 */
+	private static final String CHANGE_FIELD = "attrValue";
+
 	/**
 	 * @param output
 	 * @param list 导出数据
 	 * @param map  导出数据对应字段
 	 * @param isRetailer 是否零售商 true是；false否
 	 */
-	public static void doExport(OutputStream output, List list,List<ExcelTitleName> map, Boolean isRetailer) {
+	public static void doExport(OutputStream output, List list,List<ExcelTitleName> map, List<AttrSpecDTO> changeFiled, Boolean isRetailer) {
 		try {
 			StringBuffer buf = new StringBuffer();
 
 			// 完成数据csv文件的封装
 			// 输出列头
+			map = getChangeField(changeFiled, map);
 			for (ExcelTitleName excelTitleName : map) {
 				buf.append(excelTitleName.getName()).append(CSV_COLUMN_SEPARATOR);
 			}
@@ -75,31 +80,32 @@ public class ExportCSVUtils {
 		final String NBR = "mktResInstNbr";
 		final String SN = "sn";
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
+		String finalValue = (value == null || "null".equals(value))? "" : value;
 		if (MKT_RES_INST_TYPE.equals(filedName)) {
-			return ResourceConst.MKTResInstType.getMKTResInstTypeName(value);
+			finalValue = ResourceConst.MKTResInstType.getMKTResInstTypeName(value);
 		}
 
 		if (STORAGE_TYPE.equals(filedName)) {
-			return ResourceConst.STORAGETYPE.getStorageTypeName(value);
+			finalValue = ResourceConst.STORAGETYPE.getStorageTypeName(value);
 		}
 
 		if (STATUS_CD.equals(filedName)) {
 			log.info("STATUS_CD={}", value);
 			if (isRetailer) {
-				return ResourceConst.CRM_STATUS.getCrmStatusName(value);
+				finalValue = ResourceConst.CRM_STATUS.getCrmStatusName(value);
 			}
-			return ResourceConst.STATUSCD.getName(value);
+			finalValue = ResourceConst.STATUSCD.getName(value);
 		}
 
 		if (SOURCE_TYPE.equals(filedName)) {
-			return ResourceConst.SOURCE_TYPE.getName(value);
+			finalValue = ResourceConst.SOURCE_TYPE.getName(value);
 		}
 
 		if (CREATE_TIME.equals(filedName) || CREATE_DATE.equals(filedName)) {
 			try {
 				Date date = new Date(Long.valueOf(value));
 				String StringDate = format.format(date);
-				return StringDate  + CSV_T;
+				finalValue =  StringDate;
 			}catch (Exception e){
 				log.error("时间解析错误",e);
 			}
@@ -107,16 +113,28 @@ public class ExportCSVUtils {
 
 		if (RESULT.equals(filedName)) {
 			if (ResourceConst.CONSTANT_YES.equals(value)) {
-				return "是";
+				finalValue = "是";
 			}else {
-				return "否";
+				finalValue = "否";
 			}
 		}
-		if (NBR.equals(filedName) || SN.equals(filedName)) {
-			return value + CSV_T;
-		}
-		String finalValue = (value == null || "null".equals(value))? "" : value;
+		finalValue = finalValue == "" ? finalValue : finalValue + CSV_T;
 		return finalValue;
+	}
+
+	private static List<ExcelTitleName> getChangeField(List<AttrSpecDTO> changeFiled, List<ExcelTitleName> map){
+
+		Integer index = map.indexOf(CHANGE_FIELD);
+		map.remove(index);
+		StringBuffer buf = new StringBuffer();
+		Integer i = 0;
+		for (AttrSpecDTO dto : changeFiled) {
+			ExcelTitleName titleName = new ExcelTitleName(dto.getFiledName(), dto.getCname());
+			map.add(index+i, titleName);
+			i++;
+		}
+		return map;
+
 	}
 
 }

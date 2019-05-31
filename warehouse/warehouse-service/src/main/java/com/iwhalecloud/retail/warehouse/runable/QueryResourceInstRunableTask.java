@@ -45,7 +45,7 @@ public class QueryResourceInstRunableTask {
                 totalNum = totalRecord.intValue();
             }
             log.info("RunableTask.exceutorQueryResourceInst resourceInstService.getResourceInstList countTotal={}", totalNum);
-            Integer pageSize = 5000;
+            Integer pageSize = 10000;
             Integer excutorNum = totalNum%pageSize == 0 ? totalNum/pageSize : (totalNum/pageSize + 1);
             BlockingQueue<Callable<List<ResourceInstListPageResp>>> tasks = new LinkedBlockingQueue<>();
             for (Integer i = 0; i < excutorNum; i++) {

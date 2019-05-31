@@ -1,7 +1,9 @@
 package com.iwhalecloud.retail.order2b.service;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
@@ -54,7 +56,7 @@ public interface PurchaseApplyService {
      * @param req
      * @return
      */
-    ResultVO<List<PurApplyDeliveryResp>> getDeliveryInfoByApplyID(PurApplyDeliveryReq req);
+    ResultVO<Page<PurApplyDeliveryResp>> getDeliveryInfoByApplyID(PurApplyReq req);
 
 
 

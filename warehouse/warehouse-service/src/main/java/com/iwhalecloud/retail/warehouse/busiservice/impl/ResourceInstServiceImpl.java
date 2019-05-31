@@ -119,31 +119,37 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (null == list || list.isEmpty()) {
             return ResultVO.success(page);
         }
-        // 添加产品信息
-        for (ResourceInstListPageResp resp : list) {
-            ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
-            log.info("ResourceInstServiceImpl.getResourceInstList  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
-            MerchantDTO merchantDTO = merchantResultVO.getResultData();
-            if (null != merchantDTO) {
-                resp.setRegionName(merchantDTO.getCityName());
-                resp.setLanName(merchantDTO.getLanName());
-                resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
-            }
-            String productId = resp.getMktResId();
-            if (StringUtils.isBlank(productId)) {
+        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(list.get(0).getMktResStoreId());
+        log.info("ResourceInstServiceImpl.getResourceInstList resouceStoreService.getMerchantByStore storeId={},resp={}", list.get(0).getMktResStoreId(), JSON.toJSONString(merchantResultVO));
+        MerchantDTO merchantDTO = merchantResultVO.getResultData();
+
+        // 按产品维度组装数据
+        Map<String, List<ResourceInstListPageResp>> map = list.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
+        for (Map.Entry<String, List<ResourceInstListPageResp>> entry : map.entrySet()) {
+            String mktResId = entry.getKey();
+            if (StringUtils.isBlank(mktResId)) {
                 continue;
             }
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
-            queryReq.setProductId(productId);
+            queryReq.setProductId(mktResId);
             ResultVO<List<ProductResourceResp>> resultVO = productService.getProductResource(queryReq);
             log.info("ResourceInstServiceImpl.getResourceInstList productService.getProductResource req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(resultVO));
             List<ProductResourceResp> prodList = resultVO.getResultData();
-            if (null != prodList && !prodList.isEmpty()) {
-                ProductResourceResp prodResp = prodList.get(0);
+            if (CollectionUtils.isEmpty(prodList)) {
+                continue;
+            }
+            ProductResourceResp prodResp = prodList.get(0);
+            List<ResourceInstListPageResp> instList =entry.getValue();
+            for (ResourceInstListPageResp resp : instList) {
+                // 添加产品信息
                 BeanUtils.copyProperties(prodResp, resp);
+                if (null != merchantDTO) {
+                    resp.setRegionName(merchantDTO.getCityName());
+                    resp.setLanName(merchantDTO.getLanName());
+                    resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+                }
             }
         }
-
         return ResultVO.success(page);
     }
 
@@ -885,32 +891,36 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     public synchronized List<ResourceInstListPageResp> getResourceInstListManual(ResourceInstListPageReq req) {
         req = setProductIds(req);
         List<ResourceInstListPageResp> list = resourceInstManager.getResourceInstListManual(req);
-        log.info("ResourceInstServiceImpl.getResourceInstList resourceInstManager.getResourceInstListManual req={}", JSON.toJSONString(req));
         if (CollectionUtils.isEmpty(list)) {
             return list;
         }
-        // 添加产品信息
-        for (ResourceInstListPageResp resp : list) {
-            ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
-            log.info("ResourceInstServiceImpl.getResourceInstList  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
-            MerchantDTO merchantDTO = merchantResultVO.getResultData();
-            if (null != merchantDTO) {
-                resp.setRegionName(merchantDTO.getCityName());
-                resp.setLanName(merchantDTO.getLanName());
-                resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
-            }
-            String productId = resp.getMktResId();
-            if (StringUtils.isBlank(productId)) {
+        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(list.get(0).getMktResStoreId());
+        log.info("ResourceInstServiceImpl.getResourceInstList resouceStoreService.getMerchantByStore storeId={},resp={}", list.get(0).getMktResStoreId(), JSON.toJSONString(merchantResultVO));
+        MerchantDTO merchantDTO = merchantResultVO.getResultData();
+        // 按产品维度组装数据
+        Map<String, List<ResourceInstListPageResp>> map = list.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
+        for (Map.Entry<String, List<ResourceInstListPageResp>> entry : map.entrySet()) {
+            String mktResId = entry.getKey();
+            if (StringUtils.isBlank(mktResId)) {
                 continue;
             }
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
-            queryReq.setProductId(productId);
+            queryReq.setProductId(mktResId);
             ResultVO<List<ProductResourceResp>> resultVO = productService.getProductResource(queryReq);
-            log.info("ResourceInstServiceImpl.getResourceInstList productService.getProductResource req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(resultVO));
             List<ProductResourceResp> prodList = resultVO.getResultData();
-            if (null != prodList && !prodList.isEmpty()) {
-                ProductResourceResp prodResp = prodList.get(0);
+            if (CollectionUtils.isEmpty(prodList)) {
+                continue;
+            }
+            ProductResourceResp prodResp = prodList.get(0);
+            List<ResourceInstListPageResp> instList =entry.getValue();
+            for (ResourceInstListPageResp resp : instList) {
+                // 添加产品信息
                 BeanUtils.copyProperties(prodResp, resp);
+                if (null != merchantDTO) {
+                    resp.setRegionName(merchantDTO.getCityName());
+                    resp.setLanName(merchantDTO.getLanName());
+                    resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+                }
             }
         }
         return list;

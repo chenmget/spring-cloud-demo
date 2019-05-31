@@ -33,6 +33,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import com.alibaba.fastjson.TypeReference;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -106,7 +107,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             productBaseGetReq.setUnitType(unitType);
             List<ProductBaseGetResp> productBaseGetRespList = productBaseManager.selectProductBase(productBaseGetReq);
             if(!CollectionUtils.isEmpty(productBaseGetRespList)){
-                ResultVO.error("同一型号只能创建一个产品，已经存在改型号产品");
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "同一型号只能创建一个产品，已经存在改型号产品");
             }
         }
         ProductBase t = new ProductBase();
@@ -130,7 +131,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             String serialCode = req.getParam20(); //串码  xxxx-1234556612
             String params = req.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
             if(StringUtils.isEmpty(serialCode)){
-                ResultVO.error("固网产品必须录入串码");
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "固网产品必须录入串码");
             }
 
             String b = "";
@@ -142,10 +143,18 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             request.put("params",params);
             try {
                 b = this.zopService(callUrl,zopUrl,request,zopSecret);
-                if("-1".equals(b)){
-                    ResultVO.error("串码推送ITMS(新增)失败");
-                }else if("1".equals(b)){
-                    ResultVO.error("串码推送ITMS(新增)已经存在");
+                if(StringUtils.isNotEmpty(b)){
+                    Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
+                    String body = String.valueOf(parseObject.get("Body"));
+                    Map parseObject2 = JSON.parseObject(body, new TypeReference<HashMap>(){});
+                    String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
+                    Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>(){});
+                    String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
+                    if("-1".equals(inventoryChangeReturn)){
+                        throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(新增)失败");
+                    }else if("1".equals(inventoryChangeReturn)){
+                        throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(新增)已经存在");
+                    }
                 }
             } catch (Exception e) {
                 log.error(e.getMessage());

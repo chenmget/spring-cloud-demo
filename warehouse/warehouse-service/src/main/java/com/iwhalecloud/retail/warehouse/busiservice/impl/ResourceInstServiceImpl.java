@@ -27,8 +27,6 @@ import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.request.markresswap.EBuyTerminalItemSwapReq;
-import com.iwhalecloud.retail.warehouse.dto.request.markresswap.EBuyTerminalSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalItemSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
@@ -806,13 +804,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         ResultVO<ProductForResourceResp> productRespResultVO = productService.getProductForResource(productReq);
         log.info("ResourceInstServiceImpl.syncTerminal productService.getProductForResource req={},resp={}", JSON.toJSONString(productReq), JSON.toJSONString(productRespResultVO));
         String sn = "";
-        String isFixedLine = "";
         if (productRespResultVO.isSuccess() && productRespResultVO.getResultData() != null) {
             sn = productRespResultVO.getResultData().getSn();
-            isFixedLine = productRespResultVO.getResultData().getIsFixedLine();
         }
         List<SyncTerminalItemSwapReq> mktResList = Lists.newArrayList();
-        List<EBuyTerminalItemSwapReq> eBuyTerminalItemReqs = Lists.newArrayList();
         Integer addNum = req.getMktResInstNbrs().size();
         for (int i = 0; i < addNum; i++) {
             String mktResInstNbr = req.getMktResInstNbrs().get(i);
@@ -833,47 +828,12 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             syncTerminalItemReq.setCitySupplyId(merchantInfByNbrModel.getCitySupplyId());
             syncTerminalItemReq.setCitySupplyName(merchantInfByNbrModel.getCitySupplyName());
             mktResList.add(syncTerminalItemReq);
-            // 固网终端
-            if (ResourceConst.CONSTANT_YES.equals(isFixedLine)) {
-                EBuyTerminalItemSwapReq eBuyTerminalItemSwapReq = new EBuyTerminalItemSwapReq();
-                BeanUtils.copyProperties(syncTerminalItemReq, eBuyTerminalItemSwapReq);
-                eBuyTerminalItemSwapReq.setMktId(sn);
-                eBuyTerminalItemReqs.add(eBuyTerminalItemSwapReq);
-            }
         }
-        // step2 串码入库
-        ResultVO syncTerminalResultVO = null;
-        ResultVO eBuyTerminalResultVO = null;
-        if (CollectionUtils.isNotEmpty(mktResList)) {
-            SyncTerminalSwapReq syncTerminalReq = new SyncTerminalSwapReq();
-            syncTerminalReq.setMktResList(mktResList);
-            syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalReq);
-            log.info("ResourceInstServiceImpl.syncTerminal marketingResStoreService.syncTerminal req={},resp={}", JSON.toJSONString(syncTerminalReq), JSON.toJSONString(syncTerminalResultVO));
-        }
-        if (CollectionUtils.isNotEmpty(eBuyTerminalItemReqs)) {
-            EBuyTerminalSwapReq eBuyTerminalSwapReq = new EBuyTerminalSwapReq();
-            eBuyTerminalSwapReq.setMktResList(eBuyTerminalItemReqs);
-            eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
-            log.info("ResourceInstServiceImpl.syncTerminal marketingResStoreService.ebuyTerminal req={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
-        }
-        Boolean notSucess = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) || (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess());
-        if (notSucess) {
-            String errorMsg = "";
-            if (null == syncTerminalResultVO) {
-                errorMsg = eBuyTerminalResultVO.getResultMsg();
-            } else {
-                errorMsg = syncTerminalResultVO.getResultMsg();
-            }
-            return ResultVO.error(errorMsg);
-        }else {
-            String sucessMsg = "";
-            if (null == syncTerminalResultVO) {
-                sucessMsg =  eBuyTerminalResultVO.getResultMsg();
-            } else {
-                sucessMsg = syncTerminalResultVO.getResultMsg();
-            }
-            return ResultVO.success(sucessMsg);
-        }
+        SyncTerminalSwapReq syncTerminalReq = new SyncTerminalSwapReq();
+        syncTerminalReq.setMktResList(mktResList);
+        ResultVO syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalReq);
+        log.info("ResourceInstServiceImpl.syncTerminal marketingResStoreService.syncTerminal req={},resp={}", JSON.toJSONString(syncTerminalReq), JSON.toJSONString(syncTerminalResultVO));
+        return syncTerminalResultVO;
 
     }
 

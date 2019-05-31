@@ -159,6 +159,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
                     eBuyTerminalItemSwapReq.setSupplyName(seller.getMerchantName());
                     String price = null == deliveryResourceInstItem.getSalesPrice() ? "0" : String.valueOf(deliveryResourceInstItem.getSalesPrice());
                     eBuyTerminalItemSwapReq.setSalesPrice(price);
+                    eBuyTerminalItemSwapReq.setPurchaseType(ResourceConst.PURCHASE_TYPE.PURCHASE_TYPE_13.getCode());
                     eBuyTerminalItemReqs.add(eBuyTerminalItemSwapReq);
                 }
             }

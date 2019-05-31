@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.web.controller.b2b.warehouse.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import lombok.extern.slf4j.Slf4j;
@@ -25,18 +26,22 @@ public class ExportCSVUtils {
 	/** CSV文件列分隔符 */
 	private static final String CSV_T = "\t";
 
+	/** CSV文件动态显示字段 */
+	private static final String CHANGE_FIELD = "attrValue";
+
 	/**
 	 * @param output
 	 * @param list 导出数据
 	 * @param map  导出数据对应字段
 	 * @param isRetailer 是否零售商 true是；false否
 	 */
-	public static void doExport(OutputStream output, List list,List<ExcelTitleName> map, Boolean isRetailer) {
+	public static void doExport(OutputStream output, List list,List<ExcelTitleName> map, List<AttrSpecDTO> changeFiled, Boolean isRetailer) {
 		try {
 			StringBuffer buf = new StringBuffer();
 
 			// 完成数据csv文件的封装
 			// 输出列头
+			map = getChangeField(changeFiled, map);
 			for (ExcelTitleName excelTitleName : map) {
 				buf.append(excelTitleName.getName()).append(CSV_COLUMN_SEPARATOR);
 			}
@@ -115,6 +120,21 @@ public class ExportCSVUtils {
 		}
 		finalValue = finalValue == "" ? finalValue : finalValue + CSV_T;
 		return finalValue;
+	}
+
+	private static List<ExcelTitleName> getChangeField(List<AttrSpecDTO> changeFiled, List<ExcelTitleName> map){
+
+		Integer index = map.indexOf(CHANGE_FIELD);
+		map.remove(index);
+		StringBuffer buf = new StringBuffer();
+		Integer i = 0;
+		for (AttrSpecDTO dto : changeFiled) {
+			ExcelTitleName titleName = new ExcelTitleName(dto.getFiledName(), dto.getCname());
+			map.add(index+i, titleName);
+			i++;
+		}
+		return map;
+
 	}
 
 }

@@ -117,9 +117,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (null == list || list.isEmpty()) {
             return ResultVO.success(page);
         }
-        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(list.get(0).getMktResStoreId());
-        log.info("ResourceInstServiceImpl.getResourceInstList resouceStoreService.getMerchantByStore storeId={},resp={}", list.get(0).getMktResStoreId(), JSON.toJSONString(merchantResultVO));
-        MerchantDTO merchantDTO = merchantResultVO.getResultData();
 
         // 按产品维度组装数据
         Map<String, List<ResourceInstListPageResp>> map = list.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
@@ -141,10 +138,16 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             for (ResourceInstListPageResp resp : instList) {
                 // 添加产品信息
                 BeanUtils.copyProperties(prodResp, resp);
-                if (null != merchantDTO) {
-                    resp.setRegionName(merchantDTO.getCityName());
-                    resp.setLanName(merchantDTO.getLanName());
-                    resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+                // 库中存的是串码所属用户的地市，查询展示的是零售商的地市
+                if (StringUtils.isNotBlank(resp.getMerchantId())) {
+                    ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
+                    if (merchantResultVO.isSuccess() && null != merchantResultVO.getResultData()) {
+                        MerchantDTO merchantDTO = merchantResultVO.getResultData();
+                        resp.setRegionName(merchantDTO.getCityName());
+                        resp.setLanName(merchantDTO.getLanName());
+                        resp.setMerchantName(merchantDTO.getMerchantName());
+                        resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+                    }
                 }
             }
         }
@@ -854,9 +857,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (CollectionUtils.isEmpty(list)) {
             return list;
         }
-        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(list.get(0).getMktResStoreId());
-        log.info("ResourceInstServiceImpl.getResourceInstList resouceStoreService.getMerchantByStore storeId={},resp={}", list.get(0).getMktResStoreId(), JSON.toJSONString(merchantResultVO));
-        MerchantDTO merchantDTO = merchantResultVO.getResultData();
         // 按产品维度组装数据
         Map<String, List<ResourceInstListPageResp>> map = list.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
         for (Map.Entry<String, List<ResourceInstListPageResp>> entry : map.entrySet()) {
@@ -876,10 +876,16 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             for (ResourceInstListPageResp resp : instList) {
                 // 添加产品信息
                 BeanUtils.copyProperties(prodResp, resp);
-                if (null != merchantDTO) {
-                    resp.setRegionName(merchantDTO.getCityName());
-                    resp.setLanName(merchantDTO.getLanName());
-                    resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+                // 库中存的是串码所属用户的地市，查询展示的是零售商的地市
+                if (StringUtils.isNotBlank(resp.getMerchantId())) {
+                    ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
+                    if (merchantResultVO.isSuccess() && null != merchantResultVO.getResultData()) {
+                        MerchantDTO merchantDTO = merchantResultVO.getResultData();
+                        resp.setRegionName(merchantDTO.getCityName());
+                        resp.setLanName(merchantDTO.getLanName());
+                        resp.setMerchantName(merchantDTO.getMerchantName());
+                        resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+                    }
                 }
             }
         }

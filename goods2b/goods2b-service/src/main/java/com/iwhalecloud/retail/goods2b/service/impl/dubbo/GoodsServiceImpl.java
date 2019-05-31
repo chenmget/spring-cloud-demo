@@ -1534,6 +1534,7 @@ public class GoodsServiceImpl implements GoodsService {
                 resp.setDeliveryPrice(goodsProductRel.getDeliveryPrice());
             }
 
+            // 判断商品是否是 参加前置补贴
             if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode().equals(goods.getIsSubsidy())) {
                 // 构造请求判断 当前用户是否参加 前置补贴活动
                 activityQueryByGoodsReq.setProductId(goodsProductRel.getProductId());

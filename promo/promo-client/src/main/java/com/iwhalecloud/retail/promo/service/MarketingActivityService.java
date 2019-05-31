@@ -30,7 +30,7 @@ public interface MarketingActivityService{
     /**
      * 查询B2B产品适用活动
      * 逻辑：先检查商家是否有可以参加的活动 ，可以参加  就返回 活动产品 关联对象（主要是获取活动价格）
-     * @param req 入参数
+     * @param req 入参: 产品ID 买家商家ID  卖家商家ID  活动类型
      * @return 活动产品 关联对象
      */
     ResultVO<ActivityProductDTO> getActivityProduct(MarketingActivityQueryByGoodsReq req);

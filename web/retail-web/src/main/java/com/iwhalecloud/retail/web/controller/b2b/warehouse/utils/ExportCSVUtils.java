@@ -22,6 +22,9 @@ public class ExportCSVUtils {
 	/** CSV文件列分隔符 */
 	private static final String CSV_RN = "\r\n";
 
+	/** CSV文件列分隔符 */
+	private static final String CSV_T = "\t";
+
 	/**
 	 * @param output
 	 * @param list 导出数据
@@ -69,16 +72,18 @@ public class ExportCSVUtils {
 		final String CREATE_DATE = "createDate";
 		final String CRM_STATUS = "statusCd";
 		final String RESULT = "result";
+		final String NBR = "mktResInstNbr";
+		final String SN = "sn";
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
-		if (filedName.equals(MKT_RES_INST_TYPE)) {
+		if (MKT_RES_INST_TYPE.equals(filedName)) {
 			return ResourceConst.MKTResInstType.getMKTResInstTypeName(value);
 		}
 
-		if (filedName.equals(STORAGE_TYPE)) {
+		if (STORAGE_TYPE.equals(filedName)) {
 			return ResourceConst.STORAGETYPE.getStorageTypeName(value);
 		}
 
-		if (filedName.equals(STATUS_CD)) {
+		if (STATUS_CD.equals(filedName)) {
 			log.info("STATUS_CD={}", value);
 			if (isRetailer) {
 				return ResourceConst.CRM_STATUS.getCrmStatusName(value);
@@ -86,26 +91,29 @@ public class ExportCSVUtils {
 			return ResourceConst.STATUSCD.getName(value);
 		}
 
-		if (filedName.equals(SOURCE_TYPE)) {
+		if (SOURCE_TYPE.equals(filedName)) {
 			return ResourceConst.SOURCE_TYPE.getName(value);
 		}
 
-		if (filedName.equals(CREATE_TIME) || filedName.equals(CREATE_DATE)) {
+		if (CREATE_TIME.equals(filedName) || CREATE_DATE.equals(filedName)) {
 			try {
 				Date date = new Date(Long.valueOf(value));
 				String StringDate = format.format(date);
-				return StringDate;
+				return StringDate  + CSV_T;
 			}catch (Exception e){
 				log.error("时间解析错误",e);
 			}
 		}
 
-		if (filedName.equals(RESULT)) {
+		if (RESULT.equals(filedName)) {
 			if (ResourceConst.CONSTANT_YES.equals(value)) {
 				return "是";
 			}else {
 				return "否";
 			}
+		}
+		if (NBR.equals(filedName) || SN.equals(filedName)) {
+			return value + CSV_T;
 		}
 		String finalValue = (value == null || "null".equals(value))? "" : value;
 		return finalValue;

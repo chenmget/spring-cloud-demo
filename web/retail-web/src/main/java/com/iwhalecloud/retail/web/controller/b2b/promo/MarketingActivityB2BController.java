@@ -398,7 +398,7 @@ public class MarketingActivityB2BController {
         }
         if(activityChangeDetailDTOList!=null){
             for (ActivityChangeDetailDTO detailDTO:activityChangeDetailDTOList) {
-                if(detailDTO.getChangeField()!=null&&detailDTO.getChangeField().contains("Url")){
+                if(detailDTO.getChangeField()!=null&&detailDTO.getChangeField().contains("URL")){
                     detailDTO.setOldValue(FastDFSImgStrJoinUtil.fullImageUrl(detailDTO.getOldValue(), dfsShowIp, true));
                     detailDTO.setNewValue(FastDFSImgStrJoinUtil.fullImageUrl(detailDTO.getNewValue(), dfsShowIp, true));
                 }

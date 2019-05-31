@@ -39,14 +39,9 @@ public class MarketingActivityChangeFinalReviewNotPassServiceImpl implements Mar
             log.info("MarketingActivityChangeFinalReviewNotPassServiceImpl.run  params={}", JSON.toJSONString(params));
             return ResultVO.error(ResultCodeEnum.LACK_OF_PARAM);
         }
-        //1.变更状态为终审不通过
         String changeId = params.getParamsValue();
-        ActivityChange change = activityChangeManager.queryActivityChangeById(changeId);
-        if (change==null){
-            return ResultVO.error(constant.getUpdateFaile());
-        }
-        change.setAuditState(PromoConst.AuditState.AuditState_6.getCode());
-        boolean flag = activityChangeManager.updateActivityChange(change);
+        //执行审核操作，终审不通过
+        boolean flag = activityChangeManager.updateActivityChangeNoPassById(changeId,PromoConst.AuditState.AuditState_6.getCode());
         if (flag){
             //2.将营销活动“修改标识”改为0(不在审核修改中)
             marketingActivityManager.updateMarketingActivityToModifiying(params.getBusinessId(),PromoConst.ActivityIsModifying.NO.getCode());

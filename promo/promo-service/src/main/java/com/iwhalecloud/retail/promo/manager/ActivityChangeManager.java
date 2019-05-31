@@ -199,4 +199,54 @@ public class ActivityChangeManager{
         change.setAuditState(PromoConst.AuditState.AuditState_5.getCode());
         return activityChangeMapper.updateById(change)==1;
     }
+
+
+    /**
+     * 根据营销活动变更id将变更信息置为不审核通过,并将变更信息的参与范围和参与对象置为删除状态
+     * @param id  营销活动
+     * @return
+     */
+    public boolean updateActivityChangeNoPassById(String id,String status) {
+        ActivityChange change = activityChangeMapper.selectById(id);
+        if (change==null){
+            return false;
+        }
+        //1.准备变更相关数据
+        //获取最新对应的变更明细
+        List<ActivityChangeDetail> details = activityChangeDetailManager.queryActivityChangeDetail(change.getChangeId());
+        //获取营销活动详情
+        MarketingActivity marketingActivity = marketingActivityManager.getMarketingActivityById(change.getMarketingActivityId());
+        //活动范围信息
+        List<ActivityScope> activityScopeList = Lists.newArrayList();
+        //参与对象信息
+        List<ActivityParticipant> activityParticipantList = Lists.newArrayList();
+        //2.组装活动范围信息、活动对象信息
+        for (ActivityChangeDetail detail:details) {
+            //活动范围信息（卖家范围）
+            if(ActivityScope.TNAME.equals(detail.getTableName())){
+                ActivityScope activityScope = new ActivityScope();
+                activityScope.setId(detail.getKeyValue());
+                activityScope.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_1.getCode());
+                activityScopeList.add(activityScope);
+                continue;
+            }
+            //活动对象信息（买家范围）
+            if(ActivityParticipant.TNAME.equals(detail.getTableName())){
+                ActivityParticipant activityParticipant = new ActivityParticipant();
+                activityParticipant.setId(detail.getKeyValue());
+                activityParticipant.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_1.getCode());
+                activityParticipantList.add(activityParticipant);
+                continue;
+            }
+        }
+        // 3.执行活动变更
+        // 将营销活动“修改标识”改为0(不在审核修改中)
+        marketingActivity.setIsModifiying(PromoConst.ActivityIsModifying.NO.getCode());
+        marketingActivityManager.updateMarketingActivity(marketingActivity);
+        activityScopeManager.updateActivityScopeBatch(activityScopeList);
+        activityParticipantManager.updateActivityParticipantBatch(activityParticipantList);
+        //4.将变更信息置为传入的审核不通过状态
+        change.setAuditState(status);
+        return activityChangeMapper.updateById(change)==1;
+    }
 }

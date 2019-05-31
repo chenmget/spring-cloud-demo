@@ -1187,7 +1187,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
         //2.比较活动范围信息
         //获取原活动范围数据和变更后是活动范围数据
-        List<ActivityScopeDTO> originalActivityScopeDTOList = activityScopeManager.queryActivityScopeByMktId(originalActivity.getId());
+        List<ActivityScopeDTO> originalActivityScopeDTOList = activityScopeManager.queryActivityScopeByMktIdAndStatus(originalActivity.getId(),PromoConst.Status.Audited.getCode());
         List<ActivityScopeDTO> changedActivityScopeDTOList = changedActivity.getActivityScopeList();
         if(!CollectionUtils.isEmpty(changedActivityScopeDTOList)&&changedActivityScopeDTOList.size()>originalActivityScopeDTOList.size()){
             List<String> originalActivityScopeLanIds = originalActivityScopeDTOList.stream().map(ActivityScopeDTO::getLanId).collect(Collectors.toList());
@@ -1222,7 +1222,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
         //2.比较活动参与对象信息
         //获取原活动参与对象数据和变更后是活动参与对象数据
-        List<ActivityParticipantDTO> originalActivityParticipantDTOList = activityParticipantManager.queryActivityParticipantByMktId(originalActivity.getId());
+        List<ActivityParticipantDTO> originalActivityParticipantDTOList = activityParticipantManager.queryActivityParticipantByMktIdAndStatus(originalActivity.getId(),PromoConst.Status.Audited.getCode());
         List<ActivityParticipantDTO> changedActivityParticipantDTOList = changedActivity.getActivityParticipantList();
         if(!CollectionUtils.isEmpty(changedActivityParticipantDTOList)&&changedActivityParticipantDTOList.size()>originalActivityParticipantDTOList.size()){
             List<String> originalActivityParticipantLanIds = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getLanId).collect(Collectors.toList());

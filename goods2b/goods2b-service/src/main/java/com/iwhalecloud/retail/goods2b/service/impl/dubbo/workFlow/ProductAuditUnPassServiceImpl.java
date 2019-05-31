@@ -49,28 +49,38 @@ public class ProductAuditUnPassServiceImpl implements ProductAuditUnPassService 
 
         req.setAttrValue10(ProductConst.attrValue10.NOTPASS.getCode());
         //固网产品需要提交串码到itms
-//        ProductBaseGetByIdReq productBaseGetByIdReq = new ProductBaseGetByIdReq();
-//        productBaseGetByIdReq.setProductBaseId(params.getBusinessId());
-//        ResultVO<ProductBaseGetResp> productBaseGetRespResultVO = productBaseService.getProductBase(productBaseGetByIdReq);
-//        if(productBaseGetRespResultVO.isSuccess() && null!=productBaseGetRespResultVO.getResultData()){
-//            ProductBaseGetResp productBaseGetResp = productBaseGetRespResultVO.getResultData();
-//            String isInspection = productBaseGetResp.getIsInspection();
-//            if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
-//                String SerialCode = productBaseGetResp.getParam20();
-//                if(StringUtils.isEmpty(SerialCode)){
-//                    ResultVO.error("固网产品必须录入串码");
-//                }
-//
-//                String b = "";
-//                String callUrl = "";
-//                Map request = new HashMap<>();
-//                try {
-//                    b = ZopClientUtil.zopService(callUrl, zopUrl, request, zopSecret);
-//                } catch (Exception e) {
-//                    log.error(e.getMessage());
-//                }
-//            }
-//        }
+        ProductBaseGetByIdReq productBaseGetByIdReq = new ProductBaseGetByIdReq();
+        productBaseGetByIdReq.setProductBaseId(params.getBusinessId());
+        ResultVO<ProductBaseGetResp> productBaseGetRespResultVO = productBaseService.getProductBase(productBaseGetByIdReq);
+        if(productBaseGetRespResultVO.isSuccess() && null!=productBaseGetRespResultVO.getResultData()){
+            ProductBaseGetResp productBaseGetResp = productBaseGetRespResultVO.getResultData();
+            String isInspection = productBaseGetResp.getIsInspection();
+            if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
+                String serialCode = productBaseGetResp.getParam20();  //串码  xxxx-1234556612
+//                String param = productBaseGetResp.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
+                if(StringUtils.isEmpty(serialCode)){
+                    ResultVO.error("固网产品必须录入串码");
+                }
+
+                String b = "";
+                String callUrl = "ord.operres.OrdInventoryChange";
+                Map request = new HashMap<>();
+                request.put("deviceId",serialCode);
+                request.put("userName","username");
+                request.put("code","ITMS_DELL");
+                request.put("params","");
+                try {
+                    b = ZopClientUtil.zopService(callUrl, zopUrl, request, zopSecret);
+                    if("-1".equals(b)){
+                        ResultVO.error("串码推送ITMS(删除)失败");
+                    }else if("1".equals(b)){
+                        ResultVO.error("串码推送ITMS(删除)已经存在");
+                    }
+                } catch (Exception e) {
+                    log.error(e.getMessage());
+                }
+            }
+        }
 
         return productService.updateAuditState(req);
     }

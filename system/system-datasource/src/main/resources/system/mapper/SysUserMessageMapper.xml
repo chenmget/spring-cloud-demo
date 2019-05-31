@@ -58,7 +58,7 @@
 
 <update id="updateSysMesByTaskId">
     UPDATE sys_user_message sym
-    SET sym.STATUS = '0',
+    SET sym.STATUS = '1',
     sym.END_TIME = NOW( )
     WHERE
     sym.TASK_ID = #{taskId}

@@ -63,11 +63,12 @@ public class ProductAuditPassServiceImpl implements ProductAuditPassService {
             if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
                 String serialCode = productBaseGetResp.getParam20();  //串码  xxxx-1234556612
 //                String param = productBaseGetResp.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
+                String userName = productBaseGetResp.getParam18();  //login_name
                 String b = "";
                 String callUrl = "ord.operres.OrdInventoryChange";
                 Map request = new HashMap<>();
                 request.put("deviceId",serialCode);
-                request.put("userName","username");
+                request.put("userName",userName);
                 request.put("code","ITMS_DELL");
                 request.put("params","");
                 try {

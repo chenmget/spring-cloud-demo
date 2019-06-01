@@ -112,50 +112,50 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         if (resultInt <= 0) {
             return ResultVO.error("新增商家权限信息失败，请确认参数");
         }
-        if(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType().equals(req.getRuleType()) &&
-                PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType().equals(req.getTargetType())){
+        if (PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType().equals(req.getRuleType()) &&
+                PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType().equals(req.getTargetType())) {
             MerchantGetReq merchantGetReq = new MerchantGetReq();
             merchantGetReq.setMerchantId(req.getMerchantId());
             Merchant merchant = merchantManager.getMerchant(merchantGetReq);
             //是地包 并且 没有赋权
-            if(null!=merchant && PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchant.getMerchantType()) &&
-                    PartnerConst.AssignedFlgEnum.NO.getType().equals(merchant.getAssignedFlg())){
+            if (null != merchant && PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchant.getMerchantType()) &&
+                    PartnerConst.AssignedFlgEnum.NO.getType().equals(merchant.getAssignedFlg())) {
                 this.merchantAssigned(merchant.getMerchantId());
             }
         }
         return ResultVO.success(resultInt);
     }
 
-    private void merchantAssigned(String merchantId){
+    private void merchantAssigned(String merchantId) {
         ProductGetReq productGetReq = new ProductGetReq();
         productGetReq.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
         ResultVO<Page<ProductDTO>> resultVO = productService.selectProduct(productGetReq);
-        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+        if (resultVO.isSuccess() && null != resultVO.getResultData()) {
             List<ProductDTO> productDTOs = resultVO.getResultData().getRecords();
-            List<String> productIds  = new ArrayList<>();
-            if(!CollectionUtils.isEmpty(productDTOs)){
-                for(ProductDTO productDTO:productDTOs){
+            List<String> productIds = new ArrayList<>();
+            if (!CollectionUtils.isEmpty(productDTOs)) {
+                for (ProductDTO productDTO : productDTOs) {
                     productIds.add(productDTO.getProductId());
                 }
                 MerchantRulesSaveReq merchantRulesSaveReq = new MerchantRulesSaveReq();
                 merchantRulesSaveReq.setMerchantId(merchantId);
                 merchantRulesSaveReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
                 merchantRulesSaveReq.setTargetType(PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType());
-                int listSize=productIds.size();
-                int toIndex=300;
-                log.info("MerchantRulesServiceImpl.merchantAssigned(),商家id={} 添加产品权限数={} ", merchantId,listSize);
-                for(int i=0;i<listSize;i+=300){
-                    if(i+300>listSize){
-                        toIndex=listSize-i;
+                int listSize = productIds.size();
+                int toIndex = 300;
+                log.info("MerchantRulesServiceImpl.merchantAssigned(),商家id={} 添加产品权限数={} ", merchantId, listSize);
+                for (int i = 0; i < listSize; i += 300) {
+                    if (i + 300 > listSize) {
+                        toIndex = listSize - i;
                     }
-                    List newlist = productIds.subList(i,i+toIndex);
+                    List newlist = productIds.subList(i, i + toIndex);
                     merchantRulesSaveReq.setTargetIdList(newlist);
                     this.saveMerchantRules(merchantRulesSaveReq);
                     Merchant merchant = new Merchant();
                     merchant.setMerchantId(merchantId);
                     merchant.setAssignedFlg(PartnerConst.AssignedFlgEnum.YES.getType());
                     merchantManager.updateMerchant(merchant);
-                    log.info("MerchantRulesServiceImpl.merchantAssigned(),商家id={} 添加产品权限第={}次，总共={}次 ", merchantId,i,listSize/500+1);
+                    log.info("MerchantRulesServiceImpl.merchantAssigned(),商家id={} 添加产品权限第={}次，总共={}次 ", merchantId, i, listSize / 500 + 1);
                 }
             }
         }
@@ -282,7 +282,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     @Override
     public ResultVO<Page<MerchantRulesDetailPageResp>> pageMerchantRules(MerchantRulesDetailPageReq req) {
         log.info("MerchantRulesServiceImpl.pageMerchantRules(), input: MerchantRulesDetailPageReq={} ", req);
-        if(StringUtils.isNotEmpty(req.getLoginName())){
+        if (StringUtils.isNotEmpty(req.getLoginName())) {
             UserGetReq userGetReq = new UserGetReq();
             userGetReq.setLoginName(req.getLoginName());
             UserDTO userDTO = userService.getUser(userGetReq);
@@ -291,21 +291,17 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
         // 分组标签 转换成 merchant_id
         if (!StringUtils.isEmpty(req.getTagId())) {
-//            MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
-//            merchantTagRelListReq.setTagId(req.getTagId());
-            List<String> resultMerchantList= merchantManager.getMerchantIdListByTag(req.getTagId());
+            List<String> resultMerchantList = merchantManager.getMerchantIdListByTag(req.getTagId());
             req.setTagMerchantList(resultMerchantList);
         }
         Page<MerchantRulesDetailPageResp> merchantRulesDetailPageRespPage = merchantRulesManager.pageMerchantRules(req);
         List<MerchantRulesDetailPageResp> ruleList = merchantRulesDetailPageRespPage.getRecords();
-        if(ruleList != null && ruleList.size() > 0){
+        if (ruleList != null && ruleList.size() > 0) {
             for (int i = 0; i < ruleList.size(); i++) {
                 MerchantRulesDetailPageResp rule = ruleList.get(i);
-//                rule.setLanName(commonRegionService.getCommonRegionById(rule.getLanId()).getResultData().getRegionName());
-//                rule.setCityName(commonRegionService.getCommonRegionById(rule.getCity()).getResultData().getRegionName());
                 rule.setLanName(getRegionNameByRegionId(rule.getLanId()));
                 rule.setCityName(getRegionNameByRegionId(rule.getCity()));
-                if(StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType())){
+                if (StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType())) {
                     //经营权限
                     if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                         //机型权限
@@ -316,12 +312,11 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                             rule.setTargetName(productResp.getUnitName());
                             rule.setTargetCode(productResp.getSn());
                         }
-                    } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())){
+                    } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                         //区域权限
                         rule.setTargetName(getRegionNameByRegionId(rule.getTargetId()));
-//                        rule.setTargetName(commonRegionService.getCommonRegionById(rule.getTargetId()).getResultData().getRegionName());
                         rule.setTargetCode(rule.getTargetId());
-                    } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())){
+                    } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())) {
                         //商家权限
                         MerchantDTO merchantDTO = merchantService.getMerchantById(rule.getTargetId()).getResultData();
                         if (Objects.nonNull(merchantDTO)) {
@@ -329,9 +324,9 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                             rule.setTargetCode(merchantDTO.getMerchantCode());
                         }
                     }
-                } else if(StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.GREEN_CHANNEL.getType())){
+                } else if (StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.GREEN_CHANNEL.getType())) {
                     //绿色通道权限
-                    if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.PRODUCT.getType())){
+                    if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.PRODUCT.getType())) {
                         //产品权限
                         ProductBaseGetByIdReq productBaseGetByIdReq = new ProductBaseGetByIdReq();
                         productBaseGetByIdReq.setProductBaseId(rule.getTargetId());
@@ -339,7 +334,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                         if (Objects.nonNull(productBaseGetResp)) {
                             rule.setTargetName(productBaseGetResp.getProductName());
                         }
-                    } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.MODEL.getType())){
+                    } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.MODEL.getType())) {
                         //机型权限
                         ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
                         productGetByIdReq.setProductId(rule.getTargetId());
@@ -349,9 +344,9 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                             rule.setTargetCode(productResp.getSn());
                         }
                     }
-                } else if(StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType())){
+                } else if (StringUtils.equals(rule.getRuleType(), PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType())) {
                     //调拨权限
-                    if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType())){
+                    if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType())) {
                         //机型权限
                         ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
                         productGetByIdReq.setProductId(rule.getTargetId());
@@ -360,12 +355,11 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                             rule.setTargetName(productResp.getUnitName());
                             rule.setTargetCode(productResp.getSn());
                         }
-                    } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())){
+                    } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())) {
                         //区域权限
                         rule.setTargetName(getRegionNameByRegionId(rule.getTargetId()));
-//                        rule.setTargetName(commonRegionService.getCommonRegionById(rule.getTargetId()).getResultData().getRegionName());
                         rule.setTargetCode(rule.getTargetId());
-                    } else if(StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MERCHANT.getType())){
+                    } else if (StringUtils.equals(rule.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MERCHANT.getType())) {
                         //商家权限
                         MerchantDTO merchantDTO = merchantService.getMerchantById(rule.getTargetId()).getResultData();
                         if (Objects.nonNull(merchantDTO)) {
@@ -436,7 +430,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
                 fieldName = "regionId";
-//                detailList = regionsService.getRegionList(targetIdList).getResultData();
                 CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
                 commonRegionListReq.setRegionIdList(targetIdList);
                 detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
@@ -525,7 +518,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())) {
                 // 区域
-//                detailList = regionsService.getRegionList(targetIdList).getResultData();
                 CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
                 commonRegionListReq.setRegionIdList(targetIdList);
                 detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();

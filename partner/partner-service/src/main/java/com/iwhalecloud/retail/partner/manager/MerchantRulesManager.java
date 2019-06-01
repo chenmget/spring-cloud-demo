@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
-import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
@@ -25,20 +24,22 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
 
     /**
      * 添加一个 商家 权限规则
+     *
      * @param merchantRules
      * @return
      */
-    public int insert(MerchantRules merchantRules){
+    public int insert(MerchantRules merchantRules) {
         int resultInt = merchantRulesMapper.insert(merchantRules);
         return resultInt;
     }
 
     /**
      * 根据条件 获取一个 商家 权限规则
+     *
      * @param merchantRulesId
      * @return
      */
-    public MerchantRulesDTO getMerchantRulesById(String merchantRulesId){
+    public MerchantRulesDTO getMerchantRulesById(String merchantRulesId) {
         MerchantRules merchantRules = merchantRulesMapper.selectById(merchantRulesId);
         if (merchantRules == null) {
             return null;
@@ -61,25 +62,26 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
 
     /**
      * 删除 商家 权限规则 信息
+     *
      * @param req
      * @return
      */
-    public int deleteMerchantRules(MerchantRulesDeleteReq req){
+    public int deleteMerchantRules(MerchantRulesDeleteReq req) {
         QueryWrapper<MerchantRules> queryWrapper = new QueryWrapper<MerchantRules>();
         Boolean hasParams = false; // 是否有参数
-        if(!StringUtils.isEmpty(req.getMerchantRuleId())){
+        if (!StringUtils.isEmpty(req.getMerchantRuleId())) {
             hasParams = true;
             queryWrapper.eq(MerchantRules.FieldNames.merchantRuleId.getTableFieldName(), req.getMerchantRuleId());
         }
-        if(!StringUtils.isEmpty(req.getMerchantId())){
+        if (!StringUtils.isEmpty(req.getMerchantId())) {
             hasParams = true;
             queryWrapper.eq(MerchantRules.FieldNames.merchantId.getTableFieldName(), req.getMerchantId());
         }
-        if(!StringUtils.isEmpty(req.getRuleType())){
+        if (!StringUtils.isEmpty(req.getRuleType())) {
             hasParams = true;
             queryWrapper.eq(MerchantRules.FieldNames.ruleType.getTableFieldName(), req.getRuleType());
         }
-        if(!StringUtils.isEmpty(req.getTargetType())){
+        if (!StringUtils.isEmpty(req.getTargetType())) {
             hasParams = true;
             queryWrapper.eq(MerchantRules.FieldNames.targetType.getTableFieldName(), req.getTargetType());
         }
@@ -93,21 +95,22 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
 
     /**
      * 根据条件 获取 商家 权限规则信息列表
+     *
      * @param req
      * @return
      */
-    public List<MerchantRulesDTO> listMerchantRules(MerchantRulesListReq req){
+    public List<MerchantRulesDTO> listMerchantRules(MerchantRulesListReq req) {
         QueryWrapper<MerchantRules> queryWrapper = new QueryWrapper<MerchantRules>();
-        if(!StringUtils.isEmpty(req.getMerchantId())){
+        if (!StringUtils.isEmpty(req.getMerchantId())) {
             queryWrapper.eq(MerchantRules.FieldNames.merchantId.getTableFieldName(), req.getMerchantId());
         }
-        if(!StringUtils.isEmpty(req.getRuleType())){
+        if (!StringUtils.isEmpty(req.getRuleType())) {
             queryWrapper.eq(MerchantRules.FieldNames.ruleType.getTableFieldName(), req.getRuleType());
         }
-        if(!StringUtils.isEmpty(req.getTargetType())){
+        if (!StringUtils.isEmpty(req.getTargetType())) {
             queryWrapper.eq(MerchantRules.FieldNames.targetType.getTableFieldName(), req.getTargetType());
         }
-        if(!StringUtils.isEmpty(req.getTargetId())){
+        if (!StringUtils.isEmpty(req.getTargetId())) {
             queryWrapper.eq(MerchantRules.FieldNames.targetId.getTableFieldName(), req.getTargetId());
         }
         List<MerchantRules> merchantRulesList = merchantRulesMapper.selectList(queryWrapper);
@@ -120,9 +123,9 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
         return merchantRulesDTOList;
     }
 
-    public Page<MerchantRulesDTO> pageMerchantRulesDetail(MerchantRulesListReq req){
+    public Page<MerchantRulesDTO> pageMerchantRulesDetail(MerchantRulesListReq req) {
         Page<MerchantRulesDTO> page = new Page<>(req.getPageNo(), req.getPageSize());
-        return merchantRulesMapper.pageMerchantRulesDetail(page,req);
+        return merchantRulesMapper.pageMerchantRulesDetail(page, req);
     }
 
     public Page<MerchantRulesDetailPageResp> pageMerchantRules(MerchantRulesDetailPageReq req) {
@@ -132,10 +135,11 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
 
     /**
      * 根据条件查询商家权限规则
+     *
      * @param req
      * @return
      */
-    public List<MerchantRulesDTO> queryMerchantRuleByCondition(MerchantRuleGetReq req){
+    public List<MerchantRulesDTO> queryMerchantRuleByCondition(MerchantRuleGetReq req) {
         return merchantRulesMapper.queryMerchantRuleByCondition(req);
     }
 

@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.web.controller.partner;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods.dto.resp.ProdBrandGetResp;
@@ -118,9 +119,11 @@ public class MerchantRulesController {
 //    }
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @Transactional
-    public ResultVO<List<MerchantRulesDetailDTO>> listMerchantRules(@RequestBody @ApiParam(value = "查询商家权限规则列表参数", required = true) MerchantRulesDetailListReq req) {
-
-        return merchantRulesService.listMerchantRulesDetail(req);
+    public ResultVO<List<MerchantRulesDetailDTO>> listMerchantRulesDetail(@RequestBody @ApiParam(value = "查询商家权限规则列表参数", required = true) MerchantRulesDetailListReq req) {
+        log.info("MerchantRulesController.listMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", JSON.toJSONString(req));
+        ResultVO<List<MerchantRulesDetailDTO>> resultVO = merchantRulesService.listMerchantRulesDetail(req);
+        log.info("MerchantRulesController.listMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", JSON.toJSONString(resultVO));
+        return resultVO;
     }
 
     @ApiOperation(value = "获取商家权限规则 接口", notes = "获取商家权限规则 接口")

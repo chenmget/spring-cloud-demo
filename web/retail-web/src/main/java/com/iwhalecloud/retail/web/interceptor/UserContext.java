@@ -309,6 +309,8 @@ public class UserContext implements Serializable {
         }
         List<Integer> list = Lists.newArrayList(
                 SystemConst.USER_FOUNDER_1,
+                SystemConst.USER_FOUNDER_2,
+                SystemConst.USER_FOUNDER_9,
                 SystemConst.USER_FOUNDER_12,
                 SystemConst.USER_FOUNDER_24
         );

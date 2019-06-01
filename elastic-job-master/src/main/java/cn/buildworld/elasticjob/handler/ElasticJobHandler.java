@@ -1,6 +1,7 @@
 package cn.buildworld.elasticjob.handler;
 
 import cn.buildworld.elasticjob.config.DataSourceConfig;
+import cn.buildworld.elasticjob.job.MyJob;
 import cn.buildworld.elasticjob.listener.ElasticJobListener;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
@@ -56,9 +57,9 @@ public class ElasticJobHandler {
      * @param shardingTotalCount 分片数
      */
     public void addJob(String jobName, String cron, Integer shardingTotalCount, String id) {
-/*        LiteJobConfiguration jobConfig = simpleJobConfigBuilder(jobName, MyJob2.class, shardingTotalCount, cron, id)
+        LiteJobConfiguration jobConfig = simpleJobConfigBuilder(jobName, MyJob.class, shardingTotalCount, cron, id)
                 .overwrite(true).build();
 
-        new SpringJobScheduler(new MyJob2(), zookeeperRegistryCenter, jobConfig, elasticJobListener).init();*/
+        new SpringJobScheduler(new MyJob(), zookeeperRegistryCenter, jobConfig, elasticJobListener).init();
     }
 }

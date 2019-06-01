@@ -62,9 +62,6 @@ public class TypeServiceImpl implements TypeService {
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
 
-    @Value("${addNbrService.typeId}")
-    private String typeId;
-
     @Value("${type.moblie}")
     private String moblie;
 
@@ -336,6 +333,7 @@ public class TypeServiceImpl implements TypeService {
         String parentId = req.getTypeId();
         while (true){
             type = typeManager.selectById(parentId);
+            log.info("TypeServiceImpl.queryTypeBrand attrSpecManager.queryProdTypeComplexbyTypeId req={}, resp={}", parentId, JSON.toJSONString(type));
             if (null == type) {
                 break;
             }

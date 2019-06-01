@@ -44,9 +44,9 @@ public class ActivityProductDTO implements java.io.Serializable {
   	private String productId;
 	
 	/**
-  	 * 价格
+  	 * 	活动中的商品价格 前置补贴活动保存产品的地包强制供货价 限时抢购活动保存产品的抢购价
   	 */
-	@ApiModelProperty(value = "价格")
+	@ApiModelProperty(value = "活动中的商品价格 前置补贴活动保存产品的地包强制供货价 限时抢购活动保存产品的抢购价")
   	private Long price;
 	
 	/**

@@ -44,10 +44,10 @@ public class GoodsProductRelManager {
     }
 
     public int addGoodsProductRel(GoodsProductRel goodsProductRel) {
-        if (Objects.isNull(goodsProductRel.getInitialPrice())) {
-            // 设置初始上架价格
-            goodsProductRel.setInitialPrice(goodsProductRel.getDeliveryPrice());
-        }
+//        if (Objects.isNull(goodsProductRel.getInitialPrice())) {
+//            // 设置初始上架价格
+//            goodsProductRel.setInitialPrice(goodsProductRel.getDeliveryPrice());
+//        }
         return goodsProductRelMapper.insert(goodsProductRel);
     }
 

@@ -73,16 +73,15 @@ pay:
 
 # 分布式文件系统FDFS配置
 fdfs:
-  showUrl: https://gy.ztesoft.com/
+  showUrl: http://10.45.46.232:8081/
   soTimeout: 1500 #socket连接超时时长
   connectTimeout: 600 #连接tracker服务器超时时长
   thumbImage: #缩略图生成参数，可选
       width: 150
       height: 150
   trackerList: #TrackerList参数,支持多个，我这里只有一个，如果有多个在下方加- x.x.x.x:port :NRetail/NRetail
-    - 10.45.47.87:22133
-    - 10.45.47.90:22133
-    - 10.45.47.89:22133
+    - 10.45.46.235:22122
+    - 10.45.46.236:22122
   pool:
     jmx-enabled: false
   suffix:  #配置允许附件上传的后缀

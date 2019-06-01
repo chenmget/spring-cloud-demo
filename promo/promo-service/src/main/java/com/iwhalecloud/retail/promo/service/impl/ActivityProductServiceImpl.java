@@ -144,7 +144,7 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         }
         return ResultVO.success(preSubsidyProductResqDTOS);
     }
-    
+
     @Override
     public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProductInfo(String marketingActivityId) {
         log.info("ActivityProductServiceImpl.queryPreSubsidyProduct marketingActivityId={}", marketingActivityId);
@@ -155,16 +155,16 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             return ResultVO.success(preSubsidyProductResqDTOS);
         }
         for (ActivityProduct activityProduct : activityProducts) {
-        	//把支付定金的时间加上lws
-        	QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
+            //把支付定金的时间加上lws
+            QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
             queryMarketingActivityReq.setMarketingActivityId(activityProduct.getMarketingActivityId());
-        	ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityByIdtime(queryMarketingActivityReq);//获取时间lws
-        	MarketingActivityDTO marketingActivityDTO = marketingActivityDTOResultVO.getResultData();
-        	Date preStartTime = marketingActivityDTO.getPreStartTime();
+            ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityByIdtime(queryMarketingActivityReq);//获取时间lws
+            MarketingActivityDTO marketingActivityDTO = marketingActivityDTOResultVO.getResultData();
+            Date preStartTime = marketingActivityDTO.getPreStartTime();
 //        	String pre_Start_Time = "";
-        	Date preEndTime = marketingActivityDTO.getPreEndTime();
-        	Date tailPayStartTime = marketingActivityDTO.getTailPayStartTime();
-        	Date tailPayEndTime = marketingActivityDTO.getTailPayEndTime();
+            Date preEndTime = marketingActivityDTO.getPreEndTime();
+            Date tailPayStartTime = marketingActivityDTO.getTailPayStartTime();
+            Date tailPayEndTime = marketingActivityDTO.getTailPayEndTime();
 //        	String pre_End_Time = "";
 //        	if(preStartTime != null){
 //        		pre_Start_Time = preStartTime.toLocaleString();
@@ -185,7 +185,7 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             ActivityProductRespDTO activityProductResqDTO = new ActivityProductRespDTO();
             BeanUtils.copyProperties(activityProduct, activityProductResqDTO);
             activityProductResqDTO.setPreStartTime(preStartTime);
-            activityProductResqDTO.setPreEndTime(preEndTime); 
+            activityProductResqDTO.setPreEndTime(preEndTime);
             activityProductResqDTO.setTailPayStartTime(tailPayStartTime);
             activityProductResqDTO.setTailPayEndTime(tailPayEndTime);
             preSubsidyProductResqDTO.setActivityProductResqDTO(activityProductResqDTO);
@@ -193,7 +193,7 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         }
         return ResultVO.success(preSubsidyProductResqDTOS);
     }
-    
+
     @Override
     public ResultVO addPreSubsidyProduct(ActivityProductReq activityProductReq) {
         ActivityProduct activityProduct = new ActivityProduct();
@@ -251,44 +251,45 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = queryPreSubsidyProductInfo(queryMarketingActivityReq.getMarketingActivityId());
         return ResultVO.success(listResultVO.getResultData());
     }
-    
+
     @Override
     public ResultVO checkProductDiscountAmount(String productId, Long discountAmount) {
         QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();
         queryProductInfoReqDTO.setProductId(productId);
         ResultVO<QueryProductInfoResqDTO> productInfoResqDTOResultVO = productService.getProductInfo(queryProductInfoReqDTO);
-        if(productInfoResqDTOResultVO.getResultData()==null){
+        if (productInfoResqDTOResultVO.getResultData() == null) {
             return ResultVO.error("产品不存在");
         }
-        if(productInfoResqDTOResultVO.getResultData().getCost()<= discountAmount){
-            return ResultVO.error(productInfoResqDTOResultVO.getResultData().getProductName()+"产品的减免金额应小于产品销售价");
+        if (productInfoResqDTOResultVO.getResultData().getCost() <= discountAmount) {
+            return ResultVO.error(productInfoResqDTOResultVO.getResultData().getProductName() + "产品的减免金额应小于产品销售价");
         }
         return ResultVO.success();
     }
 
     @Override
     public ResultVO<List<ActivityProductDTO>> queryActivityProducts(ActivityProductListReq req) {
+        log.info("ActivityProductServiceImpl.queryActivityProducts req={}", JSON.toJSONString(req));
         List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(req);
-
-        List<ActivityProductDTO> activityProductDTOs = CloneUtils.batchClone(activityProducts,ActivityProductDTO.class);
-
+        List<ActivityProductDTO> activityProductDTOs = CloneUtils.batchClone(activityProducts, ActivityProductDTO.class);
+        log.info("ActivityProductServiceImpl.queryActivityProducts output={}", JSON.toJSONString(activityProductDTOs));
         return ResultVO.success(activityProductDTOs);
     }
+
     @Override
-    public ResultVO<VerifyProductPurchasesLimitResp> verifyProductPurchasesLimit(VerifyProductPurchasesLimitReq req){
+    public ResultVO<VerifyProductPurchasesLimitResp> verifyProductPurchasesLimit(VerifyProductPurchasesLimitReq req) {
         VerifyProductPurchasesLimitResp resp = new VerifyProductPurchasesLimitResp();
         resp.setResultCode(ResultCodeEnum.SUCCESS.getCode());
         resp.setResultMsg("校验通过");
         //根据产品ID和活动ID获取最大购买数
-        Long limit = activityProductManager.queryActProductSumByProduct(req.getActivityId(),req.getProductId());
-        limit = limit==null?0:limit;
+        Long limit = activityProductManager.queryActProductSumByProduct(req.getActivityId(), req.getProductId());
+        limit = limit == null ? 0 : limit;
         //根据产品ID和活动ID获取已购买数量
-        Long purchasedSum  = historyPurchaseManager.queryActProductPurchasedSum(req);
-        purchasedSum = purchasedSum==null?0:purchasedSum;
+        Long purchasedSum = historyPurchaseManager.queryActProductPurchasedSum(req);
+        purchasedSum = purchasedSum == null ? 0 : purchasedSum;
         int purchaseCount = req.getPurchaseCount().intValue();
-        if((purchasedSum.longValue()+purchaseCount)>limit.longValue()){
+        if ((purchasedSum.longValue() + purchaseCount) > limit.longValue()) {
             resp.setResultCode(ResultCodeEnum.ERROR.getCode());
-            resp.setResultMsg("校验失败,超过允许购买的最大数量:"+limit+"(已购买数量:"+purchasedSum+")!");
+            resp.setResultMsg("校验失败,超过允许购买的最大数量:" + limit + "(已购买数量:" + purchasedSum + ")!");
         }
 
         return ResultVO.success(resp);

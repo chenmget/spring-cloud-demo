@@ -31,6 +31,7 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.manager.*;
+import com.iwhalecloud.retail.warehouse.runable.QueryResourceInstRunableTask;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.*;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -125,6 +126,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Autowired
     private ResourceUploadTempManager resourceUploadTempManager;
+
+    @Autowired
+    private QueryResourceInstRunableTask queryResourceInstRunableTask;
 
 
     @Override
@@ -370,6 +374,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstUpdateReq.setMerchantId(req.getSellerMerchantId());
             ResultVO delRS = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
             log.info("SupplierResourceInstServiceImpl.deliveryOutResourceInst resourceInstService.delResourceInst req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(delRS));
+            if (delRS == null || !delRS.isSuccess()) {
+                return ResultVO.error(delRS.getResultMsg());
+            }
         }
         // 下单是增加了在途数量，发货时减去
         if (null != req.getUpdateStockReq()) {
@@ -475,6 +482,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstUpdateReq.setMktResStoreId(mktResStoreId);
             resourceInstUpdateReq.setUpdateStaff(merchantResultVO.getResultData().getUserId());
             resourceInstUpdateReq.setMerchantId(req.getBuyerMerchantId());
+            resourceInstUpdateReq.setMktResId(item.getProductId());
             ResultVO updateResultVO = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
             log.info("SupplierResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService.updateResourceInstForTransaction req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(updateResultVO));
             if (updateResultVO == null || !updateResultVO.isSuccess()) {
@@ -832,5 +840,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), updateResourceresultVO.getResultMsg());
         }
         return ResultVO.success("串码入库完成", resourceInstAddResp);
+    }
+
+    @Override
+    public ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req){
+        return ResultVO.success(queryResourceInstRunableTask.exceutorQueryResourceInst(req));
     }
 }

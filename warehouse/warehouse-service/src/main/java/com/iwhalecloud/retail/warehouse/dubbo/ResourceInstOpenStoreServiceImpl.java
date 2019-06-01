@@ -55,4 +55,8 @@ public class ResourceInstOpenStoreServiceImpl implements ResourceInstStoreServic
     public void syncMktToITMS() {
         resourceInstStoreService.syncMktToITMS();
     }
+    @Override
+    public void syncMktToITMSBack() {
+        resourceInstStoreService.syncMktToITMSBack();
+    }
 }

@@ -123,4 +123,12 @@ public interface ResourceInstService {
      * @return
      */
     String getPrimaryKey();
+
+    /**
+     * 根据查询条件串码实列(手动分页，插件自带的线程不安全)
+     * @param req
+     * @return
+     */
+    List<ResourceInstListPageResp> getResourceInstListManual(ResourceInstListPageReq req);
+
 }

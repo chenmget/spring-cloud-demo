@@ -6,9 +6,12 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import org.junit.Test;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -32,12 +35,13 @@ public class PurchaseApplyServiceImplTest extends TestBase {
 
     @Test
     public void getDeliveryInfoByApplyID(){
-//        PurApplyDeliveryReq req = new PurApplyDeliveryReq();
-//        req.setApplyId("1723");
-//        ResultVO<List<PurApplyDeliveryResp>> listResultVO = purchaseApplyService.getDeliveryInfoByApplyID(req);
-//        List<PurApplyDeliveryResp> l = listResultVO.getResultData();
-//        for(PurApplyDeliveryResp p:l) {
-//            System.out.println(p.getBatchId()+p.getUnitName()+p.getMktResInstNbr()+p.getCreateDate());
-//        }
+        PurApplyReq req = new PurApplyReq();
+        req.setApplyId("1723");
+        ResultVO<Page<PurApplyDeliveryResp>> listResultVO = purchaseApplyService.getDeliveryInfoByApplyID(req);
+        Page<PurApplyDeliveryResp> l = listResultVO.getResultData();
+        List<PurApplyDeliveryResp> r = l.getRecords();
+        for(PurApplyDeliveryResp p:r) {
+            System.out.println(p.getBatchId()+p.getUnitName()+p.getMktResInstNbr()+p.getCreateDate());
+        }
     }
 }

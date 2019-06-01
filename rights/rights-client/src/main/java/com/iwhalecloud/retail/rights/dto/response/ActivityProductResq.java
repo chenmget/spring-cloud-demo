@@ -141,5 +141,17 @@ public class ActivityProductResq implements Serializable {
      */
     @ApiModelProperty(value = "产品类型")
     private String typeName;
+    
+    /**
+	 * 活动图片应用方式
+	 */
+	@ApiModelProperty(value = "活动图片应用方式")
+	private String productPicUseType;
+	
+	/**
+	 * 活动图片
+	 */
+	@ApiModelProperty(value = "活动图片")
+	private String productPic;
 
 }

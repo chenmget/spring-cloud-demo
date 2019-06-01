@@ -7,6 +7,10 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductListGetByIdsReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductInfoResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
@@ -29,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,6 +61,9 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
     @Reference
     private SupplierResourceInstService supplierResourceInstService;
+
+    @Reference
+    private ProductService productService;
 
     /**
      * 采购单发货
@@ -198,6 +206,31 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     public ResultVO<Page<PurApplyDeliveryResp>>  getDeliveryInfoByApplyID(PurApplyReq req) {
 
         Page<PurApplyDeliveryResp> list = purApplyDeliveryManager.getDeliveryInfoByApplyID(req);
+        List<PurApplyDeliveryResp> deliveryInfo = list.getRecords();
+        List<String> prodIds = new ArrayList<String>();
+        for(PurApplyDeliveryResp purApplyDeliveryResp:deliveryInfo) {
+            String productId =purApplyDeliveryResp.getProductId();
+            if (productId!=null) {
+                prodIds.add(productId);
+            }
+        }
+
+       List<ProductInfoResp>  proTemp=productService.getProductInfoByIds(prodIds);
+        //获取产品名称 设置到list的结果集中
+        int k = deliveryInfo.size();
+        for(int i=0;i<k;i++) {
+            PurApplyDeliveryResp purApplyDeliveryResp= deliveryInfo.get(i);
+            String productId =purApplyDeliveryResp.getProductId();
+            for(ProductInfoResp productInfoResp:proTemp) {
+                String productIdTemp = productInfoResp.getProductId();
+                if (productIdTemp.equals(productId)) {
+                    purApplyDeliveryResp.setUnitName(productInfoResp.getUnitName());
+                    deliveryInfo.set(i,purApplyDeliveryResp);
+                    break;
+                }
+            }
+        }
+        list.setRecords(deliveryInfo);
         return ResultVO.success(list);
     }
 

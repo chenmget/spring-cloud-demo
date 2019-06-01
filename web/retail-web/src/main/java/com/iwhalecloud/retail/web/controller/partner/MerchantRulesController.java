@@ -60,6 +60,7 @@ public class MerchantRulesController {
 
     /**
      * 新建 商家经营权限规则
+     *
      * @param req
      * @return
      */
@@ -101,6 +102,7 @@ public class MerchantRulesController {
 
     /**
      * 获取 商家权限规则 列表
+     *
      * @param req
      * @return
      */
@@ -123,20 +125,20 @@ public class MerchantRulesController {
 
     @ApiOperation(value = "获取商家权限规则 接口", notes = "获取商家权限规则 接口")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/QueryMerchantRules", method = RequestMethod.POST)
     @Transactional
-    public ResultVO<List<MerchantRulesDTO>> QueryMerchantRules(@RequestBody @ApiParam(value = "获取商家权限规则 接口参数", required = true) MerchantRulesDetailListReq req) {
+    public ResultVO<List<MerchantRulesDTO>> queryMerchantRules(@RequestBody @ApiParam(value = "获取商家权限规则 接口参数", required = true) MerchantRulesDetailListReq req) {
 
         return merchantRulesService.listMerchantRules(req);
     }
 
     @ApiOperation(value = "获取 分页商家权限规则 列表接口", notes = "可以根据 商家ID 规则类型、对象类型 条件进行查询分页（通用接口）")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/listPage", method = RequestMethod.POST)
     @Transactional
@@ -147,6 +149,7 @@ public class MerchantRulesController {
 
     /**
      * 获取 商家权限规则 分页
+     *
      * @param req
      * @return
      */
@@ -197,6 +200,7 @@ public class MerchantRulesController {
 
     /**
      * 新建 商家经营权限规则
+     *
      * @param req
      * @return
      */
@@ -218,7 +222,7 @@ public class MerchantRulesController {
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value = "/uploadExcel", headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadExcel", headers = "content-type=multipart/form-data", method = RequestMethod.POST)
     public ResultVO uploadExcel(@RequestParam("file") MultipartFile file) {
 
         String suffix = StringUtils.getFilenameExtension(file.getOriginalFilename());

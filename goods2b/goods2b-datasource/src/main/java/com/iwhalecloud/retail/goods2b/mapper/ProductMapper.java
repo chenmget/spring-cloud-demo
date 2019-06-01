@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -133,4 +130,8 @@ public interface ProductMapper extends BaseMapper<Product>{
     ProductForResourceResp getProductForResource(String productId);
 
     public Integer updateAttrValue10(ProductAuditStateUpdateReq request);
+
+
+
+    public List<ProductInfoResp> getProductInfoByIds(@Param("productIds")List<String>productIds);
 }

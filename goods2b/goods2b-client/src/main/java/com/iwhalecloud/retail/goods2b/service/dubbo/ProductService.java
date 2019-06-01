@@ -214,4 +214,11 @@ public interface ProductService {
      * @return
      */
     ResultVO<Integer> getDuplicate (ProductGetDuplicateReq req);
+
+    /**
+     * 根据产品id列表查询产品信息
+     * @param productIdList
+     * @return
+     */
+    public List<ProductInfoResp> getProductInfoByIds( List<String> productIdList);
 }

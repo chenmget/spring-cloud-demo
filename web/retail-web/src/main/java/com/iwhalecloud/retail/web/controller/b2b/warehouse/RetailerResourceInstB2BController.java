@@ -24,7 +24,6 @@ import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExportCSVUtils;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ResourceInstColum;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
-import com.sun.deploy.net.URLEncoder;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -249,7 +248,7 @@ public class RetailerResourceInstB2BController {
             response.setCharacterEncoding("UTF-8");
             response.setHeader("Pragma", "public");
             response.setHeader("Cache-Control", "max-age=30");
-            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
+//            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
             output.close();
         }catch (Exception e){
             log.error("串码导出失败",e);

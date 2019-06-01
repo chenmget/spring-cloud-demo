@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductInfoResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
@@ -91,5 +92,18 @@ public class ProductServiceTest {
         req.setAttrValue10(ProductConst.attrValue10.SUCCESS.getCode());
         req.setProductIds(list);
         productService.updateAttrValue10(req);
+    }
+
+    @Test
+    public void getProductInfoByIds() {
+        List<String> list = new ArrayList<String>();
+        list.add("100001019");
+        list.add("100001014");
+       // req.setProductId("100000065");
+        List<ProductInfoResp> list1 = productService.getProductInfoByIds(list);
+        for (ProductInfoResp p:list1) {
+            System.out.println("resultVO=" + p.getCorporationPrice()+p.getProductId()+p.getUnitName());
+        }
+
     }
 }

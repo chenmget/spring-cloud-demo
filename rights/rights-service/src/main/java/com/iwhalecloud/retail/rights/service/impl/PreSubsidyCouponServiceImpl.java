@@ -351,7 +351,7 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
         log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct  queryPreSubsidyReqDTO ={}", JSON.toJSON(queryPreSubsidyReqDTO));
         QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
         queryMarketingActivityReq.setMarketingActivityId(queryPreSubsidyReqDTO.getMarketingActivityId());
-        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityByIdtime(queryMarketingActivityReq);//获取时间lws
+        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityByIdtime(queryMarketingActivityReq); // 获取时间lws
         log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct marketingActivityService.queryMarketingActivityById marketingActivityDTOResultVO ={} ", JSON.toJSON(marketingActivityDTOResultVO));
         if (!marketingActivityDTOResultVO.isSuccess() || marketingActivityDTOResultVO.getResultData() == null) {
             return ResultVO.error("活动数据异常");

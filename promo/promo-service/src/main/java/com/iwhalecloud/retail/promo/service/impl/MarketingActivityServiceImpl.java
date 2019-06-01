@@ -1489,9 +1489,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 for (int i = 0; i < productList.size(); i++) {
                     PreSubsidyProductPromResqDTO preSubsidyProductPromResqDTO = new PreSubsidyProductPromResqDTO();
                     BeanUtils.copyProperties(productList.get(i), preSubsidyProductPromResqDTO);
-//                    preSubsidyProductPromResqDTO.setColor(productList.get(i).getActivityProductResq().getColor());//lws
-//                    preSubsidyProductPromResqDTO.setMemory(productList.get(i).getActivityProductResq().getMemory());//lws
-//                    preSubsidyProductPromResqDTO.setTypeName(productList.get(i).getActivityProductResq().getTypeName());//lws
+
+                    // 取前置补贴活动价 zhong.wenlong
+                    if (Objects.nonNull(productList.get(i))) {
+                        preSubsidyProductPromResqDTO.setPrice(productList.get(i).getActivityProductResq().getPrice());
+                    }
+
                     preSubsidyProductPromResqDTO.setNum(productList.get(i).getActivityProductResq().getNum());
                     preSubsidyProductPromResqDTO.setDiscountAmount(productList.get(i).getActivityProductResq().getDiscountAmount());
                     preSubsidyProductPromResqDTOS.add(preSubsidyProductPromResqDTO);

@@ -109,3 +109,12 @@ zop:
   secret: ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=
   url: http://134.176.102.33:8081/api/rest
   timeout: 50000
+
+#产品类型分类对应id 手机；路由器；智能终端；融合终端；机顶盒；光猫
+type:
+    moblie: 201903142030001
+    router: 12317094
+    intelligentTermina: 10350153
+    fusionTerminal: 10350158
+    setTopBox: 10350148
+    opticalModem: 10350143

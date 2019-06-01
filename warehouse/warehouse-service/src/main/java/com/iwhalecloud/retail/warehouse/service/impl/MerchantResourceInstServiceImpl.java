@@ -167,7 +167,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         if (CollectionUtils.isNotEmpty(req.getThreeCheckMktResInstNbrs())) {
             ResultVO resultVO = this.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), mktResStoreId, merchantDTO.getLanId());
-            if (resultVO.isSuccess()) {
+            if (!resultVO.isSuccess()) {
                 return resultVO;
             }
         }
@@ -339,7 +339,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
                 request.put("userName", userName);
                 request.put("code", dellMethod);
                 request.put("params", params.toString());
-                ResultVO dellResultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getName(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
+                ResultVO dellResultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
                 log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS dellResultVO={}", JSON.toJSONString(dellResultVO));
             }
             return resultVO;

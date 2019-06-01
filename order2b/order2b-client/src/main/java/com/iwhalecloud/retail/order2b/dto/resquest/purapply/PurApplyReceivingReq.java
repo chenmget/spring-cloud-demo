@@ -43,10 +43,9 @@ public class PurApplyReceivingReq implements Serializable {
     private String mktResId;
 
     /**
-     * 串码
+     * 串码 //    @NotEmpty(message = "串码List不能为空")
      */
     @ApiModelProperty("串码List")
-    @NotEmpty(message = "串码List不能为空")
     private List<String> mktResInstNbrs;
 
     /**

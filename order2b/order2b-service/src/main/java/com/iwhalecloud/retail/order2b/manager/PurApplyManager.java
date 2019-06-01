@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
@@ -141,7 +142,7 @@ public class PurApplyManager {
 	public void commitPriceExcel(UpdateCorporationPriceReq req){
 		purApplyMapper.commitPriceExcel(req);
 	}
-	public int comparePrice(String applyId){
+	public List<PurApplyItem> comparePrice(String applyId){
 		return purApplyMapper.comparePrice(applyId);
 	}
 

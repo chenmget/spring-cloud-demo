@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.mapper;
 
 import java.util.List;
 
+import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -78,7 +79,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public void commitPriceExcel(@Param("req") UpdateCorporationPriceReq req);
 
-	public int comparePrice(@Param("applyId") String applyId);
+	public List<PurApplyItem> comparePrice(@Param("applyId") String applyId);
 
 	public void updatePurApplyStatusCd(@Param("req") ProcureApplyReq req);
 

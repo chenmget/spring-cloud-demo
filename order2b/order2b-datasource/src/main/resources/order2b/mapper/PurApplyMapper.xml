@@ -264,12 +264,12 @@
 	SELECT COUNT(*) AS isHaveSave FROM PUR_APPLY WHERE 1=1 and apply_id =#{applyId}
   </select>
 
-	<select id="comparePrice" parameterType="String" resultType="Integer">
-		SELECT COUNT(i.APPLY_ID) FROM pur_apply a,PUR_APPLY_ITEM i,PROD_PRODUCT p
-		WHERE a.APPLY_ID=i.APPLY_ID AND p.PRODUCT_ID=i.PRODUCT_ID
-		AND p.CORPORATION_PRICE &lt; i.PUR_PRICE   AND a.APPLY_ID=#{applyId}
+	<select id="comparePrice" parameterType="String" resultType="com.iwhalecloud.retail.goods2b.dto.req.PurApplyItem">
+		SELECT i.PRODUCT_ID as productId,i.PUR_PRICE as purPrice  FROM PUR_APPLY_ITEM i
+		WHERE i.APPLY_ID=#{applyId}
+
 	</select>
-  
+
   <select id="updatePurApply"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
 	UPDATE 
 	PUR_APPLY SET status_cd= #{req.statusCd},

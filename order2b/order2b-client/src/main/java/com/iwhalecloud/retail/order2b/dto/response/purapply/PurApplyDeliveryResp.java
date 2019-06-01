@@ -21,6 +21,7 @@ public class PurApplyDeliveryResp implements Serializable {
     private String mktResInstNbr;
     private String batchId;
     private String createDate;
+    private  String productId;
 
 
 

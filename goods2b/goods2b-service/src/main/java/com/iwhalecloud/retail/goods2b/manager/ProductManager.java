@@ -7,10 +7,7 @@ import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.mapper.ProductMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -255,5 +252,14 @@ public class ProductManager {
      */
     public Integer getDuplicate(ProductGetDuplicateReq request){
         return productMapper.getDuplicate(request);
+    }
+
+    /**
+     * 根据产品Id列表查询产品信息
+     * @param productIdList
+     * @return
+     */
+    public List<ProductInfoResp> getProductInfoByIds( List<String> productIdList){
+        return productMapper.getProductInfoByIds(productIdList);
     }
 }

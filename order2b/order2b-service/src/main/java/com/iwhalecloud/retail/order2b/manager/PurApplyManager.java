@@ -4,17 +4,13 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Component;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
@@ -142,7 +138,7 @@ public class PurApplyManager {
 	public void commitPriceExcel(UpdateCorporationPriceReq req){
 		purApplyMapper.commitPriceExcel(req);
 	}
-	public List<PurApplyItem> comparePrice(String applyId){
+	public List<PurApplyItemResp> comparePrice(String applyId){
 		return purApplyMapper.comparePrice(applyId);
 	}
 

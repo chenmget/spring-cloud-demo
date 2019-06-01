@@ -80,11 +80,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 		purApplyManager.tcProcureApply(req);
 
 		//如果采购价大于政企价格 要省公司审核
-		List<PurApplyItem> purApplyItemList = purApplyManager.comparePrice(req.getApplyId());
+		List<PurApplyItemResp> purApplyItemList =  purApplyManager.comparePrice(req.getApplyId());
 		List<String> prodIds = new ArrayList<String>();
 
 		for (int i=0;i<purApplyItemList.size();i++) {
-			PurApplyItem purApplyItem = purApplyItemList.get(i);
+			PurApplyItemResp purApplyItem = purApplyItemList.get(i);
 			String purApplyItemProductId = purApplyItem.getProductId();
 			String tPurPrice = purApplyItem.getPurPrice();
 			if (purApplyItemProductId!=null) {
@@ -102,7 +102,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 
          int count=0;
 		for (int i=0;i<purApplyItemList.size();i++) {
-			PurApplyItem purApplyItem = purApplyItemList.get(i);
+			PurApplyItemResp purApplyItem = purApplyItemList.get(i);
 			String tPurPrice = purApplyItem.getPurPrice();
 			String productIdItem=purApplyItem.getProductId();
 			for (ProductInfoResp productInfoResp:productList) {

@@ -62,4 +62,8 @@ public class TypeManager{
         return typeMapper.selectOne(queryWrapper);
     }
 
+    public List<Type> selectAll(){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        return typeMapper.selectList(queryWrapper);
+    }
 }

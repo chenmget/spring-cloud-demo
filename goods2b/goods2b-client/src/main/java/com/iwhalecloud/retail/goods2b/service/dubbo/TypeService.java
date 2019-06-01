@@ -7,6 +7,8 @@ import com.iwhalecloud.retail.goods2b.dto.req.TypeIsUsedQueryByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeListByNameReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeSelectByIdReq;
 
+import java.util.List;
+
 public interface TypeService {
 
     public ResultVO saveType(TypeDTO prodTypeDTO);
@@ -18,6 +20,8 @@ public interface TypeService {
     public ResultVO listType(TypeListByNameReq req);
 
     public ResultVO selectById(TypeSelectByIdReq req);
+
+    public ResultVO<List<TypeDTO>> selectAll();
 
     /**
      * 校验类型是否关联产品

@@ -84,4 +84,5 @@ public class AddPreSubsidyProductReqDTO extends AbstractRequest implements Seria
      */
     @ApiModelProperty(value = "活动图片应用方式")
     private String productPicUseType;
+    
 }

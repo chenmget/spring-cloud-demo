@@ -137,4 +137,9 @@ public class ResourceInstAddReqDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "是否固网终端")
 	private String isFixedLine;
 
+	/**
+	 * 抽检同步ITMS串码列表
+	 */
+	@ApiModelProperty(value = "抽检同步ITMS串码列表")
+	private List<String> threeCheckMktResInstNbrs;
 }

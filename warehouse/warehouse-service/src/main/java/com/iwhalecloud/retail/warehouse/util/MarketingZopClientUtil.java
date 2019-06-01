@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.warehouse.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
 import com.iwhalecloud.retail.warehouse.dto.response.markres.base.*;
@@ -11,6 +12,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -205,6 +207,35 @@ public class MarketingZopClientUtil {
     }
 
 
+    /**
+     * 调用营销资源同步固网串码到ITMS
+     * @param method  调用的方法
+     * @param version 版本
+     * @param params  参数
+     * @return 返回ResultVO, 成功与失败
+     */
+    public ResultVO callExcuteNoticeITMS(String method, String version, Object params) {
+        ResultVO resultVO = this.dealZopHead(getZoSecret(), method, version, params);
+        if (!resultVO.isSuccess()) {
+            return resultVO;
+        }
+        //能开返回成功时
+        String body = "Body";
+        String inventoryChangeResponse = "inventoryChangeResponse";
+        String inventoryChangeReturn = "inventoryChangeReturn";
+        Map<String, Object> resultMap = (Map<String, Object>) resultVO.getResultData();
+        String bodyResult = String.valueOf(resultMap.get(body));
+        Map bodyMap = JSON.parseObject(bodyResult, new TypeReference<HashMap>(){});
+        String inventoryChangeResponseResult = String.valueOf(bodyMap.get(inventoryChangeResponse));
+        Map respMap = JSON.parseObject(inventoryChangeResponseResult, new TypeReference<HashMap>(){});
+        String inventoryChangeReturnResult = String.valueOf(respMap.get(inventoryChangeReturn));
+        if (MarketingResConst.ResultEnum.FAIL.getCode().equals(inventoryChangeReturnResult)) {
+            return ResultVO.error(MarketingResConst.ResultEnum.FAIL.getCode(), MarketingResConst.ResultEnum.FAIL.getName());
+        }else if(MarketingResConst.ResultEnum.EXISTS.getCode().equals(inventoryChangeReturnResult)){
+            return ResultVO.success(MarketingResConst.ResultEnum.EXISTS.getName());
+        }
+        return resultVO;
+    }
 
     public String getZoSecret() {
         return env.getProperty(MarketingResConst.ZOP_APPSECRET);

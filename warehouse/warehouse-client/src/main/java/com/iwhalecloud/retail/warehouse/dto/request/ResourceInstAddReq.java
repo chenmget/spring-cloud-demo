@@ -259,4 +259,10 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "下单时间")
 	private java.util.Date createTime;
+
+	/**
+	 * 抽检同步ITMS串码列表
+	 */
+	@ApiModelProperty(value = "抽检同步ITMS串码列表")
+	private List<String> threeCheckMktResInstNbrs;
 }

@@ -123,14 +123,16 @@ public class ExportCSVUtils {
 	}
 
 	private static List<ExcelTitleName> getChangeField(List<AttrSpecDTO> changeFiled, List<ExcelTitleName> map){
-		Integer index = 0;
+		ExcelTitleName chantField = null;
+		Integer index = -1;
 		for (int i = 0; i < map.size(); i++) {
 			ExcelTitleName titleName = map.get(i);
 			if (CHANGE_FIELD.equals(titleName.getValue())) {
+				chantField = titleName;
 				index = i;
 			}
 		}
-		map.remove(index);
+		map.remove(chantField);
 		Integer j = 0;
 		for (AttrSpecDTO dto : changeFiled) {
 			ExcelTitleName titleName = new ExcelTitleName(dto.getFiledName(), dto.getCname());

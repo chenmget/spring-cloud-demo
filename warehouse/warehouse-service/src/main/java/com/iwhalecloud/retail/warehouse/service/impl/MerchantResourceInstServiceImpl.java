@@ -14,6 +14,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
+import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
@@ -28,6 +29,7 @@ import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
+import com.iwhalecloud.retail.warehouse.util.MarketingZopClientUtil;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -39,7 +41,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
@@ -70,6 +75,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     private ProductService productService;
     @Autowired
     private QueryResourceInstRunableTask queryResourceInstRunableTask;
+    @Autowired
+    private MarketingZopClientUtil zopClientUtil;
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -144,6 +151,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         req.setMerchantCode(merchantDTO.getMerchantCode());
         req.setLanId(merchantDTO.getLanId());
         req.setRegionId(merchantDTO.getCity());
+
         // 集采前端会传入库仓库id,其他类型根据当前登陆用户去获取仓库
         String mktResStoreId = req.getDestStoreId();
         if (!ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
@@ -156,6 +164,9 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
                 return ResultVO.error(constant.getCannotGetStoreMsg());
             }
             req.setDestStoreId(mktResStoreId);
+        }
+        if (CollectionUtils.isNotEmpty(req.getThreeCheckMktResInstNbrs())) {
+            this.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), mktResStoreId, merchantDTO.getLanId());
         }
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         SelectProcessResp selectProcessResp = resourceInstCheckService.selectProcess(req);
@@ -292,5 +303,45 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     @Override
     public ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req){
         return ResultVO.success(queryResourceInstRunableTask.exceutorQueryResourceInst(req));
+    }
+
+    private ResultVO noticeITMS(List<String> mktResInstNbrList, String userName, String storeId, String lanId) {
+        //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
+        StringBuffer params = new StringBuffer();
+        String addMethod = "ITMS_ADD";
+        String dellMethod = "ITMS_DELL";
+        params.append("city_code=").append(lanId).append("#warehouse=").append(storeId).append("#source=2").
+        append("#factory=手机");
+        List<String> successList = new ArrayList<>();
+        ResultVO resultVO = null;
+        for (String mktResInstNbr : mktResInstNbrList) {
+            Map request = new HashMap<>();
+            request.put("deviceId", mktResInstNbr);
+            request.put("userName", userName);
+            request.put("code", addMethod);
+            request.put("params", params.toString());
+            resultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getName(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
+            log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS resp={}", JSON.toJSONString(resultVO));
+            if (resultVO.isSuccess()) {
+                successList.add(mktResInstNbr);
+            }else {
+                break;
+            }
+        }
+        mktResInstNbrList.removeAll(successList);
+        if (CollectionUtils.isNotEmpty(mktResInstNbrList)) {
+            for (String mktResInstNbr : mktResInstNbrList) {
+                Map request = new HashMap<>();
+                request.put("deviceId", mktResInstNbr);
+                request.put("userName", userName);
+                request.put("code", dellMethod);
+                request.put("params", params.toString());
+                ResultVO dellResultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getName(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
+                log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS dellResultVO={}", JSON.toJSONString(dellResultVO));
+            }
+            return resultVO;
+        } else {
+            return ResultVO.success();
+        }
     }
 }

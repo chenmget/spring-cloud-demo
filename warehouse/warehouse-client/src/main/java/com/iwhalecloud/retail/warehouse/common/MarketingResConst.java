@@ -43,6 +43,7 @@ public final class MarketingResConst {
         QryStoreMktInstInfo("qry.resinfo.QryStoreMktInstInfo", "按串码查询零售商仓库终端的实例信息", "1.0"),
         QryMktInstInfoByCondition("qry.resinfo.QryMktInstInfoByCondition", "按多种条件查询零售商仓库终端的实例列表", "1.0"),
         StoreInventoryQuantity("qry.resinfo.StoreInventoryQuantity", "按条件查询零售商仓库终端的库存数量 ", "1.0"),
+        OrdInventoryChange("ord.operres.OrdInventoryChange", "固网同步ITME ", "1.0"),
 
         synMarkResStore("qry.resinfo.SynMarkResStore", "仓库信息同步 ", "1.0");
 
@@ -79,5 +80,35 @@ public final class MarketingResConst {
         public void setVersion(String version) {
             this.version = version;
         }
+    }
+
+    public static enum ResultEnum {
+        FAIL("-1", "串码推送ITMS(新增)失败"),
+        EXISTS("1", "串码推送ITMS(新增)已经存在");
+
+        private String code;
+        private String name;
+
+        ResultEnum(String code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
     }
 }

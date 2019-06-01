@@ -264,7 +264,7 @@
 	SELECT COUNT(*) AS isHaveSave FROM PUR_APPLY WHERE 1=1 and apply_id =#{applyId}
   </select>
 
-	<select id="comparePrice" parameterType="String" resultType="com.iwhalecloud.retail.goods2b.dto.req.PurApplyItem">
+	<select id="comparePrice" parameterType="String" resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyItemResp">
 		SELECT i.PRODUCT_ID as productId,i.PUR_PRICE as purPrice  FROM PUR_APPLY_ITEM i
 		WHERE i.APPLY_ID=#{applyId}
 

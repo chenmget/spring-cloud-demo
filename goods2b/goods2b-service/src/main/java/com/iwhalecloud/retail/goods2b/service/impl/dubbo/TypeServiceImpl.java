@@ -301,6 +301,20 @@ public class TypeServiceImpl implements TypeService {
         }
     }
 
+    @Override
+    public ResultVO<List<TypeDTO>> selectAll() {
+        List<TypeDTO> typeDTOs = new ArrayList<>();
+        List<Type> types = typeManager.selectAll();
+        if(!CollectionUtils.isEmpty(types)){
+            for(Type type:types){
+                TypeDTO dto = new TypeDTO();
+                BeanUtils.copyProperties(type, dto);
+                typeDTOs.add(dto);
+            }
+        }
+        return ResultVO.success(typeDTOs);
+    }
+
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)

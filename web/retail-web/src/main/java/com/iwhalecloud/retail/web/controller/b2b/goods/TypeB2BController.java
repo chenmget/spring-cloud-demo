@@ -14,6 +14,8 @@ import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @CrossOrigin
@@ -56,6 +58,12 @@ public class TypeB2BController {
         listTypeResp.setResultMsg(list.getResultMsg());
         listTypeResp.setResultData(list.getResultData());
         return listTypeResp;
+    }
+
+    @ApiOperation(value = "查询全部产品类型", notes = "")
+    @GetMapping(value = "/listAll")
+    public ResultVO<List<TypeDTO>> listAll(){
+        return typeService.selectAll();
     }
 
     @ApiOperation(value = "查询产品列表", notes = "")

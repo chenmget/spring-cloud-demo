@@ -1706,7 +1706,9 @@ public class GoodsServiceImpl implements GoodsService {
             if (1 == isSubsidy || mktprice <= 1599) {
                 return supplierGoodsDTOs;
             }
-
+            if(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(goods.getMerchantType())){
+                return supplierGoodsDTOs;
+            }
         }
 
         //先根据商家类型查询地包商是否有货

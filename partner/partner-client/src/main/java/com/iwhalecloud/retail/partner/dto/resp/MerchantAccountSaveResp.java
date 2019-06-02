@@ -60,4 +60,10 @@ public class MerchantAccountSaveResp implements Serializable {
      */
     @ApiModelProperty(value = "银行账户")
     private String bankAccount;
+    
+    /**
+     * 翼支付登录号
+     */
+    @ApiModelProperty(value = "翼支付登录号")
+    private String accountName;
 }

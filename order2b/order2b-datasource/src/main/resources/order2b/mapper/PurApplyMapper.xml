@@ -470,7 +470,7 @@
 	 	  FROM wf_task a,wf_task_item b 
 	 	  WHERE a.process_id = '528' 
 	 	  AND a.task_id = b.task_id 
-	 	  AND a.form_id=#{applyId}
+	 	  AND a.form_id=#{applyId} ORDER BY b.task_item_id DESC LIMIT 1
   	</select>
   
 </mapper>

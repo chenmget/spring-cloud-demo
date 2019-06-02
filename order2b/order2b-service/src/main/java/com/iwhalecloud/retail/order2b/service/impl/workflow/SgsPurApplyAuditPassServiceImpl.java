@@ -8,10 +8,8 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
-import com.iwhalecloud.retail.order2b.service.workflow.PurApplyAuditPassService;
 import com.iwhalecloud.retail.order2b.service.workflow.SgsPurApplyAuditPassService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
-import com.iwhalecloud.retail.workflow.config.WfRunnable;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 
@@ -23,7 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 @Service
-public class SgsPurApplyAuditPassServiceImpl implements SgsPurApplyAuditPassService, WfRunnable {
+public class SgsPurApplyAuditPassServiceImpl implements SgsPurApplyAuditPassService {
 
     @Reference
     private PurchaseApplyService purchaseApplyService;
@@ -38,6 +36,7 @@ public class SgsPurApplyAuditPassServiceImpl implements SgsPurApplyAuditPassServ
         req.setApplyId(params.getBusinessId());
         //审核通过
         req.setStatusCd(PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
+        log.info("chenbin=="+PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
         return purchaseApplyService.updatePurApplyStatus(req);
     }
 }

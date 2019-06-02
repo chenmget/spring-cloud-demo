@@ -14,7 +14,6 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
-import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
@@ -41,10 +40,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
@@ -166,7 +162,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             req.setDestStoreId(mktResStoreId);
         }
         if (CollectionUtils.isNotEmpty(req.getThreeCheckMktResInstNbrs())) {
-            ResultVO resultVO = this.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), mktResStoreId, merchantDTO.getLanId());
+            ResultVO resultVO = resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), mktResStoreId, merchantDTO.getLanId());
             if (!resultVO.isSuccess()) {
                 return resultVO;
             }
@@ -262,7 +258,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
         req.setMktResStoreId(manuResStoreId);
-        String merchantId = req.getMerchantId();
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(req.getMerchantId());
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
@@ -273,16 +268,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         req.setMerchantCode(merchantDTO.getMerchantCode());
         req.setLanId(merchantDTO.getLanId());
         req.setRegionId(merchantDTO.getCity());
-        // 获取仓库
-        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        storeGetStoreIdReq.setMerchantId(merchantId);
-        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("MerchantResourceInstServiceImpl.addResourceInstByAdmin resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
-        if (StringUtils.isBlank(mktResStoreId)) {
-            return ResultVO.error(constant.getCannotGetStoreMsg());
-        }
-        req.setDestStoreId(mktResStoreId);
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
@@ -309,43 +294,4 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         return ResultVO.success(queryResourceInstRunableTask.exceutorQueryResourceInst(req));
     }
 
-    private ResultVO noticeITMS(List<String> mktResInstNbrList, String userName, String storeId, String lanId) {
-        //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
-        StringBuffer params = new StringBuffer();
-        String addMethod = "ITMS_ADD";
-        String dellMethod = "ITMS_DELL";
-        params.append("city_code=").append(lanId).append("#warehouse=").append(storeId).append("#source=2").
-        append("#factory=手机");
-        List<String> successList = new ArrayList<>();
-        ResultVO resultVO = null;
-        for (String mktResInstNbr : mktResInstNbrList) {
-            Map request = new HashMap<>();
-            request.put("deviceId", mktResInstNbr);
-            request.put("userName", userName);
-            request.put("code", addMethod);
-            request.put("params", params.toString());
-            resultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
-            log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS resp={}", JSON.toJSONString(resultVO));
-            if (resultVO.isSuccess()) {
-                successList.add(mktResInstNbr);
-            }else {
-                break;
-            }
-        }
-        mktResInstNbrList.removeAll(successList);
-        if (CollectionUtils.isNotEmpty(mktResInstNbrList)) {
-            for (String mktResInstNbr : mktResInstNbrList) {
-                Map request = new HashMap<>();
-                request.put("deviceId", mktResInstNbr);
-                request.put("userName", userName);
-                request.put("code", dellMethod);
-                request.put("params", params.toString());
-                ResultVO dellResultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
-                log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS dellResultVO={}", JSON.toJSONString(dellResultVO));
-            }
-            return resultVO;
-        } else {
-            return ResultVO.success();
-        }
-    }
 }

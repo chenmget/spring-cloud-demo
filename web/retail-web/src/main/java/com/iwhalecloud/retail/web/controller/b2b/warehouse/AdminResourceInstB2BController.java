@@ -95,6 +95,9 @@ public class AdminResourceInstB2BController {
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         req.setStorageType(ResourceConst.STORAGETYPE.MANUAL_ENTRY.getCode());
         BeanUtils.copyProperties(dto, req);
+        if (StringUtils.isEmpty(req.getMktResInstType())) {
+            req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
+        }
         return resourceInstService.addResourceInst(req);
     }
     

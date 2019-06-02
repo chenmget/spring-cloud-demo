@@ -45,6 +45,7 @@
         ,s.REMARK
         ,s.LAN_ID
         ,s.REGION_ID
+        ,r.obj_id as merchantId
     </sql>
 
     <!--简要字段-->
@@ -88,8 +89,14 @@
         <if test="null!=req.storeName and ''!=req.storeName">
             and s.MKT_RES_STORE_NAME like CONCAT(CONCAT('%',#{req.storeName}),'%')
         </if>
+        <if test="null!=req.storeType and ''!=req.storeType">
+            and s.STORE_TYPE = #{req.storeType}
+        </if>
         <if test="null!=req.storeSubType and ''!=req.storeSubType">
             and s.STORE_SUB_TYPE = #{req.storeSubType}
+        </if>
+        <if test="null!=req.storeGrade and ''!=req.storeGrade">
+            and s.STORE_GRADE = #{req.storeGrade}
         </if>
         <if test="null!=req.regionId and ''!=req.regionId">
             and s.REGION_ID = #{req.regionId}
@@ -120,6 +127,9 @@
             </if>
             <if test="null!=req.storeSubType and ''!=req.storeSubType">
                 and s.STORE_SUB_TYPE = #{req.storeSubType}
+            </if>
+            <if test="null!=req.storeGrade and ''!=req.storeGrade">
+                and s.STORE_GRADE = #{req.storeGrade}
             </if>
             <if test="null!=req.storeName and ''!=req.storeName">
                 and s.MKT_RES_STORE_NAME like CONCAT(CONCAT('%',#{req.storeName}),'%')

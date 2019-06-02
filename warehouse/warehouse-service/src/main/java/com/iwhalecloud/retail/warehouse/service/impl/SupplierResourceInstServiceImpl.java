@@ -819,6 +819,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         req.setMktResInstType(trackList.get(0).getMktResInstType());
         mktResInstNbrs.removeAll(nbrList);
         resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);
+        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
+            ResultVO resultVO = resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), req.getDestStoreId(), merchantDTO.getLanId());
+            if (!resultVO.isSuccess()) {
+                return resultVO;
+            }
+        }
         Boolean addNum = resourceInstService.addResourceInst(req);
         if (!addNum) {
             return ResultVO.error("串码入库失败");

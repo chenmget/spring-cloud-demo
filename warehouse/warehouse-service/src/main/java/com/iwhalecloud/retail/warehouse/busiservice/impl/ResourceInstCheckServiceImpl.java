@@ -8,12 +8,14 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
+import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
+import com.iwhalecloud.retail.warehouse.util.MarketingZopClientUtil;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -25,9 +27,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -49,6 +49,9 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
     @Autowired
     private ResouceInstTrackService resouceInstTrackService;
+
+    @Autowired
+    private MarketingZopClientUtil zopClientUtil;
 
 
     @Override
@@ -185,5 +188,46 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         resp.setRequestStatusCd(requestStatusCd);
         resp.setTaskSubType(taskSubType);
         return resp;
+    }
+
+    @Override
+    public ResultVO noticeITMS(List<String> mktResInstNbrList, String userName, String storeId, String lanId) {
+        //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
+        StringBuffer params = new StringBuffer();
+        String addMethod = "ITMS_ADD";
+        String dellMethod = "ITMS_DELL";
+        params.append("city_code=").append(lanId).append("#warehouse=").append(storeId).append("#source=2").
+                append("#factory=手机");
+        List<String> successList = new ArrayList<>();
+        ResultVO resultVO = null;
+        for (String mktResInstNbr : mktResInstNbrList) {
+            Map request = new HashMap<>();
+            request.put("deviceId", mktResInstNbr);
+            request.put("userName", userName);
+            request.put("code", addMethod);
+            request.put("params", params.toString());
+            resultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
+            log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS resp={}", JSON.toJSONString(resultVO));
+            if (resultVO.isSuccess()) {
+                successList.add(mktResInstNbr);
+            }else {
+                break;
+            }
+        }
+        mktResInstNbrList.removeAll(successList);
+        if (CollectionUtils.isNotEmpty(mktResInstNbrList)) {
+            for (String mktResInstNbr : mktResInstNbrList) {
+                Map request = new HashMap<>();
+                request.put("deviceId", mktResInstNbr);
+                request.put("userName", userName);
+                request.put("code", dellMethod);
+                request.put("params", params.toString());
+                ResultVO dellResultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
+                log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS dellResultVO={}", JSON.toJSONString(dellResultVO));
+            }
+            return resultVO;
+        } else {
+            return ResultVO.success();
+        }
     }
 }

@@ -371,7 +371,9 @@ public class ResourceConst {
         // 备机
         STANDBYMACHINE("3","备机"),
         // 省内代收
-        COLLECTION_BY_PROVINCE("4","省内代收");
+        COLLECTION_BY_PROVINCE("4","省内代收"),
+        // 省内代收
+        TEST_FIX_LINE("5","测试终端");
 
         private String code;
         private String name;
@@ -880,4 +882,87 @@ public class ResourceConst {
         }
     }
 
+    /**
+     * 仓库大类
+     */
+    public enum STORE_TYPE{
+        // 终端库
+        PROVINCE("1000","省级库"),
+        CITY("1100","本地网库");
+
+        private String code;
+        private String name;
+
+        STORE_TYPE(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public static String getStoreTypeName(String name){
+            for (STORE_SUB_TYPE storeSubType : STORE_SUB_TYPE.values()){
+                if(storeSubType.code.equals(name)){
+                    return storeSubType.name;
+                }
+            }
+            return "";
+        }
+    }
+
+    /**
+     * 仓库大类
+     */
+    public enum STORE_GRADE{
+        // 终端库
+        PROVINCE("1000","省级库"),
+        CITY("1100","本地网库");
+
+        private String code;
+        private String name;
+
+        STORE_GRADE(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public static String getStoreGradeName(String name){
+            for (STORE_SUB_TYPE storeSubType : STORE_SUB_TYPE.values()){
+                if(storeSubType.code.equals(name)){
+                    return storeSubType.name;
+                }
+            }
+            return "";
+        }
+    }
 }

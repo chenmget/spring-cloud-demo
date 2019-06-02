@@ -138,6 +138,17 @@ public class ResouceInstTrack implements Serializable {
 	 */
 	@ApiModelProperty(value = "产品类型")
 	private java.lang.String typeId;
+	/**
+	 * SN码
+	 */
+	@ApiModelProperty(value = "SN码")
+	private java.lang.String snCode;
+
+	/**
+	 * 网络终端（包含光猫、机顶盒、融合终端）记录MAC码
+	 */
+	@ApiModelProperty(value = "macCode")
+	private java.lang.String macCode;
 
 	//属性 end
     /** 字段名称枚举. */
@@ -197,7 +208,14 @@ public class ResouceInstTrack implements Serializable {
 		ifGreenChannel("ifGreenChannel","IF_GREEN_CHANNEL"),
 
 		/**产品类型. */
-		typeId("typeId","TYPE_ID");
+		typeId("typeId","TYPE_ID"),
+
+		/**SN码. */
+		snCode("snCode","sn_code"),
+
+		/** 网络终端（包含光猫、机顶盒、融合终端）记录MAC码. */
+		macCode("macCode","mac_code");
+
 
 		private String fieldName;
 		private String tableFieldName;

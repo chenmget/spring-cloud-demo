@@ -939,11 +939,19 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO) {
                     return ResultVO.error(constant.getCannotGetMerchantMsg());
                 }
+                // 临时代码
+                String purchaseType = "2";
+                String mktResInstType = dto.getMktResInstType();
+                if (ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(mktResInstType)) {
+                    purchaseType = "1";
+                } else if (ResourceConst.MKTResInstType.COLLECTION_BY_PROVINCE.getCode().equals(mktResInstType)) {
+                    purchaseType = "5";
+                }
                 MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
                 List<EBuyTerminalItemSwapReq> eBuyTerminalItemReqs = Lists.newArrayList();
                 EBuyTerminalItemSwapReq eBuyTerminalItemSwapReq = new EBuyTerminalItemSwapReq();
                 eBuyTerminalItemSwapReq.setMktId(sn);
-                eBuyTerminalItemSwapReq.setPurchaseType(ResourceConst.PURCHASE_TYPE.PURCHASE_TYPE_13.getCode());
+                eBuyTerminalItemSwapReq.setPurchaseType(purchaseType);
                 String salePrice = dto.getSalesPrice() == null ? "" : String.valueOf(dto.getSalesPrice());
                 eBuyTerminalItemSwapReq.setSalesPrice(salePrice);
                 eBuyTerminalItemSwapReq.setBarCode(dto.getMktResInstNbr());

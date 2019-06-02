@@ -11,10 +11,12 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
+import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
@@ -33,6 +35,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * @author lhr 2019-03-08 14:55:30
@@ -60,6 +63,9 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
 
     @Autowired
     private Constant constant;
+
+    @Autowired
+    private ResouceInstTrackService resouceInstTrackService;
 
     @Override
     public ResultVO addResourceInst(ResourceInstAddReq req) {
@@ -127,9 +133,11 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
             log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst getProductForResource.getProduct req={} resp={}", JSON.toJSONString(productReq), JSON.toJSONString(productRespResultVO));
             String sn = "";
             String isFixedLine = "";
+            String typeId = "";
             if (productRespResultVO.isSuccess() && productRespResultVO.getResultData() != null) {
                 sn = productRespResultVO.getResultData().getSn();
                 isFixedLine = productRespResultVO.getResultData().getIsFixedLine();
+                typeId = productRespResultVO.getResultData().getTypeId();
             }
             mktResIdAndNbrMap.put(deliveryResourceInstItem.getProductId(), deliveryResourceInstItem.getMktResInstNbrs());
             nbrList.addAll(deliveryResourceInstItem.getMktResInstNbrs());
@@ -152,6 +160,20 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
                 syncTerminalItemSwapReqs.add(syncTerminalItemSwapReq);
                 // 固网终端
                 if (ResourceConst.CONSTANT_YES.equals(isFixedLine)) {
+                    ResourceInstsTrackGetReq trackReq = new ResourceInstsTrackGetReq();
+                    trackReq.setTypeId(typeId);
+                    CopyOnWriteArrayList<String> mktResInstNbrList = new CopyOnWriteArrayList(Lists.newArrayList(nbr));
+                    ResultVO<List<ResouceInstTrackDTO>> instsTrackVO = resouceInstTrackService.listResourceInstsTrack(trackReq, mktResInstNbrList);
+                    // 临时代码
+                    String purchaseType = "2";
+                    if (instsTrackVO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackVO.getResultData())) {
+                        String mktResInstType = instsTrackVO.getResultData().get(0).getMktResInstType();
+                        if (ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(mktResInstType)) {
+                            purchaseType = "1";
+                        } else if (ResourceConst.MKTResInstType.COLLECTION_BY_PROVINCE.getCode().equals(mktResInstType)) {
+                            purchaseType = "5";
+                        }
+                    }
                     EBuyTerminalItemSwapReq eBuyTerminalItemSwapReq = new EBuyTerminalItemSwapReq();
                     BeanUtils.copyProperties(syncTerminalItemSwapReq, eBuyTerminalItemSwapReq);
                     eBuyTerminalItemSwapReq.setMktId(sn);
@@ -159,7 +181,7 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
                     eBuyTerminalItemSwapReq.setSupplyName(seller.getMerchantName());
                     String price = null == deliveryResourceInstItem.getSalesPrice() ? "0" : String.valueOf(deliveryResourceInstItem.getSalesPrice());
                     eBuyTerminalItemSwapReq.setSalesPrice(price);
-                    eBuyTerminalItemSwapReq.setPurchaseType(ResourceConst.PURCHASE_TYPE.PURCHASE_TYPE_13.getCode());
+                    eBuyTerminalItemSwapReq.setPurchaseType(purchaseType);
                     eBuyTerminalItemReqs.add(eBuyTerminalItemSwapReq);
                 }
             }

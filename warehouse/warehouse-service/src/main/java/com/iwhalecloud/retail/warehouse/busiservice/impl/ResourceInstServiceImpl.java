@@ -320,8 +320,14 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInst.setMktResBatchId(batchId);
             // 目标仓库是串码所属人的仓库
             resourceInst.setMktResStoreId(req.getDestStoreId());
-            if (null != req.getCtCode()) {
-                resourceInst.setCtCode(req.getCtCode().get(mktResInstNbr));
+            if (null != req.getCtCodeMap()) {
+                resourceInst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getSnCodeMap()) {
+                resourceInst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getMacCodeMap()) {
+                resourceInst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
             }
             resourceInst.setCreateDate(now);
             resourceInst.setMerchantId(null);
@@ -412,8 +418,14 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInst.setMktResBatchId(batchId);
             // 目标仓库是串码所属人的仓库
             resourceInst.setMktResStoreId(req.getDestStoreId());
-            if (null != req.getCtCode()) {
-                resourceInst.setCtCode(req.getCtCode().get(mktResInstNbr));
+            if (null != req.getCtCodeMap()) {
+                resourceInst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getSnCodeMap()) {
+                resourceInst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getMacCodeMap()) {
+                resourceInst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
             }
             resourceInst.setCreateDate(now);
             resourceInst.setSourceType(req.getSourceType());

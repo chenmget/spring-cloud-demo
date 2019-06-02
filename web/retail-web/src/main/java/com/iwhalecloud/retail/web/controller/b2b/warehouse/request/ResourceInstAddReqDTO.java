@@ -36,11 +36,6 @@ public class ResourceInstAddReqDTO implements java.io.Serializable {
 	private List<String> checkMktResInstNbrs;
 
 	/**
-	 * 固网终端需要CT码管理时，记录CT码
-	 */
-	@ApiModelProperty(value = "固网终端需要CT码管理时，记录CT码")
-	private Map<String,String> ctCode;
-	/**
 	 * 产品名称
 	 */
 	@ApiModelProperty(value = "产品名称")
@@ -142,4 +137,22 @@ public class ResourceInstAddReqDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "抽检同步ITMS串码列表")
 	private List<String> threeCheckMktResInstNbrs;
+
+	/**
+	 * 键串码，值SN码
+	 */
+	@ApiModelProperty(value = "键串码，值SN码")
+	private Map<String, String> snCodeMap;
+
+	/**
+	 * 固网终端需要CT码管理时，记录CT码
+	 */
+	@ApiModelProperty(value = "键串码，值macCode")
+	private Map<String, String> macCodeMap;
+
+	/**
+	 * 固网终端需要CT码管理时，记录CT码
+	 */
+	@ApiModelProperty(value = "键串码，值CT码")
+	private Map<String, String> ctCodeMap;
 }

@@ -68,12 +68,17 @@ public class SettleRecordServiceImpl implements SettleRecordService {
 
     @Override
     public Integer batchAddSettleRecord(List<SettleRecordDTO> settleRecordDTOs) {
-        List<SettleRecord> settleRecords = new ArrayList<>();
+        List<SettleRecordDTO> settleRecords = new ArrayList<>();
         if(CollectionUtils.isEmpty(settleRecordDTOs)){
             return 0;
         }
 
-        return settleRecordManager.addSettleRecord(settleRecordDTOs);
+        for(SettleRecordDTO settleRecordDTO:settleRecordDTOs){
+            if(settleRecordDTO.getSubsidyAmount()>0){
+                settleRecords.add(settleRecordDTO);
+            }
+        }
+        return settleRecordManager.addSettleRecord(settleRecords);
 
     }
 
@@ -165,6 +170,8 @@ public class SettleRecordServiceImpl implements SettleRecordService {
         settleRecord.setResNbr(settleRecordOrderDTO.getResNbr());
         settleRecord.setSupplierId(settleRecordOrderDTO.getSupplierId());
         settleRecord.setMerchantId(settleRecordOrderDTO.getMerchantId());
+        settleRecord.setSupplierCode(settleRecordOrderDTO.getSupplierCode());
+        settleRecord.setMerchantCode(settleRecordOrderDTO.getMerchantCode());
         settleRecord.setPrice(settleRecordOrderDTO.getPrice());
         settleRecord.setSubsidyAmount(settleRecordOrderDTO.getCouponPrice());
         settleRecord.setOrderCreateTime(settleRecordOrderDTO.getOrderCreateTime());
@@ -201,28 +208,33 @@ public class SettleRecordServiceImpl implements SettleRecordService {
     }
 
     private void setSupplierInfo(List<SettleRecordDTO> settleRecordDTOs){
-        List<String> supplierIds = new ArrayList<>();
+        List<String> merchantCodeList = new ArrayList<>();
         if(!CollectionUtils.isEmpty(settleRecordDTOs)){
             for(SettleRecordDTO settleRecordDTO:settleRecordDTOs){
-                supplierIds.add(settleRecordDTO.getSupplierId());
-                supplierIds.add(settleRecordDTO.getMerchantId());
+                merchantCodeList.add(settleRecordDTO.getSupplierCode());
+                merchantCodeList.add(settleRecordDTO.getMerchantCode());
             }
         }
         MerchantListReq merchantListReq = new MerchantListReq();
-        merchantListReq.setMerchantIdList(supplierIds);
+        merchantListReq.setMerchantCodeList(merchantCodeList);
         log.info("SettleRecordServiceImpl.getSettleRecord listMerchant merchantListReq={}", merchantListReq);
         ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchant(merchantListReq);
         log.info("SettleRecordServiceImpl.getSettleRecord listMerchant listResultVO={}", listResultVO);
 
+        List<String> supplierIds = new ArrayList<>();
         if (listResultVO.isSuccess() && !CollectionUtils.isEmpty(listResultVO.getResultData())) {
             List<MerchantDTO> merchantDTOList = listResultVO.getResultData();
             for (SettleRecordDTO settleRecordDTO : settleRecordDTOs) {
                 for (MerchantDTO merchantDTO : merchantDTOList) {
-                    if (merchantDTO.getMerchantId().equals(settleRecordDTO.getSupplierId())) {
+                    if (merchantDTO.getMerchantCode().equals(settleRecordDTO.getSupplierCode())) {
                         settleRecordDTO.setSupplierName(merchantDTO.getMerchantName());
+                        settleRecordDTO.setSupplierId(merchantDTO.getMerchantId());
+                        supplierIds.add(merchantDTO.getMerchantId());
                     }
-                    if(merchantDTO.getMerchantId().equals(settleRecordDTO.getMerchantId())){
+                    if(merchantDTO.getMerchantCode().equals(settleRecordDTO.getMerchantCode())){
                         settleRecordDTO.setMerchantName(merchantDTO.getMerchantName());
+                        settleRecordDTO.setSupplierId(merchantDTO.getMerchantId());
+                        supplierIds.add(merchantDTO.getMerchantId());
                     }
                 }
             }

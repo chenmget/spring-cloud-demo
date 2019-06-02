@@ -8,11 +8,13 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.AttrSpecConst;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
+import com.iwhalecloud.retail.goods2b.common.TypeConst;
 import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.TypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.TypeDetailResp;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.entity.ProdTypeComplex;
 import com.iwhalecloud.retail.goods2b.entity.Type;
@@ -59,6 +61,24 @@ public class TypeServiceImpl implements TypeService {
 
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
+
+    @Value("${type.moblie}")
+    private String moblie;
+
+    @Value("${type.router}")
+    private String router;
+
+    @Value("${type.intelligentTermina}")
+    private String intelligentTermina;
+
+    @Value("${type.fusionTerminal}")
+    private String fusionTerminal;
+
+    @Value("${type.setTopBox}")
+    private String setTopBox;
+
+    @Value("${type.opticalModem}")
+    private String opticalModem;
 
     @Override
     @Transactional
@@ -304,5 +324,49 @@ public class TypeServiceImpl implements TypeService {
         }else{
             return ResultVO.success(false);
         }
+    }
+
+    @Override
+    public ResultVO<TypeDetailResp> getDetailType(TypeSelectByIdReq req){
+        String rootTypeId = "-1";
+        Type type = null;
+        String parentId = req.getTypeId();
+        while (true){
+            type = typeManager.selectById(parentId);
+            log.info("TypeServiceImpl.queryTypeBrand attrSpecManager.queryProdTypeComplexbyTypeId req={}, resp={}", parentId, JSON.toJSONString(type));
+            if (null == type) {
+                break;
+            }
+            parentId = type.getParentTypeId();
+            if (StringUtils.isNotBlank(parentId) || rootTypeId.equals(parentId)) {
+                break;
+            }
+        }
+        if (null == type) {
+            return ResultVO.success();
+        }
+        TypeDetailResp typeDetailResp = new TypeDetailResp();
+        BeanUtils.copyProperties(type, typeDetailResp);
+        String typeId = type.getTypeId();
+        if (moblie.equals(typeId)) {
+            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.MOBLIE.getCode());
+            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.MOBLIE.getValue());
+        } else if(router.equals(typeId)) {
+            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.ROUTER.getCode());
+            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.ROUTER.getValue());
+        } else if(intelligentTermina.equals(typeId)) {
+            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode());
+            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getValue());
+        }else if(fusionTerminal.equals(typeId)) {
+            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode());
+            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getValue());
+        }else if(setTopBox.equals(typeId)) {
+            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode());
+            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.SET_TOP_BOX.getValue());
+        }else if(opticalModem.equals(typeId)) {
+            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getCode());
+            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getValue());
+        }
+        return ResultVO.success(typeDetailResp);
     }
 }

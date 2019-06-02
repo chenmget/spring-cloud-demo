@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.goods2b.dto.req.TypeDeleteByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeIsUsedQueryByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeListByNameReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeSelectByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.TypeDetailResp;
 
 import java.util.List;
 
@@ -29,4 +30,11 @@ public interface TypeService {
      * @return
      */
     public ResultVO<Boolean> typeIsUsed(TypeIsUsedQueryByIdReq typeIsUsedQueryByIdReq);
+
+    /**
+     * 查询产品类型详细分类
+     * @param
+     * @return
+     */
+    ResultVO<TypeDetailResp> getDetailType(TypeSelectByIdReq req);
 }

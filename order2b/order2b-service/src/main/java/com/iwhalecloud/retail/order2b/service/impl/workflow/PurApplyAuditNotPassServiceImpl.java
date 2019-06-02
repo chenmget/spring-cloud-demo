@@ -22,7 +22,7 @@ import org.apache.commons.lang3.StringUtils;
 
 @Slf4j
 @Service
-public class PurApplyAuditNotPassServiceImpl implements PurApplyAuditNotPassService, WfRunnable {
+public class PurApplyAuditNotPassServiceImpl implements PurApplyAuditNotPassService {
 
     @Reference
     private PurchaseApplyService purchaseApplyService;

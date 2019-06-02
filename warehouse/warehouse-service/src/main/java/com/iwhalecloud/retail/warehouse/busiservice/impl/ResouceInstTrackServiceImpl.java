@@ -115,13 +115,21 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (!resp.isSuccess()) {
             return;
         }
-        Map<String, String> ctCodeMap = req.getCtCode();
+        Map<String, String> ctCodeMap = req.getCtCodeMap();
+        Map<String, String> snCodeMap = req.getSnCodeMap();
+        Map<String, String> macCodeMap = req.getMacCodeMap();
         int count = 0;
         for (int i = 0; i < newlist.size(); i++) {
             String mktResInstNbr = newlist.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             if (null != ctCodeMap) {
                 resouceInstTrackDTO.setCtCode(ctCodeMap.get(mktResInstNbr));
+            }
+            if (null != snCodeMap) {
+                resouceInstTrackDTO.setSnCode(snCodeMap.get(mktResInstNbr));
+            }
+            if (null != ctCodeMap) {
+                resouceInstTrackDTO.setMacCode(macCodeMap.get(mktResInstNbr));
             }
             BeanUtils.copyProperties(req, resouceInstTrackDTO);
             resouceInstTrackDTO.setMktResInstNbr(mktResInstNbr);

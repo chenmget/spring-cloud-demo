@@ -20,7 +20,6 @@ import com.iwhalecloud.retail.warehouse.util.MarketingZopClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -32,9 +31,6 @@ public class MarketingResStoreServiceImpl implements MarketingResStoreService {
     @Autowired
     private MarketingZopClientUtil zopClientUtil;
 
-    @Value("${zopServiceEnv}")
-    private String zopServiceEnv;
-
     @Override
     public ResultVO<QueryMarkResQueryResultsSwapResp<QryStoreMktInstInfoItemSwapResp>> qryStoreMktInstInfo(QryStoreMktInstInfoSwapReq req) {
         if (req == null) {
@@ -43,7 +39,7 @@ public class MarketingResStoreServiceImpl implements MarketingResStoreService {
         if (StringUtils.isEmpty(req.getBarCode()) && StringUtils.isEmpty(req.getStoreId())) {
             return ResultVO.error("请求参数错误,串码和仓库ID必须填写一个");
         }
-        ResultVO<QueryMarkResQueryResultsResp> resultVO = zopClientUtil.callQueryRest(MarketingResConst.ServiceEnum.QryStoreMktInstInfo.getCode()+zopServiceEnv,
+        ResultVO<QueryMarkResQueryResultsResp> resultVO = zopClientUtil.callQueryRest(MarketingResConst.ServiceEnum.QryStoreMktInstInfo.getCode(),
                 MarketingResConst.ServiceEnum.QryStoreMktInstInfo.getVersion(), MarkResReqSwapUtil.swapQryStoreMktInstInfoSwapReq(req),
                 QryStoreMktInstInfoItemResp.class);
 
@@ -54,19 +50,19 @@ public class MarketingResStoreServiceImpl implements MarketingResStoreService {
     @Override
     public ResultVO syncTerminal(SyncTerminalSwapReq req) {
 
-        return zopClientUtil.callExcuteSimplRest(MarketingResConst.ServiceEnum.SyncTerminal.getCode()+zopServiceEnv,
+        return zopClientUtil.callExcuteSimplRest(MarketingResConst.ServiceEnum.SyncTerminal.getCode(),
                 MarketingResConst.ServiceEnum.SyncTerminal.getVersion(), MarkResReqSwapUtil.swapSyncTerminalReq(req));
     }
 
     @Override
     public ResultVO ebuyTerminal(EBuyTerminalSwapReq req) {
-        return zopClientUtil.callExcuteSimplRest(MarketingResConst.ServiceEnum.EBuyTerminal.getCode()+zopServiceEnv,
+        return zopClientUtil.callExcuteSimplRest(MarketingResConst.ServiceEnum.EBuyTerminal.getCode(),
                 MarketingResConst.ServiceEnum.EBuyTerminal.getVersion(), MarkResReqSwapUtil.swapEBuyTerminalReq(req));
     }
 
     @Override
     public ResultVO<Boolean> synMktInstStatus(SynMktInstStatusSwapReq req) {
-        ResultVO<List<ExcuteMarkResResultItemResp>> resultVO = zopClientUtil.callExcuteRest(MarketingResConst.ServiceEnum.SynMktInstStatus.getCode()+zopServiceEnv,
+        ResultVO<List<ExcuteMarkResResultItemResp>> resultVO = zopClientUtil.callExcuteRest(MarketingResConst.ServiceEnum.SynMktInstStatus.getCode(),
                 MarketingResConst.ServiceEnum.SynMktInstStatus.getVersion(), MarkResReqSwapUtil.swapSynMktInstStatusReq(req));
         ResultVO<Boolean> resultVOTemp = zopClientUtil.swapCallExcuteRestResultVO(resultVO);
 
@@ -79,14 +75,14 @@ public class MarketingResStoreServiceImpl implements MarketingResStoreService {
     @Override
     public ResultVO<QueryMarkResQueryResultsSwapResp<QryMktInstInfoByConditionItemSwapResp>> qryMktInstInfoByCondition(QryMktInstInfoByConditionSwapReq req) {
 
-        ResultVO<QueryMarkResQueryResultsResp> resultVO = zopClientUtil.callQueryRest(MarketingResConst.ServiceEnum.QryMktInstInfoByCondition.getCode()+zopServiceEnv,
+        ResultVO<QueryMarkResQueryResultsResp> resultVO = zopClientUtil.callQueryRest(MarketingResConst.ServiceEnum.QryMktInstInfoByCondition.getCode(),
                 MarketingResConst.ServiceEnum.QryMktInstInfoByCondition.getVersion(), MarkResReqSwapUtil.swapQryMktInstInfoByConditionReq(req), QryMktInstInfoByConditionItemResp.class);
         return MarkResRespSwapUtil.swapQryMktInstInfoByCondition(resultVO);
     }
 
     @Override
     public ResultVO<QueryMarkResQueryResultsSwapResp<StoreInventoryQuantityItemSwapResp>> storeInventoryQuantity(StoreInventoryQuantitySwapReq req) {
-        ResultVO<QueryMarkResQueryResultsResp> resultVO = zopClientUtil.callQueryRest(MarketingResConst.ServiceEnum.StoreInventoryQuantity.getCode()+zopServiceEnv,
+        ResultVO<QueryMarkResQueryResultsResp> resultVO = zopClientUtil.callQueryRest(MarketingResConst.ServiceEnum.StoreInventoryQuantity.getCode(),
                 MarketingResConst.ServiceEnum.StoreInventoryQuantity.getVersion(), MarkResReqSwapUtil.swapStoreInventoryQuantityReq(req), StoreInventoryQuantityItemResp.class);
 
         return MarkResRespSwapUtil.swapStoreInventoryQuantityResp(resultVO);

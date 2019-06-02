@@ -132,6 +132,15 @@ public class ResouceInstTrackDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "typeId")
 	private java.lang.String typeId;
-	
-  	
+
+	/**
+	 * SN码
+	 */
+	@ApiModelProperty(value = "SN码")
+	private java.lang.String snCode;
+	/**
+	 * 网络终端（包含光猫、机顶盒、融合终端）记录MAC码
+	 */
+	@ApiModelProperty(value = "macCode")
+	private java.lang.String macCode;
 }

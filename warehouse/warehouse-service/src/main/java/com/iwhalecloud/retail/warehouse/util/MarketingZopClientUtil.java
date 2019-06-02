@@ -181,8 +181,9 @@ public class MarketingZopClientUtil {
     }
 
     private ResultVO dealZopHead(String token, String method, String version, Object params) {
-        log.info(MarketingZopClientUtil.class.getName() + ", req={}, token={}, method={}, version={}", params == null ? "" : JSON.toJSON(params), token, method, version);
-        ResponseResult result = ZopClientUtil.callRest(token, getZopUrl(), method, version, getTimeout(), params);
+        String zopUrl = getZopUrl();
+        log.info("MarketingZopClientUtil dealZopHead, params={}, token={}, method={}, version={}, zopUrl={}", params == null ? "" : JSON.toJSON(params), token, method, version, zopUrl);
+        ResponseResult result = ZopClientUtil.callRest(token, zopUrl, method, version, getTimeout(), params);
         log.info(MarketingZopClientUtil.class.getName() + ",resp={}", result == null ? "" : JSON.toJSON(result));
         //返回为空，能开返回为空
         if (result == null || !MarketingResConst.ZOP_SUC.equals(result.getRes_code())) {

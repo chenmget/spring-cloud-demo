@@ -188,6 +188,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         resourceRequestAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceRequestAddReq.setDestStoreId(mktResStoreId);
         resourceRequestAddReq.setStatusCd(selectProcessResp.getRequestStatusCd());
+        resourceRequestAddReq.setMktResInstType(req.getMktResInstType());
         String mktResReqId = runableTask.excuetorAddReq(resourceRequestAddReq);
         log.info("MerchantResourceInstServiceImpl.addResourceInst requestService.insertResourceRequest req={}, resp={}", JSON.toJSONString(resourceRequestAddReq), mktResReqId);
         // step3 启动工作流
@@ -323,7 +324,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             request.put("userName", userName);
             request.put("code", addMethod);
             request.put("params", params.toString());
-            resultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getName(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
+            resultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
             log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS resp={}", JSON.toJSONString(resultVO));
             if (resultVO.isSuccess()) {
                 successList.add(mktResInstNbr);

@@ -1,8 +1,10 @@
 package com.iwhalecloud.retail.warehouse.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
+import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
 import com.iwhalecloud.retail.warehouse.dto.request.markres.SynMarkResStoreReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.*;
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.QryMktInstInfoByConditionItemSwapResp;
@@ -11,15 +13,19 @@ import com.iwhalecloud.retail.warehouse.dto.response.markresswap.StoreInventoryQ
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.base.QueryMarkResQueryResultsSwapResp;
 import com.iwhalecloud.retail.warehouse.service.MarketingResStoreService;
 import com.iwhalecloud.retail.warehouse.service.MerchantAddNbrProcessingPassActionService;
+import com.iwhalecloud.retail.warehouse.util.MarketingZopClientUtil;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -38,6 +44,9 @@ public class MarketingResStoreServiceTest {
 
     @Reference
     private MerchantAddNbrProcessingPassActionService merchantAddNbrProcessingPassActionService;
+
+    @Autowired
+    private MarketingZopClientUtil zopClientUtil;
 
     @Test
     public void syncTerminal() {
@@ -170,5 +179,20 @@ public class MarketingResStoreServiceTest {
         params.setBusinessId("11916310");
 
         merchantAddNbrProcessingPassActionService.run(params);
+    }
+
+    @Test
+    public void callExcuteNoticeITMS(){
+        StringBuffer params = new StringBuffer();
+        String addMethod = "ITMS_ADD";
+        params.append("city_code=").append("731").append("#warehouse=").append("11").append("#source=2").
+                append("#factory=手机");
+        Map request = new HashMap<>();
+        request.put("deviceId", "1010190");
+        request.put("userName", "测试");
+        request.put("code", addMethod);
+        request.put("params", params.toString());
+        ResultVO resultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
+        log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS resp={}", JSON.toJSONString(resultVO));
     }
 }

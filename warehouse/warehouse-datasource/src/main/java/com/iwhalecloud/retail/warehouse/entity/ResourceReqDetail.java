@@ -137,6 +137,17 @@ public class ResourceReqDetail implements Serializable {
 	@ApiModelProperty(value = "CT码")
 	private String ctCode;
 
+	/**
+	 * SN码
+	 */
+	@ApiModelProperty(value = "SN码")
+	private java.lang.String snCode;
+
+	/**
+	 * 网络终端（包含光猫、机顶盒、融合终端）记录MAC码
+	 */
+	@ApiModelProperty(value = "macCode")
+	private java.lang.String macCode;
 
 
 	//属性 end
@@ -192,7 +203,13 @@ public class ResourceReqDetail implements Serializable {
 		ctCode("ctCode","CT_CODE"),
 
 		/** 备注. */
-		remark("remark","REMARK");
+		remark("remark","REMARK"),
+
+		/**SN码. */
+		snCode("snCode","sn_code"),
+
+		/** 网络终端（包含光猫、机顶盒、融合终端）记录MAC码. */
+		macCode("macCode","mac_code");
 
 		private String fieldName;
 		private String tableFieldName;

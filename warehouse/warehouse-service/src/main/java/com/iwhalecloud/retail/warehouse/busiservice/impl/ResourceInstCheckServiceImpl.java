@@ -85,7 +85,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
 
     @Override
-    public List<String> validMerchantStore(ResourceInstValidReq req){
+    public List<ResouceInstTrackDTO> validMerchantStore(ResourceInstValidReq req){
         List<String> validNbrList = req.getMktResInstNbrs();
         ResourceInstsTrackGetReq resourceInstsTrackGetReq = new ResourceInstsTrackGetReq();
         CopyOnWriteArrayList<String> mktResInstNbrList = new CopyOnWriteArrayList<String>(validNbrList);
@@ -97,8 +97,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             List<ResouceInstTrackDTO> trackList = trackListVO.getResultData();
             // 串码来源是空的为厂商串码
             trackList = trackList.stream().filter(t -> StringUtils.isBlank(t.getSourceType())).collect(Collectors.toList());
-            List<String> nbrList = trackList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
-            return nbrList;
+            return trackList;
         }
         return  null;
     }
@@ -116,8 +115,14 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
             instDTO.setMktResInstNbr(nbr);
             instDTO.setMktResId(req.getMktResId());
-            if (null != req.getCtCode()) {
-                instDTO.setCtCode(req.getCtCode().get(nbr));
+            if (null != req.getCtCodeMap()) {
+                instDTO.setCtCode(req.getCtCodeMap().get(nbr));
+            }
+            if (null != req.getSnCodeMap()) {
+                instDTO.setSnCode(req.getSnCodeMap().get(nbr));
+            }
+            if (null != req.getMacCodeMap()) {
+                instDTO.setMacCode(req.getMacCodeMap().get(nbr));
             }
             instDTOList.add(instDTO);
         }
@@ -129,8 +134,14 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                 instDTO.setMktResInstNbr(nbr);
                 instDTO.setMktResId(req.getMktResId());
                 instDTO.setIsInspection(ResourceConst.CONSTANT_YES);
-                if (null != req.getCtCode()) {
-                    instDTO.setCtCode(req.getCtCode().get(nbr));
+                if (null != req.getCtCodeMap()) {
+                    instDTO.setCtCode(req.getCtCodeMap().get(nbr));
+                }
+                if (null != req.getSnCodeMap()) {
+                    instDTO.setSnCode(req.getSnCodeMap().get(nbr));
+                }
+                if (null != req.getMacCodeMap()) {
+                    instDTO.setMacCode(req.getMacCodeMap().get(nbr));
                 }
                 instDTOList.add(instDTO);
             }

@@ -23,6 +23,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstLogService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
+import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
@@ -802,11 +803,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
-        List<String> merchantNbrList = resourceInstCheckService.validMerchantStore(resourceInstValidReq);
-        if(CollectionUtils.isEmpty(merchantNbrList)){
+        List<ResouceInstTrackDTO> trackList = resourceInstCheckService.validMerchantStore(resourceInstValidReq);
+        if(CollectionUtils.isEmpty(trackList)){
             return ResultVO.error("厂商库该机型串码不存在！");
         }
-        req.setMktResInstNbrs(merchantNbrList);
+        List<String> nbrList = trackList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
+        req.setMktResInstNbrs(nbrList);
         req.setDestStoreId(req.getMktResStoreId());
         req.setMktResStoreId(manuResStoreId);
         req.setSourceType(sourceMerchantDTO.getMerchantType());
@@ -814,7 +816,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         req.setRegionId(merchantDTO.getCity());
         req.setMerchantType(merchantDTO.getMerchantType());
         req.setCreateStaff(merchantDTO.getMerchantId());
-        mktResInstNbrs.removeAll(merchantNbrList);
+        req.setMktResInstType(trackList.get(0).getMktResInstType());
+        mktResInstNbrs.removeAll(nbrList);
         resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);
         Boolean addNum = resourceInstService.addResourceInst(req);
         if (!addNum) {
@@ -822,7 +825,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
         resourceInstUpdateReq.setDestStoreId(manuResStoreId);
-        resourceInstUpdateReq.setMktResInstNbrs(merchantNbrList);
+        resourceInstUpdateReq.setMktResInstNbrs(nbrList);
         resourceInstUpdateReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceInstUpdateReq.setMerchantId(sourceStoreMerchantId);
         resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());

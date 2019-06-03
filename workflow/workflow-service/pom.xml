@@ -57,6 +57,12 @@
 
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
+            <artifactId>order2b-client</artifactId>
+            <version>${workflow.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>workflow-datasource</artifactId>
             <version>${workflow.version}</version>
         </dependency>

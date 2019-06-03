@@ -246,7 +246,19 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	 * 固网终端需要CT码管理时，记录CT码
 	 */
 	@ApiModelProperty(value = "记录CT码")
-	private String singlectCode;
+	private String ctCode;
+
+	/**
+	 * snCode
+	 */
+	@ApiModelProperty(value = "snCode")
+	private String snCode;
+
+	/**
+	 * macCode
+	 */
+	@ApiModelProperty(value = "macCode")
+	private String macCode;
 
 	/**
 	 * 下单时间

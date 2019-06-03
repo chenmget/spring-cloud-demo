@@ -98,4 +98,10 @@ public class ProductBaseGetReq extends AbstractRequest implements Serializable {
     @ApiModelProperty(value = "isDeleted")
     private String isDeleted;
 
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
 }

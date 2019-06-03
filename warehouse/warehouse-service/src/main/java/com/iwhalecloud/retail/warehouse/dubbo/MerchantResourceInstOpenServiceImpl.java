@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
+import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
@@ -43,9 +44,14 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     @Override
     public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req) {
         log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
-        ResultVO<ResourceInstAddResp> resp = merchantResourceInstService.addResourceInst(req);
-        log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={} resp={}", JSON.toJSONString(req), JSON.toJSONString(resp));
-        return resp;
+        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
+            log.info("MerchantResourceInstOpenServiceImpl.addResourceInstForProvinceStore req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(req));
+            return merchantResourceInstService.addResourceInstForProvinceStore(req);
+        }else {
+            ResultVO<ResourceInstAddResp> resp = merchantResourceInstService.addResourceInst(req);
+            log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={} resp={}", JSON.toJSONString(req), JSON.toJSONString(resp));
+            return resp;
+        }
     }
 
     @Override
@@ -86,5 +92,11 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     @Override
     public ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req){
         return merchantResourceInstService.queryForExport(req);
+    }
+
+    @Override
+    public ResultVO addResourceInstForProvinceStore(ResourceInstAddReq req){
+        log.info("MerchantResourceInstOpenServiceImpl.addResourceInstForProvinceStore req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(req));
+        return merchantResourceInstService.addResourceInstForProvinceStore(req);
     }
 }

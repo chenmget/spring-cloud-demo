@@ -129,4 +129,10 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "attrDTOS")
     List<AttrSpecDTO> attrSpecDTOs;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
 }

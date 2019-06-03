@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.goods2b.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
@@ -19,6 +20,7 @@ import java.io.Serializable;
 @Data
 @TableName("prod_cat_condition")
 @ApiModel(value = "对应模型prod_cat_condition, 对应实体CatCondition类")
+@KeySequence(value = "seq_par_merchant_rules_id", clazz = String.class)
 public class CatCondition implements Serializable {
     /**
      * 表名常量
@@ -31,7 +33,7 @@ public class CatCondition implements Serializable {
     /**
      * 主键ID
      */
-    @TableId(type = IdType.ID_WORKER)
+    @TableId
     @ApiModelProperty(value = "主键ID")
     private String id;
 

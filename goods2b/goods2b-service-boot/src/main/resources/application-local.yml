@@ -99,6 +99,7 @@ spring.datasource:
 # 分布式文件系统FDFS配置
 fdfs:
   showUrl: https://gy.ztesoft.com/
+  imageUrl: http://10.45.46.232:8081
 
 goodsRule:
     goodsMktPrice: 159900D

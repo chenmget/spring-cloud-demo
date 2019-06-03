@@ -884,8 +884,14 @@ public class GoodsServiceImpl implements GoodsService {
                 // 设置缩略图
                 for (ProdFileDTO prodFileDTO : prodFileDTOList) {
                     if (goods.getGoodsId().equals(prodFileDTO.getTargetId())) {
-                        goods.setImageUrl(prodFileDTO.getFileUrl());
-                        break;
+                    	ProdFileDTO prodFileDTOHD = prodFileManager.queryGoodsImageHD(goods.getGoodsId());//查看这个商品有没有活动图片
+                    	if(prodFileDTOHD != null) {
+                    		goods.setImageUrl(prodFileDTOHD.getFileUrl());
+                    		break;
+                    	}else {
+                    		goods.setImageUrl(prodFileDTO.getFileUrl());
+                            break;
+                    	}
                     }
                 }
             }
@@ -1318,10 +1324,20 @@ public class GoodsServiceImpl implements GoodsService {
         List<GoodActRelResp> relResps = getGoodActRelResps(goodsId);
         resp.setGoodActRelResps(relResps);
 
+        //查询活动的图片
+        List<ProdFileDTO> prodFileDTOListHD = prodFileManager.queryGoodsImageHDdetail(goodsId);//查出是活的的图片
+        if(prodFileDTOListHD == null) {
+        	prodFileDTOListHD = new ArrayList<ProdFileDTO>();
+        }
         // 查询商品图片和视频
-        List<ProdFileDTO> prodFileDTOList = prodFileManager.queryGoodsImage(goodsId);
-        if (CollectionUtils.isNotEmpty(prodFileDTOList)) {
-            resp.setProdFiles(prodFileDTOList);
+        List<ProdFileDTO> prodFileDTOList = prodFileManager.queryGoodsImage(goodsId);//查询不是活动的图片
+        
+        for(int i=0;i<prodFileDTOList.size();i++) {//为了活动图片展示在普通的图片前面
+        	prodFileDTOListHD.add(prodFileDTOList.get(i));
+        }
+        
+        if (CollectionUtils.isNotEmpty(prodFileDTOListHD)) {
+            resp.setProdFiles(prodFileDTOListHD);
         }
         // 查询产品基本信息
         String productBaseId = goodsProductRel.getProductBaseId();

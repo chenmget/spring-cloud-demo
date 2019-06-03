@@ -31,69 +31,77 @@ public class CatB2BController {
 
     /**
      * 新增产品类别
+     *
      * @param req
      * @return
      */
-    @RequestMapping(value="/addProdCat",method = RequestMethod.POST)
-    public ResultVO<Boolean> addProdCat(@RequestBody @Valid CatAddReq req){
-        log.info("CartController updateCartNum req={} ",req);
+    @RequestMapping(value = "/addProdCat", method = RequestMethod.POST)
+    public ResultVO<Boolean> addProdCat(@RequestBody @Valid CatAddReq req) {
+        log.info("CartController updateCartNum req={} ", req);
         return catService.addProdCat(req);
     }
 
     /**
      * 新增产品类别--中台
+     *
      * @param req
      * @return
      */
-    @RequestMapping(value="/addProdCatByZT",method = RequestMethod.POST)
-    public ResultVO<String> addProdCatByZT(@RequestBody @Valid CatAddReq req){
-        log.info("CartController addProdCatByZT req={} ",req);
+    @RequestMapping(value = "/addProdCatByZT", method = RequestMethod.POST)
+    public ResultVO<String> addProdCatByZT(@RequestBody @Valid CatAddReq req) {
+        log.info("CartController addProdCatByZT req={} ", req);
         return catService.addProdCatByZT(req);
     }
 
     /**
      * 修改产品类别
+     *
      * @param req
      * @return
      */
-    @RequestMapping(value="/updateProdCat",method = RequestMethod.POST)
-    public ResultVO<Boolean> updateProdCat(@RequestBody CatUpdateReq req){
-        log.info("CartController updateCartNum req={} ",req);
+    @RequestMapping(value = "/updateProdCat", method = RequestMethod.POST)
+    public ResultVO<Boolean> updateProdCat(@RequestBody CatUpdateReq req) {
+        log.info("CartController updateCartNum req={} ", req);
         return catService.updateProdCat(req);
     }
 
     /**
      * 修改产品类别-中台
+     *
      * @param req
      * @return
      */
-    @RequestMapping(value="/updateProdCatByZT",method = RequestMethod.POST)
-    public ResultVO<Boolean> updateProdCatByZT(@RequestBody CatUpdateReq req){
-        log.info("CartController updateCartNum req={} ",req);
+    @RequestMapping(value = "/updateProdCatByZT", method = RequestMethod.POST)
+    public ResultVO<Boolean> updateProdCatByZT(@RequestBody CatUpdateReq req) {
+        log.info("CartController updateCartNum req={} ", req);
         return catService.updateProdCatByZT(req);
     }
+
     /**
      * 查询产品类别列表
+     *
      * @return
      */
-    @RequestMapping(value="/batchUpdateProdCat",method = RequestMethod.POST)
-    public ResultVO<Boolean> batchUpdateProdCat(@RequestBody List<CatUpdateReq> reqs){
-        if(CollectionUtils.isEmpty(reqs)){
+    @RequestMapping(value = "/batchUpdateProdCat", method = RequestMethod.POST)
+    public ResultVO<Boolean> batchUpdateProdCat(@RequestBody List<CatUpdateReq> reqs) {
+        if (CollectionUtils.isEmpty(reqs)) {
             return ResultVO.error("参数为空");
         }
         CatQueryReq catQueryReq = new CatQueryReq();
         catQueryReq.setUpdateReqList(reqs);
-        ResultVO<Boolean>  resultVO = catService.batchUpdateProdCat(catQueryReq);
+        ResultVO<Boolean> resultVO = catService.batchUpdateProdCat(catQueryReq);
         return resultVO;
     }
+
     /**
      * 删除产品类别
+     *
      * @param catId
      * @return
      */
-    @RequestMapping(value="/deleteProdCat",method = RequestMethod.GET)
-    public ResultVO<Boolean> deleteProdCat(@RequestParam String catId){
-        if(StringUtils.isEmpty(catId)){
+    @RequestMapping(value = "/deleteProdCat", method = RequestMethod.GET)
+    public ResultVO<Boolean> deleteProdCat(@RequestParam String catId) {
+        if (StringUtils.isEmpty(catId)) {
             return ResultVO.error("catId is not must be null");
         }
         CatQueryReq catQueryReq = new CatQueryReq();
@@ -101,26 +109,28 @@ public class CatB2BController {
         return catService.deleteProdCat(catQueryReq);
     }
 
-    @RequestMapping(value="/queryCat",method = RequestMethod.GET)
-    public ResultVO<CatResp> queryCat(@RequestParam String catId){
-        if(StringUtils.isEmpty(catId)){
+    @RequestMapping(value = "/queryCat", method = RequestMethod.GET)
+    public ResultVO<CatResp> queryCat(@RequestParam String catId) {
+        if (StringUtils.isEmpty(catId)) {
             return ResultVO.error("catId is not must be null");
         }
         CatQueryReq catQueryReq = new CatQueryReq();
         catQueryReq.setCatId(catId);
         return catService.queryProdCat(catQueryReq);
     }
+
     /**
      * 查询产品类别分页
+     *
      * @param pageNum
      * @param pageSize
      * @param catName
      * @return
      */
-    @RequestMapping(value="/queryProdCatForPage",method = RequestMethod.GET)
+    @RequestMapping(value = "/queryProdCatForPage", method = RequestMethod.GET)
     public ResultVO<IPage> queryProdCatForPage(@RequestParam Long pageNum, @RequestParam Long pageSize,
-                                               @RequestParam String catName){
-        if(StringUtils.isEmpty(catName)){
+                                               @RequestParam String catName) {
+        if (StringUtils.isEmpty(catName)) {
             return ResultVO.error("类别名称为空");
         }
         CatQueryReq catQueryReq = new CatQueryReq();
@@ -132,15 +142,16 @@ public class CatB2BController {
 
     /**
      * 查询产品类别列表
+     *
      * @return
      */
-    @RequestMapping(value="/listCat",method = RequestMethod.GET)
-    public ResultVO<CatListResp> listCat(@RequestParam(value = "parentCatId",required = false) String parentCatId,
-                                         @RequestParam(value = "typeId",required = false) String typeId){
+    @RequestMapping(value = "/listCat", method = RequestMethod.GET)
+    public ResultVO<CatListResp> listCat(@RequestParam(value = "parentCatId", required = false) String parentCatId,
+                                         @RequestParam(value = "typeId", required = false) String typeId) {
         CatQueryReq catQueryReq = new CatQueryReq();
         catQueryReq.setParentCatId(parentCatId);
         catQueryReq.setTypeId(typeId);
-        ResultVO<CatListResp>  resultVO = catService.queryCatList(catQueryReq);
+        ResultVO<CatListResp> resultVO = catService.queryCatList(catQueryReq);
         return resultVO;
     }
 

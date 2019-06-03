@@ -577,4 +577,10 @@ public class ProductDetailResp extends PageVO {
      */
     @ApiModelProperty(value = "零售商标签")
     private List<String> tagList;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
 }

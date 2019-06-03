@@ -61,28 +61,38 @@ public class ProductAuditUnPassServiceImpl implements ProductAuditUnPassService 
                 String serialCode = productBaseGetResp.getParam20();  //串码  xxxx-1234556612
 //                String param = productBaseGetResp.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
                 String userName = productBaseGetResp.getParam18();  //login_name
-                String b = "";
-                String callUrl = "ord.operres.OrdInventoryChange";
-                Map request = new HashMap<>();
-                request.put("deviceId",serialCode);
-                request.put("userName",userName);
-                request.put("code","ITMS_DELL");
-                request.put("params","");
-                try {
-                    b = ZopClientUtil.zopService(callUrl, zopUrl, request, zopSecret);
-                    Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
-                    String body = String.valueOf(parseObject.get("Body"));
-                    Map parseObject2 = JSON.parseObject(body, new TypeReference<HashMap>(){});
-                    String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
-                    Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>(){});
-                    String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
-                    if("-1".equals(inventoryChangeReturn)){
-                        throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(删除)失败");
-                    }else if("1".equals(inventoryChangeReturn)){
-                        throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(删除)已经存在");
+                if(StringUtils.isNotEmpty(serialCode) && StringUtils.isNotEmpty(userName)){
+                    if(serialCode.indexOf(",")>-1){
+                        String[] serialCodes = serialCode.split(",");
+                        for(int i=0;i<serialCodes.length;i++){
+                            this.pushItms(serialCodes[i],userName,"ITMS_DELL","");
+                        }
+                    }else{
+                        this.pushItms(serialCode,userName,"ITMS_DELL","");
                     }
-                } catch (Exception e) {
-                    log.error(e.getMessage());
+//                    String b = "";
+//                    String callUrl = "ord.operres.OrdInventoryChange";
+//                    Map request = new HashMap<>();
+//                    request.put("deviceId",serialCode);
+//                    request.put("userName",userName);
+//                    request.put("code","ITMS_DELL");
+//                    request.put("params","");
+//                    try {
+//                        b = ZopClientUtil.zopService(callUrl, zopUrl, request, zopSecret);
+//                        Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
+//                        String body = String.valueOf(parseObject.get("Body"));
+//                        Map parseObject2 = JSON.parseObject(body, new TypeReference<HashMap>(){});
+//                        String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
+//                        Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>(){});
+//                        String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
+//                        if("-1".equals(inventoryChangeReturn)){
+//                            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(删除)失败");
+//                        }else if("1".equals(inventoryChangeReturn)){
+//                            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(删除)已经存在");
+//                        }
+//                    } catch (Exception e) {
+//                        log.error(e.getMessage());
+//                    }
                 }
             }
         }
@@ -90,5 +100,34 @@ public class ProductAuditUnPassServiceImpl implements ProductAuditUnPassService 
         return productService.updateAuditState(req);
     }
 
-
+    private void pushItms(String deviceId,String userName,String code,String params) {
+        String b = "";
+        String callUrl = "ord.operres.OrdInventoryChange";
+        Map request = new HashMap<>();
+        request.put("deviceId", deviceId);
+        request.put("userName", userName);
+        request.put("code", code);
+        request.put("params", params);
+        try {
+            b = ZopClientUtil.zopService(callUrl, zopUrl, request, zopSecret);
+            if (StringUtils.isNotEmpty(b)) {
+                Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>() {
+                });
+                String body = String.valueOf(parseObject.get("Body"));
+                Map parseObject2 = JSON.parseObject(body, new TypeReference<HashMap>() {
+                });
+                String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
+                Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>() {
+                });
+                String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
+                if ("-1".equals(inventoryChangeReturn)) {
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(删除)失败");
+                } else if ("1".equals(inventoryChangeReturn)) {
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(删除)已经存在");
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
 }

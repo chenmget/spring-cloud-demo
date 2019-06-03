@@ -246,4 +246,10 @@ public class ProductBaseUpdateReq extends AbstractRequest implements Serializabl
     @ApiModelProperty(value = "oldProductBaseUpdateReqs")
     private ProductBaseUpdateReq oldProductBaseUpdateReq;
 
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
 }

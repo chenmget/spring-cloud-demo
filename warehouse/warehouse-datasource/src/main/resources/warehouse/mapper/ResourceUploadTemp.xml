@@ -10,6 +10,8 @@
     ,t.RESULT
     ,t.RESULT_DESC
     ,t.CT_CODE
+    ,t.sn_code
+    ,t.mac_code
 </sql>
 
 

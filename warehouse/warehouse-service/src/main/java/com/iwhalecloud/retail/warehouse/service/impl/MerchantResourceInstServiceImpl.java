@@ -10,18 +10,22 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.dto.req.MerChantGetProductReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
+import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
+import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTrackManager;
+import com.iwhalecloud.retail.warehouse.manager.ResouceStoreManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.runable.QueryResourceInstRunableTask;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
@@ -40,7 +44,9 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Service
@@ -73,6 +79,10 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     private QueryResourceInstRunableTask queryResourceInstRunableTask;
     @Autowired
     private MarketingZopClientUtil zopClientUtil;
+    @Autowired
+    private ResouceStoreManager resouceStoreManager;
+    @Autowired
+    private ResourceBatchRecService resourceBatchRecService;
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -107,7 +117,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     public ResultVO validNbr(ResourceInstValidReq req){
         // 集采前端会传入库仓库id,其他类型根据当前登陆用户去获取仓库
         String mktResStoreId = req.getMktResStoreId();
-        if (!ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
+        if (ResourceConst.MKTResInstType.TRANSACTION.getCode().equals(req.getMktResInstType())) {
             StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
             storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
             storeGetStoreIdReq.setMerchantId(req.getMerchantId());
@@ -116,6 +126,16 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             if (StringUtils.isBlank(mktResStoreId)) {
                 return ResultVO.error(constant.getCannotGetStoreMsg());
             }
+        } else if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
+            StorePageReq storePageReq = new StorePageReq();
+            storePageReq.setStoreType(ResourceConst.STORE_TYPE.PROVINCE.getCode());
+            storePageReq.setStoreGrade(ResourceConst.STORE_GRADE.PROVINCE.getCode());
+            Page<ResouceStoreDTO> pageVO = resouceStoreManager.pageStore(storePageReq);
+            log.info("AdminResourceInstServiceImpl.addResourceInst resouceStoreManager.pageStore req={},resp={}", JSON.toJSONString(storePageReq), JSON.toJSONString(pageVO.getRecords()));
+            if (null == pageVO || CollectionUtils.isEmpty(pageVO.getRecords())) {
+                return ResultVO.error(constant.getCannotGetStoreMsg());
+            }
+            mktResStoreId = pageVO.getRecords().get(0).getMktResStoreId();
         }
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
@@ -162,10 +182,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             req.setDestStoreId(mktResStoreId);
         }
         if (CollectionUtils.isNotEmpty(req.getThreeCheckMktResInstNbrs())) {
-            ResultVO resultVO = resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), mktResStoreId, merchantDTO.getLanId());
-            if (!resultVO.isSuccess()) {
-                return resultVO;
-            }
+            resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), mktResStoreId, merchantDTO.getLanId());
         }
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         SelectProcessResp selectProcessResp = resourceInstCheckService.selectProcess(req);
@@ -193,7 +210,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         processStartDTO.setApplyUserId(req.getCreateStaff());
         processStartDTO.setProcessId(selectProcessResp.getProcessId());
         processStartDTO.setTaskSubType(selectProcessResp.getTaskSubType());
-        processStartDTO.setApplyUserName(req.getApplyUserName());
+        processStartDTO.setApplyUserName(merchantDTO.getMerchantName());
         processStartDTO.setFormId(mktResReqId);
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("MerchantResourceInstServiceImpl.addResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
@@ -294,4 +311,70 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         return ResultVO.success(queryResourceInstRunableTask.exceutorQueryResourceInst(req));
     }
 
+    @Override
+    public ResultVO addResourceInstForProvinceStore(ResourceInstAddReq req) {
+        log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore req={}", JSON.toJSONString(req));
+        String provinceStoreLanId = "731";
+        String provinceStoreRegionId = "731";
+        // 获取产品归属厂商
+        MerChantGetProductReq merChantGetProductReq = new MerChantGetProductReq();
+        merChantGetProductReq.setProductId(req.getMktResId());
+        ResultVO<String> productRespResultVO = this.productService.getMerchantByProduct(merChantGetProductReq);
+        log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore productService.getMerchantByProduct req={} resp={}", JSON.toJSONString(merChantGetProductReq), JSON.toJSONString(productRespResultVO));
+        if (!productRespResultVO.isSuccess() || StringUtils.isEmpty(productRespResultVO.getResultData())) {
+            return ResultVO.error(constant.getCannotGetMuanfacturerMsg());
+        }
+        // 获取厂商源仓库
+        String sourceStoreMerchantId = productRespResultVO.getResultData();
+        StoreGetStoreIdReq storeManuGetStoreIdReq = new StoreGetStoreIdReq();
+        storeManuGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        storeManuGetStoreIdReq.setMerchantId(sourceStoreMerchantId);
+        String manuResStoreId = resouceStoreService.getStoreId(storeManuGetStoreIdReq);
+        log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resouceStoreService.getStoreId req={} resp={}", JSON.toJSONString(storeManuGetStoreIdReq), manuResStoreId);
+        if (StringUtils.isEmpty(manuResStoreId)) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+        StorePageReq storePageReq = new StorePageReq();
+        storePageReq.setStoreGrade(ResourceConst.STORE_GRADE.PROVINCE.getCode());
+        storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        storePageReq.setStoreType(ResourceConst.STORE_TYPE.PROVINCE.getCode());
+        Page<ResouceStoreDTO> pageStore = resouceStoreManager.pageStore(storePageReq);
+        log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resouceStoreManager.pageStore storePageReq={}" , JSON.toJSONString(storePageReq), JSON.toJSONString(pageStore.getRecords()));
+        if (null == pageStore || CollectionUtils.isEmpty(pageStore.getRecords())) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+        ResouceStoreDTO storeDTO = pageStore.getRecords().get(0);
+        String destStoreId = storeDTO.getMktResStoreId();
+        req.setMktResStoreId(manuResStoreId);
+        req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+        req.setLanId(provinceStoreLanId);
+        req.setRegionId(provinceStoreRegionId);
+        req.setSourceType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
+        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        req.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
+        req.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
+        req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+        req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        req.setDestStoreId(destStoreId);
+        req.setMerchantId(storeDTO.getMerchantId());
+        runableTask.exceutorAddNbr(req);
+        log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resourceInstService.addResourceInst addReq={}", req);
+        // step4 增加事件和批次
+        Map<String, List<String>> mktResIdAndNbrMap = new HashMap<>();
+        mktResIdAndNbrMap.put(req.getMktResId(), req.getMktResInstNbrs());
+        BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
+        batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+        batchAndEventAddReq.setLanId(provinceStoreLanId);
+        batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
+        batchAndEventAddReq.setRegionId(provinceStoreRegionId);
+        batchAndEventAddReq.setDestStoreId(destStoreId);
+        batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        batchAndEventAddReq.setMerchantId(storeDTO.getMerchantId());
+        batchAndEventAddReq.setCreateStaff(req.getCreateStaff());
+        resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
+        log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
+        // 更新轨迹
+        runableTask.exceutorAddNbrTrack(req);
+        return ResultVO.success();
+    }
 }

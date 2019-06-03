@@ -147,5 +147,11 @@ public class ProductPageResp implements Serializable {
 
     @ApiModelProperty(value = "政企价格")
     private double corporationPrice;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
     
 }

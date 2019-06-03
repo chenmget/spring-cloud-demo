@@ -778,22 +778,26 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (StringUtils.isEmpty(manuResStoreId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
+
         ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
         log.info("SupplierResourceInstServiceImpl.addResourceInstByAdmin resouceStoreService.getMerchantByStore req={} resp={}", req.getMktResStoreId(), JSON.toJSONString(merchantResultVO));
         if (!merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
+        MerchantDTO merchantDTO = merchantResultVO.getResultData();
+        req.setDestStoreId(req.getMktResStoreId());
+        req.setLanId(merchantDTO.getLanId());
+        req.setRegionId(merchantDTO.getCity());
+        req.setMerchantType(merchantDTO.getMerchantType());
+        req.setCreateStaff(merchantDTO.getMerchantId());
         ResultVO<MerchantDTO> sourceMerchantResultVO = merchantService.getMerchantById(sourceStoreMerchantId);
         log.info("SupplierResourceInstServiceImpl.addResourceInstByAdmin merchantService.getMerchantById req={} resp={}", sourceStoreMerchantId, JSON.toJSONString(sourceMerchantResultVO));
         if (!sourceMerchantResultVO.isSuccess() || null == sourceMerchantResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
-        MerchantDTO merchantDTO = merchantResultVO.getResultData();
         MerchantDTO sourceMerchantDTO = sourceMerchantResultVO.getResultData();
-
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
-        req.setDestStoreId(req.getMktResStoreId());
         BeanUtils.copyProperties(req, resourceInstValidReq);
         CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(req.getMktResInstNbrs());
         List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, newList);
@@ -809,13 +813,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
         List<String> nbrList = trackList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
         req.setMktResInstNbrs(nbrList);
-        req.setDestStoreId(req.getMktResStoreId());
         req.setMktResStoreId(manuResStoreId);
         req.setSourceType(sourceMerchantDTO.getMerchantType());
-        req.setLanId(merchantDTO.getLanId());
-        req.setRegionId(merchantDTO.getCity());
-        req.setMerchantType(merchantDTO.getMerchantType());
-        req.setCreateStaff(merchantDTO.getMerchantId());
         req.setMktResInstType(trackList.get(0).getMktResInstType());
         mktResInstNbrs.removeAll(nbrList);
         resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);
@@ -841,12 +840,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResultVO updateResourceresultVO = resourceInstService.updateResourceInst(resourceInstUpdateReq);
         if (!updateResourceresultVO.isSuccess()) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), updateResourceresultVO.getResultMsg());
-        }
-        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
-            ResultVO resultVO = resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), req.getDestStoreId(), merchantDTO.getLanId());
-            if (!resultVO.isSuccess()) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), resultVO.getResultMsg());
-            }
         }
         return ResultVO.success("串码入库完成", resourceInstAddResp);
     }

@@ -166,10 +166,10 @@ public class RunableTask {
                                     inst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
                                 }
                                 if (null != req.getSnCodeMap()) {
-                                    inst.setCtCode(req.getSnCodeMap().get(mktResInstNbr));
+                                    inst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
                                 }
                                 if (null != req.getMacCodeMap()) {
-                                    inst.setCtCode(req.getMacCodeMap().get(mktResInstNbr));
+                                    inst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
                                 }
                                 inst.setUploadDate(now);
                                 inst.setCreateDate(now);
@@ -296,6 +296,8 @@ public class RunableTask {
                         detailReq.setRemark("库存管理");
                         detailReq.setIsInspection(instDTO.getIsInspection());
                         detailReq.setCtCode(instDTO.getCtCode());
+                        detailReq.setSnCode(instDTO.getSnCode());
+                        detailReq.setMacCode(instDTO.getMacCode());
                         detailReq.setCreateDate(now);
                         detailReq.setStatusDate(now);
                         detailReq.setStatusCd(ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode());
@@ -510,10 +512,10 @@ public class RunableTask {
                                     inst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
                                 }
                                 if (null != req.getSnCodeMap()) {
-                                    inst.setCtCode(req.getSnCodeMap().get(mktResInstNbr));
+                                    inst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
                                 }
                                 if (null != req.getMacCodeMap()) {
-                                    inst.setCtCode(req.getMacCodeMap().get(mktResInstNbr));
+                                    inst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
                                 }
                                 inst.setUploadDate(now);
                                 inst.setCreateDate(now);
@@ -602,7 +604,9 @@ public class RunableTask {
                                 req.setMktResStoreId(entry.getKey());
                                 req.setMktResInstNbrs(addNbrList);
                                 req.setSourcemerchantId(dtoList.get(0).getMerchantId());
-                                req.setSinglectCode(dto.getCtCode());
+                                req.setCtCode(dto.getCtCode());
+                                req.setSnCode(dto.getSnCode());
+                                req.setMacCode(dto.getMacCode());
                                 req.setMktResId(dto.getMktResId());
                                 ResultVO resultVO = supplierResourceInstService.addResourceInst(req);
                                 if (!resultVO.isSuccess()) {

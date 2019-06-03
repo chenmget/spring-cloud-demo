@@ -114,6 +114,8 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
                 detailReq.setRemark("库存管理");
                 detailReq.setIsInspection(instDTO.getIsInspection());
                 detailReq.setCtCode(instDTO.getCtCode());
+                detailReq.setSnCode(instDTO.getSnCode());
+                detailReq.setMacCode(instDTO.getMacCode());
                 detailReq.setCreateDate(now);
                 detailReq.setStatusDate(now);
                 detailReq.setStatusCd(ResourceConst.PUT_IN_STOAGE);

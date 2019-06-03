@@ -10,7 +10,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import com.iwhalecloud.retail.order2b.service.workflow.PurApplyAuditNotPassService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
-import com.iwhalecloud.retail.workflow.config.WfRunnable;
+
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 

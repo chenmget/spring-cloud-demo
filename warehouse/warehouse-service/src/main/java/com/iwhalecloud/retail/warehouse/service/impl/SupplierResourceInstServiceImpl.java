@@ -783,7 +783,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         String regionId = null;
         String merchantType = null;
         String merchantId = null;
-        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstNbrs())) {
+        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
             // 省仓库的写死
             lanId = "731";
             regionId = "731";

@@ -132,30 +132,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             String params = req.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
             String userName = req.getParam18();  //login_name
             if(StringUtils.isNotEmpty(serialCode) && StringUtils.isNotEmpty(params) && StringUtils.isNotEmpty(userName)){
-                String b = "";
-                String callUrl = "ord.operres.OrdInventoryChange";
-                Map request = new HashMap<>();
-                request.put("deviceId",serialCode);
-                request.put("userName",userName);
-                request.put("code","ITMS_ADD");
-                request.put("params",params);
-                try {
-                    b = this.zopService(callUrl,zopUrl,request,zopSecret);
-                    if(StringUtils.isNotEmpty(b)){
-                        Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
-                        String body = String.valueOf(parseObject.get("Body"));
-                        Map parseObject2 = JSON.parseObject(body, new TypeReference<HashMap>(){});
-                        String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
-                        Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>(){});
-                        String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
-                        if("-1".equals(inventoryChangeReturn)){
-                            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(新增)失败");
-                        }else if("1".equals(inventoryChangeReturn)){
-                            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(新增)已经存在");
-                        }
+                if(serialCode.indexOf(",")>-1){
+                    String[] serialCodes = serialCode.split(",");
+                    for(int i=0;i<serialCodes.length;i++){
+                       this.pushItms(serialCodes[i],userName,"ITMS_ADD",params);
                     }
-                } catch (Exception e) {
-                    log.error(e.getMessage());
+                }else{
+                    this.pushItms(serialCode,userName,"ITMS_ADD",params);
                 }
             }
         }
@@ -235,6 +218,33 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         return  ResultVO.success(productBaseId);
     }
 
+    private void pushItms(String deviceId,String userName,String code,String params){
+        String b = "";
+        String callUrl = "ord.operres.OrdInventoryChange";
+        Map request = new HashMap<>();
+        request.put("deviceId",deviceId);
+        request.put("userName",userName);
+        request.put("code",code);
+        request.put("params",params);
+        try {
+            b = this.zopService(callUrl,zopUrl,request,zopSecret);
+            if(StringUtils.isNotEmpty(b)){
+                Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
+                String body = String.valueOf(parseObject.get("Body"));
+                Map parseObject2 = JSON.parseObject(body, new TypeReference<HashMap>(){});
+                String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
+                Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>(){});
+                String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
+                if("-1".equals(inventoryChangeReturn)){
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(新增)失败");
+                }else if("1".equals(inventoryChangeReturn)){
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(新增)已经存在");
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
     private String getPriceLevel(Double cost){
         String priceLevel = "";
         if(cost > 0 && cost<=600){

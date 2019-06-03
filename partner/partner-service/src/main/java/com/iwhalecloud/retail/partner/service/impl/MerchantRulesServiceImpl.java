@@ -89,7 +89,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
      * @return
      */
     @Override
-    @Transactional
+//    @Transactional
     public ResultVO<Integer> saveMerchantRules(MerchantRulesSaveReq req) {
         log.info("MerchantRulesServiceImpl.saveMerchantRules(), 入参ManufacturerSaveReq={} ", req);
         int resultInt = 0;

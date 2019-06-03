@@ -113,6 +113,7 @@ ftp:
   gmdirDelete: /home/itsm_y/itmsfile/data/back/Failure/Terminal/delete/
   iptvdirDelete: /home/itsm_y/itmsfile/data/back/Failure/IPTV/delete/
   extName: txt
+  num: 1000
 
 #商家增加串码机顶盒、三合一终端产品类型id
 addNbrService:

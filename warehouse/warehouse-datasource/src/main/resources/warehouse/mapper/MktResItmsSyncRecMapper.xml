@@ -3,11 +3,72 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper">
-	<resultMap id="BaseResultMap" type="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec" >
-		<constructor >
-			<idArg column="MKT_RES_ITMS_SYNC_REC_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
-		</constructor>
-	</resultMap>
+
+	<select id="findMKTInfoByParams" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
+		SELECT
+		NOW() AS SYNC_DATE,
+		'000' AS SYNC_BATCH_ID,
+		even.MKT_RES_EVENT_ID,
+		det.MKT_RES_CHNG_EVT_DETAIL_ID,
+		det.MKT_RES_INST_NBR,
+		even.mkt_res_id,
+		even.EVENT_TYPE,
+		bra.brand_id,
+		det.lan_id AS ORIG_LAN_ID,
+		bra.NAME as BRAND_NAME,
+		base.UNIT_TYPE,
+		'0' AS STATUS_CD,
+		NOW() AS STATUS_DATE,
+		'admin' CREATE_STAFF,
+		#{endDate} AS CREATE_DATE
+		FROM
+		MKT_RES_EVENT even
+		INNER JOIN mkt_res_chng_evt_detail det ON det.MKT_RES_EVENT_ID = even.MKT_RES_EVENT_ID
+		INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = even.MKT_RES_STORE_ID
+		INNER JOIN MKT_RES_INST inst ON inst.MKT_RES_STORE_ID = det.MKT_RES_STORE_ID AND inst.MKT_RES_INST_ID = det.MKT_RES_INST_ID
+		INNER JOIN PROD_PRODUCT prod ON prod.PRODUCT_ID = inst.MKT_RES_ID
+		INNER JOIN PROD_PRODUCT_BASE base ON base.PRODUCT_BASE_ID = prod.PRODUCT_BASE_ID
+		INNER JOIN PROD_BRAND bra ON bra.BRAND_ID = base.BRAND_ID
+
+		LEFT JOIN MKT_RES_STORE_OBJ_REL rel ON rel.MKT_RES_STORE_ID = even.DEST_STORE_ID
+		LEFT JOIN PAR_MERCHANT par ON par.MERCHANT_ID = rel.OBJ_ID
+
+		AND even.status_cd='1003' AND even.event_type IN
+		<foreach collection="eventType" index="index" item="itemEventType" open="(" separator="," close=")">
+			#{itemEventType}
+		</foreach>
+		AND base.IS_ITMS != NULL AND base.IS_ITMS != '0'
+		AND det.LAN_ID = #{lanId}
+		<if test="type == '1'">
+			AND par.MERCHANT_TYPE = '2' OR STORE_TYPE IN ('1000','1100')
+		</if>
+		<if test="type == '2'">
+			AND par.MKT_RES_STORE_ID != par.DEST_STORE_ID
+		</if>
+		<if test="type == '3'">
+			AND par.MERCHANT_TYPE = '2'
+		</if>
+		AND base.IS_ITMS IN
+		<foreach collection="isItms" index="index" item="itemIsItms" open="(" separator="," close=")">
+			#{itemIsItms}
+		</foreach>
+		AND even.CREATE_DATE >= #{startDate}
+		AND #{endDate}>= even.CREATE_DATE
+	</select>
+
+
+	<select id="findMKTInfoToItmsByParams" resultType="java.util.HashMap">
+		SELECT
+		CONCAT(mrisr.MKT_RES_INST_NBR, ',', mrisr.BRAND_NAME, mrisr.UNIT_TYPE, ',2,', mrisr.ORIG_LAN_ID) as itmsStr,
+		mrisr.MKT_RES_ITMS_SYNC_REC_ID	as id
+		FROM
+		MKT_RES_ITMS_SYNC_REC mrisr WHERE 1=1
+		<if test="createDate != '' and createDate != null">
+			AND mrisr.CREATE_DATE = #{createDate}
+		</if>
+		AND mrisr.ORIG_LAN_ID = #{lanId}
+	</select>
+
  <select id="findMKTInfoByDate" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
 		SELECT
 			now() as SYNC_DATE,
@@ -32,7 +93,7 @@
 	 		INNER JOIN PROD_PRODUCT_BASE ppb ON mre.mkt_res_id = ppb.PRODUCT_BASE_ID
 			INNER JOIN PROD_BRAND pr ON pr.brand_id = ppb.brand_id 
 			<if test="startDate != '' and startDate != null">
-            AND mre.CREATE_DATE >= #{startDate}
+				AND mre.CREATE_DATE >= #{startDate}
         	</if>
   </select>
   

@@ -81,9 +81,12 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private String iptvdirDelete;
     @Value("${ftp.extName}")
     private String extName;
+    @Value("${ftp.num}")
+    private int num;
 
     private static String[] brands = {"10350143", "10350148"};
     private static String[][] types = {{"1001", "1003"}, {"1002"}, {"1007", "1009"}};
+    private static String[][] isItms = {{"1","3"},{"2","3"}};
 
     private static final String SEQ_CONF_STR = "ITMS_PUSH_SEQ";
     private static final String CONF_STR = "ITMS_PUSH_MKT_NB";
@@ -236,32 +239,37 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
         // 开始时间
         String startStr = resourceInstMapper.findCfValueByCfId(CONF_STR);
-
-        int num = insertToMRISR(startStr);
-
+        // 结束时间
+        Date newStartStr = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+//        List<MktResItmsSyncRec> mktResItmsSyncRecList = insertToMRISR(startStr,sdf.format(newStartStr));
+//        int num = insertToMRISR(startStr,sdf.format(newStartStr));
         //没有待推送数据
-        if(num == 0){
+//        if(mktResItmsSyncRecList.size()==0){
+//            log.info(startStr+"ITMS没有待推送数据。");
+//            return;
+//        }
+        //没有待推送数据
+        /*if(num == 0){
         	log.info(startStr+"ITMS没有待推送数据。");
         	return;
-        }
-    	log.info(startStr+"成功插入到 MktResItmsSyncRec表 "+num+"条数据。");
+        }*/
+//    	log.info(startStr+"成功插入到 MktResItmsSyncRec表 "+num+"条数据。");
 
-        // 结束时间
-        Date endDate = new Date();
+
 
         for (int i = 0; i < brands.length; i++) {
             for (int j = 0; j < types.length; j++) {
-                this.syncMktToITMS(brands[i], types[j], startStr);
+                this.syncMktToITMS(brands[i], types[j], startStr,sdf.format(newStartStr));
             }
         }
 
-        //更新时间戳
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        Date startDate = new Date();
+
+//        Date startDate = new Date();
         if (null == startStr) {
-            resourceInstMapper.initConfig(sdf.format(startDate));
+            resourceInstMapper.initConfig(sdf.format(newStartStr));
         } else {
-            resourceInstMapper.updateCfValueByCfId(CONF_STR, sdf.format(startDate));
+            resourceInstMapper.updateCfValueByCfId(CONF_STR, sdf.format(newStartStr));
         }
 
         //删除临时文件
@@ -274,7 +282,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     }
 
-    public void syncMktToITMS(String brand, String[] ops, String startDate) {
+    public void syncMktToITMS(String brand, String[] ops, String startDate, String endDate) {
 
         List<String> files = new ArrayList<String>();
 
@@ -288,8 +296,15 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         for (int i = 0; i < latIdList.size(); i++) {
 
         	String sendDir = getSendDir(brand, ops);
-        	mktList = mktResItmsSyncRecMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate);
-        	if (mktList.size() <= 0) continue;
+        	String type = getType(ops);
+        	String[] getIsItms = getIsItms(brand);
+//            mktList = mktResItmsSyncRecMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate);
+            //事件类型、分地市、类型对应过滤条件、是否itms、开始时间、结束时间 查询并插入数据
+            insertToMRISR(ops,latIdList.get(i),type,getIsItms,startDate,endDate);
+            mktList = mktResItmsSyncRecMapper.findMKTInfoToItmsByParams(latIdList.get(i),endDate);
+
+
+            if (mktList.size() <= 0) continue;
 
         	String seqStr = mktResItmsSyncRecMapper.getSeqBysendDir(sendDir+"/"+latIdList.get(i));
         	String resStr = "0";
@@ -329,6 +344,29 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         sendFileToFtp(ftpClient, files, brand, ops);
         files.clear();
 
+    }
+
+    private String getType(String[] ops){
+        String type = "";
+        if (Arrays.equals(types[0],ops)) {
+            type = "1";
+        }
+        if (Arrays.equals(types[1],ops)) {
+            type = "2";
+        }
+        if (Arrays.equals(types[2],ops)) {
+            type = "3";
+        }
+        return type;
+    }
+    private String[] getIsItms(String brand){
+        String[] itms = new String[2];
+        if(brand.equals(brands[0])){
+            itms = isItms[0];
+        }else if(brand.equals(brands[1])){
+            itms = isItms[1];
+        }
+        return itms;
     }
 
     /**
@@ -531,16 +569,26 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      * @return
      * @throws
      */
-    private int insertToMRISR(String startDate) {
-        List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByDate(startDate);
-        int num = 0;
+    private List<MktResItmsSyncRec> insertToMRISR(String[] eventType, String lanId,String type, String[] isItms,String startDate, String endDate) {
+//        List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByDate(startDate,endDate);
+        List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByParams(eventType,lanId,type,isItms,startDate,endDate);
+        if(!CollectionUtils.isEmpty(mktResItmsSyncRecList)){
+            ArrayList<List<MktResItmsSyncRec>> mktList = this.mktListSplit(mktResItmsSyncRecList);
+            //批量更新
+            for(int i = 0; i < mktList.size(); i++){
+                resourceInstStoreManager.batchAddMKTInfo(mktList.get(i));
+            }
+
+            log.info(startDate+"成功插入到 MktResItmsSyncRec表数据。");
+        }
+        /*int num = 0;
         if(mktResItmsSyncRecList.size()>0){
             for(MktResItmsSyncRec mktResItmsSyncRec : mktResItmsSyncRecList){
                 mktResItmsSyncRecMapper.insert(mktResItmsSyncRec);
                 num++;
             }
-        }
-        return num;
+        }*/
+        return mktResItmsSyncRecList;
     }
 
     //获取返回的文件路径
@@ -698,7 +746,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         String date = sdf.format(startDate);
         String dateTem = sdfTem.format(startDate);
         try{
-            list = this.lineListSplit(lineList, 1000);
+            list = this.lineListSplit(lineList);
             for(int i = 0; i < list.size(); i++){
                 List<MktResItmsSyncRec> dataList = Lists.newArrayList();
                 if(list.get(i).size() == 0){
@@ -779,10 +827,9 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     /**
      * 将list以每num条拆分为多个list
      * @param lineList
-     * @param num
      * @return
      */
-    private ArrayList<ArrayList<String>> lineListSplit(ArrayList<String> lineList, int num){
+    private ArrayList<ArrayList<String>> lineListSplit(ArrayList<String> lineList){
         ArrayList<ArrayList<String>> allLineLists = new ArrayList<>();
         int number;
         if(lineList.size() > num){
@@ -812,7 +859,36 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         }
         return allLineLists;
     }
-
+    private ArrayList<List<MktResItmsSyncRec>> mktListSplit(List<MktResItmsSyncRec> lineList){
+        ArrayList<List<MktResItmsSyncRec>> allLineLists = new ArrayList<>();
+        int number;
+        if(lineList.size() > num){
+            //判断要分割的个数
+            if(lineList.size() % num > 0){
+                number = lineList.size() / num + 1;
+            }else{
+                number = lineList.size() / num;
+            }
+            // 循环把分割的数组存入 userIdLists 中
+            for (int i = 0; i < number; i++) {
+                ArrayList<MktResItmsSyncRec> list = new ArrayList<>();
+                // 最后一个数组长度不定
+                if (i != number - 1) {
+                    for (int j = 0; j < num; j++) {
+                        list.add(lineList.get(i * num + j));
+                    }
+                } else {
+                    for (int j = 0; j < lineList.size() - (i * num); j++) {
+                        list.add(lineList.get(i * num + j));
+                    }
+                }
+                allLineLists.add(list);
+            }
+        }else {
+            allLineLists.add(lineList);
+        }
+        return allLineLists;
+    }
     /** * 移动文件 *
      * @param pathname FTP服务器保存目录 *
      * @param filename 要移动的文件名称 *

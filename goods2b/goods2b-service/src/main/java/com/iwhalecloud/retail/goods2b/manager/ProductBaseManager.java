@@ -222,7 +222,7 @@ public class ProductBaseManager {
             }
         }
         //增加判空
-        if(!CollectionUtils.isEmpty(tagList)){
+        if(!CollectionUtils.isEmpty(tagList) && null!=productDetailResp){
             productDetailResp.setTagList(tagList);
         }
         return productDetailResp;

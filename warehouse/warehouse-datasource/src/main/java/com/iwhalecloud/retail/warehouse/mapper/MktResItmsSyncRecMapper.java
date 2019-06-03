@@ -3,10 +3,7 @@ package com.iwhalecloud.retail.warehouse.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
-import com.iwhalecloud.retail.warehouse.dto.ResourceChngEvtDetailDTO;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
-import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -63,5 +60,17 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 	 * @param mktResItmsSyncRecRep
 	 * @return
 	 */
-	int batchUpdateMRIyFileName(@Param("list")List<MktResItmsSyncRec> mktResItmsSyncRecRep);
+	 int batchUpdateMRIyFileName(@Param("list")List<MktResItmsSyncRec> mktResItmsSyncRecRep);
+	/**
+	 * 根据回传文件，串码更新推送状态
+	 * @param mktResItmsSyncRecRep
+	 * @return
+	 */
+	int updateMRIyFileName(MktResItmsSyncRec mktResItmsSyncRecRep);
+
+	/**
+	 * 批量插入
+	 * @param mktResItmsSyncRecRep
+	 */
+	void batchAddMKTInfo(List<MktResItmsSyncRec> mktResItmsSyncRecRep);
 }

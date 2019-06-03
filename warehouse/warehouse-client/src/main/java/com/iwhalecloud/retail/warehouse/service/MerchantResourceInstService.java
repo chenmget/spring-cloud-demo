@@ -84,4 +84,11 @@ public interface MerchantResourceInstService {
      */
     ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req);
 
+    /**
+     * 厂商给省仓库录入测试固网终端串码
+     * @param req
+     * @return
+     */
+    ResultVO addResourceInstForProvinceStore(ResourceInstAddReq req);
+
 }

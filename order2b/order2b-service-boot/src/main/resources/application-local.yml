@@ -9,7 +9,7 @@ spring.dubbo:
       name: order2b-provider
     registry:
  #     address: zookeeper://10.45.47.87:2285
-      address: zookeeper://127.0.0.1:2181
+      address: zookeeper://localhost:2181
     protocol:
       name: dubbo
       port: 20882

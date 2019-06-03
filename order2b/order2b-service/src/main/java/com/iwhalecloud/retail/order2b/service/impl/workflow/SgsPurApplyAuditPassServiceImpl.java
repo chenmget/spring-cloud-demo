@@ -1,17 +1,17 @@
 package com.iwhalecloud.retail.order2b.service.impl.workflow;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
-import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
+import com.iwhalecloud.retail.order2b.manager.PurApplyDeliveryManager;
 import com.iwhalecloud.retail.order2b.service.workflow.SgsPurApplyAuditPassService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @auther lin.wenhui@iwhalecloud.com
@@ -23,8 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 @Service
 public class SgsPurApplyAuditPassServiceImpl implements SgsPurApplyAuditPassService {
 
-    @Reference
-    private PurchaseApplyService purchaseApplyService;
+    @Autowired
+    private PurApplyDeliveryManager purApplyDeliveryManager;
 
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
@@ -37,7 +37,11 @@ public class SgsPurApplyAuditPassServiceImpl implements SgsPurApplyAuditPassServ
         //审核通过
         req.setStatusCd(PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
         log.info("chenbin=="+PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
-        return purchaseApplyService.updatePurApplyStatus(req);
+        int i = purApplyDeliveryManager.updatePurApplyStatus(req);
+        if (i < 1) {
+            return ResultVO.error("更新采购申请单状态失败");
+        }
+        return ResultVO.success();
     }
 }
 

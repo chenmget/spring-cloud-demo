@@ -128,7 +128,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             if (null != snCodeMap) {
                 resouceInstTrackDTO.setSnCode(snCodeMap.get(mktResInstNbr));
             }
-            if (null != ctCodeMap) {
+            if (null != macCodeMap) {
                 resouceInstTrackDTO.setMacCode(macCodeMap.get(mktResInstNbr));
             }
             BeanUtils.copyProperties(req, resouceInstTrackDTO);

@@ -147,12 +147,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             List<ProductAddReq> productAddReqs = req.getProductAddReqs();
             if (null != productAddReqs && !productAddReqs.isEmpty()) {
                 for (ProductAddReq par : productAddReqs) {
-                    if(minCost == 0.0){
+                    if(minCost < 0.01){
                         minCost = par.getCost();
                     }else{
-                        minCost = par.getCost()<minCost ? par.getCost():minCost;
+                        minCost = (par.getCost()-minCost)<0 ? par.getCost():minCost;
                     }
                 }
+                log.info("ProductBaseServiceImpl.addProductBase minCost={}",minCost);
                 if(minCost > 0){
                     req.setPriceLevel(this.getPriceLevel(minCost));
                 }

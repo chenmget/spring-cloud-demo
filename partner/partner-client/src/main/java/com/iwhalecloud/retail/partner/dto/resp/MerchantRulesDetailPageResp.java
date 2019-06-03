@@ -104,15 +104,4 @@ public class MerchantRulesDetailPageResp implements Serializable {
     @ApiModelProperty(value = "对象编码")
     private String targetCode;
 
-    /**
-     * 限额
-     */
-//    @ApiModelProperty(value = "限额")
-//    private Long maxSerialNum;
-
-    /**
-     * 本月已使用
-     */
-//    @ApiModelProperty(value = "本月已使用")
-//    private Long serialNumUsed;
 }

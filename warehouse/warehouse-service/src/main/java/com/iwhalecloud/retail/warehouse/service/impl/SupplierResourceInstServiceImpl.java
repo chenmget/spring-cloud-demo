@@ -778,17 +778,35 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (StringUtils.isEmpty(manuResStoreId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
-        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
-        log.info("SupplierResourceInstServiceImpl.addResourceInstByAdmin resouceStoreService.getMerchantByStore req={} resp={}", req.getMktResStoreId(), JSON.toJSONString(merchantResultVO));
-        if (!merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
-            return ResultVO.error(constant.getCannotGetMerchantMsg());
+
+        String lanId = null;
+        String regionId = null;
+        String merchantType = null;
+        String merchantId = null;
+        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
+            // 省仓库的写死
+            lanId = "731";
+            regionId = "731";
+            merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType();
+            merchantId = req.getMerchantId();
+        }else{
+            ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
+            log.info("SupplierResourceInstServiceImpl.addResourceInstByAdmin resouceStoreService.getMerchantByStore req={} resp={}", req.getMktResStoreId(), JSON.toJSONString(merchantResultVO));
+            if (!merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
+                return ResultVO.error(constant.getCannotGetMerchantMsg());
+            }
+            MerchantDTO merchantDTO = merchantResultVO.getResultData();
+            lanId = merchantDTO.getLanId();
+            regionId = merchantDTO.getCity();
+            merchantType = merchantDTO.getMerchantType();
+            merchantId = merchantDTO.getMerchantId();
         }
         ResultVO<MerchantDTO> sourceMerchantResultVO = merchantService.getMerchantById(sourceStoreMerchantId);
         log.info("SupplierResourceInstServiceImpl.addResourceInstByAdmin merchantService.getMerchantById req={} resp={}", sourceStoreMerchantId, JSON.toJSONString(sourceMerchantResultVO));
         if (!sourceMerchantResultVO.isSuccess() || null == sourceMerchantResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
-        MerchantDTO merchantDTO = merchantResultVO.getResultData();
+
         MerchantDTO sourceMerchantDTO = sourceMerchantResultVO.getResultData();
 
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
@@ -812,10 +830,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         req.setDestStoreId(req.getMktResStoreId());
         req.setMktResStoreId(manuResStoreId);
         req.setSourceType(sourceMerchantDTO.getMerchantType());
-        req.setLanId(merchantDTO.getLanId());
-        req.setRegionId(merchantDTO.getCity());
-        req.setMerchantType(merchantDTO.getMerchantType());
-        req.setCreateStaff(merchantDTO.getMerchantId());
+        req.setLanId(lanId);
+        req.setRegionId(regionId);
+        req.setMerchantType(merchantType);
+        req.setCreateStaff(merchantId);
         req.setMktResInstType(trackList.get(0).getMktResInstType());
         mktResInstNbrs.removeAll(nbrList);
         resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);
@@ -843,10 +861,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), updateResourceresultVO.getResultMsg());
         }
         if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
-            ResultVO resultVO = resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), req.getDestStoreId(), merchantDTO.getLanId());
-            if (!resultVO.isSuccess()) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), resultVO.getResultMsg());
-            }
+            resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), "省仓库", req.getDestStoreId(), lanId);
         }
         return ResultVO.success("串码入库完成", resourceInstAddResp);
     }

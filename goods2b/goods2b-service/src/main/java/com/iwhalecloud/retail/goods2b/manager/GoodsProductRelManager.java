@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.ActivityGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ActivityGoodsReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProdFileReq;
 import com.iwhalecloud.retail.goods2b.entity.GoodsProductRel;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsProductRelMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -141,5 +142,13 @@ public class GoodsProductRelManager {
 
     public List<String> listGoodsBySupplierId(String supplierId, String productId) {
         return goodsProductRelMapper.listGoodsBySupplierId(supplierId, productId);
+    }
+    
+    public Integer insertProdFile(ProdFileReq req) {
+    	return goodsProductRelMapper.insertProdFile(req);
+    }
+    
+    public String selectProdFileId() {
+    	return goodsProductRelMapper.selectProdFileId();
     }
 }

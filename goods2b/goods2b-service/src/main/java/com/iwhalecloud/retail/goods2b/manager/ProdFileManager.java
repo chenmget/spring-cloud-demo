@@ -84,15 +84,51 @@ public class ProdFileManager {
      * @param goodsId 商品ID
      * @return 附件集合
      */
-    @Cacheable(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId")
+//    @Cacheable(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId")
+//    public List<ProdFileDTO> queryGoodsImage(String goodsId) {
+//        QueryWrapper wrapper = new QueryWrapper<>();
+//        wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.GOODS_TARGET.getType());
+//        wrapper.eq(ProdFile.FieldNames.targetId.getTableFieldName(),goodsId);
+//        wrapper.ne(ProdFile.FieldNames.subType.getTableFieldName(), "8");
+//        wrapper.ne(ProdFile.FieldNames.subType.getTableFieldName(),"10");
+//        return this.queryProdFiles(wrapper);
+//    }
+
     public List<ProdFileDTO> queryGoodsImage(String goodsId) {
-        QueryWrapper wrapper = new QueryWrapper<>();
-        wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.GOODS_TARGET.getType());
-        wrapper.eq(ProdFile.FieldNames.targetId.getTableFieldName(),goodsId);
+    	
+    	List<ProdFileDTO> dtos = new ArrayList<ProdFileDTO>();
+        List<ProdFileDTO> prodFiles = prodFileMapper.queryGoodsImage(goodsId);
+        if (prodFiles != null) {
+            for (ProdFileDTO prodFile : prodFiles) {
+                ProdFileDTO dto = new ProdFileDTO();
+                BeanUtils.copyProperties(prodFile,dto);
+                dto.setFileUrl(attacheUrlPrefix(dto.getFileUrl()));
+                dto.setThreeDimensionsUrl(attacheUrlPrefix(dto.getThreeDimensionsUrl()));
+                dto.setThumbnailUrl(attacheUrlPrefix(dto.getThumbnailUrl()));
 
-        return this.queryProdFiles(wrapper);
+                dtos.add(dto);
+            }
+        }
+        return dtos;
     }
+  
+    public List<ProdFileDTO> queryGoodsImageHDdetail(String goodsId) {
+    	List<ProdFileDTO> listProds = new ArrayList<ProdFileDTO>();
+    	List<ProdFileDTO> listProd =  prodFileMapper.queryGoodsImageHDdetail(goodsId);
+    	if (listProd != null) {
+            for (ProdFileDTO prodFileDTO : listProd) {
+                ProdFileDTO dto = new ProdFileDTO();
+                BeanUtils.copyProperties(prodFileDTO,dto);
+                dto.setFileUrl(attacheUrlPrefix(dto.getFileUrl()));
+                dto.setThreeDimensionsUrl(attacheUrlPrefix(dto.getThreeDimensionsUrl()));
+                dto.setThumbnailUrl(attacheUrlPrefix(dto.getThumbnailUrl()));
 
+                listProds.add(dto);
+            }
+        }
+    	
+    	return listProds;
+    }
 
     /**
      * 通过商品ID和子类型获取附件集合
@@ -132,7 +168,15 @@ public class ProdFileManager {
         return this.queryProdFiles(wrapper);
     }
 
-
+    public ProdFileDTO queryGoodsImageHD(String goodsId){
+    	ProdFileDTO prodFileDTO = prodFileMapper.queryGoodsImageHD(goodsId);
+    	if(prodFileDTO != null) {
+    		prodFileDTO.setFileUrl(attacheUrlPrefix(prodFileDTO.getFileUrl()));
+    	}
+    	return prodFileDTO;
+    }
+    
+    
     /**
      * 根据商品ID删除图片
      * @param goodsId 商品ID

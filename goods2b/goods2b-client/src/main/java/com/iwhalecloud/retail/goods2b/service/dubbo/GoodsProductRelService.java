@@ -8,6 +8,7 @@ import com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsQueryByProductIdsReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProdFileReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsQueryByProductIdsResp;
 
 import java.util.List;
@@ -63,4 +64,8 @@ public interface GoodsProductRelService{
     ResultVO<GoodsQueryByProductIdsResp> queryGoodsIdsByProductIds(GoodsQueryByProductIdsReq req);
 
     ResultVO<List<GoodsProductRelDTO>> listGoodsProductRel(String goodsId);
+    
+    public void insertProdFile(ProdFileReq req);
+    
+    public String selectProdFileId();
 }

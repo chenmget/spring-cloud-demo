@@ -184,7 +184,7 @@ public class MarketingResStoreServiceTest {
     @Test
     public void callExcuteNoticeITMS(){
         StringBuffer params = new StringBuffer();
-        String addMethod = "ITMS_ADD";
+        String addMethod = "ITMS_DELL";
         params.append("city_code=").append("731").append("#warehouse=").append("11").append("#source=2").
                 append("#factory=手机");
         Map request = new HashMap<>();

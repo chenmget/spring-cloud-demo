@@ -819,12 +819,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         req.setMktResInstType(trackList.get(0).getMktResInstType());
         mktResInstNbrs.removeAll(nbrList);
         resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);
-        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
-            ResultVO resultVO = resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), req.getDestStoreId(), merchantDTO.getLanId());
-            if (!resultVO.isSuccess()) {
-                return resultVO;
-            }
-        }
         Boolean addNum = resourceInstService.addResourceInst(req);
         if (!addNum) {
             return ResultVO.error("串码入库失败");
@@ -847,6 +841,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResultVO updateResourceresultVO = resourceInstService.updateResourceInst(resourceInstUpdateReq);
         if (!updateResourceresultVO.isSuccess()) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), updateResourceresultVO.getResultMsg());
+        }
+        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
+            ResultVO resultVO = resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), req.getDestStoreId(), merchantDTO.getLanId());
+            if (!resultVO.isSuccess()) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), resultVO.getResultMsg());
+            }
         }
         return ResultVO.success("串码入库完成", resourceInstAddResp);
     }

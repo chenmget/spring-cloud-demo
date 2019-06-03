@@ -162,10 +162,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             req.setDestStoreId(mktResStoreId);
         }
         if (CollectionUtils.isNotEmpty(req.getThreeCheckMktResInstNbrs())) {
-            ResultVO resultVO = resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), mktResStoreId, merchantDTO.getLanId());
-            if (!resultVO.isSuccess()) {
-                return resultVO;
-            }
+            resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), mktResStoreId, merchantDTO.getLanId());
         }
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         SelectProcessResp selectProcessResp = resourceInstCheckService.selectProcess(req);

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.partner.service.impl;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -56,6 +57,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import com.twmacinta.util.MD5;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1009,6 +1016,11 @@ public class MerchantServiceImpl implements MerchantService {
         return success();
     }
 
+    @Override
+    public ResultVO<String> resistManufacturer(ManufacturerResistReq req) {
+        return null;
+    }
+
     /**
      *厂商自注册
      * @param req
@@ -1231,50 +1243,6 @@ public class MerchantServiceImpl implements MerchantService {
         }
     }
 
-
-//    @Override
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-//    public ResultVO<String> resistSupplier(SupplierResistReq req) {
-//        MerchantAccount account = new MerchantAccount();
-//        UserAddReq userAddReq = new UserAddReq();
-//        BeanUtils.copyProperties(req,account);
-//
-//        Boolean ifLocalSuccess = true;
-//        ResultVO<UserDTO> rt = null;
-//        try {
-//            //插入商户信息
-//            String merchanId = merchantManager.addMerchan(req);
-//            //插入附件表
-//            insertAttachment(req,merchanId);
-//
-//            account.setMerchantId(merchanId);
-//            //插入银行收款信息
-//            account = fillBankAccount(req,account);
-//            merchantAccountManager.insert(account);
-//            //插入翼支付收款信息
-//            account = fillWindPayAccount(req,account);
-//            merchantAccountManager.insert(account);
-//            //插入系统用户
-//            userAddReq.setRelCode(merchanId); //关联商户信息和系统用户
-//            //刚注册用户处于禁用状态
-//            userAddReq.setStatusCd(SystemConst.SysUserStatusCdEnum.STATUS_CD_INVALD.getCode());
-//            rt = userService.addUser(userAddReq);
-//        }catch (Exception e){
-//            ifLocalSuccess = false;
-//            log.error(e.getMessage());
-//            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-//        }finally {
-//            if(!ifLocalSuccess){
-//                return ResultVO.error("注册失败");
-//            }else if(rt.isSuccess()){
-//                //短信接口
-//                //工作流
-//                return success("注册成功");
-//            }
-//        }
-//        return ResultVO.error("注册服务异常");
-//    }
-
     /**
      * 插入附件信息
      * @param req
@@ -1341,30 +1309,23 @@ public class MerchantServiceImpl implements MerchantService {
 
 
 
-    @Override
-    public ResultVO<String> resistManufacturer(ManufacturerResistReq req) {
-        return null;
-    }
-
-
-
-
+/*
     private MerchantAccount fillWindPayAccount(SupplierResistReq resistReq, MerchantAccount account) {
         account.setAccount(resistReq.getAccount());
         account.setBankAccount(resistReq.getWindPayCount());
         //支付类型为---翼支付
         account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BEST_PAY.getType());
         return account;
-    }
+    }*/
 
-    private MerchantAccount fillBankAccount(SupplierResistReq resistReq,MerchantAccount account) {
+/*    private MerchantAccount fillBankAccount(SupplierResistReq resistReq,MerchantAccount account) {
         account.setAccount(resistReq.getAccount());
         account.setBank(resistReq.getBank());
         account.setBankAccount(resistReq.getBankAccount());
         //支付类型为---银行
         account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BANK_ACCOUNT.getType());
         return account;
-    }
+    }*/
 
     /**
      * 修改商户信息
@@ -1379,119 +1340,45 @@ public class MerchantServiceImpl implements MerchantService {
         this.merchantManager.updateMerchant(merchant);
         return ResultVO.success();
     }
-
-    @Override
-    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO<String> resistSupplier(SupplierResistReq req) {
-        MerchantAccount account = new MerchantAccount();
-        UserAddReq userAddReq = new UserAddReq();
-        BeanUtils.copyProperties(req,account);
-
-        Boolean ifLocalSuccess = true;
-        ResultVO<UserDTO> rt = null;
-        try {
-            //插入商户信息
-            String merchanId = merchantManager.addMerchan(req);
-            //插入附件表
-            insertAttachment(req,merchanId);
-
-            account.setMerchantId(merchanId);
-            //插入银行收款信息
-            account = fillBankAccount(req,account);
-            merchantAccountManager.insert(account);
-            //插入翼支付收款信息
-            account = fillWindPayAccount(req,account);
-            merchantAccountManager.insert(account);
-            //插入系统用户
-            userAddReq.setRelCode(merchanId); //关联商户信息和系统用户
-            //刚注册用户处于禁用状态
-            userAddReq.setStatusCd(SystemConst.SysUserStatusCdEnum.STATUS_CD_INVALD.getCode());
-            rt = userService.addUser(userAddReq);
-        }catch (Exception e){
-            ifLocalSuccess = false;
-            log.error(e.getMessage());
-            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-        }finally {
-            if(!ifLocalSuccess){
-                return ResultVO.error("注册失败");
-            }else if(rt.isSuccess()){
-                //短信接口
-                //工作流
-                return ResultVO.success("注册成功");
+    private SupplierResistResp fillSupplierRegistResp(MerchantDetailDTO merchant, UserDTO user, List<MerchantAccount> merchantAccountList, List<CommonFileDTO> commonFileList) {
+        SupplierResistResp resistResp = new SupplierResistResp();
+        BeanUtils.copyProperties(merchant,resistResp);
+        BeanUtils.copyProperties(user,resistResp);
+        for(CommonFileDTO commonFileDTO : commonFileList) {
+            //身份证
+            if (commonFileDTO.getFileClass().equals(SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode())) {
+                if (resistResp.getLegalPersonIdCardFont() == null) {
+                    resistResp.setLegalPersonIdCardFont(commonFileDTO.getFileUrl());
+                } else resistResp.setLegalPersonIdCardBack(commonFileDTO.getFileUrl());
+            }
+            //营业执照
+            if (commonFileDTO.getFileClass().equals(SystemConst.FileClass.BUSINESS_LICENSE.getCode())) {
+                resistResp.setBusinessLicense(commonFileDTO.getFileUrl());
+                if (resistResp.getBusinessLicense() == null) {
+                    resistResp.setBusinessLicense(commonFileDTO.getFileUrl());
+                } else {
+                    resistResp.setBusinessLicenseCopy(commonFileDTO.getFileUrl());
+                }
+            }
+            if (commonFileDTO.getFileClass().equals(SystemConst.FileClass.CONTRACT_TEXT.getCode())) {
+                resistResp.setContract(commonFileDTO.getFileUrl());
+            }
+            if (commonFileDTO.getFileClass().equals(SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode())) {
+                resistResp.setAuthorizationCertificate(commonFileDTO.getFileUrl());
             }
         }
-        return ResultVO.error("注册服务异常");
-    }
-
-    /**
-     * 插入附件信息
-     * @param req
-     * @param merchanId
-     */
-    private String insertAttachment(SupplierResistReq req,String merchanId) {
-        CommonFileDTO commonFileDTO =null;
-
-        //营业执照正本
-        String businessLicenseUrl = req.getBusinessLicense();
-        if(StringUtils.isNotBlank(businessLicenseUrl)){
-            String fileClass = SystemConst.FileClass.BUSINESS_LICENSE.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,businessLicenseUrl);
-            if(commonFileService.saveCommonFile(commonFileDTO).isSuccess()) ResultVO.error("");
-
+        //accout
+        for(MerchantAccount account : merchantAccountList){
+            resistResp.setAccount(account.getAccount());
+            if(account.getAccountType().equals(PartnerConst.MerchantAccountTypeEnum.BEST_PAY.getType())){
+                resistResp.setWindPayCount(account.getAccountName());
+            }
+            if(account.getAccountType().equals(PartnerConst.MerchantAccountTypeEnum.BANK_ACCOUNT.getType())){
+                resistResp.setBank(account.getBank());
+                resistResp.setBankAccount(account.getBankAccount());
+            }
         }
-        //营业执照副本
-        String businessLicenseCopyUrl = req.getBusinessLicenseCopy();
-        if(StringUtils.isNotBlank(businessLicenseCopyUrl)){
-            String fileClass = SystemConst.FileClass.BUSINESS_LICENSE.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,businessLicenseCopyUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-        //法人身份证正面
-        String personUrl = req.getLegalPersonIdCardFont();
-        if(StringUtils.isNotBlank(personUrl)){
-            String fileClass = SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,businessLicenseCopyUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-        //法人身份证反面
-        String personBackUrl = req.getLegalPersonIdCardBack();
-        if(StringUtils.isNotBlank(personBackUrl)){
-            String fileClass = SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,personBackUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-        //授权证明
-        String authorizationUrl = req.getAuthorizationCertificate();
-        if(StringUtils.isNotBlank(personBackUrl)){
-            String fileClass = SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,authorizationUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-
-        //合同文件
-        String contractUrl = req.getContract();
-        commonFileDTO.setFileUrl(contractUrl);
-        if(StringUtils.isNotBlank(contractUrl)){
-            String fileClass = SystemConst.FileClass.CONTRACT_TEXT.getCode();
-            String fileType = SystemConst.FileType.TXT_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,contractUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-        return null;
-    }
-
-
-
-
-
-    @Override
-    public ResultVO<String> resistManufacturer(ManufacturerResistReq req) {
-        return null;
+        return resistResp;
     }
 
 
@@ -1511,4 +1398,88 @@ public class MerchantServiceImpl implements MerchantService {
         account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BANK_ACCOUNT.getType());
         return account;
     }
+
+    /**
+     * 填充merchant
+     * @param req
+     * @return
+     */
+    private Merchant fillMerchant(SupplierResistReq req) {
+        //商户编码，id，名称，地市lanid，联系电话,状态,商户类型
+        //code要自动生成兼容手工维护的code，city可以地市+01,状态为待审核
+        Merchant merchant = new Merchant();
+        BeanUtils.copyProperties(req,merchant);
+        merchant.setStatus(PartnerConst.MerchantStatusEnum.NOT_EFFECT.getType());
+        if(merchant.getLanId()!=null)
+            merchant.setCity(merchant.getLanId() + "01");
+        return merchant;
+    }
+
+
+    /**
+     * remote add sys_user
+     * @param req
+     * @param userFounder
+     * @param merchantId
+     * @return
+     */
+    public ResultVO<UserDTO> addUser(SupplierResistReq req,int userFounder,String merchantId){
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req,userAddReq);
+        userAddReq.setLoginPwd(new MD5(SystemConst.DFPASSWD).asHex());
+        userAddReq.setUserFounder(userFounder);
+        //关联商户信息和系统用户
+        userAddReq.setRelCode(merchantId); //关联商户信息和系统用户
+        //刚注册用户处于禁用状态
+        userAddReq.setStatusCd(SystemConst.USER_STATUS_INVALID);
+        return userService.addUser(userAddReq);
+    }
+    public ResultVO<Merchant> addMerchantInfo(SupplierResistReq req) {
+        MerchantAccount account = new MerchantAccount();
+        BeanUtils.copyProperties(req,account);
+        Merchant merchant = fillMerchant(req);
+        String merchantId = merchantManager.addMerchan(merchant);
+        account.setMerchantId(merchantId);
+        //插入银行收款信息
+        account = fillBankAccount(req,account);
+        merchantAccountManager.insert(account);
+        //插入翼支付收款信息
+        account = fillWindPayAccount(req,account);
+        merchantAccountManager.insert(account);
+        return ResultVO.success(merchant);
+    }
+
+    public ResultVO checkBank(SupplierResistReq req) {
+        //银行卡号是否正确
+        JSONObject obj = JSONObject.parseObject(getCardDetail(req.getBankAccount()));
+        String stat = (String) obj.get("stat");
+        Boolean flag = (Boolean) obj.get("validated");
+        if(!stat.equals("ok") || !flag)
+            return ResultVO.error("银行卡无效");
+        return ResultVO.success();
+    }
+
+    private String getCardDetail(String cardNo) {
+        String url = "https://ccdcapi.alipay.com/validateAndCacheCardInfo.json?_input_charset=utf-8&cardNo=";
+        url+=cardNo;
+        url+="&cardBinCheck=true";
+        StringBuilder sb = new StringBuilder();
+        try {
+            URL urlObject = new URL(url);
+            URLConnection uc = urlObject.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+            String inputLine = null;
+            while ( (inputLine = in.readLine()) != null) {
+                sb.append(inputLine);
+            }
+            in.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+
 }

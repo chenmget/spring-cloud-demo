@@ -36,6 +36,7 @@ public class SystemConst {
 
     // 最多登录失败次数限制
     public static final int MAX_FAIL_LOGIN_COUNT = 5;
+    public static final String DFPASSWD = "Ab_123456";
 
     // 用户状态 1有效  0禁用 2：无效(删除） 3:锁住（密码错误次数超限 等等）
     public static final int USER_STATUS_INVALID = 0;

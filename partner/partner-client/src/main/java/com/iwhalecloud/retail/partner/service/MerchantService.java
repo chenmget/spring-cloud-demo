@@ -135,8 +135,6 @@ public interface MerchantService{
 
 
 
-    SupplierResistResp resistSupplier(SupplierListReq req);
-
     /**
      * 获取商家ID列表
      * @param

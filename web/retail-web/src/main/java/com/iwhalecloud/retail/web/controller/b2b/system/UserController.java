@@ -12,8 +12,6 @@ import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.req.BusinessEntityGetReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplierResistReq;
 import com.iwhalecloud.retail.partner.service.*;
-import com.iwhalecloud.retail.system.common.SysUserLoginConst;
-import com.iwhalecloud.retail.system.common.SysUserMessageConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.*;
 import com.iwhalecloud.retail.system.dto.request.*;
@@ -22,13 +20,10 @@ import com.iwhalecloud.retail.system.service.*;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.consts.WebConst;
 import com.iwhalecloud.retail.web.controller.BaseController;
-import com.iwhalecloud.retail.web.controller.b2b.system.request.AddUserReq;
 import com.iwhalecloud.retail.web.controller.b2b.system.request.EditUserReq;
 import com.iwhalecloud.retail.web.controller.b2b.system.response.GetUserDetailResp;
 import com.iwhalecloud.retail.web.controller.b2b.system.response.LoginResp;
-import com.iwhalecloud.retail.web.controller.system.request.EditUserReq;
-import com.iwhalecloud.retail.web.controller.system.response.GetUserDetailResp;
-import com.iwhalecloud.retail.web.controller.system.response.LoginResp;
+
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
@@ -195,30 +190,28 @@ public class UserController extends BaseController {
                 return resultVO;
             }
         }
-            UserLoginResp resp = userService.login(req);
-            log.info("用户登入返回RESP {}",resp);
-            UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
-            // 登录日志记录
-            if(StringUtils.isNotBlank(user.getUserId())){
-                LoginLogDTO loginLogDTO = new LoginLogDTO();
-                loginLogDTO.setUserId(user.getUserId());
-                Date nowDate = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                loginLogDTO.setLoginTime(sdf.format(nowDate));
-                loginLogDTO.setLoginType("3");
-                loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
-                String sourceIp = getUserLoginIp(request);
-                loginLogDTO.setSourceIp(sourceIp);
-                loginLogDTO.setLoginDesc(resp.getErrorMessage());
-                loginLogService.saveLoginLog(loginLogDTO);
+        UserLoginResp resp = userService.login(req);
 
-            }
-//        }
+        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
+
+        // 登录日志记录
+        if(StringUtils.isNotBlank(user.getUserId())){
+            LoginLogDTO loginLogDTO = new LoginLogDTO();
+            loginLogDTO.setUserId(user.getUserId());
+            Date nowDate = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            loginLogDTO.setLoginTime(sdf.format(nowDate));
+            loginLogDTO.setLoginType("3");
+            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
+            String sourceIp = getUserLoginIp(request);
+            loginLogDTO.setSourceIp(sourceIp);
+            loginLogDTO.setLoginDesc(resp.getErrorMessage());
+            loginLogService.saveLoginLog(loginLogDTO);
+
+        }
 
         // 失败 返回错误信息
-        if ((!resp.getIsLoginSuccess() || resp.getUserDTO() == null) && resp.getFailCode() != SysUserLoginConst.NEED_RESETPASSWDCODE) {
-            // return ResultVO.error(String.valueOf(resp.getFailCode()),resp.getErrorMessage());
-            log.info("账户名密码错误" );
+        if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
             return failResultVO(resp.getErrorMessage());
         }
         request.getSession().invalidate();//清空session
@@ -1159,7 +1152,7 @@ public class UserController extends BaseController {
     })
     @RequestMapping(value = "/registLandSupplier", method = RequestMethod.POST)
     public ResultVO registLandSupplier(@RequestBody SupplierResistReq req){
-        req.setSource("ADMIN");
+       // req.setSource("ADMIN");
         UserRegisterReq userRegisterReq = new UserRegisterReq();
         BeanUtils.copyProperties(req,userRegisterReq);
         return userService.registLandSupplier(userRegisterReq);

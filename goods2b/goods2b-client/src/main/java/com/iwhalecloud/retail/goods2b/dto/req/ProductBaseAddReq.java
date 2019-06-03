@@ -566,4 +566,10 @@ public class ProductBaseAddReq extends AbstractRequest implements Serializable {
     private List<String> tagList;
 
     private String purchaseType;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
 }

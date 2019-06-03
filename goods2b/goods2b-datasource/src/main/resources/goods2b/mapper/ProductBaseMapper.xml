@@ -49,6 +49,7 @@
     ,t.UPDATE_STAFF 
     ,t.UPDATE_DATE
     ,t.AVG_SUPPLY_PRICE
+    ,t.PRICE_LEVEL
 </sql>
 
 

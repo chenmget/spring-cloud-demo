@@ -155,8 +155,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 }
                 log.info("ProductBaseServiceImpl.addProductBase minCost={}",minCost);
                 if(minCost > 0.01){
-                    req.setPriceLevel(this.getPriceLevel(minCost));
-                    log.info("ProductBaseServiceImpl.addProductBase PriceLevel={}",t);
+                    t.setPriceLevel(this.getPriceLevel(minCost));
+                    log.info("ProductBaseServiceImpl.addProductBase PriceLevel={}",t.getPriceLevel());
                 }
             }
         }

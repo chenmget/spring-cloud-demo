@@ -36,7 +36,6 @@ public class SgsPurApplyAuditPassServiceImpl implements SgsPurApplyAuditPassServ
         req.setApplyId(params.getBusinessId());
         //审核通过
         req.setStatusCd(PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
-        log.info("chenbin=="+PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
         int i = purApplyDeliveryManager.updatePurApplyStatus(req);
         if (i < 1) {
             return ResultVO.error("更新采购申请单状态失败");

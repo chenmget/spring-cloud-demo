@@ -50,7 +50,7 @@ public class PurApplyConsts {
     /**
      * 申请单状态：审核通过
      */
-    public final static String PUR_APPLY_STATUS_PASS = "70";
+    public final static String PUR_APPLY_STATUS_PASS = "40";
 
     /**
      * 申请单状态省公司审核 ：审核通过

@@ -18,4 +18,57 @@
     CREATE_TIME
   </sql>
 
+
+	<select id="queryGoodsImageHD" resultType="com.iwhalecloud.retail.goods2b.dto.ProdFileDTO"
+            parameterType="java.lang.String">
+        select file_id as fileId,
+	        file_Type as fileType,
+	        target_Type as targetType,
+	        target_Id as targetId,
+	        sub_Type as subType,
+	        file_Url as fileUrl,
+	        three_Dimensions_Url as threeDimensionsUrl,
+	        thumbnail_Url as thumbnailUrl,
+	        create_Date as createDate
+        from prod_file
+        where target_Id = #{goodsId}
+        and target_Type = '1'
+        and sub_Type in ('9','10') ORDER BY sub_type limit 1
+    </select>
+
+	<select id="queryGoodsImageHDdetail" resultType="com.iwhalecloud.retail.goods2b.dto.ProdFileDTO"
+            parameterType="java.lang.String">
+        select file_id as fileId,
+	        file_Type as fileType,
+	        target_Type as targetType,
+	        target_Id as targetId,
+	        sub_Type as subType,
+	        file_Url as fileUrl,
+	        three_Dimensions_Url as threeDimensionsUrl,
+	        thumbnail_Url as thumbnailUrl,
+	        create_Date as createDate
+        from prod_file
+        where target_Id = #{goodsId}
+        and target_Type = '1'
+        and sub_Type in ('8','10') ORDER BY sub_type 
+    </select>
+    
+    <select id="queryGoodsImage" resultType="com.iwhalecloud.retail.goods2b.dto.ProdFileDTO"
+            parameterType="java.lang.String">
+        select file_id as fileId,
+	        file_Type as fileType,
+	        target_Type as targetType,
+	        target_Id as targetId,
+	        sub_Type as subType,
+	        file_Url as fileUrl,
+	        three_Dimensions_Url as threeDimensionsUrl,
+	        thumbnail_Url as thumbnailUrl,
+	        create_Date as createDate
+        from prod_file
+        where target_Id = #{goodsId}
+        and target_Type = '1'
+        and sub_Type not in ('8','9','10') ORDER BY sub_type
+    </select>
+    
+
 </mapper>

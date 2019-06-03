@@ -117,7 +117,11 @@ public class MerchantManager {
      */
     @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_MERCHANT, key = "#merchant.merchantId")
     public int updateMerchant(Merchant merchant) {
-        return merchantMapper.updateById(merchant);
+        QueryWrapper<Merchant> queryWrapper = new QueryWrapper<Merchant>();
+        queryWrapper.eq(Merchant.FieldNames.merchantId.getTableFieldName(), merchant.getMerchantId());
+        merchant.setMerchantId(null);
+        return merchantMapper.update(merchant, queryWrapper);
+//        return merchantMapper.updateById(merchant);
     }
 
     /**

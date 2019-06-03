@@ -15,6 +15,7 @@ import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ActivityGoodsReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsQueryByProductIdsReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProdFileReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsQueryByProductIdsResp;
 import com.iwhalecloud.retail.goods2b.entity.*;
 import com.iwhalecloud.retail.goods2b.manager.*;
@@ -357,5 +358,15 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
             return ResultVO.success(goodsProductRelDTOList);
         }
         return ResultVO.success(goodsProductRelDTOList);
+    }
+    
+    @Override
+    public void insertProdFile(ProdFileReq req) {
+    	goodsProductRelManager.insertProdFile(req);
+    }
+    
+    @Override
+    public String selectProdFileId() {
+    	return goodsProductRelManager.selectProdFileId();
     }
 }

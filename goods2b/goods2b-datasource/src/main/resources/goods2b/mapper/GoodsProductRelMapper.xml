@@ -117,4 +117,29 @@
         AND t1.SUPPLIER_ID = #{supplierId}
         AND PRODUCT_ID = #{productId}
     </select>
+    
+    <select id="insertProdFile" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProdFileReq">
+       insert into PROD_FILE(
+         FILE_ID,
+         FILE_TYPE,
+         TARGET_TYPE,
+         TARGET_ID,
+         SUB_TYPE,
+         FILE_URL,
+         CREATE_DATE
+       ) values (
+       #{req.fileId},
+       #{req.fileType},
+       #{req.targetType},
+       #{req.targetId},
+       #{req.subType},
+       #{req.fileUrl},
+       #{req.createDate}
+       			)
+    </select>
+    
+    <select id="selectProdFileId" resultType="java.lang.String">
+       SELECT (MAX(file_id)+1) AS fileId FROM prod_file
+    </select>
+    
 </mapper>

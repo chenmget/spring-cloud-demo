@@ -76,6 +76,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             storePageReq.setStoreType(ResourceConst.STORE_TYPE.PROVINCE.getCode());
             storePageReq.setStoreGrade(ResourceConst.STORE_GRADE.PROVINCE.getCode());
             Page<ResouceStoreDTO> pageVO = resouceStoreManager.pageStore(storePageReq);
+            log.info("AdminResourceInstServiceImpl.addResourceInst resouceStoreManager.pageStore req={},resp={}", JSON.toJSONString(storePageReq), JSON.toJSONString(pageVO.getRecords()));
             if (null == pageVO || CollectionUtils.isEmpty(pageVO.getRecords())) {
                 return ResultVO.error(constant.getCannotGetStoreMsg());
             }

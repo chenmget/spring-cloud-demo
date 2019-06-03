@@ -297,6 +297,12 @@ public class ProductBase implements Serializable {
 	@ApiModelProperty(value = "平均供货价")
 	private Double avgSupplyPrice;
 
+	/**
+	 * 价格档位
+	 */
+	@ApiModelProperty(value = "价格档位")
+	private String priceLevel;
+
   	//属性 end
 	
     /** 字段名称枚举. */
@@ -429,6 +435,9 @@ public class ProductBase implements Serializable {
 		
 		/** updateDate. */
 		updateDate("updateDate","update_date"),
+
+		/** priceLevel. */
+		priceLevel("priceLevel","price_level"),
 
 		/**平均供货价*/
 		avgSupplyPrice("avgSupplyPrice","AVG_SUPPLY_PRICE");

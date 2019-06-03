@@ -345,4 +345,10 @@ public class ProductBaseGetResp implements Serializable {
 
     @ApiModelProperty(value = "attrValue3")
     private String attrValue3;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
 }

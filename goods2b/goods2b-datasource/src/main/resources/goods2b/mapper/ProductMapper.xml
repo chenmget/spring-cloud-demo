@@ -104,7 +104,8 @@
     p.LOCAL_SUPPLY_FEE_UPPER,
     p.PURCHASE_TYPE,
     pb.name AS brand_name,
-    pb.BRAND_ID
+    pb.BRAND_ID,
+    b.PRICE_LEVEL
   </sql>
   <select id="selectPageProductAdmin" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
@@ -253,6 +254,9 @@
     </if>
     <if test="null!=pageReq.createStaff">
       and b.CREATE_STAFF = = #{pageReq.createStaff}
+    </if>
+    <if test="null!=pageReq.priceLevel">
+      and b.PRICE_LEVEL = = #{pageReq.priceLevel}
     </if>
     <if test="null!=pageReq.costLower and ''!=pageReq.costLower">
       and p.COST <![CDATA[ >= ]]> #{pageReq.costLower}

@@ -291,12 +291,12 @@
         select distinct g.GOODS_ID as goodsId,g.GOODS_NAME as goodsName,g.MARKET_ENABLE as marketEnable,c.CAT_ID as goodsCatId,c.CAT_NAME as goodsCatName,
         g.SUPPLIER_ID as supplierId ,g.AUDIT_STATE as auditState,g.IS_ALLOT as isAllot,g.SOURCE_FROM as sourceFrom,g.MERCHANT_TYPE as merchantType,g.TARGET_TYPE as targetType,
         pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn,g.MKTPRICE,g.PAYMENTS as payments,t.deliveryPrice,t.COLOR,t.MEMORY,
-        attrValue1,attrValue2,attrValue3
+        attrValue1,attrValue2,attrValue3,t.priceLevel
         from prod_goods g left join prod_cat c on g.GOODS_CAT_ID=c.CAT_ID
         left join prod_brand pb on g.brand_id=pb.brand_id
         left join
         (select pgpr.goods_id,pgpr.PRODUCT_ID,group_concat(pp.sn) sn,group_concat(pgpr.delivery_price) deliveryPrice,ppb.PRODUCT_BASE_ID,ppb.UNIT_TYPE,pp.COLOR,pp.MEMORY,
-        group_concat(pp.ATTR_VALUE1) attrValue1,group_concat(pp.ATTR_VALUE2) attrValue2,group_concat(pp.ATTR_VALUE3) attrValue3
+        group_concat(pp.ATTR_VALUE1) attrValue1,group_concat(pp.ATTR_VALUE2) attrValue2,group_concat(pp.ATTR_VALUE3) attrValue3, ppb.PRICE_LEVEL as priceLevel
         from PROD_GOODS_PRODUCT_REL pgpr,PROD_PRODUCT pp,PROD_PRODUCT_BASE ppb
         where  pgpr.PRODUCT_ID = pp.PRODUCT_ID
         and pgpr.PRODUCT_BASE_ID = ppb.PRODUCT_BASE_ID GROUP BY pgpr.GOODS_ID) t on t.goods_id=g.goods_id

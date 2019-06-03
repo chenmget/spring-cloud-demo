@@ -91,4 +91,10 @@ public class GoodsPageReq extends PageVO {
 
     @ApiModelProperty(value = "类型Id")
     private String typeId;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
 }

@@ -161,6 +161,22 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 log.error(e.getMessage());
             }
         }
+        if(StringUtils.isEmpty(req.getPriceLevel())){
+            Double minCost = 0.0;
+            List<ProductAddReq> productAddReqs = req.getProductAddReqs();
+            if (null != productAddReqs && !productAddReqs.isEmpty()) {
+                for (ProductAddReq par : productAddReqs) {
+                    if(minCost == 0.0){
+                        minCost = par.getCost();
+                    }else{
+                        minCost = par.getCost()<minCost ? par.getCost():minCost;
+                    }
+                }
+                if(minCost > 0){
+                    req.setPriceLevel(this.getPriceLevel(minCost));
+                }
+            }
+        }
         Integer num = productBaseManager.addProductBase(t);
         String productBaseId = t.getProductBaseId();
         // 添加产品拓展属性
@@ -219,6 +235,27 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }
         }
         return  ResultVO.success(productBaseId);
+    }
+
+    private String getPriceLevel(Double cost){
+        String priceLevel = "";
+        if(cost > 0 && cost<=600){
+            priceLevel = "0-600";
+        }
+        if(cost > 600 && cost<=990){
+            priceLevel = "600-990";
+        }
+        if(cost > 990 && cost<=1590){
+            priceLevel = "990-1590";
+        }
+        if(cost > 1590 && cost<=3000){
+            priceLevel = "1590-3000";
+        }
+        if(cost > 3000){
+            priceLevel = "3000-*";
+        }
+
+        return priceLevel;
     }
 
     @Override

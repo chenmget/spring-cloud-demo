@@ -122,6 +122,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         for (int i = 0; i < newlist.size(); i++) {
             String mktResInstNbr = newlist.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
+            BeanUtils.copyProperties(req, resouceInstTrackDTO);
             if (null != ctCodeMap) {
                 resouceInstTrackDTO.setCtCode(ctCodeMap.get(mktResInstNbr));
             }
@@ -131,7 +132,6 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             if (null != macCodeMap) {
                 resouceInstTrackDTO.setMacCode(macCodeMap.get(mktResInstNbr));
             }
-            BeanUtils.copyProperties(req, resouceInstTrackDTO);
             resouceInstTrackDTO.setMktResInstNbr(mktResInstNbr);
             resouceInstTrackDTO.setMktResStoreId(req.getDestStoreId());
             resouceInstTrackDTO.setSourceType(null);

@@ -193,7 +193,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         processStartDTO.setApplyUserId(req.getCreateStaff());
         processStartDTO.setProcessId(selectProcessResp.getProcessId());
         processStartDTO.setTaskSubType(selectProcessResp.getTaskSubType());
-        processStartDTO.setApplyUserName(req.getApplyUserName());
+        processStartDTO.setApplyUserName(merchantDTO.getMerchantName());
         processStartDTO.setFormId(mktResReqId);
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("MerchantResourceInstServiceImpl.addResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));

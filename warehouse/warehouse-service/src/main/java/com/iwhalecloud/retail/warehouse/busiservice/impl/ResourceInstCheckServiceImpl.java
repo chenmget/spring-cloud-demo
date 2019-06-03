@@ -22,6 +22,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -190,6 +191,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         return resp;
     }
 
+    @Async
     @Override
     public ResultVO noticeITMS(List<String> mktResInstNbrList, String userName, String storeId, String lanId) {
         //附加参数  city_code=731# warehouse=12#source=1#factory=厂家

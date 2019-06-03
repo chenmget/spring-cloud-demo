@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -53,12 +54,12 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private String gmAdd;
     @Value("${ftp.iptvAdd}")
     private String iptvAdd;
- 
+
     @Value("${ftp.gmModify}")
     private String gmModify;
     @Value("${ftp.iptvModify}")
     private String iptvModify;
-  
+
     @Value("${ftp.gmDelete}")
     private String gmDelete;
     @Value("${ftp.iptvDelete}")
@@ -78,6 +79,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private String gmdirDelete;
     @Value("${ftp.iptvdirDelete}")
     private String iptvdirDelete;
+    @Value("${ftp.extName}")
+    private String extName;
 
     private static String[] brands = {"10350143", "10350148"};
     private static String[][] types = {{"1001", "1003"}, {"1002"}, {"1007", "1009"}};
@@ -102,6 +105,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     @Autowired
     private MktResItmsSyncRecMapper mktResItmsSyncRecMapper;
+
 
     @Override
     public ResultVO<Integer> getQuantityByMerchantId(String merchantId) {
@@ -259,7 +263,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         } else {
             resourceInstMapper.updateCfValueByCfId(CONF_STR, sdf.format(startDate));
         }
-        
+
         //删除临时文件
         if (dir.isDirectory()) {
             String[] children = dir.list();
@@ -282,11 +286,11 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         List<Map<String, String>> mktList = null;
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {
-        	
+
         	String sendDir = getSendDir(brand, ops);
         	mktList = mktResItmsSyncRecMapper.findMKTInfoByLadId(latIdList.get(i), brand, ops, startDate);
         	if (mktList.size() <= 0) continue;
-        	
+
         	String seqStr = mktResItmsSyncRecMapper.getSeqBysendDir(sendDir+"/"+latIdList.get(i));
         	String resStr = "0";
         	if(StringUtils.isNotBlank(seqStr)){
@@ -311,7 +315,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 }
                 pw.write(mktList.get(j).get("itmsStr"));
                 pw.println();
-                
+
                 String syncFileName = sendDir+"/"+destFileName;
                 mktResItmsSyncRecMapper.updateFileNameById(mktList.get(j).get("id"), syncFileName, time + seq);
 
@@ -419,38 +423,83 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         // 判断传送目录
 //        sendDir = getSendDir(brand, ops);
         InputStream is = null;
-        List<String> lineList = null;
+        List<String> lineList = new ArrayList<>();
+        List<String> lines = new ArrayList<>();
         try {
             Boolean flag = ftpClient.changeWorkingDirectory(getDir);
             ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
             //传输模式
             ftpClient.enterLocalPassiveMode();
             for (int i = 0; i < files.size(); i++) {
-                lineList.addAll(readFile(ftpClient, files.get(i)));
+                lines = readFile(ftpClient, files.get(i));
+                if(!CollectionUtils.isEmpty(lines)){
+                    lineList.addAll(lines);
+                }
             }
         } catch (IOException e) {
             log.error(e.getMessage(), e);
         }
         return lineList;
     }
+    /**
+     * 回传文件
+     *
+     * @param ftpClient
+     * @param fileName
+     * @param getDir
+     */
+    private ArrayList<String> changeFtpDir(FTPClient ftpClient,String fileName, String getDir) {
+//        String sendDir = null;
+        // 判断传送目录
+//        sendDir = getSendDir(brand, ops);
+        InputStream is = null;
+//        List<String> lineList = new ArrayList<>();
+        ArrayList<String> lineList = new ArrayList<>();
+        try {
+            Boolean flag = ftpClient.changeWorkingDirectory(getDir);
+            ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+            //传输模式
+            ftpClient.enterLocalPassiveMode();
+//            for (int i = 0; i < files.size(); i++) {
+            lineList = readFile(ftpClient, fileName);
+//                if(!CollectionUtils.isEmpty(lines)){
+//                    lineList.addAll(lines);
+//                }
+//            }
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+        }
+        return lineList;
+    }
 
-    public List<String> readFile(FTPClient ftpClient, String fileName) {
+    public ArrayList<String> readFile(FTPClient ftpClient, String fileName) {
         InputStream ins = null;
-        StringBuilder builder = null;
-        List<String> lineLists = null;
+//        StringBuilder builder = new StringBuilder();
+        ArrayList<String> lineLists = new ArrayList<>();
         try {
             // 从服务器上读取指定的文件
+//            System.out.println("文件名："+fileName);
             ins = ftpClient.retrieveFileStream(fileName);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
-            String line;
+            if(ins != null){
+                BufferedReader reader = new BufferedReader(new InputStreamReader(ins, "UTF-8"));
+                String line;
 //            builder = new StringBuilder(150);
-            while ((line = reader.readLine()) != null) {
-                lineLists.add(line);
-//                System.out.println(line);
-//                builder.append(line);
+                while ((line = reader.readLine()) != null) {
+                    lineLists.add(line);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }finally {
+            if (null != ins) {
+                try {
+                    ins.close();
+                    ftpClient.completePendingCommand();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+
         }
         return lineLists;
     }
@@ -560,28 +609,47 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      */
     @Override
     public void syncMktToITMSBack(){
+        log.info("ResourceInstStoreServiceImpl.syncMktToITMSBack ", "开始读取ITMS文件回执");
         FTPClient ftpClient = connectedToftpServer();
-        String date = null;
-        String getFtpDir = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd");
-        date = sdf.format(new Date());
-        List<MktResItmsSyncRec> syncFileNameList = mktResItmsSyncRecMapper.getFileNameByDate(date);
-        if (!CollectionUtils.isEmpty(syncFileNameList)){
-            for(MktResItmsSyncRec syncFileName : syncFileNameList){
-                String syncFileDir = syncFileName.getSyncFileName();
-                //获取ftp目录
-                getFtpDir = getDir(syncFileDir);
-                //文件名List
-                List<String> fileNameList = null;
-                //文件内容List
-                List<String> lineList = null;
-                //ftp文件名List
-                fileNameList = getFileName(syncFileDir);
-                //成功目录获取到信息
-                lineList = getFileFromFtp(ftpClient, fileNameList, getFtpDir);
-                //更新数据
-                if(!CollectionUtils.isEmpty(lineList)){
-                    updateBatch(lineList, syncFileDir);
+        try {
+//            String pathName = null;
+            List<String> pathNameList = new ArrayList<>();
+            List<String[]> filePathList = new ArrayList<>();
+            //文件内容List
+            ArrayList<String> lineList = new ArrayList<>();
+            pathNameList.add(gmdirAdd);
+            pathNameList.add(iptvdirAdd);
+            pathNameList.add(gmdirModify);
+            pathNameList.add(iptvdirModify);
+            pathNameList.add(gmdirDelete);
+            pathNameList.add(iptvdirDelete);
+            for (int i = 0; i < pathNameList.size(); i++) {
+                //获取文件路径
+                filePathList = this.filePathList(pathNameList.get(i), ftpClient);
+                if(CollectionUtils.isEmpty(filePathList) || StringUtils.isEmpty(pathNameList.get(i))){
+                    continue;
+                }
+                for (int j = 0; j < filePathList.size(); j++) {
+                    lineList = changeFtpDir(ftpClient, filePathList.get(j)[0], pathNameList.get(i));
+                    if (!CollectionUtils.isEmpty(lineList)) {
+                        //插入数据
+                        insertDate(lineList, filePathList.get(j)[1]);
+                        //移动备份文件
+                        this.deleteFile(ftpClient, pathNameList.get(i), filePathList.get(j)[0]);
+
+                    }
+                }
+            }
+            ftpClient.logout();
+            log.info("ResourceInstStoreServiceImpl.syncMktToITMSBack  读取ITMS文件回执结束");
+        }catch (Exception e){
+            log.error("ResourceInstStoreServiceImpl.syncMktToITMSBack error{}"+e.getMessage());
+        }finally {
+            if(ftpClient.isConnected()){
+                try{
+                    ftpClient.disconnect();
+                }catch(IOException e){
+                    e.printStackTrace();
                 }
             }
         }
@@ -605,7 +673,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      */
     private List<String> getFileName(String syncFileName){
 
-        List<String> fileName = null;
+        List<String> fileName = new ArrayList<>();
         try {
             if(!syncFileName.isEmpty()){
                 String[] sort = syncFileName.split("/");
@@ -613,30 +681,156 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 fileName.add(sort[8].replace("ITMS","ITMSSuccess"));
             }
         }catch (Exception e){
-
         }
         return fileName;
     }
-
     /**
-     * 更新数据库
+     * 插数据到数据库
      * @param lineList
      * @param syncFileName
      */
-    private void updateBatch(List<String> lineList,String syncFileName){
+    private void insertDate(ArrayList<String> lineList,String syncFileName){
+        ArrayList<ArrayList<String>> list = new ArrayList<>();
+        String[] line = new String[2];
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdfTem = new SimpleDateFormat("yyyyMMdd");
+        Date startDate = new Date();
+        String date = sdf.format(startDate);
+        String dateTem = sdfTem.format(startDate);
+        try{
+            list = this.lineListSplit(lineList, 1000);
+            for(int i = 0; i < list.size(); i++){
+                List<MktResItmsSyncRec> dataList = Lists.newArrayList();
+                if(list.get(i).size() == 0){
+                    continue;
+                }
+                for(int j = 0; j < list.get(i).size(); j++){
+                    line = list.get(i).get(j).split(",");
+                    MktResItmsSyncRec mktData = new MktResItmsSyncRec();
+                    mktData.setSyncDate(date);
+                    mktData.setSyncFileName(dateTem);
+                    mktData.setMktResInstNbr(line[0].toString());
+                    mktData.setStatusCd(line[1].toString());
+                    mktData.setSyncDate(date);
+                    mktData.setCreateDate(date);
+                    mktData.setStatusDate(date);
+                    mktData.setSyncBatchId(dateTem);
+                    mktData.setMktResEventId(dateTem);
+                    mktData.setMktResChngEvtDetailId(dateTem);
+                    mktData.setBrandId(dateTem);
+//                    mktResItmsSyncRecMapper.insert(mktData);
+                    dataList.add(mktData);
 
-        List<MktResItmsSyncRec> dataList = new ArrayList<>();
-        MktResItmsSyncRec data;
-        String[] line;
-        for(int i = 0; i <= lineList.size(); i++){
-            line = null;
-            data = null;
-            line = lineList.get(i).split(",");
-            data.setSyncFileName(syncFileName);
-            data.setMktResInstNbr(line[0]);
-            data.setStatusCd(line[1]);
-            dataList.add(data);
+                }
+                //批量插入
+                if(dataList.size()>0){
+                    resourceInstStoreManager.batchAddMKTInfo(dataList);
+                    log.info("syncMktToITMSBack insertDate插入"+dataList.size()+"条数据成功");
+                }
+            }
+        }catch (Exception e){
+            log.error("syncMktToITMSBack insertDate插入数据失败!");
         }
-        mktResItmsSyncRecMapper.batchUpdateMRIyFileName(dataList);
+
+//        mktResItmsSyncRecMapper.batchUpdateMRIyFileName(dataList);
+
     }
+
+    /**
+     * 递归遍历目录下面指定的文件名
+     *
+     * @param pathName 需要遍历的目录，必须以"/"开始和结束
+     * @param ftp      ftp客户端
+     * @throws IOException
+     */
+    public List<String[]> filePathList(String pathName, FTPClient ftp) {
+        String[] filePathList = null;
+        List<String[]> list = new ArrayList<>();
+        try {
+            if (pathName.startsWith("/") && pathName.endsWith("/")) {
+                //更换目录到当前目录
+                ftp.changeWorkingDirectory(pathName);
+                FTPFile[] files = ftp.listFiles();
+                for (FTPFile file : files) {
+                    if (file.isFile()) {
+                        if (file.getName().endsWith(extName)) {
+                            filePathList = new String[2];
+                            filePathList[0] = file.getName();
+                            filePathList[1] = pathName + file.getName();
+                        }
+                    } else if (file.isDirectory()) {
+                        //路径下级文件
+                    /*if (!".".equals(file.getName()) && !"..".equals(file.getName())) {
+                        filePathList(pathName + file.getName() + "/", ext);
+                    }*/
+                    }
+                    if(filePathList != null||filePathList.length != 0){
+                        list.add(filePathList);
+                    }
+
+                }
+            }
+        }catch (IOException e){
+
+        }
+        return list;
+    }
+
+    /**
+     * 将list以每num条拆分为多个list
+     * @param lineList
+     * @param num
+     * @return
+     */
+    private ArrayList<ArrayList<String>> lineListSplit(ArrayList<String> lineList, int num){
+        ArrayList<ArrayList<String>> allLineLists = new ArrayList<>();
+        int number;
+        if(lineList.size() > num){
+            //判断要分割的个数
+            if(lineList.size() % num > 0){
+                number = lineList.size() / num + 1;
+            }else{
+                number = lineList.size() / num;
+            }
+            // 循环把分割的数组存入 userIdLists 中
+            for (int i = 0; i < number; i++) {
+                ArrayList<String> list = new ArrayList<>();
+                // 最后一个数组长度不定
+                if (i != number - 1) {
+                    for (int j = 0; j < num; j++) {
+                        list.add(lineList.get(i * num + j));
+                    }
+                } else {
+                    for (int j = 0; j < lineList.size() - (i * num); j++) {
+                        list.add(lineList.get(i * num + j));
+                    }
+                }
+                allLineLists.add(list);
+            }
+        }else {
+            allLineLists.add(lineList);
+        }
+        return allLineLists;
+    }
+
+    /** * 移动文件 *
+     * @param pathname FTP服务器保存目录 *
+     * @param filename 要移动的文件名称 *
+     * @return */
+    public boolean deleteFile(FTPClient ftpClient,String pathname, String filename){
+        boolean flag = false;
+        try {
+            System.out.println("开始移动文件");
+            String newFilePathName = pathname.replace("data/back/Failure","bakfile")+filename;
+            ftpClient.rename(filename,newFilePathName);
+            flag = true;
+//            System.out.println("移动文件成功pathname:"+pathname+"     newFilePathName:"+newFilePathName);
+        } catch (Exception e) {
+//            System.out.println("移动文件失败");
+            e.printStackTrace();
+        }
+        return flag;
+    }
+
+
 }

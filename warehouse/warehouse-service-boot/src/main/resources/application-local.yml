@@ -106,12 +106,13 @@ ftp:
   iptvModify: /data/back/IPTV/modify
   gmDelete: /data/back/Terminal/delete
   iptvDelete: /data/back/IPTV/delete
-  gmdirAdd: /data/back/Failure/Terminal/add
-  iptvdirAdd: /data/back/Failure/IPTV/add
-  gmdirModify: /data/back/Failure/Terminal/modify
-  iptvdirModify: /data/back/Failure/IPTV/modify
-  gmdirDelete: /data/back/Failure/Terminal/delete
-  iptvdirDelete: /data/back/Failure/IPTV/delete
+  gmdirAdd: /home/itsm_y/itmsfile/data/back/Failure/Terminal/add/
+  iptvdirAdd: /home/itsm_y/itmsfile/data/back/Failure/IPTV/add/
+  gmdirModify: /home/itsm_y/itmsfile/data/back/Failure/Terminal/modify/
+  iptvdirModify: /home/itsm_y/itmsfile/data/back/Failure/IPTV/modify/
+  gmdirDelete: /home/itsm_y/itmsfile/data/back/Failure/Terminal/delete/
+  iptvdirDelete: /home/itsm_y/itmsfile/data/back/Failure/IPTV/delete/
+  extName: txt
 
 #商家增加串码机顶盒、三合一终端产品类型id
 addNbrService:

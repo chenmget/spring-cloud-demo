@@ -3,7 +3,11 @@
     PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper">
-
+	<resultMap id="BaseResultMap" type="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec" >
+		<constructor >
+			<idArg column="MKT_RES_ITMS_SYNC_REC_ID" jdbcType="VARCHAR" javaType="java.lang.String" />
+		</constructor>
+	</resultMap>
  <select id="findMKTInfoByDate" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
 		SELECT
 			now() as SYNC_DATE,
@@ -73,21 +77,34 @@
 	<select id="getFileNameByDate" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
     SELECT DISTINCT
       ( t.SYNC_FILE_NAME ) SYNC_FILE_NAME
-    FROM
-      mkt_res_itms_sync_rec t
-    WHERE
-      t.status_cd = 0
-    AND t.CREATE_DATE LIKE #{date}
+			FROM
+			  mkt_res_itms_sync_rec t
+			WHERE
+			  t.status_cd = 0
+			AND t.CREATE_DATE LIKE CONCAT(#{date},'%')
   </select>
 
 	<update id="batchUpdateMRIyFileName" parameterType="java.util.List">
-		<foreach collection="list" separator=";" item="rep">
-			update mkt_res_itms_sync_rec
-			<set>
-			status_cd =#{rep.status_cd}
-			</set>
-			where SYNC_FILE_NAME=#{rep.syncFileName} and MKT_RES_INST_NBR=#{rep.mktResInstNbr}
+		<foreach collection="list" separator=";" item="rep" index="index" open="" close="">
+			update MKT_RES_ITMS_SYNC_REC
+			SET
+			STATUS_CD = #{rep.statusCd}
+			WHERE
+			SYNC_FILE_NAME = #{rep.syncFileName} AND MKT_RES_INST_NBR = #{rep.mktResInstNbr}
 		</foreach>
 	</update>
-
+	<update id="updateMRIyFileName" parameterType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
+			update MKT_RES_ITMS_SYNC_REC
+			SET
+			STATUS_CD = #{statusCd}
+			WHERE
+			SYNC_FILE_NAME = #{syncFileName} AND MKT_RES_INST_NBR = #{mktResInstNbr}
+	</update>
+	<insert id="batchAddMKTInfo" parameterType="java.util.List" useGeneratedKeys="true">
+		insert into MKT_RES_ITMS_SYNC_REC (MKT_RES_ITMS_SYNC_REC_ID, SYNC_DATE, SYNC_FILE_NAME, MKT_RES_INST_NBR, STATUS_CD, STATUS_DATE, CREATE_DATE,SYNC_BATCH_ID, MKT_RES_EVENT_ID, MKT_RES_CHNG_EVT_DETAIL_ID, BRAND_ID)
+		values
+		<foreach collection="list" index="index" item="item" separator=",">
+			(#{item.mktResItmsSyncRecId},#{item.syncDate},#{item.syncFileName},#{item.mktResInstNbr},#{item.statusCd},#{item.statusDate},#{item.createDate},#{item.syncBatchId},#{item.mktResEventId},#{item.mktResChngEvtDetailId},#{item.brandId})
+		</foreach>
+	</insert>
 </mapper>

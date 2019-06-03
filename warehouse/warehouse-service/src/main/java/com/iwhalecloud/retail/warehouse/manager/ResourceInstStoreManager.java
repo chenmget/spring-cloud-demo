@@ -12,7 +12,9 @@ import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ProductQuantityItem;
 import com.iwhalecloud.retail.warehouse.dto.request.UpdateStockReq;
+import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInstStore;
+import com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceStoreMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstStoreMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,9 @@ public class ResourceInstStoreManager{
 
     @Resource
     private ResouceStoreMapper resouceStoreMapper;
+
+    @Resource
+    private MktResItmsSyncRecMapper mktResItmsSyncRecMapper;
 
     @Reference
     private GoodsProductRelService goodsProductRelService;
@@ -185,4 +190,9 @@ public class ResourceInstStoreManager{
         }
         return i;
     }
+
+    public void batchAddMKTInfo(List<MktResItmsSyncRec> mktResItmsSyncRecRep){
+        mktResItmsSyncRecMapper.batchAddMKTInfo(mktResItmsSyncRecRep);
+    }
+
 }

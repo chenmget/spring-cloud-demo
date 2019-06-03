@@ -12,14 +12,18 @@ import com.iwhalecloud.retail.warehouse.dto.request.InventoryWaringReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ProductQuantityItem;
 import com.iwhalecloud.retail.warehouse.dto.request.UpdateStockReq;
 import com.iwhalecloud.retail.warehouse.dto.response.InventoryWarningResp;
+import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
+import com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper;
 import com.iwhalecloud.retail.warehouse.service.ResourceInstStoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +32,8 @@ import java.util.List;
 @Slf4j
 public class ResourceInstStoreServiceImplTest {
 
+    @Resource
+    private MktResItmsSyncRecMapper mktResItmsSyncRecMapper;
     @Reference
     private ResourceInstStoreService resourceInstStoreService;
 
@@ -99,6 +105,32 @@ public class ResourceInstStoreServiceImplTest {
     public void getQuantityByMerchantId(){
         ResultVO<Integer> amount = resourceInstStoreService.getQuantityByMerchantId("4300001063072");
         System.out.print("amount==============="+ amount.getResultData());
+    }
+    @Test
+    public void batchUpdateTest(){
+        List<MktResItmsSyncRec> mktResItmsSyncRecRep = Lists.newArrayList();
+        MktResItmsSyncRec mti1 = new MktResItmsSyncRec();
+        MktResItmsSyncRec mti2 = new MktResItmsSyncRec();
+        MktResItmsSyncRec mti3 = new MktResItmsSyncRec();
+        mti1.setMktResInstNbr("201903192116");
+        mti1.setSyncFileName("/home/itsm_y/itmsfile/data/back/Terminal/delete/731ITMS20190529002.txt");
+        mti2.setSyncFileName("/home/itsm_y/itmsfile/data/back/Terminal/modify/735ITMS20190529002.txt");
+        mti2.setMktResInstNbr("1223444444445");
+        mti1.setStatusCd("1");
+        mti2.setStatusCd("1");
+        mti3.setMktResInstNbr("201903192116");
+        mti3.setSyncFileName("/home/itsm_y/itmsfile/data/back/Terminal/delete/731ITMS20190529002.txt");
+        mti3.setStatusCd("1");
+        mktResItmsSyncRecRep.add(mti1);
+        mktResItmsSyncRecRep.add(mti2);
+        mktResItmsSyncRecRep.add(mti3);
+        for(int i=0;i<mktResItmsSyncRecRep.size();i++){
+            System.out.println("***********************"+mktResItmsSyncRecMapper.updateMRIyFileName(mktResItmsSyncRecRep.get(i)));
+        }
+    }
+    @Test
+    public void syncMktToITMSBack(){
+        resourceInstStoreService.syncMktToITMSBack();
     }
 
 }

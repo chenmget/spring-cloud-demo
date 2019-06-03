@@ -154,8 +154,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     }
                 }
                 log.info("ProductBaseServiceImpl.addProductBase minCost={}",minCost);
-                if(minCost > 0){
+                if(minCost > 0.01){
                     req.setPriceLevel(this.getPriceLevel(minCost));
+                    log.info("ProductBaseServiceImpl.addProductBase PriceLevel={}",t);
                 }
             }
         }
@@ -248,19 +249,19 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
     private String getPriceLevel(Double cost){
         String priceLevel = "";
-        if(cost > 0 && cost<=600){
+        if(cost>0.01 && (cost-600)<=0.01){
             priceLevel = "0-600";
         }
-        if(cost > 600 && cost<=990){
+        if((cost-600) >0.01 && (cost-990)<=0.01){
             priceLevel = "600-990";
         }
-        if(cost > 990 && cost<=1590){
+        if((cost-990) >0.01 && (cost-1590)<=0.01){
             priceLevel = "990-1590";
         }
-        if(cost > 1590 && cost<=3000){
+        if((cost-1590) >0.01 && (cost-3000)<=0.01){
             priceLevel = "1590-3000";
         }
-        if(cost > 3000){
+        if((cost-3000) >0.01){
             priceLevel = "3000-*";
         }
 

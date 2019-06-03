@@ -780,15 +780,13 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
 
         String lanId = null;
-        String regionId = null;
-        String merchantType = null;
-        String merchantId = null;
         if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
             // 省仓库的写死
             lanId = "731";
-            regionId = "731";
-            merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType();
-            merchantId = req.getMerchantId();
+            req.setLanId(lanId);
+            req.setRegionId("731");
+            req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+            req.setCreateStaff(req.getMerchantId());
         }else{
             ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
             log.info("SupplierResourceInstServiceImpl.addResourceInstByAdmin resouceStoreService.getMerchantByStore req={} resp={}", req.getMktResStoreId(), JSON.toJSONString(merchantResultVO));
@@ -796,10 +794,11 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                 return ResultVO.error(constant.getCannotGetMerchantMsg());
             }
             MerchantDTO merchantDTO = merchantResultVO.getResultData();
-            lanId = merchantDTO.getLanId();
-            regionId = merchantDTO.getCity();
-            merchantType = merchantDTO.getMerchantType();
-            merchantId = merchantDTO.getMerchantId();
+            req.setDestStoreId(req.getMktResStoreId());
+            req.setLanId(merchantDTO.getLanId());
+            req.setRegionId(merchantDTO.getCity());
+            req.setMerchantType(merchantDTO.getMerchantType());
+            req.setCreateStaff(merchantDTO.getMerchantId());
         }
         ResultVO<MerchantDTO> sourceMerchantResultVO = merchantService.getMerchantById(sourceStoreMerchantId);
         log.info("SupplierResourceInstServiceImpl.addResourceInstByAdmin merchantService.getMerchantById req={} resp={}", sourceStoreMerchantId, JSON.toJSONString(sourceMerchantResultVO));
@@ -811,7 +810,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
-        req.setDestStoreId(req.getMktResStoreId());
         BeanUtils.copyProperties(req, resourceInstValidReq);
         CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(req.getMktResInstNbrs());
         List<String> existNbrs = resourceInstCheckService.vaildOwnStore(resourceInstValidReq, newList);
@@ -827,13 +825,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
         List<String> nbrList = trackList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
         req.setMktResInstNbrs(nbrList);
-        req.setDestStoreId(req.getMktResStoreId());
         req.setMktResStoreId(manuResStoreId);
         req.setSourceType(sourceMerchantDTO.getMerchantType());
-        req.setLanId(lanId);
-        req.setRegionId(regionId);
-        req.setMerchantType(merchantType);
-        req.setCreateStaff(merchantId);
         req.setMktResInstType(trackList.get(0).getMktResInstType());
         mktResInstNbrs.removeAll(nbrList);
         resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);

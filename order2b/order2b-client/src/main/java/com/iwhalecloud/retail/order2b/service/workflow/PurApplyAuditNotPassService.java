@@ -1,5 +1,7 @@
 package com.iwhalecloud.retail.order2b.service.workflow;
 
 
-public interface PurApplyAuditNotPassService {
+import com.iwhalecloud.retail.workflow.config.WfRunnable;
+
+public interface PurApplyAuditNotPassService extends WfRunnable {
 }

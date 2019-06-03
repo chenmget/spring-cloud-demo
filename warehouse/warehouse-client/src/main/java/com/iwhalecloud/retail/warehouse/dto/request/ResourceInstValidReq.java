@@ -29,10 +29,22 @@ public class ResourceInstValidReq implements java.io.Serializable {
   	private List<String> mktResInstNbrs;
 
 	/**
+	 * 键串码，值SN码
+	 */
+	@ApiModelProperty(value = "键串码，值SN码")
+	private Map<String, String> snCodeMap;
+
+	/**
 	 * 固网终端需要CT码管理时，记录CT码
 	 */
-	@ApiModelProperty(value = "固网CT码,键是串码，值是ct码")
-	private Map<String, String> ctCode;
+	@ApiModelProperty(value = "键串码，值macCode")
+	private Map<String, String> macCodeMap;
+
+	/**
+	 * 固网终端需要CT码管理时，记录CT码
+	 */
+	@ApiModelProperty(value = "键串码，值CT码")
+	private Map<String, String> ctCodeMap;
 
 	/**
   	 * 营销资源标识，记录product_id

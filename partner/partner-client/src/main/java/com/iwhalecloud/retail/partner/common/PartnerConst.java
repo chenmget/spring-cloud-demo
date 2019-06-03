@@ -9,6 +9,8 @@ public class PartnerConst {
     // 表对应的缓存名称，1、表名的缓存名称：表示单条的缓存的；2、非表名的缓存: 表示存非单条的数据（一般是有父子级关系的列表）
     // 商家表par_merchant使用的缓存名称
     public static final String CACHE_NAME_PAR_MERCHANT = "par_merchant";
+    
+    public static final String CACHE_NAME_PAR_MERCHANT_ACCOUNT = "par_merchant_account";
     // 经营主体表par_business_entity使用的缓存名称
     public static final String CACHE_NAME_PAR_BUSINESS_ENTITY = "par_business_entity";
 
@@ -395,6 +397,27 @@ public class PartnerConst {
         }
         public String getCode() {
             return code;
+        }
+    }
+
+    /**
+     *  商家经营权限的 是否已经赋权
+     */
+    public enum AssignedFlgEnum {
+        NO("0","否"),
+        YES("1","是");
+
+        private String type;
+        private String name;
+        AssignedFlgEnum(String type, String name){
+            this.type = type;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
+        public String getType() {
+            return type;
         }
     }
 }

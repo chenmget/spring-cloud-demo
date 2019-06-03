@@ -75,10 +75,19 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         List<String> mktResInstNbrs = reqDetailDTOS.stream().map(ResourceReqDetailDTO::getMktResInstNbr).collect(Collectors.toList());
         log.info("MerchantAddNbrProcessingPassActionImpl.run detailManager.listDetail mktResInstNbrs={}", JSON.toJSONString(mktResInstNbrs));
         Map<String, String> ctCodeMap = new HashMap<>();
+        Map<String, String> snCodeMap = new HashMap<>();
+        Map<String, String> macCodeMap = new HashMap<>();
         reqDetailDTOS.forEach(item->{
             if(StringUtils.isNotBlank(item.getCtCode())){
                 ctCodeMap.put(item.getMktResInstNbr(), item.getCtCode());
             }
+            if(StringUtils.isNotBlank(item.getSnCode())){
+                snCodeMap.put(item.getMktResInstNbr(), item.getSnCode());
+            }
+            if(StringUtils.isNotBlank(item.getMacCode())){
+                macCodeMap.put(item.getMktResInstNbr(), item.getMacCode());
+            }
+
         });
         ResourceReqDetailDTO detailDTO = reqDetailDTOS.get(0);
 
@@ -102,7 +111,9 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         addReq.setMktResInstType(detailDTO.getMktResInstType());
         addReq.setDestStoreId(detailDTO.getDestStoreId());
         addReq.setMktResId(detailDTO.getMktResId());
-        addReq.setCtCode(ctCodeMap);
+        addReq.setCtCodeMap(ctCodeMap);
+        addReq.setSnCodeMap(snCodeMap);
+        addReq.setMacCodeMap(macCodeMap);
         addReq.setCreateStaff(detailDTO.getCreateStaff());
         addReq.setTypeId(typeId);
 

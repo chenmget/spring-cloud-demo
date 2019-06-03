@@ -14,7 +14,7 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "前置活动产品优惠信息")
-public class PreSubsidyProductPromResqDTO implements Serializable{
+public class PreSubsidyProductPromResqDTO implements Serializable {
 
     private static final long serialVersionUID = -7964366115092352712L;
 
@@ -65,19 +65,19 @@ public class PreSubsidyProductPromResqDTO implements Serializable{
      */
     @ApiModelProperty(value = "优惠券信息")
     List<MktResCouponRespDTO> mktResRegionRespDTOS;
-    
+
     /**
      * 颜色
      */
     @ApiModelProperty(value = "颜色")
     private String color;
-    
+
     /**
      * 内存
      */
     @ApiModelProperty(value = "内存")
     private String memory;
-    
+
     /**
      * 产品类型
      */

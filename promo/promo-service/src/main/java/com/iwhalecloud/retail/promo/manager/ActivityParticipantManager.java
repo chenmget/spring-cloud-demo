@@ -5,7 +5,10 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityScopeDTO;
+import com.iwhalecloud.retail.promo.entity.ActivityChange;
 import com.iwhalecloud.retail.promo.entity.ActivityParticipant;
+import com.iwhalecloud.retail.promo.entity.ActivityScope;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import com.iwhalecloud.retail.promo.mapper.ActivityParticipantMapper;
@@ -16,12 +19,27 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
+@Slf4j
 @Component
 public class ActivityParticipantManager{
     @Resource
     private ActivityParticipantMapper activityParticipantMapper;
 
+    /**
+     * 获取主键
+     * @return
+     */
+    public String getPrimaryKey(){
+        return activityParticipantMapper.getPrimaryKey();
+    }
+
+    /**插入参与对象信息
+     * @param activityParticipant 参与对象实体
+     * @return
+     */
+    public int insertActivityParticipant(ActivityParticipant activityParticipant) {
+        return activityParticipantMapper.insert(activityParticipant);
+    }
     /**
      * 添加参与对象
      * @param activityParticipantList 参与对象
@@ -30,13 +48,10 @@ public class ActivityParticipantManager{
     public void addActivityParticipantBatch(List<ActivityParticipant> activityParticipantList) {
         if (!CollectionUtils.isEmpty(activityParticipantList)) {
             for (ActivityParticipant activityParticipant : activityParticipantList) {
-                Date dt = new Date();
-                if (StringUtils.isEmpty(activityParticipant.getId())) {
-                    activityParticipant.setGmtCreate(dt);
-                    activityParticipant.setGmtModified(dt);
-                    activityParticipant.setIsDeleted("0");
-                    activityParticipantMapper.insert(activityParticipant);
+                if (activityParticipant.getId()==null){
+                    activityParticipant.setId(activityParticipantMapper.getPrimaryKey());
                 }
+                activityParticipantMapper.insert(activityParticipant);
             }
 
         }
@@ -116,5 +131,40 @@ public class ActivityParticipantManager{
         queryWrapper.eq(ActivityParticipant.FieldNames.merchantCode.getTableFieldName(), merchantCode);
         queryWrapper.eq(ActivityParticipant.FieldNames.isDeleted.getTableFieldName(), PromoConst.UNDELETED);
         return activityParticipantMapper.selectOne(queryWrapper);
+    }
+
+    /**
+     * 批量更新参与对象
+     * @param activityParticipantList 参与对象
+     * @return
+     */
+    public void updateActivityParticipantBatch(List<ActivityParticipant> activityParticipantList) {
+        if (!CollectionUtils.isEmpty(activityParticipantList)) {
+            for (ActivityParticipant activityParticipant : activityParticipantList) {
+                if (StringUtils.isNotEmpty(activityParticipant.getId())) {
+                    activityParticipant.setGmtModified(new Date());
+                    activityParticipantMapper.updateById(activityParticipant);
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 根据id查询参与对象
+     * @param participantId 活动参与对象id
+     * @return
+     */
+    public ActivityParticipant queryActivityParticipantById(String participantId) {
+        return activityParticipantMapper.selectById(participantId);
+    }
+
+    public List<ActivityParticipantDTO> queryActivityParticipantByMktIdAndStatus(String activityId, String status) {
+        log.info("ActivityScopeManager.queryActivityScopeByMktIdAndStatus activityId={},status={}", activityId);
+        if (StringUtils.isNotEmpty(activityId)&&StringUtils.isNotEmpty(status)){
+            List<ActivityParticipantDTO> activityParticipantDTOList= activityParticipantMapper.queryActivityParticipantByMktIdAndStatus(activityId,status);
+            return  activityParticipantDTOList;
+        }
+        return null;
     }
 }

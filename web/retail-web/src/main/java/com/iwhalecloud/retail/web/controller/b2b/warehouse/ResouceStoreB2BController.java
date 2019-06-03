@@ -35,6 +35,7 @@ public class ResouceStoreB2BController {
                               @RequestParam(value = "storeName", required = false) String storeName,
                               @RequestParam(value = "storeType", required = false) String storeType,
                               @RequestParam(value = "storeSubType", required = false) String storeSubType,
+                              @RequestParam(value = "storeGrade", required = false) String storeGrade,
                               @RequestParam(value = "lanName", required = false) String lanName,
                               @RequestParam(value = "pageNo", required = false) Integer pageNo,
                               @RequestParam(value = "pageSize", required = false) Integer pageSize){
@@ -48,6 +49,7 @@ public class ResouceStoreB2BController {
         storePageReq.setLanIdName(lanName);
         storePageReq.setPageNo(pageNo);
         storePageReq.setPageSize(pageSize);
+        storePageReq.setStoreGrade(storeGrade);
         Page<ResouceStoreDTO> resouceStoreDTOPage = resouceStoreService.pageStore(storePageReq);
         return ResultVO.success(resouceStoreDTOPage);
     }
@@ -64,7 +66,8 @@ public class ResouceStoreB2BController {
                               @RequestParam(value = "lanName", required = false) String lanName,
                               @RequestParam(value = "pageNo", required = false) Integer pageNo,
                               @RequestParam(value = "pageSize", required = false) Integer pageSize,
-                              @RequestParam(value = "storeType", required = false) String storeType){
+                              @RequestParam(value = "storeType", required = false) String storeType,
+                              @RequestParam(value = "storeGrade", required = false) String storeGrade){
         if(StringUtils.isNotEmpty(qryType) && qryType.equals("self")){
             StorePageReq storePageReq = new StorePageReq();
             if (StringUtils.isNotEmpty(merchantId)) {
@@ -79,6 +82,7 @@ public class ResouceStoreB2BController {
             storePageReq.setStoreType(storeType);
             storePageReq.setPageNo(pageNo);
             storePageReq.setPageSize(pageSize);
+            storePageReq.setStoreGrade(storeGrade);
             Page<ResouceStoreDTO> resouceStoreDTOPage = resouceStoreService.pageStore(storePageReq);
             return ResultVO.success(resouceStoreDTOPage);
         }else if(StringUtils.isNotEmpty(qryType) && qryType.equals("allocate")){
@@ -93,6 +97,7 @@ public class ResouceStoreB2BController {
             req.setStoryType(storeType);
             req.setPageNo(pageNo);
             req.setPageSize(pageSize);
+            req.setStoreGrade(storeGrade);
             return resouceStoreService.pageMerchantAllocateStore(req);
         }
         return ResultVO.success();

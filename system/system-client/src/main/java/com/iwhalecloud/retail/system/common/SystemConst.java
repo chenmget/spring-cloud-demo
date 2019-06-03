@@ -101,19 +101,20 @@ public class SystemConst {
     /**
      * 审核状态枚举
      */
-    public enum UserFounderEnum{
-        ADMIN_SUPER(1,"超级管理员"),
-        ADMIN_ORDINARY(2,"普通管理员"),
-        PARTNER(3,"零售商（店中商）"),
-        SUPPLIER_PROVINCE(4,"省包供应商"),
-        SUPPLIER_GROUND(5,"地包供应商"),
-        PARTNER_STAFF(6,"分销商员工"),
-        PARTNER_BUSINESS_ENTITY(7,"经营主体"),
-        MANUFACTURER(8,"厂商");
+    public enum UserFounderEnum {
+        ADMIN_SUPER(1, "超级管理员"),
+        ADMIN_ORDINARY(2, "普通管理员"),
+        PARTNER(3, "零售商（店中商）"),
+        SUPPLIER_PROVINCE(4, "省包供应商"),
+        SUPPLIER_GROUND(5, "地包供应商"),
+        PARTNER_STAFF(6, "分销商员工"),
+        PARTNER_BUSINESS_ENTITY(7, "经营主体"),
+        MANUFACTURER(8, "厂商");
 
         private String value;
         private Integer code;
-        UserFounderEnum(Integer code,String value){
+
+        UserFounderEnum(Integer code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -130,18 +131,19 @@ public class SystemConst {
     /**
      * 审核状态枚举
      */
-    public enum ValidStatusEnum{
+    public enum ValidStatusEnum {
         /**
          * 未校验
          */
-        NOT_VALID(0,"未校验"),
+        NOT_VALID(0, "未校验"),
         /**
          * 已校验
          */
-        HAVE_VALID(1,"已校验");
+        HAVE_VALID(1, "已校验");
         private String value;
         private Integer code;
-        ValidStatusEnum(Integer code,String value){
+
+        ValidStatusEnum(Integer code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -158,18 +160,19 @@ public class SystemConst {
     /**
      * 发送状态枚举
      */
-    public enum SendStatusEnum{
+    public enum SendStatusEnum {
         /**
          * 未发送
          */
-        NOT_SEND(0,"未发送"),
+        NOT_SEND(0, "未发送"),
         /**
          * 已发送
          */
-        HAVE_SEND(1,"已发送");
+        HAVE_SEND(1, "已发送");
         private String value;
         private Integer code;
-        SendStatusEnum(Integer code,String value){
+
+        SendStatusEnum(Integer code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -186,12 +189,13 @@ public class SystemConst {
     /**
      * 通知发布类型枚举
      */
-    public enum NoticePublishTypeEnum{
+    public enum NoticePublishTypeEnum {
         SYSTEM("1", "系统类型"),
-        DIRECTION("2","定向类");
+        DIRECTION("2", "定向类");
         private String value;
         private String type;
-        NoticePublishTypeEnum(String type,String value){
+
+        NoticePublishTypeEnum(String type, String value) {
             this.type = type;
             this.value = value;
         }
@@ -208,13 +212,14 @@ public class SystemConst {
     /**
      * 通知类型枚举
      */
-    public enum NoticeTypeEnum{
+    public enum NoticeTypeEnum {
         BUSINESS("1", "业务类"),
-        HOT_MSG("2","热点消息"),
-        NOTICE("3","通知公告");
+        HOT_MSG("2", "热点消息"),
+        NOTICE("3", "通知公告");
         private String value;
         private String type;
-        NoticeTypeEnum(String type,String value){
+
+        NoticeTypeEnum(String type, String value) {
             this.type = type;
             this.value = value;
         }
@@ -231,14 +236,15 @@ public class SystemConst {
     /**
      * 通知状态枚举
      */
-    public enum NoticeStatusEnum{
+    public enum NoticeStatusEnum {
         VALID("1", "有效"),
-        INVALID("0","无效"),
-        AUDIT("2","待审核"),
-        AUDIT_FAILED("3","审核不通过");
+        INVALID("0", "无效"),
+        AUDIT("2", "待审核"),
+        AUDIT_FAILED("3", "审核不通过");
         private String value;
         private String code;
-        NoticeStatusEnum(String code,String value){
+
+        NoticeStatusEnum(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -255,12 +261,13 @@ public class SystemConst {
     /**
      * 用户是否已读状态枚举
      */
-    public enum NoticeUserReadStatusEnum{
+    public enum NoticeUserReadStatusEnum {
         NOT_READ("0", "未读"),
-        HAS_READ("1","已读");
+        HAS_READ("1", "已读");
         private String value;
         private String code;
-        NoticeUserReadStatusEnum(String code,String value){
+
+        NoticeUserReadStatusEnum(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -277,14 +284,15 @@ public class SystemConst {
     /**
      * 用户是否已读状态枚举
      */
-    public enum ObjTypeEnum{
+    public enum ObjTypeEnum {
         B2C_GOODS("1", "B2C商品"),
         B2C_STORE("2", "B2C门店"),
         B2B_GOODS("3", "B2B商品"),
-        B2B_SUPPLIER("4","B2B供应商");
+        B2B_SUPPLIER("4", "B2B供应商");
         private String value;
         private String code;
-        ObjTypeEnum(String code,String value){
+
+        ObjTypeEnum(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -301,12 +309,13 @@ public class SystemConst {
     /**
      * 用户是否已读状态枚举
      */
-    public enum PlatformFlag{
+    public enum PlatformFlag {
         TRADE("0", "交易平台"),
-        ADMIN("1","管理平台");
+        ADMIN("1", "管理平台");
         private String value;
         private String code;
-        PlatformFlag(String code,String value){
+
+        PlatformFlag(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -328,7 +337,8 @@ public class SystemConst {
         TXT_FILE("2", "文件");
         private String value;
         private String code;
-        FileType(String code,String value){
+
+        FileType(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -352,7 +362,8 @@ public class SystemConst {
         CONTRACT_TEXT("4", "合同文本");
         private String value;
         private String code;
-        FileClass(String code,String value){
+
+        FileClass(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -370,13 +381,13 @@ public class SystemConst {
      * 状态常量
      */
     public enum StatusCdEnum {
-        STATUS_CD_VALD("1000","有效"),
-        STATUS_CD_INVALD("1100","失效");
+        STATUS_CD_VALD("1000", "有效"),
+        STATUS_CD_INVALD("1100", "失效");
 
         private String code;
         private String value;
 
-        StatusCdEnum(String code, String value){
+        StatusCdEnum(String code, String value) {
             this.code = code;
             this.value = value;
         }

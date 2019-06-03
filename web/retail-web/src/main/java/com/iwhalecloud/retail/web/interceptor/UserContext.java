@@ -19,9 +19,9 @@ import java.util.List;
 @Slf4j
 public class UserContext implements Serializable {
 
-	private static final long serialVersionUID = -6634783591580517814L;
+    private static final long serialVersionUID = -6634783591580517814L;
 
-	private static ThreadLocal<String> userIdThreadLocal = new ThreadLocal<>();
+    private static ThreadLocal<String> userIdThreadLocal = new ThreadLocal<>();
 
     private static ThreadLocal<String> sessionIdThreadLocal = new ThreadLocal<>();
 
@@ -31,7 +31,7 @@ public class UserContext implements Serializable {
 
     public static String getUserId() {
         String userId = userIdThreadLocal.get();
-        if (StringUtils.isEmpty(userId)){
+        if (StringUtils.isEmpty(userId)) {
             // 去session里面取
             userId = getUser() != null ? getUser().getUserId() : null;
         }
@@ -59,13 +59,14 @@ public class UserContext implements Serializable {
 
     /**
      * 判断用户是否登录
+     *
      * @return
      * @author zhong.wenlong 2018-12-25
      */
     public static final Boolean isUserLogin() {
         // 看是否获取可以获取登录用户
         UserDTO userDTO = getUser();
-        if(userDTO != null){
+        if (userDTO != null) {
             return true;
         }
         return false;
@@ -73,6 +74,7 @@ public class UserContext implements Serializable {
 
     /**
      * 获取当前servlet的session对象，不在servlet环境下返回null.
+     *
      * @return
      * @author Ji.kai 2018-11-5
      */
@@ -106,7 +108,7 @@ public class UserContext implements Serializable {
         log.info("userThreadLocal.get() resp={} ", JSON.toJSONString(userDTO));
 
         //优先从线程变量取，取到就返回
-        if(userDTO != null){
+        if (userDTO != null) {
             return userDTO;
         }
 
@@ -142,13 +144,14 @@ public class UserContext implements Serializable {
 
     /**
      * 获取当前登录的用户的 其他信息,没有登录则返回null
+     *
      * @return
      * @author zwl 2018-12-25
      */
     public static final UserOtherMsgDTO getUserOtherMsg() {
         UserOtherMsgDTO userOtherMsgDTO = userOtherMsgThreadLocal.get();
         //优先从线程变量取，取到就返回
-        if(userOtherMsgDTO != null){
+        if (userOtherMsgDTO != null) {
             return userOtherMsgDTO;
         }
         // 从httpsession中获取
@@ -166,7 +169,7 @@ public class UserContext implements Serializable {
      * @param userOtherMsgDTO 登录用户的其他信息
      * @author zwl 2018-11-5
      */
-    public static final void setUserOtherMsg(UserOtherMsgDTO userOtherMsgDTO){
+    public static final void setUserOtherMsg(UserOtherMsgDTO userOtherMsgDTO) {
         HttpSession session = getSession();
         if (session == null) {
             return;
@@ -178,29 +181,31 @@ public class UserContext implements Serializable {
         log.info("添加用户的其他信息到session中，userOtherMsgDTO={}", userOtherMsgDTO);
     }
 
-    
+
     /**
      * 获取厅店ID，假如工号的founder不是3或者6，返回null
+     *
      * @return
      */
     public static final String getPartnerShopId() {
         UserDTO userDTO = getUser();
         if (userDTO == null) {
-        	log.warn("获取厅店ID失败，登录工号信息为空");
-        	return null;
+            log.warn("获取厅店ID失败，登录工号信息为空");
+            return null;
         }
         if (SystemConst.USER_FOUNDER_3 != userDTO.getUserFounder()
-        		|| SystemConst.USER_FOUNDER_6 != userDTO.getUserFounder()) {
-        	return null;
-        	
+                || SystemConst.USER_FOUNDER_6 != userDTO.getUserFounder()) {
+            return null;
+
         }
         return userDTO.getRelCode();
-        
+
     }
 
 
     /**
      * 获取商家ID
+     *
      * @return
      */
     public static final String getMerchantId() {
@@ -218,6 +223,7 @@ public class UserContext implements Serializable {
 
     /**
      * 是否商家：厂商  零售商  供应商
+     *
      * @return
      */
     public static boolean isMerchant() {
@@ -230,76 +236,28 @@ public class UserContext implements Serializable {
                 SystemConst.USER_FOUNDER_4,
                 SystemConst.USER_FOUNDER_5,
                 SystemConst.USER_FOUNDER_8
-                );
+        );
         return list.contains(userDTO.getUserFounder());
     }
 
     /**
-     * 是否零售商
-     * @return
-     */
-    public static boolean isRetailer() {
-        UserDTO userDTO = getUser();
-        if (userDTO == null) {
-            return false;
-        }
-        return SystemConst.USER_FOUNDER_3 == userDTO.getUserFounder();
-    }
-
-    /**
-     * 是否地包商
-     * @return
-     */
-    public static boolean isSupplierGround() {
-        UserDTO userDTO = getUser();
-        if (userDTO == null) {
-            return false;
-        }
-        return SystemConst.USER_FOUNDER_5 == userDTO.getUserFounder();
-    }
-
-    /**
-     * 是否省包商
-     * @return
-     */
-    public static boolean isSupplierProvince() {
-        UserDTO userDTO = getUser();
-        if (userDTO == null) {
-            return false;
-        }
-        return SystemConst.USER_FOUNDER_4 == userDTO.getUserFounder();
-    }
-
-
-    /**
-     * 是否管理员
-     * @return
-     */
-    public static boolean isAdmin() {
-        UserDTO userDTO = getUser();
-        if (userDTO == null) {
-            log.warn("判断是否管理员失败，登录工号信息为空");
-            return false;
-        }
-        return SystemConst.USER_FOUNDER_1 == userDTO.getUserFounder();
-    }
-
-    /**
      * 是否分销商
+     *
      * @return
      */
     public static boolean isPartner() {
-    	 UserDTO userDTO = getUser();
-         if (userDTO == null) {
-         	log.warn("判断是否代理商失败，登录工号信息为空");
-         	return false;
-         }
-         
-         return SystemConst.USER_FOUNDER_3 == userDTO.getUserFounder() || SystemConst.USER_FOUNDER_6 == userDTO.getUserFounder();
+        UserDTO userDTO = getUser();
+        if (userDTO == null) {
+            log.warn("判断是否代理商失败，登录工号信息为空");
+            return false;
+        }
+
+        return SystemConst.USER_FOUNDER_3 == userDTO.getUserFounder() || SystemConst.USER_FOUNDER_6 == userDTO.getUserFounder();
     }
 
     /**
      * 是否超级管理员、终端公司管理人员、省公司市场部管理人员
+     *
      * @return
      */
     public static boolean isAdminType() {
@@ -309,6 +267,8 @@ public class UserContext implements Serializable {
         }
         List<Integer> list = Lists.newArrayList(
                 SystemConst.USER_FOUNDER_1,
+                SystemConst.USER_FOUNDER_2,
+                SystemConst.USER_FOUNDER_9,
                 SystemConst.USER_FOUNDER_12,
                 SystemConst.USER_FOUNDER_24
         );

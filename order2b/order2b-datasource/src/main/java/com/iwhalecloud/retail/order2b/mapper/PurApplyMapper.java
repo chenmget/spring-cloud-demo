@@ -2,16 +2,13 @@ package com.iwhalecloud.retail.order2b.mapper;
 
 import java.util.List;
 
+import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
+import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
@@ -78,7 +75,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public void commitPriceExcel(@Param("req") UpdateCorporationPriceReq req);
 
-	public int comparePrice(@Param("applyId") String applyId);
+	public List<PurApplyItemResp> comparePrice(@Param("applyId") String applyId);
 
 	public void updatePurApplyStatusCd(@Param("req") ProcureApplyReq req);
 

@@ -6,9 +6,16 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductListGetByIdsReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductInfoResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
+import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
@@ -21,6 +28,8 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +49,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Reference
     private UserService userService;
 
-	
+	@Reference
+	private ProductService productService;
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
 		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApply(req);
@@ -70,7 +80,45 @@ public class PurApplyServiceImpl implements PurApplyService {
 		purApplyManager.tcProcureApply(req);
 
 		//如果采购价大于政企价格 要省公司审核
-		int count = purApplyManager.comparePrice(req.getApplyId());
+		List<PurApplyItemResp> purApplyItemList =  purApplyManager.comparePrice(req.getApplyId());
+		List<String> prodIds = new ArrayList<String>();
+
+		for (int i=0;i<purApplyItemList.size();i++) {
+			PurApplyItemResp purApplyItem = purApplyItemList.get(i);
+			String purApplyItemProductId = purApplyItem.getProductId();
+			String tPurPrice = purApplyItem.getPurPrice();
+			if (purApplyItemProductId!=null) {
+				prodIds.add(purApplyItemProductId);
+			}
+		}
+		//获取产品政企价格列表
+		List<ProductInfoResp> productList =new ArrayList<ProductInfoResp>();
+		if(prodIds!=null && prodIds.size()>0) {
+			productList= productService.getProductInfoByIds(prodIds);
+
+		}
+
+		//获取产品政企价, 判断采购价是否大于政企价格
+
+         int count=0;
+		for (int i=0;i<purApplyItemList.size();i++) {
+			PurApplyItemResp purApplyItem = purApplyItemList.get(i);
+			String tPurPrice = purApplyItem.getPurPrice();
+			String productIdItem=purApplyItem.getProductId();
+			for (ProductInfoResp productInfoResp:productList) {
+				Double corporationPrice = productInfoResp.getCorporationPrice();
+				String productId = productInfoResp.getProductId();
+				if(productIdItem.equals(productId)) {
+					 if(Double.valueOf(tPurPrice)>corporationPrice) {
+						 count=count+1;
+						 break;
+					 }
+
+				}
+
+			}
+		}
+
 		log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 //		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 		if(count>0) {

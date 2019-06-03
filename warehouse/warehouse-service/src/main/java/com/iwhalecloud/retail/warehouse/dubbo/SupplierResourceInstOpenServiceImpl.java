@@ -207,4 +207,8 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
         return resp;
     }
 
+    @Override
+    public ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req){
+        return supplierResourceInstService.queryForExport(req);
+    }
 }

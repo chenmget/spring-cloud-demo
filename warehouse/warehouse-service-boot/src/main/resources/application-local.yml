@@ -86,7 +86,7 @@ fdfs:
 #能开配置
 zop:
   secret: ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=
-  url: http://134.176.102.33:9080/api
+  url: http://134.176.102.33:8081/api/rest
   timeout: 50000
 
 #webService配置
@@ -119,4 +119,3 @@ addNbrService:
   typeId: 10350158,
   checkMaxNum: 10
 
-zopServiceEnv: Test

@@ -115,13 +115,21 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         if (!resp.isSuccess()) {
             return;
         }
-        Map<String, String> ctCodeMap = req.getCtCode();
+        Map<String, String> ctCodeMap = req.getCtCodeMap();
+        Map<String, String> snCodeMap = req.getSnCodeMap();
+        Map<String, String> macCodeMap = req.getMacCodeMap();
         int count = 0;
         for (int i = 0; i < newlist.size(); i++) {
             String mktResInstNbr = newlist.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             if (null != ctCodeMap) {
                 resouceInstTrackDTO.setCtCode(ctCodeMap.get(mktResInstNbr));
+            }
+            if (null != snCodeMap) {
+                resouceInstTrackDTO.setSnCode(snCodeMap.get(mktResInstNbr));
+            }
+            if (null != ctCodeMap) {
+                resouceInstTrackDTO.setMacCode(macCodeMap.get(mktResInstNbr));
             }
             BeanUtils.copyProperties(req, resouceInstTrackDTO);
             resouceInstTrackDTO.setMktResInstNbr(mktResInstNbr);
@@ -195,7 +203,8 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         ResultVO<MerchantDTO> resultVO = merchantService.getMerchantById(req.getMerchantId());
         log.info("ResouceInstTrackServiceImpl.asynSaveTrackForSupplier merchantService.getMerchantById merchantId={}, resp={}", req.getMerchantId(), JSON.toJSONString(resultVO));
         MerchantDTO merchantDTO = null;
-        if (resultVO.isSuccess()) {
+        // 省市仓库测试终端入库，没有对应商家
+        if (resultVO.isSuccess() && null != resultVO.getResultData()) {
             merchantDTO = resultVO.getResultData();
         }
         int countTrack = 0;
@@ -212,9 +221,11 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             ResouceInstTrackDTO resouceInstTrackDTO = trackInst.get(0);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
             resouceInstTrackDetailDTO.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
-            resouceInstTrackDetailDTO.setTargetLanId(merchantDTO.getLanId());
-            resouceInstTrackDetailDTO.setTargetMerchantId(merchantDTO.getMerchantId());
-            resouceInstTrackDetailDTO.setTargetRegionId(merchantDTO.getCity());
+            if (null != merchantDTO) {
+                resouceInstTrackDetailDTO.setTargetLanId(merchantDTO.getLanId());
+                resouceInstTrackDetailDTO.setTargetMerchantId(merchantDTO.getMerchantId());
+                resouceInstTrackDetailDTO.setTargetRegionId(merchantDTO.getCity());
+            }
             resouceInstTrackDetailDTO.setTargetStoreId(req.getDestStoreId());
             resouceInstTrackDetailDTO.setInTime(new Date());
             resouceInstTrackDetailDTO.setSourceRegionId(resouceInstTrackDTO.getRegionId());
@@ -227,8 +238,10 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
 
             resouceInstTrackDTO.setMktResStoreId(req.getDestStoreId());
             resouceInstTrackDTO.setMerchantId(req.getMerchantId());
-            resouceInstTrackDTO.setLanId(merchantDTO.getLanId());
-            resouceInstTrackDTO.setRegionId(merchantDTO.getCity());
+            if (null != merchantDTO) {
+                resouceInstTrackDTO.setLanId(merchantDTO.getLanId());
+                resouceInstTrackDTO.setRegionId(merchantDTO.getCity());
+            }
             resouceInstTrackDTO.setSourceType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
             resouceInstTrackDTO.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
             countTrack += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);

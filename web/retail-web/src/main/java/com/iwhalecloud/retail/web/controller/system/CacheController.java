@@ -121,6 +121,18 @@ public class CacheController extends BaseController {
         return ResultVO.success(true);
     }
 
+    @ApiOperation(value = "清空par_merchant_account(商家）表缓存", notes = "清空par_merchant_account(商家）表缓存")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/cleanCacheMerchantAccount", method = RequestMethod.GET)
+    @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_MERCHANT_ACCOUNT, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheMerchantAccount() {
+        log.info("CacheController.cleanCacheMerchantAccount clean par_merchant table cache success!!!");
+        return ResultVO.success(true);
+    }
+    
     @ApiOperation(value = "清空par_business_entity(经营主体）表缓存", notes = "清空par_business_entity(经营主体）表缓存")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),

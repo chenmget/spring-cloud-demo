@@ -89,4 +89,10 @@ public class ResourceReqItemAddReq implements Serializable {
      */
     @ApiModelProperty(value = "备注")
     private java.lang.String remark;
+
+    /**
+     * 串码类型
+     */
+    @ApiModelProperty(value = "串码类型")
+    private String mktResInstType;
 }

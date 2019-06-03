@@ -138,4 +138,10 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst> {
      */
     List<ResourceInstDTO> validResourceInst(ResourceInstsGetReq req);
 
+    /**
+     * 根据查询条件串码实列(手动分页，插件自带的线程不安全)
+     * @return
+     */
+    public List<ResourceInstListPageResp> getResourceInstListManual(@Param("req") ResourceInstListPageReq req);
+
 }

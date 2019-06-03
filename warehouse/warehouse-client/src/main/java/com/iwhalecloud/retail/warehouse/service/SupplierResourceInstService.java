@@ -157,4 +157,10 @@ public interface SupplierResourceInstService {
      */
     ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req);
 
+    /**
+     * 导出串码查询
+     * @param req
+     * @return
+     */
+    ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req);
 }

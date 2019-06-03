@@ -162,8 +162,14 @@ public class RunableTask {
                                 inst.setMktResUploadBatch(batchId);
                                 inst.setMktResInstNbr(mktResInstNbr);
                                 inst.setResult(ResourceConst.CONSTANT_NO);
-                                if (null != req.getCtCode()) {
-                                    inst.setCtCode(req.getCtCode().get(mktResInstNbr));
+                                if (null != req.getCtCodeMap()) {
+                                    inst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
+                                }
+                                if (null != req.getSnCodeMap()) {
+                                    inst.setCtCode(req.getSnCodeMap().get(mktResInstNbr));
+                                }
+                                if (null != req.getMacCodeMap()) {
+                                    inst.setCtCode(req.getMacCodeMap().get(mktResInstNbr));
                                 }
                                 inst.setUploadDate(now);
                                 inst.setCreateDate(now);
@@ -264,7 +270,7 @@ public class RunableTask {
      * 申请单详情插入多线程处理
      * @param list
      */
-    public void exceutorAddReqDetail(List<ResourceRequestAddReq.ResourceRequestInst> list, String itemId, String createStaff, String chngType) {
+    public void exceutorAddReqDetail(List<ResourceRequestAddReq.ResourceRequestInst> list, String itemId, String createStaff) {
         ExecutorService executorService = initExecutorService();
         //营销资源申请单明细
         Integer excutorNum = list.size()%perNum == 0 ? list.size()/perNum : (list.size()/perNum + 1);
@@ -285,14 +291,14 @@ public class RunableTask {
                         detailReq.setMktResInstNbr(instDTO.getMktResInstNbr());
                         detailReq.setQuantity(Long.valueOf(ResourceConst.CONSTANT_YES));
                         detailReq.setCreateStaff(createStaff);
-                        detailReq.setChngType(chngType);
+                        detailReq.setChngType(ResourceConst.PUT_IN_STOAGE);
                         detailReq.setUnit("个");
                         detailReq.setRemark("库存管理");
                         detailReq.setIsInspection(instDTO.getIsInspection());
                         detailReq.setCtCode(instDTO.getCtCode());
                         detailReq.setCreateDate(now);
                         detailReq.setStatusDate(now);
-                        detailReq.setStatusCd(ResourceConst.PUT_IN_STOAGE);
+                        detailReq.setStatusCd(ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode());
                         detailList.add(detailReq);
                     }
                     Boolean addReqDetail = detailManager.saveBatch(detailList);
@@ -328,7 +334,7 @@ public class RunableTask {
                         itemAddReq.setRemark("库存管理");
                         itemId = itemManager.insertResourceReqItem(itemAddReq);
                         log.info("RunableTask.excuetorAddReq itemManager.insertResourceReqItem req={}, resp={}", JSON.toJSONString(itemAddReq), JSON.toJSONString(itemId));
-                        exceutorAddReqDetail(entry.getValue(), itemId, req.getCreateStaff(), req.getChngType());
+                        exceutorAddReqDetail(entry.getValue(), itemId, req.getCreateStaff());
                     }
                     return mktResReqId;
                 }
@@ -500,8 +506,14 @@ public class RunableTask {
                                 inst.setMktResInstNbr(mktResInstNbr);
                                 inst.setResult(ResourceConst.CONSTANT_YES);
                                 inst.setResultDesc("厂商库不存在");
-                                if (null != req.getCtCode()) {
-                                    inst.setCtCode(req.getCtCode().get(mktResInstNbr));
+                                if (null != req.getCtCodeMap()) {
+                                    inst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
+                                }
+                                if (null != req.getSnCodeMap()) {
+                                    inst.setCtCode(req.getSnCodeMap().get(mktResInstNbr));
+                                }
+                                if (null != req.getMacCodeMap()) {
+                                    inst.setCtCode(req.getMacCodeMap().get(mktResInstNbr));
                                 }
                                 inst.setUploadDate(now);
                                 inst.setCreateDate(now);

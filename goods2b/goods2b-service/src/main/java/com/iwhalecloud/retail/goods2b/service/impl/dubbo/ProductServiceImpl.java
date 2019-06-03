@@ -28,6 +28,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -634,5 +635,11 @@ public class ProductServiceImpl implements ProductService {
             num = productManager.getDuplicate(dto);
         }
         return ResultVO.success(num);
+    }
+
+    @Override
+    public List<ProductInfoResp> getProductInfoByIds(List<String> productIdList) {
+        log.info("ProductServiceImpl.getDuplicate productIdList={}", productIdList);
+        return productManager.getProductInfoByIds(productIdList);
     }
 }

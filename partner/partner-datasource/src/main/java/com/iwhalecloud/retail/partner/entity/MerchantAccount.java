@@ -77,6 +77,12 @@ public class MerchantAccount implements Serializable {
      */
     @ApiModelProperty(value = "帐户名称/银行账户")
     private String bankAccount;
+    
+    /**
+     * 翼支付登录号
+     */
+    @ApiModelProperty(value = "翼支付登录号")
+    private String accountName;
 
 
     //属性 end
@@ -123,7 +129,12 @@ public class MerchantAccount implements Serializable {
         /**
          * 账户名称.
          */
-        bankAccount("bankAccount", "BANK_ACCOUNT");
+        bankAccount("bankAccount", "BANK_ACCOUNT"),
+        
+        /**
+         * 翼支付登录号
+         */
+        accountName("accountName", "ACCOUNT_NAME");
 
         private String fieldName;
         private String tableFieldName;

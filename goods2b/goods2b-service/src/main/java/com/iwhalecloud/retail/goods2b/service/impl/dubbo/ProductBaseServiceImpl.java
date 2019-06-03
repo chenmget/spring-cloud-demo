@@ -28,13 +28,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import com.alibaba.fastjson.TypeReference;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -58,11 +62,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     @Autowired
     private TagRelService tagRelService;
 
-//    @Value("${zop.secret}")
-//    private String zopSecret;
-//
-//    @Value("${zop.url}")
-//    private String zopUrl;
+    @Value("${zop.secret}")
+    private String zopSecret;
+
+    @Value("${zop.url}")
+    private String zopUrl;
 
     @Override
     public ResultVO<ProductBaseGetResp> getProductBase(ProductBaseGetByIdReq req){
@@ -103,7 +107,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             productBaseGetReq.setUnitType(unitType);
             List<ProductBaseGetResp> productBaseGetRespList = productBaseManager.selectProductBase(productBaseGetReq);
             if(!CollectionUtils.isEmpty(productBaseGetRespList)){
-                ResultVO.error("同一型号只能创建一个产品，已经存在改型号产品");
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "同一型号只能创建一个产品，已经存在改型号产品");
             }
         }
         ProductBase t = new ProductBase();
@@ -122,22 +126,41 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             t.setExpDate(DateUtil.getNextYearTime(now, 3));
         }
         //固网产品需要提交串码到itms
-//        String isInspection = req.getIsInspection();
-//        if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
-//            String SerialCode = req.getParam20();
-//            if(StringUtils.isEmpty(SerialCode)){
-//                ResultVO.error("固网产品必须录入串码");
-//            }
-//
-//            String b = "";
-//            String callUrl = "";
-//            Map request = new HashMap<>();
-//            try {
-//                b = this.zopService(callUrl,zopUrl,request,zopSecret);
-//            } catch (Exception e) {
-//                log.error(e.getMessage());
-//            }
-//        }
+        String isInspection = req.getIsInspection();
+        if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
+            String serialCode = req.getParam20(); //串码  xxxx-1234556612
+            String params = req.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
+            String userName = req.getParam18();  //login_name
+            if(StringUtils.isEmpty(serialCode)){
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "固网产品必须录入串码");
+            }
+
+            String b = "";
+            String callUrl = "ord.operres.OrdInventoryChange";
+            Map request = new HashMap<>();
+            request.put("deviceId",serialCode);
+            request.put("userName",userName);
+            request.put("code","ITMS_ADD");
+            request.put("params",params);
+            try {
+                b = this.zopService(callUrl,zopUrl,request,zopSecret);
+                if(StringUtils.isNotEmpty(b)){
+                    Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
+                    String body = String.valueOf(parseObject.get("Body"));
+                    Map parseObject2 = JSON.parseObject(body, new TypeReference<HashMap>(){});
+                    String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
+                    Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>(){});
+                    String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
+                    if("-1".equals(inventoryChangeReturn)){
+                        throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(新增)失败");
+                    }else if("1".equals(inventoryChangeReturn)){
+                        throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(新增)已经存在");
+                    }
+                }
+            } catch (Exception e) {
+                log.error(e.getMessage());
+            }
+        }
         Integer num = productBaseManager.addProductBase(t);
         String productBaseId = t.getProductBaseId();
         // 添加产品拓展属性

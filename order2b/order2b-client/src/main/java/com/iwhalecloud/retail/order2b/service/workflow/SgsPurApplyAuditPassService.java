@@ -1,5 +1,7 @@
 package com.iwhalecloud.retail.order2b.service.workflow;
 
 
-public interface SgsPurApplyAuditPassService {
+import com.iwhalecloud.retail.workflow.config.WfRunnable;
+
+public interface SgsPurApplyAuditPassService extends WfRunnable {
 }

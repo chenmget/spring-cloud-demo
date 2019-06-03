@@ -1,5 +1,7 @@
 package com.iwhalecloud.retail.warehouse.busiservice;
 
+import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
@@ -26,7 +28,7 @@ public interface ResourceInstCheckService {
      * @param req
      * @return
      */
-    List<String> validMerchantStore(ResourceInstValidReq req);
+    List<ResouceInstTrackDTO> validMerchantStore(ResourceInstValidReq req);
 
     /**
      * 串码入库，组装申请单
@@ -41,4 +43,14 @@ public interface ResourceInstCheckService {
      * @return
      */
     SelectProcessResp selectProcess(ResourceInstAddReq req);
+
+    /**
+     * 固网同步到ITMS
+     * @param mktResInstNbrList
+     * @param userName
+     * @param storeId
+     * @param lanId
+     * @return
+     */
+    ResultVO noticeITMS(List<String> mktResInstNbrList, String userName, String storeId, String lanId);
 }

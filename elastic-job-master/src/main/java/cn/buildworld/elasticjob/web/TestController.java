@@ -2,6 +2,7 @@ package cn.buildworld.elasticjob.web;
 
 import cn.buildworld.elasticjob.config.DataSourceConfig;
 import cn.buildworld.elasticjob.handler.ElasticJobHandler;
+import cn.buildworld.elasticjob.job.MyJob;
 import cn.buildworld.elasticjob.listener.ElasticJobListener;
 import cn.buildworld.elasticjob.utils.DateUtil;
 import com.dangdang.ddframe.job.config.JobCoreConfiguration;
@@ -25,6 +26,7 @@ import java.util.UUID;
  */
 
 @RestController
+@RequestMapping("/job")
 public class TestController {
 
     @Autowired
@@ -45,7 +47,7 @@ public class TestController {
      */
     @RequestMapping("/test")
     public void test() {
-     /*   int shardingTotalCount = 2;
+        int shardingTotalCount = 2;
         String jobName = UUID.randomUUID().toString() + "-test123";
 
         JobCoreConfiguration jobCoreConfiguration = JobCoreConfiguration
@@ -54,7 +56,7 @@ public class TestController {
                 .build();
 
         SimpleJobConfiguration simpleJobConfiguration =
-                new SimpleJobConfiguration(jobCoreConfiguration, MyJob2.class.getCanonicalName());
+                new SimpleJobConfiguration(jobCoreConfiguration, MyJob.class.getCanonicalName());
 
         JobScheduler jobScheduler = new JobScheduler(zookeeperRegistryCenter, LiteJobConfiguration.newBuilder(simpleJobConfiguration).build());
 
@@ -66,7 +68,7 @@ public class TestController {
             e.printStackTrace();
             throw new RuntimeException("定时任务创建失败");
         }
-*/
+
 
     }
 

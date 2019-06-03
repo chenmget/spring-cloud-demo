@@ -446,4 +446,172 @@ public class PromoConst {
             this.code = code;
         }
     }
+
+    /**
+     * 活动变更模型审核状态枚举
+     */
+    public enum AuditState {
+        AuditState_1("1","待提交"),
+        AuditState_2("2","审核中"),
+        AuditState_3("3","初审通过"),
+        AuditState_4("4","初审不通过"),
+        AuditState_5("5","终审通过"),
+        AuditState_6("6","终审不通过");
+
+        private String code;
+        private String name;
+
+        AuditState(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
+    /**
+     * 活动变更详情模型变更类型枚举
+     */
+    public enum OperType {
+        ADD("add","新增"),
+        MOD("mod","修改"),
+        DEL("del","删除");
+
+        private String code;
+        private String name;
+
+        OperType(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
+    /**
+     * 活动变更详情模型字段类型枚举
+     */
+    public enum FieldType {
+        FieldType_1("1","字符和数字"),
+        FieldType_2("2","时间"),
+        FieldType_3("3","图片");
+
+        private String code;
+        private String name;
+
+        FieldType(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
+    /**
+     * 活动卖家范围和买家范围有效状态枚举
+     */
+    public enum Status {
+        WaitAudit("0","待审核"),
+        Audited("1","有效"),
+        AuditFailed("-1","审核不通过");
+
+        private String code;
+        private String name;
+
+        Status(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
+    /**
+     * 营销活动是否修改审批中
+     */
+    public enum ActivityIsModifying {
+        NO("0","不在修改审批中"),
+        YES("1","在修改审批中");
+
+        private String code;
+        private String name;
+
+        ActivityIsModifying(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
 }

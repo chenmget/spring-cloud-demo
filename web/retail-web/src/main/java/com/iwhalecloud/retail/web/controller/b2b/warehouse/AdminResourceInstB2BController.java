@@ -7,11 +7,7 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
-import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
-import com.iwhalecloud.retail.warehouse.dto.request.InventoryChangeReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetByIdListAndStoreIdReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.InventoryChangeResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
@@ -20,6 +16,8 @@ import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.InventoryQueryReq;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAndCteiResp;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAndMacResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -97,6 +95,9 @@ public class AdminResourceInstB2BController {
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         req.setStorageType(ResourceConst.STORAGETYPE.MANUAL_ENTRY.getCode());
         BeanUtils.copyProperties(dto, req);
+        if (StringUtils.isEmpty(req.getMktResInstType())) {
+            req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
+        }
         return resourceInstService.addResourceInst(req);
     }
     
@@ -212,5 +213,63 @@ public class AdminResourceInstB2BController {
 //        return inventoryChange;
         return ResultVO.success("操作成功");
     }
-    
+
+
+    @ApiOperation(value = "上传串码文件", notes = "支持xlsx、xls格式")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/getNbrAndMac",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
+    public ResultVO getNbrAndMac(@RequestParam("file") MultipartFile file) {
+
+        String suffix = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        //如果不在允许范围内的附件后缀直接抛出错误
+        if (allowUploadSuffix.indexOf(suffix) <= -1) {
+            return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
+        }
+
+        ResultVO resultVO = new ResultVO();
+        InputStream is = null;
+        try {
+            is = file.getInputStream();
+            List<ExcelToNbrAndMacResp> data = ExcelToNbrUtils.getNbrAndMac(is);
+            resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
+            resultVO.setResultData(data);
+        } catch (Exception e) {
+            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
+            resultVO.setResultMsg(e.getMessage());
+            log.error("excel解析失败",e);
+        }
+        return resultVO;
+    }
+
+    @ApiOperation(value = "上传串码文件", notes = "支持xlsx、xls格式")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/getNbrAndCtei",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
+    public ResultVO getNbrAndCtei(@RequestParam("file") MultipartFile file) {
+
+        String suffix = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        //如果不在允许范围内的附件后缀直接抛出错误
+        if (allowUploadSuffix.indexOf(suffix) <= -1) {
+            return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
+        }
+
+        ResultVO resultVO = new ResultVO();
+        InputStream is = null;
+        try {
+            is = file.getInputStream();
+            List<ExcelToNbrAndCteiResp> data = ExcelToNbrUtils.getNbrAndCtei(is);
+            resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
+            resultVO.setResultData(data);
+        } catch (Exception e) {
+            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
+            resultVO.setResultMsg(e.getMessage());
+            log.error("excel解析失败",e);
+        }
+        return resultVO;
+    }
 }

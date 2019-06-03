@@ -17,6 +17,10 @@ import com.iwhalecloud.retail.order2b.dto.resquest.order.PreCreateOrderReq;
 import com.iwhalecloud.retail.order2b.entity.OrderItem;
 import com.iwhalecloud.retail.order2b.model.CartItemModel;
 import com.iwhalecloud.retail.order2b.model.CreateOrderLogModel;
+import com.iwhalecloud.retail.promo.common.PromoConst;
+import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
+import com.iwhalecloud.retail.promo.dto.req.MarketingActivityQueryByGoodsReq;
+import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -25,6 +29,7 @@ import org.springframework.util.StringUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Slf4j
@@ -47,6 +52,9 @@ public class GoodsManagerReference {
 
     @Reference
     private ProductBaseService productBaseService;
+
+    @Reference
+    private MarketingActivityService marketingActivityService;
 
     public CommonResultResp<List<String>> getGoodsPayTypeList(List<OrderItem> orderItems) {
         CommonResultResp resp = new CommonResultResp();
@@ -131,8 +139,28 @@ public class GoodsManagerReference {
         if (resultVO.getResultData() == null) {
             return null;
         }
+
         GoodsDetailDTO detail = resultVO.getResultData();
 
+        // 检查是否有可以参加的前置补贴活动 有：要取出活动价格  替换掉上面的返回结果里面的价格 detail.getDeliveryPrice
+        MarketingActivityQueryByGoodsReq activityProductReq = new MarketingActivityQueryByGoodsReq();
+        activityProductReq.setProductId(req.getProductId());
+        activityProductReq.setActivityType(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
+        activityProductReq.setMerchantCode(request.getUserCode());
+        activityProductReq.setSupplierCode(request.getMerchantId());
+        log.info("GoodsManagerReference.builderCart() 调用服务 marketingActivityService.getActivityProduct() input:{}", JSON.toJSONString(activityProductReq));
+        ResultVO<ActivityProductDTO> activityProductResultVO = marketingActivityService.getActivityProduct(activityProductReq);
+        log.info("GoodsManagerReference.builderCart() 调用服务 marketingActivityService.getActivityProduct() output:{}", JSON.toJSONString(activityProductResultVO));
+
+        if (activityProductResultVO.isSuccess() && Objects.nonNull(activityProductResultVO.getResultData())) {
+            ActivityProductDTO activityProductDTO = activityProductResultVO.getResultData();
+            log.info("GoodsManagerReference.builderCart() 调用服务 marketingActivityService.getActivityProduct() (有参加前置补贴）返回结果:{}", JSON.toJSONString(activityProductDTO));
+            // 设置需要的值
+            // 前置补贴活动的统一货价(转换为Double)
+            detail.setDeliveryPrice(activityProductDTO.getPrice() * 1D);
+        }
+
+        // 查询预售活动
         if (StringUtils.isEmpty(request.getActivityId())) {
             request.setOrderCat(OrderManagerConsts.ORDER_CAT_0);
         } else {

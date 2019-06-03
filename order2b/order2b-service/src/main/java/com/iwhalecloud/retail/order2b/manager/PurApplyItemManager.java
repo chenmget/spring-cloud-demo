@@ -30,5 +30,16 @@ public class PurApplyItemManager {
         queryWrapper.eq("apply_id", applyId);
         return purApplyItemMapper.selectList(queryWrapper);
     }
+
+    /**
+     * 通过采购申请单查询采购申请单项
+     * @param applyId
+     * @return
+     */
+    public List<PurApplyItem> getDeliveryInfoByApplyID(String applyId) {
+        QueryWrapper<PurApplyItem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("apply_id", applyId);
+        return purApplyItemMapper.selectList(queryWrapper);
+    }
 }
 

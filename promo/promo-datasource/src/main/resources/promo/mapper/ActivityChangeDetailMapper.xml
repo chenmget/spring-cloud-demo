@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.ActivityChangeDetailMapper">
+
+<sql id="allFields">
+    t.CHANGE_DETAIL_ID 
+    ,t.CHANGE_ID 
+    ,t.OPER_TYPE 
+    ,t.VER_NUM 
+    ,t.TABLE_NAME 
+    ,t.CHANGE_FIELD 
+    ,t.CHANGE_FIELD_NAME 
+    ,t.FIELD_TYPE 
+    ,t.OLD_VALUE 
+    ,t.NEW_VALUE 
+    ,t.KEY_VALUE 
+    ,t.CREATE_DATE 
+    ,t.CREATE_STAFF 
+</sql>
+
+</mapper>

@@ -27,8 +27,6 @@ import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.request.markresswap.EBuyTerminalItemSwapReq;
-import com.iwhalecloud.retail.warehouse.dto.request.markresswap.EBuyTerminalSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalItemSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.SyncTerminalSwapReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
@@ -119,31 +117,40 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (null == list || list.isEmpty()) {
             return ResultVO.success(page);
         }
-        // 添加产品信息
-        for (ResourceInstListPageResp resp : list) {
-            ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
-            log.info("ResourceInstServiceImpl.getResourceInstList  merchantService.getMerchantById req={},resp={}", resp.getMerchantId(), JSON.toJSONString(merchantResultVO));
-            MerchantDTO merchantDTO = merchantResultVO.getResultData();
-            if (null != merchantDTO) {
-                resp.setRegionName(merchantDTO.getCityName());
-                resp.setLanName(merchantDTO.getLanName());
-                resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
-            }
-            String productId = resp.getMktResId();
-            if (StringUtils.isBlank(productId)) {
+
+        // 按产品维度组装数据
+        Map<String, List<ResourceInstListPageResp>> map = list.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
+        for (Map.Entry<String, List<ResourceInstListPageResp>> entry : map.entrySet()) {
+            String mktResId = entry.getKey();
+            if (StringUtils.isBlank(mktResId)) {
                 continue;
             }
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
-            queryReq.setProductId(productId);
+            queryReq.setProductId(mktResId);
             ResultVO<List<ProductResourceResp>> resultVO = productService.getProductResource(queryReq);
             log.info("ResourceInstServiceImpl.getResourceInstList productService.getProductResource req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(resultVO));
             List<ProductResourceResp> prodList = resultVO.getResultData();
-            if (null != prodList && !prodList.isEmpty()) {
-                ProductResourceResp prodResp = prodList.get(0);
+            if (CollectionUtils.isEmpty(prodList)) {
+                continue;
+            }
+            ProductResourceResp prodResp = prodList.get(0);
+            List<ResourceInstListPageResp> instList =entry.getValue();
+            for (ResourceInstListPageResp resp : instList) {
+                // 添加产品信息
                 BeanUtils.copyProperties(prodResp, resp);
+                // 库中存的是串码所属用户的地市，查询展示的是零售商的地市
+                if (StringUtils.isNotBlank(resp.getMerchantId())) {
+                    ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
+                    if (merchantResultVO.isSuccess() && null != merchantResultVO.getResultData()) {
+                        MerchantDTO merchantDTO = merchantResultVO.getResultData();
+                        resp.setRegionName(merchantDTO.getCityName());
+                        resp.setLanName(merchantDTO.getLanName());
+                        resp.setMerchantName(merchantDTO.getMerchantName());
+                        resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+                    }
+                }
             }
         }
-
         return ResultVO.success(page);
     }
 
@@ -313,8 +320,14 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInst.setMktResBatchId(batchId);
             // 目标仓库是串码所属人的仓库
             resourceInst.setMktResStoreId(req.getDestStoreId());
-            if (null != req.getCtCode()) {
-                resourceInst.setCtCode(req.getCtCode().get(mktResInstNbr));
+            if (null != req.getCtCodeMap()) {
+                resourceInst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getSnCodeMap()) {
+                resourceInst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getMacCodeMap()) {
+                resourceInst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
             }
             resourceInst.setCreateDate(now);
             resourceInst.setMerchantId(null);
@@ -405,8 +418,14 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInst.setMktResBatchId(batchId);
             // 目标仓库是串码所属人的仓库
             resourceInst.setMktResStoreId(req.getDestStoreId());
-            if (null != req.getCtCode()) {
-                resourceInst.setCtCode(req.getCtCode().get(mktResInstNbr));
+            if (null != req.getCtCodeMap()) {
+                resourceInst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getSnCodeMap()) {
+                resourceInst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getMacCodeMap()) {
+                resourceInst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
             }
             resourceInst.setCreateDate(now);
             resourceInst.setSourceType(req.getSourceType());
@@ -800,13 +819,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         ResultVO<ProductForResourceResp> productRespResultVO = productService.getProductForResource(productReq);
         log.info("ResourceInstServiceImpl.syncTerminal productService.getProductForResource req={},resp={}", JSON.toJSONString(productReq), JSON.toJSONString(productRespResultVO));
         String sn = "";
-        String isFixedLine = "";
         if (productRespResultVO.isSuccess() && productRespResultVO.getResultData() != null) {
             sn = productRespResultVO.getResultData().getSn();
-            isFixedLine = productRespResultVO.getResultData().getIsFixedLine();
         }
         List<SyncTerminalItemSwapReq> mktResList = Lists.newArrayList();
-        List<EBuyTerminalItemSwapReq> eBuyTerminalItemReqs = Lists.newArrayList();
         Integer addNum = req.getMktResInstNbrs().size();
         for (int i = 0; i < addNum; i++) {
             String mktResInstNbr = req.getMktResInstNbrs().get(i);
@@ -827,47 +843,12 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             syncTerminalItemReq.setCitySupplyId(merchantInfByNbrModel.getCitySupplyId());
             syncTerminalItemReq.setCitySupplyName(merchantInfByNbrModel.getCitySupplyName());
             mktResList.add(syncTerminalItemReq);
-            // 固网终端
-            if (ResourceConst.CONSTANT_YES.equals(isFixedLine)) {
-                EBuyTerminalItemSwapReq eBuyTerminalItemSwapReq = new EBuyTerminalItemSwapReq();
-                BeanUtils.copyProperties(syncTerminalItemReq, eBuyTerminalItemSwapReq);
-                eBuyTerminalItemSwapReq.setMktId(sn);
-                eBuyTerminalItemReqs.add(eBuyTerminalItemSwapReq);
-            }
         }
-        // step2 串码入库
-        ResultVO syncTerminalResultVO = null;
-        ResultVO eBuyTerminalResultVO = null;
-        if (CollectionUtils.isNotEmpty(mktResList)) {
-            SyncTerminalSwapReq syncTerminalReq = new SyncTerminalSwapReq();
-            syncTerminalReq.setMktResList(mktResList);
-            syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalReq);
-            log.info("ResourceInstServiceImpl.syncTerminal marketingResStoreService.syncTerminal req={},resp={}", JSON.toJSONString(syncTerminalReq), JSON.toJSONString(syncTerminalResultVO));
-        }
-        if (CollectionUtils.isNotEmpty(eBuyTerminalItemReqs)) {
-            EBuyTerminalSwapReq eBuyTerminalSwapReq = new EBuyTerminalSwapReq();
-            eBuyTerminalSwapReq.setMktResList(eBuyTerminalItemReqs);
-            eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
-            log.info("ResourceInstServiceImpl.syncTerminal marketingResStoreService.ebuyTerminal req={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
-        }
-        Boolean notSucess = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) || (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess());
-        if (notSucess) {
-            String errorMsg = "";
-            if (null == syncTerminalResultVO) {
-                errorMsg = eBuyTerminalResultVO.getResultMsg();
-            } else {
-                errorMsg = syncTerminalResultVO.getResultMsg();
-            }
-            return ResultVO.error(errorMsg);
-        }else {
-            String sucessMsg = "";
-            if (null == syncTerminalResultVO) {
-                sucessMsg =  eBuyTerminalResultVO.getResultMsg();
-            } else {
-                sucessMsg = syncTerminalResultVO.getResultMsg();
-            }
-            return ResultVO.success(sucessMsg);
-        }
+        SyncTerminalSwapReq syncTerminalReq = new SyncTerminalSwapReq();
+        syncTerminalReq.setMktResList(mktResList);
+        ResultVO syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalReq);
+        log.info("ResourceInstServiceImpl.syncTerminal marketingResStoreService.syncTerminal req={},resp={}", JSON.toJSONString(syncTerminalReq), JSON.toJSONString(syncTerminalResultVO));
+        return syncTerminalResultVO;
 
     }
 
@@ -879,6 +860,48 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Override
     public String getPrimaryKey(){
         return resourceInstManager.getPrimaryKey();
+    }
+
+    @Override
+    public synchronized List<ResourceInstListPageResp> getResourceInstListManual(ResourceInstListPageReq req) {
+        req = setProductIds(req);
+        List<ResourceInstListPageResp> list = resourceInstManager.getResourceInstListManual(req);
+        if (CollectionUtils.isEmpty(list)) {
+            return list;
+        }
+        // 按产品维度组装数据
+        Map<String, List<ResourceInstListPageResp>> map = list.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
+        for (Map.Entry<String, List<ResourceInstListPageResp>> entry : map.entrySet()) {
+            String mktResId = entry.getKey();
+            if (StringUtils.isBlank(mktResId)) {
+                continue;
+            }
+            ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
+            queryReq.setProductId(mktResId);
+            ResultVO<List<ProductResourceResp>> resultVO = productService.getProductResource(queryReq);
+            List<ProductResourceResp> prodList = resultVO.getResultData();
+            if (CollectionUtils.isEmpty(prodList)) {
+                continue;
+            }
+            ProductResourceResp prodResp = prodList.get(0);
+            List<ResourceInstListPageResp> instList =entry.getValue();
+            for (ResourceInstListPageResp resp : instList) {
+                // 添加产品信息
+                BeanUtils.copyProperties(prodResp, resp);
+                // 库中存的是串码所属用户的地市，查询展示的是零售商的地市
+                if (StringUtils.isNotBlank(resp.getMerchantId())) {
+                    ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(resp.getMerchantId());
+                    if (merchantResultVO.isSuccess() && null != merchantResultVO.getResultData()) {
+                        MerchantDTO merchantDTO = merchantResultVO.getResultData();
+                        resp.setRegionName(merchantDTO.getCityName());
+                        resp.setLanName(merchantDTO.getLanName());
+                        resp.setMerchantName(merchantDTO.getMerchantName());
+                        resp.setBusinessEntityName(merchantDTO.getBusinessEntityName());
+                    }
+                }
+            }
+        }
+        return list;
     }
 
 }

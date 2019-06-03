@@ -23,5 +23,10 @@ public class ProductForResourceResp implements Serializable {
      */
     @ApiModelProperty(value = "是否固网产品 1是；0否")
     private String isFixedLine;
+    /**
+     * 产品类型
+     */
+    @ApiModelProperty(value = "产品类型")
+    private String typeId;
 
 }

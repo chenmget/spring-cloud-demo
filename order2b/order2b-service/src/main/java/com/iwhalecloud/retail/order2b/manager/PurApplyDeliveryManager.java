@@ -1,7 +1,10 @@
 package com.iwhalecloud.retail.order2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.entity.PurApply;
@@ -13,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @auther lin.wenhui@iwhalecloud.com
@@ -54,5 +58,14 @@ public class PurApplyDeliveryManager {
         return purApplyMapper.update(purApply, userUpdateWrapper);
     }
 
+
+//    public List<PurApplyDeliveryResp> getDeliveryInfoByApplyID(String applyId) {
+//        return purApplyDeliveryMapper.getDeliveryInfoByApplyID(applyId);
+//    }
+    public Page<PurApplyDeliveryResp> getDeliveryInfoByApplyID(PurApplyReq req) {
+        Page<PurApplyDeliveryResp> page=new Page<>(req.getPageNo(),req.getPageSize());
+        Page<PurApplyDeliveryResp> pageReport = purApplyDeliveryMapper.getDeliveryInfoByApplyID(page,req.getApplyId());
+        return pageReport;
+    }
 }
 

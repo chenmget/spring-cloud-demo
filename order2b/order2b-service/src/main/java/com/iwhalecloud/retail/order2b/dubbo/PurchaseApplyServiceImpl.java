@@ -1,10 +1,18 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+
+
 import com.alibaba.dubbo.config.annotation.Service;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductListGetByIdsReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductInfoResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
@@ -21,9 +29,11 @@ import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -52,6 +62,9 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     @Reference
     private SupplierResourceInstService supplierResourceInstService;
 
+    @Reference
+    private ProductService productService;
+
     /**
      * 采购单发货
      *
@@ -72,29 +85,33 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             return ResultVO.error("新增采购发货记录失败");
         }
         //处理前端录入的串码数据
-        String productIdAndMktResInstNbr = req.getProductIdAndMktResInstNbr();
-        List<String> result = Arrays.asList(productIdAndMktResInstNbr.split(";"));
-        List<String> productIdList = Lists.newArrayList();
-        List<String> mktResInstNbrList = Lists.newArrayList();
-        for (int l = 0; l < result.size(); l++) {
-            if (l % 2 == 0) {
-                productIdList.add(result.get(l));
-            } else {
-                mktResInstNbrList.add(result.get(l));
-            }
+        //String productIdAndMktResInstNbr = req.getProductIdAndMktResInstNbr();
+      // List<String> result = Arrays.asList(productIdAndMktResInstNbr.split(";"));
+       // List<String> productIdList = Lists.newArrayList();
+        List<String> mktResInstNbr = Lists.newArrayList();
+        mktResInstNbr = req.getMktResInstNbr();
+        if(mktResInstNbr==null || mktResInstNbr.size()<=0) {
+            return ResultVO.error("没有收到串码记录");
         }
-        req.setProductIdList(productIdList);
-        req.setMktResInstNbrList(mktResInstNbrList);
+//        for (int l = 0; l < result.size(); l++) {
+//            if (l % 2 == 0) {
+//                productIdList.add(result.get(l));
+//            } else {
+//                mktResInstNbrList.add(result.get(l));
+//            }
+//        }
+//        req.setProductIdList(productIdList);
+//        req.setMktResInstNbrList(mktResInstNbrList);
         //通过采购申请单查询采购申请单项
         List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
 
         //新增采购申请单项明细
         List<PurApplyItemDetail> purApplyItemDetailList = Lists.newArrayList();
         for (int m = 0; m < purApplyItem.size(); m++) {
-            for (int n = 0; n < mktResInstNbrList.size(); n++) {
+            for (int n = 0; n < mktResInstNbr.size(); n++) {
                 PurApplyItemDetail purApplyItemDetail = new PurApplyItemDetail();
                 BeanUtils.copyProperties(req, purApplyItemDetail);
-                purApplyItemDetail.setMktResInstNbr(mktResInstNbrList.get(n));
+                purApplyItemDetail.setMktResInstNbr(mktResInstNbr.get(n));
                 purApplyItemDetail.setProductId(purApplyItem.get(m).getProductId());
                 purApplyItemDetail.setApplyItemId(purApplyItem.get(m).getApplyItemId());
                 purApplyItemDetailList.add(purApplyItemDetail);
@@ -183,6 +200,38 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             return ResultVO.error("更新采购申请单扩展失败");
         }
         return ResultVO.success();
+    }
+
+    @Override
+    public ResultVO<Page<PurApplyDeliveryResp>>  getDeliveryInfoByApplyID(PurApplyReq req) {
+
+        Page<PurApplyDeliveryResp> list = purApplyDeliveryManager.getDeliveryInfoByApplyID(req);
+        List<PurApplyDeliveryResp> deliveryInfo = list.getRecords();
+        List<String> prodIds = new ArrayList<String>();
+        for(PurApplyDeliveryResp purApplyDeliveryResp:deliveryInfo) {
+            String productId =purApplyDeliveryResp.getProductId();
+            if (productId!=null) {
+                prodIds.add(productId);
+            }
+        }
+
+       List<ProductInfoResp>  proTemp=productService.getProductInfoByIds(prodIds);
+        //获取产品名称 设置到list的结果集中
+        int k = deliveryInfo.size();
+        for(int i=0;i<k;i++) {
+            PurApplyDeliveryResp purApplyDeliveryResp= deliveryInfo.get(i);
+            String productId =purApplyDeliveryResp.getProductId();
+            for(ProductInfoResp productInfoResp:proTemp) {
+                String productIdTemp = productInfoResp.getProductId();
+                if (productIdTemp.equals(productId)) {
+                    purApplyDeliveryResp.setUnitName(productInfoResp.getUnitName());
+                    deliveryInfo.set(i,purApplyDeliveryResp);
+                    break;
+                }
+            }
+        }
+        list.setRecords(deliveryInfo);
+        return ResultVO.success(list);
     }
 
     public static void main(String[] args) {

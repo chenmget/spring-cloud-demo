@@ -46,4 +46,11 @@
 		SELECT SEQ_APPLY_ITEM_DETAIL_BATCH_ID.nextval 
 	</select>
 
+
+    <select id="getDeliveryInfoByApplyID"  parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp">
+        SELECT d.product_id as productId ,'' as unitName,d.mkt_res_inst_nbr as mktResInstNbr,d.batch_id as batchId,d.create_date as createDate
+        from pur_apply_item_detail d
+        WHERE  d.apply_id =#{applyId}
+
+    </select>
 </mapper>

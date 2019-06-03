@@ -63,4 +63,10 @@ public class MerchantAccountUpdateReq implements Serializable {
      */
     @ApiModelProperty(value = "帐户名称/银行账户")
     private String bankAccount;
+    
+    /**
+     * 帐户名称/银行账户
+     */
+    @ApiModelProperty(value = "翼支付登录号")
+    private String accountName;
 }

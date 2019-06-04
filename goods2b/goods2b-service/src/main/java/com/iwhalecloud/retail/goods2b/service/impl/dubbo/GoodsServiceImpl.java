@@ -164,6 +164,9 @@ public class GoodsServiceImpl implements GoodsService {
     @Reference
     private UserService userService;
 
+    @Autowired
+    private TypeManager typeManager;
+
     /**
      * 首字母转小写
      *
@@ -1351,6 +1354,13 @@ public class GoodsServiceImpl implements GoodsService {
                 productResp.setUnitType(productBaseGetResp.getUnitType());
                 productResp.setPurchaseType(productBaseGetResp.getPurchaseType());
                 productResp.setBrandId(productResp.getBrandId());
+                productResp.setBrandName(resp.getBrandName());
+                if(StringUtils.isNotEmpty(productResp.getTypeId())){
+                    Type type = typeManager.selectById(productResp.getTypeId());
+                    if(null!=type){
+                        productResp.setTypeName(type.getTypeName());
+                    }
+                }
             }
         }
         //查询产品属性列表

@@ -119,10 +119,15 @@ public class ProdFileManager {
             for (ProdFileDTO prodFileDTO : listProd) {
                 ProdFileDTO dto = new ProdFileDTO();
                 BeanUtils.copyProperties(prodFileDTO,dto);
-                dto.setFileUrl(fullImageUrl(dto.getFileUrl(), dfsShowIp, true));//lwslws
-//                dto.setThreeDimensionsUrl(fullImageUrl(dto.getThreeDimensionsUrl(), imageUrl, true));
-//                dto.setThumbnailUrl(fullImageUrl(dto.getThumbnailUrl(), imageUrl, true));
-
+                if(dto.getFileUrl() != null) {
+                	dto.setFileUrl(fullImageUrl(dto.getFileUrl(), dfsShowIp, true));//lwslws
+                }
+                if(dto.getThreeDimensionsUrl() != null) {
+                	dto.setThreeDimensionsUrl(fullImageUrl(dto.getThreeDimensionsUrl(), dfsShowIp, true));
+                }
+                if(dto.getThumbnailUrl() != null) {
+                	dto.setThumbnailUrl(fullImageUrl(dto.getThumbnailUrl(), dfsShowIp, true));
+                }
                 listProds.add(dto);
             }
         }
@@ -171,8 +176,10 @@ public class ProdFileManager {
     public ProdFileDTO queryGoodsImageHD(String goodsId){
     	ProdFileDTO prodFileDTO = prodFileMapper.queryGoodsImageHD(goodsId);
     	if(prodFileDTO != null) {
-    		String startUrl = fullImageUrl(prodFileDTO.getFileUrl(), dfsShowIp, true);//lwslws
-    		prodFileDTO.setFileUrl(startUrl);
+    		if(prodFileDTO.getFileUrl() != null) {
+    			String startUrl = fullImageUrl(prodFileDTO.getFileUrl(), dfsShowIp, true);//lwslws
+        		prodFileDTO.setFileUrl(startUrl);
+    		}
     	}
     	return prodFileDTO;
     }

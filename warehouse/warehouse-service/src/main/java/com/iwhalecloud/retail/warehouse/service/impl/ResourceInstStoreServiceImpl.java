@@ -332,7 +332,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 pw.println();
                 String syncFileName = sendDir+"/"+destFileName;
                 log.info("----------新序列seq:"+seq);
-                mktResItmsSyncRecMapper.updateByEvenId(list.get(j).getMktResEventId(),syncFileName,time + seq);
+                mktResItmsSyncRecMapper.updateByEvenId(list.get(j).getMktResChngEvtDetailId(),syncFileName,time + seq);
             }
             //批量更新
 //            mktResItmsSyncRecMapper.updateBatchById(list);

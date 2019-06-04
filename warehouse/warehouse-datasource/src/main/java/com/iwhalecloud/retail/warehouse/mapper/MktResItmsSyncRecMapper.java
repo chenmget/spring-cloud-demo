@@ -56,7 +56,7 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 			@Param("syncBatchId")String syncBatchId);
 
 	void updateBatchById(List<MktResItmsSyncRec> list);
-	void updateByEvenId(@Param("mktResEventId")String mktResEventId, @Param("destFileName")String destFileName,
+	void updateByEvenId(@Param("mktResChngEvtDetailId")String mktResChngEvtDetailId, @Param("destFileName")String destFileName,
 						@Param("syncBatchId")String syncBatchId);
 	/**
      * 根据保存路径获取当前文件最近的批次

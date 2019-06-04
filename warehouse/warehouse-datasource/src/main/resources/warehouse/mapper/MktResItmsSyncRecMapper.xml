@@ -246,6 +246,6 @@
 			SET SYNC_FILE_NAME = #{destFileName},
 			SYNC_BATCH_ID = #{syncBatchId}
 			WHERE
-			 MKT_RES_EVENT_ID = #{mktResEventId}
+			 MKT_RES_CHNG_EVT_DETAIL_ID = #{mktResChngEvtDetailId}
 	</update>
 </mapper>

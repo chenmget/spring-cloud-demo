@@ -77,13 +77,14 @@ public class ResourceBatchRecServiceImpl implements ResourceBatchRecService {
                     detailDTO.setChngType(ResourceConst.PUT_IN_STOAGE);
                     detailDTO.setStatusCd(ResourceConst.StatusCdEnum.STATUS_CD_VALD.getCode());
                     detailDTO.setMktResInstNbr(nbr);
+                    detailDTO.setMktResStoreId(req.getDestStoreId());
                     int addChngEvtDetailCnt = resourceChngEvtDetailManager.insertChngEvtDetail(detailDTO);
                     log.info("ResourceInstServiceImpl.addResourceInst detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
                 }
             }
 
             String destStroeId = req.getDestStoreId();
-            if (!StringUtils.isEmpty(destStroeId)) {
+            if (!StringUtils.isEmpty(destStroeId) && !ResourceConst.NULL_STORE_ID.equals(destStroeId)) {
                 for(String nbr : entry.getValue()){
                     ResourceChngEvtDetailDTO detailDTO = new ResourceChngEvtDetailDTO();
                     BeanUtils.copyProperties(req, detailDTO);

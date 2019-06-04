@@ -28,6 +28,7 @@ import com.iwhalecloud.retail.promo.utils.CloneUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -60,7 +61,9 @@ public class ActivityProductServiceImpl implements ActivityProductService {
     @Autowired
     private MarketingActivityService marketingActivityService;
 
-
+    @Value("${fdfs.showUrl}")
+    private String dfsShowIp;
+    
     @Override
     public ResultVO<ActivityProductResp> addActivityProduct(ActivityProductBatchReq req) {
         log.info("ActivityProductServiceImpl.addActivityProduct req={}", JSON.toJSONString(req));
@@ -145,11 +148,51 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         return ResultVO.success(preSubsidyProductResqDTOS);
     }
 
+    /**
+     * 拼接完整的地址
+     * @param imagePath
+     * @param showUrl
+     * @param flag 为true时，拼接完整地址，为false时，是截取地址
+     * @return
+     */
+    public static String fullImageUrl(String imagePath, String showUrl, boolean flag) {
+        String aftPath = "";
+        if (flag) {
+            String[] pathArr = imagePath.split(",");
+            for (String befPath : pathArr) {
+                if (org.springframework.util.StringUtils.isEmpty(aftPath)) {
+                    if (!befPath.startsWith("http")) {
+                        aftPath += showUrl + befPath;
+                    } else {
+                        aftPath += befPath;
+                    }
+                } else {
+                    if (!befPath.startsWith("http")) {
+                        aftPath += "," + showUrl + befPath;
+                    } else {
+                        aftPath += "," + befPath;
+                    }
+                }
+            }
+        } else {
+            if (!org.springframework.util.StringUtils.isEmpty(imagePath)) {
+                aftPath = imagePath.replaceAll(showUrl, "");
+            }
+        }
+        return aftPath;
+    }
+    
     @Override
     public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProductInfo(String marketingActivityId) {
         log.info("ActivityProductServiceImpl.queryPreSubsidyProduct marketingActivityId={}", marketingActivityId);
         List<PreSubsidyProductRespDTO> preSubsidyProductResqDTOS = new ArrayList<>();
         List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityId);
+        for(int i=0;i<activityProducts.size();i++) {//把路径拼接出来
+        	ActivityProduct activityProduct = activityProducts.get(i);
+        	 String productPic = fullImageUrl(activityProduct.getProductPic(), dfsShowIp, true);//lwslws
+        	activityProduct.setProductPic(productPic);
+        }
+        
         log.info("ActivityProductServiceImpl.queryPreSubsidyProduct activityProductManager.queryActivityProductByCondition activityProducts={}", JSON.toJSON(activityProducts));
         if (activityProducts.size() <= 0) {
             return ResultVO.success(preSubsidyProductResqDTOS);
@@ -189,6 +232,12 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             activityProductResqDTO.setTailPayStartTime(tailPayStartTime);
             activityProductResqDTO.setTailPayEndTime(tailPayEndTime);
             preSubsidyProductResqDTO.setActivityProductResqDTO(activityProductResqDTO);
+            
+            ActivityProductRespDTO activityProductRespDTO = preSubsidyProductResqDTO.getActivityProductResqDTO();
+            if(activityProductRespDTO != null) {
+            	preSubsidyProductResqDTO.setProductPic(activityProductRespDTO.getProductPic());
+                preSubsidyProductResqDTO.setProductPicUseType(activityProductRespDTO.getProductPicUseType());
+            }
             preSubsidyProductResqDTOS.add(preSubsidyProductResqDTO);
         }
         return ResultVO.success(preSubsidyProductResqDTOS);

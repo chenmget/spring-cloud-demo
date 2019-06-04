@@ -34,8 +34,6 @@ public class ProdFileManager {
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
 
-//    @Value("${fdfs.imageUrl}")
-//    private String imageUrl;
     /**
      * 添加商品图片
      * @param goodsId 商品ID
@@ -121,11 +119,7 @@ public class ProdFileManager {
             for (ProdFileDTO prodFileDTO : listProd) {
                 ProdFileDTO dto = new ProdFileDTO();
                 BeanUtils.copyProperties(prodFileDTO,dto);
-                String startFileUrl = dto.getFileUrl();
-        		if(startFileUrl != null) {
-        			startFileUrl = startFileUrl.replace("/CloudShelfNew", "");
-        		}
-                dto.setFileUrl(fullImageUrl(startFileUrl, "http://10.45.46.232:8081", true));
+                dto.setFileUrl(fullImageUrl(dto.getFileUrl(), dfsShowIp, true));//lwslws
 //                dto.setThreeDimensionsUrl(fullImageUrl(dto.getThreeDimensionsUrl(), imageUrl, true));
 //                dto.setThumbnailUrl(fullImageUrl(dto.getThumbnailUrl(), imageUrl, true));
 
@@ -177,12 +171,8 @@ public class ProdFileManager {
     public ProdFileDTO queryGoodsImageHD(String goodsId){
     	ProdFileDTO prodFileDTO = prodFileMapper.queryGoodsImageHD(goodsId);
     	if(prodFileDTO != null) {
-    		String startUrl = prodFileDTO.getFileUrl();
-    		if(startUrl != null) {
-    			startUrl = startUrl.replaceAll("/CloudShelfNew", "");
-    		}
-    		String fileUrl = fullImageUrl(startUrl, "http://10.45.46.232:8081", true);
-    		prodFileDTO.setFileUrl(fileUrl);
+    		String startUrl = fullImageUrl(prodFileDTO.getFileUrl(), dfsShowIp, true);//lwslws
+    		prodFileDTO.setFileUrl(startUrl);
     	}
     	return prodFileDTO;
     }

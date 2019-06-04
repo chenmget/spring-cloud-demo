@@ -148,7 +148,7 @@ public class MerchantController {
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
-    })
+    })//lws
     @RequestMapping(value = "/exportMerchantList", method = RequestMethod.POST)
     public void exportMerchantList(@RequestBody MerchantPageReq req, HttpServletResponse response) {
         log.info("MerchantController.exportMerchantList() input: MerchantPageReq={}", JSON.toJSONString(req));
@@ -219,7 +219,7 @@ public class MerchantController {
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
-    })
+    })//lws
     @RequestMapping(value = "/exportRetailMerchantList", method = RequestMethod.POST)
     public void exportRetailMerchantList(@RequestBody RetailMerchantPageReq req, HttpServletResponse response) {
         log.info("MerchantController.exportMerchantList() input: MerchantPageReq={}", JSON.toJSONString(req));
@@ -227,6 +227,13 @@ public class MerchantController {
         // 数据量控制在1万条
         req.setPageSize(EXPORT_PAGE_SIZE);
         ResultVO<Page<RetailMerchantDTO>> resultVO = merchantService.pageRetailMerchant(req);
+        List<RetailMerchantDTO> merchantDTOS = resultVO.getResultData().getRecords();
+
+        if (!CollectionUtils.isEmpty(merchantDTOS)) {
+            merchantDTOS.forEach(merchantDTO -> {
+                merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+            });
+        }
         List<ExcelTitleName> excelTitleNames = MerchantColumn.retailMerchantFields();
         OutputStream output = null;
         try {
@@ -309,6 +316,15 @@ public class MerchantController {
         req.setPageNo(EXPORT_PAGE_NO);
         req.setPageSize(EXPORT_PAGE_SIZE);
         ResultVO<Page<SupplyMerchantDTO>> resultVO = merchantService.pageSupplyMerchant(req);
+        if (null != resultVO && resultVO.isSuccess() && null != resultVO.getResultData()) {
+            List<SupplyMerchantDTO> merchantDTOS = resultVO.getResultData().getRecords();
+            if (!CollectionUtils.isEmpty(merchantDTOS)) {
+                merchantDTOS.forEach(merchantDTO -> {
+                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+                });
+            }
+        }
+        
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         excelTitleNames = MerchantColumn.complementSupplyMerchantFileds(excelTitleNames);
         OutputStream output = null;

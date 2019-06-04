@@ -68,4 +68,6 @@ public interface GoodsProductRelService{
     public void insertProdFile(ProdFileReq req);
     
     public String selectProdFileId();
+    
+    public void delProdFileByTargetId(String goodsId);
 }

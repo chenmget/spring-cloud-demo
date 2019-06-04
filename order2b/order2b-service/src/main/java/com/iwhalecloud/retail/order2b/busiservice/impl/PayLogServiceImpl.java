@@ -177,7 +177,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         saveLogModel.setRecAccount(req.getRecAccount());
         saveLogModel.setOperationType(req.getOperationType());
         saveLogModel.setRecAccountName(req.getRecAccountName());
-        saveLog(saveLogModel);
+        saveYZFLog(saveLogModel);
         resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         resultVO.setResultMsg("支付成功");
         return resultVO;
@@ -246,6 +246,43 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         payLogDTO.setOrderId(saveLogModel.getOrderId());
         payLogDTO.setChargeMoney(Long.parseLong(saveLogModel.getOrderAmount()));
         payLogDTO.setPlatformType(PayConsts.PLATFORM_TYPE_HNYHJ_B2B);
+        payLogDTO.setRequestType(PayConsts.REQUEST_TYPE_1001);
+        payLogDTO.setPayPlatformId(PayConsts.PAY_PLATFORM_ID_1001);
+        payLogDTO.setPayType(PayConsts.PAY_TYPE_1004);
+        payLogDTO.setOperationType(saveLogModel.getOperationType());
+        payLogDTO.setTerminalId(PayConsts.TERMINAL_TYPE_1003);
+        payLogDTO.setPayStatus(saveLogModel.getPayStatus());
+        payLogDTO.setRequestType(saveLogModel.getRequestType());
+        payLogDTO.setPayDataMd(saveLogModel.getPayDataMd());
+        payLogDTO.setPayData(saveLogModel.getPayData());
+        payLogDTO.setRecBankId(saveLogModel.getRecBankId());
+        payLogDTO.setRecAccount(saveLogModel.getRecAccount());
+        payLogDTO.setRecAccountName(saveLogModel.getRecAccountName());
+        payLogDTO.setCreateStaff("1");
+        payLogDTO.setCreateDate(new Date());
+        int i = this.payLogManager.savaPayLog(payLogDTO);
+        log.info("PayLogServiceImpl.saveLog payLogManager.savaPayLog req={}, resp={}", JSON.toJSONString(payLogDTO), i);
+        PayOperationLogDTO payOperationLogDTO = new PayOperationLogDTO();
+        payOperationLogDTO.setOrderId(saveLogModel.getOrderId());
+        payOperationLogDTO.setPayId(saveLogModel.getPayId());
+        payOperationLogDTO.setPayPlatform(PayConsts.PAY_PLATFORM_ID_1001);
+        payOperationLogDTO.setOperationType(saveLogModel.getOperationType());
+        payOperationLogDTO.setPayStatus(saveLogModel.getPayStatus());
+        payOperationLogDTO.setCreateStaff("1");
+        payOperationLogDTO.setCreateDate(new Date());
+        int j = this.payOperationLogManager.savaPayOperationLog(payOperationLogDTO);
+        log.info("PayLogServiceImpl.saveLog payOperationLogManager.savaPayOperationLog req={}, resp={}", JSON.toJSONString(payOperationLogDTO), i);
+        return j;
+    }
+
+    @Override
+    public int saveYZFLog(SaveLogModel saveLogModel) {
+        log.info("PayLogServiceImpl.saveLog req={} ",JSON.toJSONString(saveLogModel));
+        PayLogDTO payLogDTO = new PayLogDTO();
+        payLogDTO.setId(saveLogModel.getPayId());
+        payLogDTO.setOrderId(saveLogModel.getOrderId());
+        payLogDTO.setChargeMoney(Long.parseLong(saveLogModel.getOrderAmount()));
+        payLogDTO.setPlatformType(PayConsts.PLATFORM_TYPE_HNYHJ_B2B);
         payLogDTO.setRequestType(PayConsts.REQUEST_TYPE_1006);
         payLogDTO.setPayPlatformId(PayConsts.PAY_PLATFORM_ID_1001);
         payLogDTO.setPayType(PayConsts.PAY_TYPE_1006);
@@ -274,7 +311,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         log.info("PayLogServiceImpl.saveLog payOperationLogManager.savaPayOperationLog req={}, resp={}", JSON.toJSONString(payOperationLogDTO), i);
         return j;
     }
-
+    
     private String d2l(String d) {
         double d1 = Double.parseDouble(d);
         return String.valueOf(Math.round(d1));

@@ -135,6 +135,9 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             resouceInstTrackDTO.setMktResInstNbr(mktResInstNbr);
             resouceInstTrackDTO.setMktResStoreId(req.getDestStoreId());
             resouceInstTrackDTO.setSourceType(null);
+            if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
+                resouceInstTrackDTO.setSourceType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
+            }
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynSaveTrackForMerchant resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();

@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class PurApplyServiceImplTest  extends TestBase {
@@ -26,17 +27,19 @@ public class PurApplyServiceImplTest  extends TestBase {
 //                    isFixedLine=null, typeName=null, productId=100006163)], addFileReq=[])
     @Resource
     private PurApplyService purApplyService;
-    @Resource
-    private PurchaseApplyService purchaseApplyService;
+
     @Test
     public void tcProcureApply() {
 //        System.out.println("1111"+purApplyService);
-        String applyId="1694";
+
+//        1770	1559635944794	测试测试测试			10000701	DBS0025054	4331301047393	4331301047393	1345665656	731	73101		21	200012813991	2019-06-04 16:13:29	200012813991	2019-06-04 16:13:29	2019-06-04 16:13:29
+       String isSave="3";
+        String applyId="1770";
         ProcureApplyReq req = new ProcureApplyReq();
-        req.setIsSave("2");
+        req.setIsSave(isSave);
         req.setApplyId(applyId);
-        req.setApplyCode("1558768652984");
-        req.setApplyName("chenbin4455y53");
+        req.setApplyCode("1559635944794");
+        req.setApplyName("chenb9y53chenbin1");
         req.setApplyMerchantCode("4331301047393");
         req.setApplyAddress("731");
         req.setApplyContact("13004835189");
@@ -45,49 +48,121 @@ public class PurApplyServiceImplTest  extends TestBase {
         req.setApplyMerchantId("4331301047393");
         req.setRegionId("73105");
         req.setStatusCd("20");
-        req.setStatusDate("2019-5-27 17:09:22");
+        req.setStatusDate("2019-06-04 16:13:29");
         req.setCreateStaff("1");
-        req.setCreateDate("2019-5-25 17:09:22");
+        req.setCreateDate("2019-06-04 16:13:29");
         req.setUpdateStaff("1");
         req.setApplyType("10");
-        AddProductReq addProductReq =new AddProductReq();
-        addProductReq.setSnCount("1");
-        addProductReq.setPriceInStore("121111000");
-        addProductReq.setPurchaseType("10");
-        addProductReq.setProductId("100006163");
+        AddProductReq addProductReq1 =new AddProductReq();
+        addProductReq1.setSnCount("1");
+        addProductReq1.setPriceInStore("9121111000");
+        addProductReq1.setPurchaseType("10");
+        addProductReq1.setProductId("100006163");
         List<AddProductReq> p = new ArrayList<>();
-        p.add(addProductReq);
+        p.add(addProductReq1);
         req.setAddProductReq(p);
 
-        List<AddProductReq> list = req.getAddProductReq();
-        for(int i=0;i<list.size();i++){
-            AddProductReq addProductReq1 = list.get(i);
-            String itemId = purApplyService.hqSeqItemId();
-            addProductReq1.setApplyItemId(itemId);
-            addProductReq1.setApplyId(req.getApplyId());
-            addProductReq1.setStatusCd("1000");
-            addProductReq1.setCreateStaff("1");
-            addProductReq1.setCreateDate("2019-5-25 17:09:22");
-            addProductReq1.setUpdateStaff("1");
-            addProductReq1.setUpdateDate("2019-5-25 17:09:22");
-            addProductReq1.setStatusDate("2019-5-25 17:09:22");
-            //写表PUR_APPLY_ITEM(采购申请单项)
-            purApplyService.crPurApplyItem(addProductReq1);
+
+
+
+
+
+
+        String userId = "200012813991";
+        String userName = "zte管理员";
+        req.setHandleUserId(userId);
+        req.setHandleUserName(userName);
+        int isHaveSave = purApplyService.isHaveSave(applyId);
+        if(isHaveSave != 0){//表里面有记录的话,申请单的字段就update,添加产品跟附件的就先delete再insert
+
+            purApplyService.updatePurApply(req);//联系电话，项目名称，供应商code可以修改
+
+            purApplyService.delApplyItem(req);
+
+            purApplyService.delApplyFile(req);
+
+            purApplyService.delPurApplyExt(req);
+
+            List<AddProductReq> list = req.getAddProductReq();
+            for(int i=0;i<list.size();i++){
+                AddProductReq addProductReq = list.get(i);
+                String itemId = purApplyService.hqSeqItemId();
+                addProductReq.setApplyItemId(itemId);
+                addProductReq.setApplyId(req.getApplyId());
+                addProductReq.setStatusCd("1000");
+                addProductReq.setCreateStaff("200012813991");
+                addProductReq.setCreateDate("2019-06-04 16:13:29");
+                addProductReq.setUpdateStaff("200012813991");
+                addProductReq.setUpdateDate("2019-06-04 16:13:29");
+                addProductReq.setStatusDate("2019-06-04 16:13:29");
+                //写表PUR_APPLY_ITEM(采购申请单项)
+                purApplyService.crPurApplyItem(addProductReq);
+            }
+            if("3".equals(isSave)){//编辑
+                purApplyService.tcProcureApply(req);
+            }
+
+        }else{
+            List<AddProductReq> list = req.getAddProductReq();
+            for(int i=0;i<list.size();i++){
+                AddProductReq addProductReq = list.get(i);
+                String itemId = purApplyService.hqSeqItemId();
+                addProductReq.setApplyItemId(itemId);
+                addProductReq.setApplyId(req.getApplyId());
+                addProductReq.setStatusCd("1000");
+                addProductReq.setCreateStaff("200012813991");
+                addProductReq.setCreateDate("2019-06-04 16:13:29");
+                addProductReq.setUpdateStaff("200012813991");
+                addProductReq.setUpdateDate("2019-06-04 16:13:29");
+                addProductReq.setStatusDate("2019-06-04 16:13:29");
+                //写表PUR_APPLY_ITEM(采购申请单项)
+                purApplyService.crPurApplyItem(addProductReq);
+
+            }
+
+            purApplyService.tcProcureApply(req);
         }
-
-        purApplyService.tcProcureApply(req);
-
 
         //表里面没记录的话
 
-//             MemMemberAddressReq memMeneberAddr = purApplyService.selectMemMeneberAddr(req);
-//        System.out.println("11=======================================================11"+applyId);
+//        MemMemberAddressReq memMeneberAddr = purApplyService.selectMemMeneberAddr(req);
 //        memMeneberAddr.setApplyId(applyId);
-//        memMeneberAddr.setCreateStaff("1");
-//        memMeneberAddr.setCreateDate("2019-5-25 17:09:22");
-//        memMeneberAddr.setUpdateStaff("1");
-//        memMeneberAddr.setUpdateDate("2019-5-25 17:09:22");
+//        memMeneberAddr.setCreateStaff("200012813991");
+//        memMeneberAddr.setCreateDate("2019-06-04 16:13:29");
+//        memMeneberAddr.setUpdateStaff("200012813991");
+//        memMeneberAddr.setUpdateDate("2019-06-04 16:13:29");
 //        purApplyService.insertPurApplyExt(memMeneberAddr);
+
+//		List<AddProductReq> list = req.getAddProductReq();
+//		for(int i=0;i<list.size();i++){
+//			AddProductReq addProductReq = list.get(i);
+//			String itemId = purApplyService.hqSeqItemId();
+//			addProductReq.setApplyItemId(itemId);
+//			addProductReq.setApplyId(req.getApplyId());
+//			addProductReq.setStatusCd("1000");
+//			addProductReq.setCreateStaff(createStaff);
+//			addProductReq.setCreateDate(createDate);
+//			addProductReq.setUpdateStaff(updateStaff);
+//			addProductReq.setUpdateDate(updateDate);
+//			addProductReq.setStatusDate(statusDate);
+//			//写表PUR_APPLY_ITEM(采购申请单项)
+//			purApplyService.crPurApplyItem(addProductReq);
+//		}
+
+        List<AddFileReq> fileList = req.getAddFileReq();
+        if(fileList != null){
+            for(int i=0;i<fileList.size();i++){
+                AddFileReq addFileReq = fileList.get(i);
+                String fileId = purApplyService.hqSeqFileId();
+                addFileReq.setFileId(fileId);
+                addFileReq.setApplyId(req.getApplyId());
+                addFileReq.setCreateStaff("200012813991");
+                addFileReq.setCreateDate("2019-06-04 16:13:29");
+                addFileReq.setUpdateStaff("200012813991");
+                addFileReq.setUpdateDate("2019-06-04 16:13:29");
+                purApplyService.crPurApplyFile(addFileReq);
+            }
+        }
 
 
 

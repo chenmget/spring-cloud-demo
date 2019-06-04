@@ -163,7 +163,10 @@ public class CgSearchApplyController extends BaseController {
 		req.setStatusDate(statusDate);
 		req.setSupplierCode(supplierCode);
 		req.setApplyMerchantCode(applyMerchantCode);
-		
+		String userId = UserContext.getUserId();
+		String userName = UserContext.getUser().getLoginName();
+		req.setHandleUserId(userId);
+		req.setHandleUserName(userName);
 		int isHaveSave = purApplyService.isHaveSave(applyId);
 		if(isHaveSave != 0){//表里面有记录的话,申请单的字段就update,添加产品跟附件的就先delete再insert
 
@@ -189,6 +192,9 @@ public class CgSearchApplyController extends BaseController {
 				addProductReq.setStatusDate(statusDate);
 				//写表PUR_APPLY_ITEM(采购申请单项)
 				purApplyService.crPurApplyItem(addProductReq);
+			}
+			if("3".equals(isSave)){//编辑
+				purApplyService.tcProcureApply(req);
 			}
 
 		}else{

@@ -44,4 +44,6 @@ public interface GoodsProductRelMapper extends BaseMapper<GoodsProductRel>{
     
     public String selectProdFileId();
     
+    public void delProdFileByTargetId(@Param("goodsId") String goodsId) ;
+    
 }

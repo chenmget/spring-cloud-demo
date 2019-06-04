@@ -142,4 +142,8 @@
        SELECT (MAX(file_id)+1) AS fileId FROM prod_file
     </select>
     
+    <select id="delProdFileByTargetId" parameterType="java.lang.String">
+		DELETE FROM prod_file WHERE target_id = #{goodsId} AND sub_type IN ('8','9','10')
+	</select>
+    
 </mapper>

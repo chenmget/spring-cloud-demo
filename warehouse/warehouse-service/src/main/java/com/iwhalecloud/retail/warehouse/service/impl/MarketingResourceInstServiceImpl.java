@@ -186,48 +186,41 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
                 }
             }
         }
-        ResultVO syncTerminalResultVO = null;
-        ResultVO eBuyTerminalResultVO = null;
         if (CollectionUtils.isNotEmpty(eBuyTerminalItemReqs)) {
             EBuyTerminalSwapReq eBuyTerminalSwapReq = new EBuyTerminalSwapReq();
             eBuyTerminalSwapReq.setMktResList(eBuyTerminalItemReqs);
-            eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
+            ResultVO eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
             log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.ebuyTerminal req={}, resp={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
+            if (!eBuyTerminalResultVO.isSuccess()) {
+                return ResultVO.error(constant.getZopInterfaceError());
+            }
         }
         if (CollectionUtils.isNotEmpty(syncTerminalItemSwapReqs) && CollectionUtils.isEmpty(eBuyTerminalItemReqs)) {
             SyncTerminalSwapReq syncTerminalSwapReq = new SyncTerminalSwapReq();
             syncTerminalSwapReq.setMktResList(syncTerminalItemSwapReqs);
-            syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
+            ResultVO syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
             log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}, resp={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalResultVO));
-        }
-        Boolean notSucess = (syncTerminalResultVO != null && !syncTerminalResultVO.isSuccess()) || (eBuyTerminalResultVO != null && !eBuyTerminalResultVO.isSuccess());
-        if (!notSucess) {
-            // step3 增加事件和批次
-            BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
-            batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-            batchAndEventAddReq.setLanId(merchantResultVO.getResultData().getLanId());
-            batchAndEventAddReq.setRegionId(merchantResultVO.getResultData().getCity());
-            batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
-            batchAndEventAddReq.setMerchantId(merchantResultVO.getResultData().getMerchantId());
-            batchAndEventAddReq.setDestStoreId(destStroeId);
-            batchAndEventAddReq.setMktResStoreId(mktResStroeId);
-            batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-            batchAndEventAddReq.setMktResInstNbrs(nbrList);
-            batchAndEventAddReq.setCreateStaff(merchantResultVO.getResultData().getMerchantId());
-            batchAndEventAddReq.setObjId(req.getOrderId());
-            batchAndEventAddReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
-            resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-            log.info("ResourceInstServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
-            return ResultVO.success(true);
-        } else {
-            String errorMsg = "";
-            if (null == syncTerminalResultVO) {
-                errorMsg = eBuyTerminalResultVO.getResultMsg();
-            } else {
-                errorMsg = syncTerminalResultVO.getResultMsg();
+            if (!syncTerminalResultVO.isSuccess()) {
+                return ResultVO.error(constant.getZopInterfaceError());
             }
-            return ResultVO.error(errorMsg);
         }
+        // step3 增加事件和批次
+        BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
+        batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+        batchAndEventAddReq.setLanId(merchantResultVO.getResultData().getLanId());
+        batchAndEventAddReq.setRegionId(merchantResultVO.getResultData().getCity());
+        batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
+        batchAndEventAddReq.setMerchantId(merchantResultVO.getResultData().getMerchantId());
+        batchAndEventAddReq.setDestStoreId(destStroeId);
+        batchAndEventAddReq.setMktResStoreId(mktResStroeId);
+        batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+        batchAndEventAddReq.setMktResInstNbrs(nbrList);
+        batchAndEventAddReq.setCreateStaff(merchantResultVO.getResultData().getMerchantId());
+        batchAndEventAddReq.setObjId(req.getOrderId());
+        batchAndEventAddReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
+        resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
+        log.info("ResourceInstServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
+        return ResultVO.success(true);
     }
 
     @Override
@@ -243,7 +236,11 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
         synMktInstStatusSwapReq.setLanId(merchantResultVO.getResultData().getLanId());
         synMktInstStatusSwapReq.setBarCode(String.join(",", mktResInstNbrs));
         log.info("MarketingResourceInstServiceImpl.backDeliveryOutResourceInst marketingResStoreService.synMktInstStatus req={}", JSON.toJSONString(synMktInstStatusSwapReq));
-        return marketingResStoreService.synMktInstStatus(synMktInstStatusSwapReq);
+        ResultVO resultVO = marketingResStoreService.synMktInstStatus(synMktInstStatusSwapReq);
+        if (!resultVO.isSuccess()) {
+            return ResultVO.error(constant.getZopInterfaceError());
+        }
+        return resultVO;
     }
 
     @Override

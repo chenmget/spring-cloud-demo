@@ -167,6 +167,9 @@ public class Constant {
      */
     private String notMatchMerchant;
 
-
+    /**
+     * 调用能开接口异常
+     */
+    private String zopInterfaceError;
 
 }

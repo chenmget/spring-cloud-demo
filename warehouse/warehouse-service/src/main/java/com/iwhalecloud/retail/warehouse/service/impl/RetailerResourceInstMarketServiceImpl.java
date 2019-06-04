@@ -18,7 +18,6 @@ import com.iwhalecloud.retail.partner.dto.MerchantLimitDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantLimitUpdateReq;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
-import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceEventService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
@@ -99,8 +98,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     private ResouceInstTrackService resouceInstTrackService;
     @Autowired
     private Constant constant;
-    @Reference
-    private OrganizationService organizationService;
     @Autowired
     private ResouceStoreManager resouceStoreManager;
 
@@ -959,7 +956,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 ResultVO eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
                 log.info("RetailerResourceInstMarketServiceImpl.syncTerminal marketingResStoreService.ebuyTerminal req={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
                 if (!eBuyTerminalResultVO.isSuccess()) {
-                    return eBuyTerminalResultVO;
+                    return ResultVO.error(constant.getZopInterfaceError());
                 }
             }
         }

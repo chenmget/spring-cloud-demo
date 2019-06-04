@@ -97,6 +97,5 @@ public class PreSubsidyProductPromResqDTO implements Serializable {
      */
     @ApiModelProperty(value = "活动中的商品价格 前置补贴活动保存产品的地包强制供货价 限时抢购活动保存产品的抢购价")
     private java.lang.Long price;
-
-
+    
 }

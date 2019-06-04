@@ -1,26 +1,21 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductListGetByIdsReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductInfoResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
-import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
+import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -73,20 +68,25 @@ public class PurApplyServiceImpl implements PurApplyService {
 		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApplyLan(req);
 		return ResultVO.success(purApplyResp);
 	}
-
-	@Override
-	@Transactional
-	public ResultVO tcProcureApply(ProcureApplyReq req) {
-		purApplyManager.tcProcureApply(req);
-
+	//判断价格
+	private  int chooseCount (ProcureApplyReq req) {
+		List<AddProductReq> addProductList= req.getAddProductReq();
 		//如果采购价大于政企价格 要省公司审核
-		List<PurApplyItemResp> purApplyItemList =  purApplyManager.comparePrice(req.getApplyId());
+//			List<PurApplyItemResp> purApplyItemList =  purApplyManager.comparePrice(req.getApplyId());
 		List<String> prodIds = new ArrayList<String>();
 
-		for (int i=0;i<purApplyItemList.size();i++) {
-			PurApplyItemResp purApplyItem = purApplyItemList.get(i);
-			String purApplyItemProductId = purApplyItem.getProductId();
-			String tPurPrice = purApplyItem.getPurPrice();
+//			for (int i=0;i<purApplyItemList.size();i++) {
+//				PurApplyItemResp purApplyItem = purApplyItemList.get(i);
+//				String purApplyItemProductId = purApplyItem.getProductId();
+//				String tPurPrice = purApplyItem.getPurPrice();
+//				if (purApplyItemProductId!=null) {
+//					prodIds.add(purApplyItemProductId);
+//				}
+//			}
+		for (int i=0;i<addProductList.size();i++ ) {
+			AddProductReq addProductReq = addProductList.get(i);
+			String purApplyItemProductId = addProductReq.getProductId();
+			String tPurPrice = addProductReq.getPriceInStore();
 			if (purApplyItemProductId!=null) {
 				prodIds.add(purApplyItemProductId);
 			}
@@ -100,75 +100,117 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 		//获取产品政企价, 判断采购价是否大于政企价格
 
-         int count=0;
-		for (int i=0;i<purApplyItemList.size();i++) {
-			PurApplyItemResp purApplyItem = purApplyItemList.get(i);
-			String tPurPrice = purApplyItem.getPurPrice();
-			String productIdItem=purApplyItem.getProductId();
+		int count=0;
+		for (int i=0;i<addProductList.size();i++) {
+			AddProductReq addProductReq = addProductList.get(i);
+			String tPurPrice = addProductReq.getPriceInStore();
+			String productIdItem=addProductReq.getProductId();
 			for (ProductInfoResp productInfoResp:productList) {
 				Double corporationPrice = productInfoResp.getCorporationPrice();
 				String productId = productInfoResp.getProductId();
 				if(productIdItem.equals(productId)) {
-					 if(Double.valueOf(tPurPrice)>corporationPrice) {
-						 count=count+1;
-						 break;
-					 }
+					if(Double.valueOf(tPurPrice)>corporationPrice) {
+						count=count+1;
+						break;
+					}
 
 				}
 
 			}
 		}
+		return  count;
+	}
 
-		log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
-//		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
-		if(count>0) {
-			req.setStatusCd("21");
-			//更新省公司待审核状态
-			purApplyManager.updatePurApplyStatusCd(req);
+	@Override
+	@Transactional
+	public ResultVO tcProcureApply(ProcureApplyReq req) {
+		String isSave = req.getIsSave();
+		// 编辑的时候不做插入操作
+		if(!isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
+			purApplyManager.tcProcureApply(req);
 		}
+		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT)) {
+			//如果采购价大于政企价格 要省公司审核
+			int count =chooseCount(req);
+			log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
+//		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
+			if(count>0) {
+				req.setStatusCd("21");
+				//更新省公司待审核状态
+				purApplyManager.updatePurApplyStatusCd(req);
+			}
 
 //		String isSave = req.getIsSave();
-		//提交时发起流程审核
-		//启动流程
-		ProcessStartReq processStartDTO = new ProcessStartReq();
+			//提交时发起流程审核
+			//启动流程
+			ProcessStartReq processStartDTO = new ProcessStartReq();
 
-		//如果采购价大于政企价格 要省公司审核
-		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
-		Map map=new HashMap();
-        if(count>0) {
-            map.put("CGJ","0");//
-        }else{
-			map.put("CGJ","1");
-		}
-		processStartDTO.setParamsValue(JSON.toJSONString(map));
+			//如果采购价大于政企价格 要省公司审核
+			processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+			Map map=new HashMap();
+			if(count>0) {
+				map.put("CGJ","0");//
+			}else{
+				map.put("CGJ","1");
+			}
+			processStartDTO.setParamsValue(JSON.toJSONString(map));
 
-		processStartDTO.setTitle("采购申请单审核流程");
-		processStartDTO.setFormId(req.getApplyId());
-		processStartDTO.setProcessId(PurApplyConsts.PUR_APPLY_AUDIT_SGS_PROCESS_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040.getTaskSubType());
-		processStartDTO.setApplyUserId(req.getCreateStaff());
-		//根据用户id查询名称
-		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
-		String userName = "";
-		if (userDetailDTO.isSuccess()) {
-			userName = userDetailDTO.getResultData().getUserName();
+			processStartDTO.setTitle("采购申请单审核流程");
+			processStartDTO.setFormId(req.getApplyId());
+			processStartDTO.setProcessId(PurApplyConsts.PUR_APPLY_AUDIT_SGS_PROCESS_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040.getTaskSubType());
+			processStartDTO.setApplyUserId(req.getCreateStaff());
+			//根据用户id查询名称
+			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
+			String userName = "";
+			if (userDetailDTO.isSuccess()) {
+				userName = userDetailDTO.getResultData().getUserName();
+			}
+			processStartDTO.setApplyUserName(userName);
+			ResultVO resultVO = new ResultVO();
+			try {
+				resultVO = taskService.startProcess(processStartDTO);
+			} catch (Exception e) {
+				log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
+				return ResultVO.error();
+			} finally {
+				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
+						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
+			}
+		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
+			//做编辑处理
+			int count =chooseCount(req);
+			log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
+//		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
+			if(count>0) {
+				req.setStatusCd("21");
+				//更新省公司待审核状态
+			}else {
+				req.setStatusCd("20");
+			}
+			purApplyManager.updatePurApply(req);
+			NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new  NextRouteAndReceiveTaskReq();
+			nextRouteAndReceiveTaskReq.setFormId(req.getApplyId());
+			nextRouteAndReceiveTaskReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+			Map map=new HashMap();
+			if(count>0) {
+				map.put("CGJ","0");//
+			}else{
+				map.put("CGJ","1");
+			}
+			nextRouteAndReceiveTaskReq.setParamsValue(JSON.toJSONString(map));
+			nextRouteAndReceiveTaskReq.setHandlerUserId(req.getHandleUserId());
+			nextRouteAndReceiveTaskReq.setHandlerUserName(req.getHandleUserName());
+			taskService.nextRouteAndReceiveTask(nextRouteAndReceiveTaskReq);
+
 		}
-		processStartDTO.setApplyUserName(userName);
-		ResultVO resultVO = new ResultVO();
-		try {
-			resultVO = taskService.startProcess(processStartDTO);
-		} catch (Exception e) {
-			log.error("PurApplyServiceImpl.tcProcureApply exception={}", e);
-			return ResultVO.error();
-		} finally {
-			log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
-					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
-		}
+
+
 
 
 //		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PUR_APPLY_TYPE)) {
 //
-//		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PURCHASE_TYPE)) {
+//		}// else if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT) && req.getApplyType().equals(PurApplyConsts.PURCHASE_TYPE)) {
 //			//启动流程
 //			ProcessStartReq processStartDTO = new ProcessStartReq();
 //			processStartDTO.setTitle("采购单审核流程");

@@ -207,7 +207,7 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
 
     @Override
     public void goodsUnBundlingActivity() {
-        // 查询生效的预售活动
+        // 查询失效的预售活动
         List<MarketingActivity> advanceSaleActivityList = marketingActivityManager.queryActivityListByStatus(true, PromoConst.ACTIVITYTYPE.BOOKING.getCode());
         if (CollectionUtils.isNotEmpty(advanceSaleActivityList)) {
             List<String> goodsIdList = queryGoodsIdList(advanceSaleActivityList);
@@ -221,9 +221,30 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 Boolean resultData = goodsService.updateGoodsActTypeByGoodsIdList(req).getResultData();
                 log.info("更新商品表字段结果 resp={}", JSON.toJSON(resultData));
             }
-
+            for(int i=0;i<advanceSaleActivityList.size();i++) {
+            	MarketingActivity marketingActivity = advanceSaleActivityList.get(i);
+            	String marketingActivityId = marketingActivity.getId();//营销活动ID
+            	
+           	 	List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityId);
+           	 	
+           	 	for(int j=0;j<activityProducts.size();j++) {
+           	 		ActivityProduct activityProduct = activityProducts.get(j);
+           	 		String productId = activityProduct.getProductId();
+           	 		List<String> productIdList = new ArrayList<String>();
+           	 		productIdList.add(productId);
+           	 		GoodsQueryByProductIdsReq req = new GoodsQueryByProductIdsReq();
+           	 		req.setProductIds(productIdList);
+           	 		List<String> goodsIdsList = goodsProductRelService.queryGoodsIdsByProductIds(req).getResultData().getGoodsIds();//获取这个产品下的所有goods_id
+           	 		for(int k=0;k<goodsIdsList.size();k++) {
+           	 			String goodsId = goodsIdsList.get(k);
+           	 			goodsProductRelService.delProdFileByTargetId(goodsId);
+           	 			
+           	 		}
+           	 	}
+           	 	
+            }
         }
-        // 查询生效的前置补贴活动
+        // 查询失效的前置补贴活动
         List<MarketingActivity> subsidyActivityList = marketingActivityManager.queryActivityListByStatus(true, PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
         if (CollectionUtils.isNotEmpty(subsidyActivityList)) {
             List<String> goodsIdList = queryGoodsIdList(subsidyActivityList);
@@ -236,6 +257,28 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 log.info("开始更新商品表字段 req={}", JSON.toJSON(req));
                 Boolean resultData = goodsService.updateGoodsActTypeByGoodsIdList(req).getResultData();
                 log.info("更新商品表字段结果 resp={}", JSON.toJSON(resultData));
+            }
+            for(int i=0;i<subsidyActivityList.size();i++) {
+            	MarketingActivity marketingActivity = subsidyActivityList.get(i);
+            	String marketingActivityId = marketingActivity.getId();//营销活动ID
+            	
+           	 	List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityId);
+           	 	
+           	 	for(int j=0;j<activityProducts.size();j++) {
+           	 		ActivityProduct activityProduct = activityProducts.get(j);
+           	 		String productId = activityProduct.getProductId();
+           	 		List<String> productIdList = new ArrayList<String>();
+           	 		productIdList.add(productId);
+           	 		GoodsQueryByProductIdsReq req = new GoodsQueryByProductIdsReq();
+           	 		req.setProductIds(productIdList);
+           	 		List<String> goodsIdsList = goodsProductRelService.queryGoodsIdsByProductIds(req).getResultData().getGoodsIds();//获取这个产品下的所有goods_id
+           	 		for(int k=0;k<goodsIdsList.size();k++) {
+           	 			String goodsId = goodsIdsList.get(k);
+           	 			goodsProductRelService.delProdFileByTargetId(goodsId);
+           	 			
+           	 		}
+           	 	}
+           	 	
             }
           
         }

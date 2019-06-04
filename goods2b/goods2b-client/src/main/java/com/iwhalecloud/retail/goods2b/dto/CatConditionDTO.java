@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
 
 
 /**
@@ -26,10 +27,10 @@ public class CatConditionDTO implements java.io.Serializable {
   	private String id;
 	
 	/**
-  	 * 类型ID
+  	 * 产品类别ID
   	 */
-	@ApiModelProperty(value = "类型ID")
-  	private String typeId;
+	@ApiModelProperty(value = "产品类别ID(prod_cat表主键)")
+	private String catId;
 	
 	/**
   	 * 商品类型关联的筛选条件类型 1. 产品类型 2. 产品属性 3. 品牌 4. 营销活动类型 5. 产品标签

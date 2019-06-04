@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.order2b.dto.response.purapply;
 
-import java.io.Serializable;
-
 import com.iwhalecloud.retail.dto.PageVO;
-
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class PurApplyResp extends PageVO implements Serializable {
@@ -23,6 +22,8 @@ public class PurApplyResp extends PageVO implements Serializable {
 	private String option;	//操作
 	private String lanId; // 地址id
 	private String applyMerchantName; //申请名称
+	private String applyMerchantId; //申请id
+
 
 	private String taskId;
 	private String taskItemId;

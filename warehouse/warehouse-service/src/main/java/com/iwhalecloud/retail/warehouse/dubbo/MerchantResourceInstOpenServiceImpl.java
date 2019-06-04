@@ -41,10 +41,19 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
         return resp;
     }
 
+    /**
+     * 移动串码入库类型只有 社采 走社采流程
+     * 固网串码入库类型有集采、社采、测试终端
+     *  1、集采直接入库到地市仓库
+     *  2、测试终端直接入库到省仓库
+     *  3、社采 1）数量小于10（配置）走流程15
+     *         2）机顶盒、融合终端走流程16
+     *         3）其他（泛智能终端）走流程14
+     */
     @Override
     public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req) {
         log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={}", JSON.toJSONString(req));
-        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
+        if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType()) || ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
             log.info("MerchantResourceInstOpenServiceImpl.addResourceInstForProvinceStore req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(req));
             return merchantResourceInstService.addResourceInstForProvinceStore(req);
         }else {

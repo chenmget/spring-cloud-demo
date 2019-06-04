@@ -1,11 +1,6 @@
 package com.iwhalecloud.retail.order2b.busiservice.impl;
 
 import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
-import com.iwhalecloud.retail.order2b.authpay.PreAuthorizationApplyDTO;
-import com.iwhalecloud.retail.order2b.authpay.handler.BestpayHandler;
-import com.iwhalecloud.retail.order2b.authpay.handler.TradeCertificate;
-import com.iwhalecloud.retail.order2b.authpay.service.v3.BestpayServiceV3;
-import com.iwhalecloud.retail.order2b.authpay.util.CertificateUtil;
 import com.iwhalecloud.retail.order2b.busiservice.AfterSaleTHTKService;
 import com.iwhalecloud.retail.order2b.busiservice.AfterSalesTHService;
 import com.iwhalecloud.retail.order2b.config.DBTableSequence;
@@ -36,7 +31,6 @@ import com.iwhalecloud.retail.order2b.reference.TaskManagerReference;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
@@ -46,7 +40,6 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -248,7 +241,8 @@ public class AfterSaleTHTKServiceImpl implements AfterSaleTHTKService {
         orderApply.setApplicantId(req.getUserCode());
         orderApply.setHandlerId(req.getHandlerId());
         orderApply.setSupplierName(req.getSupplierName());
-        orderApply.setBatchId(orderApply.getBatchId() + 1);
+        Integer batchId = orderApply.getBatchId() == null ? 1 : orderApply.getBatchId()+1;
+        orderApply.setBatchId(batchId);
         orderApply.setApplyState(OrderAllStatus.ORDER_STATUS_21.getCode());
         orderApply.setCreateTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
         orderApply.setSourceFrom(req.getSourceFrom());

@@ -151,4 +151,8 @@ public class GoodsProductRelManager {
     public String selectProdFileId() {
     	return goodsProductRelMapper.selectProdFileId();
     }
+    
+    public void delProdFileByTargetId(String goodsId) {
+    	goodsProductRelMapper.delProdFileByTargetId(goodsId);
+    }
 }

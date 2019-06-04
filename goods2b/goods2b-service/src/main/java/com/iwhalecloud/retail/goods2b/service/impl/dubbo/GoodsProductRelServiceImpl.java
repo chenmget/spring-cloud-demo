@@ -369,4 +369,9 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
     public String selectProdFileId() {
     	return goodsProductRelManager.selectProdFileId();
     }
+    
+    @Override
+    public void delProdFileByTargetId(String goodsId) {
+    	goodsProductRelManager.delProdFileByTargetId(goodsId);
+    }
 }

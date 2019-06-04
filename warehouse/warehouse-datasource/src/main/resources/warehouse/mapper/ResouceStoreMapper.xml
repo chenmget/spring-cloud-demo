@@ -80,6 +80,9 @@
         SELECT <include refid="simpleFields"/>,r.OBJ_ID MERCHANT_ID
         FROM mkt_res_store s,mkt_res_store_obj_rel r WHERE 1 = 1
         and s.MKT_RES_STORE_ID = r.MKT_RES_STORE_ID
+        <if test="null!=req.mktResStoreId and ''!=req.mktResStoreId">
+            and s.MKT_RES_STORE_ID = #{req.mktResStoreId}
+        </if>
         <if test="null!=req.merchantIds and req.merchantIds.size >0">
             and r.OBJ_ID in
             <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIds">

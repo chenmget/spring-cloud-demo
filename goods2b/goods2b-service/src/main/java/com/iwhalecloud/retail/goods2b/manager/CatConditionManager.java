@@ -37,8 +37,8 @@ public class CatConditionManager {
      */
     public List<CatConditionDTO> listCatCondition(CatConditionListReq req) {
         QueryWrapper<CatCondition> queryWrapper = new QueryWrapper<CatCondition>();
-        if (!StringUtils.isEmpty(req.getTypeId())) {
-            queryWrapper.eq(CatCondition.FieldNames.typeId.getTableFieldName(), req.getTypeId());
+        if (!StringUtils.isEmpty(req.getCatId())) {
+            queryWrapper.eq(CatCondition.FieldNames.catId.getTableFieldName(), req.getCatId());
         }
         if (!StringUtils.isEmpty(req.getRelType())) {
             queryWrapper.eq(CatCondition.FieldNames.relType.getTableFieldName(), req.getRelType());

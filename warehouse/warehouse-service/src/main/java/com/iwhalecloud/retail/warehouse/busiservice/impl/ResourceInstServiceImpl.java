@@ -848,6 +848,9 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         syncTerminalReq.setMktResList(mktResList);
         ResultVO syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalReq);
         log.info("ResourceInstServiceImpl.syncTerminal marketingResStoreService.syncTerminal req={},resp={}", JSON.toJSONString(syncTerminalReq), JSON.toJSONString(syncTerminalResultVO));
+        if (!syncTerminalResultVO.isSuccess()) {
+            return ResultVO.error(constant.getZopInterfaceError());
+        }
         return syncTerminalResultVO;
 
     }

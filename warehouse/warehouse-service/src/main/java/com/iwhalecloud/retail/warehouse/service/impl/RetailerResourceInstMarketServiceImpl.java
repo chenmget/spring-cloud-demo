@@ -18,8 +18,6 @@ import com.iwhalecloud.retail.partner.dto.MerchantLimitDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantLimitUpdateReq;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
-import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
-import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceEventService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
@@ -27,6 +25,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
@@ -37,10 +36,7 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.QryMktInstInfoByConditionItemSwapResp;
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.base.QueryMarkResQueryResultsSwapResp;
-import com.iwhalecloud.retail.warehouse.manager.ResourceBatchRecManager;
-import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
-import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
-import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
+import com.iwhalecloud.retail.warehouse.manager.*;
 import com.iwhalecloud.retail.warehouse.model.MerchantInfByNbrModel;
 import com.iwhalecloud.retail.warehouse.service.MarketingResStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
@@ -102,8 +98,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     private ResouceInstTrackService resouceInstTrackService;
     @Autowired
     private Constant constant;
-    @Reference
-    private OrganizationService organizationService;
+    @Autowired
+    private ResouceStoreManager resouceStoreManager;
 
     private final String CLASS_TYPE_1 = "1";
     private final String CLASS_TYPE_2 = "2";
@@ -698,21 +694,21 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     public ResultVO pickResourceInst(ResourceInstPickupReq req) {
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 先检查零售商所属十四个地市中的一个是否存在
-        ResultVO<List<OrganizationRegionResp>> organizationIdVO = organizationService.queryRegionOrganizationId();
-        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst organizationService.getStoreId queryRegionOrganizationId={}", JSON.toJSONString(organizationIdVO));
-        if (!organizationIdVO.isSuccess() || CollectionUtils.isEmpty(organizationIdVO.getResultData())) {
-            return organizationIdVO;
-        }
-        String lanId = req.getLanId();
-        List<OrganizationRegionResp> sameLanIdOrganization = organizationIdVO.getResultData().stream().filter(t -> lanId.equals(t.getLanId())).collect(Collectors.toList());
-        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-        storeGetStoreIdReq.setMerchantId(sameLanIdOrganization.get(0).getOrgId());
-        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        String merchantStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resouceStoreService.getStoreId merchantStoreId={}", merchantStoreId);
 
+        String lanId = req.getLanId();
+        StorePageReq storeGetStoreIdReq = new StorePageReq();
+        storeGetStoreIdReq.setStoreGrade(ResourceConst.STORE_GRADE.CITY.getCode());
+        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        storeGetStoreIdReq.setStoreType(ResourceConst.STORE_TYPE.CITY.getCode());
+        storeGetStoreIdReq.setLanIdList(Lists.newArrayList(lanId));
+        Page<ResouceStoreDTO> storeDTOPage = resouceStoreManager.pageStore(storeGetStoreIdReq);
+        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resouceStoreManager.pageStore merchantStoreId={}", JSON.toJSONString(storeGetStoreIdReq), JSON.toJSONString(storeDTOPage.getRecords()));
+        if (null == storeDTOPage || CollectionUtils.isEmpty(storeDTOPage.getRecords())) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+        String sourceStoreId = storeDTOPage.getRecords().get(0).getMktResStoreId();
         ResourceInstListReq resourceInstListReq = new ResourceInstListReq();
-        resourceInstListReq.setMktResStoreId(merchantStoreId);
+        resourceInstListReq.setMktResStoreId(sourceStoreId);
         resourceInstListReq.setMktResInstNbrs(req.getMktResInstNbrs());
         resourceInstListReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         ResultVO<List<ResourceInstListResp>> merchantNbrInstVO = resourceInstService.listResourceInst(resourceInstListReq);
@@ -935,10 +931,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 if (!mktResInstNbrList.contains(dto.getMktResInstNbr())) {
                     continue;
                 }
-                ResultVO<MerchantDTO> merchantDTOResultVO = resouceStoreService.getMerchantByStore(dto.getMktResStoreId());
-                if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO) {
-                    return ResultVO.error(constant.getCannotGetMerchantMsg());
-                }
                 // 临时代码
                 String purchaseType = "2";
                 String mktResInstType = dto.getMktResInstType();
@@ -947,25 +939,27 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 } else if (ResourceConst.MKTResInstType.COLLECTION_BY_PROVINCE.getCode().equals(mktResInstType)) {
                     purchaseType = "5";
                 }
-                MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
                 List<EBuyTerminalItemSwapReq> eBuyTerminalItemReqs = Lists.newArrayList();
                 EBuyTerminalItemSwapReq eBuyTerminalItemSwapReq = new EBuyTerminalItemSwapReq();
                 eBuyTerminalItemSwapReq.setMktId(sn);
                 eBuyTerminalItemSwapReq.setPurchaseType(purchaseType);
-                String salePrice = dto.getSalesPrice() == null ? "" : String.valueOf(dto.getSalesPrice());
+                String salePrice = dto.getSalesPrice() == null ? "0" : String.valueOf(dto.getSalesPrice());
+                if (salePrice.contains(".")) {
+                    salePrice = salePrice.substring(0, salePrice.indexOf("."));
+                }
                 eBuyTerminalItemSwapReq.setSalesPrice(salePrice);
                 eBuyTerminalItemSwapReq.setBarCode(dto.getMktResInstNbr());
                 eBuyTerminalItemSwapReq.setStoreId(mktResStoreId);
                 eBuyTerminalItemSwapReq.setLanId(lanId);
-                eBuyTerminalItemSwapReq.setSupplyName(merchantDTO.getMerchantName());
-                eBuyTerminalItemSwapReq.setSupplyCode(merchantDTO.getMerchantCode());
+                eBuyTerminalItemSwapReq.setSupplyName(dto.getSupplierName());
+                eBuyTerminalItemSwapReq.setSupplyCode(dto.getSupplierCode());
                 eBuyTerminalItemReqs.add(eBuyTerminalItemSwapReq);
                 EBuyTerminalSwapReq eBuyTerminalSwapReq = new EBuyTerminalSwapReq();
                 eBuyTerminalSwapReq.setMktResList(eBuyTerminalItemReqs);
                 ResultVO eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
                 log.info("RetailerResourceInstMarketServiceImpl.syncTerminal marketingResStoreService.ebuyTerminal req={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
                 if (!eBuyTerminalResultVO.isSuccess()) {
-                    return eBuyTerminalResultVO;
+                    return ResultVO.error(constant.getZopInterfaceError());
                 }
             }
         }

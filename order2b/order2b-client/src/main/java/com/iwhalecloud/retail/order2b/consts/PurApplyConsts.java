@@ -16,6 +16,10 @@ public class PurApplyConsts {
      * 新增申请单
      */
     public final static String PUR_APPLY_SUBMIT = "2";
+    /**
+     * 编辑申请单
+     */
+    public final static String PUR_APPLY_EDIT = "3";
 
     /**
      * 申请单类型：采购申请单

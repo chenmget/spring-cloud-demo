@@ -41,7 +41,7 @@ public class GoodsBrandB2BController {
 
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
-
+    
     @ApiOperation(value = "品牌详情查询", notes = "传入品牌ID，商品ID进行查询操作")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),

@@ -101,7 +101,7 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 			 prodFileReq.setTargetId(targetId);
                 			 prodFileReq.setFileUrl(fileUrl);
                 			 goodsProductRelService.insertProdFile(prodFileReq); 
-                		 }else if("12".equals(productPicUseType)) {//应用到商品列表缩略图9
+                		 }else if("2".equals(productPicUseType)) {//应用到商品列表缩略图9
                 			 prodFileReq.setFileId(fileId);
                 			 prodFileReq.setFileType("1");//	1：图片 2：文件
                 			 prodFileReq.setTargetType("1");//商品图片：1 订单图片：2 商品规格图片：3
@@ -176,7 +176,7 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 			 prodFileReq.setTargetId(targetId);
                 			 prodFileReq.setFileUrl(fileUrl);
                 			 goodsProductRelService.insertProdFile(prodFileReq); 
-                		 }else if("12".equals(productPicUseType)) {//应用到商品列表缩略图9
+                		 }else if("2".equals(productPicUseType)) {//应用到商品列表缩略图9
                 			 prodFileReq.setFileId(fileId);
                 			 prodFileReq.setFileType("1");//	1：图片 2：文件
                 			 prodFileReq.setTargetType("1");//商品图片：1 订单图片：2 商品规格图片：3

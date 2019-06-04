@@ -33,7 +33,7 @@
         from prod_file
         where target_Id = #{goodsId}
         and target_Type = '1'
-        and sub_Type in ('9','10') ORDER BY sub_type limit 1
+        and sub_Type in ('8','10') ORDER BY sub_type limit 1
     </select>
 
 	<select id="queryGoodsImageHDdetail" resultType="com.iwhalecloud.retail.goods2b.dto.ProdFileDTO"
@@ -50,7 +50,7 @@
         from prod_file
         where target_Id = #{goodsId}
         and target_Type = '1'
-        and sub_Type in ('8','10') ORDER BY sub_type 
+        and sub_Type in ('9','10') ORDER BY sub_type 
     </select>
     
     <select id="queryGoodsImage" resultType="com.iwhalecloud.retail.goods2b.dto.ProdFileDTO"

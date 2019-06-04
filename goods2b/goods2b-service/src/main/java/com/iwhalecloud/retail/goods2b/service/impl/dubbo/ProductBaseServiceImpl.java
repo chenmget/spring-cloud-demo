@@ -147,14 +147,16 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             List<ProductAddReq> productAddReqs = req.getProductAddReqs();
             if (null != productAddReqs && !productAddReqs.isEmpty()) {
                 for (ProductAddReq par : productAddReqs) {
-                    if(minCost == 0.0){
+                    if(minCost < 0.01){
                         minCost = par.getCost();
                     }else{
-                        minCost = par.getCost()<minCost ? par.getCost():minCost;
+                        minCost = (par.getCost()-minCost)<0 ? par.getCost():minCost;
                     }
                 }
-                if(minCost > 0){
-                    req.setPriceLevel(this.getPriceLevel(minCost));
+                log.info("ProductBaseServiceImpl.addProductBase minCost={}",minCost);
+                if(minCost > 0.01){
+                    t.setPriceLevel(this.getPriceLevel(minCost));
+                    log.info("ProductBaseServiceImpl.addProductBase PriceLevel={}",t.getPriceLevel());
                 }
             }
         }
@@ -247,19 +249,19 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
     private String getPriceLevel(Double cost){
         String priceLevel = "";
-        if(cost > 0 && cost<=600){
+        if(cost>0.01 && (cost-60000)<=0.01){
             priceLevel = "0-600";
         }
-        if(cost > 600 && cost<=990){
+        if((cost-60000) >0.01 && (cost-99000)<=0.01){
             priceLevel = "600-990";
         }
-        if(cost > 990 && cost<=1590){
+        if((cost-99000) >0.01 && (cost-159000)<=0.01){
             priceLevel = "990-1590";
         }
-        if(cost > 1590 && cost<=3000){
+        if((cost-159000) >0.01 && (cost-300000)<=0.01){
             priceLevel = "1590-3000";
         }
-        if(cost > 3000){
+        if((cost-300000) >0.01){
             priceLevel = "3000-*";
         }
 

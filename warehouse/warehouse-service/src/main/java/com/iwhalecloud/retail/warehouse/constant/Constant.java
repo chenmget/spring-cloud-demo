@@ -162,6 +162,11 @@ public class Constant {
      */
     private String getRepeatStoreMsg;
 
+    /**
+     * 管理员给厂商录入串码只能录厂商自己的商品
+     */
+    private String notMatchMerchant;
+
 
 
 }

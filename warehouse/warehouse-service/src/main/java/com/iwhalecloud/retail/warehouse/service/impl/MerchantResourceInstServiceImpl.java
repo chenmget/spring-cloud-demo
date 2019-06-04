@@ -263,17 +263,12 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         if (!productRespResultVO.isSuccess() || StringUtils.isEmpty(productRespResultVO.getResultData())) {
             return ResultVO.error(constant.getCannotGetMuanfacturerMsg());
         }
-        // 获取厂商源仓库
+        // 厂商只能录入自己产品的串码
         String sourceStoreMerchantId = productRespResultVO.getResultData();
-        StoreGetStoreIdReq storeManuGetStoreIdReq = new StoreGetStoreIdReq();
-        storeManuGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        storeManuGetStoreIdReq.setMerchantId(sourceStoreMerchantId);
-        String manuResStoreId = resouceStoreService.getStoreId(storeManuGetStoreIdReq);
-        log.info("MerchantResourceInstServiceImpl.addResourceInstByAdmin resouceStoreService.getStoreId req={} resp={}", JSON.toJSONString(storeManuGetStoreIdReq), JSON.toJSONString(manuResStoreId));
-        if (StringUtils.isEmpty(manuResStoreId)) {
-            return ResultVO.error(constant.getCannotGetStoreMsg());
+        if (!req.getMerchantId().equals(sourceStoreMerchantId)) {
+            return ResultVO.error(constant.getNotMatchMerchant());
         }
-        req.setMktResStoreId(manuResStoreId);
+        req.setDestStoreId(req.getMktResStoreId());
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(req.getMerchantId());
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());

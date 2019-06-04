@@ -176,7 +176,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                 TypeSelectByIdReq typeReq = new TypeSelectByIdReq();
                 typeReq.setTypeId(req.getTypeId());
                 ResultVO<TypeDetailResp> typeDetailRespResultVO = typeService.getDetailType(typeReq);
-                if (typeDetailRespResultVO.isSuccess() || null == typeDetailRespResultVO.getResultData()) {
+                if (!typeDetailRespResultVO.isSuccess() || null == typeDetailRespResultVO.getResultData()) {
                     return ResultVO.error("产品类型不存在");
                 }
                 String detailCode = typeDetailRespResultVO.getResultData().getDetailCode();

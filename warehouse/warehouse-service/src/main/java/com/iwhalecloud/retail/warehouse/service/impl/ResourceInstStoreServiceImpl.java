@@ -13,8 +13,10 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.GetProductQuantityByMerchantResp;
 import com.iwhalecloud.retail.warehouse.dto.response.InventoryWarningResp;
+import com.iwhalecloud.retail.warehouse.entity.MktResItmsReturnRec;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
+import com.iwhalecloud.retail.warehouse.manager.MktResItmsReturnRecManager;
 import com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
@@ -110,6 +112,9 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     @Autowired
     private MktResItmsSyncRecMapper mktResItmsSyncRecMapper;
+
+    @Autowired
+    private MktResItmsReturnRecManager mktResItmsReturnRecManager;
 
 
     @Override
@@ -306,7 +311,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             if (list.size() <= 0) continue;
 
         	String seqStr = mktResItmsSyncRecMapper.getSeqBysendDir(sendDir+"/"+lanId);
-        	log.info("--------地市:"+lanId+"   旧文件路径:"+sendDir+"/"+lanId+" seqStr:"+seqStr);
+//        	log.info("--------地市:"+lanId+"   旧文件路径:"+sendDir+"/"+lanId+" seqStr:"+seqStr);
         	String resStr = "0";
         	if(seqStr != null && seqStr.length() != 0){
         		resStr = seqStr.substring(seqStr.length()-3,seqStr.length());
@@ -331,7 +336,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 pw.write(list.get(j).getMktResInstNbr()+","+list.get(j).getBrandName()+list.get(j).getUnitType()+",2,"+list.get(j).getOrigLanId());
                 pw.println();
                 String syncFileName = sendDir+"/"+destFileName;
-                log.info("----------新序列seq:"+seq);
+//                log.info("----------新序列seq:"+seq);
                 mktResItmsSyncRecMapper.updateByEvenId(list.get(j).getMktResChngEvtDetailId(),syncFileName,time + seq);
             }
             //批量更新
@@ -663,14 +668,16 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                     lineList = changeFtpDir(ftpClient, filePathList.get(j)[0], pathNameList.get(i));
                     if (!CollectionUtils.isEmpty(lineList)) {
                         //插入数据
-                        insertDate(lineList, filePathList.get(j)[1]);
-                        //移动备份回执文件
-                        this.copyFile(ftpClient, pathNameList.get(i).replace("data/back","bakfile")+filePathList.get(j)[0], filePathList.get(j)[0]);
+                        Boolean flag = insertDate(lineList, filePathList.get(j)[1]);
+                        if(flag){
+                            //移动备份回执文件
+                            this.copyFile(ftpClient, pathNameList.get(i).replace("data/back","bakfile")+filePathList.get(j)[0], filePathList.get(j)[0]);
+                        }
                     }
                 }
             }
             ftpClient.logout();
-            log.info("ResourceInstStoreServiceImpl.syncMktToITMSBack  读取ITMS文件回执结束");
+            log.info("ResourceInstStoreServiceImpl.syncMktToITMSBack  读取ITMS回执文件结束");
         }catch (Exception e){
             log.error("ResourceInstStoreServiceImpl.syncMktToITMSBack error{}"+e.getMessage());
         }finally {
@@ -718,7 +725,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      * @param lineList
      * @param syncFileName
      */
-    private void insertDate(ArrayList<String> lineList,String syncFileName){
+    private Boolean insertDate(ArrayList<String> lineList,String syncFileName){
+        Boolean flag = false;
         ArrayList<ArrayList<String>> list = new ArrayList<>();
         String[] line = new String[2];
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -729,40 +737,32 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         try{
             list = this.lineListSplit(lineList);
             for(int i = 0; i < list.size(); i++){
-                List<MktResItmsSyncRec> dataList = Lists.newArrayList();
+                List<MktResItmsReturnRec> dataList = Lists.newArrayList();
                 if(list.get(i).size() == 0){
                     continue;
                 }
                 for(int j = 0; j < list.get(i).size(); j++){
                     line = list.get(i).get(j).split(",");
-                    MktResItmsSyncRec mktData = new MktResItmsSyncRec();
-                    mktData.setSyncDate(date);
-                    mktData.setSyncFileName(dateTem);
+                    MktResItmsReturnRec mktData = new MktResItmsReturnRec();
+//                    MktResItmsSyncRec mktData = new MktResItmsSyncRec();
+                    mktData.setReturnFileName(syncFileName);
                     mktData.setMktResInstNbr(line[0].toString());
                     mktData.setStatusCd(line[1].toString());
-                    mktData.setSyncDate(date);
-                    mktData.setCreateDate(date);
-                    mktData.setStatusDate(date);
-                    mktData.setSyncBatchId(dateTem);
-                    mktData.setMktResEventId(dateTem);
-                    mktData.setMktResChngEvtDetailId(dateTem);
-                    mktData.setBrandId(dateTem);
-//                    mktResItmsSyncRecMapper.insert(mktData);
+                    mktData.setCreateStaff("admin");
+                    mktData.setCreateDate(startDate);
                     dataList.add(mktData);
-
                 }
                 //批量插入
                 if(dataList.size()>0){
-                    resourceInstStoreManager.batchAddMKTInfo(dataList);
+                    mktResItmsReturnRecManager.batchAddMKTReturnInfo(dataList);
                     log.info("syncMktToITMSBack insertDate插入"+dataList.size()+"条数据成功");
                 }
             }
+            flag = true;
         }catch (Exception e){
-            log.error("syncMktToITMSBack insertDate插入数据失败!");
+            log.error("syncMktToITMSBack insertDate插入文本数据"+syncFileName+"失败! ",e.getMessage());
         }
-
-//        mktResItmsSyncRecMapper.batchUpdateMRIyFileName(dataList);
-
+        return flag;
     }
 
     /**

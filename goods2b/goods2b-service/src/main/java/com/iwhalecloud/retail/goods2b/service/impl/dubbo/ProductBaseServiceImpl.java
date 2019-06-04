@@ -147,7 +147,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             List<ProductAddReq> productAddReqs = req.getProductAddReqs();
             if (null != productAddReqs && !productAddReqs.isEmpty()) {
                 for (ProductAddReq par : productAddReqs) {
-                    if(par.getCost()<0.01){
+                    if(StringUtils.isEmpty(String.valueOf(par.getCost()))||par.getCost()<0.01){
                         continue;
                     }
                     if(minCost < 0.01){

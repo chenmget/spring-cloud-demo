@@ -13,6 +13,8 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
+import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
@@ -83,6 +85,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     private ResouceStoreManager resouceStoreManager;
     @Autowired
     private ResourceBatchRecService resourceBatchRecService;
+    @Reference
+    private OrganizationService organizationService;
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -144,13 +148,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         return ResultVO.success(batchId);
     }
 
-    /**
-     * 集采入库类型只有移动串码 走集采流程
-     * 社采类型 1、数量小于10（配置）走集采流程
-     *         2、数量大于10 --》产品类型是（写死成配置，设计就是这样）机顶盒、三合一终端，走两步抽检流程
-     *                     --》其余的走一步抽检流程
-     *
-     */
+
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO addResourceInst(ResourceInstAddReq req) {
@@ -169,23 +167,24 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         req.setRegionId(merchantDTO.getCity());
 
         // 集采前端会传入库仓库id,其他类型根据当前登陆用户去获取仓库
-        String mktResStoreId = req.getDestStoreId();
-        if (!ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
-            StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-            storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-            storeGetStoreIdReq.setMerchantId(merchantId);
-            mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-            log.info("MerchantResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
-            if (StringUtils.isBlank(mktResStoreId)) {
-                return ResultVO.error(constant.getCannotGetStoreMsg());
-            }
-            req.setDestStoreId(mktResStoreId);
+        StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+        storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        storeGetStoreIdReq.setMerchantId(merchantId);
+        String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+        log.info("MerchantResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
+        if (StringUtils.isBlank(mktResStoreId)) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
         }
+        req.setDestStoreId(mktResStoreId);
         if (CollectionUtils.isNotEmpty(req.getThreeCheckMktResInstNbrs())) {
             resourceInstCheckService.noticeITMS(req.getThreeCheckMktResInstNbrs(), merchantDTO.getMerchantName(), mktResStoreId, merchantDTO.getLanId());
         }
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        SelectProcessResp selectProcessResp = resourceInstCheckService.selectProcess(req);
+        ResultVO selectProcessRespVO = resourceInstCheckService.selectProcess(req);
+        if (!selectProcessRespVO.isSuccess() && null ==selectProcessRespVO.getResultData()) {
+            return selectProcessRespVO;
+        }
+        SelectProcessResp selectProcessResp = (SelectProcessResp)selectProcessRespVO.getResultData();
         // step2 新增申请单
         ResourceRequestAddReq resourceRequestAddReq = new ResourceRequestAddReq();
         List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = resourceInstCheckService.getReqInst(req);
@@ -338,13 +337,26 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         storePageReq.setStoreGrade(ResourceConst.STORE_GRADE.PROVINCE.getCode());
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storePageReq.setStoreType(ResourceConst.STORE_TYPE.PROVINCE.getCode());
+        if (ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
+            storePageReq.setStoreGrade(ResourceConst.STORE_GRADE.CITY.getCode());
+            storePageReq.setStoreType(ResourceConst.STORE_TYPE.CITY.getCode());
+            storePageReq.setMktResStoreId(req.getMktResStoreId());
+        }
         Page<ResouceStoreDTO> pageStore = resouceStoreManager.pageStore(storePageReq);
-        log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resouceStoreManager.pageStore storePageReq={}" , JSON.toJSONString(storePageReq), JSON.toJSONString(pageStore.getRecords()));
+        log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resouceStoreManager.pageStore storePageReq={}", JSON.toJSONString(storePageReq), JSON.toJSONString(pageStore.getRecords()));
         if (null == pageStore || CollectionUtils.isEmpty(pageStore.getRecords())) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
         ResouceStoreDTO storeDTO = pageStore.getRecords().get(0);
         String destStoreId = storeDTO.getMktResStoreId();
+        if (ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
+            ResultVO<OrganizationDTO> organizationtVO = organizationService.getOrganization(storeDTO.getMerchantId());
+            if (organizationtVO.isSuccess() && null != organizationtVO.getResultData()) {
+                OrganizationDTO organizationDTO = organizationtVO.getResultData();
+                provinceStoreLanId = organizationDTO.getLanId();
+                provinceStoreRegionId = organizationDTO.getRegionId();
+            }
+        }
         req.setMktResStoreId(manuResStoreId);
         req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
         req.setLanId(provinceStoreLanId);

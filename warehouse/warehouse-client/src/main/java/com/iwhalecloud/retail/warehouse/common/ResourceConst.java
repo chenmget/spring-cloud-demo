@@ -57,19 +57,19 @@ public class ResourceConst {
     /**
      * 移动串码审核流程
      */
-    public final static String  MOVE_NBR_WORK_FLOW_INST = "13";
+    public final static String  WORK_FLOW_PROCESS_13 = "13";
     /**
-     * 一步抽检流程（固网）
+     * 厂商录入固网社采、泛智能终端串码审核流程
      */
-    public final static String  ONE_STEP_WORK_FLOW_INST = "14";
+        public final static String  WORK_FLOW_PROCESS_14 = "14";
     /**
      * 厂商串码入库集采流程实例（固网）
      */
-    public final static String  FIXED_NBR_WORK_FLOW_INST = "15";
+    public final static String  WORK_FLOW_PROCESS_15 = "15";
     /**
-     * 两步抽检流程（固网）
+     * 厂商录入固网社采(仅指机顶盒、三合一终端）串码审核流程
      */
-    public final static String  TWO_STEP_WORK_FLOW_INST = "16";
+    public final static String  WORK_FLOW_PROCESS_16 = "16";
 
     /**
      * 调拨返回成功的消息

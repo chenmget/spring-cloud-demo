@@ -5,7 +5,6 @@ import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
-import com.iwhalecloud.retail.warehouse.dto.response.SelectProcessResp;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,7 +41,7 @@ public interface ResourceInstCheckService {
      * @param req
      * @return
      */
-    SelectProcessResp selectProcess(ResourceInstAddReq req);
+    ResultVO selectProcess(ResourceInstAddReq req);
 
     /**
      * 固网同步到ITMS

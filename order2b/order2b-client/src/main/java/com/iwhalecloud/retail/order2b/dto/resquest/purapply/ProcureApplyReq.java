@@ -41,5 +41,8 @@ public class ProcureApplyReq extends PageVO implements Serializable {
 	private List<AddProductReq> addProductReq;
 	
 	private List<AddFileReq> addFileReq;
+
+	private String handleUserId;
+	private  String handleUserName;
 	
 }

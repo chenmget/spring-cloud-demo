@@ -147,6 +147,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             List<ProductAddReq> productAddReqs = req.getProductAddReqs();
             if (null != productAddReqs && !productAddReqs.isEmpty()) {
                 for (ProductAddReq par : productAddReqs) {
+                    if(par.getCost()<0.01){
+                        continue;
+                    }
                     if(minCost < 0.01){
                         minCost = par.getCost();
                     }else{
@@ -374,6 +377,27 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }
         }
         req.setUpdateDate(new Date());
+        if(StringUtils.isEmpty(req.getPriceLevel())){
+            Double minCost = 0.0;
+            List<ProductUpdateReq> productUpdateReqs2 = req.getProductUpdateReqs();
+            if (null != productUpdateReqs2 && !productUpdateReqs2.isEmpty()) {
+                for (ProductUpdateReq par : productUpdateReqs2) {
+                    if(par.getCost()<0.01){
+                        continue;
+                    }
+                    if(minCost < 0.01){
+                        minCost = par.getCost();
+                    }else{
+                        minCost = (par.getCost()-minCost)<0 ? par.getCost():minCost;
+                    }
+                }
+                log.info("ProductBaseServiceImpl.updateProductBase minCost={}",minCost);
+                if(minCost > 0.01){
+                    req.setPriceLevel(this.getPriceLevel(minCost));
+                    log.info("ProductBaseServiceImpl.updateProductBase PriceLevel={}",req.getPriceLevel());
+                }
+            }
+        }
         int index = productBaseManager.updateProductBase(req);
         //修改成功并且非审核中
         if(index>0&&!ProductConst.AuditStateType.AUDITING.getCode().equals(oldAuditState)){

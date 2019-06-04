@@ -944,6 +944,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 eBuyTerminalItemSwapReq.setMktId(sn);
                 eBuyTerminalItemSwapReq.setPurchaseType(purchaseType);
                 String salePrice = dto.getSalesPrice() == null ? "0" : String.valueOf(dto.getSalesPrice());
+                if (salePrice.contains(".")) {
+                    salePrice = salePrice.substring(0, salePrice.indexOf("."));
+                }
                 eBuyTerminalItemSwapReq.setSalesPrice(salePrice);
                 eBuyTerminalItemSwapReq.setBarCode(dto.getMktResInstNbr());
                 eBuyTerminalItemSwapReq.setStoreId(mktResStoreId);

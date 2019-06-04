@@ -189,8 +189,10 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityId);
         for(int i=0;i<activityProducts.size();i++) {//把路径拼接出来
         	ActivityProduct activityProduct = activityProducts.get(i);
-        	 String productPic = fullImageUrl(activityProduct.getProductPic(), dfsShowIp, true);//lwslws
-        	activityProduct.setProductPic(productPic);
+        	if(activityProduct.getProductPic() != null) {
+        		String productPic = fullImageUrl(activityProduct.getProductPic(), dfsShowIp, true);//lwslws
+            	activityProduct.setProductPic(productPic);
+        	}
         }
         
         log.info("ActivityProductServiceImpl.queryPreSubsidyProduct activityProductManager.queryActivityProductByCondition activityProducts={}", JSON.toJSON(activityProducts));

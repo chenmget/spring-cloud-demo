@@ -12,6 +12,7 @@
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
 			b.merchant_name as applyMerchantName,
+			b.merchant_id ad applyMerchantId,
 			a.STATUS_CD AS STATUS,
 			'' AS `option`
 			 FROM PUR_APPLY a,par_merchant b

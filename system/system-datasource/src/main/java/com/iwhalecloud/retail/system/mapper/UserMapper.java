@@ -20,5 +20,7 @@ public interface UserMapper extends BaseMapper<User> {
     Page<UserDTO> pageUser(Page<UserDTO> page, @Param("req") UserPageReq req);
 
     List<UserDTO> listUser(@Param("req") UserListReq req);
+    
+    String getRegionNameByRegionId(@Param("regionId") String regionId);
 
 }

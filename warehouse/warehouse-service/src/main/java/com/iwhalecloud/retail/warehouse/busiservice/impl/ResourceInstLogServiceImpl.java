@@ -68,6 +68,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             detailDTO.setCreateStaff(merchantId);
             detailDTO.setMktResInstNbr(resourceInst.getMktResInstNbr());
             detailDTO.setMktResInstId(resourceInst.getMktResInstId());
+            detailDTO.setMktResStoreId(req.getDestStoreId());
             int addChngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
             log.info("ResourceInstLogServiceImpl.addResourceInstLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
         }
@@ -102,6 +103,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             detailDTO.setMktResStoreId(resourceInst.getMktResStoreId());
             detailDTO.setMktResInstNbr(resourceInst.getMktResInstNbr());
             detailDTO.setCreateDate(new Date());
+            detailDTO.setMktResStoreId(req.getDestStoreId());
             int addChngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
             log.info("ResourceInstLogServiceImpl.updateResourceInstLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
         }
@@ -136,6 +138,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             detailDTO.setMktResStoreId(resourceInst.getMktResStoreId());
             detailDTO.setMktResInstNbr(resourceInst.getMktResInstNbr());
             detailDTO.setCreateDate(new Date());
+            detailDTO.setMktResStoreId(req.getDestStoreId());
             int addChngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
             log.info("ResourceInstLogServiceImpl.updateResourceInstByIdLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
         }
@@ -172,6 +175,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             detailDTO.setStatusCd(ResourceConst.StatusCdEnum.STATUS_CD_VALD.getCode());
             detailDTO.setMktResInstNbr(resourceInst.getMktResInstNbr());
             detailDTO.setMktResInstId(resourceInst.getMktResInstId());
+            detailDTO.setMktResStoreId(req.getDestStoreId());
             int addChngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
             log.info("ResourceInstLogServiceImpl.pickupResourceInstLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
         }
@@ -211,6 +215,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             }
             detailDTO.setMktResStoreId(resourceInst.getMktResStoreId());
             detailDTO.setMktResInstNbr(resourceInst.getMktResInstNbr());
+            detailDTO.setMktResStoreId(req.getDestStoreId());
             detailDTO.setCreateDate(new Date());
             int addChngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
             log.info("ResourceInstLogServiceImpl.delResourceInstLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
@@ -252,6 +257,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             detailDTO.setMktResStoreId(resourceInst.getMktResStoreId());
             detailDTO.setMktResInstNbr(resourceInst.getMktResInstNbr());
             detailDTO.setCreateDate(new Date());
+            detailDTO.setMktResStoreId(req.getDestStoreId());
             int addChngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
             log.info("ResourceInstLogServiceImpl.delResourceInstLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
         }

@@ -1493,8 +1493,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                     // 取前置补贴活动价 zhong.wenlong
                     if (Objects.nonNull(productList.get(i))) {
                         preSubsidyProductPromResqDTO.setPrice(productList.get(i).getActivityProductResq().getPrice());
-//                        preSubsidyProductPromResqDTO.setProductPic(productList.get(i).getActivityProductResq().getProductPic());
-//                        preSubsidyProductPromResqDTO.setProductPicUseType(productList.get(i).getActivityProductResq().getProductPicUseType());
+                        preSubsidyProductPromResqDTO.setProductPic(productList.get(i).getActivityProductResq().getProductPic());
+                        preSubsidyProductPromResqDTO.setProductPicUseType(productList.get(i).getActivityProductResq().getProductPicUseType());
                     }
 
                     preSubsidyProductPromResqDTO.setNum(productList.get(i).getActivityProductResq().getNum());

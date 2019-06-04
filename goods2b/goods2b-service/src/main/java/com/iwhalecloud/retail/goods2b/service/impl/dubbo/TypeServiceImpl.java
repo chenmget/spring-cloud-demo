@@ -331,6 +331,7 @@ public class TypeServiceImpl implements TypeService {
         String rootTypeId = "-1";
         Type type = null;
         String parentId = req.getTypeId();
+        TypeDetailResp typeDetailResp = new TypeDetailResp();
         while (true){
             type = typeManager.selectById(parentId);
             log.info("TypeServiceImpl.queryTypeBrand attrSpecManager.queryProdTypeComplexbyTypeId req={}, resp={}", parentId, JSON.toJSONString(type));
@@ -338,35 +339,39 @@ public class TypeServiceImpl implements TypeService {
                 break;
             }
             parentId = type.getParentTypeId();
-            if (StringUtils.isNotBlank(parentId) || rootTypeId.equals(parentId)) {
+            if (StringUtils.isBlank(parentId) || rootTypeId.equals(parentId)) {
+                break;
+            }
+            if (moblie.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.MOBLIE.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.MOBLIE.getValue());
+                break;
+            } else if(router.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.ROUTER.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.ROUTER.getValue());
+                break;
+            } else if(intelligentTermina.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getValue());
+                break;
+            }else if(fusionTerminal.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getValue());
+                break;
+            }else if(setTopBox.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.SET_TOP_BOX.getValue());
+                break;
+            }else if(opticalModem.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getValue());
                 break;
             }
         }
         if (null == type) {
             return ResultVO.success();
         }
-        TypeDetailResp typeDetailResp = new TypeDetailResp();
         BeanUtils.copyProperties(type, typeDetailResp);
-        String typeId = type.getTypeId();
-        if (moblie.equals(typeId)) {
-            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.MOBLIE.getCode());
-            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.MOBLIE.getValue());
-        } else if(router.equals(typeId)) {
-            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.ROUTER.getCode());
-            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.ROUTER.getValue());
-        } else if(intelligentTermina.equals(typeId)) {
-            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode());
-            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getValue());
-        }else if(fusionTerminal.equals(typeId)) {
-            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode());
-            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getValue());
-        }else if(setTopBox.equals(typeId)) {
-            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode());
-            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.SET_TOP_BOX.getValue());
-        }else if(opticalModem.equals(typeId)) {
-            typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getCode());
-            typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getValue());
-        }
         return ResultVO.success(typeDetailResp);
     }
 }

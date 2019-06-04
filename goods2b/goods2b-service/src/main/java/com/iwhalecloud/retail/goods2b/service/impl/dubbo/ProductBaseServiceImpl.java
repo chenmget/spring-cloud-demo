@@ -266,7 +266,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             priceLevel = "1590-3000";
         }
         if((cost-300000) >0.01){
-            priceLevel = "3000-*";
+            priceLevel = "3000-∞";
         }
 
         return priceLevel;

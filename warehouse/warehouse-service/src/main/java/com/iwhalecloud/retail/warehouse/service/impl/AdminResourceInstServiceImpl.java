@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.warehouse.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
@@ -23,11 +24,15 @@ import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
+import com.iwhalecloud.retail.warehouse.util.ZopClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -57,6 +62,11 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Reference
     private ResouceStoreService resouceStoreService;
 
+    @Value("${zop.secret}")
+    private String zopSecret;
+
+    @Value("${zop.url}")
+    private String zopUrl;
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("AdminResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
@@ -104,14 +114,39 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 		if(resourceInstList.size()<=0 || null == resourceInstList){
 			return ResultVO.error("串码不在库中");
 		}
+        String b = "";
+        Map request = new HashMap<>();
+        request.put("deviceId",req.getDeviceId());
+        request.put("userName",req.getUserName());
+        request.put("code",req.getCode());
+        request.put("params",req.getParams());
+        String callUrl = "ord.operres.OrdInventoryChange";
 		try {
-			result = callService.postInvenChangeToWebService(req);
+            b = ZopClientUtil.zopService(callUrl, zopUrl, request, zopSecret);
+            Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
+            String body = String.valueOf(parseObject.get("Body"));
+            Map parseObject2 = JSON.parseObject(body, new TypeReference<HashMap>(){});
+            String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
+            Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>(){});
+            String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
+            if("0".equals(inventoryChangeReturn)){
+                log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed inventoryChangeReturn={}", inventoryChangeReturn);
+                return ResultVO.success("串码推送ITMS(添加)成功");
+            }else if("1".equals(inventoryChangeReturn)){
+                log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed inventoryChangeReturn={}", inventoryChangeReturn);
+                return ResultVO.error("串码推送ITMS(添加)已经存在");
+            }else{
+                log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed inventoryChangeResponse={}", JSON.toJSONString(inventoryChangeResponse));
+                return ResultVO.error("串码推送ITMS(添加)失败");
+            }
+
+//			result = callService.postInvenChangeToWebService(req);
 //			inventoryChangeResp.setResult(result);
 		} catch (Exception e) {
 			log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed req={}", JSON.toJSONString(req));
 			return ResultVO.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed");
 		}
-		return ResultVO.success(result);
+//		return ResultVO.success(result);
 	}
     
     

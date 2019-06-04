@@ -37,6 +37,8 @@ public class ResourceInstStoreServiceImplTest {
     @Reference
     private ResourceInstStoreService resourceInstStoreService;
 
+    @Autowired
+    private ResourceInstStoreServiceImpl resourceInstStoreServiceImpl;
     @Test
     public void getProductQuantityByMerchant() {
         GetProductQuantityByMerchantReq req = new GetProductQuantityByMerchantReq();
@@ -130,7 +132,9 @@ public class ResourceInstStoreServiceImplTest {
     }
     @Test
     public void syncMktToITMSBack(){
-        resourceInstStoreService.syncMktToITMSBack();
+//        System.out.println(mktResItmsSyncRecMapper.getSeqBysendDir("/home/itsm_y/itmsfile/data/back/IPTV/add/730"));
+        resourceInstStoreServiceImpl.syncMktToITMS();
+//        resourceInstStoreService.syncMktToITMS();
     }
 
 }

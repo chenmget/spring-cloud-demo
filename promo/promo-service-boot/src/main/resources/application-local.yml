@@ -81,3 +81,7 @@ spring.messages:
     cache-seconds: 3600
     #设定Message bundles的编码，默认: UTF-8
     encoding: UTF-8
+    
+# 分布式文件系统FDFS配置
+fdfs:
+  showUrl: https://gy.ztesoft.com/

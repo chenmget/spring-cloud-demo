@@ -147,7 +147,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             List<ProductAddReq> productAddReqs = req.getProductAddReqs();
             if (null != productAddReqs && !productAddReqs.isEmpty()) {
                 for (ProductAddReq par : productAddReqs) {
-                    if(StringUtils.isEmpty(String.valueOf(par.getCost()))||par.getCost()<0.01){
+                    String cost = String.valueOf(par.getCost());
+                    if(StringUtils.isEmpty(cost) || "null".equals(cost)){
                         continue;
                     }
                     if(minCost < 0.01){
@@ -382,7 +383,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             List<ProductUpdateReq> productUpdateReqs2 = req.getProductUpdateReqs();
             if (null != productUpdateReqs2 && !productUpdateReqs2.isEmpty()) {
                 for (ProductUpdateReq par : productUpdateReqs2) {
-                    if(StringUtils.isEmpty(String.valueOf(par.getCost()))||par.getCost()<0.01){
+                    String cost = String.valueOf(par.getCost());
+                    if(StringUtils.isEmpty(cost) || "null".equals(cost)){
                         continue;
                     }
                     if(minCost < 0.01){

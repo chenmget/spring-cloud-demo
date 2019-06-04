@@ -17,9 +17,9 @@ import java.io.Serializable;
 public class CatConditionSaveReq extends AbstractRequest implements Serializable {
     private static final long serialVersionUID = -3546080674360151642L;
 
-    @ApiModelProperty(value = "类型ID")
-    @NotEmpty(message = "类型ID不能为空")
-    private String typeId;
+    @NotEmpty(message = "产品类别ID不能为空")
+    @ApiModelProperty(value = "产品类别ID(prod_cat表主键)")
+    private String catId;
 
     @ApiModelProperty(value = "商品类型关联的筛选条件类型 1. 产品类型 2. 产品属性 3. 品牌 4. 营销活动类型 5. 产品标签")
     @NotEmpty(message = "关联类型不能为空")

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.dto.req;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
 
@@ -15,8 +16,8 @@ import java.io.Serializable;
 public class CatConditionListReq implements Serializable {
     private static final long serialVersionUID = -8932336306321239450L;
 
-    @ApiModelProperty(value = "类型ID")
-    private String typeId;
+    @ApiModelProperty(value = "产品类别ID(prod_cat表主键)")
+    private String catId;
 
     @ApiModelProperty(value = "商品类型关联的筛选条件类型 1. 产品类型 2. 产品属性 3. 品牌 4. 营销活动类型 5. 产品标签")
     private String relType;

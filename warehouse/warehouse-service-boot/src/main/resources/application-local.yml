@@ -96,6 +96,8 @@ webService:
 #ITMS文件入库
 ftp:
   basePath: src/main/resources/mkt2itms
+  #basePath: E:/iwhale/code/retail/warehouse/warehouse-service-boot/src/main/resources/mkt2itms
+  baseDir: /home/itsm_y/itmsfile
   ftpAddress: 134.176.97.50
   ftpPort: 21
   ftpUserName: itsm_y
@@ -113,6 +115,7 @@ ftp:
   gmdirDelete: /home/itsm_y/itmsfile/data/back/Failure/Terminal/delete/
   iptvdirDelete: /home/itsm_y/itmsfile/data/back/Failure/IPTV/delete/
   extName: txt
+  num: 1000
 
 #商家增加串码机顶盒、三合一终端产品类型id
 addNbrService:

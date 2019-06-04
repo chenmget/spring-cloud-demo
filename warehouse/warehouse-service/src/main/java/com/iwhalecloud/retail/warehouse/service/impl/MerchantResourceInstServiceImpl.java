@@ -321,7 +321,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         String muanfacturerId = productRespResultVO.getResultData();
         ResouceStoreDTO muanfactureStoreDTO = this.resouceStoreManager.getStore(muanfacturerId, ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resouceStoreManager.getStore req={} resp={}", JSON.toJSONString(muanfacturerId), JSON.toJSONString(muanfactureStoreDTO));
-        if (null != muanfactureStoreDTO) {
+        if (null == muanfactureStoreDTO) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
         // 获取厂商

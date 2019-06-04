@@ -22,16 +22,16 @@
     <update id="updateOrderItemByItemId">
         UPDATE ord_order_items
         <set>
-            <if test="deliveryNum !=null and deliveryNum!=''">
+            <if test="deliveryNum !=null and deliveryNum !=''">
                 delivery_num =#{deliveryNum},
             </if>
-            <if test="receiveNum !=null and receiveNum!=''">
+            <if test="receiveNum !=null and receiveNum !=''">
                 receive_num =#{receiveNum},
             </if>
-            <if test="returnNum !=null  and returnNum1=''">
+            <if test="returnNum !=null  and returnNum !=''">
                 return_num =#{returnNum},
             </if>
-            <if test="replaceNum !=null and replaceNum!=''">
+            <if test="replaceNum !=null and replaceNum !=''">
                 replace_num =#{replaceNum},
             </if>
         </set>

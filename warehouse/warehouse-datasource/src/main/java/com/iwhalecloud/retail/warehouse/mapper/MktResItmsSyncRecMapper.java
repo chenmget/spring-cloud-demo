@@ -23,7 +23,7 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
      * @param startDate
      * @return
      */
-    List<MktResItmsSyncRec> findMKTInfoByDate(@Param("startDate") String startDate);
+    List<MktResItmsSyncRec> findMKTInfoByDate(@Param("startDate") String startDate,String endDate);
 
     /**
      * 查询需要推给itms的字段
@@ -33,6 +33,20 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 	List<Map<String, String>> findMKTInfoByLadId(@Param("lanId")String lanId, @Param("typeId")String typeId,
 			@Param("eventTypeArray")String[] eventTypeArray, @Param("startDate")String startDate);
 
+	/*List<Map<String, String>> findMKTInfoToItmsByParams(@Param("eventType")String[] eventType, @Param("lanId")String lanId,
+												 @Param("type")String type, @Param("isItms")String[] isItms,
+												 @Param("startDate")String startDate, @Param("endDate")String endDate);*/
+	List<Map<String, String>> findMKTInfoToItmsByParams(@Param("eventType")String[] eventType, @Param("lanId")String lanId,
+														@Param("type")String type, @Param("isItms")String[] isItms,
+														@Param("startDate")String startDate, @Param("endDate")String endDate);
+	/**
+	 * 查询需要推给itms的字段
+	 * @param eventType 事件类型 lanId 地市编码， type 不同事件类型对应的过滤条件， isItms 是否itms ， startDate 开始时间， endDate 结束时间
+	 * @return
+	 */
+	List<MktResItmsSyncRec> findMKTInfoByParams(@Param("eventType")String[] eventType, @Param("lanId")String lanId,
+												  @Param("typeOps")String typeOps, @Param("isItms")String[] isItms,
+												  @Param("startDate")String startDate, @Param("endDate")String endDate);
     /**
      * 根据ID保存itms推送表
      * @param id ID， destFileName 推送的文件路径， syncBatchId 推送的批次
@@ -41,6 +55,9 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 	void updateFileNameById(@Param("id")String id, @Param("destFileName")String destFileName,
 			@Param("syncBatchId")String syncBatchId);
 
+	void updateBatchById(List<MktResItmsSyncRec> list);
+	void updateByEvenId(@Param("mktResEventId")String mktResEventId, @Param("destFileName")String destFileName,
+						@Param("syncBatchId")String syncBatchId);
 	/**
      * 根据保存路径获取当前文件最近的批次
      * @param sendDir

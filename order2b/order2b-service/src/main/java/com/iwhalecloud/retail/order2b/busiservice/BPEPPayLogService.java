@@ -16,6 +16,12 @@ public interface BPEPPayLogService {
      * @return
      */
     public int saveLog(SaveLogModel saveLogModel);
+    
+    /**
+     * 去支付翼支付支付日志入库
+     * @return
+     */
+    public int saveYZFLog(SaveLogModel saveLogModel);
 
     /**
      * 接受支付通知日志入库

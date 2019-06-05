@@ -415,7 +415,7 @@ public class MarketingActivityManager{
     public Integer updateMarketingActivityToModifiying(String activityId,String isModifying) {
         MarketingActivity marketingActivity = new MarketingActivity();
         marketingActivity.setId(activityId);
-        marketingActivity.setIsModifiying(isModifying);
+        marketingActivity.setIsModifying(isModifying);
         return marketingActivityMapper.updateById(marketingActivity);
     }
 }

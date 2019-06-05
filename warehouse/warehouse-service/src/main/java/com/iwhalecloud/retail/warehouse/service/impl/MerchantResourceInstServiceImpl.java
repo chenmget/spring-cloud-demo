@@ -280,6 +280,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         req.setMerchantCode(merchantDTO.getMerchantCode());
         req.setLanId(merchantDTO.getLanId());
         req.setRegionId(merchantDTO.getCity());
+        req.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
+        req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
@@ -297,20 +299,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         if (!addNum) {
             return ResultVO.error("串码入库失败");
         }
-        // step4 增加事件和批次
-        Map<String, List<String>> mktResIdAndNbrMap = new HashMap<>();
-        mktResIdAndNbrMap.put(req.getMktResId(), req.getMktResInstNbrs());
-        BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
-        batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        batchAndEventAddReq.setLanId(merchantDTO.getLanId());
-        batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
-        batchAndEventAddReq.setRegionId(merchantDTO.getCity());
-        batchAndEventAddReq.setDestStoreId(req.getMktResStoreId());
-        batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        batchAndEventAddReq.setMerchantId(merchantDTO.getMerchantId());
-        batchAndEventAddReq.setCreateStaff(req.getCreateStaff());
-        batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
-        resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
         return ResultVO.success("串码入库完成", resourceInstAddResp);
     }
 

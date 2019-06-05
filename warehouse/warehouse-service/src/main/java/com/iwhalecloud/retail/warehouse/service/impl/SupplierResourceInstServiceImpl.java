@@ -420,7 +420,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstAddReq.setMktResInstNbrs(item.getMktResInstNbrs());
             resourceInstAddReq.setCreateStaff(req.getBuyerMerchantId());
             resourceInstAddReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-            resourceInstAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+            resourceInstAddReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());
             resourceInstAddReq.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
             resourceInstAddReq.setStorageType(ResourceConst.STORAGETYPE.TRANSACTION_WAREHOUSING.getCode());
             resourceInstAddReq.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
@@ -480,11 +480,14 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstUpdateReq.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
             resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
             resourceInstUpdateReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
+            resourceInstUpdateReq.setObjId(req.getOrderId());
             resourceInstUpdateReq.setDestStoreId(destStoreId);
             resourceInstUpdateReq.setMktResStoreId(mktResStoreId);
             resourceInstUpdateReq.setUpdateStaff(merchantResultVO.getResultData().getUserId());
             resourceInstUpdateReq.setMerchantId(req.getBuyerMerchantId());
             resourceInstUpdateReq.setMktResId(item.getProductId());
+            resourceInstUpdateReq.setMktResStoreId(mktResStoreId);
+            resourceInstUpdateReq.setOrderId(req.getOrderId());
             ResultVO updateResultVO = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
             log.info("SupplierResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService.updateResourceInstForTransaction req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(updateResultVO));
             if (updateResultVO == null || !updateResultVO.isSuccess()) {
@@ -539,6 +542,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             adminResourceInstDelReq.setDestStoreId(destStoreId);
             adminResourceInstDelReq.setMktResStoreId(sourceStoreId);
             adminResourceInstDelReq.setMerchantId(merchantDTO.getMerchantId());
+            adminResourceInstDelReq.setOrderId(req.getOrderId());
             ResultVO updateResultVO = resourceInstService.updateResourceInstByIdsForTransaction(adminResourceInstDelReq);
             log.info("SupplierResourceInstServiceImpl.backDeliveryInResourceInst resourceInstService.updateResultVO req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), JSON.toJSONString(updateResultVO));
             if (updateResultVO == null || !updateResultVO.isSuccess()) {

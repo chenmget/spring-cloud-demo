@@ -109,4 +109,10 @@ public class AdminResourceInstDelReq implements Serializable{
 	 */
 	@ApiModelProperty(value = "事件状态")
 	private java.lang.String eventStatusCd;
+
+	/**
+	 * 订单号
+	 */
+	@ApiModelProperty(value = "订单号")
+	private java.lang.String orderId;
 }

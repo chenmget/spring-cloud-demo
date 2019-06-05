@@ -400,4 +400,31 @@ public class SystemConst {
             return value;
         }
     }
+
+    /**
+     * 区域等级枚举
+     */
+    public enum REGION_LEVEL {
+        LEVEL_0("0", "集团公司"),
+        LEVEL_10("10", "省公司"),
+        LEVEL_20("20", "虚拟本地网"),
+        LEVEL_30("30", "地市公司"),
+        LEVEL_40("40", "区域经营部");
+
+        private String code;
+        private String value;
+
+        REGION_LEVEL(String code, String value) {
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 }

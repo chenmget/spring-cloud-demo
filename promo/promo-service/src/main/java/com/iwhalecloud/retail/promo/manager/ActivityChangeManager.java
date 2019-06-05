@@ -191,7 +191,7 @@ public class ActivityChangeManager{
         }
         // 3.执行活动变更
         // 将营销活动“修改标识”改为0(不在审核修改中)
-        marketingActivity.setIsModifiying(PromoConst.ActivityIsModifying.NO.getCode());
+        marketingActivity.setIsModifying(PromoConst.ActivityIsModifying.NO.getCode());
         marketingActivityManager.updateMarketingActivity(marketingActivity);
         activityScopeManager.updateActivityScopeBatch(activityScopeList);
         activityParticipantManager.updateActivityParticipantBatch(activityParticipantList);
@@ -241,7 +241,7 @@ public class ActivityChangeManager{
         }
         // 3.执行活动变更
         // 将营销活动“修改标识”改为0(不在审核修改中)
-        marketingActivity.setIsModifiying(PromoConst.ActivityIsModifying.NO.getCode());
+        marketingActivity.setIsModifying(PromoConst.ActivityIsModifying.NO.getCode());
         marketingActivityManager.updateMarketingActivity(marketingActivity);
         activityScopeManager.updateActivityScopeBatch(activityScopeList);
         activityParticipantManager.updateActivityParticipantBatch(activityParticipantList);

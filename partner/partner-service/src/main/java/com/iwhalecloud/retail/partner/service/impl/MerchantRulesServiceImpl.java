@@ -427,7 +427,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 // 品牌
                 BrandQueryReq brandQueryReq = new BrandQueryReq();
                 brandQueryReq.setBrandIdList(targetIdList);
-//                detailList = brandService.listBrandFileUrl(targetIdList).getResultData();
                 detailList = brandService.listBrandFileUrl(brandQueryReq).getResultData();
                 fieldName = "brandId";
 
@@ -442,6 +441,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 // 机型 productId
                 ProductsPageReq productsPageReq = new ProductsPageReq();
                 productsPageReq.setUnitName(req.getUnitName());
+                productsPageReq.setProductName(req.getProductName());
                 productsPageReq.setSn(req.getSn());
                 productsPageReq.setUnitType(req.getUnitType());
                 productsPageReq.setPageNo(1);
@@ -505,6 +505,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 // 机型 productId
                 ProductsPageReq productsPageReq = new ProductsPageReq();
                 productsPageReq.setUnitName(req.getUnitName());
+                productsPageReq.setProductName(req.getProductName());
                 productsPageReq.setSn(req.getSn());
                 productsPageReq.setUnitType(req.getUnitType());
                 productsPageReq.setPageNo(1);
@@ -589,10 +590,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             // 经营权限
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.BRAND.getType())) {
                 // 品牌
-//                BrandQueryReq brandQueryReq = new BrandQueryReq();
-//                brandQueryReq.setBrandIdList(targetIdList);
-//                detailList = brandService.listBrandFileUrl(brandQueryReq).getResultData();
-//                fieldName = "brandId";
                 BrandPageReq brandPageReq = new BrandPageReq();
                 brandPageReq.setBrandIdList(targetIdList);
                 brandPageReq.setPageNo(req.getPageNo());
@@ -602,10 +599,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
-//                fieldName = "regionId";
-//                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
-//                commonRegionListReq.setRegionIdList(targetIdList);
-//                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
                 CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
                 commonRegionPageReq.setRegionIdList(targetIdList);
                 commonRegionPageReq.setPageNo(req.getPageNo());
@@ -617,6 +610,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 // 机型 productId
                 ProductsPageReq productsPageReq = new ProductsPageReq();
                 productsPageReq.setUnitName(req.getUnitName());
+                productsPageReq.setProductName(req.getProductName());
                 productsPageReq.setSn(req.getSn());
                 productsPageReq.setUnitType(req.getUnitType());
                 productsPageReq.setPageNo(req.getPageNo());
@@ -627,23 +621,11 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 if (!StringUtils.isEmpty(req.getBrandId())) {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
                 }
-//                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
                 detailPage = productService.selectPageProductAdminAll(productsPageReq).getResultData();
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())) {
                 // 商家
-//                MerchantListReq merchantListReq = new MerchantListReq();
-//                merchantListReq.setMerchantType(req.getMerchantType());
-//                merchantListReq.setMerchantName(req.getMerchantName());
-//                merchantListReq.setMerchantCode(req.getMerchantCode());
-//                merchantListReq.setLanId(req.getLanId());
-//                merchantListReq.setCity(req.getCity());
-//                merchantListReq.setTagId(req.getTagId());
-//                merchantListReq.setLoginName(req.getLoginName());
-//                merchantListReq.setMerchantIdList(targetIdList);
-//                detailList = merchantService.listMerchant(merchantListReq).getResultData();
-//                fieldName = "merchantId";
                 MerchantPageReq merchantPageReq = new MerchantPageReq();
                 merchantPageReq.setMerchantType(req.getMerchantType());
                 merchantPageReq.setMerchantName(req.getMerchantName());
@@ -663,8 +645,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             productsPageReq.setProductName(req.getProductName());
             productsPageReq.setSn(req.getSn());
             productsPageReq.setUnitType(req.getUnitType());
-//            productsPageReq.setPageNo(1);
-//            productsPageReq.setPageSize(1000); // 写死 大一点
             productsPageReq.setPageNo(req.getPageNo());
             productsPageReq.setPageSize(req.getPageSize());
             productsPageReq.setCatId(req.getCatId());
@@ -692,10 +672,9 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 // 机型 productId
                 ProductsPageReq productsPageReq = new ProductsPageReq();
                 productsPageReq.setUnitName(req.getUnitName());
+                productsPageReq.setProductName(req.getProductName());
                 productsPageReq.setSn(req.getSn());
                 productsPageReq.setUnitType(req.getUnitType());
-//                productsPageReq.setPageNo(1);
-//                productsPageReq.setPageSize(1000); // 写死 大一点
                 productsPageReq.setPageNo(req.getPageNo());
                 productsPageReq.setPageSize(req.getPageSize());
                 productsPageReq.setProductIdList(targetIdList);
@@ -705,19 +684,11 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 if (!StringUtils.isEmpty(req.getBrandId())) {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
                 }
-
-//                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
-//                fieldName = "productId";
-
                 detailPage = productService.selectPageProductAdminAll(productsPageReq).getResultData();
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())) {
                 // 区域
-//                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
-//                commonRegionListReq.setRegionIdList(targetIdList);
-//                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
-//                fieldName = "regionId";
                 CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
                 commonRegionPageReq.setRegionIdList(targetIdList);
                 commonRegionPageReq.setPageNo(req.getPageNo());
@@ -727,17 +698,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MERCHANT.getType())) {
                 // 商家
-//                MerchantListReq merchantListReq = new MerchantListReq();
-//                merchantListReq.setMerchantType(req.getMerchantType());
-//                merchantListReq.setMerchantName(req.getMerchantName());
-//                merchantListReq.setMerchantCode(req.getMerchantCode());
-//                merchantListReq.setLanId(req.getLanId());
-//                merchantListReq.setCity(req.getCity());
-//                merchantListReq.setTagId(req.getTagId());
-//                merchantListReq.setLoginName(req.getLoginName());
-//                merchantListReq.setMerchantIdList(targetIdList);
-//                detailList = merchantService.listMerchant(merchantListReq).getResultData();
-//                fieldName = "merchantId";
                 MerchantPageReq merchantPageReq = new MerchantPageReq();
                 merchantPageReq.setMerchantType(req.getMerchantType());
                 merchantPageReq.setMerchantName(req.getMerchantName());

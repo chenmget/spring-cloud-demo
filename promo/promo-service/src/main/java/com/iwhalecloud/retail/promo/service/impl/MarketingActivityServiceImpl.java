@@ -946,7 +946,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVO marketingActivityChangeAuitProcess(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity) {
-        if (PromoConst.ActivityIsModifying.YES.getCode().equals(originalActivity.getIsModifiying())) {
+        if (PromoConst.ActivityIsModifying.YES.getCode().equals(originalActivity.getIsModifying())) {
             return ResultVO.error(constant.getModifying());
         }
         //1.插入变更信息，包含比较变更数据和原数据，获取变更项，插入变更表和变更明细表

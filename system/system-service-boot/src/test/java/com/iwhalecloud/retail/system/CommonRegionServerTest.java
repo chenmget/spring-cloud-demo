@@ -2,9 +2,11 @@ package com.iwhalecloud.retail.system;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
+import com.iwhalecloud.retail.system.dto.request.CommonRegionPageReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.utils.MessageSourceHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,16 @@ public class CommonRegionServerTest {
         req.setParRegionId(null);
 
         ResultVO resultVO = commonRegionService.listCommonRegion(req);
+        System.out.print("结果：" + resultVO.toString());
+    }
+
+    @org.junit.Test
+    public void page(){
+        CommonRegionPageReq req = new CommonRegionPageReq();
+//        req.setRegionIdList(Lists.newArrayList("731","732","733","734","735"));
+        req.setPageNo(1);
+        req.setPageSize(3);
+        ResultVO resultVO = commonRegionService.pageCommonRegion(req);
         System.out.print("结果：" + resultVO.toString());
     }
 

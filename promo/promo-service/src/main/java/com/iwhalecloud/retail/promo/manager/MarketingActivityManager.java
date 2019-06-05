@@ -412,10 +412,10 @@ public class MarketingActivityManager{
      * @param isModifying 营销活动修改标识
      * @return
      */
-    public Integer updateMarketingActivityToModifiying(String activityId,String isModifying) {
+    public Integer updateMarketingActivityToModifying(String activityId,String isModifying) {
         MarketingActivity marketingActivity = new MarketingActivity();
         marketingActivity.setId(activityId);
-        marketingActivity.setIsModifiying(isModifying);
+        marketingActivity.setIsModifying(isModifying);
         return marketingActivityMapper.updateById(marketingActivity);
     }
 }

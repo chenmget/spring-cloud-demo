@@ -73,4 +73,7 @@ public interface PurApplyService {
 
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req);
 
+
+	public void insertTcProcureApply(ProcureApplyReq req);
+
 }

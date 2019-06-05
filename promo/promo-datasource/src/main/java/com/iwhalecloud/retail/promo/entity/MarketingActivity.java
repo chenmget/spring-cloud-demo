@@ -231,10 +231,10 @@ public class MarketingActivity implements Serializable {
 	private Date deliverEndTime;
 
 	/**
-	 * 是否修改审批中：0否/1是 is_modifiying
+	 * 是否修改审批中：0否/1是 is_modifying
 	 */
-	@ApiModelProperty(value="修改标识，是否修改审批中：0否/1是 is_modifiying")
-	private String isModifiying;
+	@ApiModelProperty(value="修改标识，是否修改审批中：0否/1是 is_modifying")
+	private String isModifying;
   	
   	//属性 end
 	
@@ -350,7 +350,7 @@ public class MarketingActivity implements Serializable {
 		deliverEndTime("deliverEndTime","DELIVER_END_TIME","活动发货截止时间"),
 
 		/** 修改标识，是否修改审批中：0否/1是. */
-		isModifiying("isModifiying","is_modifiying","修改标识，是否修改审批中：0否/1是");
+		isModifying("isModifying","is_modifying","修改标识，是否修改审批中：0否/1是");
 
 		private String fieldName;
 		private String tableFieldName;

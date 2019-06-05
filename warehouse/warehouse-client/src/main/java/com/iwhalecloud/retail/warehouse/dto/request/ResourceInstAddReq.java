@@ -289,4 +289,10 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "键串码，值CT码")
 	private Map<String, String> ctCodeMap;
+
+	/**
+	 * 事件状态
+	 */
+	@ApiModelProperty(value = "事件状态")
+	private java.lang.String eventStatusCd;
 }

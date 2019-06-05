@@ -50,16 +50,23 @@ public interface BrandService {
      * @param brandQueryReq
      * @return
      */
-    public ResultVO<List<BrandUrlResp>> listBrandFileUrl(BrandQueryReq brandQueryReq);
+    ResultVO<List<BrandUrlResp>> listBrandFileUrl(BrandQueryReq brandQueryReq);
+
+    /**
+     * 查询品牌关联图片(分页）
+     * @param req
+     * @return
+     */
+    ResultVO<Page<BrandUrlResp>> pageBrandFileUrl(BrandPageReq req);
 
     /**
      * 查询分类品牌
      * @param brandQueryReq
      * @return
      */
-    public ResultVO<List<BrandUrlResp>> listBrandByCatId( BrandQueryReq brandQueryReq);
+    ResultVO<List<BrandUrlResp>> listBrandByCatId( BrandQueryReq brandQueryReq);
 
-    public ResultVO<Page<ActivityGoodsDTO>> listBrandActivityGoodsId (BrandActivityReq brandActivityReq);
+    ResultVO<Page<ActivityGoodsDTO>> listBrandActivityGoodsId (BrandActivityReq brandActivityReq);
     
     
     ResultVO<BrandUrlResp> getBrandByBrandId(String brandId);

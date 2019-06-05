@@ -332,7 +332,9 @@ public class ResourceConst {
         // 删除
         DELETE("1010","删除"),
         // 裸机销售
-        BARE_MACHINE_SALE("1013","裸机销售");
+        BARE_MACHINE_SALE("1013","裸机销售"),
+        // 无需记录事件
+        NO_RECORD("9999","无需记录事件");
 
         private String code;
         private String name;

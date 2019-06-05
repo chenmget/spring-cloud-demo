@@ -13,7 +13,6 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.BatchAndEventAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
@@ -108,6 +107,7 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         addReq.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
         addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        addReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         addReq.setMktResInstType(detailDTO.getMktResInstType());
         addReq.setDestStoreId(detailDTO.getDestStoreId());
         addReq.setMktResId(detailDTO.getMktResId());
@@ -138,19 +138,6 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
         ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
         log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
-        // step4 增加事件和批次
-        Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);
-        BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
-        batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        batchAndEventAddReq.setLanId(detailDTO.getLanId());
-        batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
-        batchAndEventAddReq.setRegionId(detailDTO.getRegionId());
-        batchAndEventAddReq.setDestStoreId(detailDTO.getMktResStoreId());
-        batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        batchAndEventAddReq.setMerchantId(merchantId);
-        batchAndEventAddReq.setCreateStaff(merchantId);
-        resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         runableTask.exceutorAddNbrTrack(addReq);
         return ResultVO.success();
     }

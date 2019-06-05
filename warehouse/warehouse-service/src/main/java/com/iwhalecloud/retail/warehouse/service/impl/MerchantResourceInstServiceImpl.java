@@ -114,6 +114,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         req.setDestStoreId(mktResStoreId);
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        req.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         return resourceInstService.updateResourceInst(req);
     }
 
@@ -279,6 +280,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         req.setMerchantCode(merchantDTO.getMerchantCode());
         req.setLanId(merchantDTO.getLanId());
         req.setRegionId(merchantDTO.getCity());
+        req.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
+        req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
@@ -290,7 +293,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
-
         req.setSourceType(merchantDTOResultVO.getResultData().getMerchantType());
         CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>(mktResInstNbrs);
         Boolean addNum = resourceInstService.addResourceInstByMerchant(req, list);
@@ -383,6 +385,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         batchAndEventAddReq.setMerchantId(storeDTO.getMerchantId());
         batchAndEventAddReq.setCreateStaff(req.getCreateStaff());
+        batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
         log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         // 更新轨迹

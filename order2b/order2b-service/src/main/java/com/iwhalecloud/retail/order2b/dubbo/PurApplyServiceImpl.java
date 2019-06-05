@@ -21,7 +21,6 @@ import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -86,7 +85,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		for (int i=0;i<addProductList.size();i++ ) {
 			AddProductReq addProductReq = addProductList.get(i);
 			String purApplyItemProductId = addProductReq.getProductId();
-			String tPurPrice = addProductReq.getPriceInStore();
+		//	String tPurPrice = addProductReq.getPriceInStore();
 			if (purApplyItemProductId!=null) {
 				prodIds.add(purApplyItemProductId);
 			}
@@ -126,9 +125,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
 		String isSave = req.getIsSave();
 		// 编辑的时候不做插入操作
-		if(!isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
-			purApplyManager.tcProcureApply(req);
-		}
+//		if(!isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
+//			purApplyManager.tcProcureApply(req);
+//		}
 		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT)) {
 			//如果采购价大于政企价格 要省公司审核
 			int count =chooseCount(req);
@@ -188,7 +187,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 			}else {
 				req.setStatusCd("20");
 			}
-			purApplyManager.updatePurApply(req);
+//			purApplyManager.updatePurApply(req);
+			purApplyManager.updatePurApplyStatusCd(req);
 			NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new  NextRouteAndReceiveTaskReq();
 			nextRouteAndReceiveTaskReq.setFormId(req.getApplyId());
 			nextRouteAndReceiveTaskReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
@@ -372,7 +372,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 		}
 		return ResultVO.success();
 	}
-	
+
+	@Override
+	public void insertTcProcureApply(ProcureApplyReq req) {
+		purApplyManager.tcProcureApply(req);
+	}
+
 //	@Override
 //	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
 //		List<String> snPriceList = req.getSnPrice();

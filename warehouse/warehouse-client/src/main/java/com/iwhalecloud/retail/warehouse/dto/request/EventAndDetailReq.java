@@ -98,4 +98,10 @@ public class EventAndDetailReq implements java.io.Serializable {
 	@ApiModelProperty(value = "目标营销资源仓库")
 	private String destStoreId;
 
+	/**
+	 * 状态
+	 */
+	@ApiModelProperty(value = "状态")
+	private String statusCd;
+
 }

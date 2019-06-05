@@ -355,6 +355,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (num < 1) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
         }
+        resourceInstLogService.addResourceInstLog(req, resourceInsts, batchId);
         return addResInstCnt;
     }
 
@@ -399,6 +400,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (num < 1) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
         }
+        resourceInstLogService.addResourceInstLog(req, resourceInsts, batchId);
         return addResInstCnt;
     }
 

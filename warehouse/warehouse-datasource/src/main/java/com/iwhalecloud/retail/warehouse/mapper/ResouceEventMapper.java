@@ -13,4 +13,5 @@ import org.apache.ibatis.annotations.Mapper;
 @Mapper
 public interface ResouceEventMapper extends BaseMapper<ResouceEvent>{
 
+    Integer updateResourceEventStatusCd(ResouceEvent event);
 }

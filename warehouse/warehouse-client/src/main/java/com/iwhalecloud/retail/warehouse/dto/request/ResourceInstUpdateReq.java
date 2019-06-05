@@ -164,4 +164,10 @@ public class ResourceInstUpdateReq implements Serializable {
 	 */
 	@ApiModelProperty(value = "下单时间")
 	private Date createTime;
+
+	/**
+	 * 事件状态
+	 */
+	@ApiModelProperty(value = "事件状态")
+	private java.lang.String eventStatusCd;
 }

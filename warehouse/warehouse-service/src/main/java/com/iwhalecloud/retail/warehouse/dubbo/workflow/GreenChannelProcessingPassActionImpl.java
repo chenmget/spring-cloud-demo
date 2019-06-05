@@ -124,6 +124,7 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
             batchAndEventAddReq.setMerchantId(merchantId);
             batchAndEventAddReq.setCreateStaff(merchantId);
+            batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("GreenChannelProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         }

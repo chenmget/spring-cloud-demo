@@ -18,7 +18,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,6 @@ public class ResourceBatchRecServiceImpl implements ResourceBatchRecService {
     @Async
     public ResultVO saveEventAndBatch(BatchAndEventAddReq req) {
         Map<String, List<String>> mktResIdAndNbrMap = req.getMktResIdAndNbrMap();
-        List<String> mktResIdList = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : mktResIdAndNbrMap.entrySet()) {
 
             // step1增加批次事件并把ID返回
@@ -77,7 +75,6 @@ public class ResourceBatchRecServiceImpl implements ResourceBatchRecService {
                     detailDTO.setChngType(ResourceConst.PUT_IN_STOAGE);
                     detailDTO.setStatusCd(ResourceConst.StatusCdEnum.STATUS_CD_VALD.getCode());
                     detailDTO.setMktResInstNbr(nbr);
-                    detailDTO.setMktResStoreId(req.getDestStoreId());
                     int addChngEvtDetailCnt = resourceChngEvtDetailManager.insertChngEvtDetail(detailDTO);
                     log.info("ResourceInstServiceImpl.addResourceInst detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
                 }
@@ -92,6 +89,7 @@ public class ResourceBatchRecServiceImpl implements ResourceBatchRecService {
                     detailDTO.setChngType(ResourceConst.OUT_PUT_STOAGE);
                     detailDTO.setStatusCd(ResourceConst.StatusCdEnum.STATUS_CD_INVALD.getCode());
                     detailDTO.setMktResInstNbr(nbr);
+                    detailDTO.setMktResStoreId(req.getDestStoreId());
                     int addChngEvtDetailCnt = resourceChngEvtDetailManager.insertChngEvtDetail(detailDTO);
                     log.info("ResourceInstServiceImpl.addResourceInst detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
                 }

@@ -199,6 +199,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
                 batchAndEventAddReq.setMktResInstNbrs(req.getMktResInstNbrs());
                 batchAndEventAddReq.setCreateStaff(req.getCreateStaff());
+                batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
                 resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
                 log.info("RetailerResourceInstMarketServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
 
@@ -255,7 +256,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (!synMktInstStatusVO.isSuccess()) {
             return synMktInstStatusVO;
         }
-
         // 增加事件和批次
         EventAndDetailReq eventAndDetailReq = new EventAndDetailReq();
         BeanUtils.copyProperties(req, eventAndDetailReq);
@@ -265,6 +265,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         eventAndDetailReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         eventAndDetailReq.setDestStoreId(mktResStoreId);
         eventAndDetailReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
+        eventAndDetailReq.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
+        eventAndDetailReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         ResultVO saveEventAndBatchVO = resouceEventService.saveResouceEventAndDetail(eventAndDetailReq);
         log.info("RetailerResourceInstMarketServiceImpl.delResourceInst resouceEventService.saveResouceEventAndDetail req={},resp={}", JSON.toJSONString(eventAndDetailReq), JSON.toJSONString(saveEventAndBatchVO));
 
@@ -356,6 +358,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             batchAndEventAddReq.setObjId(req.getResReqId());
             batchAndEventAddReq.setMktResStoreId(detailDTO.getMktResStoreId());
             batchAndEventAddReq.setDestStoreId(detailDTO.getDestStoreId());
+            batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceBatchRecService.saveEventAndBatch req={}", JSON.toJSONString(batchAndEventAddReq));
 
@@ -452,6 +455,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
             batchAndEventAddReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
             batchAndEventAddReq.setObjId(req.getResReqId());
+            batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceBatchRecService.saveEventAndBatch req={}", JSON.toJSONString(batchAndEventAddReq));
         }
@@ -655,20 +659,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (!synMktInstStatusVO.isSuccess()) {
             return synMktInstStatusVO;
         }
-        // 增加事件
         Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(resourceInstDTOList, CLASS_TYPE_1);
-        EventAndDetailReq eventAndDetailReq = new EventAndDetailReq();
-        BeanUtils.copyProperties(req, eventAndDetailReq);
-        eventAndDetailReq.setRegionId(sourceMerchantDTO.getCity());
-        eventAndDetailReq.setMerchantId(sourceMerchantDTO.getMerchantId());
-        eventAndDetailReq.setMktResStoreId(req.getMktResStoreId());
-        eventAndDetailReq.setDestStoreId(req.getDestStoreId());
-        eventAndDetailReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
-        eventAndDetailReq.setObjId(resultVOInsertResReq.getResultData());
-        eventAndDetailReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
-        eventAndDetailReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
-        ResultVO saveEventAndBatchVO =  resouceEventService.saveResouceEventAndDetail(eventAndDetailReq);
-        log.info("RetailerResourceInstMarketServiceImpl.syncTerminal resouceEventService.saveResouceEventAndDetail req={},resp={}", JSON.toJSONString(eventAndDetailReq), JSON.toJSONString(saveEventAndBatchVO));
         // step 4:修改库存(出库)
         for (Map.Entry<String, List<String>> entry : mktResIdAndNbrMap.entrySet()) {
             ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
@@ -770,6 +761,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         batchAndEventAddReq.setMktResInstNbrs(req.getMktResInstNbrs());
         batchAndEventAddReq.setCreateStaff(req.getUpdateStaff());
+        batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
         log.info("RetailerResourceInstMarketServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         return ResultVO.success();

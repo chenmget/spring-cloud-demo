@@ -45,7 +45,7 @@ public class ActivityChangeServiceImpl implements ActivityChangeService {
     @Override
     public ResultVO<ActivityChangeResp> queryMarketingActivityChangeInfo(String activityId) {
         MarketingActivity activity = marketingActivityManager.getMarketingActivityById(activityId);
-        if(activity==null|| PromoConst.ActivityIsModifying.NO.getCode().equals(activity.getIsModifiying())){
+        if(activity==null|| PromoConst.ActivityIsModifying.NO.getCode().equals(activity.getIsModifying())){
             return ResultVO.error();
         }
         ActivityChange activityChange = activityChangeManager.queryLatestActivityChangeByActivityId(activityId);

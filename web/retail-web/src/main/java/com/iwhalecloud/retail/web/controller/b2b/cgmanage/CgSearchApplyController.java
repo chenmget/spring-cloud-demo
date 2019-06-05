@@ -178,46 +178,31 @@ public class CgSearchApplyController extends BaseController {
 			
 			purApplyService.delPurApplyExt(req);
 
-			List<AddProductReq> list = req.getAddProductReq();
-			for(int i=0;i<list.size();i++){
-				AddProductReq addProductReq = list.get(i);
-				String itemId = purApplyService.hqSeqItemId();
-				addProductReq.setApplyItemId(itemId);
-				addProductReq.setApplyId(req.getApplyId());
-				addProductReq.setStatusCd("1000");
-				addProductReq.setCreateStaff(createStaff);
-				addProductReq.setCreateDate(createDate);
-				addProductReq.setUpdateStaff(updateStaff);
-				addProductReq.setUpdateDate(updateDate);
-				addProductReq.setStatusDate(statusDate);
-				//写表PUR_APPLY_ITEM(采购申请单项)
-				purApplyService.crPurApplyItem(addProductReq);
-			}
-			if("3".equals(isSave)){//编辑
-				purApplyService.tcProcureApply(req);
-			}
-
 		}else{
-			List<AddProductReq> list = req.getAddProductReq();
-			for(int i=0;i<list.size();i++){
-				AddProductReq addProductReq = list.get(i);
-				String itemId = purApplyService.hqSeqItemId();
-				addProductReq.setApplyItemId(itemId);
-				addProductReq.setApplyId(req.getApplyId());
-				addProductReq.setStatusCd("1000");
-				addProductReq.setCreateStaff(createStaff);
-				addProductReq.setCreateDate(createDate);
-				addProductReq.setUpdateStaff(updateStaff);
-				addProductReq.setUpdateDate(updateDate);
-				addProductReq.setStatusDate(statusDate);
-				//写表PUR_APPLY_ITEM(采购申请单项)
-				purApplyService.crPurApplyItem(addProductReq);
 
-			}
+			purApplyService.insertTcProcureApply(req);
 
-			purApplyService.tcProcureApply(req);
+
 		}
-		
+
+		List<AddProductReq> list = req.getAddProductReq();
+		for(int i=0;i<list.size();i++){
+			AddProductReq addProductReq = list.get(i);
+			String itemId = purApplyService.hqSeqItemId();
+			addProductReq.setApplyItemId(itemId);
+			addProductReq.setApplyId(req.getApplyId());
+			addProductReq.setStatusCd("1000");
+			addProductReq.setCreateStaff(createStaff);
+			addProductReq.setCreateDate(createDate);
+			addProductReq.setUpdateStaff(updateStaff);
+			addProductReq.setUpdateDate(updateDate);
+			addProductReq.setStatusDate(statusDate);
+			//写表PUR_APPLY_ITEM(采购申请单项)
+			purApplyService.crPurApplyItem(addProductReq);
+
+		}
+
+
 		//表里面没记录的话
 
 		MemMemberAddressReq memMeneberAddr = purApplyService.selectMemMeneberAddr(req);
@@ -258,7 +243,9 @@ public class CgSearchApplyController extends BaseController {
 				purApplyService.crPurApplyFile(addFileReq);
 			}
 		}
-
+		if(!"1".equals(isSave)) {// 只要不是保存都要起流程
+			purApplyService.tcProcureApply(req);
+		}
 		return ResultVO.success();
     }
 	

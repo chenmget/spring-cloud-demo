@@ -92,6 +92,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
         // step2 记录事件(根据产品维度)
         ResouceEventDTO eventDTO = new ResouceEventDTO();
         BeanUtils.copyProperties(inst, eventDTO);
+        BeanUtils.copyProperties(req, eventDTO);
         eventDTO.setEventType(req.getEventType());
         eventDTO.setStatusCd(req.getEventStatusCd());
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
@@ -132,6 +133,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
         // step2 记录事件(根据产品维度)
         ResouceEventDTO eventDTO = new ResouceEventDTO();
         BeanUtils.copyProperties(inst, eventDTO);
+        BeanUtils.copyProperties(req, eventDTO);
         eventDTO.setEventType(req.getEventType());
         eventDTO.setStatusCd(req.getEventStatusCd());
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
@@ -173,6 +175,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
         // 增加事件
         ResouceEventDTO eventDTO = new ResouceEventDTO();
         BeanUtils.copyProperties(inst, eventDTO);
+        BeanUtils.copyProperties(req, eventDTO);
         eventDTO.setEventType(req.getEventType());
         eventDTO.setStatusCd(req.getEventStatusCd());
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
@@ -218,6 +221,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
                 // step2 记录事件(根据产品维度)
                 ResouceEventDTO eventDTO = new ResouceEventDTO();
                 BeanUtils.copyProperties(resourceInst, eventDTO);
+                BeanUtils.copyProperties(req, eventDTO);
                 eventDTO.setEventType(req.getEventType());
                 eventDTO.setStatusCd(req.getEventStatusCd());
                 eventId = resouceEventManager.insertResouceEvent(eventDTO);
@@ -229,8 +233,8 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             String eventStatusCd = ResourceConst.STATUSCD.AVAILABLE.getCode().equals(req.getStatusCd()) ? ResourceConst.StatusCdEnum.STATUS_CD_VALD.getCode() : ResourceConst.StatusCdEnum.STATUS_CD_INVALD.getCode();
             // 增加事件明细
             ResourceChngEvtDetailDTO detailDTO = new ResourceChngEvtDetailDTO();
-            BeanUtils.copyProperties(req, detailDTO);
             BeanUtils.copyProperties(resourceInst, detailDTO);
+            BeanUtils.copyProperties(req, detailDTO);
             detailDTO.setMktResEventId(eventId);
             detailDTO.setChngType(chngType);
             detailDTO.setStatusCd(eventStatusCd);
@@ -264,6 +268,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
                 // step2 记录事件(根据产品维度)
                 ResouceEventDTO eventDTO = new ResouceEventDTO();
                 BeanUtils.copyProperties(resourceInst, eventDTO);
+                BeanUtils.copyProperties(req, eventDTO);
                 eventDTO.setEventType(req.getEventType());
                 eventDTO.setStatusCd(req.getEventStatusCd());
                 eventId = resouceEventManager.insertResouceEvent(eventDTO);

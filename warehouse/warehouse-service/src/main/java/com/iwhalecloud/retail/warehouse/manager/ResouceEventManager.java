@@ -54,8 +54,8 @@ public class ResouceEventManager {
             } else {
                 exist = true;
             }
-
         }
+
         if (!exist) {
             ResouceEvent resouceEvent = new ResouceEvent();
             BeanUtils.copyProperties(resouceEventDTO, resouceEvent);
@@ -70,13 +70,14 @@ public class ResouceEventManager {
             resouceEventMapper.insert(resouceEvent);
             eventId = resouceEvent.getMktResEventId();
         } else {
-            ResouceEvent updateEvent = new ResouceEvent();
-            updateEvent.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
+            event.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             if (StringUtils.isNotEmpty(resouceEventDTO.getStatusCd())) {
-                updateEvent.setStatusCd(resouceEventDTO.getStatusCd());
+                event.setStatusCd(resouceEventDTO.getStatusCd());
             }
-            updateEvent.setUpdateDate(now);
-            int i = resouceEventMapper.update(updateEvent, queryWrapper);
+            event.setUpdateDate(now);
+            event.setStatusDate(now);
+            event.setUpdateStaff(event.getMerchantId());
+            resouceEventMapper.updateResourceEventStatusCd(event);
             eventId = event.getMktResEventId();
         }
         return eventId;

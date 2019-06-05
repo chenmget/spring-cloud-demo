@@ -427,7 +427,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 // 品牌
                 BrandQueryReq brandQueryReq = new BrandQueryReq();
                 brandQueryReq.setBrandIdList(targetIdList);
-//                detailList = brandService.listBrandFileUrl(targetIdList).getResultData();
                 detailList = brandService.listBrandFileUrl(brandQueryReq).getResultData();
                 fieldName = "brandId";
 
@@ -442,6 +441,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 // 机型 productId
                 ProductsPageReq productsPageReq = new ProductsPageReq();
                 productsPageReq.setUnitName(req.getUnitName());
+                productsPageReq.setProductName(req.getProductName());
                 productsPageReq.setSn(req.getSn());
                 productsPageReq.setUnitType(req.getUnitType());
                 productsPageReq.setPageNo(1);
@@ -505,6 +505,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 // 机型 productId
                 ProductsPageReq productsPageReq = new ProductsPageReq();
                 productsPageReq.setUnitName(req.getUnitName());
+                productsPageReq.setProductName(req.getProductName());
                 productsPageReq.setSn(req.getSn());
                 productsPageReq.setUnitType(req.getUnitType());
                 productsPageReq.setPageNo(1);

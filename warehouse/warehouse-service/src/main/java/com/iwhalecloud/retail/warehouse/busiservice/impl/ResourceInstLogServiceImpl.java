@@ -40,11 +40,16 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
     @Async
     @Override
     public void addResourceInstLog(ResourceInstAddReq req, List<ResourceInst> resourceInsts, String batchId) {
+        log.info("ResourceInstLogServiceImpl.addResourceInstLog req={}", JSON.toJSONString(req));
+        if (ResourceConst.EVENTTYPE.NO_RECORD.getCode().equals(req.getEventType())) {
+            log.info("ResourceInstLogServiceImpl.addResourceInstLog no record");
+            return;
+        }
         // 增加批次事件并把ID返回
         String merchantId = req.getMerchantId();
         ResourceBatchRecDTO batchRecDTO = new ResourceBatchRecDTO();
         BeanUtils.copyProperties(req, batchRecDTO);
-        if(null != req.getSalesPrice()){
+        if (null != req.getSalesPrice()) {
             batchRecDTO.setCostPrice(req.getSalesPrice());
         }
         batchRecDTO.setQuantity((long) resourceInsts.size());
@@ -55,6 +60,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
         ResouceEventDTO eventDTO = new ResouceEventDTO();
         BeanUtils.copyProperties(req, eventDTO);
         eventDTO.setCreateStaff(merchantId);
+        eventDTO.setStatusCd(req.getEventStatusCd());
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
         log.info("ResourceInstLogServiceImpl.addResourceInstLog resouceEventManager.insertResouceEvent req={},eventId={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
         for (ResourceInst resourceInst : resourceInsts) {
@@ -78,11 +84,16 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
     @Override
     public void updateResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstListPageResp> resourceInsts) {
         log.info("ResourceInstLogServiceImpl.updateResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
+        if (ResourceConst.EVENTTYPE.NO_RECORD.getCode().equals(req.getEventType())) {
+            log.info("ResourceInstLogServiceImpl.updateResourceInstLog no need record");
+            return;
+        }
         ResourceInstListPageResp inst = resourceInsts.get(0);
         // step2 记录事件(根据产品维度)
         ResouceEventDTO eventDTO = new ResouceEventDTO();
         BeanUtils.copyProperties(inst, eventDTO);
         eventDTO.setEventType(req.getEventType());
+        eventDTO.setStatusCd(req.getEventStatusCd());
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
         log.info("ResourceInstLogServiceImpl.updateResourceInstLog resourceInstManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
         for (ResourceInstListPageResp resourceInst : resourceInsts) {
@@ -113,11 +124,16 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
     @Override
     public void updateResourceInstByIdLog(AdminResourceInstDelReq req, List<ResourceInstDTO> resourceInsts) {
         log.info("ResourceInstLogServiceImpl.updateResourceInstByIdLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
+        if (ResourceConst.EVENTTYPE.NO_RECORD.getCode().equals(req.getEventType())) {
+            log.info("ResourceInstLogServiceImpl.updateResourceInstByIdLog no need record");
+            return;
+        }
         ResourceInstDTO inst = resourceInsts.get(0);
         // step2 记录事件(根据产品维度)
         ResouceEventDTO eventDTO = new ResouceEventDTO();
         BeanUtils.copyProperties(inst, eventDTO);
         eventDTO.setEventType(req.getEventType());
+        eventDTO.setStatusCd(req.getEventStatusCd());
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
         log.info("ResourceInstLogServiceImpl.updateResourceInstByIdLog resourceInstManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
         for (ResourceInstDTO resourceInst : resourceInsts) {
@@ -148,12 +164,17 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
     @Override
     public void pickupResourceInstLog(ResourceInstPutInReq req, List<ResourceInstDTO> resourceList, String batchId) {
         log.info("ResourceInstLogServiceImpl.pickupResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceList));
+        if (ResourceConst.EVENTTYPE.NO_RECORD.getCode().equals(req.getEventType())) {
+            log.info("ResourceInstLogServiceImpl.pickupResourceInstLog no need record");
+            return;
+        }
         ResourceInstDTO inst = resourceList.get(0);
         Double salePrice = inst.getSalesPrice() == null ? 0D : inst.getSalesPrice();
         // 增加事件
         ResouceEventDTO eventDTO = new ResouceEventDTO();
         BeanUtils.copyProperties(inst, eventDTO);
         eventDTO.setEventType(req.getEventType());
+        eventDTO.setStatusCd(req.getEventStatusCd());
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
         log.info("ResourceInstLogServiceImpl.pickupResourceInstLog resouceStoreManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
         // 增加批次
@@ -185,6 +206,10 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
     @Override
     public void delResourceInstLog(AdminResourceInstDelReq req, List<ResourceInstDTO> resourceInsts) {
         log.info("ResourceInstLogServiceImpl.delResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
+        if (ResourceConst.EVENTTYPE.NO_RECORD.getCode().equals(req.getEventType())) {
+            log.info("ResourceInstLogServiceImpl.delResourceInstLog no need record");
+            return;
+        }
         List<String> productList = new ArrayList<>();
         for (ResourceInstDTO resourceInst : resourceInsts) {
             String productId = resourceInst.getMktResId();
@@ -194,6 +219,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
                 ResouceEventDTO eventDTO = new ResouceEventDTO();
                 BeanUtils.copyProperties(resourceInst, eventDTO);
                 eventDTO.setEventType(req.getEventType());
+                eventDTO.setStatusCd(req.getEventStatusCd());
                 eventId = resouceEventManager.insertResouceEvent(eventDTO);
                 log.info("ResourceInstLogServiceImpl.delResourceInstLog resourceInstManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
                 productList.add(productId);
@@ -226,6 +252,10 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
     @Override
     public void supplierDeliveryOutResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstDTO> resourceInsts) {
         log.info("ResourceInstLogServiceImpl.delResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
+        if (ResourceConst.EVENTTYPE.NO_RECORD.getCode().equals(req.getEventType())) {
+            log.info("ResourceInstLogServiceImpl.supplierDeliveryOutResourceInstLog no need record");
+            return;
+        }
         List<String> productList = new ArrayList<>();
         for (ResourceInstDTO resourceInst : resourceInsts) {
             String productId = resourceInst.getMktResId();
@@ -235,6 +265,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
                 ResouceEventDTO eventDTO = new ResouceEventDTO();
                 BeanUtils.copyProperties(resourceInst, eventDTO);
                 eventDTO.setEventType(req.getEventType());
+                eventDTO.setStatusCd(req.getEventStatusCd());
                 eventId = resouceEventManager.insertResouceEvent(eventDTO);
                 log.info("ResourceInstLogServiceImpl.delResourceInstLog resourceInstManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
                 productList.add(productId);

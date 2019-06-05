@@ -114,6 +114,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         req.setDestStoreId(mktResStoreId);
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        req.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         return resourceInstService.updateResourceInst(req);
     }
 
@@ -290,13 +291,26 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
             return ResultVO.error("该产品串码已在库，请不要重复录入！");
         }
-
         req.setSourceType(merchantDTOResultVO.getResultData().getMerchantType());
         CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>(mktResInstNbrs);
         Boolean addNum = resourceInstService.addResourceInstByMerchant(req, list);
         if (!addNum) {
             return ResultVO.error("串码入库失败");
         }
+        // step4 增加事件和批次
+        Map<String, List<String>> mktResIdAndNbrMap = new HashMap<>();
+        mktResIdAndNbrMap.put(req.getMktResId(), req.getMktResInstNbrs());
+        BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
+        batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+        batchAndEventAddReq.setLanId(merchantDTO.getLanId());
+        batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
+        batchAndEventAddReq.setRegionId(merchantDTO.getCity());
+        batchAndEventAddReq.setDestStoreId(req.getMktResStoreId());
+        batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+        batchAndEventAddReq.setMerchantId(merchantDTO.getMerchantId());
+        batchAndEventAddReq.setCreateStaff(req.getCreateStaff());
+        batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
+        resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
         return ResultVO.success("串码入库完成", resourceInstAddResp);
     }
 
@@ -383,6 +397,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         batchAndEventAddReq.setMerchantId(storeDTO.getMerchantId());
         batchAndEventAddReq.setCreateStaff(req.getCreateStaff());
+        batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
         log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         // 更新轨迹

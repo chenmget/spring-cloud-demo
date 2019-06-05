@@ -98,4 +98,10 @@ public class BatchAndEventAddReq implements java.io.Serializable {
 	@ApiModelProperty(value = "目标营销资源仓库")
 	private java.lang.String destStoreId;
 
+	/**
+	 * 事件状态
+	 */
+	@ApiModelProperty(value = "事件状态")
+	private java.lang.String statusCd;
+
 }

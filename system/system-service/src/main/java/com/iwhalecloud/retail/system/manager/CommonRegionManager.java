@@ -1,12 +1,18 @@
 package com.iwhalecloud.retail.system.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
+import com.iwhalecloud.retail.system.dto.request.CommonRegionPageReq;
 import com.iwhalecloud.retail.system.entity.CommonRegion;
 import com.iwhalecloud.retail.system.mapper.CommonRegionMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -52,5 +58,34 @@ public class CommonRegionManager {
         }
         List<CommonRegion> list = commonRegionMapper.selectList(queryWrapper);
         return list;
+    }
+
+
+    /**
+     * 分页获取本地区域 列表
+     * @param req
+     * @return
+     */
+    public Page<CommonRegionDTO> pageCommonRegion(CommonRegionPageReq req) {
+        IPage<CommonRegion> page =  new Page<CommonRegion>(req.getPageNo(), req.getPageSize());
+        QueryWrapper<CommonRegion> queryWrapper = new QueryWrapper<CommonRegion>();
+        if (!CollectionUtils.isEmpty(req.getRegionIdList())) {
+            queryWrapper.in(CommonRegion.FieldNames.regionId.getTableFieldName(), req.getRegionIdList());
+        }
+        page = commonRegionMapper.selectPage(page, queryWrapper);
+        Page<CommonRegionDTO> respPage = new Page<>();
+        BeanUtils.copyProperties(page, respPage);
+        List<CommonRegion> commonRegionList = page.getRecords();
+        List<CommonRegionDTO> commonRegionDTOList = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(commonRegionList)) {
+            commonRegionList.forEach(commonRegion -> {
+                CommonRegionDTO commonRegionDTO = new CommonRegionDTO();
+                BeanUtils.copyProperties(commonRegion, commonRegionDTO);
+                commonRegionDTOList.add(commonRegionDTO);
+            });
+        }
+        respPage.setRecords(commonRegionDTOList);
+
+        return respPage;
     }
 }

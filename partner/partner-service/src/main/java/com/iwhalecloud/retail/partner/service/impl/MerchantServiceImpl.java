@@ -376,12 +376,6 @@ public class MerchantServiceImpl implements MerchantService {
                 dto.setCityName(regionNamesMap.get(dto.getCity()));
             }
 
-//            // 取本地网名称  市县名称
-//            for (MerchantDTO merchantDTO : list) {
-//                // 取本地网名称  市县名称
-//                merchantDTO.setLanName(getRegionNameByRegionId(merchantDTO.getLanId()));
-//                merchantDTO.setCityName(getRegionNameByRegionId(merchantDTO.getCity()));
-//            }
         }
         log.info("MerchantServiceImpl.listMerchant(), output: list={} ", list);
         return ResultVO.success(list);
@@ -418,13 +412,6 @@ public class MerchantServiceImpl implements MerchantService {
                 merchantDTO.setCityName(regionNamesMap.get(merchantDTO.getCity()));
             }
         }
-
-//        // 取本地网名称  市县名称
-//        for (MerchantPageResp merchantDTO : page.getRecords()) {
-//            // 取本地网名称  市县名称
-//            merchantDTO.setLanName(getRegionNameByRegionId(merchantDTO.getLanId()));
-//            merchantDTO.setCityName(getRegionNameByRegionId(merchantDTO.getCity()));
-//        }
         log.info("MerchantServiceImpl.pageMerchant() output: list<MerchantPageResp>={} ", JSON.toJSONString(page.getRecords()));
         return ResultVO.success(page);
     }

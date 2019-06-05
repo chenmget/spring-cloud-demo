@@ -44,7 +44,7 @@ public class MarketingActivityChangeFinalReviewNotPassServiceImpl implements Mar
         boolean flag = activityChangeManager.updateActivityChangeNoPassById(changeId,PromoConst.AuditState.AuditState_6.getCode());
         if (flag){
             //2.将营销活动“修改标识”改为0(不在审核修改中)
-            marketingActivityManager.updateMarketingActivityToModifiying(params.getBusinessId(),PromoConst.ActivityIsModifying.NO.getCode());
+            marketingActivityManager.updateMarketingActivityToModifying(params.getBusinessId(),PromoConst.ActivityIsModifying.NO.getCode());
             return ResultVO.successMessage(constant.getUpdateSuccess());
         }else{
             return ResultVO.error(constant.getUpdateFaile());

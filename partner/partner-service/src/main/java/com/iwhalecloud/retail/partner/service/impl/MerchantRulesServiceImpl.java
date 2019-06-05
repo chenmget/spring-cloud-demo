@@ -260,15 +260,16 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", req);
         MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
         BeanUtils.copyProperties(req, merchantRulesListReq);
+        // 之前逻辑 分页在 par_merchant_rules表
 //        Page<MerchantRulesDTO> page = merchantRulesManager.pageMerchantRulesDetail(merchantRulesListReq);
 //        List<MerchantRulesDTO> list = page.getRecords();
-//        List<MerchantRulesDetailDTO> resultList = getDetailPageList(req, list);
+//        List<MerchantRulesDetailDTO> resultList = getDetailList(req, list);
 //        Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = new Page<MerchantRulesDetailDTO>();
 //        BeanUtils.copyProperties(page, merchantRulesDetailDTOPage);
 //        merchantRulesDetailDTOPage.setRecords(resultList);
 
+        // 修改后逻辑  分页在  具体详情表
         List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(merchantRulesListReq);
-
         Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = getDetailPageList(req, list);
 
         log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), output: resultList={} ", JSON.toJSONString(merchantRulesDetailDTOPage.getRecords()));
@@ -766,7 +767,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
 
         // 主要是复制 分页信息
-        BeanUtils.copyProperties(respPage, detailPage);
+        BeanUtils.copyProperties(detailPage, respPage);
         // 设置分页 结果列表（并去除没有详情的数据）
         respPage.setRecords(resultList.stream().filter(item -> item.getTargetData() != null).collect(Collectors.toList()));
         return respPage;

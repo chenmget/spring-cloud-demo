@@ -952,7 +952,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         //1.插入变更信息，包含比较变更数据和原数据，获取变更项，插入变更表和变更明细表
         String changeId = addMarketingActivityChange(originalActivity, changedActivity);
         //2.将营销活动“修改标识”改为1(在审核修改中)
-        marketingActivityManager.updateMarketingActivityToModifiying(changedActivity.getId(), PromoConst.ActivityIsModifying.YES.getCode());
+        marketingActivityManager.updateMarketingActivityToModifying(changedActivity.getId(), PromoConst.ActivityIsModifying.YES.getCode());
         //3.起变更审核流程
         ResultVO auditMktResultVO = activityChangeAuitStartProcess(changedActivity.getName(), changedActivity.getUserId(), changedActivity.getUserName(), changedActivity.getOrgId(), changedActivity.getSysPostName(), changedActivity.getId(), changeId);
         return auditMktResultVO;

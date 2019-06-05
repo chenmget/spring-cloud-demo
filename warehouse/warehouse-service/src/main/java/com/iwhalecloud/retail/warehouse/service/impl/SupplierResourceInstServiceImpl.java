@@ -437,6 +437,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstAddReq.setLanId(buyer.getLanId());
             resourceInstAddReq.setRegionId(buyer.getCity());
             resourceInstAddReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
+            resourceInstAddReq.setMerchantType(buyer.getMerchantType());
             ProductGetByIdReq productReq = new ProductGetByIdReq();
             productReq.setProductId(item.getProductId());
             ResultVO<ProductResp> productRespResultVO = productService.getProductInfo(productReq);

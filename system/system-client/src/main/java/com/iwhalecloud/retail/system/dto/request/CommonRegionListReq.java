@@ -24,4 +24,7 @@ public class CommonRegionListReq implements Serializable {
     @ApiModelProperty(value = "区域名称（模糊查询）")
     private String regionName;
 
+    @ApiModelProperty(value = "记录区域的级别。LOVB=LOC-C-0004")
+    private String regionLevel;
+
 }

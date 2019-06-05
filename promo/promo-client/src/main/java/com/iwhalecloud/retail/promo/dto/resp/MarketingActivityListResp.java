@@ -116,8 +116,8 @@ public class MarketingActivityListResp implements Serializable {
     private Date deliverEndTime;
 
     /**
-     * 是否修改审批中：0否/1是 is_modifiying
+     * 是否修改审批中：0否/1是 is_modifying
      */
-    @ApiModelProperty(value="修改标识，是否修改审批中：0否/1是 is_modifiying")
-    private String isModifiying;
+    @ApiModelProperty(value="修改标识，是否修改审批中：0否/1是 is_modifying")
+    private String isModifying;
 }

@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
@@ -61,7 +62,7 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO<Integer> addBrand(BrandAddReq req) {
         Brand t = new Brand();
         BeanUtils.copyProperties(req, t);
@@ -86,12 +87,12 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO<Integer> updateBrand(BrandUpdateReq req) {
         String fileUrl = req.getFileUrl();
         String targetId = req.getBrandId();
 
-        if (StringUtils.isNotBlank(fileUrl)){
+        if (StringUtils.isNotBlank(fileUrl)) {
             String targetType = FileConst.TargetType.BRAND_TARGET.getType();
             String subType = FileConst.SubType.DEFAULT_SUB.getType();
             Integer num = fileManager.deleteFile(targetId, targetType, subType);
@@ -108,16 +109,16 @@ public class BrandServiceImpl implements BrandService {
     @Override
     public ResultVO<Integer> deleteBrand(BrandQueryReq brandQueryReq) {
         String brandId = brandQueryReq.getBrandId();
-		return ResultVO.success(brandManager.deleteBrand(brandId));
+        return ResultVO.success(brandManager.deleteBrand(brandId));
     }
 
-	@Override
-	public ResultVO<List<BrandUrlResp>> listBrandFileUrl(BrandQueryReq brandQueryReq){
+    @Override
+    public ResultVO<List<BrandUrlResp>> listBrandFileUrl(BrandQueryReq brandQueryReq) {
         List brandIdList = brandQueryReq.getBrandIdList();
         List<BrandUrlResp> list = brandManager.listBrandFileUrl(brandIdList);
         if (null != list && !list.isEmpty()) {
-            for(BrandUrlResp resp:list){
-                if(StringUtils.isEmpty(resp.getFileUrl())){
+            for (BrandUrlResp resp : list) {
+                if (StringUtils.isEmpty(resp.getFileUrl())) {
                     continue;
                 }
                 String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(resp.getFileUrl(), dfsShowIp, true);
@@ -125,19 +126,43 @@ public class BrandServiceImpl implements BrandService {
             }
         }
         return ResultVO.success(list);
-	}
+    }
+
+    /**
+     * 查询品牌关联图片(分页）
+     * @param req
+     * @return
+     */
+    @Override
+    public ResultVO<Page<BrandUrlResp>> pageBrandFileUrl(BrandPageReq req) {
+        log.info("BrandServiceImpl.pageBrandFileUrl(), input：req={} ", JSON.toJSONString(req));
+        Page<BrandUrlResp> page = brandManager.pageBrandFileUrl(req);
+        List<BrandUrlResp> list = page.getRecords();
+        if (null != list && !list.isEmpty()) {
+            for (BrandUrlResp resp : list) {
+                if (StringUtils.isEmpty(resp.getFileUrl())) {
+                    continue;
+                }
+                String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(resp.getFileUrl(), dfsShowIp, true);
+                resp.setFileUrl(newImageFile);
+            }
+        }
+        log.info("BrandServiceImpl.pageBrandFileUrl(), output：list={} ", JSON.toJSONString(page.getRecords()));
+        return ResultVO.success(page);
+    }
+
 
     @Override
-	public ResultVO<List<BrandUrlResp>> listBrandByCatId( BrandQueryReq brandQueryReq){
+    public ResultVO<List<BrandUrlResp>> listBrandByCatId(BrandQueryReq brandQueryReq) {
         String catId = brandQueryReq.getCatId();
-		return ResultVO.success(brandManager.listBrandByCatId(catId));
-	}
+        return ResultVO.success(brandManager.listBrandByCatId(catId));
+    }
 
     @Override
     public ResultVO<Page<ActivityGoodsDTO>> listBrandActivityGoodsId(BrandActivityReq brandActivityReq) {
 //        List<ActivityGoodsDTO> activityGoodsDTOs = new ArrayList<>();
         Page<ActivityGoodsDTO> activityGoodsDTOPage = new Page<ActivityGoodsDTO>(brandActivityReq.getPageNo(), brandActivityReq.getPageSize());
-        if(null == brandActivityReq){
+        if (null == brandActivityReq) {
             return ResultVO.successMessage("入参不能为空");
         }
         String regionId = brandActivityReq.getRegionId();
@@ -145,29 +170,29 @@ public class BrandServiceImpl implements BrandService {
         String supplierId = brandActivityReq.getSupplierId();
         String lanId = brandActivityReq.getLanId();
         log.info("BrandServiceImpl listBrandActivityGoodsId req={} ", brandActivityReq);
-        if(StringUtils.isEmpty(brandId)){
-            return  ResultVO.successMessage("入参品牌ID为空");
+        if (StringUtils.isEmpty(brandId)) {
+            return ResultVO.successMessage("入参品牌ID为空");
         }
         List<String> productIdList = new ArrayList<>();
-        try{
+        try {
             ResultVO<List<String>> listResultVO = merchantRulesService.getBusinessModelPermission(supplierId);
 //            if(listResultVO.isSuccess()){
 //                productIdList = listResultVO.getResultData();
 //            }
             productIdList = listResultVO.getResultData();
-        }catch (Exception ex) {
+        } catch (Exception ex) {
             log.error("BrandServiceImpl.listBrandActivityGoodsId merchantRulesService.getBusinessModelPermission throw exception ex={}", ex);
-            
+
 //            return ResultVO.error(GoodsResultCodeEnum.INVOKE_PARTNER_SERVICE_EXCEPTION);
         }
         brandActivityReq.setProductIdList(productIdList);
         activityGoodsDTOPage = brandManager.listBrandActivityGoodsId(brandActivityReq);
         List<ActivityGoodsDTO> activityGoodsDTOs = activityGoodsDTOPage.getRecords();
-        if(CollectionUtils.isEmpty(activityGoodsDTOs)){
+        if (CollectionUtils.isEmpty(activityGoodsDTOs)) {
             return ResultVO.successMessage("根据入参区域ID和品牌ID没有查到数据");
         }
-        for(ActivityGoodsDTO activityGoodsDTO:activityGoodsDTOs){
-            if(StringUtils.isNotEmpty(activityGoodsDTO.getSupplierId())) {
+        for (ActivityGoodsDTO activityGoodsDTO : activityGoodsDTOs) {
+            if (StringUtils.isNotEmpty(activityGoodsDTO.getSupplierId())) {
                 try {
                     ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(activityGoodsDTO.getSupplierId());
                     if (merchantDTOResultVO.isSuccess() && merchantDTOResultVO.getResultData() != null) {
@@ -185,10 +210,10 @@ public class BrandServiceImpl implements BrandService {
     }
 
     @Override
-    public ResultVO<BrandUrlResp> getBrandByBrandId(String brandId){
+    public ResultVO<BrandUrlResp> getBrandByBrandId(String brandId) {
         BrandUrlResp brandUrlResp = new BrandUrlResp();
         Brand brand = brandManager.getBrandByBrandId(brandId);
-        BeanUtils.copyProperties(brand,brandUrlResp);
+        BeanUtils.copyProperties(brand, brandUrlResp);
         return ResultVO.success(brandUrlResp);
     }
 }

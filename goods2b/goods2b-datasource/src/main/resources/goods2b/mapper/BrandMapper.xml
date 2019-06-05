@@ -30,6 +30,23 @@
     </foreach>
   </select>
 
+
+  <!-- 分页 查询品牌名称及关联图片-->
+  <select id="pageBrandFileUrl" resultType="com.iwhalecloud.retail.goods2b.dto.resp.BrandUrlResp"
+          parameterType="com.iwhalecloud.retail.goods2b.dto.req.BrandPageReq">
+    select pb.brand_id, pb.name,pb.brand_code,pb.brand_code_outer,pb.brand_desc,pb.create_staff,pf.file_url,pb.MANUFACTURER_ID,pb.MANUFACTURER_NAME
+    from prod_brand pb
+    left join prod_file pf on pb.brand_id = pf.target_id
+    where pf.target_type = '4'
+    and pb.is_deleted = '0'
+    <if test="req.brandIdList != null and req.brandIdList.size > 0">
+      and pb.brand_id in
+      <foreach collection="req.brandIdList" open="(" index="index" item="item" separator="," close=")">
+        #{item}
+      </foreach>
+    </if>
+  </select>
+
   <select id="listBrandByCatId" resultType="com.iwhalecloud.retail.goods2b.dto.resp.BrandUrlResp"
           parameterType="String">
     select pb.brand_id, pb.name,pb.brand_code,pb.brand_code_outer,pb.brand_desc,pb.create_staff,pf.file_url,pb.MANUFACTURER_ID,pb.MANUFACTURER_NAME

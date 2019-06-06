@@ -214,6 +214,18 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             startProductFlowReq.setDealer(t.getCreateStaff());
             startProductFlowReq.setProductName(req.getProductName());
             startProductFlowReq.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
+            //如果是固网产品
+            if(StringUtils.isNotEmpty(req.getIsFixedLine()) && "1".equals(req.getIsFixedLine())){
+                String isItms = req.getIsItms();
+                if(StringUtils.isNotEmpty(isItms) && (ProductConst.isItms.PUSHIPTV.getCode().equals(isItms) ||
+                        ProductConst.isItms.PUSHIPTVMODEL.getCode().equals(isItms))){
+                    startProductFlowReq.setProcessId(ProductConst.ITV_PRODUCT_FLOW_PROCESS_ID);
+                }else if(StringUtils.isNotEmpty(isItms) && ProductConst.isItms.PUSHMODEL.getCode().equals(isItms)){
+                    startProductFlowReq.setProcessId(ProductConst.MODEL_PRODUCT_FLOW_PROCESS_ID);
+                }else{
+                    startProductFlowReq.setProcessId(ProductConst.INTELLIGENCE_PRODUCT_FLOW_PROCESS_ID);
+                }
+            }
             startProductFlowReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.STRING_PARAMS.getCode());
             startProductFlowReq.setParamsValue(t.getBrandId());
             ResultVO flowResltVO = productFlowService.startProductFlow(startProductFlowReq);
@@ -419,6 +431,17 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                          || ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
                      //原审核状态为待提交，且新状态为非待提交
                      String processId =ProductConst.APP_PRODUCT_FLOW_PROCESS_ID;
+                     if(StringUtils.isNotEmpty(req.getIsFixedLine()) && "1".equals(req.getIsFixedLine())){
+                         String isItms = req.getIsItms();
+                         if(StringUtils.isNotEmpty(isItms) && (ProductConst.isItms.PUSHIPTV.getCode().equals(isItms) ||
+                                 ProductConst.isItms.PUSHIPTVMODEL.getCode().equals(isItms))){
+                             processId =ProductConst.ITV_PRODUCT_FLOW_PROCESS_ID;
+                         }else if(StringUtils.isNotEmpty(isItms) && ProductConst.isItms.PUSHMODEL.getCode().equals(isItms)){
+                             processId =ProductConst.MODEL_PRODUCT_FLOW_PROCESS_ID;
+                         }else{
+                             processId =ProductConst.INTELLIGENCE_PRODUCT_FLOW_PROCESS_ID;
+                         }
+                     }
                      if(ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
                          processId =ProductConst.UPDATE_PRODUCT_FLOW_PROCESS_ID;
                      }

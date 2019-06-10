@@ -8,8 +8,7 @@ spring.dubbo:
     application:
       name: wf-provider
     registry:
-     # address: zookeeper://localhost:2181
-      address: zookeeper://10.45.46.238:8121
+      address: zookeeper://localhost:2181
       username:
       password:
     protocol:

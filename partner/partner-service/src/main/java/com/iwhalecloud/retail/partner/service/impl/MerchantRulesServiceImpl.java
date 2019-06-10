@@ -1240,4 +1240,23 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
         return ResultVO.success();
     }
+
+    @Override
+    public ResultVO<List<String>> checkProdListRule(String merchantId, List<String> productIds) {
+        List<String> list = new ArrayList<>();
+        MerchantRulesCommonReq req = new MerchantRulesCommonReq();
+        req.setMerchantId(merchantId);
+        req.setTargetType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
+        req.setRuleType(PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType());
+        ResultVO<List<String>> resultVO = this.getCommonPermission(req);
+        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+            List<String> targetids = resultVO.getResultData();
+            for(String productId : productIds){
+                if(!targetids.contains(productId)){
+                    list.add(productId);
+                }
+            }
+        }
+        return ResultVO.success(list);
+    }
 }

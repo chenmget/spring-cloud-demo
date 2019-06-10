@@ -288,4 +288,22 @@ public class MerchantRulesController {
         return resultVO;
     }
 
+    /**
+     * 商家是否有经营权限进行提示
+     *
+     * @param merchantId
+     * @param productIds
+     * @return
+     */
+    @ApiOperation(value = "商家是否有经营权限进行提示接口", notes = "商家是否有经营权限进行提示")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/checkProdListRule", method = RequestMethod.POST)
+    @Transactional
+    public ResultVO<List<String>> checkProdListRule(@RequestParam(value = "merchantId") String merchantId, @RequestParam(value = "productIds")List<String> productIds) {
+
+        return merchantRulesService.checkProdListRule(merchantId,productIds);
+    }
 }

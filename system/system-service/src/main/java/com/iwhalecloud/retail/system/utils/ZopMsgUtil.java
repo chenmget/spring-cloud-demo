@@ -47,26 +47,27 @@ public class ZopMsgUtil {
 
     /**
      * 发送多条模板短信
-     * @param zopMsgModels 短信报文模型
+     * @param zopMsgModel  短信报文模型
      * @param msgtTemplate 短信模板内容类,参照SmsVerificationtemplate
      * @return
      */
-    public boolean SendMsgs(List<ZopMsgModel> zopMsgModels,List<Object> msgtTemplate) {
-        if(zopMsgModels.size()!=msgtTemplate.size()){
-            return false;
-        }
+    public boolean SendMsgs(ZopMsgModel zopMsgModel,List<Object> msgtTemplate) {
         RequestParams params = new RequestParams();
         params.setAccess_token(getToken());
         params.setTimeout(getTimeout());
         params.setUrl(getUrl());
         ZopReqContent content = new ZopReqContent();
-
-        for(int i=0;i<zopMsgModels.size();i++){
-            String param = JSON.toJSONString(msgtTemplate.get(i));
+        List list = new ArrayList();
+        //模板所需要的参数转16进制
+        for(Object o : msgtTemplate){
+            String param = JSON.toJSONString(msgtTemplate);
             param = new String(Hex.encodeHex(param.getBytes()));
-            zopMsgModels.get(i).setParams(param);
+            ZopMsgModel zm = new ZopMsgModel();
+            BeanUtils.copyProperties(zopMsgModel,zm);
+            zm.setParams(param);
+            list.add(zopMsgModel);
         }
-        content.setBillReqVo(zopMsgModels);
+        content.setBillReqVo(list);
         ResponseResult responseResult = ZopClient.callRest(params,  SysUserMessageConst.ZopServiceEnum.SEND_MESSAGE.getVersion()
                 ,SysUserMessageConst.ZopServiceEnum.SEND_MESSAGE.getMethod(),content,true);
         return responseResult.getRes_code().equals("00000");

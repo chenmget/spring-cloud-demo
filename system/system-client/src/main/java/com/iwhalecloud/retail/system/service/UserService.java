@@ -148,7 +148,6 @@ public interface UserService {
      */
     ResultVO registLandSupplier(UserRegisterReq resistReq);
 
-
     /**
      * 省包商自注册
      * @param resistReq

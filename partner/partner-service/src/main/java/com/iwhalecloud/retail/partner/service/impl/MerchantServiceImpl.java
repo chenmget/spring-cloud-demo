@@ -1183,17 +1183,14 @@ public class MerchantServiceImpl implements MerchantService {
     private void addlegalPersonIdCard(String legalPersonIdCardFont, String merchantId,Boolean rollBack) {
         //身份证不为空，上传身份证
         if(StringUtils.isNotBlank(legalPersonIdCardFont)){
-            try {
-                CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.BUSINESS_LICENSE.getCode(),merchantId,legalPersonIdCardFont);
-                commonFileService.saveCommonFile(dto);
-            } catch (Exception e) {
-                log.error("MerchantServiceImpl.addlegalPersonIdCard(), input: legalPersonIdCardFont={} ", legalPersonIdCardFont);
-                if(rollBack){
-                    throw new RuntimeException("上传身份证失败");
-                }
+            CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode(),merchantId,legalPersonIdCardFont);
+            if(!commonFileService.saveCommonFile(dto).isSuccess() && rollBack)
+            {
+                throw new RuntimeException("上传身份证失败");
             }
         }
     }
+
 
     /**
      * 上传营业执照
@@ -1204,14 +1201,10 @@ public class MerchantServiceImpl implements MerchantService {
     private void addBusinessLicense(String businessLicense, String merchantId,Boolean rollBack) {
         //营业执照照片不为空，上传营业执照
         if(StringUtils.isNotBlank(businessLicense)){
-            try {
-                CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.BUSINESS_LICENSE.getCode(),merchantId,businessLicense);
-                commonFileService.saveCommonFile(dto);
-            } catch (Exception e) {
-                log.error("MerchantServiceImpl.addBusinessLicense(), input: businessLicense={} ", businessLicense);
-                if(rollBack){
-                    throw new RuntimeException("上传营业执照失败");
-                }
+            CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.BUSINESS_LICENSE.getCode(),merchantId,businessLicense);
+            if(!commonFileService.saveCommonFile(dto).isSuccess() && rollBack)
+            {
+                throw new RuntimeException("上传营业执照失败");
             }
         }
     }

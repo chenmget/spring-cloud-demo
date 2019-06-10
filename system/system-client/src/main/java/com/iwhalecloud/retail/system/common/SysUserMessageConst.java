@@ -20,13 +20,27 @@ public class SysUserMessageConst {
     public static  final String NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT_NEW = "您还有《%s》营销活动订单未完成发货，本次活动将于%s结束，请在活动结束前完成串码上传，逾期将不能上传串码 。";
     // 营销活动发货预警提前天数
     public static  final String DELIVER_END_TIME_NOTIFY_DAYS = "DELIVER_END_TIME_NOTIFY_DAYS";
-    
+
+
+    public static final String SUPPLIER_REGISTER_SUCCESS = "供应商注册成功";
+    public static final String SUPPLIER_REGISTER_FAIL = "供应商注册失败";
+
+    //ZOP短信能力
+    public static final String SMS_VERIFY_BSID = "2691";
+
     /**
      * 0：未读
      * 1：已读
      */
     public static final String READ_FLAG_N = "0";
     public static final String READ_FLAG_Y = "1";
+
+    /**
+     *  '0未验证  1已校验n            2 已验证',
+     */
+    public static final int UNVERIFIED = 0;
+    public static final int VERIFIED = 1;
+    //public static final String VERIFIED = "2";
 
 
     /**
@@ -48,6 +62,63 @@ public class SysUserMessageConst {
 
         public String getCode() {
             return code;
+        }
+    }
+
+    public enum ZopServiceEnum {
+        //发送短信 1.0
+        SEND_MESSAGE("order.sms.sendsms", "1.0");
+
+        private String method;
+        private String version;
+
+        ZopServiceEnum(String version, String method) {
+            this.method = method;
+            this.version = version;
+        }
+
+        public String getMethod() {
+            return method;
+        }
+
+        public void setMethod(String method) {
+            this.method = method;
+        }
+
+        public String getVersion() {
+            return version;
+        }
+
+        public void setVersion(String version) {
+            this.version = version;
+        }
+    }
+
+    public enum SendMsgType {
+        SEND_MESSAGE(1,"短信"),
+        SEND_EMAIL(2,"邮箱账号");
+        private int type;
+        private String code;
+
+        SendMsgType(int type, String code) {
+            this.type = type;
+            this.code = code;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public void setType(int type) {
+            this.type = type;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
         }
     }
 }

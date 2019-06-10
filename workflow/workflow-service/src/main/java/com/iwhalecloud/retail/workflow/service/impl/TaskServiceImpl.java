@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.workflow.aop.SendMsg;
 import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.TaskDTO;
@@ -57,6 +58,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
+    @SendMsg
     public ResultVO startProcess(ProcessStartReq processStartDTO) {
         log.info("TaskServiceImpl.startProcess processStartDTO={}",JSON.toJSONString(processStartDTO));
         return taskManager.startProcess(processStartDTO);

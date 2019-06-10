@@ -20,6 +20,7 @@ import com.iwhalecloud.retail.system.manager.CommonRegionManager;
 import com.iwhalecloud.retail.system.manager.OrganizationManager;
 import com.iwhalecloud.retail.system.manager.UserManager;
 import com.iwhalecloud.retail.system.service.RoleService;
+import com.iwhalecloud.retail.system.service.VerifyCodeService;
 import com.iwhalecloud.retail.system.service.ZopMessageService;
 import com.iwhalecloud.retail.system.service.UserRoleService;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -33,6 +34,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
+import org.springframework.transaction.annotation.Propagation;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -69,7 +71,7 @@ public class UserServiceImpl implements UserService {
     RoleService roleService;
 
     @Autowired
-    ZopMessageService SendMsgService;
+    VerifyCodeService SendMsgService;
 
     @Override
     public UserLoginResp login(UserLoginReq req) {

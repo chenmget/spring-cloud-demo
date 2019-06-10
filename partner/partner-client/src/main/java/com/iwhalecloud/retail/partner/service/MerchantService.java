@@ -166,7 +166,7 @@ public interface MerchantService{
     ResultVO<String> resistManufacturer(ManufacturerResistReq req);
 
     /**
-     * 修改厂商信息
+     * 修改商户信息
      * @param req
      * @return
      */

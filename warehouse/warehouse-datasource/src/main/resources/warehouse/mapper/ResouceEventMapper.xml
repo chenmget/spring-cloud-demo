@@ -33,6 +33,7 @@
         where EVENT_TYPE = #{eventType}
         and MKT_RES_EVENT_ID = #{mktResEventId}
     </update>
+
     <select id="selectMktResEventList" resultType="com.iwhalecloud.retail.warehouse.entity.ResouceEvent">
 		SELECT <include refid="allFields"/>
         FROM

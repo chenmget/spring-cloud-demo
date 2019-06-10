@@ -18,6 +18,7 @@ public interface ResouceEventMapper extends BaseMapper<ResouceEvent>{
 
     Integer updateResourceEventStatusCd(ResouceEvent event);
 
+
     List<ResouceEvent> selectMktResEventList(@Param("eventType")String[] eventType,
                                              @Param("startDate")String startDate,
                                              @Param("endDate")String endDate);

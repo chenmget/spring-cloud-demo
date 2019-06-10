@@ -15,6 +15,7 @@ import com.iwhalecloud.retail.system.dto.CommonFileDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.CommonFileService;
 import com.iwhalecloud.retail.system.service.UserService;
+import com.iwhalecloud.retail.system.service.VerifyCodeService;
 import com.iwhalecloud.retail.workflow.bizservice.RunRouteService;
 import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -102,6 +103,9 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
     @Reference
     private CommonFileService commonFileService;
 
+    @Reference
+    private VerifyCodeService verifyCodeService;
+
     /**
      * 启动工作流
      *
@@ -173,9 +177,10 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
 
         log.info("8、添加下个环节处理");
         addNextTaskItem(nextRoute, task, handlerUserList);
-
         return ResultVO.success();
     }
+
+
 
     /**
      * 添加任务项

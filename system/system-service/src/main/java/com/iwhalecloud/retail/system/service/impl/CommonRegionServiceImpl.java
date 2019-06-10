@@ -106,7 +106,6 @@ public class CommonRegionServiceImpl implements CommonRegionService {
     @Override
     public ResultVO<Page<CommonRegionDTO>> pageCommonRegion(CommonRegionPageReq req) {
         log.info("CommonRegionServiceImpl.pageCommonRegion(), input：req={} ", JSON.toJSONString(req));
-        Page<CommonRegionDTO> page =  new Page<CommonRegionDTO>(req.getPageNo(), req.getPageSize());
         Page<CommonRegionDTO> respPage = commonRegionManager.pageCommonRegion(req);
         log.info("CommonRegionServiceImpl.pageCommonRegion(), output：list={} ", JSON.toJSONString(respPage.getRecords()));
         return ResultVO.success(respPage);

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.report.mapper.SupplierOperatingDayMapper">
+
+<sql id="allFields">
+    t.ITEM_ID 
+    ,t.ITEM_DATE 
+    ,t.SUPPLIER_ID 
+    ,t.SUPPLIER_CODE 
+    ,t.SUPPLIER_NAME 
+    ,t.CITY_ID 
+    ,t.COUNTY_ID 
+    ,t.GOODS_ID 
+    ,t.PRODUCT_BASE_ID 
+    ,t.PRODUCT_BASE_NAME 
+    ,t.PRODUCT_ID 
+    ,t.PRODUCT_NAME 
+    ,t.BRAND_ID 
+    ,t.BRAND_NAME 
+    ,t.PRICE_LEVEL 
+    ,t.SELL_NUM 
+    ,t.SELL_AMOUNT 
+    ,t.PURCHASE_AMOUNT 
+    ,t.PURCHASE_NUM 
+    ,t.MANUAL_NUM 
+    ,t.TRANS_IN_NUM 
+    ,t.TRANS_OUT_NUM 
+    ,t.RETURN_NUM 
+    ,t.STOCK_NUM 
+    ,t.STOCK_AMOUNT 
+    ,t.CREATE_DATE 
+    ,t.TYPE_ID 
+</sql>
+
+</mapper>

@@ -127,7 +127,7 @@ public class ResourceInstStoreServiceImplTest {
         mktResItmsSyncRecRep.add(mti2);
         mktResItmsSyncRecRep.add(mti3);
         for(int i=0;i<mktResItmsSyncRecRep.size();i++){
-            System.out.println("***********************"+mktResItmsSyncRecMapper.updateMRIyFileName(mktResItmsSyncRecRep.get(i)));
+//            System.out.println("***********************"+mktResItmsSyncRecMapper.updateMRIyFileName(mktResItmsSyncRecRep.get(i)));
         }
     }
     @Test

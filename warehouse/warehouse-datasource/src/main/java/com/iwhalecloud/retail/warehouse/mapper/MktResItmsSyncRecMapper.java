@@ -4,6 +4,7 @@ package com.iwhalecloud.retail.warehouse.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
+import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,13 +20,6 @@ import java.util.Map;
 public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 
     /**
-     * 通过时间戳查询需要推送到ITMS的所有串码
-     * @param startDate
-     * @return
-     */
-    List<MktResItmsSyncRec> findMKTInfoByDate(@Param("startDate") String startDate,String endDate);
-
-    /**
      * 查询需要推给itms的字段
      * @param lanId 地市编码， typeId 类型ID， eventTypeArray 事件类型 ， startDate 时间戳
      * @return
@@ -33,20 +27,14 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 	List<Map<String, String>> findMKTInfoByLadId(@Param("lanId")String lanId, @Param("typeId")String typeId,
 			@Param("eventTypeArray")String[] eventTypeArray, @Param("startDate")String startDate);
 
-	/*List<Map<String, String>> findMKTInfoToItmsByParams(@Param("eventType")String[] eventType, @Param("lanId")String lanId,
-												 @Param("type")String type, @Param("isItms")String[] isItms,
-												 @Param("startDate")String startDate, @Param("endDate")String endDate);*/
-	List<Map<String, String>> findMKTInfoToItmsByParams(@Param("eventType")String[] eventType, @Param("lanId")String lanId,
-														@Param("type")String type, @Param("isItms")String[] isItms,
-														@Param("startDate")String startDate, @Param("endDate")String endDate);
 	/**
 	 * 查询需要推给itms的字段
-	 * @param eventType 事件类型 lanId 地市编码， type 不同事件类型对应的过滤条件， isItms 是否itms ， startDate 开始时间， endDate 结束时间
+	 * @param  lanId 地市编码， type 不同事件类型对应的过滤条件， isItms 是否itms ,ResouceEvent resouceEvent
 	 * @return
 	 */
-	List<MktResItmsSyncRec> findMKTInfoByParams(@Param("eventType")String[] eventType, @Param("lanId")String lanId,
-												  @Param("typeOps")String typeOps, @Param("isItms")String[] isItms,
-												  @Param("startDate")String startDate, @Param("endDate")String endDate);
+
+	MktResItmsSyncRec findDateMKTInfoByParams(@Param("lanId")String lanId,@Param("typeOps")String typeOps,
+											  @Param("isItms")String[] isItms,@Param("even")ResouceEvent resouceEvent);
     /**
      * 根据ID保存itms推送表
      * @param id ID， destFileName 推送的文件路径， syncBatchId 推送的批次
@@ -55,8 +43,7 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 	void updateFileNameById(@Param("id")String id, @Param("destFileName")String destFileName,
 			@Param("syncBatchId")String syncBatchId);
 
-	void updateBatchById(List<MktResItmsSyncRec> list);
-	void updateByEvenId(@Param("mktResChngEvtDetailId")String mktResChngEvtDetailId, @Param("destFileName")String destFileName,
+	void updateByMktResChngEvtDetailId(@Param("mktResChngEvtDetailId")String mktResChngEvtDetailId, @Param("destFileName")String destFileName,
 						@Param("syncBatchId")String syncBatchId);
 	/**
      * 根据保存路径获取当前文件最近的批次
@@ -64,26 +51,6 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
      * @return
      */
 	String getSeqBysendDir(@Param("sendDir")String sendDir);
-
-	/**
-	 * 获取当天未更新文件路径
-	 * @param date
-	 * @return
-	 */
-	List<MktResItmsSyncRec> getFileNameByDate(String date);
-
-	/**
-	 * 根据回传文件，串码批量更新推送状态
-	 * @param mktResItmsSyncRecRep
-	 * @return
-	 */
-	 int batchUpdateMRIyFileName(@Param("list")List<MktResItmsSyncRec> mktResItmsSyncRecRep);
-	/**
-	 * 根据回传文件，串码更新推送状态
-	 * @param mktResItmsSyncRecRep
-	 * @return
-	 */
-	int updateMRIyFileName(MktResItmsSyncRec mktResItmsSyncRecRep);
 
 	/**
 	 * 批量插入

@@ -15,9 +15,12 @@ import com.iwhalecloud.retail.warehouse.dto.response.GetProductQuantityByMerchan
 import com.iwhalecloud.retail.warehouse.dto.response.InventoryWarningResp;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsReturnRec;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
+import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
 import com.iwhalecloud.retail.warehouse.manager.MktResItmsReturnRecManager;
+import com.iwhalecloud.retail.warehouse.mapper.MktResItmsReturnRecMapper;
 import com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper;
+import com.iwhalecloud.retail.warehouse.mapper.ResouceEventMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceInstStoreService;
@@ -114,7 +117,10 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private MktResItmsSyncRecMapper mktResItmsSyncRecMapper;
 
     @Autowired
-    private MktResItmsReturnRecManager mktResItmsReturnRecManager;
+    private MktResItmsReturnRecMapper mktResItmsReturnRecMapper;
+
+    @Autowired
+    private ResouceEventMapper resouceEventMapper;
 
 
     @Override
@@ -260,15 +266,19 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         	return;
         }*/
 //    	log.info(startStr+"成功插入到 MktResItmsSyncRec表 "+num+"条数据。");
-
-
+        //存放已查询过的数据
+        Map<String,List<ResouceEvent>> map = new HashMap<String,List<ResouceEvent>>();
+//        List<ResouceEvent> resouceEventRemove = new ArrayList<ResouceEvent>();
         for (int i = 0; i < brands.length; i++) {
             for (int j = 0; j < types.length; j++) {
-                this.syncMktToITMS(brands[i], types[j], startStr,sdf.format(newStartStr));
+                //查询事件表数据
+                List<ResouceEvent> evenList = resouceEventMapper.selectMktResEventList(types[j],startStr,sdf.format(newStartStr));
+                if(evenList.size()<=0){
+                    continue;
+                }
+                this.syncMktToITMS(brands[i], types[j], evenList, map);
             }
         }
-
-
 //        Date startDate = new Date();
         if (null == startStr) {
             resourceInstMapper.initConfig(sdf.format(newStartStr));
@@ -280,7 +290,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     }
 
-    public void syncMktToITMS(String brand, String[] ops, String startDate, String endDate) {
+    public void syncMktToITMS(String brand, String[] ops, List<ResouceEvent> evenList, Map<String,List<ResouceEvent>> map) {
 
         List<String> files = new ArrayList<String>();
         // 查询所有地市
@@ -291,27 +301,22 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         String time = sdf.format(new Date());
 
         File dir = new File(basePath);
-
         //删除文件
         this.delTempChild(dir);
         if (!dir.isDirectory()) {
             dir.mkdir();
         }
-
-
-//        List<Map<String, String>> mktList = null;
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {
             String lanId = latIdList.get(i);
         	String sendDir = getSendDir(brand, ops);
         	String type = getType(ops);
         	String[] getIsItms = getIsItms(brand);
-            List<MktResItmsSyncRec> list = insertToMRISR(ops,lanId,type,getIsItms,startDate,endDate);
-
+        	//插入数据到MktResItmsSyncRec表
+            List<MktResItmsSyncRec> list = insertDateToMRISR(lanId,type,getIsItms,evenList, map);
             if (list.size() <= 0) continue;
 
         	String seqStr = mktResItmsSyncRecMapper.getSeqBysendDir(sendDir+"/"+lanId);
-//        	log.info("--------地市:"+lanId+"   旧文件路径:"+sendDir+"/"+lanId+" seqStr:"+seqStr);
         	String resStr = "0";
         	if(seqStr != null && seqStr.length() != 0){
         		resStr = seqStr.substring(seqStr.length()-3,seqStr.length());
@@ -336,8 +341,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 pw.write(list.get(j).getMktResInstNbr()+","+list.get(j).getBrandName()+list.get(j).getUnitType()+",2,"+list.get(j).getOrigLanId());
                 pw.println();
                 String syncFileName = sendDir+"/"+destFileName;
-//                log.info("----------新序列seq:"+seq);
-                mktResItmsSyncRecMapper.updateByEvenId(list.get(j).getMktResChngEvtDetailId(),syncFileName,time + seq);
+                //更新MktResItmsSyncRec表数据
+                mktResItmsSyncRecMapper.updateByMktResChngEvtDetailId(list.get(j).getMktResChngEvtDetailId(),syncFileName,time + seq);
             }
             //批量更新
 //            mktResItmsSyncRecMapper.updateBatchById(list);
@@ -466,36 +471,6 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             log.error(e.getMessage(), e);
         }
     }
-
-    /**
-     * 回传文件
-     *
-     * @param ftpClient
-     * @param files
-     */
-    private List<String> getFileFromFtp(FTPClient ftpClient, List<String> files, String getDir) {
-//        String sendDir = null;
-        // 判断传送目录
-//        sendDir = getSendDir(brand, ops);
-        InputStream is = null;
-        List<String> lineList = new ArrayList<>();
-        List<String> lines = new ArrayList<>();
-        try {
-            Boolean flag = ftpClient.changeWorkingDirectory(getDir);
-            ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
-            //传输模式
-            ftpClient.enterLocalPassiveMode();
-            for (int i = 0; i < files.size(); i++) {
-                lines = readFile(ftpClient, files.get(i));
-                if(!CollectionUtils.isEmpty(lines)){
-                    lineList.addAll(lines);
-                }
-            }
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-        }
-        return lineList;
-    }
     /**
      * 回传文件
      *
@@ -586,28 +561,65 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      * @return
      * @throws
      */
-    private List<MktResItmsSyncRec> insertToMRISR(String[] eventType, String lanId,String type, String[] isItms,String startDate, String endDate) {
-//        List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByDate(startDate,endDate);
-        List<MktResItmsSyncRec> mktResItmsSyncRecList = mktResItmsSyncRecMapper.findMKTInfoByParams(eventType,lanId,type,isItms,startDate,endDate);
+    private List<MktResItmsSyncRec> insertDateToMRISR(String lanId,String type, String[] isItms,List<ResouceEvent> evenList, Map<String,List<ResouceEvent>> map) {
+        List<MktResItmsSyncRec> mktResItmsSyncRecList = new ArrayList<MktResItmsSyncRec>();
+        List<ResouceEvent> resouceEventRemove = new ArrayList<ResouceEvent>();
+        if(map.get(type).size()>0){
+            //移除已查询过的事件
+            evenList = evenList(evenList,map.get(type));
+            //查询过的事件
+            resouceEventRemove.addAll(map.get(type));
+        }
+        for(ResouceEvent resouceEvent:evenList){
+            MktResItmsSyncRec mktResItmsSyncRec = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,isItms,resouceEvent);
+            if(mktResItmsSyncRec.getMktResEventId() != null){
+                mktResItmsSyncRecList.add(mktResItmsSyncRec);
+                resouceEventRemove.add(resouceEvent);
+            }
+        }
+        map.put(type,resouceEventRemove);
         if(mktResItmsSyncRecList.size()!=0){
             ArrayList<List<MktResItmsSyncRec>> mktList = this.mktListSplit(mktResItmsSyncRecList);
             //批量插入
             for(int i = 0; i < mktList.size(); i++){
                 resourceInstStoreManager.batchAddMKTInfo(mktList.get(i));
             }
-
-            log.info(startDate+"成功插入到 MktResItmsSyncRec表数据。");
+            log.info("成功插入到 MktResItmsSyncRec表数据。");
         }
-        /*int num = 0;
-        if(mktResItmsSyncRecList.size()>0){
-            for(MktResItmsSyncRec mktResItmsSyncRec : mktResItmsSyncRecList){
-                mktResItmsSyncRecMapper.insert(mktResItmsSyncRec);
-                num++;
-            }
-        }*/
         return mktResItmsSyncRecList;
     }
 
+    /**
+     * 从第一个List中去除所有第二个List中与之重复的元素
+     * @param evenList
+     * @param removeList
+     * @return
+     */
+    private List<ResouceEvent> evenList(List<ResouceEvent> evenList, List<ResouceEvent> removeList){
+        //第一步：构建mAllList的HashMap
+        //将mAllList中的元素作为键，如果不是String类，需要实现hashCode和equals方法
+        //将mAllList中的元素对应的位置作为值
+        Map<ResouceEvent, Integer> map = new HashMap<>();
+        for (int i = 0; i < evenList.size(); i++) {
+            map.put(evenList.get(i), i);
+        }
+        //第二步：利用map遍历mSubList，查找重复元素
+        //把mAllList中所有查到的重复元素的位置置空
+        for (int i = 0; i < removeList.size(); i++) {
+            Integer pos = map.get(removeList.get(i));
+            if (pos==null) {
+                continue;
+            }
+            evenList.set(pos, null);
+        }
+        //第三步：把mAllList中所有的空元素移除
+        for (int i = evenList.size()-1; i>=0; i--) {
+            if (evenList.get(i)==null) {
+                evenList.remove(i);
+            }
+        }
+        return evenList;
+    }
     public String getSendDir(String brand, String[] ops){
 //        String baseDir = "/home/itsm_y/itmsfile";
     	String sendDir = "";
@@ -668,7 +680,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                     lineList = changeFtpDir(ftpClient, filePathList.get(j)[0], pathNameList.get(i));
                     if (!CollectionUtils.isEmpty(lineList)) {
                         //插入数据
-                        Boolean flag = insertDate(lineList, filePathList.get(j)[1]);
+                        Boolean flag = insertDate(lineList, filePathList.get(j)[0]);
                         if(flag){
                             //移动备份回执文件
                             this.copyFile(ftpClient, pathNameList.get(i).replace("data/back","bakfile")+filePathList.get(j)[0], filePathList.get(j)[0]);
@@ -754,8 +766,13 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 }
                 //批量插入
                 if(dataList.size()>0){
-                    mktResItmsReturnRecManager.batchAddMKTReturnInfo(dataList);
-                    log.info("syncMktToITMSBack insertDate插入"+dataList.size()+"条数据成功");
+                    try{
+                        mktResItmsReturnRecMapper.batchAddMKTReturnInfo(dataList);
+                        log.info("syncMktToITMSBack insertDate插入"+dataList.size()+"条数据成功");
+                    }catch (Exception e){
+                        log.error("---------------"+e.getMessage());
+                    }
+
                 }
             }
             flag = true;
@@ -840,6 +857,12 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         }
         return allLineLists;
     }
+
+    /**
+     * 将list以每num条拆分为多个list
+     * @param lineList
+     * @return
+     */
     private ArrayList<List<MktResItmsSyncRec>> mktListSplit(List<MktResItmsSyncRec> lineList){
         ArrayList<List<MktResItmsSyncRec>> allLineLists = new ArrayList<>();
         int number;
@@ -878,15 +901,11 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     public boolean copyFile(FTPClient ftpClient,String pathname, String filename){
         boolean flag = false;
         try {
-            log.info("开始移动文件");
-//            System.out.println("开始移动文件");
-//            String newFilePathName = pathname;
+//            log.info("开始移动文件");
             ftpClient.rename(filename,pathname);
             flag = true;
-//            System.out.println("移动文件成功pathname:"+pathname+"     newFilePathName:"+newFilePathName);
         } catch (Exception e) {
-//            System.out.println("移动文件失败");
-            log.error("移动文件失败:"+e.getMessage());
+            log.error("移动"+pathname+"文件失败:"+e.getMessage());
         }
         return flag;
     }

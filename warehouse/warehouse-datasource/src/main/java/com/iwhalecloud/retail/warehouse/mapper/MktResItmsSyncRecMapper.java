@@ -33,7 +33,7 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 	 * @return
 	 */
 
-	MktResItmsSyncRec findDateMKTInfoByParams(@Param("lanId")String lanId,@Param("typeOps")String typeOps,
+	MktResItmsSyncRec findDateMKTInfoByParams(@Param("lanId")String lanId,@Param("typeOps")String typeOps,@Param("eventType")String eventType,
 											  @Param("isItms")String[] isItms,@Param("even")ResouceEvent resouceEvent);
     /**
      * 根据ID保存itms推送表

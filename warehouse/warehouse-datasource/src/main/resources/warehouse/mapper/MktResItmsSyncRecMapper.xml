@@ -30,34 +30,45 @@
 		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.destStoreId}) AS DET_LAN_ID,
 		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.mktResStoreId}) as ORIG_LAN_ID
 		FROM
-		MKT_RES_CHNG_EVT_DETAIL det
+		(
+		select * from MKT_RES_CHNG_EVT_DETAIL mkt where 1=1
+		<if test="typeOps == 3">
+			and mkt.MKT_RES_EVENT_ID = #{even.mktResEventId} and mkt.MKT_RES_STORE_ID = #{even.mktResStoreId}
+		</if>
+		<if test="typeOps == 1 or typeOps == 2">
+			and mkt.MKT_RES_EVENT_ID = #{even.mktResEventId} and mkt.MKT_RES_STORE_ID = #{even.destStoreId}
+		</if>
+		) det
 		INNER JOIN MKT_RES_INST inst ON inst.MKT_RES_STORE_ID = det.MKT_RES_STORE_ID AND inst.MKT_RES_INST_NBR =
 		det.MKT_RES_INST_NBR
 		INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = det.MKT_RES_STORE_ID
 		INNER JOIN PROD_PRODUCT prod ON prod.PRODUCT_ID = inst.MKT_RES_ID
 		INNER JOIN PROD_PRODUCT_BASE base ON base.PRODUCT_BASE_ID = prod.PRODUCT_BASE_ID
 		INNER JOIN PROD_BRAND bra ON bra.BRAND_ID = base.BRAND_ID
-
+		<if test="eventType == 1001 or eventType == 1002 or eventType == 1009">
 		LEFT JOIN MKT_RES_STORE_OBJ_REL rel ON rel.MKT_RES_STORE_ID = #{even.destStoreId}
+		</if>
+		<if test="eventType == 1003 or eventType == 1007">
+			LEFT JOIN MKT_RES_STORE_OBJ_REL rel ON rel.MKT_RES_STORE_ID = #{even.mktResStoreId}
+		</if>
 		LEFT JOIN PAR_MERCHANT par ON par.MERCHANT_ID = rel.OBJ_ID
 		) t
 		where 1=1
-		<if test="typeOps == 3">
-			and t.MKT_RES_EVENT_ID = #{even.mktResEventId} and t.MKT_RES_STORE_ID = #{even.mktResStoreId}
-		</if>
-		<if test="typeOps == 1 or typeOps == 2">
-			and t.MKT_RES_EVENT_ID = #{even.mktResEventId} and t.MKT_RES_STORE_ID = #{even.destStoreId}
-		</if>
+
 		AND t.LAN_ID = #{lanId}
-		<if test="typeOps == 1">
+		<if test="eventType == 1001">
 			AND t.MERCHANT_TYPE = '2' OR t.STORE_TYPE IN ('1000','1100')
 		</if>
-		<if test="typeOps == 2">
+		<if test="eventType == 1003 or eventType == 1009">
+			AND t.MERCHANT_TYPE = '3'
+		</if>
+		<if test="eventType == 1002">
 			AND t.DET_LAN_ID != t.ORIG_LAN_ID
 		</if>
-		<if test="typeOps == 3">
+		<if test="eventType == 1007">
 			AND t.MERCHANT_TYPE = '2' OR t.STORE_TYPE IN ('1000','1100')
 		</if>
+
 		AND t.IS_ITMS IN
 		<foreach collection="isItms" index="index" item="itemIsItms" open="(" separator="," close=")">
 			#{itemIsItms}

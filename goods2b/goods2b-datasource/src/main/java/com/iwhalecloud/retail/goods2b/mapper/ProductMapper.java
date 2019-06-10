@@ -139,12 +139,7 @@ public interface ProductMapper extends BaseMapper<Product>{
 
     public List<ProductInfoResp> getProductInfoByIds(@Param("productIds")List<String>productIds);
 
-    /**
-     * 更新政企价格审核状态
-     * @param req
-     * @return
-     */
-    public int updateAuditStateByProductId(@Param("req")ProductAuditReq req);
+
 
 
 }

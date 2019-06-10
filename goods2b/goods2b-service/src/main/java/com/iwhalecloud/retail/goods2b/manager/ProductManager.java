@@ -262,13 +262,4 @@ public class ProductManager {
     public List<ProductInfoResp> getProductInfoByIds( List<String> productIdList){
         return productMapper.getProductInfoByIds(productIdList);
     }
-    /**
-     * 根据产品Id更新产品状态
-     * @param req
-     * @return
-     */
-    public int updateAuditStateByProductId(ProductAuditReq req){
-        return productMapper.updateAuditStateByProductId(req);
-
-    }
 }

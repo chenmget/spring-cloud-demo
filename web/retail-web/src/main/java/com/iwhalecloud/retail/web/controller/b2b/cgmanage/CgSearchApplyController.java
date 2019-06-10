@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.b2b.cgmanage;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -139,9 +140,11 @@ public class CgSearchApplyController extends BaseController {
 		}
 		
 		Date date = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String dateString = formatter.format(date);
 		String updateStaff =UserContext.getUserId();
-		String updateDate = date.toLocaleString();
-		String statusDate = date.toLocaleString();
+		String updateDate = dateString;
+		String statusDate = dateString;
 		//情况一，默认是保存,状态就是10，待提交
 		//情况二，如果是提交，状态就是20，待审核(分表里面是否有记录)
 		String applyId = req.getApplyId();
@@ -153,7 +156,7 @@ public class CgSearchApplyController extends BaseController {
 		String supplierCode = purApplyService.getMerchantCode(supplierId);
 		String applyMerchantCode = purApplyService.getMerchantCode(applyMerchantId);
 		
-		String createDate = date.toLocaleString();//创建时间
+		String createDate = dateString;//创建时间
 		
 		req.setStatusCd(statusCd);
 		req.setCreateStaff(createStaff);

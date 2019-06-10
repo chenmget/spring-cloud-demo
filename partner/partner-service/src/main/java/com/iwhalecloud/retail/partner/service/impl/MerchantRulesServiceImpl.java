@@ -1269,7 +1269,10 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
         log.info("MerchantRulesServiceImpl.checkProdListRule, productIds={} ,targetids={}", productIds,targetids);
         if(!CollectionUtils.isEmpty(productIds) && !CollectionUtils.isEmpty(targetids)){
-            ResultVO.success(productIds.retainAll(targetids));
+            productIds.retainAll(targetids);
+            if(!CollectionUtils.isEmpty(productIds)){
+                ResultVO.success(true);
+            }
         }
         return ResultVO.success(false);
     }

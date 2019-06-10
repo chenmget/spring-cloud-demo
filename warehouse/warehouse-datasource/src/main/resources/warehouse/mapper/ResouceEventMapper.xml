@@ -27,6 +27,12 @@
     ,t.REMARK 
     ,t.UPDATE_DATE 
 </sql>
+    <update id="updateResourceEventStatusCd" parameterType="com.iwhalecloud.retail.warehouse.entity.ResouceEvent">
+        update mkt_res_event t
+        set t.STATUS_CD = #{statusCd},t.UPDATE_DATE = #{updateDate},t.STATUS_DATE = #{statusDate},t.UPDATE_STAFF = #{updateStaff}
+        where EVENT_TYPE = #{eventType}
+        and MKT_RES_EVENT_ID = #{mktResEventId}
+    </update>
     <select id="selectMktResEventList" resultType="com.iwhalecloud.retail.warehouse.entity.ResouceEvent">
 		SELECT <include refid="allFields"/>
         FROM

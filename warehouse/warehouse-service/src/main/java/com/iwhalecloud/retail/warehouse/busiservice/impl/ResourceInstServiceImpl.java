@@ -334,6 +334,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInst.setMerchantName(null);
             resourceInst.setMerchantCode(null);
             resourceInst.setSourceType(req.getSourceType());
+            resourceInst.setStatusDate(now);
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             resourceInsts.add(resourceInst);
         }
@@ -381,6 +382,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             resourceInst.setMktResInstNbr(mktResInstNbr);
             resourceInst.setMerchantId(null);
+            resourceInst.setStatusDate(now);
             resourceInsts.add(resourceInst);
         }
         Boolean addResInstCnt = resourceInstManager.saveBatch(resourceInsts);
@@ -430,6 +432,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 resourceInst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
             }
             resourceInst.setCreateDate(now);
+            resourceInst.setStatusDate(now);
             resourceInst.setSourceType(req.getSourceType());
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             resourceInst.setMerchantId(null);
@@ -693,7 +696,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             List<ResourceInstDTO> dtoList = entry.getValue();
             ResourceInstDTO inst = dtoList.get(0);
 
-            List<ResourceInstListPageResp> updatedInstList = new ArrayList<>(dtoList.size());
             String batchId = resourceInstManager.getPrimaryKey();
             List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(dtoList.size());
             for (ResourceInstDTO resourceInst : dtoList) {
@@ -701,12 +703,15 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 ResourceInst t = new ResourceInst();
                 BeanUtils.copyProperties(resourceInst, t);
                 BeanUtils.copyProperties(req, t);
+                Date now = new Date();
                 t.setMktResBatchId(batchId);
                 t.setMktResStoreId(req.getDestStoreId());
                 t.setStorageType(req.getStorageType());
                 t.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
                 t.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
                 t.setCreateStaff("1");
+                t.setStatusDate(now);
+                t.setCreateDate(now);
                 resourceInsts.add(t);
                 allocateNum ++;
             }

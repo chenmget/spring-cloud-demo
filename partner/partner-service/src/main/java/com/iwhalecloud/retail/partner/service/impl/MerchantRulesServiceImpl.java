@@ -1247,6 +1247,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         ProductGetReq productGetReq = new ProductGetReq();
         productGetReq.setProductBaseId(productBaseId);
         ResultVO<Page<ProductDTO>> pageResultVO = productService.selectProduct(productGetReq);
+        log.info("MerchantRulesServiceImpl.checkProdListRule.selectProduct, pageResultVO.getResultData().getRecords()={} ", pageResultVO.getResultData().getRecords());
         if(pageResultVO.isSuccess() && null!=pageResultVO.getResultData()){
             List<ProductDTO> productDTOList = pageResultVO.getResultData().getRecords();
             if(!CollectionUtils.isEmpty(productDTOList)){

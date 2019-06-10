@@ -129,6 +129,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
             Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>(){});
             String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
+
             if("0".equals(inventoryChangeReturn)){
                 log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed inventoryChangeReturn={}", inventoryChangeReturn);
                 return ResultVO.success("串码推送ITMS(添加)成功");
@@ -143,7 +144,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 //			result = callService.postInvenChangeToWebService(req);
 //			inventoryChangeResp.setResult(result);
 		} catch (Exception e) {
-			log.info("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed req={}", JSON.toJSONString(req));
+			log.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed req={}", JSON.toJSONString(req));
 			return ResultVO.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed");
 		}
 //		return ResultVO.success(result);

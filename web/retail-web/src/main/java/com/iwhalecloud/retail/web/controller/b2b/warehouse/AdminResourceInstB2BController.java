@@ -201,7 +201,7 @@ public class AdminResourceInstB2BController {
         
         InventoryChangeResp inventoryChangeResp = new InventoryChangeResp();
         String userName = UserContext.getUser().getUserName();
-        String params = "city_code"+dto.getCode();
+        String params = "city_code="+dto.getCode();
         
         InventoryChangeReq req = new InventoryChangeReq ();
         req.setDeviceId(dto.getDeviceId());

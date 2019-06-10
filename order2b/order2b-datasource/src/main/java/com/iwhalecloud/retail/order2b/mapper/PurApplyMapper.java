@@ -13,6 +13,8 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
@@ -71,7 +73,13 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public void addShippingAddress(@Param("req") MemMemberAddressReq req);
 	
-	public void updatePrice(@Param("req") UpdateCorporationPriceReq req);
+	public void insertProdChangePrice(@Param("req") ProdProductChangeReq req);
+	public String getProductBaseIdByProductId(@Param("productId") String productId);
+	public void insertProdProductChangeDetail(@Param("req") ProdProductChangeDetail req);
+	
+	public String selectNextChangeId() ;
+	public String selectNextChangeDetailId() ;
+	public String selectOldValue(@Param("productId") String productId);
 	
 	public void commitPriceExcel(@Param("req") UpdateCorporationPriceReq req);
 
@@ -79,4 +87,10 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 
 	public void updatePurApplyStatusCd(@Param("req") ProcureApplyReq req);
 
+	public int updateProductChange(@Param("req") ProdProductChangeReq req);
+	
+	public int updateProductCorpPrice(@Param("req") ProdProductChangeDetail req);
+	
+	public List<ProdProductChangeDetail> selectProdProductChangeDetail(@Param("keyValue") String keyValue);
+	
 }

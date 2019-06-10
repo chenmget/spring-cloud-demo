@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -355,23 +356,143 @@ public class PurApplyServiceImpl implements PurApplyService {
 	
 	@Override
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
-		purApplyManager.updatePrice(req);
-		return ResultVO.success();
-	}
-	
-	//需要优化  怎么改为批量更新
-	@Override
-	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
-		List<String> snPriceList = req.getSnPrice();
-		for(int i=0;i<snPriceList.size();i++){
-			String snPrice = snPriceList.get(i);
-			String[] splits = snPrice.split("\\|");
-			req.setSn(splits[0]);
-			req.setCorporationPrice(splits[1]+"00");
-			purApplyManager.updatePrice(req);
+//		purApplyManager.updatePrice(req);//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
+		String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
+		String changeId = purApplyManager.selectNextChangeId();
+		ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
+		prodProductChangeReq.setChangeId(changeId);
+		prodProductChangeReq.setVerNum("1.0");
+		prodProductChangeReq.setProductBaseId(productBaseId);
+		prodProductChangeReq.setAuditState("2");
+		prodProductChangeReq.setCreateDate(new Date());
+		prodProductChangeReq.setCreateStaff(req.getApplyUserId());
+		prodProductChangeReq.setBatchId(req.getBatchId());
+		purApplyManager.insertProdChangePrice(prodProductChangeReq);
+		
+		String changeDetailId = purApplyManager.selectNextChangeDetailId();
+		String oldValue = purApplyManager.selectOldValue(req.getProductId());
+		ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
+		prodProductChangeDetail.setChangeDetailId(changeDetailId);
+		prodProductChangeDetail.setChangeId(changeId);
+		prodProductChangeDetail.setOperType("MOD");//操作类型 ADD：新增 MOD：修改 DEL：删除
+		prodProductChangeDetail.setVerNum("1.0");//版本号
+		prodProductChangeDetail.setTableName("PROD_PRODUCT");//表名
+		prodProductChangeDetail.setChangeField("CORPORATION_PRICE");//	变更字段英文名
+		prodProductChangeDetail.setChangeFieldName("政企供货价");//变更字段中文注释的名字
+		prodProductChangeDetail.setOldValue(oldValue);//	原始值
+		prodProductChangeDetail.setNewValue(req.getCorporationPrice());//	变更值
+		prodProductChangeDetail.setKeyValue(req.getProductId());//product_id	业务ID
+		prodProductChangeDetail.setCreateDate(new Date());//创建时间
+		prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
+		purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
+		
+		//政企价格修改提交启动流程
+		ProcessStartReq processStartDTO = new ProcessStartReq();
+
+		//政企价格修改审核
+		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+		Map map=new HashMap();
+		map.put("CORPORATION_PRICE", req.getCorporationPrice());
+		processStartDTO.setParamsValue(JSON.toJSONString(map));
+
+		processStartDTO.setTitle("政企价格修改审核流程");
+		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
+		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
+		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3050.getTaskSubType());
+		processStartDTO.setApplyUserId(req.getApplyUserId());
+		//根据用户id查询名称
+		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());
+		String userName = "";
+		if (userDetailDTO.isSuccess()) {
+			userName = userDetailDTO.getResultData().getUserName();
+		}
+		processStartDTO.setApplyUserName(userName);
+		ResultVO resultVO = new ResultVO();
+		try {
+			resultVO = taskService.startProcess(processStartDTO);
+		} catch (Exception e) {
+			log.error("PurApplyServiceImpl.updatePrice exception={}", e);
+			return ResultVO.error();
+		} finally {
+			log.info("PurApplyServiceImpl.updatePrice req={},resp={}",
+					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 		}
 		return ResultVO.success();
 	}
+	
+	@Override
+	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
+		List<String> productPriceList = req.getProductPrice();
+		for(int i=0;i<productPriceList.size();i++){
+			String productPrice = productPriceList.get(i);
+			String[] splits = productPrice.split("\\|");
+			req.setProductId(splits[0]);
+			req.setCorporationPrice(splits[1]+"00");
+			String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
+			//循环插入变更表
+			String changeId = purApplyManager.selectNextChangeId();
+			ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
+			prodProductChangeReq.setChangeId(changeId);
+			prodProductChangeReq.setVerNum("1.0");
+			prodProductChangeReq.setProductBaseId(productBaseId);
+			prodProductChangeReq.setAuditState("2");
+			prodProductChangeReq.setCreateDate(new Date());
+			prodProductChangeReq.setCreateStaff(req.getApplyUserId());
+			prodProductChangeReq.setBatchId(req.getBatchId());
+			purApplyManager.insertProdChangePrice(prodProductChangeReq);
+			
+			String changeDetailId = purApplyManager.selectNextChangeDetailId();
+			String oldValue = purApplyManager.selectOldValue(req.getProductId());
+			ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
+			prodProductChangeDetail.setChangeDetailId(changeDetailId);
+			prodProductChangeDetail.setChangeId(changeId);
+			prodProductChangeDetail.setOperType("MOD");//操作类型 ADD：新增 MOD：修改 DEL：删除
+			prodProductChangeDetail.setVerNum("1.0");//版本号
+			prodProductChangeDetail.setTableName("PROD_PRODUCT");//表名
+			prodProductChangeDetail.setChangeField("CORPORATION_PRICE");//	变更字段英文名
+			prodProductChangeDetail.setChangeFieldName("政企供货价");//变更字段中文注释的名字
+			prodProductChangeDetail.setOldValue(oldValue);//	原始值
+			prodProductChangeDetail.setNewValue(req.getCorporationPrice());//	变更值
+			prodProductChangeDetail.setKeyValue(req.getProductId());//product_id	业务ID
+			prodProductChangeDetail.setCreateDate(new Date());//创建时间
+			prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
+			purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
+			
+		}
+		//政企价格修改提交启动流程
+		ProcessStartReq processStartDTO = new ProcessStartReq();
+
+		//如果采购价大于政企价格 要省公司审核
+		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+		Map map=new HashMap();
+		map.put("CORPORATION_PRICE", req.getCorporationPrice());
+		processStartDTO.setParamsValue(JSON.toJSONString(map));
+
+		processStartDTO.setTitle("政企价格修改审核流程");
+		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
+		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
+		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3050.getTaskSubType());
+		processStartDTO.setApplyUserId(req.getApplyUserId());
+		//根据用户id查询名称
+		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());
+		String userName = "";
+		if (userDetailDTO.isSuccess()) {
+			userName = userDetailDTO.getResultData().getUserName();
+		}
+		processStartDTO.setApplyUserName(userName);
+		ResultVO resultVO = new ResultVO();
+		try {
+			resultVO = taskService.startProcess(processStartDTO);
+		} catch (Exception e) {
+			log.error("PurApplyServiceImpl.updatePrice exception={}", e);
+			return ResultVO.error();
+		} finally {
+			log.info("PurApplyServiceImpl.updatePrice req={},resp={}",
+					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
+		}
+		return ResultVO.success();
+	}
+
 
 	@Override
 	public void insertTcProcureApply(ProcureApplyReq req) {
@@ -395,5 +516,6 @@ public class PurApplyServiceImpl implements PurApplyService {
 //		return ResultVO.success();
 //	}
 	
+
 }
 

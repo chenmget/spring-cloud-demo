@@ -15,6 +15,8 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
@@ -131,8 +133,24 @@ public class PurApplyManager {
 		purApplyMapper.addShippingAddress(req);
 	}
 	
-	public void updatePrice(UpdateCorporationPriceReq req){
-		purApplyMapper.updatePrice(req);
+	public void insertProdChangePrice(ProdProductChangeReq req){
+		purApplyMapper.insertProdChangePrice(req);
+	}
+	public String getProductBaseIdByProductId(String productId) {
+		return purApplyMapper.getProductBaseIdByProductId(productId);
+	}
+	public void insertProdProductChangeDetail(ProdProductChangeDetail req){
+		purApplyMapper.insertProdProductChangeDetail(req);
+	}
+	
+	public String selectNextChangeId() {
+		return purApplyMapper.selectNextChangeId();
+	}
+	public String selectNextChangeDetailId() {
+		return purApplyMapper.selectNextChangeDetailId();
+	}
+	public String selectOldValue(String productId) {
+		return purApplyMapper.selectOldValue(productId);
 	}
 	
 	public void commitPriceExcel(UpdateCorporationPriceReq req){
@@ -145,5 +163,17 @@ public class PurApplyManager {
 	public void updatePurApplyStatusCd(ProcureApplyReq req){
 		purApplyMapper.updatePurApplyStatusCd(req);
 	}
-
+	
+	public int updateProductChange(ProdProductChangeReq req) {
+		return purApplyMapper.updateProductChange(req);
+	}
+	
+	public int updateProductCorpPrice(ProdProductChangeDetail req) {
+		return purApplyMapper.updateProductCorpPrice(req);
+	}
+	
+	public List<ProdProductChangeDetail> selectProdProductChangeDetail(String keyValue) {
+		return purApplyMapper.selectProdProductChangeDetail(keyValue);
+	}
+	
 }

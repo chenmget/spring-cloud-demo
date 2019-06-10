@@ -140,9 +140,9 @@ public interface MerchantRulesService {
      * 商家权限规则校验 商家是否有经营权限进行提示
      *
      * @param merchantId 规则校验入参
-     * @param productIds 规则校验入参
+     * @param productBaseId 规则校验入参
      * @return ResultVO
      */
-    ResultVO<List<String>> checkProdListRule(String merchantId,List<String> productIds);
+    ResultVO<Boolean> checkProdListRule(String merchantId,String productBaseId);
 
 }

@@ -292,7 +292,7 @@ public class MerchantRulesController {
      * 商家是否有经营权限进行提示
      *
      * @param merchantId
-     * @param productIds
+     * @param productBaseId
      * @return
      */
     @ApiOperation(value = "商家是否有经营权限进行提示接口", notes = "商家是否有经营权限进行提示")
@@ -302,8 +302,8 @@ public class MerchantRulesController {
     })
     @RequestMapping(value = "/checkProdListRule", method = RequestMethod.GET)
     @Transactional
-    public ResultVO<List<String>> checkProdListRule(@RequestParam(value = "merchantId") String merchantId, @RequestParam(value = "productIds")List<String> productIds) {
+    public ResultVO<Boolean> checkProdListRule(@RequestParam(value = "merchantId") String merchantId, @RequestParam(value = "productBaseId")String productBaseId) {
 
-        return merchantRulesService.checkProdListRule(merchantId,productIds);
+        return merchantRulesService.checkProdListRule(merchantId,productBaseId);
     }
 }

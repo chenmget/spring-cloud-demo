@@ -68,6 +68,7 @@ public class BssInfoSyncServiceImpl implements BssInfoSyncService {
         user.setRegionId(bssUserInfoRequestModel.getRegionId());
         user.setOrgId((String) systemUserMap.get("userOrgId"));
         user.setPhoneNo((String) systemUserMap.get("pwdSmsTel"));
+        user.setUserId((String) systemUserMap.get("sysUserId"));
         if (SystemConst.ADD_TYPE.equals(actType)) {
             user.setCreateStaff((String) systemUserMap.get("createStaff"));
             user.setUserSource(SystemConst.USER_SOURCE_PORTAL);

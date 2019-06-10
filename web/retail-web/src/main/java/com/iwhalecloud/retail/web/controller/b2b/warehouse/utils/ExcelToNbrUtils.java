@@ -90,7 +90,7 @@ public class ExcelToNbrUtils {
 				//获得当前行的列数
 				int lastCellNum = row.getPhysicalNumberOfCells();
 				UpdateCorporationPriceReq resp = new UpdateCorporationPriceReq();
-				resp.setSn(getCellValue(row.getCell(firstCellNum)));
+				resp.setProductId(getCellValue(row.getCell(firstCellNum)));
 				// 2种模板
 				if(lastCellNum > firstCellNum) {
 					resp.setCorporationPrice(getCellValue(row.getCell(firstCellNum + 1)));

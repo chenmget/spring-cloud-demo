@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.web.controller.b2b.cgmanage;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -132,7 +133,12 @@ public class GovernmentPriceManageController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping("/updatePrice")
+	@UserLoginToken
     public ResultVO updatePrice(@RequestBody UpdateCorporationPriceReq req) {
+		req.setApplyUserId(UserContext.getUserId());
+		Date date = new Date();
+		String batch_id = String.valueOf(date.getTime());
+		req.setBatchId(batch_id);
 		return purApplyService.updatePrice(req);
     }
 	

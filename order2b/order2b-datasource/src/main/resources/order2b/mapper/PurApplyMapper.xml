@@ -440,15 +440,6 @@
   		)
   </select>
   
-  <select id="updatePrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq" >
-  		update 
-  			prod_product 
-  		set 
-  			corporation_price = #{req.corporationPrice} 
-  		where 
-  			sn = #{req.sn}
-  </select>
-  
   <select id="commitPriceExcel" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq" >
  		update 
  			prod_product 
@@ -473,6 +464,120 @@
 	 	  AND a.task_id = b.task_id 
 	 	  AND a.form_id=#{applyId} ORDER BY b.task_item_id DESC LIMIT 1
   	</select>
+  
+  <select id="selectNextChangeId" resultType="java.lang.String" >
+ 	 select seq_PRODUCT_CHANGE_ID.nextVal
+  </select>
+  
+  <select id="selectNextChangeDetailId" resultType="java.lang.String" >
+ 	 select seq_PRODUCT_CHANGE_DETAIL_ID.nextVal
+  </select>
+  	
+  <select id="insertProdChangePrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq" >
+ 	 insert into PROD_PRODUCT_CHANGE(
+	 	 CHANGE_ID,
+	 	 VER_NUM,
+	 	 PRODUCT_BASE_ID,
+	 	 AUDIT_STATE,
+	 	 CREATE_DATE,
+	 	 CREATE_STAFF,
+	 	 BATCH_ID
+ 	 ) value (
+ 	 	#{req.changeId},
+ 	 	#{req.verNum},
+ 	 	#{req.productBaseId},
+ 	 	#{req.auditState},
+ 	 	#{req.createDate},
+ 	 	#{req.createStaff},
+ 	 	#{req.batchId}
+ 	 )
+  </select>
+  
+  <select id="selectOldValue" parameterType="java.lang.String" resultType="java.lang.String" >
+ 	 SELECT 
+ 	 	CORPORATION_PRICE 
+ 	 FROM 
+ 	 	prod_product 
+ 	 WHERE 
+ 	 	product_id = #{productId}
+  </select>
+  
+  <select id="insertProdProductChangeDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" >
+ 	 insert into PROD_PRODUCT_CHANGE_DETAIL(
+ 	 	 CHANGE_DETAIL_ID,
+	 	 CHANGE_ID,
+	 	 OPER_TYPE,
+	 	 VER_NUM,
+	 	 TABLE_NAME,
+	 	 CHANGE_FIELD,
+	 	 CHANGE_FIELD_NAME,
+	 	 OLD_VALUE,
+	 	 NEW_VALUE,
+	 	 KEY_VALUE,
+	 	 CREATE_DATE,
+	 	 CREATE_STAFF
+ 	 ) value (
+ 	 	#{req.changeDetailId},
+ 	 	#{req.changeId},
+ 	 	#{req.operType},
+ 	 	#{req.verNum},
+ 	 	#{req.tableName},
+ 	 	#{req.changeField},
+ 	 	#{req.changeFieldName},
+ 	 	#{req.oldValue},
+ 	 	#{req.newValue},
+ 	 	#{req.keyValue},
+ 	 	#{req.createDate},
+ 	 	#{req.createStaff}
+ 	 )
+  </select>
+  
+  <select id="updateProductChange" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq" resultType="java.lang.Integer"  >
+ 	 UPDATE 
+ 	 	PROD_PRODUCT_CHANGE 
+ 	 SET 
+ 	 	audit_state=#{req.auditState} 
+ 	 WHERE 
+ 	 	change_id = #{req.changeId}
+  </select>
+  
+  <select id="selectProdProductChangeDetail" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail"  >
+	  SELECT 
+	  	CHANGE_DETAIL_ID as changeDetailId,
+		CHANGE_ID as changeId,
+		OPER_TYPE as operType,
+		VER_NUM as verNum,
+		TABLE_NAME as tableName,
+		CHANGE_FIELD as changeField,
+		CHANGE_FIELD_NAME as changeFieldName,
+		OLD_VALUE as oldValue,
+		NEW_VALUE as newValue,
+		KEY_VALUE as keyValue,
+		CREATE_DATE as createDate,
+		CREATE_STAFF as createStaff
+	FROM 
+		PROD_PRODUCT_CHANGE_DETAIL
+	WHERE 
+		KEY_VALUE = #{keyValue}
+  </select>
+  
+  <select id="updateProductCorpPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" resultType="java.lang.Integer" >
+	UPDATE 
+		prod_product 
+	SET 
+		CORPORATION_PRICE=#{req.corporationPrice} 
+	WHERE 
+		product_id = #{req.productId}	
+  </select>
+  
+  <select id="getProductBaseIdByProductId" parameterType="java.lang.String" resultType="java.lang.String" >
+	select 
+		product_base_id 
+	from 
+		prod_product
+	WHERE 
+		product_id = #{productId}	
+  </select>
   
 </mapper>
 

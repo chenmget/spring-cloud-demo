@@ -9,6 +9,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 @Component
@@ -23,6 +24,7 @@ public class ResouceInstTrackManager{
         ResouceInstTrack qryResouceInstTrack = resouceInstTrackMapper.selectOne(queryWrapper);
         ResouceInstTrack resouceInstTrack = new ResouceInstTrack();
         BeanUtils.copyProperties(resouceInstTrackDTO, resouceInstTrack);
+        resouceInstTrack.setStatusDate(new Date());
         if ( null == qryResouceInstTrack){
             return resouceInstTrackMapper.insert(resouceInstTrack);
         } else {

@@ -131,7 +131,15 @@ public interface ProductMapper extends BaseMapper<Product>{
 
     public Integer updateAttrValue10(ProductAuditStateUpdateReq request);
 
-
+    /**
+     * 查询产品信息列表根据产品id
+     * @param productIds
+     * @return
+     */
 
     public List<ProductInfoResp> getProductInfoByIds(@Param("productIds")List<String>productIds);
+
+
+
+
 }

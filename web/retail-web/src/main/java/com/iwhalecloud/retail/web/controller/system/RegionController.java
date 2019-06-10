@@ -87,16 +87,16 @@ public class RegionController {
         CommonRegionListReq req = new CommonRegionListReq();
         if (!StringUtils.isEmpty(parRegionId)) {
             req.setParRegionId(parRegionId);
-        }
-        if(StringUtils.isEmpty(levelFlag)){
-            //没有传入查询标记时，如果当前等级是30(地市公司级)，无需查询下一级
-            ResultVO<CommonRegionDTO> resultVO = commonRegionService.getCommonRegionById(parRegionId);
-            CommonRegionDTO commonRegionDTO = resultVO.getResultData();
-            if(SystemConst.REGION_LEVEL.LEVEL_30.getCode().equals(commonRegionDTO.getRegionLevel())){
-                return ResultVO.success();
+            if(StringUtils.isEmpty(levelFlag)){
+                //没有传入查询标记时，如果当前等级是30(地市公司级)，无需查询下一级
+                ResultVO<CommonRegionDTO> resultVO = commonRegionService.getCommonRegionById(parRegionId);
+                CommonRegionDTO commonRegionDTO = resultVO.getResultData();
+                if(SystemConst.REGION_LEVEL.LEVEL_30.getCode().equals(commonRegionDTO.getRegionLevel())){
+                    return ResultVO.success();
+                }
             }
-
         }
+
         return commonRegionService.listCommonRegion(req);
     }
 

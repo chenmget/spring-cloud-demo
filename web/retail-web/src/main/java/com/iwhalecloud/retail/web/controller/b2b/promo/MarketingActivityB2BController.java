@@ -240,14 +240,18 @@ public class MarketingActivityB2BController {
         //解析处理活动范围对象，范围类型分为：10地区，20商家。
         if (scopeList != null && scopeList.size() > 0) {
             for (int i = 0; i < scopeList.size(); i++) {
+                ActivityScopeDTO scopeDTO = scopeList.get(i);
+                if(scopeDTO==null){
+                    continue;
+                }
                 if (PromoConst.ActivityScopeType.ACTIVITY_SCOPE_TYPE_20.getCode().equals(req.getActivityScopeType())) {
-                    scopeList.get(i).setSupplierName(scopeList.get(i).getMerchantName());
-                    scopeList.get(i).setSupplierCode(scopeList.get(i).getMerchantCode());
+                    scopeDTO.setSupplierName(scopeDTO.getMerchantName());
+                    scopeDTO.setSupplierCode(scopeDTO.getMerchantCode());
                 } else {
-                    if (scopeList.get(i).getRegionId().length() > 3) {
-                        scopeList.get(i).setCity(scopeList.get(i).getRegionId());
+                    if (scopeDTO.getRegionId().length() > 3) {
+                        scopeDTO.setCity(scopeDTO.getRegionId());
                     } else {
-                        scopeList.get(i).setLanId(scopeList.get(i).getRegionId());
+                        scopeDTO.setLanId(scopeDTO.getRegionId());
                     }
                 }
             }
@@ -255,14 +259,18 @@ public class MarketingActivityB2BController {
         //解析处理活动范围对象，参与类型分为：10地区，20商家。
         if (activityParticipantList != null && activityParticipantList.size() > 0) {
             for (int i = 0; i < activityParticipantList.size(); i++) {
+                ActivityParticipantDTO participantDTO = activityParticipantList.get(i);
+                if(participantDTO==null){
+                    continue;
+                }
                 if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(req.getActivityParticipantType())) {
-                    activityParticipantList.get(i).setShopName(activityParticipantList.get(i).getMerchantName());
-                    activityParticipantList.get(i).setShopCode(activityParticipantList.get(i).getMerchantCode());
+                    participantDTO.setShopName(participantDTO.getMerchantName());
+                    participantDTO.setShopCode(participantDTO.getMerchantCode());
                 } else {
-                    if (activityParticipantList.get(i).getRegionId().length() > 3) {
-                        activityParticipantList.get(i).setCity(activityParticipantList.get(i).getRegionId());
+                    if (participantDTO.getRegionId().length() > 3) {
+                        participantDTO.setCity(participantDTO.getRegionId());
                     } else {
-                        activityParticipantList.get(i).setLanId(activityParticipantList.get(i).getRegionId());
+                        participantDTO.setLanId(participantDTO.getRegionId());
                     }
                 }
             }

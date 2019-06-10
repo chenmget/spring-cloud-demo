@@ -1215,10 +1215,15 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         if (!CollectionUtils.isEmpty(changedActivityScopeDTOList) && changedActivityScopeDTOList.size() > originalActivityScopeDTOList.size()) {
             List<String> originalActivityScopeLanIds = originalActivityScopeDTOList.stream().map(ActivityScopeDTO::getLanId).collect(Collectors.toList());
             List<String> originalActivityScopeCitys = originalActivityScopeDTOList.stream().map(ActivityScopeDTO::getCity).collect(Collectors.toList());
+            List<String> originalActivitySupplierCodes = originalActivityScopeDTOList.stream().map(ActivityScopeDTO::getSupplierCode).collect(Collectors.toList());
             for (ActivityScopeDTO changedActivityScopeDTO : changedActivityScopeDTOList) {
                 String lanId = changedActivityScopeDTO.getLanId() == null ? "" : changedActivityScopeDTO.getLanId();
                 String city = changedActivityScopeDTO.getCity() == null ? "" : changedActivityScopeDTO.getCity();
+                String supplierCode = changedActivityScopeDTO.getSupplierCode() == null ? "" : changedActivityScopeDTO.getSupplierCode();
                 if (originalActivityScopeLanIds.contains(lanId) || originalActivityScopeCitys.contains(city)) {
+                    continue;
+                }
+                if (originalActivitySupplierCodes.contains(supplierCode)) {
                     continue;
                 }
                 //如果该范围不在原范围里，准备进行添加，并写变更详情表
@@ -1250,10 +1255,15 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         if (!CollectionUtils.isEmpty(changedActivityParticipantDTOList) && changedActivityParticipantDTOList.size() > originalActivityParticipantDTOList.size()) {
             List<String> originalActivityParticipantLanIds = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getLanId).collect(Collectors.toList());
             List<String> originalActivityParticipantCitys = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getCity).collect(Collectors.toList());
+            List<String> originalActivityParticipantMerchantCodes = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getMerchantCode).collect(Collectors.toList());
             for (ActivityParticipantDTO changedActivityParticipantDTO : changedActivityParticipantDTOList) {
                 String lanId = changedActivityParticipantDTO.getLanId() == null ? "" : changedActivityParticipantDTO.getLanId();
                 String city = changedActivityParticipantDTO.getCity() == null ? "" : changedActivityParticipantDTO.getCity();
+                String merchantCode = changedActivityParticipantDTO.getMerchantCode() == null ? "" : changedActivityParticipantDTO.getMerchantCode();
                 if (originalActivityParticipantLanIds.contains(lanId) || originalActivityParticipantCitys.contains(city)) {
+                    continue;
+                }
+                if (originalActivityParticipantMerchantCodes.contains(merchantCode)) {
                     continue;
                 }
                 //如果该范围不在原参与对象里，准备进行添加，并写变更详情表

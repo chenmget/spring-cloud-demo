@@ -210,9 +210,9 @@ public class AdminResourceInstB2BController {
         req.setParams(params);
         //需要调用itms接口补录，需要提供。
         ResultVO inventoryChange = resourceInstService.inventoryChange(req);
-//        return inventoryChange;
-        inventoryChange.getResultMsg();
-        return ResultVO.success("操作成功");
+        return inventoryChange;
+//        inventoryChange.getResultMsg();
+//        return ResultVO.success("操作成功");
     }
 
 

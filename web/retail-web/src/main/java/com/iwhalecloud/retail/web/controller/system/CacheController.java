@@ -169,7 +169,7 @@ public class CacheController extends BaseController {
         return ResultVO.success(true);
     }
 
-    @ApiOperation(value = "清空wf_node表缓存", notes = "清空wf_route表缓存")
+    @ApiOperation(value = "清空wf_node表缓存", notes = "清空wf_node表缓存")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
@@ -177,7 +177,7 @@ public class CacheController extends BaseController {
     @RequestMapping(value = "/cleanCacheNameWfNote", method = RequestMethod.GET)
     @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_NODE, allEntries = true, beforeInvocation = true)
     public ResultVO<Boolean> cleanCacheNameWfNote() {
-        log.info("CacheController.cleanCacheNameWfNote clean wf_route table cache success!!!");
+        log.info("CacheController.cleanCacheNameWfNote clean wf_node table cache success!!!");
         return ResultVO.success(true);
     }
 }

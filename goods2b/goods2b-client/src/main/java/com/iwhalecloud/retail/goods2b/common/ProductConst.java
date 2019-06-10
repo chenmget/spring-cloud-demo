@@ -14,14 +14,6 @@ public class ProductConst {
 
     public static final String EDIT_PRODUCT_FLOW_PROCESS_ID="22";
 
-    public static final String UPDATE_PRODUCT_FLOW_PROCESS_ID="10";
-
-    public static final String MODEL_PRODUCT_FLOW_PROCESS_ID="31";
-
-    public static final String ITV_PRODUCT_FLOW_PROCESS_ID="32";
-
-    public static final String INTELLIGENCE_PRODUCT_FLOW_PROCESS_ID="33";
-
     /**
      * 状态常量
      */
@@ -96,28 +88,6 @@ public class ProductConst {
         private String value;
 
         isInspection(String code, String value){
-            this.code = code;
-            this.value = value;
-        }
-
-        public String getCode() {
-            return code;
-        }
-        public String getValue() {
-            return value;
-        }
-    }
-
-    public enum isItms {
-        NOPUSH("0","不推送"),
-        PUSHIPTV("1","推送为IPTV"),
-        PUSHMODEL("2","推送为光猫"),
-        PUSHIPTVMODEL("3","同时推送为IPTV和光猫");
-
-        private String code;
-        private String value;
-
-        isItms(String code, String value){
             this.code = code;
             this.value = value;
         }

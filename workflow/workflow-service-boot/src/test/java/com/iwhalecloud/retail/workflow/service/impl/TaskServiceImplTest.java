@@ -4,6 +4,8 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.WorkFlowServiceApplication;
 import com.iwhalecloud.retail.workflow.bizservice.RunRouteService;
@@ -89,20 +91,26 @@ public class TaskServiceImplTest {
 
     @Test
     public void nextRoute() {
-        RouteNextReq req = new RouteNextReq();
-        req.setTaskId("12213824");
-        req.setTaskItemId("12213825");
-        req.setHandlerUserId("1345");
-        req.setHandlerUserName("12322");
-        req.setHandlerMsg("选择");
-        req.setRouteId("19");
-        req.setNextNodeId("1007");
+        String json = "{\"appendixType\":\"2\",\"appendixUrl\":\"\",\"handlerMsg\":\"333\",\"handlerUserId\":\"200012813991\",\"handlerUserName\":\"zte管理员\",\"nextHandlerUser\":[],\"nextNodeId\":\"1559\",\"routeId\":\"20190528005\",\"taskId\":\"12330136\",\"taskItemId\":\"12330137\"}\n";
+//        RouteNextReq req = (RouteNextReq) JSON.parse(json);
+
+        Gson gson = new Gson();
+        RouteNextReq routeNextReq  = gson.fromJson(json, new TypeToken<RouteNextReq>(){}.getType());
+
+//        req.setTaskId("12330129");
+//        req.setTaskItemId("12330130");
+//        req.setHandlerUserId("200012813991");
+//        req.setHandlerUserName("zte管理员");
+//        req.setHandlerMsg("555");
+//        req.setRouteId("20190528005");
+//        req.setNextNodeId("1559");
+//        req.setAppendixType("2");
 //        List<HandlerUser> userList = Lists.newArrayList();
 //        HandlerUser user = new HandlerUser();
 //        user.setHandlerUserId("1079205258011422722");
 //        user.setHandlerUserName("经营主体");
 //        req.setNextHandlerUser(userList);
-        ResultVO resultVO = taskService.nextRoute(req);
+        ResultVO resultVO = taskService.nextRoute(routeNextReq);
         System.out.println(resultVO.isSuccess());
     }
 

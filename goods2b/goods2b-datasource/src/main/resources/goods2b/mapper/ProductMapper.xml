@@ -492,4 +492,9 @@
     </if>
   </select>
 
+  <update id="updateAuditStateByProductId" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductAuditReq">
+    UPDATE prod_product_change
+    SET audit_state=#{req.auditState},
+    WHERE product_id=#{req.productId}
+  </update>
 </mapper>

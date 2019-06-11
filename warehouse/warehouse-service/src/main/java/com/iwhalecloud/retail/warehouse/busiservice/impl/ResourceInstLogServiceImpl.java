@@ -182,6 +182,10 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
         BeanUtils.copyProperties(req, eventDTO);
         eventDTO.setEventType(req.getEventType());
         eventDTO.setStatusCd(req.getEventStatusCd());
+        String mktResStoreId = req.getMktResStoreId();
+        String destStoreId = req.getDestStoreId();
+        eventDTO.setDestStoreId(mktResStoreId);
+        eventDTO.setMktResStoreId(destStoreId);
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
         log.info("ResourceInstLogServiceImpl.pickupResourceInstLog resouceStoreManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
         // 增加批次

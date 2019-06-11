@@ -489,6 +489,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstUpdateReq.setMktResId(item.getProductId());
             resourceInstUpdateReq.setMktResStoreId(mktResStoreId);
             resourceInstUpdateReq.setOrderId(req.getOrderId());
+            resourceInstUpdateReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             ResultVO updateResultVO = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
             log.info("SupplierResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService.updateResourceInstForTransaction req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(updateResultVO));
             if (updateResultVO == null || !updateResultVO.isSuccess()) {

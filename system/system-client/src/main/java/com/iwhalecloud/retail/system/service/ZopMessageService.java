@@ -1,9 +1,10 @@
 package com.iwhalecloud.retail.system.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.system.dto.request.NoticeMsgReq;
 import com.iwhalecloud.retail.system.dto.request.VerifyCodeGetReq;
 
-public interface VerifyCodeService {
+public interface ZopMessageService {
 
     /**
      * 获取验证码
@@ -23,5 +24,5 @@ public interface VerifyCodeService {
      * 通知短信
      * @return
      */
-    ResultVO noticeMsg();
+    ResultVO noticeMsg(NoticeMsgReq msgReq);
 }

@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.system.model;
+package com.iwhalecloud.retail.system.dto.request;
 
 import com.ztesoft.fastjson.annotation.JSONField;
 import lombok.Data;

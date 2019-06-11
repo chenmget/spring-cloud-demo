@@ -1,26 +1,24 @@
 package com.iwhalecloud.retail.system.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.common.SysUserMessageConst;
-import com.iwhalecloud.retail.system.dto.request.RandomLogAddReq;
-import com.iwhalecloud.retail.system.dto.request.RandomLogGetReq;
-import com.iwhalecloud.retail.system.dto.request.VerifyCodeGetReq;
+import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.RandomLogGetResp;
-
-import com.iwhalecloud.retail.system.model.SmsVerificationtemplate;
+import com.iwhalecloud.retail.system.dto.request.SmsVerificationtemplate;
 import com.iwhalecloud.retail.system.model.ZopMsgModel;
 import com.iwhalecloud.retail.system.service.RandomLogService;
-import com.iwhalecloud.retail.system.service.VerifyCodeService;
+import com.iwhalecloud.retail.system.service.ZopMessageService;
 import com.iwhalecloud.retail.system.utils.ZopMsgUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Random;
 
+import java.util.*;
+
+@Slf4j
 @Service
-public class VerifyCodeServiceImpl implements VerifyCodeService {
+public class ZopMessageServiceImpl implements ZopMessageService {
 
     @Autowired
     private ZopMsgUtil zopMsgUtil;
@@ -35,16 +33,19 @@ public class VerifyCodeServiceImpl implements VerifyCodeService {
             //产生六位随机验证码
             String verifyCode = generateCode();
             //调用能开发送验证码
-            sendSmsVerificationCode(getReq.getPhoneNo(),getReq.getLandId(),verifyCode);
+           if(!sendSmsVerificationCode(getReq.getPhoneNo(),getReq.getLandId(),verifyCode)){
+               return ResultVO.error("zop msg remote fail");
+           }
             //插入数据库
             insertVerifyCode(getReq,verifyCode);
         }catch (Exception e){
+            log.info(e.getMessage());
             return ResultVO.error();
         }
         return ResultVO.success();
     }
 
-    private void checkReq(VerifyCodeGetReq getReq) {
+    private void checkReq(BaseZopMsgReq getReq) {
         if(null == getReq.getPhoneNo() || getReq.getPhoneNo().equals("")){
             throw new RuntimeException("phoneNo must not null");
         }
@@ -66,8 +67,28 @@ public class VerifyCodeServiceImpl implements VerifyCodeService {
     }
 
     @Override
-    public ResultVO noticeMsg() {
-        return ResultVO.success();
+    public ResultVO noticeMsg(NoticeMsgReq msgReq) {
+      try {
+          List<BaseZopMsgReq> zopMsgReqs = msgReq.getBaseZopMsgReqs();
+          List  zopModeList = new ArrayList();
+          for(BaseZopMsgReq req : zopMsgReqs){
+              checkReq(req);
+              ZopMsgModel model = new ZopMsgModel();
+              //模板ID要改
+              model.setBusinessId(SysUserMessageConst.SMS_VERIFY_BSID);
+              model.setLatnId(req.getLandId());
+              model.setToTel(req.getPhoneNo());
+              model.setSentContent("");
+              zopModeList.add(model);
+          }
+          if(zopMsgUtil.SendMsgs(zopModeList,msgReq.getTemplateList())){
+              return ResultVO.success();
+          }
+      }catch (Exception e){
+          log.info(e.getMessage());
+          return ResultVO.error();
+      }
+        return ResultVO.error();
     }
 
 

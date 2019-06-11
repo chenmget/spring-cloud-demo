@@ -10,8 +10,10 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.req.BusinessEntityGetReq;
+import com.iwhalecloud.retail.partner.dto.req.SupplierResistReq;
 import com.iwhalecloud.retail.partner.service.*;
 import com.iwhalecloud.retail.system.common.SysUserLoginConst;
+import com.iwhalecloud.retail.system.common.SysUserMessageConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.*;
 import com.iwhalecloud.retail.system.dto.request.*;
@@ -24,6 +26,9 @@ import com.iwhalecloud.retail.web.controller.b2b.system.request.AddUserReq;
 import com.iwhalecloud.retail.web.controller.b2b.system.request.EditUserReq;
 import com.iwhalecloud.retail.web.controller.b2b.system.response.GetUserDetailResp;
 import com.iwhalecloud.retail.web.controller.b2b.system.response.LoginResp;
+import com.iwhalecloud.retail.web.controller.system.request.EditUserReq;
+import com.iwhalecloud.retail.web.controller.system.response.GetUserDetailResp;
+import com.iwhalecloud.retail.web.controller.system.response.LoginResp;
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
@@ -52,6 +57,7 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+@CrossOrigin
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
@@ -102,6 +108,9 @@ public class UserController extends BaseController {
 
     @Reference
     LoginLogService loginLogService;
+
+    @Reference
+    ZopMessageService verifyCodeService;
 
     /**
      * 云货架
@@ -735,12 +744,6 @@ public class UserController extends BaseController {
         UserAddReq userAddReq = new UserAddReq();
         BeanUtils.copyProperties(req, userAddReq);
 
-
-//        userDTO = userService.addUser(userAddReq);
-//        // 失败统一返回
-//        if (userDTO == null) {
-//            return failResultVO("新增失败!");
-//        }
         ResultVO<UserDTO> addUserResultVO = userService.addUser(userAddReq);
         userDTO = addUserResultVO.getResultData();
         // 失败统一返回
@@ -1135,4 +1138,34 @@ public class UserController extends BaseController {
         return userService.registerFactoryMerchant(req);
     }
 
+
+    @ApiOperation(value = "省包商自注册", notes = "省包商自注册")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/registProvinceSupplier", method = RequestMethod.POST)
+    public ResultVO registProvinceSupplier(@RequestBody SupplierResistReq req){
+        req.setSource("ADMIN");
+        UserRegisterReq userRegisterReq = new UserRegisterReq();
+        BeanUtils.copyProperties(req,userRegisterReq);
+        return userService.registProvinceSupplier(userRegisterReq);
+    }
+
+    @ApiOperation(value = "地包商自注册", notes = "地包商自注册")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/registLandSupplier", method = RequestMethod.POST)
+    public ResultVO registLandSupplier(@RequestBody SupplierResistReq req){
+        req.setSource("ADMIN");
+        UserRegisterReq userRegisterReq = new UserRegisterReq();
+        BeanUtils.copyProperties(req,userRegisterReq);
+        return userService.registLandSupplier(userRegisterReq);
+    }
+    @RequestMapping(value = "/getVerifyCode", method = RequestMethod.POST)
+    public ResultVO getVerifyCode(@RequestBody VerifyCodeGetReq req){
+        return verifyCodeService.sendRegistVerifyCode(req);
+    }
 }

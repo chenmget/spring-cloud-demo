@@ -1,10 +1,12 @@
-package com.iwhalecloud.retail.system.model;
+package com.iwhalecloud.retail.system.dto.request;
 
 import com.ztesoft.fastjson.annotation.JSONField;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class NoticeTrialMsgTemplate {
+public class NoticeTrialMsgTemplate implements Serializable{
     @JSONField(name="UserName")
     private String userName;
     @JSONField(name="ProcessName")

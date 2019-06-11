@@ -20,6 +20,7 @@ import com.iwhalecloud.retail.system.manager.CommonRegionManager;
 import com.iwhalecloud.retail.system.manager.OrganizationManager;
 import com.iwhalecloud.retail.system.manager.UserManager;
 import com.iwhalecloud.retail.system.service.RoleService;
+import com.iwhalecloud.retail.system.service.ZopMessageService;
 import com.iwhalecloud.retail.system.service.UserRoleService;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.system.utils.SysUserCacheUtils;
@@ -67,6 +68,8 @@ public class UserServiceImpl implements UserService {
     @Reference
     RoleService roleService;
 
+    @Autowired
+    ZopMessageService SendMsgService;
 
     @Override
     public UserLoginResp login(UserLoginReq req) {
@@ -587,6 +590,68 @@ public class UserServiceImpl implements UserService {
         req.setRoleId(roleId);
         req.setOrgId(orgId);
         return ResultVO.success(userManager.listUser(req));
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registLandSupplier(UserRegisterReq resistReq) {
+       //add user and get id into req
+        SupplierResistReq req = new SupplierResistReq();
+        BeanUtils.copyProperties(resistReq,req);
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req,userAddReq);
+        ResultVO<UserDTO> resultVO = addUser(userAddReq);
+        String userId = resultVO.getResultData().getUserId();
+        req.setUserId(userId);
+        log.info("userId" + userId);
+        // use remote service
+        if(!resultVO.isSuccess()) return ResultVO.error(resultVO.getResultMsg());
+        ResultVO rt = merchantService.registLandSupplier(req);
+        log.info(rt.getResultCode()+" ---" + rt.getResultMsg());
+        if(!rt.isSuccess())
+        {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.info("地包商注册失败");
+            return ResultVO.error(SysUserMessageConst.SUPPLIER_REGISTER_FAIL);
+        }
+        return ResultVO.success();
+    }
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registProvinceSupplier(UserRegisterReq resistReq) {
+        //add user and get id into req
+        SupplierResistReq req = new SupplierResistReq();
+        BeanUtils.copyProperties(resistReq,req);
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req,userAddReq);
+        ResultVO<UserDTO> resultVO = addUser(userAddReq);
+        if(!resultVO.isSuccess())return resultVO;
+        String userId = resultVO.getResultData().getUserId();
+        req.setUserId(userId);
+        log.info("userId" + userId);
+        if(!resultVO.isSuccess()) return ResultVO.error(resultVO.getResultMsg());
+        ResultVO rt = merchantService.registProvinceSupplier(req);
+        if(!rt.isSuccess())
+        {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.info("省包商注册失败");
+            return ResultVO.error(SysUserMessageConst.SUPPLIER_REGISTER_FAIL);
+        }
+        return ResultVO.success();
+    }
+
+
+    /**
+     * 更改系统用户状态
+     * @param userId
+     * @param state
+     * @return
+     */
+    @Override
+    public ResultVO UpSysUserState(String userId, int state) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setStatusCd(state);
+        if(userManager.updateUser(user)==1)return ResultVO.success();
+        return ResultVO.error();
     }
 
 

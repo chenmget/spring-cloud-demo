@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.goods2b.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
 
 
 /**
@@ -15,10 +14,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 @Data
 @ApiModel(value = "对应模型prod_cat_condition, 对应实体CatCondition类")
 public class CatConditionDTO implements java.io.Serializable {
-    
-  	private static final long serialVersionUID = 1L;
-  
-  	
+
   	//属性 begin
 	/**
   	 * 主键ID

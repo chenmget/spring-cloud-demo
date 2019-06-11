@@ -4,9 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.report.dto.SupplierOperatingDayDTO;
 import com.iwhalecloud.retail.report.dto.request.SummarySaleBySupplierPageReq;
-import com.iwhalecloud.retail.report.dto.request.SupplierOperatingDayPageReq;
 import com.iwhalecloud.retail.report.dto.response.SummarySaleBySupplierPageResp;
 import com.iwhalecloud.retail.report.service.SupplierOperatingDayService;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -65,12 +63,12 @@ public class SupplierOperationDayB2BController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value = "/export")
-    public void export(@RequestBody SupplierOperatingDayPageReq req, HttpServletResponse response) {
+    public void export(@RequestBody SummarySaleBySupplierPageReq req, HttpServletResponse response) {
         log.info("MerchantController.export() input: SupplierOperatingDayPageReq={}", JSON.toJSONString(req));
         req.setPageNo(1);
         //数据量控制在1万条
         req.setPageSize(10000);
-        ResultVO<Page<SupplierOperatingDayDTO>> resultVO = supplierOperatingDayService.page(req);
+        ResultVO<Page<SummarySaleBySupplierPageResp>> resultVO = supplierOperatingDayService.pageSummarySaleBySupplier(req);
         List<ExcelTitleName> excelTitleNames = SupplierOperatingDayColumn.showColumn();
         OutputStream output = null;
         try {

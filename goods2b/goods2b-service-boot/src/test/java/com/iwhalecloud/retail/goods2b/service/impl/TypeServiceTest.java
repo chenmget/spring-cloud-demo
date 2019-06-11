@@ -29,7 +29,7 @@ public class TypeServiceTest {
     @Test
     public void getProductTest() {
         TypeSelectByIdReq req = new TypeSelectByIdReq();
-        req.setTypeId("210001");
+        req.setTypeId("201903142030001");
         ResultVO<TypeDetailResp> resultVO = typeService.getDetailType(req);
         System.out.println("resultVO=" + JSON.toJSON(resultVO));
         Assert.assertNotNull(resultVO);

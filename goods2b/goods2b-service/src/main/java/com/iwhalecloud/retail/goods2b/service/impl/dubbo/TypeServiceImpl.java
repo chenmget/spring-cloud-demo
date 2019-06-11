@@ -338,10 +338,7 @@ public class TypeServiceImpl implements TypeService {
             if (null == type) {
                 break;
             }
-            parentId = type.getParentTypeId();
-            if (StringUtils.isBlank(parentId) || rootTypeId.equals(parentId)) {
-                break;
-            }
+
             if (moblie.equals(parentId)) {
                 typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.MOBLIE.getCode());
                 typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.MOBLIE.getValue());
@@ -365,6 +362,11 @@ public class TypeServiceImpl implements TypeService {
             }else if(opticalModem.equals(parentId)) {
                 typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getCode());
                 typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getValue());
+                break;
+            }
+
+            parentId = type.getParentTypeId();
+            if (StringUtils.isBlank(parentId) || rootTypeId.equals(parentId)) {
                 break;
             }
         }

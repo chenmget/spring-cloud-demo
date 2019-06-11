@@ -356,7 +356,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	
 	@Override
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
-//		purApplyManager.updatePrice(req);//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
+		//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
 		String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
 		String changeId = purApplyManager.selectNextChangeId();
 		ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
@@ -388,7 +388,6 @@ public class PurApplyServiceImpl implements PurApplyService {
 		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
-
 		//政企价格修改审核
 		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 		Map map=new HashMap();
@@ -410,7 +409,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		processStartDTO.setApplyUserName(userName);
 		ResultVO resultVO = new ResultVO();
 		try {
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程start*********************",JSON.toJSONString(processStartDTO));
 			resultVO = taskService.startProcess(processStartDTO);
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程end*********************",JSON.toJSONString(resultVO));
 		} catch (Exception e) {
 			log.error("PurApplyServiceImpl.updatePrice exception={}", e);
 			return ResultVO.error();

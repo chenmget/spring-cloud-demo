@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -150,7 +151,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         storeIdReq.setMerchantId(req.getMerchantId());
         storeIdReq.setStoreSubType("1300");//终端类型
         String MktResStoreId= resouceStoreService.getStoreId(storeIdReq);//查询仓库id
-        log.info("MktResStoreId="+MktResStoreId);
+        log.info("PurApplyReceivingReq req"+ JSON.toJSONString(req)+" MktResStoreId="+MktResStoreId);
         for (PurApplyItemDetail purApplyItemDetail : purApplyItemDetailList) {
             List<String> MktResInstNbrsList = new ArrayList<String>();
             ResourceInstAddReq resourceInstAddReq = new ResourceInstAddReq();

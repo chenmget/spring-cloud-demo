@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.report.mapper.ReportCityTotalInvMapper">
+
+
+    <select id="getCityTotalInvList" parameterType="com.iwhalecloud.retail.report.dto.request.ReportCityTotalInvReq"
+            resultType="com.iwhalecloud.retail.report.dto.response.ReportCityTotalInvResp">
+
+        select
+        r.city_id cityId,
+        r.county_id countyId,
+        r.PRODUCT_BASE_ID productBaseId,
+        r.BRAND_ID brandId,
+        (SELECT region_name FROM sys_common_region WHERE region_id = r.city_id) as cityName,-- 地市
+        (SELECT region_name FROM sys_common_region WHERE region_id = r.county_id) as countyName,-- 区县
+
+        PRODUCT_BASE_NAME productName,-- 机型
+        BRAND_NAME brandName,-- 品牌
+        PRICE_LEVEL priceLevel,-- 机型档位
+        IFNULL(SUM(TRANS_IN_NUM),0) totalInNum ,-- 入库总量
+        IFNULL(SUM(TRANS_OUT_NUM),0) totalOutNum,-- 出库总量
+        IFNULL(SUM(PURCHASE_NUM),0) purchaseNum,-- 交易进货量
+        ROUND(IFNULL(SUM(PURCHASE_AMOUNT),0)/100,2) purchaseAmount,-- 交易进货金额
+        IFNULL(SUM(MANUAL_NUM),0) manualNum,-- 手工入库量
+        IFNULL(SUM(TRANS_IN_NUM),0) transInNum,-- 挑拨入库量
+        IFNULL(SUM(SELL_NUM),0) totalSalesNum,-- 总销量
+        IFNULL(SUM(SELL_AMOUNT),0) totalSellAmount,-- //总销售额
+        IFNULL(SUM(UNCONTRACT_NUM),0) manualSalesNum,-- 手工核销量
+        IFNULL(SUM(CONTRACT_NUM),0) crmContractNum,-- CRM合约销量
+        IFNULL(SUM(REGISTER_NUM),0) registerNum,-- 自注册销量
+        (select ROUND(IFNULL(SUM(sell_num/7),0),2) from rpt_partner_operating_day WHERE date >= date_sub(curdate(),interval 7 day)) as avg7,-- 近7天日均销量
+        (SELECT IFNULL(SUM(STOCK_NUM),0) FROM RPT_PARTNER_OPERATING_DAY WHERE date=DATE_SUB(CURDATE(),INTERVAL 1 DAY)) stockNum,-- 库存总量
+        (SELECT ROUND(IFNULL(SUM(STOCK_AMOUNT),0)/100,2) FROM RPT_PARTNER_OPERATING_DAY WHERE date=DATE_SUB(CURDATE(),INTERVAL 1 DAY)) stockAmount,-- 库存金额
+
+        IFNULL(SUM(TRANS_OUT_NUM),0) transOutNum,-- //调拨出库量
+        IFNULL(SUM(RETURN_NUM),0) returnNum-- //退库量
+
+        from RPT_PARTNER_OPERATING_DAY r
+        where 1=1
+        <if test="req.createTimeStart!=null and req.createTimeStart!=''">
+            and r.date &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+        </if>
+        <if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
+            and r.date &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+        </if>
+        <if test="req.outTimeStart!=null and req.outTimeStart!=''">
+            and r.date &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+        </if>
+        <if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
+            and r.date &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+        </if>
+        <if test="req.cityId!=null and req.cityId!=''">
+            and r.city_id = #{req.cityId}
+        </if>
+        <if test="req.countyId!=null and req.countyId!=''">
+            and r.county_id = #{req.countyId}
+        </if>
+        <if test="req.brandId!=null and req.brandId!=''">
+            and r.brand_id = #{req.brandId}
+        </if>
+        <if test="req.productBaseId!=null and req.productBaseId!=''">
+            and r.PRODUCT_BASE_ID = #{req.productBaseId}
+        </if>
+
+
+        <if test="req.partnerCode!=null and req.partnerCode!=''">
+            and r.PARTNER_CODE = #{req.partnerCode}
+        </if>
+        <if test="req.partnerName!=null and req.partnerName!=''">
+            and r.PARTNER_NAME like CONCAT("%", #{req.partnerName},"%")
+        </if>
+        <if test="req.businessEntityName!=null and req.businessEntityName!=''">
+            and r.BUSINESS_ENTITY_NAME like CONCAT("%",#{req.businessEntityName},"%")
+        </if>
+        group by r.city_id, r.county_id,r.PRODUCT_BASE_ID ,r.BRAND_ID,PRICE_LEVEL
+    </select>
+
+</mapper>

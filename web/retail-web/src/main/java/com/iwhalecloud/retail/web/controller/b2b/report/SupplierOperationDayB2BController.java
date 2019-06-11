@@ -53,7 +53,7 @@ public class SupplierOperationDayB2BController {
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value = "/export")
+    @PostMapping(value = "/exportSummarySaleBySupplier")
     public void export(@RequestBody SummarySaleBySupplierPageReq req, HttpServletResponse response) {
         log.info("MerchantController.export() input: SummarySaleBySupplierPageReq={}", JSON.toJSONString(req));
         req.setPageNo(1);
@@ -65,7 +65,7 @@ public class SupplierOperationDayB2BController {
         try {
             //创建Excel
             Workbook workbook = new HSSFWorkbook();
-            String fileName = "商家列表";
+            String fileName = "地包进销存数据汇总报表";
             ExcelToSupplierOperatingDayListUtils.builderOrderExcel(workbook, resultVO.getResultData().getRecords(), excelTitleNames);
             output = response.getOutputStream();
             response.reset();

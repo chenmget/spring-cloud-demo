@@ -84,10 +84,10 @@
         <if test="req.brandId != null and req.brandId != ''">
             and t.BRAND_ID =  #{req.brandId}
         </if>
-        <if test="req.startDate != null">
+        <if test="req.startDate != null and req.startDate != ''">
             and t.item_date &gt;= #{req.startDate}
         </if>
-        <if test="req.endDate != null">
+        <if test="req.endDate != null and req.endDate != ''">
             and t.item_date &lt;= #{req.endDate}
         </if>
         group by t.SUPPLIER_ID

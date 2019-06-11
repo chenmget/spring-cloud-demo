@@ -10,14 +10,13 @@ import java.util.Date;
 
 /**
  * @author wenlong.zhong
- * @date 2019/6/10
+ * @date 2019/6/11
  */
 @Data
-@ApiModel(value = "地包进销存 数据 分页查询 请求对象")
-public class SupplierOperatingDayPageReq extends PageVO implements Serializable {
+@ApiModel(value = "地包进销存 数据 汇总 分页查询（按地包商的维度)请求对象")
+public class SummarySaleBySupplierPageReq extends PageVO implements Serializable {
 
-    private static final long serialVersionUID = -1226016843802742667L;
-
+    private static final long serialVersionUID = 3600240428650033398L;
     @ApiModelProperty(value = "供应商id")
     private String supplierId;
 
@@ -42,10 +41,9 @@ public class SupplierOperatingDayPageReq extends PageVO implements Serializable 
     @ApiModelProperty(value = "品牌id")
     private String brandId;
 
-    @ApiModelProperty(value = "开始时间")
-    private Date startDate;
+    @ApiModelProperty(value = "开始时间 格式 %Y-%m-%d")
+    private String startDate;
 
-    @ApiModelProperty(value = "结束时间")
-    private Date endDate;
-
+    @ApiModelProperty(value = "结束时间 格式 %Y-%m-%d")
+    private String endDate;
 }

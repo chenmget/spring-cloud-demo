@@ -5,7 +5,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.report.dto.SupplierOperatingDayDTO;
+import com.iwhalecloud.retail.report.dto.request.SummarySaleBySupplierPageReq;
 import com.iwhalecloud.retail.report.dto.request.SupplierOperatingDayPageReq;
+import com.iwhalecloud.retail.report.dto.response.SummarySaleBySupplierPageResp;
 import com.iwhalecloud.retail.report.service.SupplierOperatingDayService;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.report.utils.ExcelToSupplierOperatingDayListUtils;
@@ -37,14 +39,24 @@ public class SupplierOperationDayB2BController {
     @Reference
     private SupplierOperatingDayService supplierOperatingDayService;
 
-    @ApiOperation(value = "获取 地包进销存 数据 分页 列表接口", notes = "获取 地包进销存 数据 分页 列表接口")
+//    @ApiOperation(value = "获取 地包进销存 数据 分页 列表接口", notes = "获取 地包进销存 数据 分页 列表接口")
+//    @ApiResponses({
+//            @ApiResponse(code = 400, message = "请求参数没填好"),
+//            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+//    })
+//    @PostMapping(value = "/page")
+//    public ResultVO<Page<SupplierOperatingDayDTO>> page(@RequestBody @ApiParam(value = "获取 地包进销存 数据 分页 列表接口参数", required = true) SupplierOperatingDayPageReq req) {
+//        return supplierOperatingDayService.page(req);
+//    }
+
+    @ApiOperation(value = "获取 地包进销存数据（按地包商的维度） 分页 列表接口", notes = "获取 地包进销存数据（按地包商的维度） 分页 列表接口")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value = "/page")
-    public ResultVO<Page<SupplierOperatingDayDTO>> page(@RequestBody @ApiParam(value = "获取 地包进销存 数据 分页 列表接口参数", required = true) SupplierOperatingDayPageReq req) {
-        return supplierOperatingDayService.page(req);
+    @PostMapping(value = "/pageSummarySaleBySupplier")
+    public ResultVO<Page<SummarySaleBySupplierPageResp>> pageSummarySaleBySupplier(@RequestBody @ApiParam(value = "获取 地包进销存数据（按地包商的维度） 分页 列表接口参数", required = true) SummarySaleBySupplierPageReq req) {
+        return supplierOperatingDayService.pageSummarySaleBySupplier(req);
     }
 
     @ApiOperation(value = "地包进销存 数据列表导出", notes = "地包进销存 数据列表导出")

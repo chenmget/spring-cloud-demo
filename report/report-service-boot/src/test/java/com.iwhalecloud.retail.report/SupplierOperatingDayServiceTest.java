@@ -1,6 +1,8 @@
 package com.iwhalecloud.retail.report;
 
+import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.report.dto.request.SummarySaleBySupplierPageReq;
 import com.iwhalecloud.retail.report.dto.request.SupplierOperatingDayPageReq;
 import com.iwhalecloud.retail.report.service.SupplierOperatingDayService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,12 +26,23 @@ public class SupplierOperatingDayServiceTest {
 
     @org.junit.Test
     public void page(){
-        SupplierOperatingDayPageReq req = new SupplierOperatingDayPageReq();
+//        SupplierOperatingDayPageReq req = new SupplierOperatingDayPageReq();
 //        req.setRegionIdList(Lists.newArrayList("731","732","733","734","735"));
+//        req.setPageNo(1);
+//        req.setPageSize(3);
+//        ResultVO resultVO = supplierOperatingDayService.page(req);
+//        System.out.print("结果：" + resultVO.toString());
+    }
+
+    @org.junit.Test
+    public void pageSummarySaleBySupplier(){
+        SummarySaleBySupplierPageReq req = new SummarySaleBySupplierPageReq();
+//        req.setRegionIdList(Lists.newArrayList("731","732","733","734","735"));
+        req.setSupplierId("11");
         req.setPageNo(1);
         req.setPageSize(3);
-        ResultVO resultVO = supplierOperatingDayService.page(req);
-        System.out.print("结果：" + resultVO.toString());
+        ResultVO resultVO = supplierOperatingDayService.pageSummarySaleBySupplier(req);
+        log.info("结果：{}", JSON.toJSONString(resultVO.getResultData()));
     }
 }
 

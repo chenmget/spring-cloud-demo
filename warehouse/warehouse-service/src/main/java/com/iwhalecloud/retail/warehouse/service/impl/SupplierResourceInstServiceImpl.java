@@ -242,7 +242,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
         ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
         selectReq.setMktResInstIdList(req.getMktResInstIds());
-        selectReq.setMktResStoreId(req.getDestStoreId());
+        selectReq.setMktResStoreId(req.getMktResStoreId());
         List<ResourceInstDTO> resourceInstDTOList = resourceInstService.selectByIds(selectReq);
 
         Boolean sameLanId = sourceMerchantDTO.getLanId() != null && destMerchantDTO.getLanId() != null && sourceMerchantDTO.getLanId().equals(destMerchantDTO.getLanId());

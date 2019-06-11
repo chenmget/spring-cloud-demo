@@ -31,6 +31,7 @@ import com.iwhalecloud.retail.warehouse.manager.ResouceStoreManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.runable.QueryResourceInstRunableTask;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
+import com.iwhalecloud.retail.warehouse.runable.ValidAndAddRunableTask;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
@@ -87,6 +88,8 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     private ResourceBatchRecService resourceBatchRecService;
     @Reference
     private OrganizationService organizationService;
+    @Autowired
+    private ValidAndAddRunableTask validAndAddRunableTask;
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -145,7 +148,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
         resourceInstValidReq.setMktResStoreId(mktResStoreId);
-        String batchId = runableTask.exceutorValid(resourceInstValidReq);
+        String batchId = validAndAddRunableTask.exceutorValid(resourceInstValidReq);
         return ResultVO.success(batchId);
     }
 
@@ -219,7 +222,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         ResourceUploadTempDelReq resourceUploadTempDelReq = new ResourceUploadTempDelReq();
         resourceUploadTempDelReq.setMktResUploadBatch(req.getMktResUploadBatch());
-        runableTask.exceutorDelNbr(resourceUploadTempDelReq);
+        validAndAddRunableTask.exceutorDelNbr(resourceUploadTempDelReq);
         return ResultVO.success("串码入库提交申请单");
     }
 
@@ -233,7 +236,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     @Override
     public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
         // 多线程没跑完，返回空
-        if (runableTask.validHasDone()) {
+        if (validAndAddRunableTask.validHasDone()) {
             return ResultVO.success(resourceUploadTempManager.listResourceUploadTemp(req));
         } else{
             return ResultVO.success();

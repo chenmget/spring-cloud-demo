@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.warehouse.busiservice.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -215,7 +214,9 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         for (String mktResInstNbr : req.getMktResInstNbrs()) {
             ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
             getReq.setTypeId(req.getTypeId());
-            getReq.setMktResInstNbrList(Lists.newArrayList(mktResInstNbr));
+            CopyOnWriteArrayList<String> copyOnWriteArrayList = new CopyOnWriteArrayList();
+            copyOnWriteArrayList.add(mktResInstNbr);
+            getReq.setMktResInstNbrList(copyOnWriteArrayList);
             List<ResouceInstTrackDTO> trackInst = resouceInstTrackManager.listResourceInstsTrack(getReq);
             log.info("ResouceInstTrackServiceImpl.asynSaveTrackForSupplier resouceInstTrackManager.listResourceInstsTrack storeId={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(trackInst));
             if (CollectionUtils.isEmpty(trackInst)) {
@@ -730,12 +731,12 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
             resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
-            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
+            log.info("ResouceInstTrackServiceImpl.asynDeleteInstForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDetailDTO);
             resouceInstTrackDetailDTO.setStorageType(ResourceConst.STORAGETYPE.RETAILER_DELETION.getCode());
             count += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
-            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
+            log.info("ResouceInstTrackServiceImpl.asynDeleteInstForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
         }
     }
 
@@ -791,7 +792,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
                 resouceInstTrackDTO.setSourceType(sourceMerchant.getMerchantType());
             }
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
-            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
+            log.info("ResouceInstTrackServiceImpl.pickResourceInstForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDetailDTO);
             resouceInstTrackDetailDTO.setStorageType(ResourceConst.STORAGETYPE.RETAILER_APPOINTMENT.getCode());
@@ -810,7 +811,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
                 resouceInstTrackDetailDTO.setTargetRegionId(merchantDTO.getCity());
             }
             count += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
-            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
+            log.info("ResouceInstTrackServiceImpl.pickResourceInstForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
         }
     }
 
@@ -837,12 +838,12 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
             resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.ALLOCATIONING.getCode());
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
-            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
+            log.info("ResouceInstTrackServiceImpl.allocateResourceInstForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDetailDTO);
             resouceInstTrackDetailDTO.setStorageType(ResourceConst.STORAGETYPE.RETAILER_ALLOCATION.getCode());
             count += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
-            log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
+            log.info("ResouceInstTrackServiceImpl.allocateResourceInstForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
         }
     }
 
@@ -857,15 +858,17 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         log.info("ResouceInstTrackServiceImpl.allocateResourceIntsWarehousingForRetail resourceReqDetailManager.listDetail req={}", JSON.toJSONString(queryReq));
         ResourceReqDetailDTO detailDTO = list.get(0);
         ResultVO<MerchantDTO> sourceMerchantResultVO = resouceStoreService.getMerchantByStore(detailDTO.getMktResStoreId());
-        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier merchantService.getMerchantById req={},merchantId={}", detailDTO.getMktResStoreId(), JSON.toJSONString(sourceMerchantResultVO));
+        log.info("ResouceInstTrackServiceImpl.allocateResourceIntsWarehousingForRetail merchantService.getMerchantById req={},merchantId={}", detailDTO.getMktResStoreId(), JSON.toJSONString(sourceMerchantResultVO));
         ResultVO<MerchantDTO> targetMerchantResultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
-        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier merchantService.getMerchantById req={},merchantId={}", detailDTO.getDestStoreId(), JSON.toJSONString(targetMerchantResultVO));
+        log.info("ResouceInstTrackServiceImpl.allocateResourceIntsWarehousingForRetail merchantService.getMerchantById req={},merchantId={}", detailDTO.getDestStoreId(), JSON.toJSONString(targetMerchantResultVO));
 
         int countTrack = 0;
         int countTrackDetail = 0;
         for (ResourceReqDetailDTO resourceReqDetailDTO : list) {
             ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
-            getReq.setMktResInstNbrList(Lists.newArrayList(resourceReqDetailDTO.getMktResInstNbr()));
+            CopyOnWriteArrayList<String> copyOnWriteArrayList = new CopyOnWriteArrayList();
+            copyOnWriteArrayList.add(resourceReqDetailDTO.getMktResInstNbr());
+            getReq.setMktResInstNbrList(copyOnWriteArrayList);
             getReq.setMktResId(resourceReqDetailDTO.getMktResId());
             List<ResouceInstTrackDTO> resouceInstTrackDTOList = resouceInstTrackManager.listResourceInstsTrack(getReq);
             if (CollectionUtils.isNotEmpty(resouceInstTrackDTOList)) {
@@ -883,7 +886,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
                     resouceInstTrackDTO.setSourceType(sourceMerchant.getMerchantType());
                 }
                 countTrack += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
-                log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrack);
+                log.info("ResouceInstTrackServiceImpl.allocateResourceIntsWarehousingForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrack);
                 ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
                 BeanUtils.copyProperties(resourceReqDetailDTO, resouceInstTrackDetailDTO);
                 resouceInstTrackDetailDTO.setStorageType(ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode());
@@ -904,7 +907,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
                 }
                 resouceInstTrackDetailDTO.setMktResInstNbr(resouceInstTrackDTO.getMktResInstNbr());
                 countTrackDetail += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
-                log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrackDetail);
+                log.info("ResouceInstTrackServiceImpl.allocateResourceIntsWarehousingForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrackDetail);
             }
         }
     }
@@ -920,20 +923,22 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         log.info("ResouceInstTrackServiceImpl.allocateResourceIntsWarehousingForRetail resourceReqDetailManager.listDetail req={}", JSON.toJSONString(queryReq));
         ResourceReqDetailDTO detailDTO = list.get(0);
         ResultVO<MerchantDTO> sourceMerchantResultVO = resouceStoreService.getMerchantByStore(detailDTO.getMktResStoreId());
-        log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier merchantService.getMerchantById req={},merchantId={}", detailDTO.getMktResStoreId(), JSON.toJSONString(sourceMerchantResultVO));
+        log.info("ResouceInstTrackServiceImpl.allocateResourceIntsWarehousingCancelForRetail merchantService.getMerchantById req={},merchantId={}", detailDTO.getMktResStoreId(), JSON.toJSONString(sourceMerchantResultVO));
 
         int countTrack = 0;
         int countTrackDetail = 0;
         for (ResourceReqDetailDTO resourceReqDetailDTO : list) {
             ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
-            getReq.setMktResInstNbrList(Lists.newArrayList(resourceReqDetailDTO.getMktResInstNbr()));
+            CopyOnWriteArrayList<String> copyOnWriteArrayList = new CopyOnWriteArrayList();
+            copyOnWriteArrayList.add(resourceReqDetailDTO.getMktResInstNbr());
+            getReq.setMktResInstNbrList(copyOnWriteArrayList);
             getReq.setMktResId(resourceReqDetailDTO.getMktResId());
             List<ResouceInstTrackDTO> resouceInstTrackDTOList = resouceInstTrackManager.listResourceInstsTrack(getReq);
             if (CollectionUtils.isNotEmpty(resouceInstTrackDTOList)) {
                 ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOList.get(0);
                 resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
                 countTrack += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
-                log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrack);
+                log.info("ResouceInstTrackServiceImpl.allocateResourceIntsWarehousingCancelForRetail resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrack);
                 ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
                 BeanUtils.copyProperties(resourceReqDetailDTO, resouceInstTrackDetailDTO);
                 resouceInstTrackDetailDTO.setStorageType(ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode());
@@ -951,7 +956,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
                 }
                 resouceInstTrackDetailDTO.setMktResInstNbr(resouceInstTrackDTO.getMktResInstNbr());
                 countTrackDetail += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
-                log.info("ResouceInstTrackServiceImpl.asynGreenChannelForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrackDetail);
+                log.info("ResouceInstTrackServiceImpl.allocateResourceIntsWarehousingCancelForRetail resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), countTrackDetail);
             }
         }
     }
@@ -968,8 +973,12 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
 
 
     @Override
-    public ResultVO<List<ResouceInstTrackDTO>> listResourceInstsTrack(ResourceInstsTrackGetReq req, CopyOnWriteArrayList<String> mktResInstNbrList){
-        req.setMktResInstNbrList(mktResInstNbrList);
+    public ResultVO<List<ResouceInstTrackDTO>> listResourceInstsTrack(ResourceInstsTrackGetReq req) {
+        log.info("ResouceInstTrackServiceImpl.listResourceInstsTrack req={}", JSON.toJSONString(req));
+        if (CollectionUtils.isEmpty(req.getMktResInstNbrList()) && CollectionUtils.isEmpty(req.getCtCodeList())
+                && CollectionUtils.isEmpty(req.getMacCodeList()) && CollectionUtils.isEmpty(req.getSnCodeList())) {
+            return ResultVO.success();
+        }
         return ResultVO.success(resouceInstTrackManager.listResourceInstsTrack(req));
     }
 }

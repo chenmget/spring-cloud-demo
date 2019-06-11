@@ -139,8 +139,7 @@ public interface ResouceInstTrackService {
     /**
      * 查询串码轨迹列表
      * @param req
-     * @param mktResInstNbrList
      * @return
      */
-    ResultVO<List<ResouceInstTrackDTO>> listResourceInstsTrack(ResourceInstsTrackGetReq req, CopyOnWriteArrayList<String> mktResInstNbrList);
+    ResultVO<List<ResouceInstTrackDTO>> listResourceInstsTrack(ResourceInstsTrackGetReq req);
 }

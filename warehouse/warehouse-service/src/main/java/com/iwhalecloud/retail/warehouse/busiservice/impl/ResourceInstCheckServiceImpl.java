@@ -102,7 +102,8 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         CopyOnWriteArrayList<String> mktResInstNbrList = new CopyOnWriteArrayList<String>(validNbrList);
         resourceInstsTrackGetReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         resourceInstsTrackGetReq.setTypeId(req.getTypeId());
-        ResultVO<List<ResouceInstTrackDTO>> trackListVO = resouceInstTrackService.listResourceInstsTrack(resourceInstsTrackGetReq, mktResInstNbrList);
+        resourceInstsTrackGetReq.setMktResInstNbrList(mktResInstNbrList);
+        ResultVO<List<ResouceInstTrackDTO>> trackListVO = resouceInstTrackService.listResourceInstsTrack(resourceInstsTrackGetReq);
         log.info("ResourceInstCheckServiceImpl.validMerchantStore resourceInstManager.getResourceInsts req={},resp={}", JSON.toJSONString(resourceInstsTrackGetReq), JSON.toJSONString(trackListVO));
         if (trackListVO.isSuccess() && null != trackListVO.getResultData()) {
             List<ResouceInstTrackDTO> trackList = trackListVO.getResultData();

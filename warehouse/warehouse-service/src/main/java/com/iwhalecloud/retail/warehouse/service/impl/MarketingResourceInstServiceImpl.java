@@ -163,7 +163,8 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
                     ResourceInstsTrackGetReq trackReq = new ResourceInstsTrackGetReq();
                     trackReq.setTypeId(typeId);
                     CopyOnWriteArrayList<String> mktResInstNbrList = new CopyOnWriteArrayList(Lists.newArrayList(nbr));
-                    ResultVO<List<ResouceInstTrackDTO>> instsTrackVO = resouceInstTrackService.listResourceInstsTrack(trackReq, mktResInstNbrList);
+                    trackReq.setMktResInstNbrList(mktResInstNbrList);
+                    ResultVO<List<ResouceInstTrackDTO>> instsTrackVO = resouceInstTrackService.listResourceInstsTrack(trackReq);
                     // 临时代码
                     String purchaseType = "2";
                     if (instsTrackVO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackVO.getResultData())) {

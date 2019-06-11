@@ -21,6 +21,8 @@
         ,t.SELF_REG_STATUS
         ,t.IF_PRE_SUBSIDY
         ,t.TYPE_ID
+        ,t.SN_CODE
+        ,t,MAC_CODE
     </sql>
 
     <sql id="nbrSource">
@@ -47,10 +49,30 @@
         select <include refid="allFields" />
         from mkt_res_inst_track t
         where 1 = 1
-        and t.mkt_res_inst_nbr in
-        <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstNbrList">
-            #{item}
-        </foreach>
+        <if test="null!=mktResInstNbrList and mktResInstNbrList.size > 0">
+            and t.mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstNbrList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=ctCodeList and ctCodeList.size > 0">
+            and t.ct_code in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="ctCodeList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=snCodeList and snCodeList.size > 0">
+            and t.sn_code in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="snCodeList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=macCodeList and macCodeList.size > 0">
+            and t.mac_code in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="macCodeList">
+                #{item}
+            </foreach>
+        </if>
         <if test="null!=statusCd and ''!=statusCd">
             and t.status_cd = #{statusCd}
         </if>

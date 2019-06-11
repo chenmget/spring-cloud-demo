@@ -94,4 +94,28 @@ public class ResourceInstValidReq implements java.io.Serializable {
 	@ApiModelProperty(value = "orderId")
 	private String orderId;
 
+	/**
+	 * CT码集合（校验用）
+	 */
+	@ApiModelProperty(value = "CT码集合")
+	private List<String> ctCodeList;
+
+	/**
+	 * SN码集合（校验用）
+	 */
+	@ApiModelProperty(value = "SN码集合")
+	private List<String> snCodeList;
+
+	/**
+	 * MAC码集合（校验用）
+	 */
+	@ApiModelProperty(value = "MAC码集合")
+	private List<String> macCodeList;
+
+	/**
+	 * 区分产品类型用 TypeConst.TYPE_DETAIL(不同的产品类型校验规则不一样)
+	 */
+	@ApiModelProperty(value = "detailCode")
+	private String detailCode;
+
 }

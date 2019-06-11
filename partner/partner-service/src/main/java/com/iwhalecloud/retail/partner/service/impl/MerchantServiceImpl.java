@@ -1419,7 +1419,12 @@ public class MerchantServiceImpl implements MerchantService {
     public ResultVO<UserDTO> addUser(SupplierResistReq req,int userFounder,String merchantId){
         UserAddReq userAddReq = new UserAddReq();
         BeanUtils.copyProperties(req,userAddReq);
-        userAddReq.setLoginPwd(new MD5(SystemConst.DFPASSWD).asHex());
+        String source = req.getSource();
+        if( null!=source && source.equals("ADMIN")){
+            userAddReq.setLoginPwd(new MD5(SystemConst.DFPASSWD).asHex());
+        }else {
+            userAddReq.setLoginPwd(new MD5(req.getLoginPwd()).asHex());
+        }
         userAddReq.setUserFounder(userFounder);
         //关联商户信息和系统用户
         userAddReq.setRelCode(merchantId); //关联商户信息和系统用户
@@ -1474,5 +1479,76 @@ public class MerchantServiceImpl implements MerchantService {
         return sb.toString();
     }
 
+    /**
+     * 修改商户信息
+     * @param req
+     * @return
+     */
+    @Override
+    public ResultVO editMerchant (MerchantEditReq req) {
+        Merchant merchant=new Merchant();
+        BeanUtils.copyProperties(req, merchant);
+        this.merchantManager.updateMerchant(merchant);
+        return ResultVO.success();
+    }
+
+    @Override
+    public ResultVO<FactoryMerchantResp> getFactoryMerchant(String merchantId) {
+        FactoryMerchantResp factoryMerchantResp=new FactoryMerchantResp();
+        //获取厂家基本信息
+        ResultVO<MerchantDTO> merchantResult=this.getMerchantById(merchantId);
+        if(merchantResult.getResultData()==null){
+            return ResultVO.error("未找到对应的厂商信息");
+        }
+        MerchantDTO merchantDTO=merchantResult.getResultData();
+        BeanUtils.copyProperties(merchantDTO,factoryMerchantResp);
+        //获取厂家账号信息
+        UserGetReq userGetReq=new UserGetReq();
+        userGetReq.setRelCode(merchantId);
+        UserDTO userDTO=userService.getUser(userGetReq);
+        if(userDTO!=null){
+            BeanUtils.copyProperties(userDTO,factoryMerchantResp);
+        }
+        //获取厂家附件信息
+        CommonFileDTO commonFileDTO=new CommonFileDTO();
+        commonFileDTO.setObjId(merchantId);
+        ResultVO<List<CommonFileDTO>> commonFileResult=commonFileService.listCommonFile(commonFileDTO);
+        if(commonFileResult.isSuccess()&&commonFileResult.getResultData()!=null){
+            makeUpMerchantFile(commonFileResult.getResultData(),factoryMerchantResp);
+        }
+        return ResultVO.success(factoryMerchantResp);
+    }
+
+    /**
+     * 获取厂商附件
+     * @param fileList
+     * @param factoryMerchantResp
+     */
+    private void makeUpMerchantFile(List<CommonFileDTO> fileList, FactoryMerchantResp factoryMerchantResp) {
+        for(CommonFileDTO file : fileList ){
+            String fileUrl=file.getFileUrl();
+            if(file.getFileClass().equals(SystemConst.FileClass.BUSINESS_LICENSE.getCode())){
+                //营业执照
+                if (factoryMerchantResp.getBusinessLicense() == null) {
+                    factoryMerchantResp.setBusinessLicense(fileUrl);
+                } else {
+                    factoryMerchantResp.setBusinessLicenseCopy(fileUrl);
+                }
+            }else if(file.getFileClass().equals(SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode())){
+                //身份证照片
+                if(factoryMerchantResp.getLegalPersonIdCardFont()==null){
+                    factoryMerchantResp.setLegalPersonIdCardFont(fileUrl);
+                }else{
+                    factoryMerchantResp.setLegalPersonIdCardBack(fileUrl);
+                }
+            }else if(file.getFileClass().equals(SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode())){
+                //授权证书
+                factoryMerchantResp.setAuthorizationCertificate(fileUrl);
+            }else if(file.getFileClass().equals(SystemConst.FileClass.CONTRACT_TEXT.getCode())){
+                //合同文本
+                factoryMerchantResp.setContract(fileUrl);
+            }
+        }
+    }
 
 }

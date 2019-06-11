@@ -1,7 +1,7 @@
 package com.iwhalecloud.retail.system.service.impl;
 
 import com.iwhalecloud.retail.system.SystemServiceApplication;
-import com.iwhalecloud.retail.system.model.SmsVerificationtemplate;
+import com.iwhalecloud.retail.system.dto.request.SmsVerificationtemplate;
 import com.iwhalecloud.retail.system.model.ZopMsgModel;
 import com.iwhalecloud.retail.system.utils.ZopMsgUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,9 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RunWith(SpringRunner.class)
@@ -20,7 +23,7 @@ public class SendMsgServiceImplTest {
     ZopMsgUtil util;
 
     @Test
-    public void test(){
+    public void testSendMsg(){
         try {
             ZopMsgModel info1 = new ZopMsgModel();
             SmsVerificationtemplate template = new SmsVerificationtemplate();

@@ -163,7 +163,7 @@ public class SupplierResistReq implements Serializable {
     @NotEmpty(message = "授权证明不能为空")
     @ApiModelProperty(value = "授权证明")
     private String authorizationCertificate;
-
+    @NotEmpty(message = "合同不能为空")
     @ApiModelProperty(value = "合同")
     private String contract;
 

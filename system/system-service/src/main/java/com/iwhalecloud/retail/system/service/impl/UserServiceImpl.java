@@ -20,7 +20,6 @@ import com.iwhalecloud.retail.system.manager.CommonRegionManager;
 import com.iwhalecloud.retail.system.manager.OrganizationManager;
 import com.iwhalecloud.retail.system.manager.UserManager;
 import com.iwhalecloud.retail.system.service.RoleService;
-import com.iwhalecloud.retail.system.service.VerifyCodeService;
 import com.iwhalecloud.retail.system.service.ZopMessageService;
 import com.iwhalecloud.retail.system.service.UserRoleService;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -71,7 +70,7 @@ public class UserServiceImpl implements UserService {
     RoleService roleService;
 
     @Autowired
-    VerifyCodeService SendMsgService;
+    ZopMessageService SendMsgService;
 
     @Override
     public UserLoginResp login(UserLoginReq req) {

@@ -37,15 +37,6 @@ public class SupplierOperationDayB2BController {
     @Reference
     private SupplierOperatingDayService supplierOperatingDayService;
 
-//    @ApiOperation(value = "获取 地包进销存 数据 分页 列表接口", notes = "获取 地包进销存 数据 分页 列表接口")
-//    @ApiResponses({
-//            @ApiResponse(code = 400, message = "请求参数没填好"),
-//            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
-//    })
-//    @PostMapping(value = "/page")
-//    public ResultVO<Page<SupplierOperatingDayDTO>> page(@RequestBody @ApiParam(value = "获取 地包进销存 数据 分页 列表接口参数", required = true) SupplierOperatingDayPageReq req) {
-//        return supplierOperatingDayService.page(req);
-//    }
 
     @ApiOperation(value = "获取 地包进销存数据（按地包商的维度） 分页 列表接口", notes = "获取 地包进销存数据（按地包商的维度） 分页 列表接口")
     @ApiResponses({
@@ -64,7 +55,7 @@ public class SupplierOperationDayB2BController {
     })
     @PostMapping(value = "/export")
     public void export(@RequestBody SummarySaleBySupplierPageReq req, HttpServletResponse response) {
-        log.info("MerchantController.export() input: SupplierOperatingDayPageReq={}", JSON.toJSONString(req));
+        log.info("MerchantController.export() input: SummarySaleBySupplierPageReq={}", JSON.toJSONString(req));
         req.setPageNo(1);
         //数据量控制在1万条
         req.setPageSize(10000);

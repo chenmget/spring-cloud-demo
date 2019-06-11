@@ -409,9 +409,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 		processStartDTO.setApplyUserName(userName);
 		ResultVO resultVO = new ResultVO();
 		try {
-			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程start*********************",JSON.toJSONString(processStartDTO));
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程start*********************");
+			log.info("****************************************processStartDTO = "+JSON.toJSONString(processStartDTO));
 			resultVO = taskService.startProcess(processStartDTO);
-			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程end*********************",JSON.toJSONString(resultVO));
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程end*********************");
+			log.info("****************************************resultVO = "+JSON.toJSONString(resultVO));
 		} catch (Exception e) {
 			log.error("PurApplyServiceImpl.updatePrice exception={}", e);
 			return ResultVO.error();

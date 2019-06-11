@@ -42,6 +42,11 @@ public class PurApplyConsts {
     public final static String PUR_APPLY_AUDIT_SGS_PROCESS_ID = "528";
 
     /**
+     * 政企价格修改审核流程
+     */
+    public final static String PROD_PRODUCT_CORPORATION_PRICE_ID = "50101010000";
+    
+    /**
      * 采购申请单审核流程
      */
     public final static String PURCHASE_AUDIT_PROCESS_ID = "18";
@@ -61,6 +66,16 @@ public class PurApplyConsts {
      */
     public final static String SGS_PUR_APPLY_STATUS_PASS = "20";
 
+    /**
+     * 政企价格修改审核通过
+     */
+    public final static String AUDIT_STATE_PASS = "3";
+    
+    /**
+     * 政企价格修改审核不通过
+     */
+    public final static String AUDIT_STATE_NO_PASS = "4";
+    
     /**
      * 申请单状态：审核不通过
      */

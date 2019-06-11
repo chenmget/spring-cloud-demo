@@ -1242,21 +1242,39 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     }
 
     @Override
-    public ResultVO<List<String>> checkProdListRule(String merchantId, List<String> productIds) {
-        List<String> list = new ArrayList<>();
-        MerchantRulesCommonReq req = new MerchantRulesCommonReq();
-        req.setMerchantId(merchantId);
-        req.setTargetType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
-        req.setRuleType(PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType());
-        ResultVO<List<String>> resultVO = this.getCommonPermission(req);
-        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
-            List<String> targetids = resultVO.getResultData();
-            for(String productId : productIds){
-                if(!targetids.contains(productId)){
-                    list.add(productId);
+    public ResultVO<Boolean> checkProdListRule(String merchantId, String productBaseId) {
+        List<String> productIds = new ArrayList<>();
+        ProductGetReq productGetReq = new ProductGetReq();
+        productGetReq.setProductBaseId(productBaseId);
+        ResultVO<Page<ProductDTO>> pageResultVO = productService.selectProduct(productGetReq);
+        log.info("MerchantRulesServiceImpl.checkProdListRule.selectProduct, pageResultVO.getResultData().getRecords()={} ", pageResultVO.getResultData().getRecords());
+        if(pageResultVO.isSuccess() && null!=pageResultVO.getResultData()){
+            List<ProductDTO> productDTOList = pageResultVO.getResultData().getRecords();
+            if(!CollectionUtils.isEmpty(productDTOList)){
+                for(ProductDTO productDTO : productDTOList){
+                    productIds.add(productDTO.getProductId());
                 }
             }
         }
-        return ResultVO.success(list);
+
+        MerchantRulesCommonReq req = new MerchantRulesCommonReq();
+        req.setMerchantId(merchantId);
+        req.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
+        req.setTargetType(PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType());
+        ResultVO<List<String>> resultVO = this.getCommonPermission(req);
+        List<String> targetids = new ArrayList<>();
+        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+            targetids = resultVO.getResultData();
+        }
+
+        log.info("MerchantRulesServiceImpl.checkProdListRule, productIds={} ,targetids={}", productIds,targetids);
+        if(!CollectionUtils.isEmpty(productIds) && !CollectionUtils.isEmpty(targetids)){
+            productIds.retainAll(targetids);
+            log.info("MerchantRulesServiceImpl.checkProdListRule2, productIds={}", productIds);
+            if(!CollectionUtils.isEmpty(productIds)){
+                return ResultVO.success(true);
+            }
+        }
+        return ResultVO.success(false);
     }
 }

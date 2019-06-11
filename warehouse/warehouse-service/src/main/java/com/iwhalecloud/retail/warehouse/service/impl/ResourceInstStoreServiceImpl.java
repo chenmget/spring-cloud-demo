@@ -571,7 +571,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             resouceEventRemove.addAll(map.get(type));
         }
         for(ResouceEvent resouceEvent:evenList){
-            MktResItmsSyncRec mktResItmsSyncRec = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,isItms,resouceEvent);
+            MktResItmsSyncRec mktResItmsSyncRec = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent);
             if(mktResItmsSyncRec.getMktResEventId() != null){
                 mktResItmsSyncRecList.add(mktResItmsSyncRec);
                 resouceEventRemove.add(resouceEvent);

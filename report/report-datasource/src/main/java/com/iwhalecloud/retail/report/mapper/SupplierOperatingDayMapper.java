@@ -16,6 +16,12 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface SupplierOperatingDayMapper extends BaseMapper<SupplierOperatingDay> {
 
+    /**
+     * 地包进销存 数据 汇总 分页查询（按地包商的维度）
+     * @param page
+     * @param req
+     * @return
+     */
     Page<SummarySaleBySupplierPageResp> pageSummarySaleBySupplier(Page<SummarySaleBySupplierPageResp> page, @Param("req") SummarySaleBySupplierPageReq req);
 
 }

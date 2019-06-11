@@ -25,6 +25,8 @@ import com.iwhalecloud.retail.order2b.manager.PurApplyItemDetailManager;
 import com.iwhalecloud.retail.order2b.manager.PurApplyItemManager;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
+import com.iwhalecloud.retail.warehouse.dto.request.StoreGetStoreIdReq;
+import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -64,6 +66,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
     @Reference
     private ProductService productService;
+    @Reference
+    private ResouceStoreService resouceStoreService;
 
     /**
      * 采购单发货
@@ -142,8 +146,15 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     public ResultVO receiving(PurApplyReceivingReq req) {
         //串码入库
         List<PurApplyItemDetail> purApplyItemDetailList = purApplyItemDetailManager.getPurApplyItemDetail(req.getApplyId());
+        StoreGetStoreIdReq storeIdReq  = new StoreGetStoreIdReq();
+        storeIdReq.setMerchantId(req.getMerchantId());
+        storeIdReq.setStoreSubType("1300");//终端类型
+        String MktResStoreId= resouceStoreService.getStoreId(storeIdReq);//查询仓库id
+        log.info("MktResStoreId="+MktResStoreId);
         for (PurApplyItemDetail purApplyItemDetail : purApplyItemDetailList) {
+            List<String> MktResInstNbrsList = new ArrayList<String>();
             ResourceInstAddReq resourceInstAddReq = new ResourceInstAddReq();
+            MktResInstNbrsList.add(purApplyItemDetail.getMktResInstNbr());
             BeanUtils.copyProperties(purApplyItemDetail, resourceInstAddReq);
             resourceInstAddReq.setMktResId(purApplyItemDetail.getProductId());
             resourceInstAddReq.setMktResInstType(req.getMktResInstType());
@@ -152,6 +163,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             resourceInstAddReq.setStorageType(req.getStorageType());
             resourceInstAddReq.setSourceType(req.getSourceType());
             resourceInstAddReq.setCreateStaff(req.getCreateStaff());
+            resourceInstAddReq.setMktResStoreId(MktResStoreId);//仓库id
+            resourceInstAddReq.setMktResInstNbrs(MktResInstNbrsList);//
             ResultVO resultVO = supplierResourceInstService.addResourceInstByAdmin(resourceInstAddReq);
             if(!resultVO.isSuccess()){
                 return ResultVO.error(resultVO.getResultMsg());

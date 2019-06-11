@@ -69,11 +69,11 @@
         <if test="req.supplierId != null and req.supplierId != ''">
             and t.SUPPLIER_ID =  #{req.supplierId}
         </if>
-        <if test="req.cityId != null and req.cityId != ''">
-            and t.CITY_ID =  #{req.cityId}
+        <if test="req.lanId != null and req.lanId != ''">
+            and t.CITY_ID =  #{req.lanId}
         </if>
-        <if test="req.countyId != null and req.countyId != ''">
-            and t.COUNTY_ID =  #{req.countyId}
+        <if test="req.regionID != null and req.regionID != ''">
+            and t.COUNTY_ID =  #{req.regionID}
         </if>
         <if test="req.productBaseId != null and req.productBaseId != ''">
             and t.PRODUCT_BASE_ID =  #{req.productBaseId}

@@ -67,7 +67,6 @@ public class ValidAndAddRunableTask {
             List<String> macCodeList = req.getMacCodeList();
             String batchId = resourceInstService.getPrimaryKey();
             Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
-            validFutureTaskResult = new ArrayList<>(excutorNum);
             BlockingQueue<Callable<Boolean>> tasks = new LinkedBlockingQueue<>();
             for (Integer i = 0; i < excutorNum; i++) {
                 Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
@@ -95,6 +94,7 @@ public class ValidAndAddRunableTask {
                 Callable<Boolean> callable = new ValidNbr(req, getReq, newList, batchId);
                 tasks.add(callable);
             }
+            validFutureTaskResult = executorService.invokeAll(tasks);
             executorService.shutdown();
             return batchId;
         } catch (Exception e) {
@@ -234,7 +234,7 @@ public class ValidAndAddRunableTask {
             }
             Boolean addResult = resourceUploadTempManager.saveBatch(instList);
             log.info("ValidAndAddRunableTask.exceutorValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
-            return null;
+            return addResult;
         }
 
 

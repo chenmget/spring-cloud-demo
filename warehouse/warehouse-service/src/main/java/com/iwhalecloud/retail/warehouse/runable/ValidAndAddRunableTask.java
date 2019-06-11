@@ -16,6 +16,7 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.util.ExcutorServiceUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -164,8 +165,13 @@ public class ValidAndAddRunableTask {
         @Override
         public Boolean call() throws Exception {
             Date now = new Date();
-            ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq);
-            log.info("ValidAndAddRunableTask.exceutorValid resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(instsTrackvO));
+            ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
+            BeanUtils.copyProperties(getReq, trackGetReq);
+            trackGetReq.setSnCodeList(null);
+            trackGetReq.setMacCodeList(null);
+            trackGetReq.setCtCodeList(null);
+            ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
+            log.info("ValidAndAddRunableTask.exceutorValid resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(instsTrackvO));
             List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
             List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>();
             instList.addAll(this.validSnCode());

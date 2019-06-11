@@ -89,7 +89,6 @@
         </if>
         <if test="req.endDate != null">
             and t.item_date &lt;= #{req.endDate}
---             and t.item_date &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
         </if>
         group by t.SUPPLIER_ID
     </select>

@@ -72,7 +72,8 @@ public class PurchaseApplyController extends BaseController {
         req.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
         req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
         req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
-        req.setMerchantId(UserContext.getMerchantId());
+        //req.setMerchantId(UserContext.getMerchantId());
+        log.info("UserContext.getMerchantId()="+UserContext.getMerchantId());
         ResultVO resultVO = purchaseApplyService.receiving(req);
         if (resultVO.isSuccess()) {
             return ResultVO.successMessage("确认收货成功");

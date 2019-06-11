@@ -14,7 +14,12 @@
 		t.MKT_RES_ID,
 		#{even.eventType} AS EVENT_TYPE,
 		t.BRAND_ID,
-		t.ORIG_LAN_ID,
+		<if test="typeOps == 1">
+			case when t.DET_LAN_ID='10000000' then '999' else t.DET_LAN_ID end ORIG_LAN_ID,
+		</if>
+		<if test="typeOps == 2 or typeOps == 3">
+			case when t.ORIG_LAN_ID='10000000' then '999' else t.ORIG_LAN_ID end ORIG_LAN_ID,
+		</if>
 		t.BRAND_NAME,
 		t.UNIT_TYPE,
 		'0' AS STATUS_CD,
@@ -28,7 +33,7 @@
 		case when store.STORE_TYPE='1000' then '999' else store.LAN_ID end LAN_ID,
 		bra.brand_id,bra.NAME as BRAND_NAME,base.UNIT_TYPE,det.MKT_RES_STORE_ID,
 		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.destStoreId}) AS DET_LAN_ID,
-		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.mktResStoreId}) as ORIG_LAN_ID
+		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.mktResStoreId}) AS ORIG_LAN_ID
 		FROM
 		(
 		select * from MKT_RES_CHNG_EVT_DETAIL mkt where 1=1
@@ -56,8 +61,8 @@
 		where 1=1
 
 		AND t.LAN_ID = #{lanId}
-		<if test="eventType == 1001">
-			AND t.MERCHANT_TYPE = '2' OR t.STORE_TYPE IN ('1000','1100')
+		<if test="eventType == 1001 or eventType == 1007">
+			AND (t.MERCHANT_TYPE = '2' OR t.STORE_TYPE IN ('1000','1100'))
 		</if>
 		<if test="eventType == 1003 or eventType == 1009">
 			AND t.MERCHANT_TYPE = '3'
@@ -65,10 +70,6 @@
 		<if test="eventType == 1002">
 			AND t.DET_LAN_ID != t.ORIG_LAN_ID
 		</if>
-		<if test="eventType == 1007">
-			AND t.MERCHANT_TYPE = '2' OR t.STORE_TYPE IN ('1000','1100')
-		</if>
-
 		AND t.IS_ITMS IN
 		<foreach collection="isItms" index="index" item="itemIsItms" open="(" separator="," close=")">
 			#{itemIsItms}

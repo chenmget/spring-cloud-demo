@@ -564,16 +564,18 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private List<MktResItmsSyncRec> insertDateToMRISR(String lanId,String type, String[] isItms,List<ResouceEvent> evenList, Map<String,List<ResouceEvent>> map) {
         List<MktResItmsSyncRec> mktResItmsSyncRecList = new ArrayList<MktResItmsSyncRec>();
         List<ResouceEvent> resouceEventRemove = new ArrayList<ResouceEvent>();
-        if(map.get(type).size()>0){
-            //移除已查询过的事件
-            evenList = evenList(evenList,map.get(type));
-            //查询过的事件
-            resouceEventRemove.addAll(map.get(type));
+        if(map.size()>0){
+            if(map.get(type).size()>0){
+                //移除已查询过的事件
+                evenList = evenList(evenList,map.get(type));
+                //查询过的事件
+                resouceEventRemove.addAll(map.get(type));
+            }
         }
         for(ResouceEvent resouceEvent:evenList){
-            MktResItmsSyncRec mktResItmsSyncRec = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent);
-            if(mktResItmsSyncRec.getMktResEventId() != null){
-                mktResItmsSyncRecList.add(mktResItmsSyncRec);
+            List<MktResItmsSyncRec> mktResItmsSyncRecs = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent);
+            if(mktResItmsSyncRecs.size() > 0){
+                mktResItmsSyncRecList.addAll(mktResItmsSyncRecs);
                 resouceEventRemove.add(resouceEvent);
             }
         }

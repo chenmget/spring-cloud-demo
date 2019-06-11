@@ -356,7 +356,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	
 	@Override
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
-//		purApplyManager.updatePrice(req);//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
+		//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
 		String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
 		String changeId = purApplyManager.selectNextChangeId();
 		ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
@@ -388,7 +388,6 @@ public class PurApplyServiceImpl implements PurApplyService {
 		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
-
 		//政企价格修改审核
 		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 		Map map=new HashMap();
@@ -396,9 +395,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 		processStartDTO.setParamsValue(JSON.toJSONString(map));
 
 		processStartDTO.setTitle("政企价格修改审核流程");
+		//业务ID->批次ID
 		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
 		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3050.getTaskSubType());
+		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9604.getTaskSubType());
 		processStartDTO.setApplyUserId(req.getApplyUserId());
 		//根据用户id查询名称
 		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());
@@ -409,7 +409,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 		processStartDTO.setApplyUserName(userName);
 		ResultVO resultVO = new ResultVO();
 		try {
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程start*********************");
+			log.info("****************************************processStartDTO = "+JSON.toJSONString(processStartDTO));
 			resultVO = taskService.startProcess(processStartDTO);
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程end*********************");
+			log.info("****************************************resultVO = "+JSON.toJSONString(resultVO));
 		} catch (Exception e) {
 			log.error("PurApplyServiceImpl.updatePrice exception={}", e);
 			return ResultVO.error();
@@ -471,7 +475,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		processStartDTO.setTitle("政企价格修改审核流程");
 		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
 		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3050.getTaskSubType());
+		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9604.getTaskSubType());
 		processStartDTO.setApplyUserId(req.getApplyUserId());
 		//根据用户id查询名称
 		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());

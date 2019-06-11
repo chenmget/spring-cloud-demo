@@ -29,7 +29,13 @@
             <artifactId>report-datasource</artifactId>
             <version>${report.version}</version>
         </dependency>
-        
+
+        <dependency>
+            <groupId>com.iwhalecloud.retail</groupId>
+            <artifactId>system-client</artifactId>
+            <version>${report.version}</version>
+        </dependency>
+
         <dependency>
 	  		<groupId>io.dubbo.springboot</groupId>
 	  		<artifactId>spring-boot-starter-dubbo</artifactId>

@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -40,6 +41,9 @@ public class CatConditionServiceImpl implements CatConditionService {
         entity.setUpdateDate(new Date());
         if (!StringUtils.isEmpty(req.getCreateStaff())) {
             entity.setUpdateStaff(req.getCreateStaff());
+        }
+        if (Objects.isNull(req.getOrder())) {
+            entity.setOrder(0L);
         }
         Integer resultInt = catConditionManager.saveCatCondition(entity);
         if (resultInt > 0) {

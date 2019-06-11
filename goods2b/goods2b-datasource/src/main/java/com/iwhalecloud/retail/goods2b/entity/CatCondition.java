@@ -20,7 +20,7 @@ import java.io.Serializable;
 @Data
 @TableName("prod_cat_condition")
 @ApiModel(value = "对应模型prod_cat_condition, 对应实体CatCondition类")
-@KeySequence(value = "seq_par_merchant_rules_id", clazz = String.class)
+@KeySequence(value = "seq_retail_all_tables", clazz = String.class)
 public class CatCondition implements Serializable {
     /**
      * 表名常量

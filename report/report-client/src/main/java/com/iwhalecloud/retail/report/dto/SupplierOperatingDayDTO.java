@@ -16,6 +16,15 @@ import lombok.Data;
 public class SupplierOperatingDayDTO implements java.io.Serializable {
     private static final long serialVersionUID = 2018008013449981807L;
 
+    /** 非表字段***/
+
+    @ApiModelProperty(value = "地市名称（本地网）")
+    private java.lang.String cityName;
+
+    @ApiModelProperty(value = "区县名称")
+    private java.lang.String countyName;
+
+    /** 非表字段***/
 
     //属性 begin
     /**

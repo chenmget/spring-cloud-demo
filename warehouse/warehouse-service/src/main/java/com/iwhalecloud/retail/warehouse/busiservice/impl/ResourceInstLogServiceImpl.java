@@ -93,8 +93,12 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
         ResouceEventDTO eventDTO = new ResouceEventDTO();
         BeanUtils.copyProperties(inst, eventDTO);
         BeanUtils.copyProperties(req, eventDTO);
+        String mktResStoreId = req.getMktResStoreId();
+        String destStoreId = req.getDestStoreId();
         eventDTO.setEventType(req.getEventType());
         eventDTO.setStatusCd(req.getEventStatusCd());
+        eventDTO.setDestStoreId(mktResStoreId);
+        eventDTO.setMktResStoreId(destStoreId);
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
         log.info("ResourceInstLogServiceImpl.updateResourceInstLog resourceInstManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
         for (ResourceInstListPageResp resourceInst : resourceInsts) {
@@ -178,6 +182,10 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
         BeanUtils.copyProperties(req, eventDTO);
         eventDTO.setEventType(req.getEventType());
         eventDTO.setStatusCd(req.getEventStatusCd());
+        String mktResStoreId = req.getMktResStoreId();
+        String destStoreId = req.getDestStoreId();
+        eventDTO.setDestStoreId(mktResStoreId);
+        eventDTO.setMktResStoreId(destStoreId);
         String eventId = resouceEventManager.insertResouceEvent(eventDTO);
         log.info("ResourceInstLogServiceImpl.pickupResourceInstLog resouceStoreManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
         // 增加批次

@@ -242,7 +242,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
         ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
         selectReq.setMktResInstIdList(req.getMktResInstIds());
-        selectReq.setMktResStoreId(req.getDestStoreId());
+        selectReq.setMktResStoreId(req.getMktResStoreId());
         List<ResourceInstDTO> resourceInstDTOList = resourceInstService.selectByIds(selectReq);
 
         Boolean sameLanId = sourceMerchantDTO.getLanId() != null && destMerchantDTO.getLanId() != null && sourceMerchantDTO.getLanId().equals(destMerchantDTO.getLanId());
@@ -489,6 +489,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstUpdateReq.setMktResId(item.getProductId());
             resourceInstUpdateReq.setMktResStoreId(mktResStoreId);
             resourceInstUpdateReq.setOrderId(req.getOrderId());
+            resourceInstUpdateReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             ResultVO updateResultVO = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);
             log.info("SupplierResourceInstServiceImpl.backDeliveryOutResourceInst resourceInstService.updateResourceInstForTransaction req={},resp={}", JSON.toJSONString(resourceInstUpdateReq), JSON.toJSONString(updateResultVO));
             if (updateResultVO == null || !updateResultVO.isSuccess()) {

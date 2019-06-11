@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.warehouse.runable;
 import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
@@ -21,6 +20,7 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceRequestManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
+import com.iwhalecloud.retail.warehouse.util.ExcutorServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -88,164 +88,13 @@ public class RunableTask {
     @Autowired
     private ResouceInstTrackService resouceInstTrackService;
 
-    public ExecutorService initExecutorService() {
-        ThreadFactory namedThreadFactory = new ThreadFactoryBuilder().setNameFormat("thread-call-runner-%d").build();
-        ExecutorService executorService = new ThreadPoolExecutor(corePoolSize, corePoolSize+1, keepAliveTime, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<Runnable>(), namedThreadFactory);
-        return executorService;
-    }
-
-    /**
-     * 串码校验多线程处理
-     * @param req
-     */
-    public String exceutorValid(ResourceInstValidReq req) {
-        try {
-            ExecutorService executorService = initExecutorService();
-            List<String> nbrList = req.getMktResInstNbrs();
-            String batchId = resourceInstService.getPrimaryKey();
-            Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
-            validFutureTaskResult = new ArrayList<>(excutorNum);
-            for (Integer i = 0; i < excutorNum; i++) {
-                Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
-                List<String> subList = nbrList.subList(perNum * i, maxNum);
-                CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
-                ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
-                getReq.setTypeId(req.getTypeId());
-                log.info("RunableTask.exceutorValid newList={}, validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
-                Callable<Boolean> callable = new Callable<Boolean>() {
-                    @Override
-                    public Boolean call() throws Exception {
-                        Date now = new Date();
-                        ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq, newList);
-                        log.info("RunableTask.exceutorValid resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(instsTrackvO));
-                        List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
-                        List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
-                        if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
-                            List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
-                            // 删除的串码可再次导入
-                            String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
-                            List<String> mktResInstNbrList = instTrackDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
-                            for (ResouceInstTrackDTO dto : instTrackDTOList) {
-                                ResouceUploadTemp inst = new ResouceUploadTemp();
-                                inst.setMktResUploadBatch(batchId);
-                                inst.setUploadDate(now);
-                                inst.setCreateDate(now);
-                                if (!deleteStatus.equals(dto.getStatusCd())) {
-                                    inst.setResultDesc("库中已存在");
-                                    inst.setResult(ResourceConst.CONSTANT_YES);
-                                }else{
-                                    inst.setResult(ResourceConst.CONSTANT_NO);
-                                }
-                                inst.setMktResInstNbr(dto.getMktResInstNbr());
-                                inst.setCreateStaff(req.getCreateStaff());
-                                instList.add(inst);
-                            }
-                            newList.removeAll(mktResInstNbrList);
-                        }
-                        if (CollectionUtils.isNotEmpty(detailExitstNbr)) {
-                            for (String mktResInstNbr : detailExitstNbr) {
-                                ResouceUploadTemp inst = new ResouceUploadTemp();
-                                inst.setMktResUploadBatch(batchId);
-                                inst.setMktResInstNbr(mktResInstNbr);
-                                inst.setResult(ResourceConst.CONSTANT_YES);
-                                inst.setUploadDate(now);
-                                inst.setCreateDate(now);
-                                inst.setResultDesc("申请单中已存在");
-                                inst.setCreateStaff(req.getCreateStaff());
-                                instList.add(inst);
-                            }
-                            newList.removeAll(detailExitstNbr);
-                        }
-                        if (CollectionUtils.isNotEmpty(newList)) {
-                            for (String mktResInstNbr : newList) {
-                                ResouceUploadTemp inst = new ResouceUploadTemp();
-                                inst.setMktResUploadBatch(batchId);
-                                inst.setMktResInstNbr(mktResInstNbr);
-                                inst.setResult(ResourceConst.CONSTANT_NO);
-                                if (null != req.getCtCodeMap()) {
-                                    inst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
-                                }
-                                if (null != req.getSnCodeMap()) {
-                                    inst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
-                                }
-                                if (null != req.getMacCodeMap()) {
-                                    inst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
-                                }
-                                inst.setUploadDate(now);
-                                inst.setCreateDate(now);
-                                inst.setCreateStaff(req.getCreateStaff());
-                                instList.add(inst);
-                            }
-                        }
-                        Boolean addResult = resourceUploadTempManager.saveBatch(instList);
-                        log.info("RunableTask.exceutorValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
-                        return addResult;
-                    }
-                };
-                Future<Boolean> validFutureTask = executorService.submit(callable);
-                validFutureTaskResult.add(validFutureTask);
-            }
-            executorService.shutdown();
-            return batchId;
-        }catch (Throwable e) {
-            if (e instanceof ExecutionException) {
-                e = e.getCause();
-            }
-            log.info("error happen", e);
-        }
-        return null;
-    }
-
-    /**
-     * 串码校验多线程处理是否完成
-     */
-    public Boolean validHasDone() {
-        try{
-            Boolean hasDone = true;
-            log.info("RunableTask.validHasDone validFutureTaskResult={}", JSON.toJSONString(validFutureTaskResult));
-            if (CollectionUtils.isEmpty(validFutureTaskResult)) {
-                return false;
-            }
-            for (Future<Boolean> future : validFutureTaskResult) {
-                if (!future.isDone()) {
-                    return future.isDone();
-                }
-            }
-            return hasDone;
-        }catch (Throwable e) {
-            if (e instanceof ExecutionException) {
-                e = e.getCause();
-            }
-            log.error("error happen", e);
-        }
-        return null;
-    }
-
-    /**
-     * 串码临时表删除多线程处理
-     * @param req
-     */
-    public void exceutorDelNbr(ResourceUploadTempDelReq req) {
-        ExecutorService executorService = initExecutorService();
-        List<String> nbrList = req.getMktResInstNbrList();
-        Callable callable = new Callable<Integer>() {
-            @Override
-            public Integer call() throws Exception {
-                Integer successNum = resourceUploadTempManager.delResourceUploadTemp(req);
-                log.info("RunableTask.exceutorDelNbr resourceUploadTempManager.delResourceUploadTemp req={}, resp={}", JSON.toJSONString(req), successNum);
-                return successNum;
-            }
-        };
-        delNbrFutureTask = executorService.submit(callable);
-        executorService.shutdown();
-    }
 
     /**
      * 串码入库插入多线程处理
      * @param req
      */
     public void exceutorAddNbr(ResourceInstAddReq req) {
-        ExecutorService executorService = initExecutorService();
+        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         for (Integer i = 0; i < excutorNum; i++) {
@@ -271,7 +120,7 @@ public class RunableTask {
      * @param list
      */
     public void exceutorAddReqDetail(List<ResourceRequestAddReq.ResourceRequestInst> list, String itemId, String createStaff) {
-        ExecutorService executorService = initExecutorService();
+        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
         //营销资源申请单明细
         Integer excutorNum = list.size()%perNum == 0 ? list.size()/perNum : (list.size()/perNum + 1);
         log.info("RunableTask.exceutorAddReqDetail list.size()={}", list.size());
@@ -315,7 +164,7 @@ public class RunableTask {
 
 
     public String excuetorAddReq(ResourceRequestAddReq req){
-        ExecutorService executorService = initExecutorService();
+        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
         try{
             Callable callable = new Callable<String>() {
                 @Override
@@ -358,7 +207,7 @@ public class RunableTask {
     public List<ResourceUploadTempListResp> exceutorQueryTempNbr(ResourceUploadTempDelReq req) {
        final AtomicInteger atomicInteger = new AtomicInteger(0);
        try {
-           ExecutorService executorService = initExecutorService();
+           ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
            Integer totalNum = resourceUploadTempManager.countTotal(req);
            log.info("RunableTask.exceutorQueryTempNbr resourceUploadTempManager.listResourceUploadTemp countTotal={}", totalNum);
            Integer pageSize = 5000;
@@ -394,7 +243,7 @@ public class RunableTask {
     public List<ResourceReqDetailPageResp> exceutorQueryReqDetail(ResourceReqDetailPageReq req) {
         final AtomicInteger atomicInteger = new AtomicInteger(0);
         try {
-            ExecutorService executorService = initExecutorService();
+            ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             ResourceReqDetailReq detailReq = new ResourceReqDetailReq();
             BeanUtils.copyProperties(req, detailReq);
             Integer totalNum = detailManager.resourceRequestCount(detailReq);
@@ -430,7 +279,7 @@ public class RunableTask {
     * @param req
     */
     public void exceutorAddNbrTrack(ResourceInstAddReq req) {
-        ExecutorService executorService = initExecutorService();
+        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
         for (Integer i = 0; i < excutorNum; i++) {
@@ -457,7 +306,7 @@ public class RunableTask {
      */
     public String exceutorValidForSupplier(ResourceInstValidReq req) {
         try {
-            ExecutorService executorService = initExecutorService();
+            ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             List<String> nbrList = req.getMktResInstNbrs();
             String batchId = resourceInstService.getPrimaryKey();
             Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
@@ -469,12 +318,13 @@ public class RunableTask {
                 log.info("RunableTask.exceutorValidForSupplier newList={}", JSON.toJSONString(newList));
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 getReq.setTypeId(req.getTypeId());
+                getReq.setMktResInstNbrList(newList);
                 Callable<Boolean> callable = new Callable<Boolean>() {
                     @Override
                     public Boolean call() throws Exception {
                         Date now = new Date();
                         List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
-                        ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq, newList);
+                        ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq);
                         log.info("RunableTask.exceutorValidForSupplier resouceInstTrackService.listResourceInstsTrack req={}, newList={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(newList),  JSON.toJSONString(newList));
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
@@ -573,7 +423,7 @@ public class RunableTask {
      */
     public String exceutorAddNbrForSupplier(ResourceInstAddReq req) {
         try {
-            ExecutorService executorService = initExecutorService();
+            ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             List<String> nbrList = req.getMktResInstNbrs();
             Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
             addNbrForSupplierFutureTaskResult = new ArrayList<>(excutorNum);
@@ -585,10 +435,11 @@ public class RunableTask {
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 getReq.setTypeId(req.getTypeId());
                 getReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+                getReq.setMktResInstNbrList(newList);
                 Callable<Boolean> callable = new Callable<Boolean>() {
                     @Override
                     public Boolean call() throws Exception {
-                        ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq, newList);
+                        ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq);
                         log.info("RunableTask.exceutorAddNbrForSupplier resouceInstTrackService.listResourceInstsTrack getReq={},newList={},instsTrackvO={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), JSON.toJSONString(instsTrackvO));
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> trackList = instsTrackvO.getResultData();
@@ -658,7 +509,7 @@ public class RunableTask {
 
     public static void main(String[] args) {
         RunableTask task = new RunableTask();
-        ExecutorService executorService = task.initExecutorService();
+        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
         Future<String> future = executorService.submit(new Callable<String>() {
             @Override
             public String call() throws Exception {

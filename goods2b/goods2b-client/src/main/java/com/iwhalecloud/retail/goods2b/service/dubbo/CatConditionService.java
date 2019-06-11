@@ -24,4 +24,11 @@ public interface CatConditionService {
      */
     ResultVO<List<CatConditionDTO>> listCatCondition(CatConditionListReq req);
 
+    /**
+     * 商品类型条件 列表查询
+     * @param req
+     * @return
+     */
+//    ResultVO<List<CatConditionDTO>> listCatConditionDetail(CatConditionListReq req);
+
 }

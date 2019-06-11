@@ -169,12 +169,12 @@ public class UserController extends BaseController {
                 String resultCode = svcCont.getString("resultCode");
                 String resultMsg = svcCont.getString("resultMsg");
                 JSONObject resultObject = svcCont.getJSONObject("resultObject");
-                JSONArray ruleEvents = resultObject.getJSONArray("ruleEvents");
-                String ruleMsg = "";
-                for (int i = 0; i < 1; i++) {
-                    JSONObject job = ruleEvents.getJSONObject(i);
-                    ruleMsg = String.valueOf(job.get("ruleMsg"));
-                }
+//                JSONArray ruleEvents = resultObject.getJSONArray("ruleEvents");
+                String ruleMsg = resultMsg;
+//                for (int i = 0; i < 1; i++) {
+//                    JSONObject job = ruleEvents.getJSONObject(i);
+//                    ruleMsg = String.valueOf(job.get("ruleMsg"));
+//                }
                 if (!resultCodeCom.equals(resultCode)) {
                     resultVO.setResultCode(resultCode);
                     resultVO.setResultMsg(resultMsg + ":" + ruleMsg);

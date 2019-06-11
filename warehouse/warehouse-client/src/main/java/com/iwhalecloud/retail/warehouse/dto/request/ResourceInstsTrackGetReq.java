@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 
 /**
@@ -48,7 +48,7 @@ public class ResourceInstsTrackGetReq implements Serializable{
 	 * 记录营销资源实例编码。
 	 */
 	@ApiModelProperty(value = "记录营销资源实例编码。")
-	private List<String> mktResInstNbrList;
+	private CopyOnWriteArrayList<String> mktResInstNbrList;
 
 	/**
 	 * 产品类型
@@ -62,4 +62,21 @@ public class ResourceInstsTrackGetReq implements Serializable{
 	@ApiModelProperty(value = "记录串码来源，01  厂商 02  供应商 03  零售商")
 	private java.lang.String sourceType;
 
+	/**
+	 * CT码集合
+	 */
+	@ApiModelProperty(value = "CT码集合")
+	private CopyOnWriteArrayList<String> ctCodeList;
+
+	/**
+	 * SN码集合
+	 */
+	@ApiModelProperty(value = "SN码集合")
+	private CopyOnWriteArrayList<String> snCodeList;
+
+	/**
+	 * MAC码集合
+	 */
+	@ApiModelProperty(value = "MAC码集合")
+	private CopyOnWriteArrayList<String> macCodeList;
 }

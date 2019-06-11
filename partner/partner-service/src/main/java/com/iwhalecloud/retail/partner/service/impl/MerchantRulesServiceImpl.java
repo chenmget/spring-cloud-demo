@@ -1247,6 +1247,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         ProductGetReq productGetReq = new ProductGetReq();
         productGetReq.setProductBaseId(productBaseId);
         ResultVO<Page<ProductDTO>> pageResultVO = productService.selectProduct(productGetReq);
+        log.info("MerchantRulesServiceImpl.checkProdListRule.selectProduct, pageResultVO.getResultData().getRecords()={} ", pageResultVO.getResultData().getRecords());
         if(pageResultVO.isSuccess() && null!=pageResultVO.getResultData()){
             List<ProductDTO> productDTOList = pageResultVO.getResultData().getRecords();
             if(!CollectionUtils.isEmpty(productDTOList)){
@@ -1266,8 +1267,13 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             targetids = resultVO.getResultData();
         }
 
+        log.info("MerchantRulesServiceImpl.checkProdListRule, productIds={} ,targetids={}", productIds,targetids);
         if(!CollectionUtils.isEmpty(productIds) && !CollectionUtils.isEmpty(targetids)){
-            ResultVO.success(productIds.retainAll(targetids));
+            productIds.retainAll(targetids);
+            log.info("MerchantRulesServiceImpl.checkProdListRule2, productIds={}", productIds);
+            if(!CollectionUtils.isEmpty(productIds)){
+                return ResultVO.success(true);
+            }
         }
         return ResultVO.success(false);
     }

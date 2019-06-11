@@ -95,6 +95,12 @@
   <if test="req.brandName!=null and req.brandName!=''">
     and c.BRAND_ID=#{req.brandName}
   </if>
+  <if test="req.unitName!=null and req.unitName!=''">
+    and c.product_name like CONCAT(CONCAT('%',#{req.unitName}),'%')
+  </if>
+  <if test="req.unitType!=null and req.unitType!=''">
+    and c.unit_type=#{req.unitType}
+  </if>
   <if test="req.productName!=null and req.productName!=''">
     and b.PRODUCT_BASE_ID=#{req.productName}
   </if>

@@ -34,11 +34,11 @@ public class ProductChangePriceNextNodePeopleImpl implements WFServiceExecutor  
         HandlerUser handlerUser = new HandlerUser();
         String isFixedLine = purApplyManager.selectisFixedLineByBatchId(batchId);
         if("1".equals(isFixedLine)) {//如果是固网
-        	handlerUser.setHandlerUserId("5852");
-        	handlerUser.setHandlerUserName("李燕燕");
-        }else {
         	handlerUser.setHandlerUserId("5845");
         	handlerUser.setHandlerUserName("李洁");
+        }else {
+        	handlerUser.setHandlerUserId("5852");
+        	handlerUser.setHandlerUserName("李燕燕");
         }
         handlerUsers.add(handlerUser);
         

@@ -367,10 +367,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		prodProductChangeReq.setCreateDate(new Date());
 		prodProductChangeReq.setCreateStaff(req.getApplyUserId());
 		prodProductChangeReq.setBatchId(req.getBatchId());
-		purApplyManager.insertProdChangePrice(prodProductChangeReq);
-		
-		//把订单的状态改成待审核
 		prodProductChangeReq.setProductId(req.getProductId());
+		purApplyManager.insertProdChangePrice(prodProductChangeReq);
+		//把订单的状态改成待审核
 		purApplyManager.updateProdProduct(prodProductChangeReq);
 		
 		String changeDetailId = purApplyManager.selectNextChangeDetailId();
@@ -448,10 +447,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 			prodProductChangeReq.setCreateDate(new Date());
 			prodProductChangeReq.setCreateStaff(req.getApplyUserId());
 			prodProductChangeReq.setBatchId(req.getBatchId());
+			prodProductChangeReq.setProductId(req.getProductId());
 			purApplyManager.insertProdChangePrice(prodProductChangeReq);
 			
 			//把订单的状态改成待审核
-			prodProductChangeReq.setProductId(req.getProductId());
+			
 			purApplyManager.updateProdProduct(prodProductChangeReq);
 			
 			String changeDetailId = purApplyManager.selectNextChangeDetailId();

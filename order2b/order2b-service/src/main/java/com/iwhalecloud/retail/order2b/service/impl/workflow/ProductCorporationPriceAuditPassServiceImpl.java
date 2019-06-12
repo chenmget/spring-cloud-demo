@@ -27,7 +27,7 @@ public class ProductCorporationPriceAuditPassServiceImpl implements ProductCorpo
 	
 	 @Override
 	 public ResultVO run(InvokeRouteServiceRequest params) {
-		 log.info("ProductCorporationPriceAuditPassServiceImpl.run params={}", JSON.toJSONString(params));
+		 log.info("***********************************************************ProductCorporationPriceAuditPassServiceImpl.run params={}", JSON.toJSONString(params));
         if (params == null || StringUtils.isEmpty(params.getBusinessId())) {//拿到业务ID（batch_id）循环处理里面的product_id
             return ResultVO.error(ResultCodeEnum.LACK_OF_PARAM);
         }
@@ -39,16 +39,17 @@ public class ProductCorporationPriceAuditPassServiceImpl implements ProductCorpo
             ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
             prodProductChangeReq.setChangeId(changeId);
             prodProductChangeReq.setAuditState(PurApplyConsts.AUDIT_STATE_PASS);
-            int j = purApplyManager.updateProductChange(prodProductChangeReq);//修改change表的状态
+            purApplyManager.updateProductChange(prodProductChangeReq);//修改change表的状态
+            //通过changeId查询productId
+            String productId = purApplyManager.selectProductIdByChangeId(changeId);
             //把change表的状态更新到prod_product
             prodProductChangeDetail.setPriceStatus(PurApplyConsts.AUDIT_STATE_PASS);
-            int k = purApplyManager.updateProductCorpPrice(prodProductChangeDetail);
-        	if(j ==0 || k==0) {
-        		return ResultVO.error();
-        	}
+            prodProductChangeDetail.setProductId(productId);
+            purApplyManager.updateProductCorpPrice(prodProductChangeDetail);
+        	
         }
         
-        return ResultVO.error();
+        return ResultVO.success();
         
 	 }
 

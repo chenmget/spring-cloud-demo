@@ -85,7 +85,7 @@ public class GoodSaleOrderServiceImpl implements GoodSaleOrderService {
                     for(GoodsSaleOrderDTO goodsSaleOrderDTO:goodsSaleOrderDTOs){
                         boolean flag = true;
                         for(GoodsSaleOrderDTO allgoodsSaleOrderDTO : list){
-                            if(goodsSaleOrderDTO.getGoodsId().equals(allgoodsSaleOrderDTO.getGoodsId())){
+                            if(goodsSaleOrderDTO.getProductId().equals(allgoodsSaleOrderDTO.getProductId())){
                                 allgoodsSaleOrderDTO.setSaleNum(goodsSaleOrderDTO.getSaleNum()+allgoodsSaleOrderDTO.getSaleNum());
                                 flag = false;
                                 break;

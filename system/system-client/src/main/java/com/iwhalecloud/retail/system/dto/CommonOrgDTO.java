@@ -120,6 +120,12 @@ public class CommonOrgDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "记录每次修改的时间")
   	private java.util.Date updateDate;
+
+	/**
+	 * 层次路径编码
+	 */
+	@ApiModelProperty(value = "层次路径编码")
+	private java.lang.String pathCode;
 	
   	
 }

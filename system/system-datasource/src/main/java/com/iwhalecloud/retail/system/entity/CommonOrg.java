@@ -126,6 +126,12 @@ public class CommonOrg implements Serializable {
   	 */
 	@ApiModelProperty(value = "记录每次修改的时间")
   	private java.util.Date updateDate;
+
+	/**
+	 * 层次路径编码
+	 */
+	@ApiModelProperty(value = "层次路径编码")
+	private java.lang.String pathCode;
   	
   	
   	//属性 end
@@ -181,7 +187,10 @@ public class CommonOrg implements Serializable {
 		updateStaff("updateStaff","update_staff"),
 		
 		/** 记录每次修改的时间. */
-		updateDate("updateDate","update_date");
+		updateDate("updateDate","update_date"),
+
+		/** 层次路径编码 */
+		pathCode("pathCode","path_code");
 
 		private String fieldName;
 		private String tableFieldName;

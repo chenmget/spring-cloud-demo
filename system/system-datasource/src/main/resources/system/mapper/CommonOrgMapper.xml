@@ -21,7 +21,8 @@
     ,t.CREATE_STAFF 
     ,t.CREATE_DATE 
     ,t.UPDATE_STAFF 
-    ,t.UPDATE_DATE 
+    ,t.UPDATE_DATE
+    ,t.PATH_CODE
 </sql>
 
 </mapper>

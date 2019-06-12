@@ -99,7 +99,7 @@ public class UserController extends BaseController {
 
     @Reference
     ConfigInfoService configInfoService;
-
+    
     @Reference
     LoginLogService loginLogService;
 
@@ -134,7 +134,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResultVO<LoginResp> userLogin(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginReq req) throws Exception {
 
-            // 先密码还原成普通字符串
+        // 先密码还原成普通字符串
         req.setLoginPwd(decodePassword(req.getLoginPwd()));
 
         ResultVO resultVO = new ResultVO();
@@ -216,7 +216,7 @@ public class UserController extends BaseController {
         request.getSession().invalidate();//清空session
         Cookie[] cookies = request.getCookies();
         if (Objects.nonNull(cookies) && cookies.length > 0) {
-            Cookie cookie = request.getCookies()[0] ;//获取cookie
+            Cookie cookie = request.getCookies()[0];//获取cookie
             cookie.setMaxAge(0);//让cookie过期
         }
 
@@ -288,6 +288,7 @@ public class UserController extends BaseController {
             loginLogDTO.setSourceIp(sourceIp);
             loginLogDTO.setLoginDesc(resp.getErrorMessage());
             loginLogService.saveLoginLog(loginLogDTO);
+
         }
 
         // 失败 返回错误信息
@@ -692,9 +693,9 @@ public class UserController extends BaseController {
             return "";
         }
         String orgName = "";
-        OrganizationDTO organizationDTO = organizationService.getOrganization(orgId).getResultData();
-        if (organizationDTO != null) {
-            orgName = organizationDTO.getOrgName();
+        com.iwhalecloud.retail.dto.ResultVO resultVO = organizationService.getOrganization(orgId);
+        if (resultVO.getResultData() != null) {
+            orgName = ((OrganizationDTO) resultVO.getResultData()).getOrgName();
         }
         return orgName;
     }
@@ -711,7 +712,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ResultVO<UserDTO> addUser(@RequestBody AddUserReq req) {
+    public ResultVO<UserDTO> addUser(@RequestBody UserSaveReq req) {
 
         if (StringUtils.isEmpty(req.getLoginName())) {
             return failResultVO("账号不能为空");
@@ -864,7 +865,7 @@ public class UserController extends BaseController {
             return failResultVO("用户ID不能为空");
         }
 //        if (requestDTO.getRoleIds() == null) {
-//            return resultVO(ResultCodeEnum.ERROR.getCode(), "角色参数缺失", null);
+//            return resultVO(OmsCommonConsts.RESULE_CODE_FAIL, "角色参数缺失", null);
 //        }
 
         UserDTO loginUser = UserContext.getUser();

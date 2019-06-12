@@ -21,12 +21,15 @@ public class SysUserMessageConst {
     // 营销活动发货预警提前天数
     public static  final String DELIVER_END_TIME_NOTIFY_DAYS = "DELIVER_END_TIME_NOTIFY_DAYS";
 
-
-    public static final String SUPPLIER_REGISTER_SUCCESS = "供应商注册成功";
-    public static final String SUPPLIER_REGISTER_FAIL = "供应商注册失败";
-
     //ZOP短信能力
-    public static final String SMS_VERIFY_BSID = "2691";
+    public static final String REGIST_VERIFY_BSID = "2691";
+    public static final String MODFIFY_PASSWD_BSID = "2691";
+    public static final String LOGIN_VERIFY_BSID = "2691";
+
+    public static final String PHONENO_NULL = "电话号码为空";
+    public static final String VERIFYCODE_NULL = "验证码为空";
+    public static final String VERIFYCODE_EFF = "验证码过期";
+    public static final String VERIFYCODE_ERR = "验证码有误";
 
     /**
      * 0：未读

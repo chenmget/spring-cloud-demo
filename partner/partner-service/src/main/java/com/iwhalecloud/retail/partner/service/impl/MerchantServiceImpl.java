@@ -1326,12 +1326,55 @@ public class MerchantServiceImpl implements MerchantService {
      * @return
      */
     @Override
-    @Transactional
-    public ResultVO editMerchant (MerchantEditReq req) {
-        Merchant merchant=new Merchant();
-        BeanUtils.copyProperties(req, merchant);
-        this.merchantManager.updateMerchant(merchant);
-        return ResultVO.success();
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registLandSupplierForAdmin(SupplierResistReq req) {
+        try {
+            ResultVO codeRt = zopMessageService.checkVerifyCode(req.getPhoneNo(),req.getCode());
+            if(!codeRt.isSuccess())return codeRt;
+            req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
+            //插入商家信息
+            ResultVO<Merchant> merchantRt = addMerchantInfo(req);
+            String merchantId = merchantRt.getResultData().getMerchantId();
+            //插入附件表  --未做补偿
+            addEnclosure(req,merchantId);
+            //调用user服务插入注册user信息
+            UserDTO user = addUser(req,SystemConst.USER_FOUNDER_5,merchantId);
+            //发起审核流程
+            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessTitle(), user.getUserId(), user.getUserName()
+                    ,PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessId(),
+                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3037.getTaskSubType());
+        }catch (Exception e){
+            log.info(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error("注册失败");
+        }
+        return ResultVO.success("注册成功");
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registProvinceSupplierForAdmin(SupplierResistReq req) {
+        try {
+            ResultVO codeRt = zopMessageService.checkVerifyCode(req.getPhoneNo(),req.getCode());
+            if(!codeRt.isSuccess())return codeRt;
+            req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+            //插入商家信息
+            ResultVO<Merchant> merchantRt = addMerchantInfo(req);
+            String merchantId = merchantRt.getResultData().getMerchantId();
+            //插入附件表  --未做补偿
+            addEnclosure(req,merchantId);
+            //USER_FOUNDER_4 省包
+            UserDTO user = addUser(req,SystemConst.USER_FOUNDER_4,merchantId);
+            //发起审核流程   如果是电信人员则显示“岗位+部门”信息
+            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessTitle(), user.getUserId(), user.getUserName()
+                    ,PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessId(),
+                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3037.getTaskSubType());
+        }catch (Exception e){
+            log.info(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error("注册失败");
+        }
+        return ResultVO.success("注册成功");
     }
     private SupplierResistResp fillSupplierRegistResp(MerchantDetailDTO merchant, UserDTO user, List<MerchantAccount> merchantAccountList, List<CommonFileDTO> commonFileList) {
         SupplierResistResp resistResp = new SupplierResistResp();
@@ -1419,12 +1462,7 @@ public class MerchantServiceImpl implements MerchantService {
     public ResultVO<UserDTO> addUser(SupplierResistReq req,int userFounder,String merchantId){
         UserAddReq userAddReq = new UserAddReq();
         BeanUtils.copyProperties(req,userAddReq);
-        String source = req.getSource();
-        if( null!=source && source.equals("ADMIN")){
-            userAddReq.setLoginPwd(new MD5(SystemConst.DFPASSWD).asHex());
-        }else {
-            userAddReq.setLoginPwd(new MD5(req.getLoginPwd()).asHex());
-        }
+        userAddReq.setLoginPwd(new MD5(SystemConst.DFPASSWD).asHex());
         userAddReq.setUserFounder(userFounder);
         //关联商户信息和系统用户
         userAddReq.setRelCode(merchantId); //关联商户信息和系统用户

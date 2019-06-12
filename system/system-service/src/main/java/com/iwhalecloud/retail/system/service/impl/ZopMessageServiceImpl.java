@@ -56,14 +56,26 @@ public class ZopMessageServiceImpl implements ZopMessageService {
 
 
     public ResultVO checkVerifyCode(String phoneNo,String verifyCode){
+        Assert.notNull(phoneNo,"电话不能空");
+        Assert.notNull(verifyCode,"验证码不能为空");
         RandomLogGetReq req = new RandomLogGetReq();
         req.setReceviNo(phoneNo);
+        //selectLogIdByRandomCode 写死查询的是失效大于当前时间所以会有查询DATA为null
         ResultVO<RandomLogGetResp> resultVO = randomLogService.selectLogIdByRandomCode(req);
         RandomLogGetResp resp = resultVO.getResultData();
+        if(resp == null)return ResultVO.error(SysUserMessageConst.VERIFYCODE_EFF);
+     /*   if( resp.getEffDate().getTime() < new Date().getTime()){
+           return  ResultVO.error(SysUserMessageConst.VERIFYCODE_EFF) ;
+        }*/
         if(verifyCode.equals(resp.getRandomCode())){
+            RandomLogUpdateReq randomLogUpdateReq = new RandomLogUpdateReq();
+            randomLogUpdateReq.setLogId(resp.getLogId());
+            randomLogUpdateReq.setValidStatus(1);
+            randomLogUpdateReq.setValidTime(new Date());
+            randomLogService.updateByPrimaryKey(randomLogUpdateReq);
             return ResultVO.success();
         }
-        return  ResultVO.error() ;
+        return  ResultVO.error(SysUserMessageConst.VERIFYCODE_ERR) ;
     }
 
     @Override
@@ -75,7 +87,7 @@ public class ZopMessageServiceImpl implements ZopMessageService {
               checkReq(req);
               ZopMsgModel model = new ZopMsgModel();
               //模板ID要改
-              model.setBusinessId(SysUserMessageConst.SMS_VERIFY_BSID);
+              model.setBusinessId(SysUserMessageConst.REGIST_VERIFY_BSID);
               model.setLatnId(req.getLandId());
               model.setToTel(req.getPhoneNo());
               model.setSentContent("");
@@ -96,7 +108,7 @@ public class ZopMessageServiceImpl implements ZopMessageService {
         ZopMsgModel model = new ZopMsgModel();
         SmsVerificationtemplate template = new SmsVerificationtemplate();
         template.setSmsVerificationCode(verifyCode);
-        model.setBusinessId(SysUserMessageConst.SMS_VERIFY_BSID);
+        model.setBusinessId(SysUserMessageConst.REGIST_VERIFY_BSID);
         model.setLatnId(landId);
         model.setToTel(phoneNo);
         model.setSentContent("");
@@ -107,6 +119,7 @@ public class ZopMessageServiceImpl implements ZopMessageService {
         RandomLogAddReq addReq = new RandomLogAddReq();
         addReq.setBusiType(getReq.getOperatType());
         addReq.setRandomCode(code);
+        addReq.setValidStatus(0);
         addReq.setSendType(SysUserMessageConst.SendMsgType.SEND_MESSAGE.getType());
         addReq.setReceviNo(getReq.getPhoneNo());
         addReq.setValidStatus(SysUserMessageConst.UNVERIFIED);

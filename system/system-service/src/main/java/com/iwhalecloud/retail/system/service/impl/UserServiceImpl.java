@@ -612,12 +612,15 @@ public class UserServiceImpl implements UserService {
         {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.info("地包商注册失败");
-            return ResultVO.error(SysUserMessageConst.SUPPLIER_REGISTER_FAIL);
+            return ResultVO.error("地包商注册失败");
         }
         return ResultVO.success();
     }
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO registProvinceSupplier(UserRegisterReq resistReq) {
+        //verifyCode
+        ResultVO codeRt = zopMessageService.checkVerifyCode(resistReq.getPhoneNo(),resistReq.getCode());
+        if(!codeRt.isSuccess())return codeRt;
         //add user and get id into req
         SupplierResistReq req = new SupplierResistReq();
         BeanUtils.copyProperties(resistReq,req);
@@ -634,7 +637,7 @@ public class UserServiceImpl implements UserService {
         {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             log.info("省包商注册失败");
-            return ResultVO.error(SysUserMessageConst.SUPPLIER_REGISTER_FAIL);
+            return ResultVO.error("省包商注册失败");
         }
         return ResultVO.success();
     }

@@ -398,7 +398,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		//业务ID->批次ID
 		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
 		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9604.getTaskSubType());
+		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9504.getTaskSubType());
 		processStartDTO.setApplyUserId(req.getApplyUserId());
 		//根据用户id查询名称
 		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());
@@ -475,7 +475,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		processStartDTO.setTitle("政企价格修改审核流程");
 		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
 		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9604.getTaskSubType());
+		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9504.getTaskSubType());
 		processStartDTO.setApplyUserId(req.getApplyUserId());
 		//根据用户id查询名称
 		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());

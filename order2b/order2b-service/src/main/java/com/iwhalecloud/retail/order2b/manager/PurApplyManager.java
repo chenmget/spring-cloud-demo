@@ -49,6 +49,10 @@ public class PurApplyManager {
 		purApplyMapper.tcProcureApply(req);
 	}
 	
+	public List<ProdProductChangeDetail> searchCommitPriceInfo(UpdateCorporationPriceReq req){
+		return purApplyMapper.searchCommitPriceInfo(req);
+	}
+	
 	public void crPurApplyFile(AddFileReq req){
 		purApplyMapper.crPurApplyFile(req);
 	}

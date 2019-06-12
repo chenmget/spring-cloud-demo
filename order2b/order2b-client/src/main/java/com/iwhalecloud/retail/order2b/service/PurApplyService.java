@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
@@ -73,7 +74,7 @@ public interface PurApplyService {
 
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req);
 
-
+	public List<ProdProductChangeDetail> searchCommitPriceInfo(UpdateCorporationPriceReq req);
 	public void insertTcProcureApply(ProcureApplyReq req);
 
 }

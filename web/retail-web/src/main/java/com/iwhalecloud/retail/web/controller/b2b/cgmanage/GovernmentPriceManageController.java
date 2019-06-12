@@ -34,6 +34,7 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
 import com.iwhalecloud.retail.order2b.service.GovernmentPriceManageService;
@@ -180,6 +181,16 @@ public class GovernmentPriceManageController extends BaseController {
     @RequestMapping(value = "/commitPriceExcel")
     public ResultVO commitPriceExcel(@RequestBody UpdateCorporationPriceReq req) {
 		return purApplyService.commitPriceExcel(req);
+    }
+	
+	@ApiOperation(value = "查询政企价格审核信息", notes = "查询政企价格审核信息")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/searchCommitPriceInfo")
+    public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(@RequestBody UpdateCorporationPriceReq req) {
+		return purApplyService.searchCommitPriceInfo(req);
     }
 	
 }

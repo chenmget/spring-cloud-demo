@@ -579,5 +579,28 @@
 		product_id = #{productId}	
   </select>
   
+  <select id="searchCommitPriceInfo" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq" 
+  	resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" >
+		SELECT 
+			b.CHANGE_DETAIL_ID as changeDetailId,
+			b.CHANGE_ID as changeId,
+			b.OPER_TYPE as operType,
+			b.VER_NUM as verNum,
+			b.TABLE_NAME as tableName,
+			b.CHANGE_FIELD as changeField,
+			b.CHANGE_FIELD_NAME as changeFieldName,
+			b.OLD_VALUE as oldValue,
+			b.NEW_VALUE as newValue,
+			b.KEY_VALUE as keyValue,
+			b.CREATE_DATE as createDate,
+			b.CREATE_STAFF as createStaff
+		FROM 
+			prod_product_change a,prod_product_change_detail b 
+		WHERE 
+			a.change_id = b.change_id 
+		AND 
+			a.batch_id = #{req.batchId}
+  </select>
+  
 </mapper>
 

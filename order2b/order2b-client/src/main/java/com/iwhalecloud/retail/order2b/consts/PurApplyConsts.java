@@ -44,7 +44,7 @@ public class PurApplyConsts {
     /**
      * 政企价格修改审核流程
      */
-    public final static String PROD_PRODUCT_CORPORATION_PRICE_ID = "50101010000";
+    public final static String PROD_PRODUCT_CORPORATION_PRICE_ID = "20190611";
     
     /**
      * 采购申请单审核流程

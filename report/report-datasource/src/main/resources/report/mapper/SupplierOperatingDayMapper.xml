@@ -58,6 +58,21 @@
             select supplier_id, supplier_code, supplier_name
             from rpt_supplier_operating_day
             where 1=1
+                <if test="req.supplierName != null and req.supplierName != ''">
+                    and lower(t.SUPPLIER_NAME) like lower(CONCAT(CONCAT('%', #{req.supplierName }), '%'))
+                </if>
+                <if test="req.supplierCode != null and req.supplierCode != ''">
+                    and lower(t.SUPPLIER_CODE) like lower(CONCAT(CONCAT('%', #{req.supplierCode }), '%'))
+                </if>
+                <if test="req.supplierId != null and req.supplierId != ''">
+                    and t.SUPPLIER_ID =  #{req.supplierId}
+                </if>
+                <if test="req.lanId != null and req.lanId != ''">
+                    and t.CITY_ID =  #{req.lanId}
+                </if>
+                <if test="req.regionID != null and req.regionID != ''">
+                    and t.COUNTY_ID =  #{req.regionID}
+                </if>
             group by supplier_id
         ) a
         left join (
@@ -82,22 +97,6 @@
             from rpt_supplier_operating_day t
             where
                 1=1
-                <if test="req.supplierName != null and req.supplierName != ''">
-                    and lower(t.SUPPLIER_NAME) like lower(CONCAT(CONCAT('%', #{req.supplierName }), '%'))
-                and lower(t.SUPPLIER_CODE) like lower(CONCAT(CONCAT('%', #{req.supplierCode }), '%'))
-                </if>
-                <if test="req.supplierCode != null and req.supplierCode != ''">
-                    and lower(t.SUPPLIER_CODE) like lower(CONCAT(CONCAT('%', #{req.supplierCode }), '%'))
-                </if>
-                <if test="req.supplierId != null and req.supplierId != ''">
-                    and t.SUPPLIER_ID =  #{req.supplierId}
-                </if>
-                <if test="req.lanId != null and req.lanId != ''">
-                    and t.CITY_ID =  #{req.lanId}
-                </if>
-                <if test="req.regionID != null and req.regionID != ''">
-                    and t.COUNTY_ID =  #{req.regionID}
-                </if>
                 <if test="req.productBaseId != null and req.productBaseId != ''">
                     and t.PRODUCT_BASE_ID =  #{req.productBaseId}
                 </if>

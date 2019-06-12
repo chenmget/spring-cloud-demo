@@ -45,7 +45,16 @@ public class CommonOrgController {
             req.setParentOrgId(parentOrgId);
         }
 
-        return commonOrgService.listCommonOrg(req);
+        return commonOrgService.listCommonOrg(req,false);
+    }
+
+
+    @ApiOperation(value = "查询通用组织信息全部列表", notes = "不传参数，默认查湖南 通用组织信息 列表")
+    @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    @GetMapping(value = "/listAllCommonOrg")
+    public ResultVO<List<CommonOrgDTO>> listAllCommonOrg(){
+        CommonOrgListReq req = new CommonOrgListReq();
+        return commonOrgService.listCommonOrg(req,true);
     }
 
 }

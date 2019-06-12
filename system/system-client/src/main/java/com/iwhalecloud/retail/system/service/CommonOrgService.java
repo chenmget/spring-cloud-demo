@@ -16,9 +16,10 @@ public interface CommonOrgService{
     /**
      * 获取通用组织信息列表
      * @param req
+     * @param isSelectAll 是否查询全部,true:查询全部，false：查询一级
      * @return
      */
-    ResultVO<List<CommonOrgDTO>> listCommonOrg(CommonOrgListReq req);
+    ResultVO<List<CommonOrgDTO>> listCommonOrg(CommonOrgListReq req,boolean isSelectAll);
 
     /**
      * orgId

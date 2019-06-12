@@ -427,4 +427,27 @@ public class SystemConst {
             return value;
         }
     }
+
+    /**
+     * 通知发布类型枚举
+     */
+    public enum loginTypeEnum {
+        PORTAL("portal", "统一门户工号"),
+        YHJ("yhj", "云货架账号");
+        private String value;
+        private String type;
+
+        loginTypeEnum(String type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getType() {
+            return type;
+        }
+    }
 }

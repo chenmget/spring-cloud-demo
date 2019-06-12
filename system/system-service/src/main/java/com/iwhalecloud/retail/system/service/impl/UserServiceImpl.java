@@ -112,7 +112,7 @@ public class UserServiceImpl implements UserService {
             return resp;
         }
         //5、 判断登录密码
-        if (StringUtils.isEmpty(req.getLoginPwd())
+        if (SystemConst.loginTypeEnum.YHJ.getType().equals(req.getLoginType()) && StringUtils.isEmpty(req.getLoginPwd())
                 || !StringUtils.equals(user.getLoginPwd(), new MD5(req.getLoginPwd()).asHex() )) {
             // 密码错误 登录失败次数 failLoginCnt +1
             Integer failLoginCnt = user.getFailLoginCnt() != null ? user.getFailLoginCnt() : 0;

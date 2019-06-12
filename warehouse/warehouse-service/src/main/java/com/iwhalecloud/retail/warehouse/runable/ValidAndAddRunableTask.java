@@ -219,7 +219,7 @@ public class ValidAndAddRunableTask {
                     inst.setResult(ResourceConst.CONSTANT_NO);
                     if (!checkPatten(mktResInstNbr)) {
                         inst.setResult(ResourceConst.CONSTANT_YES);
-                        inst.setResultDesc("格式不正确");
+                        inst.setResultDesc("串码格式不正确");
                     }
                     inst.setMktResUploadBatch(batchId);
                     inst.setMktResInstNbr(mktResInstNbr);

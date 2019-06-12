@@ -112,19 +112,21 @@ public class UserServiceImpl implements UserService {
             return resp;
         }
         //5、 判断登录密码
-        if (SystemConst.loginTypeEnum.YHJ.getType().equals(req.getLoginType()) && StringUtils.isEmpty(req.getLoginPwd())
-                || !StringUtils.equals(user.getLoginPwd(), new MD5(req.getLoginPwd()).asHex() )) {
-            // 密码错误 登录失败次数 failLoginCnt +1
-            Integer failLoginCnt = user.getFailLoginCnt() != null ? user.getFailLoginCnt() : 0;
-            // 只更部分字段
-            User updateUser = new User();
-            updateUser.setUserId(user.getUserId());
-            updateUser.setFailLoginCnt(failLoginCnt + 1);
-            userManager.updateUser(updateUser);
+        if(SystemConst.loginTypeEnum.YHJ.getType().equals(req.getLoginType())){
+            if ( StringUtils.isEmpty(req.getLoginPwd())
+                    || !StringUtils.equals(user.getLoginPwd(), new MD5(req.getLoginPwd()).asHex() )) {
+                // 密码错误 登录失败次数 failLoginCnt +1
+                Integer failLoginCnt = user.getFailLoginCnt() != null ? user.getFailLoginCnt() : 0;
+                // 只更部分字段
+                User updateUser = new User();
+                updateUser.setUserId(user.getUserId());
+                updateUser.setFailLoginCnt(failLoginCnt + 1);
+                userManager.updateUser(updateUser);
 
-            resp.setErrorMessage(errorMsg);
-            log.info("UserServiceImpl.login 出参：UserLoginResp-{}", JSON.toJSON(resp));
-            return resp;
+                resp.setErrorMessage(errorMsg);
+                log.info("UserServiceImpl.login 出参：UserLoginResp-{}", JSON.toJSON(resp));
+                return resp;
+            }
         }
 
         //操作成功后的逻辑，修改当前登录时间，和上次登录时间 ，登录次数1+  将 failLoginCnt 清零

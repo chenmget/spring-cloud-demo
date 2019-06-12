@@ -78,13 +78,12 @@ public class GoodsSaleNumServiceImpl implements GoodsSaleNumService {
                             if(goodsSaleOrderDTO.getProductId().equals(productPageResp.getProductId())){
                                 goodsSaleOrderDTO.setProductName(productPageResp.getProductName());
                                 goodsSaleOrderDTO.setProductBaseId(productPageResp.getProductBaseId());
+                                GoodsSaleNumDTO goodsSaleNumDTO = new GoodsSaleNumDTO();
+                                BeanUtils.copyProperties(goodsSaleOrderDTO,goodsSaleNumDTO);
+                                list.add(goodsSaleNumDTO);
                             }
-                            GoodsSaleNumDTO goodsSaleNumDTO = new GoodsSaleNumDTO();
-                            BeanUtils.copyProperties(goodsSaleOrderDTO,goodsSaleNumDTO);
-                            list.add(goodsSaleNumDTO);
                         }
                     }
-
                 }
             }
 //            List<Goods> goodsList =  goodsManager.listGoods(goodsIds);
@@ -106,6 +105,7 @@ public class GoodsSaleNumServiceImpl implements GoodsSaleNumService {
                     if(!CollectionUtils.isEmpty(list2)){
                         boolean flag = true;
                         for(GoodsSaleNumDTO goodsSaleNumDTO1:list2){
+                            flag = true;
                             if(goodsSaleNumDTO.getProductBaseId().equals(goodsSaleNumDTO1.getProductBaseId())){
                                 goodsSaleNumDTO1.setSaleNum(goodsSaleNumDTO1.getSaleNum()+goodsSaleNumDTO.getSaleNum());
                                 flag = false;

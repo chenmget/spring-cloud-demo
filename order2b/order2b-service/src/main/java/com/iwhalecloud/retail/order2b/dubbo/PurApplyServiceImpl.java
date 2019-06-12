@@ -363,11 +363,15 @@ public class PurApplyServiceImpl implements PurApplyService {
 		prodProductChangeReq.setChangeId(changeId);
 		prodProductChangeReq.setVerNum("1.0");
 		prodProductChangeReq.setProductBaseId(productBaseId);
-		prodProductChangeReq.setAuditState("2");
+		prodProductChangeReq.setAuditState(PurApplyConsts.AUDIT_STATE_WAIT);
 		prodProductChangeReq.setCreateDate(new Date());
 		prodProductChangeReq.setCreateStaff(req.getApplyUserId());
 		prodProductChangeReq.setBatchId(req.getBatchId());
 		purApplyManager.insertProdChangePrice(prodProductChangeReq);
+		
+		//把订单的状态改成待审核
+		prodProductChangeReq.setProductId(req.getProductId());
+		purApplyManager.updateProdProduct(prodProductChangeReq);
 		
 		String changeDetailId = purApplyManager.selectNextChangeDetailId();
 		String oldValue = purApplyManager.selectOldValue(req.getProductId());
@@ -385,6 +389,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		prodProductChangeDetail.setCreateDate(new Date());//创建时间
 		prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
 		purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
+		
 		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
@@ -439,11 +444,15 @@ public class PurApplyServiceImpl implements PurApplyService {
 			prodProductChangeReq.setChangeId(changeId);
 			prodProductChangeReq.setVerNum("1.0");
 			prodProductChangeReq.setProductBaseId(productBaseId);
-			prodProductChangeReq.setAuditState("2");
+			prodProductChangeReq.setAuditState(PurApplyConsts.AUDIT_STATE_WAIT);
 			prodProductChangeReq.setCreateDate(new Date());
 			prodProductChangeReq.setCreateStaff(req.getApplyUserId());
 			prodProductChangeReq.setBatchId(req.getBatchId());
 			purApplyManager.insertProdChangePrice(prodProductChangeReq);
+			
+			//把订单的状态改成待审核
+			prodProductChangeReq.setProductId(req.getProductId());
+			purApplyManager.updateProdProduct(prodProductChangeReq);
 			
 			String changeDetailId = purApplyManager.selectNextChangeDetailId();
 			String oldValue = purApplyManager.selectOldValue(req.getProductId());

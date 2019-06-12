@@ -76,6 +76,8 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public void addShippingAddress(@Param("req") MemMemberAddressReq req);
 	
 	public void insertProdChangePrice(@Param("req") ProdProductChangeReq req);
+	public void updateProdProduct(@Param("req") ProdProductChangeReq req);
+	
 	public String getProductBaseIdByProductId(@Param("productId") String productId);
 	public void insertProdProductChangeDetail(@Param("req") ProdProductChangeDetail req);
 	
@@ -92,6 +94,8 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public int updateProductChange(@Param("req") ProdProductChangeReq req);
 	
 	public int updateProductCorpPrice(@Param("req") ProdProductChangeDetail req);
+	
+	public int updateProdNoPassPrice(@Param("req") ProdProductChangeDetail req);
 	
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(@Param("keyValue") String keyValue);
 	

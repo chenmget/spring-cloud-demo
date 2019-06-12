@@ -541,6 +541,15 @@
  	 	change_id = #{req.changeId}
   </select>
   
+  <select id="updateProdProduct" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq" resultType="java.lang.Integer"  >
+ 	 UPDATE 
+ 	 	PROD_PRODUCT 
+ 	 SET 
+ 	 	price_status=#{req.auditState} 
+ 	 WHERE 
+ 	 	product_id = #{req.productId}
+  </select>
+  
   <select id="selectProdProductChangeDetail" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail"  >
 	  SELECT 
 	  	CHANGE_DETAIL_ID as changeDetailId,
@@ -565,7 +574,16 @@
 	UPDATE 
 		prod_product 
 	SET 
-		CORPORATION_PRICE=#{req.corporationPrice} 
+		CORPORATION_PRICE=#{req.corporationPrice},PRICE_STATUS=#{req.priceStatus} 
+	WHERE 
+		product_id = #{req.productId}	
+  </select>
+  
+  <select id="updateProdNoPassPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" resultType="java.lang.Integer" >
+	UPDATE 
+		prod_product 
+	SET 
+		PRICE_STATUS=#{req.priceStatus} 
 	WHERE 
 		product_id = #{req.productId}	
   </select>

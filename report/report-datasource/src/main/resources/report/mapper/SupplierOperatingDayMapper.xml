@@ -56,7 +56,7 @@
             IFNULL(b.AVERAGE_DAILY_SALES, 0) AVERAGE_DAILY_SALES
         from (
             select supplier_id, supplier_code, supplier_name
-            from rpt_supplier_operating_day
+            from rpt_supplier_operating_day t
             where 1=1
                 <if test="req.supplierName != null and req.supplierName != ''">
                     and lower(t.SUPPLIER_NAME) like lower(CONCAT(CONCAT('%', #{req.supplierName }), '%'))
@@ -73,7 +73,7 @@
                 <if test="req.regionID != null and req.regionID != ''">
                     and t.COUNTY_ID =  #{req.regionID}
                 </if>
-            group by supplier_id
+            group by t.supplier_id
         ) a
         left join (
             select  supplier_id,

@@ -105,7 +105,8 @@
     p.PURCHASE_TYPE,
     pb.name AS brand_name,
     pb.BRAND_ID,
-    b.PRICE_LEVEL
+    b.PRICE_LEVEL,
+    p.PRICE_STATUS
   </sql>
   <select id="selectPageProductAdmin" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">

@@ -316,6 +316,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         updateReq.setObjId(resultVOInsertResReq.getResultData());
         updateReq.setMktResStoreId(req.getMktResStoreId());
         updateReq.setDestStoreId(req.getDestStoreId());
+        updateReq.setMktResInstIdList(req.getMktResInstIds());
         ResultVO updateResultVO = resourceInstService.updateResourceInstByIds(updateReq);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resourceInstService.updateResourceInstByIds req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updateResultVO));
         if (!updateResultVO.isSuccess()) {

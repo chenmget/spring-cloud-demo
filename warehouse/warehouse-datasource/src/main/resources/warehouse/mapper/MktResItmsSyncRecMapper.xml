@@ -14,12 +14,18 @@
 		t.MKT_RES_ID,
 		#{even.eventType} AS EVENT_TYPE,
 		t.BRAND_ID,
-		<if test="typeOps == 1">
+        <if test="eventType == 1001">
+            case when t.DET_LAN_ID='10000000' then '999' else t.DET_LAN_ID end ORIG_LAN_ID,
+        </if>
+        <if test="eventType == 1002  or eventType == 1003 or eventType == 1007  or eventType == 1009">
+            case when t.ORIG_LAN_ID='10000000' then '999' else t.ORIG_LAN_ID end ORIG_LAN_ID,
+        </if>
+		<!--<if test="typeOps == 1">
 			case when t.DET_LAN_ID='10000000' then '999' else t.DET_LAN_ID end ORIG_LAN_ID,
 		</if>
 		<if test="typeOps == 2 or typeOps == 3">
 			case when t.ORIG_LAN_ID='10000000' then '999' else t.ORIG_LAN_ID end ORIG_LAN_ID,
-		</if>
+		</if>-->
 		t.BRAND_NAME,
 		t.UNIT_TYPE,
 		'0' AS STATUS_CD,
@@ -37,12 +43,18 @@
 		FROM
 		(
 		select * from MKT_RES_CHNG_EVT_DETAIL mkt where 1=1
-		<if test="typeOps == 3">
+		<if test="eventType == 1003 or eventType == 1007">
+			and mkt.MKT_RES_EVENT_ID = #{even.mktResEventId} and mkt.MKT_RES_STORE_ID = #{even.mktResStoreId}
+		</if>
+		<if test="eventType == 1001 or eventType == 1002  or eventType == 1009">
+			and mkt.MKT_RES_EVENT_ID = #{even.mktResEventId} and mkt.MKT_RES_STORE_ID = #{even.destStoreId}
+		</if>
+		<!--<if test="typeOps == 3">
 			and mkt.MKT_RES_EVENT_ID = #{even.mktResEventId} and mkt.MKT_RES_STORE_ID = #{even.mktResStoreId}
 		</if>
 		<if test="typeOps == 1 or typeOps == 2">
 			and mkt.MKT_RES_EVENT_ID = #{even.mktResEventId} and mkt.MKT_RES_STORE_ID = #{even.destStoreId}
-		</if>
+		</if>-->
 		) det
 		INNER JOIN MKT_RES_INST inst ON inst.MKT_RES_STORE_ID = det.MKT_RES_STORE_ID AND inst.MKT_RES_INST_NBR =
 		det.MKT_RES_INST_NBR

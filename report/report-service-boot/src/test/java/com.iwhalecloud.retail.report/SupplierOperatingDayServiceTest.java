@@ -27,7 +27,7 @@ public class SupplierOperatingDayServiceTest {
     public void pageSummarySaleBySupplier(){
         SummarySaleBySupplierPageReq req = new SummarySaleBySupplierPageReq();
 //        req.setRegionIdList(Lists.newArrayList("731","732","733","734","735"));
-        req.setSupplierId("11");
+//        req.setSupplierId("11");
         req.setPageNo(1);
         req.setPageSize(3);
         ResultVO resultVO = supplierOperatingDayService.pageSummarySaleBySupplier(req);

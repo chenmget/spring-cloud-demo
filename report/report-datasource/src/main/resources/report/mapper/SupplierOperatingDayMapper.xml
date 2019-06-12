@@ -35,62 +35,86 @@
 </sql>
 
     <!--地包进销存 数据 汇总 分页查询（按地包商的维度）-->
+    <!--逻辑：先对rpt_supplier_operating_day表按supplier_id字段分组  再左连接 rpt_supplier_operating_day表过滤条件并也按supplier_id分组
+    要保证 表里面所有的地包商都有数据  即使过滤条件后 左连接的是 空记录 （全部设置为0）-->
     <select id="pageSummarySaleBySupplier" parameterType="com.iwhalecloud.retail.report.dto.request.SummarySaleBySupplierPageReq"
             resultType="com.iwhalecloud.retail.report.dto.response.SummarySaleBySupplierPageResp">
-        select
-            supplier_id, supplier_code, supplier_name,
-            sum(SELL_NUM) SELL_NUM,
-            sum(SELL_AMOUNT) SELL_AMOUNT,
-            sum(PURCHASE_AMOUNT) PURCHASE_AMOUNT,
-            sum(PURCHASE_NUM) PURCHASE_NUM,
-            sum(MANUAL_NUM) MANUAL_NUM,
-            sum(TRANS_IN_NUM) TRANS_IN_NUM,
-            sum(TRANS_OUT_NUM) TRANS_OUT_NUM,
-            sum(RETURN_NUM) RETURN_NUM,
-            sum(STOCK_NUM) STOCK_NUM,
-            sum(STOCK_AMOUNT) STOCK_AMOUNT,
-            (sum(TRANS_IN_NUM)+sum(MANUAL_NUM)+sum(PURCHASE_NUM)) TOTAL_IN_NUM ,
-            (sum(TRANS_OUT_NUM)+sum(RETURN_NUM)+sum(SELL_NUM)) TOTAL_OUT_NUM,
-            -- 7天平均日销量
-            IFNULL(
-                (select ROUND(sum(b.SELL_NUM)/7, 0) a from rpt_supplier_operating_day b
-                 where b.CREATE_DATE >=DATE_SUB(CURDATE(), INTERVAL 7 DAY)  GROUP BY b.SUPPLIER_ID
-                ), 0) AVERAGE_DAILY_SALES
 
-        from rpt_supplier_operating_day t
-        where
-        1=1
-        <if test="req.supplierName != null and req.supplierName != ''">
-            and lower(t.SUPPLIER_NAME) like lower(CONCAT(CONCAT('%', #{req.supplierName }), '%'))
-        </if>
-        <if test="req.supplierCode != null and req.supplierCode != ''">
-            and lower(t.SUPPLIER_CODE) like lower(CONCAT(CONCAT('%', #{req.supplierCode }), '%'))
-        </if>
-        <if test="req.supplierId != null and req.supplierId != ''">
-            and t.SUPPLIER_ID =  #{req.supplierId}
-        </if>
-        <if test="req.lanId != null and req.lanId != ''">
-            and t.CITY_ID =  #{req.lanId}
-        </if>
-        <if test="req.regionID != null and req.regionID != ''">
-            and t.COUNTY_ID =  #{req.regionID}
-        </if>
-        <if test="req.productBaseId != null and req.productBaseId != ''">
-            and t.PRODUCT_BASE_ID =  #{req.productBaseId}
-        </if>
-        <if test="req.productId != null and req.productId != ''">
-            and t.PRODUCT_ID =  #{req.productId}
-        </if>
-        <if test="req.brandId != null and req.brandId != ''">
-            and t.BRAND_ID =  #{req.brandId}
-        </if>
-        <if test="req.startDate != null and req.startDate != ''">
-            and t.item_date &gt;= #{req.startDate}
-        </if>
-        <if test="req.endDate != null and req.endDate != ''">
-            and t.item_date &lt;= #{req.endDate}
-        </if>
-        group by t.SUPPLIER_ID
+        select a.supplier_id, a.supplier_code, a.supplier_name,
+            IFNULL(b.SELL_NUM, 0) SELL_NUM,
+            IFNULL(b.SELL_AMOUNT, 0) SELL_AMOUNT,
+            IFNULL(b.PURCHASE_AMOUNT, 0) PURCHASE_AMOUNT,
+            IFNULL(b.PURCHASE_NUM, 0) PURCHASE_NUM,
+            IFNULL(b.MANUAL_NUM, 0) MANUAL_NUM,
+            IFNULL(b.TRANS_IN_NUM, 0) TRANS_IN_NUM,
+            IFNULL(b.TRANS_OUT_NUM, 0) TRANS_OUT_NUM,
+            IFNULL(b.RETURN_NUM, 0) RETURN_NUM,
+            IFNULL(b.STOCK_NUM, 0) STOCK_NUM,
+            IFNULL(b.STOCK_AMOUNT, 0) STOCK_AMOUNT,
+            IFNULL(b.TOTAL_IN_NUM, 0) TOTAL_IN_NUM,
+            IFNULL(b.TOTAL_OUT_NUM, 0) TOTAL_OUT_NUM,
+            IFNULL(b.AVERAGE_DAILY_SALES, 0) AVERAGE_DAILY_SALES
+        from (
+            select supplier_id, supplier_code, supplier_name
+            from rpt_supplier_operating_day
+            where 1=1
+            group by supplier_id
+        ) a
+        left join (
+            select  supplier_id,
+                sum(SELL_NUM) SELL_NUM,
+                sum(SELL_AMOUNT) SELL_AMOUNT,
+                sum(PURCHASE_AMOUNT) PURCHASE_AMOUNT,
+                sum(PURCHASE_NUM) PURCHASE_NUM,
+                sum(MANUAL_NUM) MANUAL_NUM,
+                sum(TRANS_IN_NUM) TRANS_IN_NUM,
+                sum(TRANS_OUT_NUM) TRANS_OUT_NUM,
+                sum(RETURN_NUM) RETURN_NUM,
+                sum(STOCK_NUM) STOCK_NUM,
+                sum(STOCK_AMOUNT) STOCK_AMOUNT,
+                (sum(TRANS_IN_NUM)+sum(MANUAL_NUM)+sum(PURCHASE_NUM)) TOTAL_IN_NUM ,
+                (sum(TRANS_OUT_NUM)+sum(RETURN_NUM)+sum(SELL_NUM)) TOTAL_OUT_NUM,
+                -- 7天平均日销量
+                IFNULL(
+                    (select ROUND(sum(b.SELL_NUM)/7, 0) a from rpt_supplier_operating_day b
+                    where b.CREATE_DATE >=DATE_SUB(CURDATE(), INTERVAL 7 DAY) GROUP BY b.SUPPLIER_ID
+                ), 0) AVERAGE_DAILY_SALES
+            from rpt_supplier_operating_day t
+            where
+                1=1
+                <if test="req.supplierName != null and req.supplierName != ''">
+                    and lower(t.SUPPLIER_NAME) like lower(CONCAT(CONCAT('%', #{req.supplierName }), '%'))
+                and lower(t.SUPPLIER_CODE) like lower(CONCAT(CONCAT('%', #{req.supplierCode }), '%'))
+                </if>
+                <if test="req.supplierCode != null and req.supplierCode != ''">
+                    and lower(t.SUPPLIER_CODE) like lower(CONCAT(CONCAT('%', #{req.supplierCode }), '%'))
+                </if>
+                <if test="req.supplierId != null and req.supplierId != ''">
+                    and t.SUPPLIER_ID =  #{req.supplierId}
+                </if>
+                <if test="req.lanId != null and req.lanId != ''">
+                    and t.CITY_ID =  #{req.lanId}
+                </if>
+                <if test="req.regionID != null and req.regionID != ''">
+                    and t.COUNTY_ID =  #{req.regionID}
+                </if>
+                <if test="req.productBaseId != null and req.productBaseId != ''">
+                    and t.PRODUCT_BASE_ID =  #{req.productBaseId}
+                </if>
+                <if test="req.productId != null and req.productId != ''">
+                    and t.PRODUCT_ID =  #{req.productId}
+                </if>
+                <if test="req.brandId != null and req.brandId != ''">
+                    and t.BRAND_ID =  #{req.brandId}
+                </if>
+                <if test="req.startDate != null and req.startDate != ''">
+                    and t.item_date &gt;= #{req.startDate}
+                </if>
+                <if test="req.endDate != null and req.endDate != ''">
+                    and t.item_date &lt;= #{req.endDate}
+                </if>
+            group by t.SUPPLIER_ID
+        ) b on a.supplier_id = b.supplier_id
     </select>
 
 

@@ -190,6 +190,7 @@ public class ResNbrManagerReference {
         list.add(instItem);
 
         validResourceInstReq.setDeliveryResourceInstItemList(list);
+        validResourceInstReq.setOrderId(apply.getOrderId());
         ResultVO<Boolean> resultVO = supplierResourceInstService.backDeliveryOutResourceInst(validResourceInstReq);
         log.info("gs_10010_backDeliveryInResourceInst req{},resp{}", JSON.toJSONString(validResourceInstReq), JSON.toJSONString(resultVO));
 
@@ -219,6 +220,7 @@ public class ResNbrManagerReference {
 
         validResourceInstReq.setBuyerMerchantId(apply.getApplicantId());
         validResourceInstReq.setDeliveryResourceInstItemList(list);
+        validResourceInstReq.setOrderId(apply.getOrderId());
         ResultVO<Boolean> resultVO = supplierResourceInstService.backDeliveryInResourceInst(validResourceInstReq);
         log.info("gs_10010_backDeliveryOutResourceInst req{},resp{}", JSON.toJSONString(validResourceInstReq), JSON.toJSONString(resultVO));
 

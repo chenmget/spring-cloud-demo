@@ -117,7 +117,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         req.setDestStoreId(mktResStoreId);
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        req.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         return resourceInstService.updateResourceInst(req);
     }
 

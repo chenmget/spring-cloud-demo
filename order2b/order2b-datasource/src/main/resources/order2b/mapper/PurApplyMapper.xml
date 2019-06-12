@@ -630,5 +630,17 @@
 		select product_id from PROD_PRODUCT_CHANGE where change_id = #{changeId}
   </select>
   
+  <select id="selectisFixedLineByBatchId" parameterType="java.lang.String" 
+  	resultType="java.lang.String" >
+		select 
+			a.is_fixed_line 
+		from 
+			prod_product_base a,prod_product_change b 
+		where 
+			a.product_base_id = b.product_base_id 
+		and 
+			b.batch_id = #{batchId}
+  </select>
+  
 </mapper>
 

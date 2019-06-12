@@ -21,4 +21,6 @@ public class ProdProductChangeReq extends PageVO {
 	private Date createDate;//	创建时间
 	private String createStaff;//	创建人
 	private String batchId;//批次号
+	
+	private String productId;
 }

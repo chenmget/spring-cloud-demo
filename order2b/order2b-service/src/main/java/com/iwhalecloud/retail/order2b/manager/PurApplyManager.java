@@ -140,6 +140,11 @@ public class PurApplyManager {
 	public void insertProdChangePrice(ProdProductChangeReq req){
 		purApplyMapper.insertProdChangePrice(req);
 	}
+	
+	public void updateProdProduct(ProdProductChangeReq req){
+		purApplyMapper.updateProdProduct(req);
+	}
+	
 	public String getProductBaseIdByProductId(String productId) {
 		return purApplyMapper.getProductBaseIdByProductId(productId);
 	}

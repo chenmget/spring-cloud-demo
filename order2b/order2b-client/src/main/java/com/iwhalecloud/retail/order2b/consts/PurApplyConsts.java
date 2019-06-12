@@ -72,6 +72,11 @@ public class PurApplyConsts {
     public final static String AUDIT_STATE_PASS = "3";
     
     /**
+     * 审核中
+     */
+    public final static String AUDIT_STATE_WAIT = "2";
+    
+    /**
      * 政企价格修改审核不通过
      */
     public final static String AUDIT_STATE_NO_PASS = "4";

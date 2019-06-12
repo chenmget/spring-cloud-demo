@@ -189,7 +189,7 @@ public class GovernmentPriceManageController extends BaseController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/searchCommitPriceInfo")
-    public List<ProdProductChangeDetail> searchCommitPriceInfo(@RequestBody UpdateCorporationPriceReq req) {
+    public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(@RequestBody UpdateCorporationPriceReq req) {
 		return purApplyService.searchCommitPriceInfo(req);
     }
 	

@@ -503,8 +503,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		purApplyManager.tcProcureApply(req);
 	}
 	
-	public List<ProdProductChangeDetail> searchCommitPriceInfo(UpdateCorporationPriceReq req){
-		return purApplyManager.searchCommitPriceInfo(req);
+	public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(UpdateCorporationPriceReq req){
+		List<ProdProductChangeDetail> list = purApplyManager.searchCommitPriceInfo(req);
+		return ResultVO.success(list);
 	}
 	
 	

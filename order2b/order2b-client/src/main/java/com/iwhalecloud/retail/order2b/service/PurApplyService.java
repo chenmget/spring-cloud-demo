@@ -74,7 +74,7 @@ public interface PurApplyService {
 
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req);
 
-	public List<ProdProductChangeDetail> searchCommitPriceInfo(UpdateCorporationPriceReq req);
+	public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(UpdateCorporationPriceReq req);
 	public void insertTcProcureApply(ProcureApplyReq req);
 
 }

@@ -181,6 +181,10 @@ public class PurApplyManager {
 		return purApplyMapper.updateProductCorpPrice(req);
 	}
 	
+	public int updateProdNoPassPrice(ProdProductChangeDetail req) {
+		return purApplyMapper.updateProdNoPassPrice(req);
+	}
+	
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(String keyValue) {
 		return purApplyMapper.selectProdProductChangeDetail(keyValue);
 	}

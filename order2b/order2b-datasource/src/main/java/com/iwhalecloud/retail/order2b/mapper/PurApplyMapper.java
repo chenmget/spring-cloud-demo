@@ -95,6 +95,8 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public int updateProductCorpPrice(@Param("req") ProdProductChangeDetail req);
 	
+	public int updateProdNoPassPrice(@Param("req") ProdProductChangeDetail req);
+	
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(@Param("keyValue") String keyValue);
 	
 }

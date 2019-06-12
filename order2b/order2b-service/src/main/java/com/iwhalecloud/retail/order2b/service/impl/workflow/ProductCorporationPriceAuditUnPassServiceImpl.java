@@ -40,6 +40,9 @@ public class ProductCorporationPriceAuditUnPassServiceImpl implements ProductCor
 	            prodProductChangeReq.setChangeId(changeId);
 	            prodProductChangeReq.setAuditState(PurApplyConsts.AUDIT_STATE_NO_PASS);
 	            int j = purApplyManager.updateProductChange(prodProductChangeReq);//修改change表的状态
+	            
+	            prodProductChangeDetail.setPriceStatus(PurApplyConsts.AUDIT_STATE_NO_PASS);
+	            int k = purApplyManager.updateProdNoPassPrice(prodProductChangeDetail);
 	        	if(j ==0) {
 	        		return ResultVO.error();
 	        	}

@@ -545,7 +545,7 @@
  	 UPDATE 
  	 	PROD_PRODUCT 
  	 SET 
- 	 	audit_state=#{req.auditState} 
+ 	 	price_status=#{req.auditState} 
  	 WHERE 
  	 	product_id = #{req.productId}
   </select>
@@ -574,7 +574,16 @@
 	UPDATE 
 		prod_product 
 	SET 
-		CORPORATION_PRICE=#{req.corporationPrice} 
+		CORPORATION_PRICE=#{req.corporationPrice},PRICE_STATUS=#{req.priceStatus} 
+	WHERE 
+		product_id = #{req.productId}	
+  </select>
+  
+  <select id="updateProdNoPassPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" resultType="java.lang.Integer" >
+	UPDATE 
+		prod_product 
+	SET 
+		PRICE_STATUS=#{req.priceStatus} 
 	WHERE 
 		product_id = #{req.productId}	
   </select>

@@ -41,6 +41,7 @@ public class ProductCorporationPriceAuditPassServiceImpl implements ProductCorpo
             prodProductChangeReq.setAuditState(PurApplyConsts.AUDIT_STATE_PASS);
             int j = purApplyManager.updateProductChange(prodProductChangeReq);//修改change表的状态
             //把change表的状态更新到prod_product
+            prodProductChangeDetail.setPriceStatus(PurApplyConsts.AUDIT_STATE_PASS);
             int k = purApplyManager.updateProductCorpPrice(prodProductChangeDetail);
         	if(j ==0 || k==0) {
         		return ResultVO.error();

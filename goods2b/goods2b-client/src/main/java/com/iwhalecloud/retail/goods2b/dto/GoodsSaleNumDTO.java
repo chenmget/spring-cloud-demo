@@ -12,15 +12,18 @@ import java.io.Serializable;
 public class GoodsSaleNumDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "商品ID")
-    private String goodsId;
-
-    @ApiModelProperty(value = "商品名字")
-    private String goodsName;
-
     @ApiModelProperty(value = "销售数量")
     private Integer saleNum;
 
     @ApiModelProperty(value = "缩略图")
     private String imageUrl;
+
+    @ApiModelProperty(value = "产品ID")
+    private String productId;
+
+    @ApiModelProperty(value = "产品BaseID")
+    private String productBaseId;
+
+    @ApiModelProperty(value = "产品名字")
+    private String productName;
 }

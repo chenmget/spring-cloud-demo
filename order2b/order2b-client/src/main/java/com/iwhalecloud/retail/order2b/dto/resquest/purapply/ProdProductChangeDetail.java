@@ -27,5 +27,6 @@ public class ProdProductChangeDetail extends PageVO {
 	private String createStaff;//创建人
 	
 	private String priceStatus;//政企价格审核状态
+	private String productId;
 
 }

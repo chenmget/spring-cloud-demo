@@ -2,13 +2,13 @@ package com.iwhalecloud.retail.web.controller.system;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
-import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgListReq;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +31,7 @@ public class CommonOrgController {
     private CommonOrgService commonOrgService;
 
 
-    @ApiOperation(value = "查询通用组织信息列表", notes = "不传参数，默认查湖南 通用组织信息 列表")
+    @ApiOperation(value = "查询通用组织信息列表", notes = "不传参数，默认查湖南 通用组织信息第一级 列表")
     @ApiImplicitParam(name="parentOrgId", value = "父级区域ID，为空默认查湖南通用组织信息列表", paramType = "query", required = false, dataType = "String")
 
     @ApiResponses({
@@ -49,7 +49,7 @@ public class CommonOrgController {
     }
 
 
-    @ApiOperation(value = "查询通用组织信息全部列表", notes = "不传参数，默认查湖南 通用组织信息 列表")
+    @ApiOperation(value = "查询通用组织信息全部列表", notes = "不传参数，默认查湖南 通用组织信息全部 列表")
     @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     @GetMapping(value = "/listAllCommonOrg")
     public ResultVO<List<CommonOrgDTO>> listAllCommonOrg(){

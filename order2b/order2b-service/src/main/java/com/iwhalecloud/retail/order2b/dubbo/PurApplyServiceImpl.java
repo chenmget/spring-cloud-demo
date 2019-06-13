@@ -406,8 +406,6 @@ public class PurApplyServiceImpl implements PurApplyService {
 		prodProductChangeReq.setBatchId(req.getBatchId());
 		prodProductChangeReq.setProductId(req.getProductId());
 		purApplyManager.insertProdChangePrice(prodProductChangeReq);
-		//把订单的状态改成待审核
-		purApplyManager.updateProdProduct(prodProductChangeReq);
 		
 		String changeDetailId = purApplyManager.selectNextChangeDetailId();
 		String oldValue = purApplyManager.selectOldValue(req.getProductId());
@@ -425,6 +423,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 		prodProductChangeDetail.setCreateDate(new Date());//创建时间
 		prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
 		purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
+		//把订单的状态改成待审核
+		purApplyManager.updateProdProduct(prodProductChangeReq);
 		return ResultVO.success();
 	}
 	
@@ -486,8 +486,6 @@ public class PurApplyServiceImpl implements PurApplyService {
 			
 			//把订单的状态改成待审核
 			
-			purApplyManager.updateProdProduct(prodProductChangeReq);
-			
 			String changeDetailId = purApplyManager.selectNextChangeDetailId();
 			String oldValue = purApplyManager.selectOldValue(req.getProductId());
 			ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
@@ -504,7 +502,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 			prodProductChangeDetail.setCreateDate(new Date());//创建时间
 			prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
 			purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
-			
+			//把订单的状态改成待审核
+			purApplyManager.updateProdProduct(prodProductChangeReq);
 		}
 		return ResultVO.success();
 	}

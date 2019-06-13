@@ -244,6 +244,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
             PurApplyItemReq.setApplyItem(PurApplyItemTemp.getApplyItemId());
             PurApplyItemReq.setProductId(PurApplyItemTemp.getProductId());
+            log.info("7._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail =" +JSON.toJSONString(PurApplyItemReq));
             int count =purApplyManager.countPurApplyItemDetail(PurApplyItemReq);//查询发货的条数
             log.info("7._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail = count ="+count+" = "+JSON.toJSONString(PurApplyItemReq));
             if (Integer.valueOf(num)!=count) {

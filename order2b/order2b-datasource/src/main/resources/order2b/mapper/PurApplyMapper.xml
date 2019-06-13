@@ -665,12 +665,12 @@
 
 
 	<select id="countPurApplyItemDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyItemReq" resultType="Integer">
-		SELECT COUNT(mkt_res_inst_nbr) FROM pur_apply_item_detail WHERE apply_item_id=#{applyItem} AND product_id=#{productId};
+		SELECT COUNT(mkt_res_inst_nbr) FROM pur_apply_item_detail WHERE apply_item_id=#{req.applyItem} AND product_id=#{req.productId};
 
 	</select>
 
 	<select id="countPurApplyItemDetailReving" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyItemReq" resultType="Integer">
-		SELECT COUNT(mkt_res_inst_nbr) FROM pur_apply_item_detail WHERE STATUS_CD='6' and apply_item_id=#{applyItem} AND product_id=#{productId};
+		SELECT COUNT(mkt_res_inst_nbr) FROM pur_apply_item_detail WHERE STATUS_CD='6' and apply_item_id=#{req.applyItem} AND product_id=#{req.productId};
 	</select>
 
 

@@ -178,6 +178,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         resourceInstUpdateReq.setMktResInstNbrs(req.getMktResInstNbrs());
         resourceInstUpdateReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());
+        resourceInstUpdateReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         resourceInstUpdateReq.setCheckStatusCd(Lists.newArrayList(
                 ResourceConst.STATUSCD.AUDITING.getCode(),
                 ResourceConst.STATUSCD.ALLOCATIONED.getCode(),
@@ -187,6 +188,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
                 ResourceConst.STATUSCD.DELETED.getCode()));
         resourceInstUpdateReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
         resourceInstUpdateReq.setTypeId(req.getTypeId());
+        resourceInstUpdateReq.setMktResId(req.getMktResId());
         resourceInstUpdateReq.setMerchantId(req.getSourcemerchantId());
         ResultVO updateResourceresultVO = resourceInstService.updateResourceInst(resourceInstUpdateReq);
         if (!updateResourceresultVO.isSuccess()) {
@@ -426,7 +428,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstAddReq.setStorageType(ResourceConst.STORAGETYPE.TRANSACTION_WAREHOUSING.getCode());
             resourceInstAddReq.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
             resourceInstAddReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
-            resourceInstAddReq.setObjId(item.getOrderItemId());
+            resourceInstAddReq.setObjId(req.getOrderId());
             resourceInstAddReq.setMktResId(item.getProductId());
             resourceInstAddReq.setOrderId(req.getOrderId());
             resourceInstAddReq.setCreateTime(new Date());
@@ -484,7 +486,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstUpdateReq.setObjType(ResourceConst.EVENT_OBJTYPE.ALLOT.getCode());
             resourceInstUpdateReq.setObjId(req.getOrderId());
             resourceInstUpdateReq.setDestStoreId(destStoreId);
-            resourceInstUpdateReq.setMktResStoreId(mktResStoreId);
             resourceInstUpdateReq.setUpdateStaff(merchantResultVO.getResultData().getUserId());
             resourceInstUpdateReq.setMerchantId(req.getBuyerMerchantId());
             resourceInstUpdateReq.setMktResId(item.getProductId());

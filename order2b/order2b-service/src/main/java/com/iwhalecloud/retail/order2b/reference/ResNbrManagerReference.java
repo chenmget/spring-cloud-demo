@@ -191,6 +191,7 @@ public class ResNbrManagerReference {
 
         validResourceInstReq.setDeliveryResourceInstItemList(list);
         validResourceInstReq.setOrderId(apply.getOrderId());
+        validResourceInstReq.setSellerMerchantId(apply.getHandlerId());
         ResultVO<Boolean> resultVO = supplierResourceInstService.backDeliveryOutResourceInst(validResourceInstReq);
         log.info("gs_10010_backDeliveryInResourceInst req{},resp{}", JSON.toJSONString(validResourceInstReq), JSON.toJSONString(resultVO));
 

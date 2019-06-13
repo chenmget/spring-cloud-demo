@@ -264,12 +264,8 @@ public class RetailerResourceInstB2BController {
     })
     @GetMapping(value="greenChannelValid")
     @UserLoginToken
-    public ResultVO greenChannelValid(@RequestParam String mktResId, @RequestParam String specialRight) {
+    public ResultVO greenChannelValid(@RequestParam String mktResId) {
         String  merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
-        // 产品有绿色通道录入权限
-        if (ResourceConst.CONSTANT_YES.equals(specialRight)) {
-            return ResultVO.success(true);
-        }
         ResultVO<List<String>> transferPermissionVO = merchantRulesService.getGreenChannelPermission(merchantId);
         log.info("RetailerResourceInstB2BController.greenChannelValid merchantRulesService.getGreenChannelPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
         if (null == transferPermissionVO || !transferPermissionVO.isSuccess() || CollectionUtils.isEmpty(transferPermissionVO.getResultData())) {

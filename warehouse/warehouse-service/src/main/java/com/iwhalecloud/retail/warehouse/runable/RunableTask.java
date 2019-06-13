@@ -452,7 +452,6 @@ public class RunableTask {
                                 List<ResouceInstTrackDTO> dtoList = entry.getValue();
                                 ResouceInstTrackDTO dto = dtoList.get(0);
                                 List<String> addNbrList = dtoList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
-                                req.setMktResStoreId(entry.getKey());
                                 req.setMktResInstNbrs(addNbrList);
                                 req.setSourcemerchantId(dtoList.get(0).getMerchantId());
                                 req.setCtCode(dto.getCtCode());

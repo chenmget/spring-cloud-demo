@@ -37,7 +37,8 @@
 	       f.MERCHANT_CODE merchantCode1,
 	       f.BUSINESS_ENTITY_NAME,
 	       f.LAN_ID,
-	       (SELECT region_name FROM sys_common_region WHERE region_id =f.city) CITY
+	       (SELECT region_name FROM sys_common_region WHERE region_id =f.city) CITY,
+	       b.PRODUCT_BASE_ID
 	  FROM ord_order         a,
 	       prod_product      b,
 	       prod_product_base c,
@@ -130,7 +131,7 @@
 	<if test="req.couponActive!=null and req.couponActive!=''">
 	 		WHERE 1=1 AND l.name LIKE CONCAT(CONCAT('%',#{req.couponActive}),'%')
 	</if>
- 	 GROUP BY order_id
+ 	 GROUP BY PRODUCT_BASE_ID
  	 limit 60000) z
  	 <if test='req.couponType!=null and req.couponType!=""'>
 	 		WHERE 1=1 AND z.couponType =#{req.couponType}

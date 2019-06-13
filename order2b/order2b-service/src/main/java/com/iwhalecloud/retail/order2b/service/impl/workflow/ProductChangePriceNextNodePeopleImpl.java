@@ -32,6 +32,8 @@ public class ProductChangePriceNextNodePeopleImpl implements WFServiceExecutor  
         System.out.println("--------------");
         String batchId = serviceParamContext.getBusinessId();
         HandlerUser handlerUser = new HandlerUser();
+        handlerUser.setHandlerUserId("5852");
+    	handlerUser.setHandlerUserName("李燕燕");
         String isFixedLine = purApplyManager.selectisFixedLineByBatchId(batchId);
         if("1".equals(isFixedLine)) {//如果是固网
         	handlerUser.setHandlerUserId("5845");

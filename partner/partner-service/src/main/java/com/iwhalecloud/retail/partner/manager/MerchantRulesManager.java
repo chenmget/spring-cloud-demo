@@ -53,17 +53,6 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
     }
 
     /**
-     * 根据条件 获取一个 商家 权限规则
-     * @param req
-     * @return
-     */
-//    public int updateMerchantRules(MerchantRulesUpdateReq req){
-//        MerchantRules merchantRules = new MerchantRules();
-//        BeanUtils.copyProperties(req, merchantRules);
-//        return merchantRulesMapper.updateById(merchantRules);
-//    }
-
-    /**
      * 删除 商家 权限规则 信息
      *
      * @param req

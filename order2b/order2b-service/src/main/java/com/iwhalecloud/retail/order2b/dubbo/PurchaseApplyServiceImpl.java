@@ -75,8 +75,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO delivery(PurApplyDeliveryReq req) {
         List<String> mktResInstNbr = Lists.newArrayList();
-        int total = mktResInstNbr.size();//串码总数
         mktResInstNbr = req.getMktResInstNbr(); //串码列表
+        int total = mktResInstNbr.size();//串码总数
         if(mktResInstNbr==null || mktResInstNbr.size()<=0) {
             return ResultVO.error("没有收到串码记录");
         }

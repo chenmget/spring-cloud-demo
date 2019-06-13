@@ -116,17 +116,17 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         if (resultInt <= 0) {
             return ResultVO.error("新增商家权限信息失败，请确认参数");
         }
-        if (PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType().equals(req.getRuleType()) &&
-                PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType().equals(req.getTargetType())) {
-            MerchantGetReq merchantGetReq = new MerchantGetReq();
-            merchantGetReq.setMerchantId(req.getMerchantId());
-            Merchant merchant = merchantManager.getMerchant(merchantGetReq);
-            //是地包 并且 没有赋权
-            if (null != merchant && PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchant.getMerchantType()) &&
-                    PartnerConst.AssignedFlgEnum.NO.getType().equals(merchant.getAssignedFlg())) {
-                this.merchantAssigned(merchant.getMerchantId());
-            }
-        }
+//        if (PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType().equals(req.getRuleType()) &&
+//                PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType().equals(req.getTargetType())) {
+//            MerchantGetReq merchantGetReq = new MerchantGetReq();
+//            merchantGetReq.setMerchantId(req.getMerchantId());
+//            Merchant merchant = merchantManager.getMerchant(merchantGetReq);
+//            //是地包 并且 没有赋权
+//            if (null != merchant && PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchant.getMerchantType()) &&
+//                    PartnerConst.AssignedFlgEnum.NO.getType().equals(merchant.getAssignedFlg())) {
+//                this.merchantAssigned(merchant.getMerchantId());
+//            }
+//        }
         return ResultVO.success(resultInt);
     }
 

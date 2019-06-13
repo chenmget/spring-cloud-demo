@@ -228,6 +228,9 @@
         <if test="req.regionId != null and req.lanId != null and req.targetId == null">
             and t.GOODS_ID in
             (select DISTINCT goods_id from prod_goods_region_rel where (REGION_ID = #{req.regionId } or REGION_ID = #{req.lanId }) and LAN_ID = #{req.lanId }
+            <if test="req.orgPathCode != null and req.orgPathCode != ''">
+                and INSTR(#{req.orgPathCode}, ORG_ID)
+            </if>
             UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)
         </if>
         <if test="req.regionId == null and req.lanId == null and req.targetId != null">
@@ -238,6 +241,9 @@
         <if test="req.regionId != null and req.lanId != null and req.targetId != null">
             and t.GOODS_ID in
             (select DISTINCT goods_id from prod_goods_region_rel where (REGION_ID = #{req.regionId } or REGION_ID = #{req.lanId })  and LAN_ID = #{req.lanId }
+                <if test="req.orgPathCode != null and req.orgPathCode != ''">
+                    and INSTR(#{req.orgPathCode}, ORG_ID)
+                </if>
             UNION select DISTINCT goods_id from prod_goods_target_rel where TARGET_ID = #{req.targetId }
             UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)
         </if>
@@ -291,7 +297,7 @@
         select distinct g.GOODS_ID as goodsId,g.GOODS_NAME as goodsName,g.MARKET_ENABLE as marketEnable,c.CAT_ID as goodsCatId,c.CAT_NAME as goodsCatName,
         g.SUPPLIER_ID as supplierId ,g.AUDIT_STATE as auditState,g.IS_ALLOT as isAllot,g.SOURCE_FROM as sourceFrom,g.MERCHANT_TYPE as merchantType,g.TARGET_TYPE as targetType,
         pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn,g.MKTPRICE,g.PAYMENTS as payments,t.deliveryPrice,t.COLOR,t.MEMORY,
-        attrValue1,attrValue2,attrValue3,t.priceLevel
+        attrValue1,attrValue2,attrValue3,t.priceLevel,g.IS_ADVANCE_SALE as isAdvanceSale
         from prod_goods g left join prod_cat c on g.GOODS_CAT_ID=c.CAT_ID
         left join prod_brand pb on g.brand_id=pb.brand_id
         left join

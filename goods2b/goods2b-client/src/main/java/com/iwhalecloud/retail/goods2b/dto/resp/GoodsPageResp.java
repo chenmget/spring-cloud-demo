@@ -59,6 +59,12 @@ public class GoodsPageResp implements Serializable {
     private Integer isAllot;
 
     /**
+     * 是否分货
+     */
+    @ApiModelProperty(value = "是否预售")
+    private Integer isAdvanceSale;
+
+    /**
      * 来源平台
      */
     @ApiModelProperty(value = "来源平台")

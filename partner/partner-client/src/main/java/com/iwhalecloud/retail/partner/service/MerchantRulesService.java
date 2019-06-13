@@ -28,13 +28,6 @@ public interface MerchantRulesService {
     ResultVO<MerchantRulesDTO> getMerchantRulesById(String merchantRulesId);
 
     /**
-     * 更新 商家 权限规则
-     * @param req
-     * @return
-     */
-//    ResultVO<Integer> updateMerchantRules(MerchantRulesUpdateReq req);
-
-    /**
      * 删除 商家 权限规则
      * @param req
      * @return

@@ -1,28 +1,14 @@
 package com.iwhalecloud.retail.order2b.manager;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
-import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
-import org.apache.ibatis.annotations.Param;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
+import com.iwhalecloud.retail.order2b.entity.PurApply;
+import com.iwhalecloud.retail.order2b.mapper.PurApplyMapper;
 import org.springframework.stereotype.Component;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
-import com.iwhalecloud.retail.order2b.mapper.CartMapper;
-import com.iwhalecloud.retail.order2b.mapper.PurApplyMapper;
+import javax.annotation.Resource;
+import java.util.List;
 
 @Component
 public class PurApplyManager {
@@ -195,5 +181,43 @@ public class PurApplyManager {
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(String keyValue) {
 		return purApplyMapper.selectProdProductChangeDetail(keyValue);
 	}
+
+	/**
+	 * 通过采购申请单查询采购申请单项
+	 * @param applyId
+	 * @return
+	 */
+	public  PurApply getPurApplyByAppId(String applyId) {
+//		QueryWrapper<PurApply> queryWrapper = new QueryWrapper<>();
+//		queryWrapper.eq("apply_id", applyId);
+		return purApplyMapper.selectById(applyId);
+	}
+	/**
+	 * 查询已发货的串码
+	 * @param req
+	 * @return
+	 */
+	public int countPurApplyItemDetail(PurApplyItemReq req) {
+		return purApplyMapper.countPurApplyItemDetail(req);
+	}
+
+	/**
+	 * 查询已确认收货的串码
+	 * @param req
+	 * @return
+	 */
+	public int countPurApplyItemDetailReving(PurApplyItemReq req) {
+		return purApplyMapper.countPurApplyItemDetailReving(req);
+	}
+
+	/**
+	 * 更新串码状态
+	 * @param mktResInstNbrList
+	 * @return
+	 */
+	public int updatePurApplyItemDetailStatusCd(List<String> mktResInstNbrList) {
+		return purApplyMapper.updatePurApplyItemDetailStatusCd(mktResInstNbrList);
+	}
+
 	
 }

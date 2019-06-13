@@ -204,6 +204,11 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
         log.info("ResouceStoreServiceImpl.getStoreId req={}", JSON.toJSONString(req));
         return resouceStoreManager.getStoreId(req);
     }
+    @Override
+    public String getStoreIdByLanId(String lanId){
+        log.info("ResouceStoreServiceImpl.getStoreIdByLanId req={}", JSON.toJSONString(lanId));
+        return resouceStoreManager.getStoreIdByLanId(lanId);
+    }
 
     @Override
     public void initStoredata() {

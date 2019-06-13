@@ -110,6 +110,11 @@ public class GoodsForPageQueryReq extends AbstractPageReq {
     @ApiModelProperty(value = "本地网ID")
     private String lanId;
 
+    /**
+     * 组织路径编码 （零售商 专属）对应sys_common_org表的path_code字段
+     */
+    @ApiModelProperty(value = "组织路径编码（零售商 专属）对应sys_common_org表的path_code字段")
+    private String orgPathCode;
 
     /**
      * 对象ID

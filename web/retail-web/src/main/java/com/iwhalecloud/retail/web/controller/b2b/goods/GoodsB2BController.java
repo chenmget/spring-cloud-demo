@@ -31,7 +31,9 @@ import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityProductListReq;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -40,16 +42,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -96,6 +95,10 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @Reference
     private GoodsSaleNumService goodsSaleNumService;
+
+    @Reference
+    private CommonOrgService commonOrgService;
+
 
     @ApiOperation(value = "添加商品", notes = "添加商品")
     @ApiResponses({
@@ -368,6 +371,10 @@ public class GoodsB2BController extends GoodsBaseController {
                 throw new UserNoMerchantException(ResultCodeEnum.ERROR.getCode(), "用户没有商家类型，请确认");
             } else if (userFounder == SystemConst.USER_FOUNDER_3) {
                 req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC_MERCHANT_TYPE_ASC.getValue());
+
+                // 设置零售商的组织路径编码 zhong.wenlong 2019.06.13
+//                req.setOrgPathCode(getOrgPathCode(merchantId));
+
             } else if (userFounder == SystemConst.USER_FOUNDER_5) {
                 String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType();
                 // 商家类型为省包供应商
@@ -407,6 +414,30 @@ public class GoodsB2BController extends GoodsBaseController {
         long cost = (end - start);
         System.out.println("queryGoodsForPage cost time:" + cost);
         return pageResultVO;
+    }
+
+    /**
+     * zhong.wenlong
+     * 获取零售商的 组织路径 OrgPathCode
+     * @param merchantId
+     */
+    private String getOrgPathCode(String merchantId) {
+        // 根据商家所属组织，过滤商品发布区域
+        String orgPathCode = null;
+        MerchantDTO merchantDTO = merchantService.getMerchantById(merchantId).getResultData();
+        log.info("GoodsB2BController.getOrgPathCode() merchantService.getMerchantById() input: merchantId={}, output: merchantDTO ={}", merchantId, JSON.toJSONString(merchantDTO));
+        if (Objects.nonNull(merchantDTO)) {
+            // 判断是否 是零售商  组织ID 是否为空
+            if (StringUtils.equals(merchantDTO.getMerchantType(), PartnerConst.MerchantTypeEnum.PARTNER.getType())
+                    && StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
+                CommonOrgDTO commonOrgDTO = commonOrgService.getCommonOrgById(merchantDTO.getParCrmOrgId()).getResultData();
+                log.info("GoodsB2BController.getOrgPathCode() commonOrgService.getCommonOrgById() input: orgId={}, output: CommonOrgDTO ={}", merchantDTO.getParCrmOrgId(), JSON.toJSONString(commonOrgDTO));
+                if (Objects.nonNull(commonOrgDTO) && StringUtils.isNotEmpty(commonOrgDTO.getPathCode())) {
+                    orgPathCode = commonOrgDTO.getPathCode();
+                }
+            }
+        }
+        return orgPathCode;
     }
 
     private void setRegionIdAndTargetId(GoodsForPageQueryReq req) {
@@ -451,25 +482,6 @@ public class GoodsB2BController extends GoodsBaseController {
             req.setTargetCodeList(targetCodeList);
         }
         log.info("GoodsB2BController.setTarGetCodeList userFounder={},targetCodeList={}", userFounder, JSON.toJSONString(targetCodeList));
-    }
-
-    private List<String> listMerchantRules(String targetType) {
-        MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
-        String merchantId = UserContext.getMerchantId();
-        merchantRulesListReq.setMerchantId(merchantId);
-        merchantRulesListReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
-        merchantRulesListReq.setTargetType(targetType);
-        // 查询规格类型为经营权限，对象类型为机型的商家规则
-        log.info("GoodsB2BController.listMerchantRules merchantRulesListReq={}", JSON.toJSONString(merchantRulesListReq));
-        ResultVO<List<MerchantRulesDTO>> resultVO = merchantRulesService.listMerchantRules(merchantRulesListReq);
-        log.info("GoodsB2BController.listMerchantRules resultVO={}", JSON.toJSONString(resultVO));
-        List<String> targetIdList = null;
-        if (resultVO.isSuccess() && !CollectionUtils.isEmpty(resultVO.getResultData())) {
-            List<MerchantRulesDTO> merchantRulesDTOList = resultVO.getResultData();
-            targetIdList = merchantRulesDTOList.stream().map(MerchantRulesDTO::getTargetId).collect(Collectors.toList());
-            log.info("GoodsB2BController.listMerchantRules targetIdList={}", JSON.toJSONString(targetIdList));
-        }
-        return targetIdList;
     }
 
     @ApiOperation(value = "查询商品详情", notes = "查询商品详情")

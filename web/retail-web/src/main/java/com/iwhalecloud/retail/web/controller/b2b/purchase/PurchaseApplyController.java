@@ -67,11 +67,20 @@ public class PurchaseApplyController extends BaseController {
     public ResultVO receiving(@RequestBody @Valid PurApplyReceivingReq req) {
         String userId = UserContext.getUserId();
         req.setCreateStaff(userId);
-        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        req.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
-        req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
-        req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
+        if (null != UserContext.getUser()) {
+            req.setRegionId(UserContext.getUser().getRegionId());
+            req.setLanId(UserContext.getUser().getLanId());
+            if (UserContext.getUser().getLanId()==null) {
+                return ResultVO.error("用户地市信息为空");
+            }
+        }else {
+            return ResultVO.error("获取用户信息失败");
+        }
+//        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+//        req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+//        req.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
+//        req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
+//        req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
         //req.setMerchantId(UserContext.getMerchantId());
         log.info("UserContext.getMerchantId()="+UserContext.getMerchantId());
         ResultVO resultVO = purchaseApplyService.receiving(req);

@@ -1,6 +1,8 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.warehouse.dto.ResourceChngEvtDetailDTO;
+import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
 import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -45,7 +47,17 @@ public class ResourceChngEvtDetailManager{
        }
        return sum == detailDTOList.size() ? 1:0;
     }
-    
+
+    /**
+     * 根据事件ID查询detail表数据
+     * @param resouceEvent
+     * @return
+     */
+    public List<ResourceChngEvtDetail> resourceChngEvtDetailList(ResouceEvent resouceEvent){
+        QueryWrapper<ResourceChngEvtDetail> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(ResourceChngEvtDetail.FieldNames.mktResEventId.getTableFieldName(),resouceEvent.getMktResEventId());
+        return resourceChngEvtDetailMapper.selectList(queryWrapper);
+    }
     
     
 }

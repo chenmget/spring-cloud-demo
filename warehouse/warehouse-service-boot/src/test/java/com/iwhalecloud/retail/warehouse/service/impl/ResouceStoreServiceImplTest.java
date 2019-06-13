@@ -277,4 +277,8 @@ public class ResouceStoreServiceImplTest {
         i = i + resouceStoreObjRelManager.updateStoreRelByObjId(updateResouceStoreObjRelDTO);
         return i;
     }
+    public void  getStoreInfo() {
+        StoreGetStoreIdReq req= new StoreGetStoreIdReq();
+        resouceStoreService.getStoreId(req);
+    }
 }

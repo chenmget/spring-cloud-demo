@@ -31,10 +31,7 @@ import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.request.CommonOrgPageReq;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionPageReq;
-import com.iwhalecloud.retail.system.dto.request.UserGetReq;
+import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -179,27 +176,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         return ResultVO.success(merchantRulesDTO);
     }
 
-
-    /**
-     * 更新 商家 权限规则
-     *
-     * @param req
-     * @return
-     */
-//    @Override
-//    public ResultVO<Integer> updateMerchantRules(MerchantRulesUpdateReq req) {
-//
-//        int resultInt = merchantRulesManager.updateMerchantRules(req);
-//        log.info("Method: MerchantRulesServiceImpl.updateMerchantRules()");
-//        log.info("InputParameter: MerchantRulesUpdateReq = {}", JSON.toJSONString(req));
-//        log.info("OutputParameter: update effect rows = {} ", JSON.toJSONString(resultInt));
-//
-//        if (resultInt <= 0) {
-//            return ResultVO.error("更新商家权限记录失败");
-//        }
-//        return ResultVO.success(resultInt);
-//    }
-
     /**
      * 删除 商家 权限规则
      *
@@ -277,7 +253,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(merchantRulesListReq);
         Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = getDetailPageList(req, list);
 
-        log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), output: resultList={} ", JSON.toJSONString(merchantRulesDetailDTOPage.getRecords()));
+        log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), output: resultList={} ", JSON.toJSONString(merchantRulesDetailDTOPage.getRecords()));
 
         return ResultVO.success(merchantRulesDetailDTOPage);
     }
@@ -442,6 +418,12 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 commonRegionListReq.setRegionIdList(targetIdList);
                 detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
 
+                // zhong.wenlong 2019.06.13 改查 sys_common_org表
+//                CommonOrgListReq commonOrgListReq = new CommonOrgListReq();
+//                commonOrgListReq.setOrgIdList(targetIdList);
+//                detailList = commonOrgService.listCommonOrg(commonOrgListReq, false).getResultData();
+//                fieldName = "orgId";
+
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
                 ProductsPageReq productsPageReq = new ProductsPageReq();
@@ -453,6 +435,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setPageSize(1000); // 写死 大一点
                 productsPageReq.setProductIdList(targetIdList);
                 productsPageReq.setCatId(req.getCatId());
+                productsPageReq.setTypeId(req.getTypeId());
+
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
@@ -486,6 +470,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             productsPageReq.setPageNo(1);
             productsPageReq.setPageSize(1000); // 写死 大一点
             productsPageReq.setCatId(req.getCatId());
+            productsPageReq.setTypeId(req.getTypeId());
 
             // 品牌
             if (!StringUtils.isEmpty(req.getBrandId())) {
@@ -517,6 +502,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setPageSize(1000); // 写死 大一点
                 productsPageReq.setProductIdList(targetIdList);
                 productsPageReq.setCatId(req.getCatId());
+                productsPageReq.setTypeId(req.getTypeId());
 
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {
@@ -567,6 +553,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
     /**
      * 获取权限详情(分页）
+     *
      * @param req
      * @param merchantRulesDTOList
      * @return
@@ -604,19 +591,19 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
-//                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
-//                commonRegionPageReq.setRegionIdList(targetIdList);
-//                commonRegionPageReq.setPageNo(req.getPageNo());
-//                commonRegionPageReq.setPageSize(req.getPageSize());
-//                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
-//                fieldName = "regionId";
+                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
+                commonRegionPageReq.setRegionIdList(targetIdList);
+                commonRegionPageReq.setPageNo(req.getPageNo());
+                commonRegionPageReq.setPageSize(req.getPageSize());
+                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
+                fieldName = "regionId";
                 // zhong.wenlong 2019.06.13 改查 sys_common_org表
-                CommonOrgPageReq commonOrgPageReq = new CommonOrgPageReq();
-                commonOrgPageReq.setOrgIdList(targetIdList);
-                commonOrgPageReq.setPageNo(req.getPageNo());
-                commonOrgPageReq.setPageSize(req.getPageSize());
-                detailPage = commonOrgService.pageCommonOrg(commonOrgPageReq).getResultData();
-                fieldName = "orgId";
+//                CommonOrgPageReq commonOrgPageReq = new CommonOrgPageReq();
+//                commonOrgPageReq.setOrgIdList(targetIdList);
+//                commonOrgPageReq.setPageNo(req.getPageNo());
+//                commonOrgPageReq.setPageSize(req.getPageSize());
+//                detailPage = commonOrgService.pageCommonOrg(commonOrgPageReq).getResultData();
+//                fieldName = "orgId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
@@ -748,7 +735,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         respPage.setRecords(resultList.stream().filter(item -> item.getTargetData() != null).collect(Collectors.toList()));
         return respPage;
     }
-
 
 
     /**
@@ -1264,10 +1250,10 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         productGetReq.setProductBaseId(productBaseId);
         ResultVO<Page<ProductDTO>> pageResultVO = productService.selectProduct(productGetReq);
         log.info("MerchantRulesServiceImpl.checkProdListRule.selectProduct, pageResultVO.getResultData().getRecords()={} ", pageResultVO.getResultData().getRecords());
-        if(pageResultVO.isSuccess() && null!=pageResultVO.getResultData()){
+        if (pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
             List<ProductDTO> productDTOList = pageResultVO.getResultData().getRecords();
-            if(!CollectionUtils.isEmpty(productDTOList)){
-                for(ProductDTO productDTO : productDTOList){
+            if (!CollectionUtils.isEmpty(productDTOList)) {
+                for (ProductDTO productDTO : productDTOList) {
                     productIds.add(productDTO.getProductId());
                 }
             }
@@ -1279,15 +1265,15 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         req.setTargetType(PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType());
         ResultVO<List<String>> resultVO = this.getCommonPermission(req);
         List<String> targetids = new ArrayList<>();
-        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+        if (resultVO.isSuccess() && null != resultVO.getResultData()) {
             targetids = resultVO.getResultData();
         }
 
-        log.info("MerchantRulesServiceImpl.checkProdListRule, productIds={} ,targetids={}", productIds,targetids);
-        if(!CollectionUtils.isEmpty(productIds) && !CollectionUtils.isEmpty(targetids)){
+        log.info("MerchantRulesServiceImpl.checkProdListRule, productIds={} ,targetids={}", productIds, targetids);
+        if (!CollectionUtils.isEmpty(productIds) && !CollectionUtils.isEmpty(targetids)) {
             productIds.retainAll(targetids);
             log.info("MerchantRulesServiceImpl.checkProdListRule2, productIds={}", productIds);
-            if(!CollectionUtils.isEmpty(productIds)){
+            if (!CollectionUtils.isEmpty(productIds)) {
                 return ResultVO.success(true);
             }
         }

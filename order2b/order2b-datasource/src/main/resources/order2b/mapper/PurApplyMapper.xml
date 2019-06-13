@@ -9,14 +9,15 @@
 			a.APPLY_CODE AS applyCode,
 			a.APPLY_NAME AS applyName,
 			a.CREATE_DATE AS applyTime,
+		    a.MERCHANT_ID As merchantId,
 			a.APPLY_MERCHANT_ID As applyMerchantId,
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
-			b.merchant_name As applyMerchantName,
+			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.APPLY_MERCHANT_ID) AS applyMerchantName,
 			a.STATUS_CD AS STATUS,
 			'' AS `option`
-			 FROM PUR_APPLY a,par_merchant b
-			 WHERE 1=1 and a.APPLY_MERCHANT_ID=b.MERCHANT_ID
+			 FROM PUR_APPLY a
+			 WHERE 1=1 
 			 and a.STATUS_CD != '1100'
 		<if test="req.lanId != null and req.lanId != ''">
             and a.LAN_ID = #{req.lanId}
@@ -544,14 +545,14 @@
   </select>
   
   <select id="updateProdProduct" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq">
- 	 UPDATE 
- 	 	PROD_PRODUCT 
- 	 SET 
- 	 	price_status=#{req.auditState} 
- 	 WHERE 
+ 	 UPDATE
+ 	 	PROD_PRODUCT
+ 	 SET
+ 	 	price_status=#{req.auditState}
+ 	 WHERE
  	 	product_id = #{req.productId}
   </select>
-  
+
   <select id="selectProdProductChangeDetail" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail"  >
 	  SELECT 
 	  	a.CHANGE_DETAIL_ID AS changeDetailId,
@@ -572,23 +573,23 @@
 		a.CHANGE_ID = b.CHANGE_ID
 	AND
 		b.BATCH_ID=#{keyValue}
-		
+
   </select>
   
   <select id="updateProductCorpPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail">
 	UPDATE 
 		prod_product 
 	SET 
-		CORPORATION_PRICE=#{req.newValue},PRICE_STATUS=#{req.priceStatus} 
-	WHERE 
-		product_id = #{req.productId}	
+		CORPORATION_PRICE=#{req.newValue},PRICE_STATUS=#{req.priceStatus}
+	WHERE
+		product_id = #{req.productId}
   </select>
-  
+
   <select id="updateProdNoPassPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail">
-	UPDATE 
-		prod_product 
-	SET 
-		PRICE_STATUS=#{req.priceStatus} 
+	UPDATE
+		prod_product
+	SET
+		PRICE_STATUS=#{req.priceStatus}
 	WHERE 
 		product_id = #{req.productId}	
   </select>
@@ -601,10 +602,10 @@
 	WHERE 
 		product_id = #{productId}	
   </select>
-  
-  <select id="searchCommitPriceInfo" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq" 
+
+  <select id="searchCommitPriceInfo" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq"
   	resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" >
-		SELECT 
+		SELECT
 			b.CHANGE_DETAIL_ID as changeDetailId,
 			b.CHANGE_ID as changeId,
 			b.OPER_TYPE as operType,
@@ -623,43 +624,67 @@
 			pp.SN as sn,
 			pt.TYPE_NAME as typeName,
 			pb.NAME as brandName
-		FROM 
+		FROM
 			prod_product_change a,
 			prod_product_change_detail b ,
 			PROD_PRODUCT_BASE ppb,
 			PROD_PRODUCT pp,
 			PROD_TYPE pt,
 			PROD_BRAND pb
-		WHERE 
-			a.change_id = b.change_id 
+		WHERE
+			a.change_id = b.change_id
 		AND
-			ppb.product_base_id = pp.product_base_id 
-		AND 
+			ppb.product_base_id = pp.product_base_id
+		AND
 			ppb.type_id = pt.type_id
-		AND 
+		AND
 			ppb.BRAND_ID = pb.BRAND_ID
 		AND
 			a.product_id = pp.product_id
-		AND 
+		AND
 			a.batch_id = #{req.batchId}
   </select>
-  
-  <select id="selectProductIdByChangeId" parameterType="java.lang.String" 
+
+  <select id="selectProductIdByChangeId" parameterType="java.lang.String"
   	resultType="java.lang.String" >
 		select product_id from PROD_PRODUCT_CHANGE where change_id = #{changeId}
   </select>
-  
-  <select id="selectisFixedLineByBatchId" parameterType="java.lang.String" 
+
+  <select id="selectisFixedLineByBatchId" parameterType="java.lang.String"
   	resultType="java.lang.String" >
-		select 
-			a.is_fixed_line 
-		from 
-			prod_product_base a,prod_product_change b 
-		where 
-			a.product_base_id = b.product_base_id 
-		and 
+		select
+			a.is_fixed_line
+		from
+			prod_product_base a,prod_product_change b
+		where
+			a.product_base_id = b.product_base_id
+		and
 			b.batch_id = #{batchId}
   </select>
-  
+
+
+
+	<select id="countPurApplyItemDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyItemReq" resultType="Integer">
+		SELECT COUNT(mkt_res_inst_nbr) FROM pur_apply_item_detail WHERE apply_item_id=#{applyItem} AND product_id=#{productId};
+
+	</select>
+
+	<select id="countPurApplyItemDetailReving" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyItemReq" resultType="Integer">
+		SELECT COUNT(mkt_res_inst_nbr) FROM pur_apply_item_detail WHERE STATUS_CD='6' and apply_item_id=#{applyItem} AND product_id=#{productId};
+	</select>
+
+
+	<select id="updatePurApplyItemDetailStatusCd" parameterType="java.lang.String" resultType="Integer">
+		UPDATE
+		pur_apply_item_detail
+		SET
+		STATUS_CD='6'
+		WHERE
+		MKT_RES_INST_NBR in
+		<foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstNbrList">
+			#{item}
+		</foreach>
+
+	</select>
 </mapper>
 

@@ -39,6 +39,7 @@ public class PurApplyItemManager {
     public List<PurApplyItem> getDeliveryInfoByApplyID(String applyId) {
         QueryWrapper<PurApplyItem> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("apply_id", applyId);
+        queryWrapper.eq("status_cd", "5");
         return purApplyItemMapper.selectList(queryWrapper);
     }
 }

@@ -8,6 +8,7 @@ import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.DeliveryValidResourceInstItemResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
@@ -248,5 +249,10 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
      */
     public List<ResourceInstListPageResp> getResourceInstListManual(ResourceInstListPageReq req){
         return resourceInstMapper.getResourceInstListManual(req);
+    }
+
+
+    public ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req) {
+        return resourceInstMapper.getMktResInstNbrForCheck(req);
     }
 }

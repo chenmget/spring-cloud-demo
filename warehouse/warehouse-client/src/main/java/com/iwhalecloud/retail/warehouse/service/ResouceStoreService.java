@@ -53,6 +53,14 @@ public interface ResouceStoreService{
     String getStoreId(StoreGetStoreIdReq req);
 
     /**
+     * 根据lanID 查询地市仓库
+     *
+     * @param lanId
+     * @return
+     */
+    String getStoreIdByLanId(String lanId);
+
+    /**
      * 初始化仓库
      *
      * @return

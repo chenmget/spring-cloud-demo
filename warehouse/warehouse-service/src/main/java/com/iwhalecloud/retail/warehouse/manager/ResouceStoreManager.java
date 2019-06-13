@@ -68,6 +68,10 @@ public class ResouceStoreManager extends ServiceImpl<ResouceStoreMapper, Resouce
         return resouceStoreMapper.getStoreId(req);
     }
 
+    public String getStoreIdByLanId(String lanId){
+        return resouceStoreMapper.getStoreIdByLanId(lanId);
+    }
+
     /**
      * 查询仓库ID列表
      * @param objIdList 使用对象集合

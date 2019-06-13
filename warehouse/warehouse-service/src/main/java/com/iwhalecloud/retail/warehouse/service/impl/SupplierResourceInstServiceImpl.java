@@ -151,6 +151,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         storeGetStoreIdReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storeGetStoreIdReq.setMerchantId(merchantId);
         String mktResStoreId = null;
+        String destStoreId = req.getDestStoreId();
         try{
             mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
             log.info("SupplierResourceInstServiceImpl.addResourceInst resouceStoreService.getStoreId req={},resp={}", JSON.toJSONString(storeGetStoreIdReq), mktResStoreId);
@@ -175,7 +176,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.error("串码入库失败");
         }
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
-        resourceInstUpdateReq.setDestStoreId(req.getDestStoreId());
+        resourceInstUpdateReq.setDestStoreId(destStoreId);
         resourceInstUpdateReq.setMktResInstNbrs(req.getMktResInstNbrs());
         resourceInstUpdateReq.setMktResStoreId(mktResStoreId);
         resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());

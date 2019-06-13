@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.goods2b.dto;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -10,7 +9,6 @@ import java.io.Serializable;
  * Created by Administrator on 2019/4/15.
  */
 @Data
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class GoodsSaleNumDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 

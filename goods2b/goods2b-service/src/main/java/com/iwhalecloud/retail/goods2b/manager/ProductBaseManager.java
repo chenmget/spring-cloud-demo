@@ -236,4 +236,8 @@ public class ProductBaseManager {
     public Double getAvgSupplyPrice(String productBaseId) {
         return productBaseMapper.getAvgSupplyPrice(productBaseId);
     }
+    
+    public String selectisFixedLineByBatchId(String batchId) {
+		return productBaseMapper.selectisFixedLineByBatchId(batchId);
+	}
 }

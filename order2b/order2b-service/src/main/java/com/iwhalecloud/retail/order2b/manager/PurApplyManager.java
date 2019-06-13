@@ -191,7 +191,7 @@ public class PurApplyManager {
 	public  PurApply getPurApplyByAppId(String applyId) {
 		QueryWrapper<PurApply> queryWrapper = new QueryWrapper<>();
 		queryWrapper.eq("apply_id", applyId);
-		return purApplyMapper.selectById(applyId);
+		return purApplyMapper.selectById(queryWrapper);
 	}
 	/**
 	 * 查询已发货的串码

@@ -147,7 +147,7 @@ public class TradeResourceInstServiceImpl implements TradeResourceInstService {
             resourceInstAddReq.setEventType(ResourceConst.EVENTTYPE.RECEIVE.getCode());
             resourceInstAddReq.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
             resourceInstAddReq.setStorageType(ResourceConst.STORAGETYPE.LEADING_INTO_STORAGE.getCode());
-            resourceInstAddReq.setMktResInstType(ResourceConst.MKTResInstType.NONTRANSACTION.getCode());
+            resourceInstAddReq.setMktResInstType(ResourceConst.MKTResInstType.COLLECTION_BY_PROVINCE.getCode());
             resourceInstAddReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
             resourceInstAddReq.setObjId(req.getOrderId());
             resourceInstAddReq.setMktResId(item.getProductId());

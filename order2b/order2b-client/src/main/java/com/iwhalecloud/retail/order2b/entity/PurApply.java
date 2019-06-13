@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.entity;
 
 import java.io.Serializable;
 
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import io.swagger.annotations.ApiModel;
@@ -21,6 +22,7 @@ public class PurApply implements Serializable {/**
 	 * 申请单id
 	 */
 	@ApiModelProperty(value = "applyId")
+	@TableId
     private java.lang.String applyId;
 	
 	/**

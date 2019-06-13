@@ -77,7 +77,7 @@ public class TradeResourceInstServiceImpl implements TradeResourceInstService {
         storePageReq.setStoreGrade(ResourceConst.STORE_GRADE.CITY.getCode());
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storePageReq.setStoreType(ResourceConst.STORE_TYPE.CITY.getCode());
-        storePageReq.setLanIdList(Lists.newArrayList(req.getLnaId()));
+        storePageReq.setLanIdList(Lists.newArrayList(req.getLanId()));
         Page<ResouceStoreDTO> storeDTOPage = resouceStoreManager.pageStore(storePageReq);
         log.info("TradeResourceInstServiceImpl.tradeOutResourceInst resouceStoreManager.pageStore merchantStoreId={}", JSON.toJSONString(storePageReq), JSON.toJSONString(storeDTOPage.getRecords()));
         if (null == storeDTOPage || CollectionUtils.isEmpty(storeDTOPage.getRecords())) {
@@ -127,7 +127,7 @@ public class TradeResourceInstServiceImpl implements TradeResourceInstService {
         storePageReq.setStoreGrade(ResourceConst.STORE_GRADE.CITY.getCode());
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storePageReq.setStoreType(ResourceConst.STORE_TYPE.CITY.getCode());
-        storePageReq.setLanIdList(Lists.newArrayList(req.getLnaId()));
+        storePageReq.setLanIdList(Lists.newArrayList(req.getLanId()));
         Page<ResouceStoreDTO> storeDTOPage = resouceStoreManager.pageStore(storePageReq);
         log.info("TradeResourceInstServiceImpl.tradeInResourceInst resouceStoreManager.pageStore merchantStoreId={}", JSON.toJSONString(storeGetStoreIdReq), JSON.toJSONString(storeDTOPage.getRecords()));
         if (null == storeDTOPage || CollectionUtils.isEmpty(storeDTOPage.getRecords())) {
@@ -158,7 +158,7 @@ public class TradeResourceInstServiceImpl implements TradeResourceInstService {
             resourceInstAddReq.setSupplierName(merchantDTO.getMerchantName());
             resourceInstAddReq.setSupplierCode(merchantDTO.getMerchantCode());
             resourceInstAddReq.setMerchantId(storeDTO.getMerchantId());
-            resourceInstAddReq.setLanId(req.getLnaId());
+            resourceInstAddReq.setLanId(req.getLanId());
             resourceInstAddReq.setRegionId(storeDTO.getRegionId());
             resourceInstAddReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             resourceInstAddReq.setMerchantType(storeDTO.getMerchantType());

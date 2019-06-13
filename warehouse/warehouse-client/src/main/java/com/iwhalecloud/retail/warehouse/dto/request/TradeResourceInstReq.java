@@ -30,7 +30,7 @@ public class TradeResourceInstReq implements Serializable {
 	 * 收货人的（十四个地市之一）的lanId
 	 */
 	@ApiModelProperty(value = "买家")
-	private String lnaId;
+	private String lanId;
 
 	/**
 	 * 订单项id

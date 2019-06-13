@@ -29,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -1004,7 +1003,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         storePageReq.setStoreGrade(ResourceConst.STORE_GRADE.CITY.getCode());
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storePageReq.setStoreType(ResourceConst.STORE_TYPE.CITY.getCode());
-        storePageReq.setLanIdList(Lists.newArrayList(req.getLnaId()));
+        storePageReq.setLanIdList(Lists.newArrayList(req.getLanId()));
         Page<ResouceStoreDTO> storeDTOPage = resouceStoreService.pageStore(storePageReq);
         if (null == storeDTOPage || CollectionUtils.isEmpty(storeDTOPage.getRecords())) {
             return;
@@ -1066,7 +1065,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         storePageReq.setStoreGrade(ResourceConst.STORE_GRADE.CITY.getCode());
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storePageReq.setStoreType(ResourceConst.STORE_TYPE.CITY.getCode());
-        storePageReq.setLanIdList(Lists.newArrayList(req.getLnaId()));
+        storePageReq.setLanIdList(Lists.newArrayList(req.getLanId()));
         Page<ResouceStoreDTO> storeDTOPage = resouceStoreService.pageStore(storePageReq);
         if (null == storeDTOPage || CollectionUtils.isEmpty(storeDTOPage.getRecords())) {
             return;

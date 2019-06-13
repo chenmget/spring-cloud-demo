@@ -440,18 +440,26 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Transactional
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
 		
+String isFixedLine = purApplyManager.selectisFixedLineByBatchId(req.getBatchId());
+		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
-		log.info("----------------------------------------------------------------政企价格修改准备参数 new ProcessStartReq()--------------------------------------------------------------");
+		//政企价格修改审核
 		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 		Map map=new HashMap();
-		map.put("CORPORATION_PRICE", req.getCorporationPrice());
+		map.put("GWZD", "1");
 		processStartDTO.setParamsValue(JSON.toJSONString(map));
-
-		processStartDTO.setTitle("政企价格修改审核流程");
+		//业务ID->批次ID
 		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
-		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9504.getTaskSubType());
+		if("1".equals(isFixedLine)) {//如果是固网
+			processStartDTO.setTitle("固网终端政企价格修改审核流程");
+			processStartDTO.setProcessId(PurApplyConsts.GWPROD_PRODUCT_CORPORATION_PRICE_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9605.getTaskSubType());
+		} else {
+			processStartDTO.setTitle("移动终端政企价格修改审核流程");
+			processStartDTO.setProcessId(PurApplyConsts.YDPROD_PRODUCT_CORPORATION_PRICE_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9604.getTaskSubType());
+		}
 		processStartDTO.setApplyUserId(req.getApplyUserId());
 		//根据用户id查询名称
 		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());
@@ -462,13 +470,16 @@ public class PurApplyServiceImpl implements PurApplyService {
 		processStartDTO.setApplyUserName(userName);
 		ResultVO resultVO = new ResultVO();
 		try {
-			log.info("----------------------------------------------------------------taskService.startProcess--------------------------------------------------------------");
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程start*********************");
+			log.info("****************************************processStartDTO = "+JSON.toJSONString(processStartDTO));
 			resultVO = taskService.startProcess(processStartDTO);
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程end*********************");
+			log.info("****************************************resultVO = "+JSON.toJSONString(resultVO));
 		} catch (Exception e) {
-			log.error("PurApplyServiceImpl.updatePrice catch exception={}"+ e);
+			log.error("PurApplyServiceImpl.updatePrice catch exception={}", e);
 			return ResultVO.error();
 		} finally {
-			log.info("PurApplyServiceImpl.updatePrice finally req={},resp={}"+
+			log.info("PurApplyServiceImpl.updatePrice finally req={},resp={}",
 					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 		}
 		

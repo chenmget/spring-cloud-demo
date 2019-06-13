@@ -190,6 +190,10 @@ public class GovernmentPriceManageController extends BaseController {
     })
     @RequestMapping(value = "/searchCommitPriceInfo")
     public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(@RequestBody UpdateCorporationPriceReq req) {
+		req.setApplyUserId(UserContext.getUserId());
+		Date date = new Date();
+		String batch_id = String.valueOf(date.getTime());
+		req.setBatchId(batch_id);
 		return purApplyService.searchCommitPriceInfo(req);
     }
 	

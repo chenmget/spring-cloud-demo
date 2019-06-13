@@ -31,9 +31,11 @@ import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.system.dto.request.CommonOrgPageReq;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionPageReq;
 import com.iwhalecloud.retail.system.dto.request.UserGetReq;
+import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -68,6 +70,9 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
     @Reference
     private CommonRegionService commonRegionService;
+
+    @Reference
+    private CommonOrgService commonOrgService;
 
     @Reference
     private MerchantService merchantService;
@@ -599,12 +604,19 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
-                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
-                commonRegionPageReq.setRegionIdList(targetIdList);
-                commonRegionPageReq.setPageNo(req.getPageNo());
-                commonRegionPageReq.setPageSize(req.getPageSize());
-                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
-                fieldName = "regionId";
+//                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
+//                commonRegionPageReq.setRegionIdList(targetIdList);
+//                commonRegionPageReq.setPageNo(req.getPageNo());
+//                commonRegionPageReq.setPageSize(req.getPageSize());
+//                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
+//                fieldName = "regionId";
+                // zhong.wenlong 2019.06.13 改查 sys_common_org表
+                CommonOrgPageReq commonOrgPageReq = new CommonOrgPageReq();
+                commonOrgPageReq.setOrgIdList(targetIdList);
+                commonOrgPageReq.setPageNo(req.getPageNo());
+                commonOrgPageReq.setPageSize(req.getPageSize());
+                detailPage = commonOrgService.pageCommonOrg(commonOrgPageReq).getResultData();
+                fieldName = "orgId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
@@ -617,6 +629,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setPageSize(req.getPageSize());
                 productsPageReq.setProductIdList(targetIdList);
                 productsPageReq.setCatId(req.getCatId());
+                productsPageReq.setTypeId(req.getTypeId());
+
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
@@ -648,6 +662,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             productsPageReq.setPageNo(req.getPageNo());
             productsPageReq.setPageSize(req.getPageSize());
             productsPageReq.setCatId(req.getCatId());
+            productsPageReq.setTypeId(req.getTypeId());
 
             // 品牌
             if (!StringUtils.isEmpty(req.getBrandId())) {
@@ -679,6 +694,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setPageSize(req.getPageSize());
                 productsPageReq.setProductIdList(targetIdList);
                 productsPageReq.setCatId(req.getCatId());
+                productsPageReq.setTypeId(req.getTypeId());
 
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {

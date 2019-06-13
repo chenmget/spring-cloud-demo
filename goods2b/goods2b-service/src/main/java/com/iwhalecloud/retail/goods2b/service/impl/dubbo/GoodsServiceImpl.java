@@ -32,9 +32,7 @@ import com.iwhalecloud.retail.partner.service.SupplierService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
-import com.iwhalecloud.retail.promo.dto.req.ActivityProductListReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityQueryByGoodsReq;
-import com.iwhalecloud.retail.promo.dto.resp.MarketingGoodsActivityQueryResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingReliefActivityQueryResp;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
@@ -181,6 +179,20 @@ public class GoodsServiceImpl implements GoodsService {
         }
     }
 
+    /**
+     * 添加商品发布地市关联记录
+     *
+     * @param goodsId
+     * @param regionReq
+     */
+    private void saveGoodsRegionRel(String goodsId, RegionReq regionReq) {
+        // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+        GoodsRegionRel goodsRegionRel = new GoodsRegionRel();
+        BeanUtils.copyProperties(regionReq, goodsRegionRel);
+        goodsRegionRel.setGoodsId(goodsId);
+        goodsRegionRelManager.saveGoodsRegionRel(goodsRegionRel);
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVO<GoodsAddResp> addGoods(GoodsAddReq req) throws GoodsRulesException {
@@ -227,7 +239,9 @@ public class GoodsServiceImpl implements GoodsService {
             if (CollectionUtils.isNotEmpty(regionList)) {
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -330,7 +344,9 @@ public class GoodsServiceImpl implements GoodsService {
             if (CollectionUtils.isNotEmpty(regionList)) {
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -428,7 +444,9 @@ public class GoodsServiceImpl implements GoodsService {
                 goodsTargetManager.deleteGoodsTargerRel(goodsId);
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -566,7 +584,9 @@ public class GoodsServiceImpl implements GoodsService {
                 goodsRegionRelManager.delGoodsRegionRelByGoodsId(goodsId);
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -887,14 +907,14 @@ public class GoodsServiceImpl implements GoodsService {
                 // 设置缩略图
                 for (ProdFileDTO prodFileDTO : prodFileDTOList) {
                     if (goods.getGoodsId().equals(prodFileDTO.getTargetId())) {
-                    	ProdFileDTO prodFileDTOHD = prodFileManager.queryGoodsImageHD(goods.getGoodsId());//查看这个商品有没有活动图片
-                    	if(prodFileDTOHD != null) {
-                    		goods.setImageUrl(prodFileDTOHD.getFileUrl());
-                    		break;
-                    	}else {
-                    		goods.setImageUrl(prodFileDTO.getFileUrl());
+                        ProdFileDTO prodFileDTOHD = prodFileManager.queryGoodsImageHD(goods.getGoodsId());//查看这个商品有没有活动图片
+                        if (prodFileDTOHD != null) {
+                            goods.setImageUrl(prodFileDTOHD.getFileUrl());
                             break;
-                    	}
+                        } else {
+                            goods.setImageUrl(prodFileDTO.getFileUrl());
+                            break;
+                        }
                     }
                 }
             }
@@ -1276,9 +1296,11 @@ public class GoodsServiceImpl implements GoodsService {
             for (GoodsRegionRel regionRel : goodsRegionRels) {
                 regionNames.add(regionRel.getRegionName());
                 RegionReq regionReq = new RegionReq();
-                regionReq.setRegionId(regionRel.getRegionId());
-                regionReq.setRegionName(regionRel.getRegionName());
-                regionReq.setLanId(regionRel.getLanId());
+//                regionReq.setRegionId(regionRel.getRegionId());
+//                regionReq.setRegionName(regionRel.getRegionName());
+//                regionReq.setLanId(regionRel.getLanId());
+                // zhongwenlong 2019.06.13
+                BeanUtils.copyProperties(regionRel, regionReq);
                 regionList.add(regionReq);
             }
             resp.setRegionList(regionList);
@@ -1329,16 +1351,16 @@ public class GoodsServiceImpl implements GoodsService {
 
         //查询活动的图片
         List<ProdFileDTO> prodFileDTOListHD = prodFileManager.queryGoodsImageHDdetail(goodsId);//查出是活的的图片
-        if(prodFileDTOListHD == null) {
-        	prodFileDTOListHD = new ArrayList<ProdFileDTO>();
+        if (prodFileDTOListHD == null) {
+            prodFileDTOListHD = new ArrayList<ProdFileDTO>();
         }
         // 查询商品图片和视频
         List<ProdFileDTO> prodFileDTOList = prodFileManager.queryGoodsImage(goodsId);//查询不是活动的图片
-        
-        for(int i=0;i<prodFileDTOList.size();i++) {//为了活动图片展示在普通的图片前面
-        	prodFileDTOListHD.add(prodFileDTOList.get(i));
+
+        for (int i = 0; i < prodFileDTOList.size(); i++) {//为了活动图片展示在普通的图片前面
+            prodFileDTOListHD.add(prodFileDTOList.get(i));
         }
-        
+
         if (CollectionUtils.isNotEmpty(prodFileDTOListHD)) {
             resp.setProdFiles(prodFileDTOListHD);
         }
@@ -1355,9 +1377,9 @@ public class GoodsServiceImpl implements GoodsService {
                 productResp.setPurchaseType(productBaseGetResp.getPurchaseType());
                 productResp.setBrandId(productResp.getBrandId());
                 productResp.setBrandName(resp.getBrandName());
-                if(StringUtils.isNotEmpty(productResp.getTypeId())){
+                if (StringUtils.isNotEmpty(productResp.getTypeId())) {
                     Type type = typeManager.selectById(productResp.getTypeId());
-                    if(null!=type){
+                    if (null != type) {
                         productResp.setTypeName(type.getTypeName());
                     }
                 }
@@ -1566,10 +1588,10 @@ public class GoodsServiceImpl implements GoodsService {
                 activityQueryByGoodsReq.setProductId(goodsProductRel.getProductId());
                 ResultVO<ActivityProductDTO> resultVO = marketingActivityService.getActivityProduct(activityQueryByGoodsReq);
                 if (resultVO.isSuccess() && Objects.nonNull(resultVO.getResultData())) {
-                        ActivityProductDTO activityProductDTO = resultVO.getResultData();
-                        // 设置需要的值
-                        // 前置补贴活动的统一货价(转换为Double)
-                        resp.setDeliveryPrice(activityProductDTO.getPrice() * 1D);
+                    ActivityProductDTO activityProductDTO = resultVO.getResultData();
+                    // 设置需要的值
+                    // 前置补贴活动的统一货价(转换为Double)
+                    resp.setDeliveryPrice(activityProductDTO.getPrice() * 1D);
                 } else {
                     log.info("GoodsServiceImpl.getProductResps() 调用服务 marketingActivityService.getActivityProduct 返回结果为空");
                 }
@@ -1732,7 +1754,7 @@ public class GoodsServiceImpl implements GoodsService {
             if (1 == isSubsidy || mktprice <= 1599) {
                 return supplierGoodsDTOs;
             }
-            if(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(goods.getMerchantType())){
+            if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(goods.getMerchantType())) {
                 return supplierGoodsDTOs;
             }
         }

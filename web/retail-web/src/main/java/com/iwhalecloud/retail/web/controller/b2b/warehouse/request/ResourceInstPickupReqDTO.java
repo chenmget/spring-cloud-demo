@@ -35,4 +35,6 @@ public class ResourceInstPickupReqDTO implements Serializable {
 	@ApiModelProperty(value = "lanId")
 	private String lanId;
 
+	@ApiModelProperty(value = "是政企还是集采串码")
+	private String isGovOrJC;//政企为1，集采为2
 }

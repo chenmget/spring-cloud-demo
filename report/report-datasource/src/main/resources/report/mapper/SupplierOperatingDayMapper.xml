@@ -117,6 +117,7 @@
     </select>
 
 
+    <!-- 这个sql （只是用来参考的） 是没有用到的  可以删除-->
     <sql id="reportDeSale_prefix" >
         select * from (
             select * from (

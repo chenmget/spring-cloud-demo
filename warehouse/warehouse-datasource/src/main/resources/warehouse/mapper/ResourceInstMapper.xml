@@ -446,4 +446,9 @@
         order by create_date desc
         LIMIT #{req.pageStartNo}, #{req.pageSize}
     </select>
+    
+    <select id="selectMktResInstType" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceStoreIdResnbr"
+            resultType="java.lang.String">
+    	SELECT MKT_RES_INST_TYPE FROM MKT_RES_INST WHERE MKT_RES_INST_NBR=#{req.mktResInstNbr} AND MKT_RES_STORE_ID=#{req.mktResStoreId}
+    </select>
 </mapper>

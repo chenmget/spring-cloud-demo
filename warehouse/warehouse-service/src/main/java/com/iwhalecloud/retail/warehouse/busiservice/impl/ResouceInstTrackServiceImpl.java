@@ -29,6 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -770,7 +771,10 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         log.info("ResouceInstTrackServiceImpl.pickResourceInstForRetail merchantService.getMerchantById req={},buyerMerchantId={}", req.getMerchantId(), JSON.toJSONString(targetMerchantResultVO));
 
         ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
+        
+        
         resourceInstsGetReq.setMktResInstNbrs(req.getMktResInstNbrs());
+        
         resourceInstsGetReq.setMktResStoreId(sourceStoreId);
         List<ResourceInstDTO> insts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.pickResourceInsForRetail resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(insts));

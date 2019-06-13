@@ -393,6 +393,37 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 continue;
             }
         }
+
+        // 添加产品
+        List<ProductAddReq> productAddReqs = req.getProductAddReqs();
+        String status = "";
+        Boolean addResult = true;
+        if (null != productAddReqs && !productAddReqs.isEmpty()){
+            for (ProductAddReq par : productAddReqs){
+                //
+                if(StringUtils.isEmpty(req.getIsFixedLine()) || (StringUtils.isNotEmpty(req.getIsFixedLine()) &&
+                        !"1".equals(req.getIsFixedLine()))){
+                    String sn = par.getSn();
+                    String purchaseString = sn.substring(sn.length() - 3);
+                    if ("100".equals(purchaseString)){
+                        par.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
+                    }else if("300".equals(purchaseString)){
+                        par.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
+                    }
+                }
+                status = par.getStatus();
+                String auditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();
+                //除了待提交，都是审核中
+                if(!ProductConst.StatusType.SUBMIT.getCode().equals(status)){
+                    auditState =ProductConst.AuditStateType.AUDITING.getCode();
+                    par.setStatus(ProductConst.StatusType.AUDIT.getCode());
+                }
+                par.setProductBaseId(req.getProductBaseId());
+                par.setCreateStaff(req.getUpdateStaff());
+                par.setAuditState(auditState);
+                productService.addProduct(par);
+            }
+        }
         req.setUpdateDate(new Date());
         if(StringUtils.isEmpty(req.getPriceLevel())){
             Double minCost = 0.0;

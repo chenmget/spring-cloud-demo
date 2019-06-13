@@ -616,11 +616,30 @@
 			b.NEW_VALUE as newValue,
 			b.KEY_VALUE as keyValue,
 			b.CREATE_DATE as createDate,
-			b.CREATE_STAFF as createStaff
+			b.CREATE_STAFF as createStaff,
+			ppb.PRODUCT_NAME as productName,
+			ppb.UNIT_TYPE as unitType,
+			ppb.UNIT_TYPE_NAME as unitTypeName,
+			pp.SN as sn,
+			pt.TYPE_NAME as typeName,
+			pb.NAME as brandName
 		FROM 
-			prod_product_change a,prod_product_change_detail b 
+			prod_product_change a,
+			prod_product_change_detail b ,
+			PROD_PRODUCT_BASE ppb,
+			PROD_PRODUCT pp,
+			PROD_TYPE pt,
+			PROD_BRAND pb
 		WHERE 
 			a.change_id = b.change_id 
+		AND
+			ppb.product_base_id = pp.product_base_id 
+		AND 
+			ppb.type_id = pt.type_id
+		AND 
+			ppb.BRAND_ID = pb.BRAND_ID
+		AND
+			a.product_id = pp.product_id
 		AND 
 			a.batch_id = #{req.batchId}
   </select>

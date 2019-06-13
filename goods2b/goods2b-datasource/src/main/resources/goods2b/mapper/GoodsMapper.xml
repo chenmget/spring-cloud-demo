@@ -228,6 +228,9 @@
         <if test="req.regionId != null and req.lanId != null and req.targetId == null">
             and t.GOODS_ID in
             (select DISTINCT goods_id from prod_goods_region_rel where (REGION_ID = #{req.regionId } or REGION_ID = #{req.lanId }) and LAN_ID = #{req.lanId }
+            <if test="req.orgPathCode != null and req.orgPathCode != ''">
+                and INSTR(#{req.orgPathCode}, ORG_ID)
+            </if>
             UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)
         </if>
         <if test="req.regionId == null and req.lanId == null and req.targetId != null">
@@ -238,6 +241,9 @@
         <if test="req.regionId != null and req.lanId != null and req.targetId != null">
             and t.GOODS_ID in
             (select DISTINCT goods_id from prod_goods_region_rel where (REGION_ID = #{req.regionId } or REGION_ID = #{req.lanId })  and LAN_ID = #{req.lanId }
+                <if test="req.orgPathCode != null and req.orgPathCode != ''">
+                    and INSTR(#{req.orgPathCode}, ORG_ID)
+                </if>
             UNION select DISTINCT goods_id from prod_goods_target_rel where TARGET_ID = #{req.targetId }
             UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)
         </if>

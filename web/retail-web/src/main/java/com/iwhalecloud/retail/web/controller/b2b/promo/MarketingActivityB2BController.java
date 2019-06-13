@@ -213,6 +213,7 @@ public class MarketingActivityB2BController {
         UserDTO userDTO = UserContext.getUser();
         req.setUserId(userDTO.getUserId());
         req.setUserName(userDTO.getUserName());
+        req.setModifier(userDTO.getUserName());
         req.setSysPostName(userDTO.getSysPostName());
         req.setOrgId(userDTO.getOrgId());
         if (!StringUtils.isEmpty(req.getPageImgUrl())) {

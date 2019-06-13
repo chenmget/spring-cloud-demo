@@ -951,6 +951,9 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         }
         //1.插入变更信息，包含比较变更数据和原数据，获取变更项，插入变更表和变更明细表
         String changeId = addMarketingActivityChange(originalActivity, changedActivity);
+        if(changeId==null){
+            return ResultVO.error(constant.getNoModify());
+        }
         //2.将营销活动“修改标识”改为1(在审核修改中)
         marketingActivityManager.updateMarketingActivityToModifying(changedActivity.getId(), PromoConst.ActivityIsModifying.YES.getCode());
         //3.起变更审核流程
@@ -967,6 +970,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
      * @return 变更信息id
      */
     private String addMarketingActivityChange(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity) {
+
+        //获取原活动信息，与新活动信息比较获取变更明细信息
+        List<ActivityChangeDetail> activityChangeDetails = calculateActivityChangeDetail(originalActivity, changedActivity);
+        if(activityChangeDetails.size()==0){
+            return null;
+        }
         //通过查询该活动的最新变更信息,计算出新变更版本号，与变更明细共用
         Long num = 0L;
         List<ActivityChange> changes = activityChangeManager.queryActivityChangeByActivityId(changedActivity.getId());
@@ -986,9 +995,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         activityChange.setMarketingActivityId(changedActivity.getId());
         activityChange.setAuditState(PromoConst.AuditState.AuditState_2.getCode());
 
-        //获取原活动信息，与新活动信息比较获取变更明细信息
-        List<ActivityChangeDetail> activityChangeDetails = calculateActivityChangeDetail(originalActivity, changedActivity);
-        //补充关联信息
+       //补充变更详情相关关联信息
         for (ActivityChangeDetail activityChangeDetail : activityChangeDetails) {
             activityChangeDetail.setChangeId(changeId);
             activityChangeDetail.setVerNum(Long.valueOf(num));

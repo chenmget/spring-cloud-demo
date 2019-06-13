@@ -47,6 +47,16 @@ public class PurApplyConsts {
     public final static String PROD_PRODUCT_CORPORATION_PRICE_ID = "20190611";
     
     /**
+     *固网终端 政企价格修改审核流程
+     */
+    public final static String GWPROD_PRODUCT_CORPORATION_PRICE_ID = "2019061501";
+    
+    /**
+     *移动终端 政企价格修改审核流程
+     */
+    public final static String YDPROD_PRODUCT_CORPORATION_PRICE_ID = "2019061401";
+
+    /**
      * 采购申请单审核流程
      */
     public final static String PURCHASE_AUDIT_PROCESS_ID = "18";

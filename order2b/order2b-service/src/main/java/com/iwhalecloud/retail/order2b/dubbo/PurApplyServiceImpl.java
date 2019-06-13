@@ -357,6 +357,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
+		
+		String isFixedLine = purApplyManager.selectisFixedLineByBatchId(req.getBatchId());
+		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
 		//政企价格修改审核
@@ -364,12 +367,17 @@ public class PurApplyServiceImpl implements PurApplyService {
 		Map map=new HashMap();
 		map.put("GWZD", "1");
 		processStartDTO.setParamsValue(JSON.toJSONString(map));
-
-		processStartDTO.setTitle("政企价格修改审核流程");
 		//业务ID->批次ID
 		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
-		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9504.getTaskSubType());
+		if("1".equals(isFixedLine)) {//如果是固网
+			processStartDTO.setTitle("固网终端政企价格修改审核流程");
+			processStartDTO.setProcessId(PurApplyConsts.GWPROD_PRODUCT_CORPORATION_PRICE_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9605.getTaskSubType());
+		} else {
+			processStartDTO.setTitle("移动终端政企价格修改审核流程");
+			processStartDTO.setProcessId(PurApplyConsts.YDPROD_PRODUCT_CORPORATION_PRICE_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9604.getTaskSubType());
+		}
 		processStartDTO.setApplyUserId(req.getApplyUserId());
 		//根据用户id查询名称
 		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());

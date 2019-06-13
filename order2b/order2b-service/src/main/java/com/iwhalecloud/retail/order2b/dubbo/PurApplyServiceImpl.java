@@ -386,10 +386,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程end*********************");
 			log.info("****************************************resultVO = "+JSON.toJSONString(resultVO));
 		} catch (Exception e) {
-			log.error("PurApplyServiceImpl.updatePrice exception={}", e);
+			log.error("PurApplyServiceImpl.updatePrice catch exception={}", e);
 			return ResultVO.error();
 		} finally {
-			log.info("PurApplyServiceImpl.updatePrice req={},resp={}",
+			log.info("PurApplyServiceImpl.updatePrice finally req={},resp={}",
 					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 		}
 		
@@ -434,6 +434,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
+		log.info("----------------------------------------------------------------政企价格修改准备参数 new ProcessStartReq()--------------------------------------------------------------");
 		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 		Map map=new HashMap();
 		map.put("CORPORATION_PRICE", req.getCorporationPrice());
@@ -453,12 +454,13 @@ public class PurApplyServiceImpl implements PurApplyService {
 		processStartDTO.setApplyUserName(userName);
 		ResultVO resultVO = new ResultVO();
 		try {
+			log.info("----------------------------------------------------------------taskService.startProcess--------------------------------------------------------------");
 			resultVO = taskService.startProcess(processStartDTO);
 		} catch (Exception e) {
-			log.error("PurApplyServiceImpl.updatePrice exception={}", e);
+			log.error("PurApplyServiceImpl.updatePrice catch exception={}"+ e);
 			return ResultVO.error();
 		} finally {
-			log.info("PurApplyServiceImpl.updatePrice req={},resp={}",
+			log.info("PurApplyServiceImpl.updatePrice finally req={},resp={}"+
 					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 		}
 		

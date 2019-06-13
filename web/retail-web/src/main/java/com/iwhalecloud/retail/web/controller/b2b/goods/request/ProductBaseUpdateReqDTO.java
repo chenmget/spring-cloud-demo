@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.web.controller.b2b.goods.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductAddReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductExtUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductUpdateReq;
 import io.swagger.annotations.ApiModelProperty;
@@ -243,5 +244,11 @@ public class ProductBaseUpdateReqDTO implements Serializable {
      */
     @ApiModelProperty(value = "价格档位")
     private String priceLevel;
+
+    /**
+     * 产品列表
+     */
+    @ApiModelProperty(value = "产品列表")
+    private List<ProductAddReq> productAddReqs;
 
 }

@@ -12,11 +12,11 @@
 			a.APPLY_MERCHANT_ID As applyMerchantId,
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
-			b.merchant_name As applyMerchantName,
+			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.APPLY_MERCHANT_ID) AS applyMerchantName,
 			a.STATUS_CD AS STATUS,
 			'' AS `option`
-			 FROM PUR_APPLY a,par_merchant b
-			 WHERE 1=1 and a.APPLY_MERCHANT_ID=b.MERCHANT_ID
+			 FROM PUR_APPLY a
+			 WHERE 1=1 
 			 and a.STATUS_CD != '1100'
 		<if test="req.lanId != null and req.lanId != ''">
             and a.LAN_ID = #{req.lanId}
@@ -481,7 +481,8 @@
 	 	 AUDIT_STATE,
 	 	 CREATE_DATE,
 	 	 CREATE_STAFF,
-	 	 BATCH_ID
+	 	 BATCH_ID,
+	 	 PRODUCT_ID
  	 ) value (
  	 	#{req.changeId},
  	 	#{req.verNum},
@@ -489,7 +490,8 @@
  	 	#{req.auditState},
  	 	#{req.createDate},
  	 	#{req.createStaff},
- 	 	#{req.batchId}
+ 	 	#{req.batchId},
+ 	 	#{req.productId}
  	 )
   </select>
   
@@ -532,7 +534,7 @@
  	 )
   </select>
   
-  <select id="updateProductChange" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq" resultType="java.lang.Integer"  >
+  <select id="updateProductChange" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq">
  	 UPDATE 
  	 	PROD_PRODUCT_CHANGE 
  	 SET 
@@ -541,31 +543,52 @@
  	 	change_id = #{req.changeId}
   </select>
   
-  <select id="selectProdProductChangeDetail" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail"  >
-	  SELECT 
-	  	CHANGE_DETAIL_ID as changeDetailId,
-		CHANGE_ID as changeId,
-		OPER_TYPE as operType,
-		VER_NUM as verNum,
-		TABLE_NAME as tableName,
-		CHANGE_FIELD as changeField,
-		CHANGE_FIELD_NAME as changeFieldName,
-		OLD_VALUE as oldValue,
-		NEW_VALUE as newValue,
-		KEY_VALUE as keyValue,
-		CREATE_DATE as createDate,
-		CREATE_STAFF as createStaff
-	FROM 
-		PROD_PRODUCT_CHANGE_DETAIL
-	WHERE 
-		KEY_VALUE = #{keyValue}
+  <select id="updateProdProduct" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq">
+ 	 UPDATE 
+ 	 	PROD_PRODUCT 
+ 	 SET 
+ 	 	price_status=#{req.auditState} 
+ 	 WHERE 
+ 	 	product_id = #{req.productId}
   </select>
   
-  <select id="updateProductCorpPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" resultType="java.lang.Integer" >
+  <select id="selectProdProductChangeDetail" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail"  >
+	  SELECT 
+	  	a.CHANGE_DETAIL_ID AS changeDetailId,
+		a.CHANGE_ID AS changeId,
+		a.OPER_TYPE AS operType,
+		a.VER_NUM AS verNum,
+		a.TABLE_NAME AS tableName,
+		a.CHANGE_FIELD AS changeField,
+		a.CHANGE_FIELD_NAME AS changeFieldName,
+		a.OLD_VALUE AS oldValue,
+		a.NEW_VALUE AS newValue,
+		a.KEY_VALUE AS keyValue,
+		a.CREATE_DATE AS createDate,
+		a.CREATE_STAFF AS createStaff
+	FROM 
+		PROD_PRODUCT_CHANGE_DETAIL a,PROD_PRODUCT_CHANGE b
+	WHERE 
+		a.CHANGE_ID = b.CHANGE_ID
+	AND
+		b.BATCH_ID=#{keyValue}
+		
+  </select>
+  
+  <select id="updateProductCorpPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail">
 	UPDATE 
 		prod_product 
 	SET 
-		CORPORATION_PRICE=#{req.corporationPrice} 
+		CORPORATION_PRICE=#{req.newValue},PRICE_STATUS=#{req.priceStatus} 
+	WHERE 
+		product_id = #{req.productId}	
+  </select>
+  
+  <select id="updateProdNoPassPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail">
+	UPDATE 
+		prod_product 
+	SET 
+		PRICE_STATUS=#{req.priceStatus} 
 	WHERE 
 		product_id = #{req.productId}	
   </select>
@@ -577,6 +600,65 @@
 		prod_product
 	WHERE 
 		product_id = #{productId}	
+  </select>
+  
+  <select id="searchCommitPriceInfo" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq" 
+  	resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" >
+		SELECT 
+			b.CHANGE_DETAIL_ID as changeDetailId,
+			b.CHANGE_ID as changeId,
+			b.OPER_TYPE as operType,
+			b.VER_NUM as verNum,
+			b.TABLE_NAME as tableName,
+			b.CHANGE_FIELD as changeField,
+			b.CHANGE_FIELD_NAME as changeFieldName,
+			b.OLD_VALUE as oldValue,
+			b.NEW_VALUE as newValue,
+			b.KEY_VALUE as keyValue,
+			b.CREATE_DATE as createDate,
+			b.CREATE_STAFF as createStaff,
+			ppb.PRODUCT_NAME as productName,
+			ppb.UNIT_TYPE as unitType,
+			ppb.UNIT_TYPE_NAME as unitTypeName,
+			pp.SN as sn,
+			pt.TYPE_NAME as typeName,
+			pb.NAME as brandName
+		FROM 
+			prod_product_change a,
+			prod_product_change_detail b ,
+			PROD_PRODUCT_BASE ppb,
+			PROD_PRODUCT pp,
+			PROD_TYPE pt,
+			PROD_BRAND pb
+		WHERE 
+			a.change_id = b.change_id 
+		AND
+			ppb.product_base_id = pp.product_base_id 
+		AND 
+			ppb.type_id = pt.type_id
+		AND 
+			ppb.BRAND_ID = pb.BRAND_ID
+		AND
+			a.product_id = pp.product_id
+		AND 
+			a.batch_id = #{req.batchId}
+  </select>
+  
+  <select id="selectProductIdByChangeId" parameterType="java.lang.String" 
+  	resultType="java.lang.String" >
+		select product_id from PROD_PRODUCT_CHANGE where change_id = #{changeId}
+  </select>
+  
+  <select id="selectisFixedLineByBatchId" parameterType="java.lang.String" 
+  	resultType="java.lang.String" >
+		select 
+			a.is_fixed_line 
+		from 
+			prod_product_base a,prod_product_change b 
+		where 
+			a.product_base_id = b.product_base_id 
+		and 
+			b.batch_id = #{batchId}
   </select>
   
 </mapper>

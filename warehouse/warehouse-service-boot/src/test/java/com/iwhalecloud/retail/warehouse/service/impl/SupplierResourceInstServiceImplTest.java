@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
+import com.iwhalecloud.retail.warehouse.service.TradeResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,6 +33,9 @@ public class SupplierResourceInstServiceImplTest {
 
     @Autowired
     private ResourceInstService resourceInstService;
+
+    @Reference
+    private TradeResourceInstService tradeResourceInstService;
 
     //场景一：省包(卖) 地保(买)  省包发货
     @Test
@@ -214,5 +218,28 @@ public class SupplierResourceInstServiceImplTest {
         Gson gson = new Gson();
         DeliveryResourceInstReq req = gson.fromJson(json, new TypeToken<DeliveryResourceInstReq>(){}.getType());
         supplierResourceInstService.backDeliveryInResourceInst(req);
+    }
+
+    @Test
+    public void tradeOutResourceInst(){
+        String json = "{\"tradeResourceInstItemList\":" +
+                "[{\"mktResInstNbrs\":[\"101000000003\"]," +
+                "\"orderItemId\":\"20190225090207222641306\"," +
+                "\"productId\":\"100005111\"}],\"sellerMerchantId\":\"4301811025392\",\"lanId\":\"746\"}";
+        Gson gson = new Gson();
+        TradeResourceInstReq req = gson.fromJson(json, new TypeToken<TradeResourceInstReq>(){}.getType());
+        tradeResourceInstService.tradeOutResourceInst(req);
+    }
+
+
+    @Test
+    public void tradeInResourceInst(){
+        String json = "{\"tradeResourceInstItemList\":" +
+                "[{\"mktResInstNbrs\":[\"101000000003\"]," +
+                "\"orderItemId\":\"20190225090207222641306\"," +
+                "\"productId\":\"100005111\"}],\"sellerMerchantId\":\"4301811025392\",\"lanId\":\"746\"}";
+        Gson gson = new Gson();
+        TradeResourceInstReq req = gson.fromJson(json, new TypeToken<TradeResourceInstReq>(){}.getType());
+        tradeResourceInstService.tradeInResourceInst(req);
     }
 }

@@ -683,6 +683,41 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO pickResourceInst(ResourceInstPickupReq req) {
+    	
+    	String isGovOrJC = req.getIsGovOrJC();
+        List<String> mktResInstNbrsList = req.getMktResInstNbrs();
+        String mktResStoreId = req.getMktResStoreId();//仓库ID
+        List<String> bfhNbrList = new ArrayList<String>();
+        List<String> fhNbrList = new ArrayList<String>();
+        if("1".equals(isGovOrJC)) {//政企为1，集采为2
+        	for(int i=0;i<mktResInstNbrsList.size();i++) {
+        		String mktResInstNbr = mktResInstNbrsList.get(i);
+        		ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
+        		resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbr);
+        		resourceStoreIdResnbr.setMktResStoreId(mktResStoreId);
+        		String mktResInstType = resourceInstManager.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
+        		if("4".equals(mktResInstType)) {
+        			fhNbrList.add(mktResInstNbr);
+        		}else {
+        			bfhNbrList.add(mktResInstNbr);
+        		}
+        	}
+        }else if("2".equals(isGovOrJC)){//政企为1，集采为2
+        	for(int i=0;i<mktResInstNbrsList.size();i++) {
+        		String mktResInstNbr = mktResInstNbrsList.get(i);
+        		ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
+        		resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbr);
+        		resourceStoreIdResnbr.setMktResStoreId(mktResStoreId);
+        		String mktResInstType = resourceInstManager.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
+        		if("3".equals(mktResInstType)) {
+        			fhNbrList.add(mktResInstNbr);
+        		}else {
+        			bfhNbrList.add(mktResInstNbr);
+        		}
+        	}
+        }
+        req.setMktResInstNbrs(fhNbrList);
+    	
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 先检查零售商所属十四个地市中的一个是否存在
 
@@ -764,7 +799,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
         log.info("RetailerResourceInstMarketServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
-        return ResultVO.success();
+        return ResultVO.success(bfhNbrList);
     }
 
     private List<ResourceInstListPageResp> translateNbrInst(List<QryMktInstInfoByConditionItemSwapResp> qryMktInstInfoList){

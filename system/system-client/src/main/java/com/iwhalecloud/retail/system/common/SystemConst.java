@@ -19,6 +19,10 @@ public class SystemConst {
     public static final String CACHE_NAME_SYS_COMMON_REGION = "sys_common_region";
     // 区域表sys_common_region 父级的 list集合使用的缓存名称
     public static final String CACHE_NAME_SYS_COMMON_REGION_LIST = "sys_common_region_list";
+    // 通用组织信息sys_common_org使用的缓存名称
+    public static final String CACHE_NAME_SYS_COMMON_ORG = "sys_common_org";
+    // 通用组织信息sys_common_org父级的 list集合使用的缓存名称
+    public static final String CACHE_NAME_SYS_COMMON_ORG_LIST = "sys_common_org_list";
     // 配置表sys_config_info使用的缓存名称
     public static final String CACHE_NAME_SYS_CONFIG_INFO = "sys_config_info";
     // 公共字段表表sys_public_dict使用的缓存名称
@@ -26,6 +30,9 @@ public class SystemConst {
 
     // 湖南默认一级本地网的 父级区域ID
     public static final String HN_DEFAULT_PAR_REGION_ID = "10000000";
+
+    // 湖南默认通用组织信息 父级区域ID
+    public static final String HN_DEFAULT_PARENT_ORG_ID = "843000000000000";
 
     // 最多登录失败次数限制
     public static final int MAX_FAIL_LOGIN_COUNT = 5;
@@ -425,6 +432,29 @@ public class SystemConst {
 
         public String getValue() {
             return value;
+        }
+    }
+
+    /**
+     * 通知发布类型枚举
+     */
+    public enum loginTypeEnum {
+        PORTAL("portal", "统一门户工号"),
+        YHJ("yhj", "云货架账号");
+        private String value;
+        private String type;
+
+        loginTypeEnum(String type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getType() {
+            return type;
         }
     }
 }

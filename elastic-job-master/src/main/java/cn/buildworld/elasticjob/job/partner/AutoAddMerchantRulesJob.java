@@ -75,19 +75,19 @@ public class AutoAddMerchantRulesJob implements SimpleJob {
             merchantListReq.setMerchantType(PartnerConst.MerchantTypeEnum.PARTNER.getType());
             ResultVO<List<MerchantDTO>>  merchantResultVo = merchantService.listMerchant(merchantListReq);
             log.info("AutoAddMerchantRulesJob listMerchant={}", merchantResultVo.getResultData().size());
-            MerchantListReq merchantListReq1 = new MerchantListReq();
-            merchantListReq1.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
-            merchantListReq1.setAssignedFlg(PartnerConst.AssignedFlgEnum.YES.getType());
-            ResultVO<List<MerchantDTO>>  supplierGroundResultVo = merchantService.listMerchant(merchantListReq);
-            log.info("AutoAddMerchantRulesJob supplierGround_listMerchant={}", supplierGroundResultVo.getResultData().size());
+//            MerchantListReq merchantListReq1 = new MerchantListReq();
+//            merchantListReq1.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
+//            merchantListReq1.setAssignedFlg(PartnerConst.AssignedFlgEnum.YES.getType());
+//            ResultVO<List<MerchantDTO>>  supplierGroundResultVo = merchantService.listMerchant(merchantListReq);
+//            log.info("AutoAddMerchantRulesJob supplierGround_listMerchant={}", supplierGroundResultVo.getResultData().size());
             List<MerchantDTO> merchantDTOs = new ArrayList<>();
             if(merchantResultVo.isSuccess()&& null!=merchantResultVo){
                 merchantDTOs = merchantResultVo.getResultData();
             }
             //地包的 并且有赋权的
-            if(supplierGroundResultVo.isSuccess()&& null!=supplierGroundResultVo){
-                merchantDTOs.addAll(supplierGroundResultVo.getResultData());
-            }
+//            if(supplierGroundResultVo.isSuccess()&& null!=supplierGroundResultVo){
+//                merchantDTOs.addAll(supplierGroundResultVo.getResultData());
+//            }
             if(!CollectionUtils.isEmpty(merchantDTOs) && !CollectionUtils.isEmpty(productIds)){
                 for(MerchantDTO merchantDTO: merchantDTOs){
                     MerchantRulesSaveReq merchantRulesSaveReq = new MerchantRulesSaveReq();

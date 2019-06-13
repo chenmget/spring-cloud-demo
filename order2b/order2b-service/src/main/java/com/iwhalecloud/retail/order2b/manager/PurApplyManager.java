@@ -49,6 +49,10 @@ public class PurApplyManager {
 		purApplyMapper.tcProcureApply(req);
 	}
 	
+	public List<ProdProductChangeDetail> searchCommitPriceInfo(UpdateCorporationPriceReq req){
+		return purApplyMapper.searchCommitPriceInfo(req);
+	}
+	
 	public void crPurApplyFile(AddFileReq req){
 		purApplyMapper.crPurApplyFile(req);
 	}
@@ -136,6 +140,11 @@ public class PurApplyManager {
 	public void insertProdChangePrice(ProdProductChangeReq req){
 		purApplyMapper.insertProdChangePrice(req);
 	}
+	
+	public void updateProdProduct(ProdProductChangeReq req){
+		purApplyMapper.updateProdProduct(req);
+	}
+	
 	public String getProductBaseIdByProductId(String productId) {
 		return purApplyMapper.getProductBaseIdByProductId(productId);
 	}
@@ -164,12 +173,23 @@ public class PurApplyManager {
 		purApplyMapper.updatePurApplyStatusCd(req);
 	}
 	
-	public int updateProductChange(ProdProductChangeReq req) {
-		return purApplyMapper.updateProductChange(req);
+	public void updateProductChange(ProdProductChangeReq req) {
+		purApplyMapper.updateProductChange(req);
 	}
 	
-	public int updateProductCorpPrice(ProdProductChangeDetail req) {
-		return purApplyMapper.updateProductCorpPrice(req);
+	public void updateProductCorpPrice(ProdProductChangeDetail req) {
+		purApplyMapper.updateProductCorpPrice(req);
+	}
+	
+	public String selectProductIdByChangeId(String changeId) {
+		return purApplyMapper.selectProductIdByChangeId(changeId);
+	}
+	
+	public String selectisFixedLineByBatchId(String batchId) {
+		return purApplyMapper.selectisFixedLineByBatchId(batchId);
+	}
+	public void updateProdNoPassPrice(ProdProductChangeDetail req) {
+		purApplyMapper.updateProdNoPassPrice(req);
 	}
 	
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(String keyValue) {

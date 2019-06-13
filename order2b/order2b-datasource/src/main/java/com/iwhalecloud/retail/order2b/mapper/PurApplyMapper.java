@@ -32,6 +32,8 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 
 	public void tcProcureApply(@Param("req") ProcureApplyReq procureApplyReq);
 	
+	public List<ProdProductChangeDetail> searchCommitPriceInfo(@Param("req") UpdateCorporationPriceReq req);
+	
 	public void crPurApplyFile(@Param("req") AddFileReq procureApplyReq);
 	
 	public void crPurApplyItem(@Param("req") AddProductReq addProductReq);
@@ -74,6 +76,8 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public void addShippingAddress(@Param("req") MemMemberAddressReq req);
 	
 	public void insertProdChangePrice(@Param("req") ProdProductChangeReq req);
+	public void updateProdProduct(@Param("req") ProdProductChangeReq req);
+	
 	public String getProductBaseIdByProductId(@Param("productId") String productId);
 	public void insertProdProductChangeDetail(@Param("req") ProdProductChangeDetail req);
 	
@@ -87,9 +91,15 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 
 	public void updatePurApplyStatusCd(@Param("req") ProcureApplyReq req);
 
-	public int updateProductChange(@Param("req") ProdProductChangeReq req);
+	public void updateProductChange(@Param("req") ProdProductChangeReq req);
 	
-	public int updateProductCorpPrice(@Param("req") ProdProductChangeDetail req);
+	public void updateProductCorpPrice(@Param("req") ProdProductChangeDetail req);
+	
+	public String selectProductIdByChangeId(@Param("changeId") String changeId);
+	
+	public String selectisFixedLineByBatchId(@Param("batchId") String batchId) ;
+	
+	public void updateProdNoPassPrice(@Param("req") ProdProductChangeDetail req);
 	
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(@Param("keyValue") String keyValue);
 	

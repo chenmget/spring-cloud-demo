@@ -173,6 +173,26 @@ public class ProdFileManager {
         return this.queryProdFiles(wrapper);
     }
 
+    /**
+     * 通过产品ID集合和子类型获取附件集合
+     * @param productIds 商品ID集合
+     * @param subType 子类型
+     * @link TargetType
+     * @return 附件集合
+     */
+    public List<ProdFileDTO> queryProductImage(List<String> productIds,FileConst.SubType subType) {
+        if (productIds==null || productIds.size()<=0) {
+            log.warn("ProdFileManager.queryGoodsImage productIds is null");
+            return null;
+        }
+        QueryWrapper wrapper = new QueryWrapper<>();
+        wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.PRODUCT_TARGET.getType());
+        wrapper.in(ProdFile.FieldNames.targetId.getTableFieldName(), productIds);
+        wrapper.eq(ProdFile.FieldNames.subType.getTableFieldName(),subType.getType());
+
+        return this.queryProdFiles(wrapper);
+    }
+
     public ProdFileDTO queryGoodsImageHD(String goodsId){
     	ProdFileDTO prodFileDTO = prodFileMapper.queryGoodsImageHD(goodsId);
     	if(prodFileDTO != null) {

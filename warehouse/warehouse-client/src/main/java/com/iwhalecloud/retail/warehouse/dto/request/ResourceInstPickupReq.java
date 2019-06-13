@@ -49,5 +49,11 @@ public class ResourceInstPickupReq implements Serializable {
 	 */
 	@ApiModelProperty(value = "更新人")
 	private String updateStaff;
+	
+	/**
+	 * 政企为1，集采为2
+	 */
+	@ApiModelProperty(value = "是政企还是集采串码")
+	private String isGovOrJC;//政企为1，集采为2
 
 }

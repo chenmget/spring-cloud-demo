@@ -50,5 +50,6 @@ public class ReportOrderResp implements Serializable {
 	private String resNbr;
 	private String userType;
 	private String userId;
+	private String productBaseId;
 	private List<ReportOrderNbrResp> nbr;
 }

@@ -142,4 +142,18 @@ public interface ResouceInstTrackService {
      * @return
      */
     ResultVO<List<ResouceInstTrackDTO>> listResourceInstsTrack(ResourceInstsTrackGetReq req);
+
+    /**
+     * 采购发货
+     * @param req
+     * @param resp
+     */
+    void asynTradeOutResourceInst(TradeResourceInstReq req, ResultVO resp);
+
+    /**
+     * 采购收货
+     * @param req
+     * @param resp
+     */
+    void asynTradeInResourceInst(TradeResourceInstReq req, ResultVO resp);
 }

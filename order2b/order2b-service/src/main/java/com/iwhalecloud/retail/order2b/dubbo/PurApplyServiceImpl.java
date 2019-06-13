@@ -355,37 +355,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 	}
 	
 	@Override
+	@Transactional
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
-		//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
-		String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
-		String changeId = purApplyManager.selectNextChangeId();
-		ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
-		prodProductChangeReq.setChangeId(changeId);
-		prodProductChangeReq.setVerNum("1.0");
-		prodProductChangeReq.setProductBaseId(productBaseId);
-		prodProductChangeReq.setAuditState("2");
-		prodProductChangeReq.setCreateDate(new Date());
-		prodProductChangeReq.setCreateStaff(req.getApplyUserId());
-		prodProductChangeReq.setBatchId(req.getBatchId());
-		purApplyManager.insertProdChangePrice(prodProductChangeReq);
-		
-		String changeDetailId = purApplyManager.selectNextChangeDetailId();
-		String oldValue = purApplyManager.selectOldValue(req.getProductId());
-		ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
-		prodProductChangeDetail.setChangeDetailId(changeDetailId);
-		prodProductChangeDetail.setChangeId(changeId);
-		prodProductChangeDetail.setOperType("MOD");//操作类型 ADD：新增 MOD：修改 DEL：删除
-		prodProductChangeDetail.setVerNum("1.0");//版本号
-		prodProductChangeDetail.setTableName("PROD_PRODUCT");//表名
-		prodProductChangeDetail.setChangeField("CORPORATION_PRICE");//	变更字段英文名
-		prodProductChangeDetail.setChangeFieldName("政企供货价");//变更字段中文注释的名字
-		prodProductChangeDetail.setOldValue(oldValue);//	原始值
-		prodProductChangeDetail.setNewValue(req.getCorporationPrice());//	变更值
-		prodProductChangeDetail.setKeyValue(req.getProductId());//product_id	业务ID
-		prodProductChangeDetail.setCreateDate(new Date());//创建时间
-		prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
-		purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
-		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
 		//政企价格修改审核
@@ -421,52 +392,48 @@ public class PurApplyServiceImpl implements PurApplyService {
 			log.info("PurApplyServiceImpl.updatePrice req={},resp={}",
 					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 		}
+		
+		//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
+		String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
+		String changeId = purApplyManager.selectNextChangeId();
+		ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
+		prodProductChangeReq.setChangeId(changeId);
+		prodProductChangeReq.setVerNum("1.0");
+		prodProductChangeReq.setProductBaseId(productBaseId);
+		prodProductChangeReq.setAuditState(PurApplyConsts.AUDIT_STATE_WAIT);
+		prodProductChangeReq.setCreateDate(new Date());
+		prodProductChangeReq.setCreateStaff(req.getApplyUserId());
+		prodProductChangeReq.setBatchId(req.getBatchId());
+		prodProductChangeReq.setProductId(req.getProductId());
+		purApplyManager.insertProdChangePrice(prodProductChangeReq);
+		//把订单的状态改成待审核
+		purApplyManager.updateProdProduct(prodProductChangeReq);
+		
+		String changeDetailId = purApplyManager.selectNextChangeDetailId();
+		String oldValue = purApplyManager.selectOldValue(req.getProductId());
+		ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
+		prodProductChangeDetail.setChangeDetailId(changeDetailId);
+		prodProductChangeDetail.setChangeId(changeId);
+		prodProductChangeDetail.setOperType("MOD");//操作类型 ADD：新增 MOD：修改 DEL：删除
+		prodProductChangeDetail.setVerNum("1.0");//版本号
+		prodProductChangeDetail.setTableName("PROD_PRODUCT");//表名
+		prodProductChangeDetail.setChangeField("CORPORATION_PRICE");//	变更字段英文名
+		prodProductChangeDetail.setChangeFieldName("政企供货价");//变更字段中文注释的名字
+		prodProductChangeDetail.setOldValue(oldValue);//	原始值
+		prodProductChangeDetail.setNewValue(req.getCorporationPrice());//	变更值
+		prodProductChangeDetail.setKeyValue(req.getProductId());//product_id	业务ID
+		prodProductChangeDetail.setCreateDate(new Date());//创建时间
+		prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
+		purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
 		return ResultVO.success();
 	}
 	
 	@Override
+	@Transactional
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
-		List<String> productPriceList = req.getProductPrice();
-		for(int i=0;i<productPriceList.size();i++){
-			String productPrice = productPriceList.get(i);
-			String[] splits = productPrice.split("\\|");
-			req.setProductId(splits[0]);
-			req.setCorporationPrice(splits[1]+"00");
-			String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
-			//循环插入变更表
-			String changeId = purApplyManager.selectNextChangeId();
-			ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
-			prodProductChangeReq.setChangeId(changeId);
-			prodProductChangeReq.setVerNum("1.0");
-			prodProductChangeReq.setProductBaseId(productBaseId);
-			prodProductChangeReq.setAuditState("2");
-			prodProductChangeReq.setCreateDate(new Date());
-			prodProductChangeReq.setCreateStaff(req.getApplyUserId());
-			prodProductChangeReq.setBatchId(req.getBatchId());
-			purApplyManager.insertProdChangePrice(prodProductChangeReq);
-			
-			String changeDetailId = purApplyManager.selectNextChangeDetailId();
-			String oldValue = purApplyManager.selectOldValue(req.getProductId());
-			ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
-			prodProductChangeDetail.setChangeDetailId(changeDetailId);
-			prodProductChangeDetail.setChangeId(changeId);
-			prodProductChangeDetail.setOperType("MOD");//操作类型 ADD：新增 MOD：修改 DEL：删除
-			prodProductChangeDetail.setVerNum("1.0");//版本号
-			prodProductChangeDetail.setTableName("PROD_PRODUCT");//表名
-			prodProductChangeDetail.setChangeField("CORPORATION_PRICE");//	变更字段英文名
-			prodProductChangeDetail.setChangeFieldName("政企供货价");//变更字段中文注释的名字
-			prodProductChangeDetail.setOldValue(oldValue);//	原始值
-			prodProductChangeDetail.setNewValue(req.getCorporationPrice());//	变更值
-			prodProductChangeDetail.setKeyValue(req.getProductId());//product_id	业务ID
-			prodProductChangeDetail.setCreateDate(new Date());//创建时间
-			prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
-			purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
-			
-		}
+		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
-
-		//如果采购价大于政企价格 要省公司审核
 		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 		Map map=new HashMap();
 		map.put("CORPORATION_PRICE", req.getCorporationPrice());
@@ -494,6 +461,49 @@ public class PurApplyServiceImpl implements PurApplyService {
 			log.info("PurApplyServiceImpl.updatePrice req={},resp={}",
 					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 		}
+		
+		List<String> productPriceList = req.getProductPrice();
+		for(int i=0;i<productPriceList.size();i++){
+			String productPrice = productPriceList.get(i);
+			String[] splits = productPrice.split("\\|");
+			req.setProductId(splits[0]);
+			req.setCorporationPrice(splits[1]+"00");
+			String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
+			//循环插入变更表
+			String changeId = purApplyManager.selectNextChangeId();
+			ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
+			prodProductChangeReq.setChangeId(changeId);
+			prodProductChangeReq.setVerNum("1.0");
+			prodProductChangeReq.setProductBaseId(productBaseId);
+			prodProductChangeReq.setAuditState(PurApplyConsts.AUDIT_STATE_WAIT);
+			prodProductChangeReq.setCreateDate(new Date());
+			prodProductChangeReq.setCreateStaff(req.getApplyUserId());
+			prodProductChangeReq.setBatchId(req.getBatchId());
+			prodProductChangeReq.setProductId(req.getProductId());
+			purApplyManager.insertProdChangePrice(prodProductChangeReq);
+			
+			//把订单的状态改成待审核
+			
+			purApplyManager.updateProdProduct(prodProductChangeReq);
+			
+			String changeDetailId = purApplyManager.selectNextChangeDetailId();
+			String oldValue = purApplyManager.selectOldValue(req.getProductId());
+			ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
+			prodProductChangeDetail.setChangeDetailId(changeDetailId);
+			prodProductChangeDetail.setChangeId(changeId);
+			prodProductChangeDetail.setOperType("MOD");//操作类型 ADD：新增 MOD：修改 DEL：删除
+			prodProductChangeDetail.setVerNum("1.0");//版本号
+			prodProductChangeDetail.setTableName("PROD_PRODUCT");//表名
+			prodProductChangeDetail.setChangeField("CORPORATION_PRICE");//	变更字段英文名
+			prodProductChangeDetail.setChangeFieldName("政企供货价");//变更字段中文注释的名字
+			prodProductChangeDetail.setOldValue(oldValue);//	原始值
+			prodProductChangeDetail.setNewValue(req.getCorporationPrice());//	变更值
+			prodProductChangeDetail.setKeyValue(req.getProductId());//product_id	业务ID
+			prodProductChangeDetail.setCreateDate(new Date());//创建时间
+			prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
+			purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
+			
+		}
 		return ResultVO.success();
 	}
 
@@ -502,6 +512,13 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public void insertTcProcureApply(ProcureApplyReq req) {
 		purApplyManager.tcProcureApply(req);
 	}
+	
+	public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(UpdateCorporationPriceReq req){
+		List<ProdProductChangeDetail> list = purApplyManager.searchCommitPriceInfo(req);
+		return ResultVO.success(list);
+	}
+	
+	
 
 //	@Override
 //	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){

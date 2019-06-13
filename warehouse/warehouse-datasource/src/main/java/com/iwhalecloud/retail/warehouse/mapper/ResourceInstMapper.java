@@ -63,6 +63,13 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst> {
     public List<ResourceInstDTO> getResourceInsts(ResourceInstsGetReq req);
 
     /**
+     * 判断是政企串码还是集采串码
+     * @param req
+     * @return
+     */
+    public String selectMktResInstType(@Param("req") ResourceStoreIdResnbr req);
+    
+    /**
      * 根据查询主键集合串码实列
      *
      * @param req

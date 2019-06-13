@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
 
 
 /**
@@ -42,6 +43,17 @@ public class GoodsRegionRelDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "regionName")
   	private String regionName;
-	
+
+	/**
+	 * 组织ID, sys_commom_org表主键
+	 */
+	@ApiModelProperty(value = "组织ID, sys_commom_org表主键")
+	private java.lang.String orgId;
+
+	/**
+	 * 组织名称
+	 */
+	@ApiModelProperty(value = "组织名称")
+	private java.lang.String orgName;
   	
 }

@@ -117,7 +117,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         }
         req.setDestStoreId(mktResStoreId);
         req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        req.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         return resourceInstService.updateResourceInst(req);
     }
 
@@ -283,7 +282,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         req.setMerchantCode(merchantDTO.getMerchantCode());
         req.setLanId(merchantDTO.getLanId());
         req.setRegionId(merchantDTO.getCity());
-        req.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
+        req.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();

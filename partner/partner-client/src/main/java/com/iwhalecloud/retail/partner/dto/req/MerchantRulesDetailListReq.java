@@ -62,6 +62,12 @@ public class MerchantRulesDetailListReq extends PageVO implements Serializable {
     private java.lang.String brandId;
 
     /**
+     * 查询表PROD_TYPE使用
+     */
+    @ApiModelProperty(value = "产品类型")
+    private String typeId;
+
+    /**
      * 查询表PROD_CAT使用
      */
     @ApiModelProperty(value = "产品类别")

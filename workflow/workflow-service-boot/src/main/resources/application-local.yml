@@ -2,7 +2,7 @@ project:
   name: 本机环境
   
 server:
-  port: 8325
+  port: 8925
 
 spring.dubbo:
     application:
@@ -13,7 +13,7 @@ spring.dubbo:
       password:
     protocol:
       name: dubbo
-      port: 20880
+      port: 20789
     scan: com.iwhalecloud.retail
 
 spring.redis:

@@ -258,14 +258,14 @@
 
     <select id="getGoodsSaleNumByTime"
             resultType="com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO">
-        select b.goods_id as goodsId,sum(b.num) as saleNum from ord_order a, ord_order_items b
+        select b.product_id as productId,sum(b.num) as saleNum from ord_order a, ord_order_items b
         where a.order_id = b.order_id
         and a.lan_id = b.lan_id
         and a.status in (4,41,5,6,10)
         and a.create_time > #{beginTime}
         and a.create_time <![CDATA[<=]]> DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
         AND a.lan_id = #{lanId}
-        group by b.goods_id
+        group by b.product_id
         order by saleNum
     </select>
 

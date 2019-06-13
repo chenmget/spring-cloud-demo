@@ -154,4 +154,16 @@ public class ProductPageResp implements Serializable {
     @ApiModelProperty(value = "价格档位")
     private String priceLevel;
     
+    /**
+     * 政企价格审核状态
+     */
+    @ApiModelProperty(value = "政企价格审核状态")
+    private String priceStatus;
+
+    @ApiModelProperty(value = "地包供货价下限")
+    private String localSupplyFeeLower;
+
+    @ApiModelProperty(value = "地包供货价上限")
+    private String localSupplyFeeUpper;
+    
 }

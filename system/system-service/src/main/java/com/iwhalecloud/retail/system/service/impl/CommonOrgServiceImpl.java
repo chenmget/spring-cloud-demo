@@ -2,11 +2,13 @@ package com.iwhalecloud.retail.system.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgListReq;
+import com.iwhalecloud.retail.system.dto.request.CommonOrgPageReq;
 import com.iwhalecloud.retail.system.entity.CommonOrg;
 import com.iwhalecloud.retail.system.manager.CommonOrgManager;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
@@ -79,6 +81,20 @@ public class CommonOrgServiceImpl implements CommonOrgService {
         }
         log.info("CommonOrgServiceImpl.listCommonOrg(), output：commonOrgDTOList={} ", JSON.toJSONString(commonOrgDTOList));
         return ResultVO.success(commonOrgDTOList);
+    }
+
+
+    /**
+     * 分页 获取本地区域 列表
+     * @param req
+     * @return
+     */
+    @Override
+    public ResultVO<Page<CommonOrgDTO>> pageCommonOrg(CommonOrgPageReq req) {
+        log.info("CommonOrgServiceImpl.pageCommonOrg(), input：req={} ", JSON.toJSONString(req));
+        Page<CommonOrgDTO> respPage = commonOrgManager.pageCommonOrg(req);
+        log.info("CommonOrgServiceImpl.pageCommonOrg(), output：list={} ", JSON.toJSONString(respPage.getRecords()));
+        return ResultVO.success(respPage);
     }
 
 }

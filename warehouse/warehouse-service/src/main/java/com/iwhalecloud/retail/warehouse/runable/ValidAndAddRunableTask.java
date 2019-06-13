@@ -16,6 +16,7 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.util.ExcutorServiceUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -187,7 +188,7 @@ public class ValidAndAddRunableTask {
                     inst.setMktResUploadBatch(batchId);
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
-                    if (!deleteStatus.equals(dto.getStatusCd())) {
+                    if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
                         inst.setResultDesc("库中已存在");
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{
@@ -309,7 +310,7 @@ public class ValidAndAddRunableTask {
                     inst.setMktResUploadBatch(batchId);
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
-                    if (!deleteStatus.equals(dto.getStatusCd())) {
+                    if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
                         inst.setResultDesc("SN码库中已存在");
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{
@@ -358,7 +359,7 @@ public class ValidAndAddRunableTask {
                     inst.setMktResUploadBatch(batchId);
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
-                    if (!deleteStatus.equals(dto.getStatusCd())) {
+                    if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
                         inst.setResultDesc("MAC码库中已存在");
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{
@@ -405,7 +406,7 @@ public class ValidAndAddRunableTask {
                     inst.setMktResUploadBatch(batchId);
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
-                    if (!deleteStatus.equals(dto.getStatusCd())) {
+                    if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
                         inst.setResultDesc("CT码库中已存在");
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{

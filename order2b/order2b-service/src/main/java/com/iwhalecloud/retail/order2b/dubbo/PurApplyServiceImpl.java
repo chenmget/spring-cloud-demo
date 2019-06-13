@@ -362,7 +362,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		//政企价格修改审核
 		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 		Map map=new HashMap();
-		map.put("CORPORATION_PRICE", req.getCorporationPrice());
+		map.put("GWZD", "1");
 		processStartDTO.setParamsValue(JSON.toJSONString(map));
 
 		processStartDTO.setTitle("政企价格修改审核流程");

@@ -177,12 +177,16 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         Boolean addResult = true;
         if (null != productAddReqs && !productAddReqs.isEmpty()){
             for (ProductAddReq par : productAddReqs){
-                String sn = par.getSn();
-                String purchaseString = sn.substring(sn.length() - 3);
-                if ("100".equals(purchaseString)){
-                    par.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
-                }else if("300".equals(purchaseString)){
-                    par.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
+                //
+                if(StringUtils.isEmpty(req.getIsFixedLine()) || (StringUtils.isNotEmpty(req.getIsFixedLine()) &&
+                        !"1".equals(req.getIsFixedLine()))){
+                    String sn = par.getSn();
+                    String purchaseString = sn.substring(sn.length() - 3);
+                    if ("100".equals(purchaseString)){
+                        par.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
+                    }else if("300".equals(purchaseString)){
+                        par.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
+                    }
                 }
                 status = par.getStatus();
                 String auditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();

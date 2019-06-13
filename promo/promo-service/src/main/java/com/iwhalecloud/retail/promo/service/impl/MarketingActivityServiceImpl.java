@@ -1217,6 +1217,9 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             List<String> originalActivityScopeCitys = originalActivityScopeDTOList.stream().map(ActivityScopeDTO::getCity).collect(Collectors.toList());
             List<String> originalActivitySupplierCodes = originalActivityScopeDTOList.stream().map(ActivityScopeDTO::getSupplierCode).collect(Collectors.toList());
             for (ActivityScopeDTO changedActivityScopeDTO : changedActivityScopeDTOList) {
+                if(changedActivityScopeDTOList==null||"null".equals(changedActivityScopeDTO)){
+                    continue;
+                }
                 String lanId = changedActivityScopeDTO.getLanId() == null ? "" : changedActivityScopeDTO.getLanId();
                 String city = changedActivityScopeDTO.getCity() == null ? "" : changedActivityScopeDTO.getCity();
                 String supplierCode = changedActivityScopeDTO.getSupplierCode() == null ? "" : changedActivityScopeDTO.getSupplierCode();
@@ -1257,6 +1260,9 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             List<String> originalActivityParticipantCitys = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getCity).collect(Collectors.toList());
             List<String> originalActivityParticipantMerchantCodes = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getMerchantCode).collect(Collectors.toList());
             for (ActivityParticipantDTO changedActivityParticipantDTO : changedActivityParticipantDTOList) {
+                if(changedActivityParticipantDTO==null||"null".equals(changedActivityParticipantDTO)){
+                    continue;
+                }
                 String lanId = changedActivityParticipantDTO.getLanId() == null ? "" : changedActivityParticipantDTO.getLanId();
                 String city = changedActivityParticipantDTO.getCity() == null ? "" : changedActivityParticipantDTO.getCity();
                 String merchantCode = changedActivityParticipantDTO.getMerchantCode() == null ? "" : changedActivityParticipantDTO.getMerchantCode();

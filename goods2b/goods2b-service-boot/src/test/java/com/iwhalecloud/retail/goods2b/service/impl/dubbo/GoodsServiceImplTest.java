@@ -157,6 +157,10 @@ public class GoodsServiceImplTest {
         req.setPageSize(20);
 //        req.setSourceFrom("hnyhj_b2b");
         req.setIsLogin(true);
+        req.setLanId("731");
+        req.setRegionId("73101");
+        req.setOrgPathCode("843073100000000");
+        req.setIsLogin(true);
         List<String> supplierIdList = new ArrayList<>();
         supplierIdList.add("4301811025392");
         req.setSupplierIdList(supplierIdList);

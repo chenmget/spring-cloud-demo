@@ -31,10 +31,7 @@ import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.request.CommonOrgPageReq;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionPageReq;
-import com.iwhalecloud.retail.system.dto.request.UserGetReq;
+import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -437,10 +434,16 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
-                fieldName = "regionId";
-                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
-                commonRegionListReq.setRegionIdList(targetIdList);
-                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
+//                fieldName = "regionId";
+//                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
+//                commonRegionListReq.setRegionIdList(targetIdList);
+//                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
+
+                // zhong.wenlong 2019.06.13 改查 sys_common_org表
+                CommonOrgListReq commonOrgListReq = new CommonOrgListReq();
+                commonOrgListReq.setOrgIdList(targetIdList);
+                detailList = commonOrgService.listCommonOrg(commonOrgListReq, false).getResultData();
+                fieldName = "orgId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
@@ -453,6 +456,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setPageSize(1000); // 写死 大一点
                 productsPageReq.setProductIdList(targetIdList);
                 productsPageReq.setCatId(req.getCatId());
+                productsPageReq.setTypeId(req.getTypeId());
+
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {
                     productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
@@ -486,6 +491,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             productsPageReq.setPageNo(1);
             productsPageReq.setPageSize(1000); // 写死 大一点
             productsPageReq.setCatId(req.getCatId());
+            productsPageReq.setTypeId(req.getTypeId());
 
             // 品牌
             if (!StringUtils.isEmpty(req.getBrandId())) {
@@ -517,6 +523,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
                 productsPageReq.setPageSize(1000); // 写死 大一点
                 productsPageReq.setProductIdList(targetIdList);
                 productsPageReq.setCatId(req.getCatId());
+                productsPageReq.setTypeId(req.getTypeId());
 
                 // 品牌
                 if (!StringUtils.isEmpty(req.getBrandId())) {

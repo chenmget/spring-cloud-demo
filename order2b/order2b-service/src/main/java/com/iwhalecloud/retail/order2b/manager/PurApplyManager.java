@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.manager;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
@@ -188,8 +189,8 @@ public class PurApplyManager {
 	 * @return
 	 */
 	public  PurApply getPurApplyByAppId(String applyId) {
-//		QueryWrapper<PurApply> queryWrapper = new QueryWrapper<>();
-//		queryWrapper.eq("apply_id", applyId);
+		QueryWrapper<PurApply> queryWrapper = new QueryWrapper<>();
+		queryWrapper.eq("apply_id", applyId);
 		return purApplyMapper.selectById(applyId);
 	}
 	/**

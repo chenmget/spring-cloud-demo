@@ -458,6 +458,8 @@ public class RunableTask {
                                 req.setSnCode(dto.getSnCode());
                                 req.setMacCode(dto.getMacCode());
                                 req.setMktResId(dto.getMktResId());
+                                // 同一次如果供应商从不同厂商交易过来会有问题（暂时默认从同一个厂商过来）
+                                req.setDestStoreId(dto.getMktResStoreId());
                                 ResultVO resultVO = supplierResourceInstService.addResourceInst(req);
                                 if (!resultVO.isSuccess()) {
                                     return false;

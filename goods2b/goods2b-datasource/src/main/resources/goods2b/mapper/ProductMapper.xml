@@ -494,4 +494,13 @@
     </if>
   </select>
 
+	<select id="selectNextChangeId" resultType="java.lang.String" >
+ 	 	select seq_PRODUCT_CHANGE_ID.nextVal
+  	</select>
+  	
+  	<select id="selectNextChangeDetailId" resultType="java.lang.String" >
+ 	 	select seq_PRODUCT_CHANGE_DETAIL_ID.nextVal
+  	</select>
+  	
+  	
 </mapper>

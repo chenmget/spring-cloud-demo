@@ -72,8 +72,6 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public String getProductBaseIdByProductId(@Param("productId") String productId);
 	public void insertProdProductChangeDetail(@Param("req") ProdProductChangeDetail req);
 	
-	public String selectNextChangeId() ;
-	public String selectNextChangeDetailId() ;
 	public String selectOldValue(@Param("productId") String productId);
 	
 	public void commitPriceExcel(@Param("req") UpdateCorporationPriceReq req);

@@ -403,7 +403,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		
 		//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
 		String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
-		String changeId = purApplyManager.selectNextChangeId();
+		String changeId = productService.selectNextChangeId();
 		ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
 		prodProductChangeReq.setChangeId(changeId);
 		prodProductChangeReq.setVerNum("1.0");
@@ -415,7 +415,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		prodProductChangeReq.setProductId(req.getProductId());
 		purApplyManager.insertProdChangePrice(prodProductChangeReq);
 		
-		String changeDetailId = purApplyManager.selectNextChangeDetailId();
+		String changeDetailId = productService.selectNextChangeDetailId();
 		String oldValue = purApplyManager.selectOldValue(req.getProductId());
 		ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
 		prodProductChangeDetail.setChangeDetailId(changeDetailId);
@@ -480,7 +480,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			req.setCorporationPrice(splits[1]+"00");
 			String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
 			//循环插入变更表
-			String changeId = purApplyManager.selectNextChangeId();
+			String changeId = productService.selectNextChangeId();//1151
 			ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
 			prodProductChangeReq.setChangeId(changeId);
 			prodProductChangeReq.setVerNum("1.0");
@@ -494,7 +494,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			
 			//把订单的状态改成待审核
 			
-			String changeDetailId = purApplyManager.selectNextChangeDetailId();
+			String changeDetailId = productService.selectNextChangeDetailId();//1131
 			String oldValue = purApplyManager.selectOldValue(req.getProductId());
 			ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
 			prodProductChangeDetail.setChangeDetailId(changeDetailId);

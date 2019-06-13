@@ -139,12 +139,6 @@ public class PurApplyManager {
 		purApplyMapper.insertProdProductChangeDetail(req);
 	}
 	
-	public String selectNextChangeId() {
-		return purApplyMapper.selectNextChangeId();
-	}
-	public String selectNextChangeDetailId() {
-		return purApplyMapper.selectNextChangeDetailId();
-	}
 	public String selectOldValue(String productId) {
 		return purApplyMapper.selectOldValue(productId);
 	}

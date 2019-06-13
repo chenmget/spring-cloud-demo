@@ -186,7 +186,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public synchronized ResultVO updateResourceInst(ResourceInstUpdateReq req) {
-        log.info("ResourceInstServiceImpl.updateResourceInst req={},resp={}", JSON.toJSONString(req));
+        log.info("ResourceInstServiceImpl.updateResourceInst req={}", JSON.toJSONString(req));
         Map<String, Object> data = assembleData(req, req.getDestStoreId());
         Map<String, List<ResourceInstListPageResp>> insts = (HashMap<String, List<ResourceInstListPageResp>>)data.get("productNbr");
         List<String> unavailbaleNbrs = (List<String>)data.get("unavailbaleNbrs");

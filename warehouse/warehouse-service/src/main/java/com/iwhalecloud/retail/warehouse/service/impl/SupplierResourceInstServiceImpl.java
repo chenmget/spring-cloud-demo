@@ -175,7 +175,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             return ResultVO.error("串码入库失败");
         }
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
-        resourceInstUpdateReq.setDestStoreId(req.getMktResStoreId());
+        resourceInstUpdateReq.setDestStoreId(mktResStoreId);
         resourceInstUpdateReq.setMktResInstNbrs(req.getMktResInstNbrs());
         resourceInstUpdateReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
         resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());

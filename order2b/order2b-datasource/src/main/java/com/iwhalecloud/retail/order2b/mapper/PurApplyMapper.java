@@ -99,4 +99,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 
 	public int updatePurApplyItemDetailStatusCd(@Param("mktResInstNbrList") List<String> mktResInstNbrList);
 
+
+	public PurApply getPurApplyByAppId(@Param("applyId") String applyId);
+
 }

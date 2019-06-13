@@ -189,7 +189,8 @@ public class PurApplyManager {
 	 * @return
 	 */
 	public  PurApply getPurApplyByAppId(String applyId) {
-		return purApplyMapper.selectById(applyId);
+//        purApplyMapper.selectById(applyId);
+		return purApplyMapper.getPurApplyByAppId(applyId);
 	}
 	/**
 	 * 查询已发货的串码

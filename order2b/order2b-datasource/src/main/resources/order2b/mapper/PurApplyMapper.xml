@@ -686,5 +686,16 @@
 		</foreach>
 
 	</select>
+	<select id="getPurApplyByAppId" parameterType="String"
+			resultType="com.iwhalecloud.retail.order2b.entity.PurApply">
+		SELECT apply_id as applyId,apply_code as applyCode,apply_name as applyName,
+		apply_type as applyType,content,merchant_id as merchantId,merchant_code as merchantCode,
+		apply_merchant_id as applyMerchantId,apply_merchant_code as applyMerchantCode,phone,lan_id as lanId,
+		region_id as regionId,rel_apply_id as relApplyId,status_cd as statusCd,create_staff as createStaff,
+		create_date as createDate,update_staff as updateStaff,update_date as updateDate FROM PUR_APPLY WHERE apply_id=#{applyId}
+	</select>
+
+
+
 </mapper>
 

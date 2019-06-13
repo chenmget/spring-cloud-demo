@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.partner.manager;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -8,6 +9,8 @@ import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import com.iwhalecloud.retail.partner.mapper.MerchantRulesMapper;
+import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -16,7 +19,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Slf4j
 @Component
 public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, MerchantRules> {
     @Resource
@@ -100,6 +103,8 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
      * @return
      */
     public List<MerchantRulesDTO> listMerchantRules(MerchantRulesListReq req) {
+        log.info("MerchantRulesManager.listMerchantRules(), input: MerchantRulesListReq={} ", JSON.toJSONString(req));
+
         QueryWrapper<MerchantRules> queryWrapper = new QueryWrapper<MerchantRules>();
         if (!StringUtils.isEmpty(req.getMerchantId())) {
             queryWrapper.eq(MerchantRules.FieldNames.merchantId.getTableFieldName(), req.getMerchantId());
@@ -120,6 +125,7 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
             BeanUtils.copyProperties(merchantRules, merchantRulesDTO);
             merchantRulesDTOList.add(merchantRulesDTO);
         }
+        log.info("MerchantRulesManager.listMerchantRules(), output: merchantRulesDTOList={} ", JSON.toJSONString(merchantRulesDTOList));
         return merchantRulesDTOList;
     }
 

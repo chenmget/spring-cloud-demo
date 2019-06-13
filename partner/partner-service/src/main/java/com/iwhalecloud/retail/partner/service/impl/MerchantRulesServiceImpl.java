@@ -277,7 +277,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(merchantRulesListReq);
         Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = getDetailPageList(req, list);
 
-        log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), output: resultList={} ", JSON.toJSONString(merchantRulesDetailDTOPage.getRecords()));
+        log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), output: resultList={} ", JSON.toJSONString(merchantRulesDetailDTOPage.getRecords()));
 
         return ResultVO.success(merchantRulesDetailDTOPage);
     }
@@ -567,6 +567,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
     /**
      * 获取权限详情(分页）
+     *
      * @param req
      * @param merchantRulesDTOList
      * @return
@@ -748,7 +749,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         respPage.setRecords(resultList.stream().filter(item -> item.getTargetData() != null).collect(Collectors.toList()));
         return respPage;
     }
-
 
 
     /**
@@ -1264,10 +1264,10 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         productGetReq.setProductBaseId(productBaseId);
         ResultVO<Page<ProductDTO>> pageResultVO = productService.selectProduct(productGetReq);
         log.info("MerchantRulesServiceImpl.checkProdListRule.selectProduct, pageResultVO.getResultData().getRecords()={} ", pageResultVO.getResultData().getRecords());
-        if(pageResultVO.isSuccess() && null!=pageResultVO.getResultData()){
+        if (pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
             List<ProductDTO> productDTOList = pageResultVO.getResultData().getRecords();
-            if(!CollectionUtils.isEmpty(productDTOList)){
-                for(ProductDTO productDTO : productDTOList){
+            if (!CollectionUtils.isEmpty(productDTOList)) {
+                for (ProductDTO productDTO : productDTOList) {
                     productIds.add(productDTO.getProductId());
                 }
             }
@@ -1279,15 +1279,15 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         req.setTargetType(PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType());
         ResultVO<List<String>> resultVO = this.getCommonPermission(req);
         List<String> targetids = new ArrayList<>();
-        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+        if (resultVO.isSuccess() && null != resultVO.getResultData()) {
             targetids = resultVO.getResultData();
         }
 
-        log.info("MerchantRulesServiceImpl.checkProdListRule, productIds={} ,targetids={}", productIds,targetids);
-        if(!CollectionUtils.isEmpty(productIds) && !CollectionUtils.isEmpty(targetids)){
+        log.info("MerchantRulesServiceImpl.checkProdListRule, productIds={} ,targetids={}", productIds, targetids);
+        if (!CollectionUtils.isEmpty(productIds) && !CollectionUtils.isEmpty(targetids)) {
             productIds.retainAll(targetids);
             log.info("MerchantRulesServiceImpl.checkProdListRule2, productIds={}", productIds);
-            if(!CollectionUtils.isEmpty(productIds)){
+            if (!CollectionUtils.isEmpty(productIds)) {
                 return ResultVO.success(true);
             }
         }

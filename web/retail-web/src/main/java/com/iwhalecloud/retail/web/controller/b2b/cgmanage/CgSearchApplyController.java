@@ -79,10 +79,7 @@ public class CgSearchApplyController extends BaseController {
 		
 		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userType = "+userType);
 		if("2".equals(userType) || "2" == userType){//地市管理员
-//			PurApplyReq req2 = new PurApplyReq();
-			
 			req.setLanId(lanId);
-			return purApplyService.cgSearchApplyLan(req);
 		}
 		
 		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );

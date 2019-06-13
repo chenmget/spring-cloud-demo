@@ -12,11 +12,11 @@
 			a.APPLY_MERCHANT_ID As applyMerchantId,
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
-			b.merchant_name As applyMerchantName,
+			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.APPLY_MERCHANT_ID) AS applyMerchantName,
 			a.STATUS_CD AS STATUS,
 			'' AS `option`
-			 FROM PUR_APPLY a,par_merchant b
-			 WHERE 1=1 and a.APPLY_MERCHANT_ID=b.MERCHANT_ID
+			 FROM PUR_APPLY a
+			 WHERE 1=1 
 			 and a.STATUS_CD != '1100'
 		<if test="req.lanId != null and req.lanId != ''">
             and a.LAN_ID = #{req.lanId}

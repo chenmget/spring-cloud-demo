@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.order2b.service.impl.workflow;
+package com.iwhalecloud.retail.goods2b.service.impl.dubbo.workFlow;
 
 import java.util.List;
 
@@ -7,7 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
+import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
 import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.extservice.WFServiceExecutor;
 import com.iwhalecloud.retail.workflow.extservice.params.ServiceParamContext;
@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProductChangePriceNextNodePeopleImpl implements WFServiceExecutor  {
 	
 	@Autowired
-    private PurApplyManager purApplyManager;
+    private ProductBaseManager productBaseManager;
 	
 	@Override
 	public ResultVO<List<HandlerUser>> execute(ServiceParamContext serviceParamContext) {
@@ -34,7 +34,7 @@ public class ProductChangePriceNextNodePeopleImpl implements WFServiceExecutor  
         HandlerUser handlerUser = new HandlerUser();
 //        handlerUser.setHandlerUserId("5852");
 //    	handlerUser.setHandlerUserName("李燕燕");
-        String isFixedLine = purApplyManager.selectisFixedLineByBatchId(batchId);
+        String isFixedLine = productBaseManager.selectisFixedLineByBatchId(batchId);
         if("1".equals(isFixedLine)) {//如果是固网
         	handlerUser.setHandlerUserId("5845");
         	handlerUser.setHandlerUserName("李洁");

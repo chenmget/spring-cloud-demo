@@ -239,9 +239,9 @@ public class GoodsServiceImpl implements GoodsService {
             if (CollectionUtils.isNotEmpty(regionList)) {
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
                     // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
-                    saveGoodsRegionRel(goodsId, regionReq);
+//                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -344,9 +344,9 @@ public class GoodsServiceImpl implements GoodsService {
             if (CollectionUtils.isNotEmpty(regionList)) {
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
                     // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
-                    saveGoodsRegionRel(goodsId, regionReq);
+//                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -444,9 +444,9 @@ public class GoodsServiceImpl implements GoodsService {
                 goodsTargetManager.deleteGoodsTargerRel(goodsId);
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
                     // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
-                    saveGoodsRegionRel(goodsId, regionReq);
+//                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -584,9 +584,9 @@ public class GoodsServiceImpl implements GoodsService {
                 goodsRegionRelManager.delGoodsRegionRelByGoodsId(goodsId);
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
                     // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
-                    saveGoodsRegionRel(goodsId, regionReq);
+//                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {

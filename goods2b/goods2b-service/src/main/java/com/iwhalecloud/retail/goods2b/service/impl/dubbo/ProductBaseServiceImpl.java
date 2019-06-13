@@ -127,7 +127,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
         //固网产品需要提交串码到itms
         String isInspection = req.getIsInspection();
-        if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
+        String isItms = req.getIsItms();
+        if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection) &&
+                StringUtils.isNotEmpty(isItms) &&  !ProductConst.isItms.NOPUSH.equals(isItms)){
             String serialCode = req.getParam20(); //串码  xxxx-1234556612
             String params = req.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
             String userName = req.getParam18();  //login_name
@@ -220,7 +222,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             startProductFlowReq.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
             //如果是固网产品
             if(StringUtils.isNotEmpty(req.getIsFixedLine()) && "1".equals(req.getIsFixedLine())){
-                String isItms = req.getIsItms();
+//                String isItms = req.getIsItms();
                 if(StringUtils.isNotEmpty(isItms) && (ProductConst.isItms.PUSHIPTV.getCode().equals(isItms) ||
                         ProductConst.isItms.PUSHIPTVMODEL.getCode().equals(isItms))){
                     startProductFlowReq.setProcessId(ProductConst.ITV_PRODUCT_FLOW_PROCESS_ID);

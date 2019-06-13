@@ -50,6 +50,11 @@ public  class ResouceStoreOpenServiceImpl implements ResouceStoreService {
     }
 
     @Override
+    public String getStoreIdByLanId(String lanId) {
+        return resouceStoreService.getStoreIdByLanId(lanId);
+    }
+
+    @Override
     public void initStoredata() {
         log.info("ResouceStoreOpenServiceImpl.initStoredata");
         resouceStoreService.initStoredata();

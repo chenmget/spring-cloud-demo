@@ -96,5 +96,15 @@ public class PurApplyConsts {
      * 申请单状态：已完成
      */
     public final static String PUR_APPLY_STATUS_FINISHED = "60";
+
+    /**
+     * 状态：待收货
+     */
+    public final static String PUR_APPLY_STATUS_DELIVERY = "5";
+
+    /**
+     * 状态：已收货
+     */
+    public final static String PUR_APPLY_MKT_STATUS_RECEIVED = "6";
 }
 

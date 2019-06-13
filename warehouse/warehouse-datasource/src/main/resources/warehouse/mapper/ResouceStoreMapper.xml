@@ -182,6 +182,11 @@
         and s.STORE_SUB_TYPE = #{storeSubType}
     </select>
 
+    <select id="getStoreIdByLanId" resultType="java.lang.String"
+            parameterType="java.lang.String">
+        select MKT_RES_STORE_ID from mkt_res_store where store_type = '1100' and lan_id =#{lanId}
+    </select>
+
 
     <select id="listGivenStore" resultType="com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO"
             parameterType="java.util.List">

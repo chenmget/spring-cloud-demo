@@ -176,27 +176,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         return ResultVO.success(merchantRulesDTO);
     }
 
-
-    /**
-     * 更新 商家 权限规则
-     *
-     * @param req
-     * @return
-     */
-//    @Override
-//    public ResultVO<Integer> updateMerchantRules(MerchantRulesUpdateReq req) {
-//
-//        int resultInt = merchantRulesManager.updateMerchantRules(req);
-//        log.info("Method: MerchantRulesServiceImpl.updateMerchantRules()");
-//        log.info("InputParameter: MerchantRulesUpdateReq = {}", JSON.toJSONString(req));
-//        log.info("OutputParameter: update effect rows = {} ", JSON.toJSONString(resultInt));
-//
-//        if (resultInt <= 0) {
-//            return ResultVO.error("更新商家权限记录失败");
-//        }
-//        return ResultVO.success(resultInt);
-//    }
-
     /**
      * 删除 商家 权限规则
      *
@@ -434,16 +413,16 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
-//                fieldName = "regionId";
-//                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
-//                commonRegionListReq.setRegionIdList(targetIdList);
-//                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
+                fieldName = "regionId";
+                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
+                commonRegionListReq.setRegionIdList(targetIdList);
+                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
 
                 // zhong.wenlong 2019.06.13 改查 sys_common_org表
-                CommonOrgListReq commonOrgListReq = new CommonOrgListReq();
-                commonOrgListReq.setOrgIdList(targetIdList);
-                detailList = commonOrgService.listCommonOrg(commonOrgListReq, false).getResultData();
-                fieldName = "orgId";
+//                CommonOrgListReq commonOrgListReq = new CommonOrgListReq();
+//                commonOrgListReq.setOrgIdList(targetIdList);
+//                detailList = commonOrgService.listCommonOrg(commonOrgListReq, false).getResultData();
+//                fieldName = "orgId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
@@ -612,19 +591,19 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
-//                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
-//                commonRegionPageReq.setRegionIdList(targetIdList);
-//                commonRegionPageReq.setPageNo(req.getPageNo());
-//                commonRegionPageReq.setPageSize(req.getPageSize());
-//                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
-//                fieldName = "regionId";
+                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
+                commonRegionPageReq.setRegionIdList(targetIdList);
+                commonRegionPageReq.setPageNo(req.getPageNo());
+                commonRegionPageReq.setPageSize(req.getPageSize());
+                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
+                fieldName = "regionId";
                 // zhong.wenlong 2019.06.13 改查 sys_common_org表
-                CommonOrgPageReq commonOrgPageReq = new CommonOrgPageReq();
-                commonOrgPageReq.setOrgIdList(targetIdList);
-                commonOrgPageReq.setPageNo(req.getPageNo());
-                commonOrgPageReq.setPageSize(req.getPageSize());
-                detailPage = commonOrgService.pageCommonOrg(commonOrgPageReq).getResultData();
-                fieldName = "orgId";
+//                CommonOrgPageReq commonOrgPageReq = new CommonOrgPageReq();
+//                commonOrgPageReq.setOrgIdList(targetIdList);
+//                commonOrgPageReq.setPageNo(req.getPageNo());
+//                commonOrgPageReq.setPageSize(req.getPageSize());
+//                detailPage = commonOrgService.pageCommonOrg(commonOrgPageReq).getResultData();
+//                fieldName = "orgId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId

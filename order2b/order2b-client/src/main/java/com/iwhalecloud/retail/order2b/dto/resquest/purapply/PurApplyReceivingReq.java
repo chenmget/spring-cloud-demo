@@ -97,6 +97,12 @@ public class PurApplyReceivingReq implements Serializable {
     private String mktResInstType;
 
     /**
+     * lanId
+     */
+    @ApiModelProperty("lanId")
+    private String lanId;
+
+    /**
      * 资源类型
      */
 //    @ApiModelProperty("资源类型")

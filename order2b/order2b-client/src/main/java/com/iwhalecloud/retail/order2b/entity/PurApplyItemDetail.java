@@ -67,7 +67,7 @@ public class PurApplyItemDetail implements Serializable {
      * 状态
      */
     @ApiModelProperty("statusCd")
-    private Double statusCd;
+    private String statusCd;
 
     /**
      * 创建人

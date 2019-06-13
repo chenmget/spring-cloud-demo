@@ -373,7 +373,7 @@ public class GoodsB2BController extends GoodsBaseController {
                 req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC_MERCHANT_TYPE_ASC.getValue());
 
                 // 设置零售商的组织路径编码 zhong.wenlong 2019.06.13
-                req.setOrgPathCode(getOrgPathCode(merchantId));
+//                req.setOrgPathCode(getOrgPathCode(merchantId));
 
             } else if (userFounder == SystemConst.USER_FOUNDER_5) {
                 String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType();
@@ -423,7 +423,6 @@ public class GoodsB2BController extends GoodsBaseController {
      */
     private String getOrgPathCode(String merchantId) {
         // 根据商家所属组织，过滤商品发布区域
-        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
         String orgPathCode = null;
         MerchantDTO merchantDTO = merchantService.getMerchantById(merchantId).getResultData();
         log.info("GoodsB2BController.getOrgPathCode() merchantService.getMerchantById() input: merchantId={}, output: merchantDTO ={}", merchantId, JSON.toJSONString(merchantDTO));
@@ -483,25 +482,6 @@ public class GoodsB2BController extends GoodsBaseController {
             req.setTargetCodeList(targetCodeList);
         }
         log.info("GoodsB2BController.setTarGetCodeList userFounder={},targetCodeList={}", userFounder, JSON.toJSONString(targetCodeList));
-    }
-
-    private List<String> listMerchantRules(String targetType) {
-        MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
-        String merchantId = UserContext.getMerchantId();
-        merchantRulesListReq.setMerchantId(merchantId);
-        merchantRulesListReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
-        merchantRulesListReq.setTargetType(targetType);
-        // 查询规格类型为经营权限，对象类型为机型的商家规则
-        log.info("GoodsB2BController.listMerchantRules merchantRulesListReq={}", JSON.toJSONString(merchantRulesListReq));
-        ResultVO<List<MerchantRulesDTO>> resultVO = merchantRulesService.listMerchantRules(merchantRulesListReq);
-        log.info("GoodsB2BController.listMerchantRules resultVO={}", JSON.toJSONString(resultVO));
-        List<String> targetIdList = null;
-        if (resultVO.isSuccess() && !CollectionUtils.isEmpty(resultVO.getResultData())) {
-            List<MerchantRulesDTO> merchantRulesDTOList = resultVO.getResultData();
-            targetIdList = merchantRulesDTOList.stream().map(MerchantRulesDTO::getTargetId).collect(Collectors.toList());
-            log.info("GoodsB2BController.listMerchantRules targetIdList={}", JSON.toJSONString(targetIdList));
-        }
-        return targetIdList;
     }
 
     @ApiOperation(value = "查询商品详情", notes = "查询商品详情")

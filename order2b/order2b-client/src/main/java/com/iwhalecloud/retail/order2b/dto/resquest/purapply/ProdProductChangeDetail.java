@@ -28,5 +28,11 @@ public class ProdProductChangeDetail extends PageVO {
 	
 	private String priceStatus;//政企价格审核状态
 	private String productId;
+	private String productName;//产品名称
+	private String unitType;//产品型号	
+	private String unitTypeName;//型号名称
+	private String sn;//营销资源实例编码
+	private String typeName;//产品类型
+	private String brandName;//品牌名称
 
 }

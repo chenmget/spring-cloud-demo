@@ -9,7 +9,6 @@ import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgListReq;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgPageReq;
 import com.iwhalecloud.retail.system.entity.CommonOrg;
-import com.iwhalecloud.retail.system.entity.CommonRegion;
 import com.iwhalecloud.retail.system.mapper.CommonOrgMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -78,7 +77,7 @@ public class CommonOrgManager {
         IPage<CommonOrg> page = new Page<CommonOrg>(req.getPageNo(), req.getPageSize());
         QueryWrapper<CommonOrg> queryWrapper = new QueryWrapper<CommonOrg>();
         if (!CollectionUtils.isEmpty(req.getOrgIdList())) {
-            queryWrapper.in(CommonRegion.FieldNames.regionId.getTableFieldName(), req.getOrgIdList());
+            queryWrapper.in(CommonOrg.FieldNames.orgId.getTableFieldName(), req.getOrgIdList());
         }
         page = commonOrgMapper.selectPage(page, queryWrapper);
         Page<CommonOrgDTO> respPage = new Page<>();

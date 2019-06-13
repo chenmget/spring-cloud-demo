@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
+import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -33,8 +34,11 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 	 * @return
 	 */
 
-	List<MktResItmsSyncRec> findDateMKTInfoByParams(@Param("lanId")String lanId,@Param("typeOps")String typeOps,@Param("eventType")String eventType,
+	List<MktResItmsSyncRec> findDateMKTInfoByParamsOld(@Param("lanId")String lanId,@Param("typeOps")String typeOps,@Param("eventType")String eventType,
 											  @Param("isItms")String[] isItms,@Param("even")ResouceEvent resouceEvent);
+	List<MktResItmsSyncRec> findDateMKTInfoByParams(@Param("lanId")String lanId,@Param("typeOps")String typeOps,@Param("eventType")String eventType,
+													@Param("isItms")String[] isItms,@Param("even")ResouceEvent resouceEvent,
+													 @Param("det")ResourceChngEvtDetail resourceChngEvtDetail);
     /**
      * 根据ID保存itms推送表
      * @param id ID， destFileName 推送的文件路径， syncBatchId 推送的批次

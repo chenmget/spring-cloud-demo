@@ -16,6 +16,8 @@ import com.iwhalecloud.retail.warehouse.dto.response.InventoryWarningResp;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsReturnRec;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
+import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
+import com.iwhalecloud.retail.warehouse.manager.ResourceChngEvtDetailManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
 import com.iwhalecloud.retail.warehouse.manager.MktResItmsReturnRecManager;
 import com.iwhalecloud.retail.warehouse.mapper.MktResItmsReturnRecMapper;
@@ -121,6 +123,9 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     @Autowired
     private ResouceEventMapper resouceEventMapper;
+
+    @Autowired
+    private ResourceChngEvtDetailManager resourceChngEvtDetailManager;
 
 
     @Override
@@ -383,10 +388,13 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     }
     private String[] getIsItms(String brand){
         String[] itms = new String[2];
+        //光猫
         if(brand.equals(brands[0])){
-            itms = isItms[0];
-        }else if(brand.equals(brands[1])){
             itms = isItms[1];
+        }
+        //IPTV
+        else if(brand.equals(brands[1])){
+            itms = isItms[0];
         }
         return itms;
     }
@@ -565,7 +573,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         List<MktResItmsSyncRec> mktResItmsSyncRecList = new ArrayList<MktResItmsSyncRec>();
         List<ResouceEvent> resouceEventRemove = new ArrayList<ResouceEvent>();
         if(map.size()>0){
-            if(map.get(type).size()>0){
+            if(!CollectionUtils.isEmpty(map.get(type))){
                 //移除已查询过的事件
                 evenList = evenList(evenList,map.get(type));
                 //查询过的事件
@@ -573,13 +581,24 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             }
         }
         for(ResouceEvent resouceEvent:evenList){
-            List<MktResItmsSyncRec> mktResItmsSyncRecs = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent);
-            if(mktResItmsSyncRecs.size() > 0){
-                mktResItmsSyncRecList.addAll(mktResItmsSyncRecs);
-                resouceEventRemove.add(resouceEvent);
+            List<ResourceChngEvtDetail> detailList = resourceChngEvtDetailManager.resourceChngEvtDetailList(resouceEvent);
+            if(!CollectionUtils.isEmpty(detailList)){
+                for(ResourceChngEvtDetail detail : detailList){
+                    List<MktResItmsSyncRec> mktResItmsSyncRecs = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent,detail);
+//                    List<MktResItmsSyncRec> mktResItmsSyncRecs = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent);
+                    if(!CollectionUtils.isEmpty(mktResItmsSyncRecs)){
+                        mktResItmsSyncRecList.addAll(mktResItmsSyncRecs);
+                        resouceEventRemove.add(resouceEvent);
+                    }
+                }
+
             }
+
         }
-        map.put(type,resouceEventRemove);
+        if(!CollectionUtils.isEmpty(resouceEventRemove)){
+            map.put(type,resouceEventRemove);
+//            log.info("移除已查询过的事件1:"+JSON.toJSONString(map));
+        }
         if(mktResItmsSyncRecList.size()!=0){
             ArrayList<List<MktResItmsSyncRec>> mktList = this.mktListSplit(mktResItmsSyncRecList);
             //批量插入

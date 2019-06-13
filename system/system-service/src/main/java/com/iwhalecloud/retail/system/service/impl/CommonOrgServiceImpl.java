@@ -55,14 +55,15 @@ public class CommonOrgServiceImpl implements CommonOrgService {
     /**
      * 获取本地区域 列表
      * @param req
+     * @param isSelectAll 是否查询全部
      * @return
      */
     @Override
-    public ResultVO<List<CommonOrgDTO>> listCommonOrg(CommonOrgListReq req) {
+    public ResultVO<List<CommonOrgDTO>> listCommonOrg(CommonOrgListReq req,boolean isSelectAll) {
         log.info("CommonOrgServiceImpl.listCommonOrg(), input：req={} ", JSON.toJSONString(req));
         if (StringUtils.isEmpty(req.getParentOrgId())
                 && CollectionUtils.isEmpty(req.getOrgIdList())
-                && StringUtils.isEmpty(req.getOrgName())) {
+                && StringUtils.isEmpty(req.getOrgName())&&!isSelectAll) {
             // 三个条件都为空 默认查湖南的 第一级通用组织信息
             req.setParentOrgId(SystemConst.HN_DEFAULT_PARENT_ORG_ID);
         }

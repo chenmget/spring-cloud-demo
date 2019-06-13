@@ -105,6 +105,13 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
     }
 
     /**
+     * 查询串码是政企串码还是集采串码
+     */
+    public String selectMktResInstType(ResourceStoreIdResnbr req) {
+    	return resourceInstMapper.selectMktResInstType(req);
+    }
+    
+    /**
      * 根据主键查询
      *
      * @param mktResInstId

@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
+import com.iwhalecloud.retail.partner.dto.req.FactoryMerchantSaveReq;
+import com.iwhalecloud.retail.partner.dto.req.SupplierResistReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.common.SysUserLoginConst;
@@ -70,7 +72,7 @@ public class UserServiceImpl implements UserService {
     RoleService roleService;
 
     @Autowired
-    ZopMessageService SendMsgService;
+    ZopMessageService zopMessageService;
 
     @Override
     public UserLoginResp login(UserLoginReq req) {
@@ -595,12 +597,15 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO registLandSupplier(UserRegisterReq resistReq) {
-       //add user and get id into req
+        ResultVO codeRt = zopMessageService.checkVerifyCode(resistReq.getPhoneNo(),resistReq.getCode());
+        if(!codeRt.isSuccess())return codeRt;
+        //add user and get id into req
         SupplierResistReq req = new SupplierResistReq();
         BeanUtils.copyProperties(resistReq,req);
         UserAddReq userAddReq = new UserAddReq();
         BeanUtils.copyProperties(req,userAddReq);
         ResultVO<UserDTO> resultVO = addUser(userAddReq);
+        if(!resultVO.isSuccess())return resultVO;
         String userId = resultVO.getResultData().getUserId();
         req.setUserId(userId);
         log.info("userId" + userId);
@@ -616,6 +621,8 @@ public class UserServiceImpl implements UserService {
         }
         return ResultVO.success();
     }
+
+
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO registProvinceSupplier(UserRegisterReq resistReq) {
         //verifyCode
@@ -688,22 +695,36 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVO registerFactoryMerchant(UserFactoryMerchantReq req) {
-        //TODO 验证短信
-
+        if(!zopMessageService.checkVerifyCode(req.getPhoneNo(),req.getCode()).isSuccess())
+            return ResultVO.error("短信验证码不一致");
         //生成用户主键
-        //String userId=userManager.getPrimaryKey();
-        //req.setUserId(userId);
-        ResultVO<UserDTO> addUserResultVO=initUser(req);
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req, userAddReq);
+        userAddReq.setStatusCd(SystemConst.USER_STATUS_INVALID);//默认禁用字段
+        userAddReq.setUserFounder(SystemConst.USER_FOUNDER_8);//用户类型为厂商
+        ResultVO<UserDTO> addUserResultVO = addUser(userAddReq);
         UserDTO userDTO = addUserResultVO.getResultData();
         if (!addUserResultVO.isSuccess() || userDTO == null) {
             return addUserResultVO;
         }
-        //新建厂商信息
+        //组装厂商信息
         req.setUserId(userDTO.getUserId());
-        ResultVO vo=merchantService.registerFactoryMerchant(req);
-        if(!vo.isSuccess()){
+        FactoryMerchantSaveReq factoryMerchantSaveReq=new FactoryMerchantSaveReq();
+        BeanUtils.copyProperties(req, factoryMerchantSaveReq);
+        factoryMerchantSaveReq.setApplyId(userDTO.getUserId());
+        factoryMerchantSaveReq.setApplyName(userDTO.getUserName());
+        //调用自注册服务
+        ResultVO<String> vo=merchantService.registerFactoryMerchant(factoryMerchantSaveReq);
+        if(!vo.isSuccess()||null==vo.getResultData()){
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultVO.error(vo.getResultMsg());
+        }else{
+            //修改商家关联信息
+            String merchantId=vo.getResultData();
+            User user = new User();
+            BeanUtils.copyProperties(userDTO, user);
+            user.setRelCode(merchantId);
+            userManager.updateUser(user);
         }
         return ResultVO.success();
     }

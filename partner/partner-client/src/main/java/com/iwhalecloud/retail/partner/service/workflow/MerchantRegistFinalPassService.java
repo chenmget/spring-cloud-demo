@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.partner.service;
+package com.iwhalecloud.retail.partner.service.workflow;
 
 import com.iwhalecloud.retail.workflow.config.WfRunnable;
 

@@ -139,7 +139,6 @@ public interface UserService {
      * @return
      */
     ResultVO<UserDTO> addSysUser(UserDTO loginUser,UserSaveReq req);
-    ResultVO registLandSupplier(SupplierResistReq resistReq);
 
     /**
      * 地包商自注册

@@ -1,5 +1,4 @@
 package com.iwhalecloud.retail.partner.service.impl;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
@@ -26,26 +25,20 @@ import com.iwhalecloud.retail.partner.manager.InvoiceManager;
 import com.iwhalecloud.retail.partner.manager.MerchantAccountManager;
 import com.iwhalecloud.retail.partner.manager.MerchantManager;
 import com.iwhalecloud.retail.partner.service.MerchantService;
-import com.iwhalecloud.retail.system.common.SysUserMessageConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonFileDTO;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
-import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
-import com.iwhalecloud.retail.system.service.CommonFileService;
-import com.iwhalecloud.retail.system.dto.request.*;
-import com.iwhalecloud.retail.system.service.CommonFileService;
-import com.iwhalecloud.retail.system.service.CommonRegionService;
-import com.iwhalecloud.retail.system.service.OrganizationService;
-import com.iwhalecloud.retail.system.service.UserService;
+import com.iwhalecloud.retail.system.service.*;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
+import com.twmacinta.util.MD5;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -55,7 +48,6 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
-import com.twmacinta.util.MD5;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -65,8 +57,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
 import java.util.stream.Collectors;
-
-import static com.iwhalecloud.retail.dto.ResultVO.success;
 
 @Slf4j
 @Service(timeout = 20000)
@@ -88,9 +78,6 @@ public class MerchantServiceImpl implements MerchantService {
     @Reference
     private MerchantTagRelService merchantTagRelService;
 
-    @Reference
-    private CommonFileService commonFileService;
-
     @Autowired
     private InvoiceManager invoiceManager;
 
@@ -108,6 +95,9 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Reference
     private ProductService productService;
+
+    @Reference
+    private ZopMessageService zopMessageService;
 
     /**
      * 根据条件 查询商家条数
@@ -240,6 +230,8 @@ public class MerchantServiceImpl implements MerchantService {
             }
 
             // “系统账号”、“系统状态”
+//            if (!StringUtils.isEmpty(merchantDetailDTO.getUserId())) {
+//                UserDTO userDTO = userService.getUserByUserId(merchantDetailDTO.getUserId());
             if (!StringUtils.isEmpty(merchantDetailDTO.getMerchantId())) {
                 UserGetReq userGetReq = new UserGetReq();
                 userGetReq.setRelCode(merchantDetailDTO.getMerchantId());
@@ -249,26 +241,6 @@ public class MerchantServiceImpl implements MerchantService {
                     merchantDetailDTO.setUserStatus(userDTO.getStatusCd().toString());
                 }
             }
-
-            // 取经营单元（三级组织） 、 营销支局（四级组织）
-            // 根据parCrmOrgPathCode取3、4级组织ID （如果有）
-            String orgIdWithLevel3 = getOrgIdByPathCode(merchantDetailDTO.getParCrmOrgPathCode(), 3);
-            String orgIdWithLevel4 = getOrgIdByPathCode(merchantDetailDTO.getParCrmOrgPathCode(), 4);
-            merchantDetailDTO.setOrgIdWithLevel3(orgIdWithLevel3);
-            merchantDetailDTO.setOrgIdWithLevel4(orgIdWithLevel4);
-            if (StringUtils.isNotEmpty(orgIdWithLevel3)) {
-                OrganizationDTO dto = organizationService.getOrganization(orgIdWithLevel3).getResultData();
-                if (Objects.nonNull(dto)) {
-                    merchantDetailDTO.setOrgNameWithLevel3(dto.getOrgName());
-                }
-            }
-            if (StringUtils.isNotEmpty(orgIdWithLevel4)) {
-                OrganizationDTO dto = organizationService.getOrganization(orgIdWithLevel4).getResultData();
-                if (Objects.nonNull(dto)) {
-                    merchantDetailDTO.setOrgNameWithLevel4(dto.getOrgName());
-                }
-            }
-
 
         }
         log.info("MerchantServiceImpl.getMerchantDetail(), output: merchantDetailDTO={} ", JSON.toJSONString(merchantDetailDTO));
@@ -399,7 +371,7 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     /**
-     * 商家 信息列表（只取 部分必要字段）
+     * 商家信息列表（只取 部分必要字段）
      *
      * @param req
      * @return
@@ -407,32 +379,33 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public ResultVO<List<MerchantDTO>> listMerchant(MerchantListReq req) {
         log.info("MerchantServiceImpl.listMerchant(), input: MerchantListReq={} ", JSON.toJSONString(req));
-
         List<MerchantDTO> list = merchantManager.listMerchant(req);
-
         if (!CollectionUtils.isEmpty(list) && BooleanUtils.isTrue(req.getNeedOtherTableFields())) {
-
-            /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
-
-            // 取本地网  市县  ID集合
-            HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
+            // 取本地网  市县  ID集合 //去重
+            HashSet<String> regionIdHashSet = new HashSet<>();
             for (MerchantDTO dto : list) {
                 regionIdHashSet.add(dto.getLanId());
                 regionIdHashSet.add(dto.getCity());
             }
 
             Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
-
             // 取本地网名称  市县名称
             for (MerchantDTO dto : list) {
-                // 取本地网名称  市县名称
                 dto.setLanName(regionNamesMap.get(dto.getLanId()));
                 dto.setCityName(regionNamesMap.get(dto.getCity()));
             }
-
         }
-        log.info("MerchantServiceImpl.listMerchant(), output: list.size()={} ", list.size());
+
+        //数据量太大，改为输出大小
+        log.info("MerchantServiceImpl.listMerchant(), output: list.size={} ", JSON.toJSONString(getSize(list)));
         return ResultVO.success(list);
+    }
+
+    private int getSize(List list) {
+        if (Objects.isNull(list)) {
+            return 0;
+        }
+        return list.size();
     }
 
     /**
@@ -450,31 +423,20 @@ public class MerchantServiceImpl implements MerchantService {
 
         if (!CollectionUtils.isEmpty(page.getRecords())) {
 
-            // 取本地网  市县  ID集合  去重
-            HashSet<String> regionIdHashSet = new HashSet<>();
-            // 所有商家ID去重
-            HashSet<String> merchantIdHashSet = new HashSet<>();
-
+            // 取本地网  市县  ID集合
+            HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
             for (MerchantPageResp merchantDTO : page.getRecords()) {
-                // 取本地网  市县  ID集合
                 regionIdHashSet.add(merchantDTO.getLanId());
                 regionIdHashSet.add(merchantDTO.getCity());
-
-                // 取merchantId集合
-                merchantIdHashSet.add(merchantDTO.getMerchantId());
             }
 
             Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
-            Map<String, String> loginNamesMap = getLoginNamesMap(merchantIdHashSet);
 
             // 取本地网名称  市县名称
             for (MerchantPageResp merchantDTO : page.getRecords()) {
                 // 取本地网名称  市县名称
                 merchantDTO.setLanName(regionNamesMap.get(merchantDTO.getLanId()));
                 merchantDTO.setCityName(regionNamesMap.get(merchantDTO.getCity()));
-
-                // 取商家的登录名称
-                merchantDTO.setLoginName(loginNamesMap.get(merchantDTO.getMerchantId()));
             }
         }
         log.info("MerchantServiceImpl.pageMerchant() output: list<MerchantPageResp>.siz()={} ", JSON.toJSONString(page.getRecords().size()));
@@ -555,13 +517,9 @@ public class MerchantServiceImpl implements MerchantService {
         /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
         if (!CollectionUtils.isEmpty(merchantPage.getRecords())) {
 
-            // 取本地网  市县  ID集合  去重
-            HashSet<String> regionIdHashSet = new HashSet<>();
-            // 所有商家ID去重
-            HashSet<String> merchantIdHashSet = new HashSet<>();
-            // 所有组织id去重
-            HashSet<String> orgIdHashSet = new HashSet<>();
-
+            HashSet<String> regionIdHashSet = new HashSet<>(); // 所有区域ID去重
+            HashSet<String> merchantIdHashSet = new HashSet<>(); // 所有商家ID去重
+            HashSet<String> orgIdHashSet = new HashSet<>(); // 所有组织id去重
             for (Merchant entity : merchantPage.getRecords()) {
 
                 RetailMerchantDTO targetDTO = new RetailMerchantDTO();
@@ -591,7 +549,6 @@ public class MerchantServiceImpl implements MerchantService {
             Map<String, Invoice> invoiceMap = getInvoiceMap(merchantIdHashSet);
             Map<String, String> tagNamesMap = getTagNamesMap(merchantIdHashSet);
             Map<String, String> orgNamesMap = getOrgNamesMap(orgIdHashSet);
-            Map<String, String> loginNamesMap = getLoginNamesMap(merchantIdHashSet);
 
             // 设置 对应要翻译的名称
             for (RetailMerchantDTO dto : targetList) {
@@ -603,9 +560,6 @@ public class MerchantServiceImpl implements MerchantService {
                 // 设置 本地网名称  市县名称
                 dto.setLanName(regionNamesMap.get(dto.getLanId()));
                 dto.setCityName(regionNamesMap.get(dto.getCity()));
-
-                // 取商家的登录名称
-                dto.setLoginName(loginNamesMap.get(dto.getMerchantId()));
 
                 // 设置 发票里面的相关信息
                 Invoice invoice = invoiceMap.get(dto.getMerchantId());
@@ -674,14 +628,49 @@ public class MerchantServiceImpl implements MerchantService {
         BeanUtils.copyProperties(merchantPage, targetPage);
         List<SupplyMerchantDTO> targetList = Lists.newArrayList();
 
+//        for (Merchant merchant : merchantPage.getRecords()) {
+//            SupplyMerchantDTO targetDTO = new SupplyMerchantDTO();
+//            BeanUtils.copyProperties(merchant, targetDTO);
+//
+//            // 取本地网名称 市县名称
+//            targetDTO.setLanName(getRegionNameByRegionId(targetDTO.getLanId()));
+//            targetDTO.setCityName(getRegionNameByRegionId(targetDTO.getCity()));
+//
+//            // 营业执照号、税号、公司账号、营业执照失效期
+//            InvoiceListReq invoiceListReq = new InvoiceListReq();
+//            invoiceListReq.setMerchantId(targetDTO.getMerchantId());
+//            invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
+//            List<Invoice> invoiceList = invoiceManager.listInvoice(invoiceListReq);
+//            if (!CollectionUtils.isEmpty(invoiceList)) {
+//                // 取第一条数据
+//                Invoice invoice = invoiceList.get(0);
+//                targetDTO.setBusiLicenceCode(invoice.getBusiLicenceCode());
+//                targetDTO.setBusiLicenceExpDate(invoice.getBusiLicenceExpDate());
+//                targetDTO.setTaxCode(invoice.getTaxCode());
+//                targetDTO.setRegisterBankAcct(invoice.getRegisterBankAcct());
+//                // 不要用copyProperties  有可能两个表的数据不一样 覆盖商家名称
+////                BeanUtils.copyProperties(invoiceList.get(0), targetDTO);
+//            }
+//
+//            // 取收款账号
+//            MerchantAccountListReq accountListReq = new MerchantAccountListReq();
+//            accountListReq.setMerchantId(targetDTO.getMerchantId());
+//            accountListReq.setAccountType(PartnerConst.MerchantAccountTypeEnum.BEST_PAY.getType());
+//            List<MerchantAccount> accountList = merchantAccountManager.listMerchantAccount(accountListReq);
+//            if (!CollectionUtils.isEmpty(accountList)) {
+//                // 取第一条数据
+//                targetDTO.setAccount(accountList.get(0).getAccount());
+//            }
+//
+//
+//            targetList.add(targetDTO);
+//        }
+
+
         /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
         if (!CollectionUtils.isEmpty(merchantPage.getRecords())) {
-
-            // 取本地网  市县  ID集合  去重
-            HashSet<String> regionIdHashSet = new HashSet<>();
-            // 所有商家ID去重
-            HashSet<String> merchantIdHashSet = new HashSet<>();
-
+            HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
+            HashSet<String> merchantIdHashSet = new HashSet<>(); // 去重
             for (Merchant entity : merchantPage.getRecords()) {
 
                 SupplyMerchantDTO targetDTO = new SupplyMerchantDTO();
@@ -699,7 +688,6 @@ public class MerchantServiceImpl implements MerchantService {
             Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
             Map<String, Invoice> invoiceMap = getInvoiceMap(merchantIdHashSet);
             Map<String, String> merchantAccountMap = getMerchantAccountMap(merchantIdHashSet);
-            Map<String, String> loginNamesMap = getLoginNamesMap(merchantIdHashSet);
 
             // 取本地网名称  市县名称
             for (SupplyMerchantDTO dto : targetList) {
@@ -707,9 +695,6 @@ public class MerchantServiceImpl implements MerchantService {
                 // 设置 本地网名称  市县名称
                 dto.setLanName(regionNamesMap.get(dto.getLanId()));
                 dto.setCityName(regionNamesMap.get(dto.getCity()));
-
-                // 取商家的登录名称
-                dto.setLoginName(loginNamesMap.get(dto.getMerchantId()));
 
                 // 设置 发票里面的相关信息
                 Invoice invoice = invoiceMap.get(dto.getMerchantId());
@@ -749,14 +734,21 @@ public class MerchantServiceImpl implements MerchantService {
         BeanUtils.copyProperties(merchantPage, targetPage);
         List<FactoryMerchantDTO> targetList = Lists.newArrayList();
 
+//        for (Merchant merchant : merchantPage.getRecords()) {
+//            FactoryMerchantDTO targetDTO = new FactoryMerchantDTO();
+//            BeanUtils.copyProperties(merchant, targetDTO);
+//
+//            // 取本地网名称  市县名称
+//            targetDTO.setLanName(getRegionNameByRegionId(targetDTO.getLanId()));
+//            targetDTO.setCityName(getRegionNameByRegionId(targetDTO.getCity()));
+//
+//            targetList.add(targetDTO);
+//        }
+
         /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
         if (!CollectionUtils.isEmpty(merchantPage.getRecords())) {
 
-            // 取本地网  市县  ID集合  去重
-            HashSet<String> regionIdHashSet = new HashSet<>();
-            // 所有商家ID去重
-            HashSet<String> merchantIdHashSet = new HashSet<>();
-
+            HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
             for (Merchant entity : merchantPage.getRecords()) {
 
                 FactoryMerchantDTO targetDTO = new FactoryMerchantDTO();
@@ -767,12 +759,9 @@ public class MerchantServiceImpl implements MerchantService {
                 regionIdHashSet.add(entity.getLanId());
                 regionIdHashSet.add(entity.getCity());
 
-                // 取merchantId集合
-                merchantIdHashSet.add(entity.getMerchantId());
             }
 
             Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
-            Map<String, String> loginNamesMap = getLoginNamesMap(merchantIdHashSet);
 
             // 取本地网名称  市县名称
             for (FactoryMerchantDTO dto : targetList) {
@@ -780,9 +769,6 @@ public class MerchantServiceImpl implements MerchantService {
                 // 设置 本地网名称  市县名称
                 dto.setLanName(regionNamesMap.get(dto.getLanId()));
                 dto.setCityName(regionNamesMap.get(dto.getCity()));
-
-                // 取商家的登录名称
-                dto.setLoginName(loginNamesMap.get(dto.getMerchantId()));
 
             }
         }
@@ -810,25 +796,6 @@ public class MerchantServiceImpl implements MerchantService {
         if (!CollectionUtils.isEmpty(dtoList)) {
             dtoList.forEach(dto -> {
                 resultMap.put(dto.getOrgId(), dto.getOrgName());
-            });
-        }
-        return resultMap;
-    }
-
-    /**
-     * 根据merchantId集合获取所有的  登录名称
-     *
-     * @param merchantIdHashSet
-     * @return
-     */
-    private Map<String, String> getLoginNamesMap(HashSet<String> merchantIdHashSet) {
-        UserListReq req = new UserListReq();
-        req.setRelCodeList(Lists.newArrayList(merchantIdHashSet));
-        List<UserDTO> dtoList = userService.getUserList(req);
-        Map resultMap = new HashMap();
-        if (!CollectionUtils.isEmpty(dtoList)) {
-            dtoList.forEach(userDTO -> {
-                resultMap.put(userDTO.getRelCode(), userDTO.getLoginName());
             });
         }
         return resultMap;
@@ -937,6 +904,11 @@ public class MerchantServiceImpl implements MerchantService {
         if (StringUtils.isEmpty(regionId)) {
             return "";
         }
+//        CommonRegionDTO commonRegionDTO = new CommonRegionDTO();
+//        ResultVO<CommonRegionDTO> re = commonRegionService.getCommonRegionById(regionId);
+//        if(!Objects.isNull(re.getResultData())){
+//            commonRegionDTO = re.getResultData();
+//        }
         CommonRegionDTO commonRegionDTO = commonRegionService.getCommonRegionById(regionId).getResultData();
         if (commonRegionDTO != null) {
             return commonRegionDTO.getRegionName();
@@ -986,39 +958,36 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public List<String> getMerchantIdList(String merchantName) {
-        return merchantManager.getMerchantIdList(merchantName);
-    }
-
     @Transactional(rollbackFor = Exception.class)
     public ResultVO saveFactoryMerchant(FactoryMerchantSaveReq req) {
-        try {
-            //新增厂商表记录
-            Merchant merchant=this.addMerchant(req);
-            String merchantId=merchant.getMerchantId();
-            //关联账户信息,生成user信息
-            UserDTO user=this.addUser(req,merchantId);
-            String userId=user.getUserId();
-            String userName=user.getUserName();
-            //注册厂商信息并生成审核流程
-            UserFactoryMerchantReq userFactoryMerchantReq=new UserFactoryMerchantReq();
-            BeanUtils.copyProperties(req, userFactoryMerchantReq);
-            userFactoryMerchantReq.setUserId(userId);
-            userFactoryMerchantReq.setUserName(userName);
-            ResultVO vo=initFactoryMerchant(userFactoryMerchantReq,merchantId);
-            if(!vo.isSuccess()){
-                //注册厂商信息失败，回滚生成的账户信息
-                TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            }
-        } catch (Exception e) {
-            return ResultVO.error(e.getMessage());
+        //新增厂商表记录
+        Merchant merchant=this.addMerchant(req);
+        String merchantId=merchant.getMerchantId();
+        //关联账户信息,生成user信息
+        ResultVO<UserDTO> userResult=this.addUser(req,merchantId);
+        if(!userResult.isSuccess()||null==userResult.getResultData()){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error(userResult.getResultMsg());
         }
-        return success();
-    }
-
-    @Override
-    public ResultVO<String> resistManufacturer(ManufacturerResistReq req) {
-        return null;
+        UserDTO user=userResult.getResultData();
+        String userId=user.getUserId();
+        String userName=user.getUserName();
+        //注册厂商信息并生成审核流程
+        req.setUserId(userId);
+        req.setUserName(userName);
+        //新增厂商附件记录
+        this.addEnclosure(req,merchantId);
+        //发起审核流程
+        String extends1=req.getLanId();
+        try {
+            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessTitle(), req.getApplyId(), req.getApplyName(),PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessId(),
+                    merchantId,extends1, WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040501.getTaskSubType());
+        } catch (Exception e) {
+            //注册厂商信息失败，回滚生成的账户信息
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error("发起厂商审核流程失败");
+        }
+        return ResultVO.success();
     }
 
     /**
@@ -1028,42 +997,40 @@ public class MerchantServiceImpl implements MerchantService {
      */
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVO registerFactoryMerchant(UserFactoryMerchantReq req) {
+    public ResultVO<String> registerFactoryMerchant(FactoryMerchantSaveReq req) {
+        //添加厂商信息
+        Merchant merchant=this.addMerchant(req);
+        String merchantId=merchant.getMerchantId();
+        //新增厂商附件记录
+        this.addEnclosure(req,merchantId);
+        //发起审核流程
+        String extends1=req.getLanId();
         try {
-            Merchant merchant=this.addMerchant(req);
-            String merchantId=merchant.getMerchantId();
-            initFactoryMerchant(req,merchantId);
-            return ResultVO.success();
+            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessTitle(), req.getApplyId(), req.getApplyName(),PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessId(),
+                    merchantId,extends1,WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040501.getTaskSubType());
         } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultVO.error(e.getMessage());
         }
+        return ResultVO.success(merchant.getMerchantId());
     }
 
 
-
-
-    /**
-     * 注册厂商信息并生成审核流程
-     * @param req
-     * @param merchantId
-     * @return
-     */
-    @Transactional(rollbackFor = Exception.class)
-    public ResultVO<String> initFactoryMerchant(UserFactoryMerchantReq req,String merchantId) {
-        try {
-            String userId=req.getUserId();
-            String userName=req.getUserName();
-            //新增厂商附件记录
-            this.addEnclosure(req,merchantId);
-            //发起审核流程
-            String extends1=req.getLanId();
-            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessTitle(), userId, userName,PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessId(),
-                    merchantId,extends1, WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040501.getTaskSubType());
-            return ResultVO.success(merchantId);
-        } catch (Exception e) {
-            return ResultVO.error(e.getMessage());
-        }
-    }
+//    /**
+//     * 注册厂商信息并生成审核流程
+//     * @param
+//     * @param merchantId
+//     * @return
+//     */
+//    @Transactional(rollbackFor = Exception.class)
+//    public ResultVO<String> initFactoryMerchant(FactoryMerchantSaveReq req, String merchantId) {
+//        try {
+//
+//            return ResultVO.success(merchantId);
+//        } catch (Exception e) {
+//            return ResultVO.error(e.getMessage());
+//        }
+//    }
 
     /**
      * 新建厂商记录
@@ -1075,6 +1042,8 @@ public class MerchantServiceImpl implements MerchantService {
         BeanUtils.copyProperties(req, merchant);
         merchant.setStatus(PartnerConst.MerchantStatusEnum.NOT_EFFECT.getType());//默认未生效
         merchant.setMerchantType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());//类别为厂商
+        String merchantCode = merchantManager.getMerchantCode(merchant.getMerchantType());//获取厂商编码
+        merchant.setMerchantCode(merchantCode);
         merchantManager.insertMerchant(merchant);
         return merchant;
     }
@@ -1086,7 +1055,7 @@ public class MerchantServiceImpl implements MerchantService {
      * @return
      * @throws Exception
      */
-    private UserDTO addUser(FactoryMerchantSaveReq req,String merchantId) throws RuntimeException {
+    private ResultVO<UserDTO> addUser(FactoryMerchantSaveReq req,String merchantId) {
         UserAddReq userAddReq=new UserAddReq();
         BeanUtils.copyProperties(req, userAddReq);
         userAddReq.setStatusCd(SystemConst.USER_STATUS_INVALID);//默认禁用字段
@@ -1095,12 +1064,7 @@ public class MerchantServiceImpl implements MerchantService {
         //生成默认密码
         String loginPwd="Ab_123456";
         userAddReq.setLoginPwd(new MD5(loginPwd).asHex());
-        ResultVO<UserDTO> vo=userService.addUser(userAddReq);
-        if(vo!=null&&vo.getResultData()!=null&&vo.isSuccess()){
-            return vo.getResultData();
-        }else{
-            throw new RuntimeException(vo.getResultMsg());
-        }
+        return userService.addUser(userAddReq);
     }
 
     /**
@@ -1119,7 +1083,7 @@ public class MerchantServiceImpl implements MerchantService {
      * @param req
      * @return
      */
-    private  void addEnclosure(UserFactoryMerchantReq req,String merchantId) {
+    private  void addEnclosure(FactoryMerchantSaveReq req,String merchantId) {
         //上传营业执照
         addBusinessLicense(req.getBusinessLicense(),merchantId,Boolean.FALSE);
         addBusinessLicense(req.getBusinessLicenseCopy(),merchantId,Boolean.FALSE);
@@ -1132,6 +1096,31 @@ public class MerchantServiceImpl implements MerchantService {
         addContract(req.getContract(),merchantId,Boolean.FALSE);
 
     }
+    /**
+     * 上传省/地包附件信息
+     * @param req
+     * @return
+     */
+    //(可以定时扫描关联不到商户的附件删除)
+    private void addEnclosure(SupplierResistReq req,String merchantId) throws RuntimeException {
+        //上传营业执照
+        log.info("merchantId:{}" + merchantId);
+        addBusinessLicense(req.getBusinessLicense(),merchantId,Boolean.TRUE);
+        log.info("上传营业执照成功");
+        addBusinessLicense(req.getBusinessLicenseCopy(),merchantId,Boolean.TRUE);
+        log.info("上传营业执照辐照成功");
+        //上传身份证
+        addlegalPersonIdCard(req.getLegalPersonIdCardFont(),merchantId,Boolean.TRUE);
+        log.info("上传身份证正面成功");
+        addlegalPersonIdCard(req.getLegalPersonIdCardBack(),merchantId,Boolean.TRUE);
+        log.info("上传身份证反面成功");
+        //上传授权证明
+        addAuthorizationCertificate(req.getAuthorizationCertificate(),merchantId,Boolean.TRUE);
+        log.info("上传授权证明反面成功");
+        //上传合同
+        addContract(req.getContract(),merchantId,Boolean.FALSE);
+    }
+
 
     /**
      * 上传合同
@@ -1142,15 +1131,10 @@ public class MerchantServiceImpl implements MerchantService {
     private void addContract(String contract, String merchantId,Boolean rollBack) {
         //合同不为空，上传合同
         if(StringUtils.isNotBlank(contract)){
-            try {
-                CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.CONTRACT_TEXT.getCode(),merchantId,contract);
-                commonFileService.saveCommonFile(dto);
-            } catch (Exception e) {
-                log.error("MerchantServiceImpl.addlegalPersonIdCard(), input: contract={} ", contract);
-                if(rollBack){
-                    throw new RuntimeException("上传合同失败");
-                }
-
+            CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.CONTRACT_TEXT.getCode(),merchantId,contract);
+            if( !commonFileService.saveCommonFile(dto).isSuccess() && rollBack)
+            {
+                throw new RuntimeException("上传合同失败");
             }
         }
     }
@@ -1163,14 +1147,10 @@ public class MerchantServiceImpl implements MerchantService {
      */
     private void addAuthorizationCertificate(String authorizationCertificate, String merchantId,Boolean rollBack) {
         Assert.notNull(authorizationCertificate, "授权证明不允许为空");
-        try {
-            CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode(),merchantId,authorizationCertificate);
-            commonFileService.saveCommonFile(dto);
-        } catch (Exception e) {
-            log.error("MerchantServiceImpl.addAuthorizationCertificate(), input: authorizationCertificate={} ", authorizationCertificate);
-            if(rollBack){
-                throw new RuntimeException("上传授权失败");
-            }
+        CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode(),merchantId,authorizationCertificate);
+        if(!commonFileService.saveCommonFile(dto).isSuccess() && rollBack)
+        {
+            throw new RuntimeException("上传授权失败");
         }
     }
 
@@ -1219,7 +1199,8 @@ public class MerchantServiceImpl implements MerchantService {
      * @param extends1 如果申请人是商家，该字段信息显示“地市+区县”信息，如果是电信人员则显示“岗位+部门”信息
      * @param taskType 流程类别
      */
-    private void startProcess(String title,String userId,String userName,String processId,String formId,String extends1,String taskType){
+    @Override
+    public void startProcess(String title, String userId, String userName, String processId, String formId, String extends1, String taskType){
         ProcessStartReq processStartDTO = new ProcessStartReq();
         processStartDTO.setTitle(title);
         //创建流程者， 参数需要提供
@@ -1229,99 +1210,60 @@ public class MerchantServiceImpl implements MerchantService {
         processStartDTO.setFormId(formId);
         processStartDTO.setExtends1(extends1);
         processStartDTO.setTaskSubType(taskType);
-        try{
-            taskService.startProcess(processStartDTO);
-        }catch (Exception ex){
+        ResultVO result=taskService.startProcess(processStartDTO);
+        if(!result.isSuccess()){
+            //生成流程失败，抛出异常，回滚业务
             throw new RuntimeException("生成审核流程失败");
         }
     }
 
-    /**
-     * 插入附件信息
-     * @param req
-     * @param merchanId
-     */
-    private String insertAttachment(SupplierResistReq req,String merchanId) {
-        CommonFileDTO commonFileDTO =null;
-
-        //营业执照正本
-        String businessLicenseUrl = req.getBusinessLicense();
-        if(StringUtils.isNotBlank(businessLicenseUrl)){
-            String fileClass = SystemConst.FileClass.BUSINESS_LICENSE.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,businessLicenseUrl);
-            if(commonFileService.saveCommonFile(commonFileDTO).isSuccess()) ResultVO.error("");
-
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registLandSupplier(SupplierResistReq req) {
+        try {
+            //地包商
+            req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
+            //插入商家信息
+            ResultVO<Merchant> merchantRt = addMerchantInfo(req);
+            String merchantId = merchantRt.getResultData().getMerchantId();
+            //插入附件表  --未做补偿
+            addEnclosure(req,merchantId);
+            //发起审核流程
+            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessTitle(), req.getUserId(), req.getMerchantName()
+                    ,PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessId(),
+                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040301.getTaskSubType());
+        }catch (Exception e){
+            log.info(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error("注册失败");
         }
-        //营业执照副本
-        String businessLicenseCopyUrl = req.getBusinessLicenseCopy();
-        if(StringUtils.isNotBlank(businessLicenseCopyUrl)){
-            String fileClass = SystemConst.FileClass.BUSINESS_LICENSE.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,businessLicenseCopyUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-        //法人身份证正面
-        String personUrl = req.getLegalPersonIdCardFont();
-        if(StringUtils.isNotBlank(personUrl)){
-            String fileClass = SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,businessLicenseCopyUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-        //法人身份证反面
-        String personBackUrl = req.getLegalPersonIdCardBack();
-        if(StringUtils.isNotBlank(personBackUrl)){
-            String fileClass = SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,personBackUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-        //授权证明
-        String authorizationUrl = req.getAuthorizationCertificate();
-        if(StringUtils.isNotBlank(personBackUrl)){
-            String fileClass = SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode();
-            String fileType = SystemConst.FileType.IMG_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,authorizationUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-
-        //合同文件
-        String contractUrl = req.getContract();
-        commonFileDTO.setFileUrl(contractUrl);
-        if(StringUtils.isNotBlank(contractUrl)){
-            String fileClass = SystemConst.FileClass.CONTRACT_TEXT.getCode();
-            String fileType = SystemConst.FileType.TXT_FILE.getCode();
-            commonFileDTO = new CommonFileDTO(fileType,fileClass,merchanId,contractUrl);
-            commonFileService.saveCommonFile(commonFileDTO);
-        }
-        return null;
+        return ResultVO.success("注册成功");
     }
 
-
-
-
-
-/*
-    private MerchantAccount fillWindPayAccount(SupplierResistReq resistReq, MerchantAccount account) {
-        account.setAccount(resistReq.getAccount());
-        account.setBankAccount(resistReq.getWindPayCount());
-        //支付类型为---翼支付
-        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BEST_PAY.getType());
-        return account;
-    }*/
-
-/*    private MerchantAccount fillBankAccount(SupplierResistReq resistReq,MerchantAccount account) {
-        account.setAccount(resistReq.getAccount());
-        account.setBank(resistReq.getBank());
-        account.setBankAccount(resistReq.getBankAccount());
-        //支付类型为---银行
-        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BANK_ACCOUNT.getType());
-        return account;
-    }*/
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registProvinceSupplier(SupplierResistReq req) {
+        try {
+            req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+            //插入商家信息
+            ResultVO<Merchant> merchantRt = addMerchantInfo(req);
+            String merchantId = merchantRt.getResultData().getMerchantId();
+            //插入附件表  --未做补偿
+            addEnclosure(req,merchantId);
+            //发起审核流程
+            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessTitle(),req.getUserId(), req.getMerchantName()
+                    ,PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessId(),
+                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040601.getTaskSubType());
+        }catch (Exception e){
+            log.error("注册失败" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error("注册失败");
+        }
+        return ResultVO.success("注册成功");
+    }
 
     /**
-     * 修改商户信息
+     * 管理员注册地包商
      * @param req
      * @return
      */
@@ -1329,8 +1271,6 @@ public class MerchantServiceImpl implements MerchantService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO registLandSupplierForAdmin(SupplierResistReq req) {
         try {
-            ResultVO codeRt = zopMessageService.checkVerifyCode(req.getPhoneNo(),req.getCode());
-            if(!codeRt.isSuccess())return codeRt;
             req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
             //插入商家信息
             ResultVO<Merchant> merchantRt = addMerchantInfo(req);
@@ -1338,13 +1278,21 @@ public class MerchantServiceImpl implements MerchantService {
             //插入附件表  --未做补偿
             addEnclosure(req,merchantId);
             //调用user服务插入注册user信息
-            UserDTO user = addUser(req,SystemConst.USER_FOUNDER_5,merchantId);
+            ResultVO<UserDTO> addUserRt = addUser(req,SystemConst.USER_FOUNDER_4,merchantId);
+            if(!addUserRt.isSuccess())return addUserRt;
+            UserDTO user = addUserRt.getResultData();
+            log.info("注册用户id"+user.getUserId());
+            String statrProUserId = req.getUserId();
+            log.info("发起者id"+statrProUserId);
+            UserGetReq userGetReq = new UserGetReq();
+            userGetReq.setUserId(statrProUserId);
+            UserDTO startProcessUser = userService.getUser(userGetReq);
             //发起审核流程
-            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessTitle(), user.getUserId(), user.getUserName()
+            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessTitle(), startProcessUser.getUserId(), startProcessUser.getUserName()
                     ,PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessId(),
-                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3037.getTaskSubType());
+                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040301.getTaskSubType());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error(e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultVO.error("注册失败");
         }
@@ -1355,8 +1303,6 @@ public class MerchantServiceImpl implements MerchantService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO registProvinceSupplierForAdmin(SupplierResistReq req) {
         try {
-            ResultVO codeRt = zopMessageService.checkVerifyCode(req.getPhoneNo(),req.getCode());
-            if(!codeRt.isSuccess())return codeRt;
             req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
             //插入商家信息
             ResultVO<Merchant> merchantRt = addMerchantInfo(req);
@@ -1364,18 +1310,51 @@ public class MerchantServiceImpl implements MerchantService {
             //插入附件表  --未做补偿
             addEnclosure(req,merchantId);
             //USER_FOUNDER_4 省包
-            UserDTO user = addUser(req,SystemConst.USER_FOUNDER_4,merchantId);
+            ResultVO<UserDTO> addUserRt = addUser(req,SystemConst.USER_FOUNDER_4,merchantId);
+            if(!addUserRt.isSuccess())return addUserRt;
+            UserDTO user = addUserRt.getResultData();
+            log.info("注册用户id"+user.getUserId());
+            String statrProUserId = req.getUserId();
+            log.info("发起者id"+statrProUserId);
+            UserGetReq userGetReq = new UserGetReq();
+            userGetReq.setUserId(statrProUserId);
+            UserDTO startProcessUser = userService.getUser(userGetReq);
             //发起审核流程   如果是电信人员则显示“岗位+部门”信息
-            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessTitle(), user.getUserId(), user.getUserName()
+            this.startProcess(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessTitle(), startProcessUser.getUserId(), startProcessUser.getUserName()
                     ,PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessId(),
-                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3037.getTaskSubType());
+                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040601.getTaskSubType());
         }catch (Exception e){
-            log.info(e.getMessage());
+            log.error(e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return ResultVO.error("注册失败");
         }
         return ResultVO.success("注册成功");
     }
+
+    @Override
+    public ResultVO<SupplierResistResp> getSupplierInfo(String merchantId) {
+        SupplierResistResp resistResp;
+        try {
+            MerchantGetReq req = new MerchantGetReq();
+            req.setMerchantId(merchantId);
+            UserGetReq userGetReq = new UserGetReq();
+            MerchantDetailDTO merchant = this.getMerchantDetail(req).getResultData();
+            MerchantAccountListReq merchantAccountListReq = new MerchantAccountListReq();
+            merchantAccountListReq.setMerchantId(merchantId);
+            List<MerchantAccount> merchantAccountList = merchantAccountManager.listMerchantAccount(merchantAccountListReq);
+            userGetReq.setUserId(merchant.getUserId());
+            UserDTO user = userService.getUser(userGetReq);
+            CommonFileDTO commonFileDTO = new CommonFileDTO();
+            commonFileDTO.setObjId(merchantId);
+            List<CommonFileDTO>commonFileList= commonFileService.listCommonFile(commonFileDTO).getResultData();
+            resistResp = fillSupplierRegistResp(merchant,user,merchantAccountList,commonFileList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return ResultVO.error("获取详情失败");
+        }
+        return ResultVO.success(resistResp);
+    }
+
     private SupplierResistResp fillSupplierRegistResp(MerchantDetailDTO merchant, UserDTO user, List<MerchantAccount> merchantAccountList, List<CommonFileDTO> commonFileList) {
         SupplierResistResp resistResp = new SupplierResistResp();
         BeanUtils.copyProperties(merchant,resistResp);
@@ -1418,40 +1397,6 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
 
-    private MerchantAccount fillWindPayAccount(SupplierResistReq resistReq, MerchantAccount account) {
-        account.setAccount(resistReq.getAccount());
-        account.setBankAccount(resistReq.getWindPayCount());
-        //支付类型为---翼支付
-        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BEST_PAY.getType());
-        return account;
-    }
-
-    private MerchantAccount fillBankAccount(SupplierResistReq resistReq,MerchantAccount account) {
-        account.setAccount(resistReq.getAccount());
-        account.setBank(resistReq.getBank());
-        account.setBankAccount(resistReq.getBankAccount());
-        //支付类型为---银行
-        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BANK_ACCOUNT.getType());
-        return account;
-    }
-
-    /**
-     * 填充merchant
-     * @param req
-     * @return
-     */
-    private Merchant fillMerchant(SupplierResistReq req) {
-        //商户编码，id，名称，地市lanid，联系电话,状态,商户类型
-        //code要自动生成兼容手工维护的code，city可以地市+01,状态为待审核
-        Merchant merchant = new Merchant();
-        BeanUtils.copyProperties(req,merchant);
-        merchant.setStatus(PartnerConst.MerchantStatusEnum.NOT_EFFECT.getType());
-        if(merchant.getLanId()!=null)
-            merchant.setCity(merchant.getLanId() + "01");
-        return merchant;
-    }
-
-
     /**
      * remote add sys_user
      * @param req
@@ -1485,6 +1430,7 @@ public class MerchantServiceImpl implements MerchantService {
         return ResultVO.success(merchant);
     }
 
+
     public ResultVO checkBank(SupplierResistReq req) {
         //银行卡号是否正确
         JSONObject obj = JSONObject.parseObject(getCardDetail(req.getBankAccount()));
@@ -1493,6 +1439,41 @@ public class MerchantServiceImpl implements MerchantService {
         if(!stat.equals("ok") || !flag)
             return ResultVO.error("银行卡无效");
         return ResultVO.success();
+    }
+
+    /**
+     * 填充merchant
+     * @param req
+     * @return
+     */
+    private Merchant fillMerchant(SupplierResistReq req) {
+        //商户编码，id，名称，地市lanid，联系电话,状态,商户类型
+        //code要自动生成兼容手工维护的code，city可以地市+01,状态为待审核
+        Merchant merchant = new Merchant();
+        BeanUtils.copyProperties(req,merchant);
+        merchant.setStatus(PartnerConst.MerchantStatusEnum.NOT_EFFECT.getType());
+        if(merchant.getLanId()!=null)
+            merchant.setCity(merchant.getLanId() + "01");
+        return merchant;
+    }
+
+
+
+    private MerchantAccount fillWindPayAccount(SupplierResistReq resistReq, MerchantAccount account) {
+        account.setAccount(resistReq.getAccount());
+        account.setAccountName(resistReq.getWindPayCount());
+        //支付类型为---翼支付
+        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BEST_PAY.getType());
+        return account;
+    }
+
+    private MerchantAccount fillBankAccount(SupplierResistReq resistReq,MerchantAccount account) {
+        account.setAccount(resistReq.getAccount());
+        account.setBank(resistReq.getBank());
+        account.setBankAccount(resistReq.getBankAccount());
+        //支付类型为---银行
+        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BANK_ACCOUNT.getType());
+        return account;
     }
 
     private String getCardDetail(String cardNo) {
@@ -1589,4 +1570,30 @@ public class MerchantServiceImpl implements MerchantService {
         }
     }
 
+//    @Override
+//    public List<String> getMerchantIdListForPayment(MerchantIdListForPaymentReq req){
+//        List<String> merchantIdlist = Lists.newArrayList();
+//
+//        //根据系统账号名称获取系统账号id
+//        UserListReq userListReq = new UserListReq();
+//        if(!StringUtils.isEmpty(req.getLoginName())){
+//            userListReq.setLoginName(req.getLoginName());
+//            List<UserDTO> userDTOList = userService.getUserList(userListReq);
+//            if(CollectionUtils.isEmpty(userDTOList)){
+//                return new ArrayList<String>();
+//            }
+//            userDTOList.forEach(userDTO -> {
+//                merchantIdlist.add(userDTO.getRelCode());
+//            });
+//        }
+//
+//        MerchantListReq merchantListReq = new MerchantListReq();
+//        BeanUtils.copyProperties(req,merchantListReq);
+//        merchantListReq.setMerchantIdList(merchantIdlist);
+//        return merchantManager.getMerchantIdListForPayment(merchantListReq);
+//    }
+
+    public List<String> getMerchantIdList(String merchantName) {
+        return merchantManager.getMerchantIdList(merchantName);
+    }
 }

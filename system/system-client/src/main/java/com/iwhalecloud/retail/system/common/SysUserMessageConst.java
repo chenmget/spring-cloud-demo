@@ -21,15 +21,10 @@ public class SysUserMessageConst {
     // 营销活动发货预警提前天数
     public static  final String DELIVER_END_TIME_NOTIFY_DAYS = "DELIVER_END_TIME_NOTIFY_DAYS";
 
-    //ZOP短信能力
-    public static final String REGIST_VERIFY_BSID = "2691";
-    public static final String MODFIFY_PASSWD_BSID = "2691";
-    public static final String LOGIN_VERIFY_BSID = "2691";
 
     public static final String PHONENO_NULL = "电话号码为空";
     public static final String VERIFYCODE_NULL = "验证码为空";
-    public static final String VERIFYCODE_EFF = "验证码过期";
-    public static final String VERIFYCODE_ERR = "验证码有误";
+    public static final String VERIFYCODE_ERR = "验证码过期或无效";
 
     /**
      * 0：未读
@@ -124,4 +119,40 @@ public class SysUserMessageConst {
             this.code = code;
         }
     }
+
+    //ZOP短信能力
+    public enum VerifyCode {
+        //注册校验嘛
+        REGIST_CODE(1,"10101"),
+        //登陆校验码
+        LOGIN_CODE(3,"10102"),
+        //重置密码校验码
+        RESET_PASSWD_CODE(2,"10103");
+        private int type;
+        private String bsid;
+
+        VerifyCode(int type, String bsid) {
+            this.type = type;
+            this.bsid = bsid;
+        }
+
+        public int getType() {
+            return type;
+        }
+
+        public void setType(int type) {
+            this.type = type;
+        }
+
+        public String getBsid() {
+            return bsid;
+        }
+
+        public void setBsid(String bsid) {
+            this.bsid = bsid;
+        }
+    }
+    public static final String REGIST_VERIFY_BSID = "2691";
+    public static final String MODFIFY_PASSWD_BSID = "2691";
+    public static final String LOGIN_VERIFY_BSID = "2691";
 }

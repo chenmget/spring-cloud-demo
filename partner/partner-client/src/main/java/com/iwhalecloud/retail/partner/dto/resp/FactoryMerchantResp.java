@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.partner.dto.req;
+package com.iwhalecloud.retail.partner.dto.resp;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -10,51 +10,45 @@ import java.io.Serializable;
 
 @Data
 @ApiModel("新增厂商的信息")
-public class FactoryMerchantSaveReq  implements Serializable {
+public class FactoryMerchantResp implements Serializable {
 
-    private static final long serialVersionUID = -1473978323038437354L;
+    private static final long serialVersionUID = -6622407800905681737L;
     //（par_merchant表字段）
     //企业信息
-    @NotEmpty(message = "公司名称不能为空")
+    @ApiModelProperty(value = "厂商Id")
+    private String merchantId;
+
     @ApiModelProperty(value = "公司名称")
     private String merchantName;
 
-    @NotEmpty(message = "地市不能为空")
     @ApiModelProperty(value = "地市")
     private String lanId;
 
-    @NotEmpty(message = "经营品牌不能为空")
+    @ApiModelProperty(value = "地市名称")
+    private java.lang.String lanName;
+
     @ApiModelProperty(value = "经营品牌")
     private String manageBrand;
 
-    @NotEmpty(message = "法人姓名不能为空")
     @ApiModelProperty(value = "法人姓名")
     private String legalPerson;
 
-    @NotEmpty(message = "公司地址不能为空")
     @ApiModelProperty(value = "公司地址")
     private String address;
 
 
-    //账户基本信息（sys_user表字段）
-    @NotEmpty(message = "账户名不能为空")
     @ApiModelProperty(value = "账户名")
     private String loginName;
 
-    @ApiModelProperty(value = "登陆密码")
-    private String loginPwd;
-
-    @NotEmpty(message = "真实姓名不能为空")
     @ApiModelProperty(value = "真实姓名")
     private String userName;
 
-    @NotEmpty(message = "身份证号不能为空")
     @ApiModelProperty(value = "身份证号")
     private String certNumber;
 
-    @NotEmpty(message = "联系电话不能为空")
     @ApiModelProperty(value = "联系电话")
     private String phoneNo;
+
 
 
 
@@ -72,25 +66,9 @@ public class FactoryMerchantSaveReq  implements Serializable {
     @ApiModelProperty(value = "法人身份证背面")
     private String legalPersonIdCardBack;
 
-    @NotEmpty(message = "授权证明不能为空")
     @ApiModelProperty(value = "授权证明")
     private String authorizationCertificate;
 
     @ApiModelProperty(value = "合同")
     private String contract;
-
-    @ApiModelProperty(value = "用户ID")
-    private String userId;
-
-    /**
-     * 用户ID
-     */
-    @ApiModelProperty(value = "申请人ID")
-    private String applyId;
-
-    /**
-     * 用户昵称
-     */
-    @ApiModelProperty(value = "申请人昵称")
-    private String applyName;
 }

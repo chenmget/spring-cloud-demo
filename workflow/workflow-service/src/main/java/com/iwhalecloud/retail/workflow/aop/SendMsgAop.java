@@ -67,6 +67,10 @@ public class SendMsgAop {
         }
         if(result instanceof ResultVO){
             List<HandlerUser> handlerUsers = (List<HandlerUser>) ((ResultVO) result).getResultData();
+            if(handlerUsers == null){
+                log.info("handleUser is null");
+                return;
+            }
             sendMsg(processId,handlerUsers);
         }
 
@@ -76,7 +80,6 @@ public class SendMsgAop {
         NoticeMsgReq req = new NoticeMsgReq();
         List<BaseZopMsgReq> zopMsgReqs = new ArrayList<>();
         List templates = new ArrayList<>();
-
         for (HandlerUser user : handlerUserList){
             UserDetailDTO userDetailDTO = userClient.getUserDetail(user.getHandlerUserId());
             BaseZopMsgReq baseZopMsgReq = new BaseZopMsgReq();

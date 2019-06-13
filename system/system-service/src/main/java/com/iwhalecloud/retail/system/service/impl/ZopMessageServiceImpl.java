@@ -11,7 +11,9 @@ import com.iwhalecloud.retail.system.service.RandomLogService;
 import com.iwhalecloud.retail.system.service.ZopMessageService;
 import com.iwhalecloud.retail.system.utils.ZopMsgUtil;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.Assert;
 
 
 import java.util.*;
@@ -33,7 +35,7 @@ public class ZopMessageServiceImpl implements ZopMessageService {
             //产生六位随机验证码
             String verifyCode = generateCode();
             //调用能开发送验证码
-           if(!sendSmsVerificationCode(getReq.getPhoneNo(),getReq.getLandId(),verifyCode)){
+           if(!sendSmsVerificationCode(getReq.getPhoneNo(),getReq.getLandId(),verifyCode,getReq.getOperatType())){
                return ResultVO.error("zop msg remote fail");
            }
             //插入数据库
@@ -63,10 +65,8 @@ public class ZopMessageServiceImpl implements ZopMessageService {
         //selectLogIdByRandomCode 写死查询的是失效大于当前时间所以会有查询DATA为null
         ResultVO<RandomLogGetResp> resultVO = randomLogService.selectLogIdByRandomCode(req);
         RandomLogGetResp resp = resultVO.getResultData();
-        if(resp == null)return ResultVO.error(SysUserMessageConst.VERIFYCODE_EFF);
-     /*   if( resp.getEffDate().getTime() < new Date().getTime()){
-           return  ResultVO.error(SysUserMessageConst.VERIFYCODE_EFF) ;
-        }*/
+        if(resp == null)return ResultVO.error(SysUserMessageConst.VERIFYCODE_ERR);
+
         if(verifyCode.equals(resp.getRandomCode())){
             RandomLogUpdateReq randomLogUpdateReq = new RandomLogUpdateReq();
             randomLogUpdateReq.setLogId(resp.getLogId());
@@ -104,11 +104,20 @@ public class ZopMessageServiceImpl implements ZopMessageService {
     }
 
 
-    private boolean sendSmsVerificationCode(String phoneNo,String landId,String verifyCode) {
+    private boolean sendSmsVerificationCode(String phoneNo,String landId,String verifyCode,int opType) {
         ZopMsgModel model = new ZopMsgModel();
         SmsVerificationtemplate template = new SmsVerificationtemplate();
         template.setSmsVerificationCode(verifyCode);
-        model.setBusinessId(SysUserMessageConst.REGIST_VERIFY_BSID);
+        if(SysUserMessageConst.VerifyCode.LOGIN_CODE.getType() == opType){
+            model.setBusinessId(SysUserMessageConst.VerifyCode.LOGIN_CODE.getBsid());
+        }
+        if(SysUserMessageConst.VerifyCode.REGIST_CODE.getType() == opType){
+            model.setBusinessId(SysUserMessageConst.VerifyCode.REGIST_CODE.getBsid());
+        }
+        if(SysUserMessageConst.VerifyCode.RESET_PASSWD_CODE.getType() == opType){
+            model.setBusinessId(SysUserMessageConst.VerifyCode.RESET_PASSWD_CODE.getBsid());
+        }
+        if(StringUtils.isBlank(model.getBusinessId()))return false;
         model.setLatnId(landId);
         model.setToTel(phoneNo);
         model.setSentContent("");

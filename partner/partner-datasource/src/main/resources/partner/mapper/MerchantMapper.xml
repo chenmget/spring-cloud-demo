@@ -10,6 +10,7 @@
     ,t.MERCHANT_NAME
     ,t.STATUS 
     ,t.MERCHANT_TYPE
+    ,t.merchant_sub_type
     ,t.USER_ID
     ,t.LAST_UPDATE_DATE 
     ,t.BUSINESS_ENTITY_NAME 
@@ -70,7 +71,14 @@
     ,t.TOP_SHORT_NAME 
     ,t.TOP_LEVEL 
     ,t.EFF_DATE 
-    ,t.EXP_DATE 
+    ,t.EXP_DATE
+    ,t.SUPPLY_REGION
+    ,t.LEGAL_PERSON
+    ,t.BUSI_LICENCE_CODE
+    ,t.BUSI_LICENCE_EXP_DATE
+    ,t.CONTRACT_EFF_DATE
+    ,t.CONTRACT_EXP_DATE
+    ,t.CERT_NUMBER
 </sql>
 <!--简要字段-->
 <sql id="simpleFields">
@@ -79,6 +87,7 @@
     ,t.MERCHANT_NAME
     ,t.STATUS
     ,t.MERCHANT_TYPE
+    ,t.merchant_sub_type
     ,t.USER_ID
     ,t.BUSINESS_ENTITY_NAME
     ,t.BUSINESS_ENTITY_CODE

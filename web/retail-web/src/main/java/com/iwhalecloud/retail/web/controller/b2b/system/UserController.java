@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.req.BusinessEntityGetReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplierResistReq;
 import com.iwhalecloud.retail.partner.service.*;
+import com.iwhalecloud.retail.system.common.SysUserLoginConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.*;
 import com.iwhalecloud.retail.system.dto.request.*;
@@ -20,9 +21,10 @@ import com.iwhalecloud.retail.system.service.*;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.consts.WebConst;
 import com.iwhalecloud.retail.web.controller.BaseController;
-import com.iwhalecloud.retail.web.controller.system.request.EditUserReq;
-import com.iwhalecloud.retail.web.controller.system.response.GetUserDetailResp;
-import com.iwhalecloud.retail.web.controller.system.response.LoginResp;
+import com.iwhalecloud.retail.web.controller.b2b.system.request.AddUserReq;
+import com.iwhalecloud.retail.web.controller.b2b.system.request.EditUserReq;
+import com.iwhalecloud.retail.web.controller.b2b.system.response.GetUserDetailResp;
+import com.iwhalecloud.retail.web.controller.b2b.system.response.LoginResp;
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
@@ -51,7 +53,6 @@ import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@CrossOrigin
 @Slf4j
 @RestController
 @RequestMapping("/api/user")
@@ -99,12 +100,12 @@ public class UserController extends BaseController {
 
     @Reference
     ConfigInfoService configInfoService;
-    
+
     @Reference
     LoginLogService loginLogService;
 
     @Reference
-    ZopMessageService verifyCodeService;
+    ZopMessageService zopMessageService;
 
     /**
      * 云货架
@@ -190,9 +191,7 @@ public class UserController extends BaseController {
             }
         }
         UserLoginResp resp = userService.login(req);
-
         UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
-
         // 登录日志记录
         if(StringUtils.isNotBlank(user.getUserId())){
             LoginLogDTO loginLogDTO = new LoginLogDTO();
@@ -208,15 +207,16 @@ public class UserController extends BaseController {
             loginLogService.saveLoginLog(loginLogDTO);
 
         }
+//        }
 
         // 失败 返回错误信息
-        if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
+        if ((!resp.getIsLoginSuccess() || resp.getUserDTO() == null) && resp.getFailCode() != SysUserLoginConst.NEED_RESETPASSWDCODE) {
             return failResultVO(resp.getErrorMessage());
         }
         request.getSession().invalidate();//清空session
         Cookie[] cookies = request.getCookies();
         if (Objects.nonNull(cookies) && cookies.length > 0) {
-            Cookie cookie = request.getCookies()[0];//获取cookie
+            Cookie cookie = request.getCookies()[0] ;//获取cookie
             cookie.setMaxAge(0);//让cookie过期
         }
 
@@ -288,7 +288,6 @@ public class UserController extends BaseController {
             loginLogDTO.setSourceIp(sourceIp);
             loginLogDTO.setLoginDesc(resp.getErrorMessage());
             loginLogService.saveLoginLog(loginLogDTO);
-
         }
 
         // 失败 返回错误信息
@@ -325,10 +324,10 @@ public class UserController extends BaseController {
     })
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public ResultVO userLogout(HttpServletRequest request) {
-    	String userId = UserContext.getUserId();
+        String userId = UserContext.getUserId();
         Date nowDate = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	loginLogService.updatelogoutTimeByUserId(userId, sdf.format(nowDate));
+        loginLogService.updatelogoutTimeByUserId(userId, sdf.format(nowDate));
 
         //清空session里面的用户信息
         request.getSession().removeAttribute(WebConst.SESSION_TOKEN);
@@ -586,8 +585,8 @@ public class UserController extends BaseController {
         UserContext.setUser(userDTO);
         return userOtherMsgDTO;
     }
-    
-    
+
+
     /**
      * 取用户登录的地址来源
      *
@@ -595,28 +594,28 @@ public class UserController extends BaseController {
      * @return
      */
     private String getUserLoginIp(HttpServletRequest request) {
-    	String ip = request.getHeader("x-forwarded-for");
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getHeader("Proxy-Client-IP");
-    	}
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getHeader("WL-Proxy-Client-IP");
-    	}
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getHeader("HTTP_CLIENT_IP");
-    	}
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-    	}
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getRemoteAddr();
-    	}
-    	// 因为有些有些登录是通过代理，所以取第一个（第一个为真是ip）
-    	int index = ip.indexOf(',');
-    	if (index != -1) {
-    		ip = ip.substring(0, index);
-    	}
-    	return ip;
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        // 因为有些有些登录是通过代理，所以取第一个（第一个为真是ip）
+        int index = ip.indexOf(',');
+        if (index != -1) {
+            ip = ip.substring(0, index);
+        }
+        return ip;
     }
 
 
@@ -693,9 +692,9 @@ public class UserController extends BaseController {
             return "";
         }
         String orgName = "";
-        com.iwhalecloud.retail.dto.ResultVO resultVO = organizationService.getOrganization(orgId);
-        if (resultVO.getResultData() != null) {
-            orgName = ((OrganizationDTO) resultVO.getResultData()).getOrgName();
+        OrganizationDTO organizationDTO = organizationService.getOrganization(orgId).getResultData();
+        if (organizationDTO != null) {
+            orgName = organizationDTO.getOrgName();
         }
         return orgName;
     }
@@ -712,7 +711,7 @@ public class UserController extends BaseController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/add", method = RequestMethod.POST)
-    public ResultVO<UserDTO> addUser(@RequestBody UserSaveReq req) {
+    public ResultVO<UserDTO> addUser(@RequestBody AddUserReq req) {
 
         if (StringUtils.isEmpty(req.getLoginName())) {
             return failResultVO("账号不能为空");
@@ -737,6 +736,12 @@ public class UserController extends BaseController {
         UserAddReq userAddReq = new UserAddReq();
         BeanUtils.copyProperties(req, userAddReq);
 
+
+//        userDTO = userService.addUser(userAddReq);
+//        // 失败统一返回
+//        if (userDTO == null) {
+//            return failResultVO("新增失败!");
+//        }
         ResultVO<UserDTO> addUserResultVO = userService.addUser(userAddReq);
         userDTO = addUserResultVO.getResultData();
         // 失败统一返回
@@ -790,7 +795,7 @@ public class UserController extends BaseController {
                 && req.getStatusCd() != SystemConst.USER_STATUS_VALID
                 && req.getStatusCd() != SystemConst.USER_STATUS_DELETE
                 && req.getStatusCd() != SystemConst.USER_STATUS_LOCK
-                ) {
+        ) {
             return failResultVO("状态值有误，请确认");
         }
         int result = userService.setUserStatus(req);
@@ -865,7 +870,7 @@ public class UserController extends BaseController {
             return failResultVO("用户ID不能为空");
         }
 //        if (requestDTO.getRoleIds() == null) {
-//            return resultVO(OmsCommonConsts.RESULE_CODE_FAIL, "角色参数缺失", null);
+//            return resultVO(ResultCodeEnum.ERROR.getCode(), "角色参数缺失", null);
 //        }
 
         UserDTO loginUser = UserContext.getUser();
@@ -1121,7 +1126,7 @@ public class UserController extends BaseController {
      * @param req
      * @return
      */
-    @ApiOperation(value = "用户自注册为产商", notes = "注册用户，同时生成厂商信息，配置产商权限，生成厂商审核流程")
+    @ApiOperation(value = "用户自注册为厂商", notes = "注册用户，同时生成厂商信息，配置产商权限，生成厂商审核流程")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
@@ -1139,7 +1144,6 @@ public class UserController extends BaseController {
     })
     @RequestMapping(value = "/registProvinceSupplier", method = RequestMethod.POST)
     public ResultVO registProvinceSupplier(@RequestBody SupplierResistReq req){
-        req.setSource("ADMIN");
         UserRegisterReq userRegisterReq = new UserRegisterReq();
         BeanUtils.copyProperties(req,userRegisterReq);
         return userService.registProvinceSupplier(userRegisterReq);
@@ -1152,13 +1156,12 @@ public class UserController extends BaseController {
     })
     @RequestMapping(value = "/registLandSupplier", method = RequestMethod.POST)
     public ResultVO registLandSupplier(@RequestBody SupplierResistReq req){
-       // req.setSource("ADMIN");
         UserRegisterReq userRegisterReq = new UserRegisterReq();
         BeanUtils.copyProperties(req,userRegisterReq);
         return userService.registLandSupplier(userRegisterReq);
     }
     @RequestMapping(value = "/getVerifyCode", method = RequestMethod.POST)
     public ResultVO getVerifyCode(@RequestBody VerifyCodeGetReq req){
-        return verifyCodeService.sendRegistVerifyCode(req);
+        return zopMessageService.sendRegistVerifyCode(req);
     }
 }

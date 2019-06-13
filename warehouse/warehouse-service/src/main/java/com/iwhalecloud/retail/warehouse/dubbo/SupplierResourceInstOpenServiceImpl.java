@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
@@ -210,5 +211,10 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     @Override
     public ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req){
         return supplierResourceInstService.queryForExport(req);
+    }
+
+    @Override
+    public ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req) {
+        return supplierResourceInstService.getMktResInstNbrForCheck(req);
     }
 }

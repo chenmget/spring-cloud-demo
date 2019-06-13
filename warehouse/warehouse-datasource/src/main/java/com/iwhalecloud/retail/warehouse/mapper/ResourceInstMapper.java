@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
@@ -150,5 +151,8 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst> {
      * @return
      */
     public List<ResourceInstListPageResp> getResourceInstListManual(@Param("req") ResourceInstListPageReq req);
+
+
+    public ResourceInstCheckResp getMktResInstNbrForCheck(@Param("req") ResourceStoreIdResnbr req);
 
 }

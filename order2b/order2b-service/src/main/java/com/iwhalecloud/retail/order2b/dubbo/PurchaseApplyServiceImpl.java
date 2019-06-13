@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.order2b.entity.PurApplyItemDetail;
 import com.iwhalecloud.retail.order2b.manager.*;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
@@ -75,7 +76,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     public ResultVO delivery(PurApplyDeliveryReq req) {
         List<String> mktResInstNbr = Lists.newArrayList();
         int total = mktResInstNbr.size();//串码总数
-        mktResInstNbr = req.getMktResInstNbr();
+        mktResInstNbr = req.getMktResInstNbr(); //串码列表
         if(mktResInstNbr==null || mktResInstNbr.size()<=0) {
             return ResultVO.error("没有收到串码记录");
         }
@@ -105,23 +106,28 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 //        mktResInstNbr
             //生成batchId
 //        String batchId = UUID.randomUUID().toString().replace("-", "");
-            List<String> mktResStoreIds = new ArrayList<String>();
+//            List<String> mktResStoreIds = new ArrayList<String>();
             //查一下仓库
-            mktResStoreIds.add(MktResStoreId);
+//            mktResStoreIds.add(MktResStoreId);
            // String mktResInstNbrCheck="";
-            ResourceInstListPageReq resource = new ResourceInstListPageReq();
-            resource.setMktResInstNbr(mktResInstNbrCheck);
-            resource.setMktResStoreIds(mktResStoreIds);
-            log.info("3.查询串码是否存在参数resource{} =" + JSON.toJSONString(resource));
-            ResultVO<Page<ResourceInstListPageResp>> queryMktResInstNbr= supplierResourceInstService.getResourceInstList(resource);
-            long count = queryMktResInstNbr.getResultData().getTotal();
-            if (count==0) {
+//            ResourceInstListPageReq resource = new ResourceInstListPageReq();
+//            resource.setMktResInstNbr(mktResInstNbrCheck);
+//            resource.setMktResStoreIds(mktResStoreIds);
+
+//            ResultVO<Page<ResourceInstListPageResp>> queryMktResInstNbr= supplierResourceInstService.getResourceInstList(resource);
+            ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
+            resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbrCheck);
+            resourceStoreIdResnbr.setMktResStoreId(MktResStoreId);
+            log.info("3.resourceStoreIdResnbr{} =" + JSON.toJSONString(resourceStoreIdResnbr));
+            ResourceInstCheckResp resourceInstCheckResp = supplierResourceInstService.getMktResInstNbrForCheck(resourceStoreIdResnbr);
+//            long count = queryMktResInstNbr.getResultData().getTotal();
+            if (resourceInstCheckResp==null) {
                 return ResultVO.error("该仓库查不到该串码"+mktResInstNbr);
             }else {
                 //开始出理串码和产品id 归类，
-                List<ResourceInstListPageResp> resultData = queryMktResInstNbr.getResultData().getRecords();
-                ResourceInstListPageResp resourceInstListPageResp = resultData.get(0);
-                String productId = resourceInstListPageResp.getMktResId();//产品ID
+//                List<ResourceInstListPageResp> resultData = queryMktResInstNbr.getResultData().getRecords();
+//                ResourceInstListPageResp resourceInstListPageResp = resultData.get(0);
+                String productId = resourceInstCheckResp.getMktResId();//产品ID
                 if(map.get(productId)==null) {
                     List<String> mktResInstNbrList = new ArrayList<String>();
                     mktResInstNbrList.add(mktResInstNbrCheck);

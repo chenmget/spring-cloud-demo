@@ -215,7 +215,7 @@ public class PurApplyManager {
 	 * @param mktResInstNbrList
 	 * @return
 	 */
-	public int updatePurApplyItemDetailStatusCd(List<String> mktResInstNbrList) {
+	public Integer updatePurApplyItemDetailStatusCd(List<String> mktResInstNbrList) {
 		return purApplyMapper.updatePurApplyItemDetailStatusCd(mktResInstNbrList);
 	}
 

@@ -3,12 +3,10 @@ package com.iwhalecloud.retail.order2b.dubbo;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.TestBase;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
+import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import org.junit.Test;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 
@@ -43,5 +41,23 @@ public class PurchaseApplyServiceImplTest extends TestBase {
         for(PurApplyDeliveryResp p:r) {
             System.out.println(p.getBatchId()+p.getUnitName()+p.getMktResInstNbr()+p.getCreateDate());
         }
+    }
+
+
+    @Test
+    public void reving() {
+        PurApplyReceivingReq req = new PurApplyReceivingReq();
+        req.setApplyId("1736");
+        String userId = "1";
+        req.setCreateStaff(userId);
+        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+        req.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
+        req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
+        req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
+        req.setMerchantId("4331301049118");
+        ResultVO resultVO = purchaseApplyService.receiving(req);
+        System.out.println(resultVO.isSuccess()+"===="+resultVO.getResultMsg());
+
     }
 }

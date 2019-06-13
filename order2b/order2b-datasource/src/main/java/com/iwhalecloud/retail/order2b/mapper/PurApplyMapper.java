@@ -3,22 +3,13 @@ package com.iwhalecloud.retail.order2b.mapper;
 import java.util.List;
 
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
 import com.iwhalecloud.retail.order2b.entity.PurApply;
 
 @Mapper
@@ -102,5 +93,10 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public void updateProdNoPassPrice(@Param("req") ProdProductChangeDetail req);
 	
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(@Param("keyValue") String keyValue);
-	
+
+	public int countPurApplyItemDetail(@Param("req") PurApplyItemReq req);
+	public int countPurApplyItemDetailReving(@Param("req") PurApplyItemReq req);
+
+	public int updatePurApplyItemDetailStatusCd(@Param("mktResInstNbrList") List<String> mktResInstNbrList);
+
 }

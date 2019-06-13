@@ -37,6 +37,15 @@ public interface ResouceStoreMapper extends BaseMapper<ResouceStore>{
     String getStoreId(StoreGetStoreIdReq req);
 
     /**
+     * 根据lanID查询仓库ID
+     *
+     * @param lanId
+     * @return
+     */
+    String getStoreIdByLanId(String lanId);
+
+
+    /**
      * 查询仓库ID列表
      * @param objIdList
      * @return

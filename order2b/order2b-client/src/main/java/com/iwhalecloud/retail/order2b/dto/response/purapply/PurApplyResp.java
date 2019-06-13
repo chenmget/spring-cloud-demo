@@ -23,6 +23,7 @@ public class PurApplyResp extends PageVO implements Serializable {
 	private String lanId; // 地址id
 	private String applyMerchantName; //申请名称
 	private String applyMerchantId; //申请id
+	private String merchantId; //供应商id
 
 
 	private String taskId;

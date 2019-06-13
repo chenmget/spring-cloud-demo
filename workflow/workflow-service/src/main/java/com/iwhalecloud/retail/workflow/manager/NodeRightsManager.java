@@ -126,7 +126,7 @@ public class NodeRightsManager{
             log.error("NodeRightsManager.getHandlerUserByRemote-->serviceManager.getService is null,serviceId={}",nodeRights.getServiceId() );
             return Lists.newArrayList();
         }
-
+        log.info("NodeRightsManager.getHandlerUserByRemote serviceManager.getService service={}", JSON.toJSONString(service));
         NodeRightsServiceParamContext serviceParamContext = new NodeRightsServiceParamContext();
         serviceParamContext.setRoleId(nodeRights.getRoleId());
         serviceParamContext.setHandlerUserId(task.getCreateUserId());

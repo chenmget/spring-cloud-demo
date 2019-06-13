@@ -637,9 +637,19 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(num);
     }
 
-    @Override
+    
     public List<ProductInfoResp> getProductInfoByIds(List<String> productIdList) {
         log.info("ProductServiceImpl.getDuplicate productIdList={}", productIdList);
         return productManager.getProductInfoByIds(productIdList);
     }
+    
+    @Override
+    public String selectNextChangeId() {
+		return productManager.selectNextChangeId();
+	}
+    
+    @Override
+    public String selectNextChangeDetailId() {
+		return productManager.selectNextChangeDetailId();
+	}
 }

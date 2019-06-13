@@ -140,6 +140,8 @@ public interface ProductMapper extends BaseMapper<Product>{
     public List<ProductInfoResp> getProductInfoByIds(@Param("productIds")List<String>productIds);
 
 
-
+    public String selectNextChangeId();
+    
+    public String selectNextChangeDetailId();
 
 }

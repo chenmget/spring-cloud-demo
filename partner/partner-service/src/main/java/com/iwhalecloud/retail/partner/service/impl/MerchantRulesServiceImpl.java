@@ -547,8 +547,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
 
         // 去除没有详情的数据
-//        return resultList.stream().filter(item -> item.getTargetData() != null).collect(Collectors.toList());
-        return resultList;
+        return resultList.stream().filter(item -> item.getTargetData() != null).collect(Collectors.toList());
+//        return resultList;
     }
 
     /**

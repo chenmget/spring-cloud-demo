@@ -77,9 +77,12 @@ public class CgSearchApplyController extends BaseController {
 		
 		String lanId = login.getLanId();
 		
-		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
-		if("9".equals(userFounder)){//地市管理员
-			req.setLanId(lanId);
+		log.info("1查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
+		if(userFounder!=null) {
+			if(9==userFounder){//地市管理员
+				log.info("2查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
+				req.setLanId(lanId);
+			}
 		}
 		Boolean isMerchant= UserContext.isMerchant();
 		if(isMerchant==true) {

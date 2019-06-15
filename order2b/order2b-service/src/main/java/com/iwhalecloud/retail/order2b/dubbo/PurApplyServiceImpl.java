@@ -12,9 +12,13 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
+import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
+import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
+import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
+import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
@@ -23,11 +27,7 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 
@@ -46,8 +46,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Reference
 	private ProductService productService;
+	@Reference
+	MerchantService merchantService;
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
+		log.info("cgSearchApply   req={}"+JSON.toJSONString(req));
 		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApply(req);
 		List<PurApplyResp> list = purApplyResp.getRecords();
 		
@@ -124,6 +127,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
+
 		String isSave = req.getIsSave();
 		// 编辑的时候不做插入操作
 //		if(!isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
@@ -149,6 +153,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 			Map map=new HashMap();
 			if(count>0) {
+				//根据商家ID获取 商家userId
 				map.put("CGJ","0");//
 			}else{
 				map.put("CGJ","1");
@@ -177,6 +182,21 @@ public class PurApplyServiceImpl implements PurApplyService {
 				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
 						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 			}
+			// 申请单上选择的供应商 ，单子就由该供应商来审核  更新wf_task_item  的handler_user_id
+			MerchantGetReq  merchantGetReq = new MerchantGetReq();
+			merchantGetReq.setMerchantId(req.getApplyMerchantId());
+			ResultVO<MerchantDetailDTO> merchantInfo =merchantService.getMerchantDetail(merchantGetReq);
+			MerchantDetailDTO m = merchantInfo.getResultData();
+			String userId = m.getUserId();
+			String supplierName = m.getSupplierName();
+			List<HandlerUser> list = new ArrayList<HandlerUser>();
+			HandlerUser hUser = new HandlerUser();
+			hUser.setHandlerUserId(userId);
+			hUser.setHandlerUserName(supplierName);
+			list.add(hUser);
+			processStartDTO.setNextHandlerUser(list);
+
+
 		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
 			//做编辑处理
 			int count =chooseCount(req);

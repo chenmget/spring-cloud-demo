@@ -166,9 +166,6 @@ public class PurApplyManager {
 		return purApplyMapper.selectProductIdByChangeId(changeId);
 	}
 	
-	public String selectisFixedLineByBatchId(String batchId) {
-		return purApplyMapper.selectisFixedLineByBatchId(batchId);
-	}
 	public void updateProdNoPassPrice(ProdProductChangeDetail req) {
 		purApplyMapper.updateProdNoPassPrice(req);
 	}

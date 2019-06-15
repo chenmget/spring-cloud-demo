@@ -652,4 +652,9 @@ public class ProductServiceImpl implements ProductService {
     public String selectNextChangeDetailId() {
 		return productManager.selectNextChangeDetailId();
 	}
+    
+    @Override
+    public String selectisFixedLineByBatchId(String batchId) {
+		return productManager.selectisFixedLineByBatchId(batchId);
+	}
 }

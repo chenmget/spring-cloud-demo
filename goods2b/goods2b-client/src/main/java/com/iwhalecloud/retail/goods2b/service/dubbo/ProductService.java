@@ -225,4 +225,7 @@ public interface ProductService {
     public String selectNextChangeId();
     
     public String selectNextChangeDetailId() ;
+    
+    public String selectisFixedLineByBatchId(String batchId) ;
+    
 }

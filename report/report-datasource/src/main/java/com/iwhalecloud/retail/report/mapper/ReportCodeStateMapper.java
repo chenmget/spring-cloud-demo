@@ -16,6 +16,12 @@ public interface ReportCodeStateMapper extends BaseMapper<RptResInstDetailDay>  
 
 	public Page<ReportCodeStatementsResp> getCodeStatementsReport(Page<ReportCodeStatementsResp> page,@Param("req") ReportCodeStatementsReq reportStorePurchaserReq);
 	
+	public Page<ReportCodeStatementsResp> getCodeStatementsReportAdmin(Page<ReportCodeStatementsResp> page,@Param("req") ReportCodeStatementsReq reportStorePurchaserReq);
+
 	public List<ReportCodeStatementsResp> getCodeStatementsReport(@Param("req") ReportCodeStatementsReq reportStorePurchaserReq);
+	
+	public List<ReportCodeStatementsResp> getCodeStatementsReportAdmin(@Param("req") ReportCodeStatementsReq reportStorePurchaserReq);
+
 
 }
+

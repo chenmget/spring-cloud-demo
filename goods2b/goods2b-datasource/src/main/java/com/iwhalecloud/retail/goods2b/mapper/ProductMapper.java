@@ -143,5 +143,7 @@ public interface ProductMapper extends BaseMapper<Product>{
     public String selectNextChangeId();
     
     public String selectNextChangeDetailId();
+    
+    public String selectisFixedLineByBatchId(String batchId);
 
 }

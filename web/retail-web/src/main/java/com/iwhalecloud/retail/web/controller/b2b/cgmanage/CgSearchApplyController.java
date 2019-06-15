@@ -72,14 +72,19 @@ public class CgSearchApplyController extends BaseController {
 		String userId = UserContext.getUserId();
 //		String userId = "100028487";
 		PriCityManagerResp login = purApplyService.getLoginInfo(userId);
-		String userType = login.getUserType();
+		Integer userFounder = UserContext.getUser().getUserFounder();
 		//传过来的APPLY_TYPE看
 		
 		String lanId = login.getLanId();
 		
-		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userType = "+userType);
-		if("2".equals(userType) || "2" == userType){//地市管理员
+		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
+		if("9".equals(userFounder)){//地市管理员
 			req.setLanId(lanId);
+		}
+		Boolean isMerchant= UserContext.isMerchant();
+		if(isMerchant==true) {
+			req.setMerchantId(UserContext.getMerchantId());
+            log.info("查询采购申请单报表*******************isMerchant = "+isMerchant +" **************UserContext.getMerchantId() = "+UserContext.getMerchantId());
 		}
 		
 		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );

@@ -183,18 +183,18 @@ public class PurApplyServiceImpl implements PurApplyService {
 						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 			}
 			// 申请单上选择的供应商 ，单子就由该供应商来审核  更新wf_task_item  的handler_user_id
-			MerchantGetReq  merchantGetReq = new MerchantGetReq();
-			merchantGetReq.setMerchantId(req.getApplyMerchantId());
-			ResultVO<MerchantDetailDTO> merchantInfo =merchantService.getMerchantDetail(merchantGetReq);
-			MerchantDetailDTO m = merchantInfo.getResultData();
-			String userId = m.getUserId();
-			String supplierName = m.getSupplierName();
-			List<HandlerUser> list = new ArrayList<HandlerUser>();
-			HandlerUser hUser = new HandlerUser();
-			hUser.setHandlerUserId(userId);
-			hUser.setHandlerUserName(supplierName);
-			list.add(hUser);
-			processStartDTO.setNextHandlerUser(list);
+//			MerchantGetReq  merchantGetReq = new MerchantGetReq();
+//			merchantGetReq.setMerchantId(req.getApplyMerchantId());
+//			ResultVO<MerchantDetailDTO> merchantInfo =merchantService.getMerchantDetail(merchantGetReq);
+//			MerchantDetailDTO m = merchantInfo.getResultData();
+//			String userId = m.getUserId();
+//			String supplierName = m.getSupplierName();
+//			List<HandlerUser> list = new ArrayList<HandlerUser>();
+//			HandlerUser hUser = new HandlerUser();
+//			hUser.setHandlerUserId(userId);
+//			hUser.setHandlerUserName(supplierName);
+//			list.add(hUser);
+//			processStartDTO.setNextHandlerUser(list);
 
 
 		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {

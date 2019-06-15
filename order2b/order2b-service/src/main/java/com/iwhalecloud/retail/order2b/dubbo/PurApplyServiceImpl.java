@@ -488,7 +488,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 					}
 				}
 				if(listProd.size() > 0) {
-					return ResultVO.error(String.valueOf(listProd));
+					return ResultVO.error("这些产品不是固网终端 ： "+String.valueOf(listProd));
 				}
 			}
 		} else if("200012864664".equals(applyUserId)) {//移动终端
@@ -504,7 +504,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 					}
 				}
 				if(listProd.size() > 0) {
-					return ResultVO.error(String.valueOf(listProd));
+					return ResultVO.error("这些产品不是移动终端 ： " + String.valueOf(listProd));
 				}
 			}
 		} else {

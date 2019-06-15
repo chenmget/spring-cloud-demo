@@ -51,6 +51,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
 		log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
+		if (req.getLanId()!=null) {
+			req.setRegionId(req.getLanId());
+		}
+		//req.setRegionId();
 		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApply(req);
 		List<PurApplyResp> list = purApplyResp.getRecords();
 		

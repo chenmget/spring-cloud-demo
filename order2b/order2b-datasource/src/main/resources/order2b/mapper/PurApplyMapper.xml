@@ -19,9 +19,9 @@
 			 FROM PUR_APPLY a
 			 WHERE 1=1 
 			 and a.STATUS_CD != '1100'
-		<if test='req.lanId != null and req.lanId != ""'>
-            and a.LAN_ID = #{req.lanId}
-        </if>
+		<if test='req.regionId!=null and req.regionId!=""'>
+			and a.LAN_ID= #{req.regionId}
+		</if>
 		<if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode} 
 		</if>

@@ -441,7 +441,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
 		List<String> listProductPrice = req.getProductPrice();
 		String productId = null;
-		if(listProductPrice.size() > 0) {
+		if(listProductPrice!= null && listProductPrice.size() > 0) {
 			productId = listProductPrice.get(0).split("\\|")[0];
 		}
 		String isFixedLine = productService.selectisFixedLineByBatchId(productId);

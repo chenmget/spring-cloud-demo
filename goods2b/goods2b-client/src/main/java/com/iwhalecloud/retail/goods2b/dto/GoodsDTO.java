@@ -112,8 +112,8 @@ public class GoodsDTO implements java.io.Serializable {
 	/**
 	 * 卖点
 	 */
-	@ApiModelProperty(value = "卖点")
-	private String sallingPoint;
+//	@ApiModelProperty(value = "卖点")
+//	private String sallingPoint;
 	
 	/**
   	 * 生效日期

@@ -587,6 +587,6 @@ public class ProductDetailResp extends PageVO {
     /**
      * 卖点
      */
-    @ApiModelProperty(value = "卖点")
-    private String sallingPoint;
+//    @ApiModelProperty(value = "卖点")
+//    private String sallingPoint;
 }

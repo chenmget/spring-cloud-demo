@@ -179,10 +179,10 @@ public class ProductBaseManager {
             hasParam = true;
             queryWrapper.eq("manufacturer_id", req.getManufacturerId());
         }
-        if(StringUtils.isNotBlank(req.getSallingPoint())){
-            hasParam = true;
-            queryWrapper.eq("salling_point", req.getSallingPoint());
-        }
+//        if(StringUtils.isNotBlank(req.getSallingPoint())){
+//            hasParam = true;
+//            queryWrapper.eq("salling_point", req.getSallingPoint());
+//        }
 
         if ( !hasParam ){
             return null;

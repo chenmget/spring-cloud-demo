@@ -387,6 +387,14 @@ public class MerchantController {
         req.setPageNo(EXPORT_PAGE_NO);
         req.setPageSize(EXPORT_PAGE_SIZE);
         ResultVO<Page<FactoryMerchantDTO>> resultVO = merchantService.pageFactoryMerchant(req);
+        if (null != resultVO && resultVO.isSuccess() && null != resultVO.getResultData()) {
+            List<FactoryMerchantDTO> merchantDTOS = resultVO.getResultData().getRecords();
+            if (!CollectionUtils.isEmpty(merchantDTOS)) {
+                merchantDTOS.forEach(merchantDTO -> {
+                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+                });
+            }
+        }
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         OutputStream output = null;
         try {

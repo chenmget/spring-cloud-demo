@@ -497,7 +497,16 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
         return  ResultVO.success(index);
     }
-    
+
+    private String updateProductFlow(ProductBaseUpdateReq req){
+        String updateProductFlow="";
+        ProductBaseUpdateReq oldReq = new ProductBaseUpdateReq();
+
+
+
+        return updateProductFlow;
+    }
+
     @Override
     public ResultVO<Integer> deleteProdProductBase(ProdProductBaseDeleteReq req){
         return ResultVO.success(productBaseManager.deleteProdProductBase(req.getProductBaseId()));

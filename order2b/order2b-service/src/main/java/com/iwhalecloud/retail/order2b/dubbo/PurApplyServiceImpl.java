@@ -439,8 +439,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
-		
-		String isFixedLine = productService.selectisFixedLineByBatchId(req.getProductId());
+		List<String> listProductPrice = req.getProductPrice();
+		String productId = null;
+		if(listProductPrice.size() > 0) {
+			productId = listProductPrice.get(0).split("\\|")[0];
+		}
+		String isFixedLine = productService.selectisFixedLineByBatchId(productId);
 		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();

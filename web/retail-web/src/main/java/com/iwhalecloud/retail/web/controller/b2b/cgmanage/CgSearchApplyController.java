@@ -81,6 +81,10 @@ public class CgSearchApplyController extends BaseController {
 		if("2".equals(userType) || "2" == userType){//地市管理员
 			req.setLanId(lanId);
 		}
+		Boolean isMerchant= UserContext.isMerchant();
+		if(isMerchant==true) {
+			req.setMerchantId(UserContext.getMerchantId());
+		}
 		
 		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
 		return purApplyService.cgSearchApply(req);

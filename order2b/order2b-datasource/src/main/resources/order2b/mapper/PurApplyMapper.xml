@@ -40,6 +40,9 @@
 		<if test='req.applyMerchantName!=null and req.applyMerchantName!=""'>
 			and b.merchant_name like  CONCAT(CONCAT('%',#{req.applyMerchantName}),'%')
 		</if>
+        <if test='req.merchantId!=null and req.merchantId!=""'>
+            and a.merchant_id= #{req.merchantId}
+        </if>
 		
   </select>
   
@@ -652,7 +655,7 @@
 	</select>
 
 
-	<select id="updatePurApplyItemDetailStatusCd" parameterType="java.lang.String" resultType="Integer">
+	<update id="updatePurApplyItemDetailStatusCd" parameterType="java.lang.String" >
 		UPDATE
 		pur_apply_item_detail
 		SET
@@ -663,7 +666,7 @@
 			#{item}
 		</foreach>
 
-	</select>
+	</update>
 	<select id="getPurApplyByAppId" parameterType="String"
 			resultType="com.iwhalecloud.retail.order2b.entity.PurApply">
 		SELECT apply_id as applyId,apply_code as applyCode,apply_name as applyName,

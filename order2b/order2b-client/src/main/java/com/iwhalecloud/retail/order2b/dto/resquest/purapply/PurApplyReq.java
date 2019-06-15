@@ -25,5 +25,7 @@ public class PurApplyReq extends PageVO implements Serializable {
 	private String applyMerchantName;//申请人名字
 	private String applyType;//申请单类型，10 采购申请单、20 采购单
 	private String statusCd;//当前处理环节
+
+	private  String merchantId;//供应商ID
 	
 }

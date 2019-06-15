@@ -50,7 +50,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	MerchantService merchantService;
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
-		log.info("cgSearchApply   req={}"+JSON.toJSONString(req));
+		log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
 		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApply(req);
 		List<PurApplyResp> list = purApplyResp.getRecords();
 		

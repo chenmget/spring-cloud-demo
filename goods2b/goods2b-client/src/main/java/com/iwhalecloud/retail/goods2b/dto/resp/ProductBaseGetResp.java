@@ -351,4 +351,10 @@ public class ProductBaseGetResp implements Serializable {
      */
     @ApiModelProperty(value = "价格档位")
     private String priceLevel;
+
+    /**
+     * 卖点
+     */
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 }

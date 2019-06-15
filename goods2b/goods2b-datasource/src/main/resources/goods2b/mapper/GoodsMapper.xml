@@ -37,6 +37,7 @@
     ,t.BUY_COUNT
     ,t.SUPPLIER_ID
     ,t.SELLING_POINT
+    ,t.SALLING_POINT
     ,t.SOURCE_FROM
     ,t.MERCHANT_TYPE
     ,t.PRODUCT_BASE_ID
@@ -154,6 +155,7 @@
 ,t5.PARAM69
 ,t5.PARAM70
 ,t0.PAYMENTS
+,t3.SALLING_POINT
 </sql>
     <select id="queryGoodsForPage" resultType="com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp" parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq">
         select

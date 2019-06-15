@@ -459,12 +459,42 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
-		List<String> listProductPrice = req.getProductPrice();
-		String productId = null;
-		if(listProductPrice!= null && listProductPrice.size() > 0) {
-			productId = listProductPrice.get(0).split("\\|")[0];
+		String applyUserId = req.getApplyUserId();//移动终端 余玲 200012864664           固网终端  胡亚玲  200012829198
+		List<String> listProd = new ArrayList<String>();
+		String isFixedLine = null;
+		if("200012829198".equals(applyUserId)) {//固网终端
+			isFixedLine = "1";
+			List<String> listProductPrice = req.getProductPrice();
+			if(listProductPrice!= null && listProductPrice.size() > 0) {
+				//判断所有产品ID是同一类型
+				for(int i=0;i<listProductPrice.size();i++) {
+					String productId = listProductPrice.get(i).split("\\|")[0];
+					String isFixedLineMa = productService.selectisFixedLineByBatchId(productId);
+					if(!isFixedLine.equals(isFixedLineMa)) {
+						listProd.add(productId);
+					}
+				}
+				if(listProd.size() > 0) {
+					return ResultVO.error(String.valueOf(listProd));
+				}
+			}
+		} else {
+			isFixedLine = "0";
+			List<String> listProductPrice = req.getProductPrice();
+			if(listProductPrice!= null && listProductPrice.size() > 0) {
+				//判断所有产品ID是同一类型
+				for(int i=0;i<listProductPrice.size();i++) {
+					String productId = listProductPrice.get(i).split("\\|")[0];
+					String isFixedLineMa = productService.selectisFixedLineByBatchId(productId);
+					if(!isFixedLine.equals(isFixedLineMa)) {
+						listProd.add(productId);
+					}
+				}
+				if(listProd.size() > 0) {
+					return ResultVO.error(String.valueOf(listProd));
+				}
+			}
 		}
-		String isFixedLine = productService.selectisFixedLineByBatchId(productId);
 		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();

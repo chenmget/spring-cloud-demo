@@ -357,8 +357,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
-		
-		String isFixedLine = productService.selectisFixedLineByBatchId(req.getBatchId());
+		log.info(req.getBatchId()+"********************************************************************************************");
+		String isFixedLine = productService.selectisFixedLineByBatchId(req.getProductId());
 		log.info(req.getBatchId()+"********************************************************************************************"+isFixedLine);
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
@@ -440,7 +440,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Transactional
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
 		
-		String isFixedLine = productService.selectisFixedLineByBatchId(req.getBatchId());
+		String isFixedLine = productService.selectisFixedLineByBatchId(req.getProductId());
 		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();

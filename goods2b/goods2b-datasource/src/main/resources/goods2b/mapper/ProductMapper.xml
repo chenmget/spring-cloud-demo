@@ -507,10 +507,10 @@
 		select
 			a.is_fixed_line
 		from
-			prod_product_base a,prod_product_change b
+			prod_product_base a,prod_product b
 		where
 			a.product_base_id = b.product_base_id
 		and
-			b.batch_id = #{batchId}
+			b.product_id = #{productId}
   </select>
 </mapper>

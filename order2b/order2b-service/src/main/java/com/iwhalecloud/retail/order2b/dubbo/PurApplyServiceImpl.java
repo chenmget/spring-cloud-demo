@@ -379,6 +379,19 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
 		log.info(req.getBatchId()+"********************************************************************************************");
 		String isFixedLine = productService.selectisFixedLineByBatchId(req.getProductId());
+		String applyUserId = req.getApplyUserId();//移动终端 余玲 200012864664           固网终端  胡亚玲  200012829198
+		if("200012829198".equals(applyUserId)) {//固网
+			if(!"1".equals(isFixedLine)) {
+				return ResultVO.error("当前用户没有权限修改移动终端政企价格");
+			}
+		}else if("200012864664".equals(applyUserId)) {//移动
+			if("1".equals(isFixedLine)) {
+				return ResultVO.error("当前用户没有权限修改固网终端政企价格");
+			}
+		}else {
+			return ResultVO.error("当前用户没有权限修改政企价格");
+		}
+		
 		log.info(req.getBatchId()+"********************************************************************************************"+isFixedLine);
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
@@ -478,7 +491,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 					return ResultVO.error(String.valueOf(listProd));
 				}
 			}
-		} else {
+		} else if("200012864664".equals(applyUserId)) {//移动终端
 			isFixedLine = "0";
 			List<String> listProductPrice = req.getProductPrice();
 			if(listProductPrice!= null && listProductPrice.size() > 0) {
@@ -494,6 +507,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 					return ResultVO.error(String.valueOf(listProd));
 				}
 			}
+		} else {
+			return ResultVO.error("当前用户没有权限修改政企价格");
 		}
 		
 		//政企价格修改提交启动流程

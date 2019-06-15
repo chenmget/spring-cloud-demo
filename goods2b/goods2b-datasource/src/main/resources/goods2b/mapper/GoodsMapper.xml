@@ -321,6 +321,9 @@
             <if test="null!=req.sourceFrom">
                 and g.SOURCE_FROM=#{req.sourceFrom}
             </if>
+            <if test="null!=req.isAdvanceSale">
+                and g.IS_ADVANCE_SALE=#{req.isAdvanceSale}
+            </if>
             <if test="null!=req.typeId and req.typeId!='' and '-1'!=req.typeId">
                 and g.GOODS_ID in (select GOODS_ID from prod_product_base a,PROD_GOODS_PRODUCT_REL b
                 where a.PRODUCT_BASE_ID = b.PRODUCT_BASE_ID

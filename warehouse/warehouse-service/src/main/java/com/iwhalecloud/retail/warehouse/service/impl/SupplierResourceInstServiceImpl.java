@@ -279,6 +279,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         resourceRequestAddReq.setLanId(sourceMerchantDTO.getLanId());
         resourceRequestAddReq.setRegionId(sourceMerchantDTO.getCity());
         resourceRequestAddReq.setReqCode(reqCode);
+        resourceRequestAddReq.setDetailStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
         ResultVO<String> resultVOInsertResReq = resourceRequestService.insertResourceRequest(resourceRequestAddReq);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resourceRequestService.insertResourceRequest req={},resp={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVOInsertResReq));
         if (resultVOInsertResReq == null || resultVOInsertResReq.getResultData() == null) {
@@ -491,7 +492,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceInstUpdateReq.setUpdateStaff(merchantResultVO.getResultData().getUserId());
             resourceInstUpdateReq.setMerchantId(req.getBuyerMerchantId());
             resourceInstUpdateReq.setMktResId(item.getProductId());
-            resourceInstUpdateReq.setMktResStoreId(mktResStoreId);
             resourceInstUpdateReq.setOrderId(req.getOrderId());
             resourceInstUpdateReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             ResultVO updateResultVO = resourceInstService.updateResourceInstForTransaction(resourceInstUpdateReq);

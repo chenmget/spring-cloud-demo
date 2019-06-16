@@ -135,4 +135,8 @@ public class MerchantTagRelServiceImpl implements MerchantTagRelService {
     }
 
 
+    @Override
+    public ResultVO<List<MerchantTagRelDTO>> listMerchantAndTag(MerchantTagRelListReq req){
+        return ResultVO.success(merchantTagRelManager.listMerchantAndTag(req));
+    }
 }

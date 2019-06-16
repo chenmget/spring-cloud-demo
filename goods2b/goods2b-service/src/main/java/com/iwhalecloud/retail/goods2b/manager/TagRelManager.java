@@ -2,12 +2,13 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.goods2b.dto.TagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.TagRelAddReq;
+import com.iwhalecloud.retail.goods2b.dto.req.TagRelListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TagRelUpdateReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp;
 import com.iwhalecloud.retail.goods2b.entity.TagRel;
 import com.iwhalecloud.retail.goods2b.mapper.TagRelMapper;
 import org.springframework.beans.BeanUtils;
@@ -137,5 +138,14 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
             }
         }
         return tagRelDTOList;
+    }
+
+    /**
+     * 查询产商品标签关联集合
+     * @param req
+     * @return
+     */
+    public List<TagRelListResp> listTagRel(TagRelListReq req){
+        return tagRelMapper.listTagRel(req);
     }
 }

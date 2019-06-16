@@ -4,10 +4,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailPageReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceReqDetail;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceReqDetailMapper;
@@ -82,5 +79,14 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
      */
     public List<ResourceReqDetailPageResp> executorResourceRequestPage(ResourceReqDetailPageReq req){
         return resourceReqDetailMapper.executorResourceRequestPage(req);
+    }
+
+    /**
+     * 根据申请单项主键修改申请单详情状态
+     * @param req
+     * @return
+     */
+    public Integer updateResourceReqDetailStatusCd(ResourceReqDetailUpdateReq req){
+        return resourceReqDetailMapper.updateResourceReqDetailStatusCd(req);
     }
 }

@@ -426,9 +426,9 @@ public class ValidAndAddRunableTask {
     }
 
     public static void main(String[] args) {
-        String reg = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){8}$";
+        String reg = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){24}$";
         Pattern pattern39= Pattern.compile(reg);
-        String test = "1A34567&";
+        String test = "AbAb11111111111111111111";
         Boolean matchs = pattern39.matcher(test).matches();
         System.out.print(matchs);
     }

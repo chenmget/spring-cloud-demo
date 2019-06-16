@@ -149,7 +149,7 @@ public class RunableTask {
                         detailReq.setMacCode(instDTO.getMacCode());
                         detailReq.setCreateDate(now);
                         detailReq.setStatusDate(now);
-                        detailReq.setStatusCd(ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode());
+                        detailReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
                         detailList.add(detailReq);
                     }
                     Boolean addReqDetail = detailManager.saveBatch(detailList);

@@ -82,4 +82,12 @@ public interface RetailerResourceInstService {
      */
     public ResultVO confirmRefuseNbr(ConfirmReciveNbrReq req);
 
+    /**
+     * 绿色通道导入权限校验
+     * @param mktResId
+     * @param merchantId
+     * @return
+     */
+    ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId);
+
 }

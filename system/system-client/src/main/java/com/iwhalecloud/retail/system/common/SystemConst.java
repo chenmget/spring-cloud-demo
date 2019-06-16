@@ -457,4 +457,56 @@ public class SystemConst {
             return type;
         }
     }
+
+    /**
+     * 数据字典里面保存的
+     * 绿色通道机型、门店权限字典
+     */
+    public enum GreenChannelType {
+        ChainStore("1230600001", "连锁门店"),
+        Echannle("1230600002", "电子渠道"),
+        Honor("1230600003", "荣耀绿色通道"),
+        XiaoMi("1230600004", "小米绿色通道"),
+        HuaWei("1230600005", "华为绿色通道"),
+        SpecialType("1230600006", "特殊机型绿色通道");
+        private String value;
+        private String type;
+
+        GreenChannelType(String type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getType() {
+            return type;
+        }
+    }
+
+    /**
+     * 数据字典里面保存的
+     * 绿色通道机型权类型
+     */
+    public enum TagType {
+        mechant("MERCHANT_TAG", "门店权限"),
+        product("PRODUCT_TAG", "机型权限");
+        private String value;
+        private String type;
+
+        TagType(String type, String value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public String getType() {
+            return type;
+        }
+    }
 }

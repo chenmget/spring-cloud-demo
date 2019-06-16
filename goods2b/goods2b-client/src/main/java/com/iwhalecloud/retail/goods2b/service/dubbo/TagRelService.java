@@ -4,6 +4,7 @@ package com.iwhalecloud.retail.goods2b.service.dubbo;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.TagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
+import com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp;
 
 import java.util.List;
 
@@ -63,4 +64,11 @@ public interface TagRelService {
      * @return
      */
     ResultVO<List<TagRelDTO>> listTagByGoodsId(TagRelListByGoodsIdReq relListByGoodsIdReq);
+
+    /**
+     * 查询产商品标签关联集合
+     * @param req
+     * @return
+     */
+    ResultVO<List<TagRelListResp>> listTagRel(TagRelListReq req);
 }

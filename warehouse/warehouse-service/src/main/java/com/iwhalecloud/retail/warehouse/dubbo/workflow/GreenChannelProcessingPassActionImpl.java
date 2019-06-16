@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.warehouse.dubbo.workflow;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
@@ -11,10 +12,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.BatchAndEventAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
 import com.iwhalecloud.retail.warehouse.service.GreenChannelProcessingPassActionService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
@@ -61,6 +59,9 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
 
     @Autowired
     private ResouceInstTrackService resouceInstTrackService;
+
+    @Autowired
+    private ResourceReqDetailManager resourceReqDetailManager;
 
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
@@ -112,6 +113,11 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
             ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
             log.info("GreenChannelProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
+            ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
+            detailUpdateReq.setMktResReqItemIdList(Lists.newArrayList(detailDTO.getMktResReqItemId()));
+            detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
+            Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
+            log.info("MerchantAddNbrProcessingPassActionImpl.run resourceReqDetailManager.updateResourceReqDetailStatusCd detailUpdateReq={}, resp={}", JSON.toJSONString(detailUpdateReq), detailNum);
 
             // step3 增加事件和批次
             Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);

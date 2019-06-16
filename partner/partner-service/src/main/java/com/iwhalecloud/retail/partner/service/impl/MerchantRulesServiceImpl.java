@@ -9,7 +9,6 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.BrandUrlResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.BrandService;
@@ -31,7 +30,9 @@ import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.request.*;
+import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
+import com.iwhalecloud.retail.system.dto.request.CommonRegionPageReq;
+import com.iwhalecloud.retail.system.dto.request.UserGetReq;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -388,11 +389,10 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
      * @return
      */
     private List getDetailList(MerchantRulesDetailListReq req, List<MerchantRulesDTO> merchantRulesDTOList) {
-        if (CollectionUtils.isEmpty(merchantRulesDTOList)) {
-            return Lists.newArrayList();
-        }
-
         List<MerchantRulesDetailDTO> resultList = Lists.newArrayList();
+        if (CollectionUtils.isEmpty(merchantRulesDTOList)) {
+            return resultList;
+        }
         String fieldName = "";
         List<String> targetIdList = Lists.newArrayList();
         for (MerchantRulesDTO merchantRulesDTO : merchantRulesDTOList) {
@@ -547,8 +547,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
 
         // 去除没有详情的数据
-//        return resultList.stream().filter(item -> item.getTargetData() != null).collect(Collectors.toList());
-        return resultList;
+        return resultList.stream().filter(item -> item.getTargetData() != null).collect(Collectors.toList());
     }
 
     /**

@@ -275,7 +275,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
     @Async
     @Override
     public void supplierDeliveryOutResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstDTO> resourceInsts) {
-        log.info("ResourceInstLogServiceImpl.delResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
+        log.info("ResourceInstLogServiceImpl.supplierDeliveryOutResourceInstLog req={}, resourceInsts={}", JSON.toJSONString(req), JSON.toJSONString(resourceInsts));
         if (ResourceConst.EVENTTYPE.NO_RECORD.getCode().equals(req.getEventType())) {
             log.info("ResourceInstLogServiceImpl.supplierDeliveryOutResourceInstLog no need record");
             return;
@@ -296,7 +296,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
                 eventDTO.setDestStoreId(mktResStoreId);
                 eventDTO.setMktResStoreId(destStoreId);
                 eventId = resouceEventManager.insertResouceEvent(eventDTO);
-                log.info("ResourceInstLogServiceImpl.delResourceInstLog resourceInstManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
+                log.info("ResourceInstLogServiceImpl.supplierDeliveryOutResourceInstLog resourceInstManager.insertResouceEvent req={},resp={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
                 productList.add(productId);
             }
 
@@ -319,7 +319,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             detailDTO.setCreateDate(new Date());
             detailDTO.setMktResStoreId(req.getDestStoreId());
             int addChngEvtDetailCnt = detailManager.insertChngEvtDetail(detailDTO);
-            log.info("ResourceInstLogServiceImpl.delResourceInstLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
+            log.info("ResourceInstLogServiceImpl.supplierDeliveryOutResourceInstLog detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
         }
     }
 }

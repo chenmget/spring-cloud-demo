@@ -2,6 +2,8 @@ package com.iwhalecloud.retail.goods2b.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.iwhalecloud.retail.goods2b.dto.req.TagRelListReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp;
 import com.iwhalecloud.retail.goods2b.entity.TagRel;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -21,4 +23,11 @@ public interface TagRelMapper extends BaseMapper<TagRel>{
     public List<TagRel> listAll();
 
     public void batchAddTagRel(List<TagRel> tagRelList);
+
+    /**
+     * 查询产商品标签关联集合
+     * @param req
+     * @return
+     */
+    List<TagRelListResp> listTagRel(TagRelListReq req);
 }

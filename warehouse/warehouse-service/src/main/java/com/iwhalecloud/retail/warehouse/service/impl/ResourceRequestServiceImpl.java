@@ -118,7 +118,7 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
                 detailReq.setMacCode(instDTO.getMacCode());
                 detailReq.setCreateDate(now);
                 detailReq.setStatusDate(now);
-                detailReq.setStatusCd(ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode());
+                detailReq.setStatusCd(req.getDetailStatusCd());
                 detailList.add(detailReq);
             }
             Boolean addReqDetail = detailManager.saveBatch(detailList);

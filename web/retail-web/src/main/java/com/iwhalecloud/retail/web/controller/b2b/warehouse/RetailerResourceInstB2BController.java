@@ -265,19 +265,8 @@ public class RetailerResourceInstB2BController {
     @GetMapping(value="greenChannelValid")
     @UserLoginToken
     public ResultVO greenChannelValid(@RequestParam String mktResId) {
-        String  merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
-        ResultVO<List<String>> transferPermissionVO = merchantRulesService.getGreenChannelPermission(merchantId);
-        log.info("RetailerResourceInstB2BController.greenChannelValid merchantRulesService.getGreenChannelPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
-        if (null == transferPermissionVO || !transferPermissionVO.isSuccess() || CollectionUtils.isEmpty(transferPermissionVO.getResultData())) {
-            // 没有权限，返回false
-            return ResultVO.success(false);
-        }
-
-        List<String> productIdList = transferPermissionVO.getResultData();
-        if (productIdList.contains(mktResId)) {
-            return ResultVO.success(true);
-        }
-        return ResultVO.success(false);
+        String merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
+        return retailerResourceInstService.greenChannelValid(mktResId, merchantId);
     }
 
     @ApiOperation(value = "导出录入失败串码", notes = "导出录入失败串码")

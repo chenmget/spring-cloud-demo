@@ -52,4 +52,12 @@ public interface ResourceInstCheckService {
      * @return
      */
     ResultVO noticeITMS(List<String> mktResInstNbrList, String userName, String storeId, String lanId);
+
+    /**
+     * 绿色通道导入权限校验
+     * @param mktResId
+     * @param merchantId
+     * @return
+     */
+    ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId);
 }

@@ -18,10 +18,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantLimitDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantLimitUpdateReq;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResouceEventService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
+import com.iwhalecloud.retail.warehouse.busiservice.*;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
@@ -100,6 +97,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     private Constant constant;
     @Autowired
     private ResouceStoreManager resouceStoreManager;
+    @Autowired
+    private ResourceInstCheckService resourceInstCheckService;
 
     private final String CLASS_TYPE_1 = "1";
     private final String CLASS_TYPE_2 = "2";
@@ -153,7 +152,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
             resourceRequestAddReq.setLanId(merchantDTOResultVO.getResultData().getLanId());
             resourceRequestAddReq.setRegionId(merchantDTOResultVO.getResultData().getCity());
-
+            resourceRequestAddReq.setDetailStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
             resourceRequestAddReq.setMktResStoreId(mktResStoreId);
             ResultVO<String> resultVO = requestService.insertResourceRequest(resourceRequestAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel() resourceRequestService.insertResourceRequest req={}, resultVO={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVO));
@@ -584,6 +583,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             return ResultVO.error("商家获取失败");
         }
         String requestStatusCd = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
+        String detailStatusCd = ResourceConst.DetailStatusCd.STATUS_CD_1002.getCode();
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         String auditType = validAllocateNbr(sourceMerchantDTO, destMerchantDTO, mktResInstNbrs);
@@ -593,6 +593,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         }else if(ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode().equals(auditType)){
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
             successMessage = ResourceConst.ALLOCATE_AUDITING_MSG + reqCode;
+            detailStatusCd = ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode();
         }
         // 此处应该调用BSS3.0接口查
         ResourceInstBatchReq resourceInstBatchReq = new ResourceInstBatchReq();
@@ -624,6 +625,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         resourceRequestAddReq.setLanId(destMerchantDTO.getLanId());
         resourceRequestAddReq.setRegionId(destMerchantDTO.getCity());
         resourceRequestAddReq.setReqCode(reqCode);
+        resourceRequestAddReq.setDetailStatusCd(detailStatusCd);
         ResultVO<String> resultVOInsertResReq = requestService.insertResourceRequest(resourceRequestAddReq);
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resourceRequestService.insertResourceRequest req={},resp={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVOInsertResReq));
         if (!resultVOInsertResReq.isSuccess()) {
@@ -993,4 +995,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         return ResultVO.success();
     }
 
+    @Override
+    public ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId){
+        return resourceInstCheckService.greenChannelValid(mktResId, merchantId);
+    }
 }

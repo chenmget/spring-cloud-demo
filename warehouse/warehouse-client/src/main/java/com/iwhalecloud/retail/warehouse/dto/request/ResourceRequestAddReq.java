@@ -137,6 +137,9 @@ public class ResourceRequestAddReq implements Serializable {
     @ApiModelProperty(value = "串码类型")
     private String mktResInstType;
 
+    @ApiModelProperty(value = "申请单详情状态")
+    private String detailStatusCd;
+
     @Data
     public static class ResourceRequestInst implements Serializable{
         /**

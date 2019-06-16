@@ -9,7 +9,7 @@
     </constructor>
   </resultMap>
   <sql id="Base_Column_List" >
-    REL_ID, TAG_ID, PRODUCT_BASE_ID
+    REL_ID, TAG_ID, PRODUCT_BASE_ID, PRODUCT_ID
   </sql>
 
   <!-- listAll -->
@@ -26,4 +26,34 @@
       (#{item.relId},#{item.tagId},#{item.productBaseId})
     </foreach>
   </insert>
+
+  <sql id="relTagColoun">
+    ptr.TAG_ID, ptr.PRODUCT_BASE_ID, ptr.PRODUCT_ID
+  </sql>
+  <select id="listTagRel" parameterType="com.iwhalecloud.retail.goods2b.dto.req.TagRelListReq"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp">
+      SELECT <include refid="relTagColoun" />
+      FROM prod_tag_rel ptr
+      WHERE 1 = 1
+      <if test="null!=relTagIdList and relTagIdList.size > 0">
+          AND ptr.TAG_ID in
+          (
+          SELECT TAG_ID FROM prod_tags pt WHERE
+          pt.REL_TAG_ID in
+          <foreach item="item" index="index" open="(" separator="," close=")" collection="relTagIdList">
+              #{item}
+          </foreach>
+          )
+      </if>
+      <if test="null!=tagId and ''!= tagId">
+          AND ptr.TAG_ID = #{tagId}
+      </if>
+      <if test="null!=productId and ''!= productId">
+          AND ptr.PRODUCT_ID = #{productId}
+      </if>
+      <if test="null!=productBaseId and ''!= productBaseId">
+          AND ptr.PRODUCT_BASE_ID = #{productBaseId}
+      </if>
+
+  </select>
 </mapper>

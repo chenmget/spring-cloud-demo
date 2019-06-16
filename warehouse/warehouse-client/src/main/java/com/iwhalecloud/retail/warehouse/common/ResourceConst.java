@@ -967,4 +967,38 @@ public class ResourceConst {
             return "";
         }
     }
+
+    /**
+     * 申请单详情状态
+     */
+    public enum DetailStatusCd{
+        STATUS_CD_1002("1002","处理中"),
+        STATUS_CD_1003("1003","完成"),
+        STATUS_CD_1004("1004","取消/审核不通过"),
+        STATUS_CD_1005("1005","审核通过"),
+        STATUS_CD_1009("1009","待审核");
+        private String code;
+        private String name;
+
+        DetailStatusCd(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
 }

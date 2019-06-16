@@ -518,4 +518,9 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         return ResultVO.success();
     }
 
+    @Override
+    public ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId){
+        return null;
+    }
+
 }

@@ -30,4 +30,28 @@
         </if>
     </select>
 
+
+    <sql id="relTagColoun">
+        pmr.TAG_ID, pmr.MERCHANT_ID,
+        pt.REL_TAG_ID, pt.TAG_TYPE, pt.TAG_NAME
+    </sql>
+    <select id="listMerchantAndTag" resultType="com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO"
+            parameterType="com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq">
+        SELECT <include refid="relTagColoun" />
+        FROM prod_merchant_tag_rel pmr
+        LEFT JOIN prod_tags pt on pt.TAG_ID = pmr.TAG_ID
+        WHERE 1 = 1
+        <if test="null!=tagId and ''!=tagId">
+            and pmr.TAG_ID = #{tagId}
+        </if>
+        <if test="null!=merchantId and ''!=merchantId">
+            and pmr.MERCHANT_ID = #{merchantId}
+        </if>
+        <if test="null!=relTagIdList and relTagIdList.size > 0">
+            and pt.REL_TAG_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="relTagIdList">
+                #{item}
+            </foreach>
+        </if>
+    </select>
 </mapper>

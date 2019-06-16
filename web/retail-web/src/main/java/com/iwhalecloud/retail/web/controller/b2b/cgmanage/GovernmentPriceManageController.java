@@ -180,6 +180,10 @@ public class GovernmentPriceManageController extends BaseController {
     })
     @RequestMapping(value = "/commitPriceExcel")
     public ResultVO commitPriceExcel(@RequestBody UpdateCorporationPriceReq req) {
+		req.setApplyUserId(UserContext.getUserId());
+		Date date = new Date();
+		String batch_id = String.valueOf(date.getTime());
+		req.setBatchId(batch_id);
 		return purApplyService.commitPriceExcel(req);
     }
 	

@@ -697,7 +697,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         		ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
         		resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbr);
         		resourceStoreIdResnbr.setMktResStoreId(mktResStoreId);
-        		String mktResInstType = resourceInstManager.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
+        		String mktResInstType = resourceInstService.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
         		if("4".equals(mktResInstType)) {
         			fhNbrList.add(mktResInstNbr);
         		}else {
@@ -710,7 +710,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         		ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
         		resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbr);
         		resourceStoreIdResnbr.setMktResStoreId(mktResStoreId);
-        		String mktResInstType = resourceInstManager.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
+        		String mktResInstType = resourceInstService.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
         		if("3".equals(mktResInstType)) {
         			fhNbrList.add(mktResInstNbr);
         		}else {

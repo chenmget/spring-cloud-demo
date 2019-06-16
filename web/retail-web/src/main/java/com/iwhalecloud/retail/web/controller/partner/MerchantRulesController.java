@@ -4,9 +4,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods.dto.resp.ProdBrandGetResp;
-
-import com.iwhalecloud.retail.goods2b.dto.req.BrandGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.BrandUrlResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.BrandService;
@@ -112,11 +109,6 @@ public class MerchantRulesController {
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-//    @RequestMapping(value = "/list", method = RequestMethod.POST)
-//    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(@RequestBody @ApiParam(value = "列表查询参数", required = true) MerchantRulesListReq req) {
-//        // 判空
-//        return merchantRulesService.listMerchantRules(req);
-//    }
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @Transactional
     public ResultVO<List<MerchantRulesDetailDTO>> listMerchantRulesDetail(@RequestBody @ApiParam(value = "查询商家权限规则列表参数", required = true) MerchantRulesDetailListReq req) {
@@ -302,8 +294,8 @@ public class MerchantRulesController {
     })
     @RequestMapping(value = "/checkProdListRule", method = RequestMethod.GET)
     @Transactional
-    public ResultVO<Boolean> checkProdListRule(@RequestParam(value = "merchantId") String merchantId, @RequestParam(value = "productBaseId")String productBaseId) {
+    public ResultVO<Boolean> checkProdListRule(@RequestParam(value = "merchantId") String merchantId, @RequestParam(value = "productBaseId") String productBaseId) {
 
-        return merchantRulesService.checkProdListRule(merchantId,productBaseId);
+        return merchantRulesService.checkProdListRule(merchantId, productBaseId);
     }
 }

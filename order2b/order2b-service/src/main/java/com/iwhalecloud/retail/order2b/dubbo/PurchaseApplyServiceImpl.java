@@ -16,9 +16,11 @@ import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
 import com.iwhalecloud.retail.order2b.entity.PurApplyItemDetail;
 import com.iwhalecloud.retail.order2b.manager.*;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
-import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceStoreIdResnbr;
+import com.iwhalecloud.retail.warehouse.dto.request.StoreGetStoreIdReq;
+import com.iwhalecloud.retail.warehouse.dto.request.TradeResourceInstItem;
+import com.iwhalecloud.retail.warehouse.dto.request.TradeResourceInstReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.TradeResourceInstService;
@@ -325,7 +327,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 map.put(productId,mktResInstNbrList);
             }
         }
-
+        log.info("2.reving 开始处理产品id和对应的串码分类，处理结果="+ JSON.toJSONString(map));
         List<TradeResourceInstItem> tradeResourceInstItemItemList = new ArrayList<TradeResourceInstItem>();
         for (String key : map.keySet()) {
             List<String> temp  = map.get(key);
@@ -341,7 +343,9 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         tradeResourceInstReq.setSellerMerchantId(req.getMerchantId());
         tradeResourceInstReq.setOrderId(req.getApplyId());
 //      调用确认收货接口
+        log.info("3.调用串码入库接口"+ JSON.toJSONString(tradeResourceInstReq));
         ResultVO resultVOIn = tradeResourceInstService.tradeInResourceInst(tradeResourceInstReq);
+        log.info("4.调用串码入库接口结果"+ JSON.toJSONString(resultVOIn));
         if(!resultVOIn.isSuccess()){
             return ResultVO.error(resultVOIn.getResultMsg());
         }
@@ -350,32 +354,34 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
 //    串码入库成功之后 更新确认收货
         if (allMktResInstNbrList!=null) {
-           int r = purApplyManager.updatePurApplyItemDetailStatusCd(allMktResInstNbrList);
+           Integer r = purApplyManager.updatePurApplyItemDetailStatusCd(allMktResInstNbrList);
+            log.info("5.更新确认收货成功数量"+ r);
+
         }
         //判断是否全部收货完,首先 获取条目表 记录 中的数量  和 详情记录的 已确认收货的数量 作比较 一致则表示完成收完
         //通过采购申请单查询采购申请单项
         List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
-        int flag = 0; //定义是否完全发货标识
+        int flag = 0; //定义是否完全收货标识
         for (PurApplyItem PurApplyItemTemp : purApplyItem) {
             String num = PurApplyItemTemp.getPurNum();//数量
             PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
             PurApplyItemReq.setApplyItem(PurApplyItemTemp.getApplyItemId());
             PurApplyItemReq.setProductId(PurApplyItemTemp.getProductId());
             int count =purApplyManager.countPurApplyItemDetailReving(PurApplyItemReq);//查询发货的条数
-            log.info("7._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail = count ="+count+" = "+JSON.toJSONString(PurApplyItemReq));
+            log.info("5._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail num="+num+"= count ="+count+" = "+JSON.toJSONString(PurApplyItemReq));
             if (Integer.valueOf(num)!=count) {
-                flag=1;//发货数量与条数数量不符合，标识还未完全发货
+                flag=1;//发货数量与条数数量不符合，标识还未完全收货
                 break;
             }
         }
 
         //更新采购申请单状态
-        if (flag!=1) {
+        if (flag==0) {
             PurApplyReq purApplyReq = new PurApplyReq();
             purApplyReq.setApplyId(req.getApplyId());
             purApplyReq.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_FINISHED);
             int i = purApplyDeliveryManager.updatePurApplyStatus(purApplyReq);
-            log.info("PurchaseApplyServiceImpl.receiving updatePurApplyStatusResp = {}", i);
+            log.info("5.PurchaseApplyServiceImpl.receiving updatePurApplyStatusResp = {}", i);
             if (i < 1) {
                 return ResultVO.error("更新采购申请单状态失败");
             }
@@ -445,6 +451,11 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         }
         list.setRecords(deliveryInfo);
         return ResultVO.success(list);
+    }
+
+    @Override
+    public Integer updatePurApplyItemDetailStatusCd(List<String> list) {
+        return purApplyManager.updatePurApplyItemDetailStatusCd(list);
     }
 
     public static void main(String[] args) {

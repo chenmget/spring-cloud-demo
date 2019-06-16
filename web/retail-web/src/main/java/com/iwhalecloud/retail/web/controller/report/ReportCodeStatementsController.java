@@ -75,9 +75,13 @@ public class ReportCodeStatementsController extends BaseController  {
 //			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
 //			req.setLssCode(retailerCodes);
 //		}
+		if(userType!=null&&!"".equals(userType)&&userType.equals("1")){
+			return reportCodeStateService.getCodeStatementsReportAdmin(req);
+		}
 		if(userType!=null&&!"".equals(userType)&&userType.equals("2")){
 			String lanId=UserContext.getUser().getLanId();
 			req.setLanId(lanId);
+			return reportCodeStateService.getCodeStatementsReportAdmin(req);
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
 			req.setLssCode(lssCode);
@@ -132,30 +136,33 @@ public class ReportCodeStatementsController extends BaseController  {
 		req.setPageNo(1);
 		req.setPageSize(60000);
 		String userType=req.getUserType();
-		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-			req.setLssCode(retailerCodes);
-		}
-		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
+		ResultVO<List<ReportCodeStatementsResp>> resultVO = null;
+		if(userType!=null&&!"".equals(userType)&&"1".equals(userType)) {
+			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
+		}else if(userType!=null&&!"".equals(userType)&&"2".equals(userType)){
 			String lanId=UserContext.getUser().getLanId();
 			req.setLanId(lanId);
+			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
 		}else if("3".equals(userType)){
 			String lssCode = UserContext.getUser().getRelCode();
 			req.setLssCode(lssCode);
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(lssCode);
 			req.setMktResStoreId(mktResStoreId);
+			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
 		}else if("4".equals(userType)){
 			String gysCode = UserContext.getUser().getRelCode();
 			req.setGysCode(gysCode);
 			//供应商只能看自己的仓库
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(gysCode);
 			req.setMktResStoreId(mktResStoreId);
+			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
 		}else if("5".equals(userType)){
 			String manufacturerCode = UserContext.getUser().getRelCode();
 			req.setManufacturerCode(manufacturerCode);
 			//厂商也只能看自己的仓库
 			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(manufacturerCode);
 			req.setMktResStoreId(mktResStoreId);
+			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
 		}
 		String xdCreateTimeStart = req.getXdCreateTimeStart();
 		String xdCreateTimeEnd = req.getXdCreateTimeEnd();
@@ -172,7 +179,6 @@ public class ReportCodeStatementsController extends BaseController  {
 			xdCreateTimeStart = format3.format(date3);
 			xdCreateTimeEnd = df.format(date);
 		}
-        ResultVO<List<ReportCodeStatementsResp>> resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
         
         ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {

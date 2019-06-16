@@ -93,6 +93,12 @@ public class GoodsForPageQueryResp implements Serializable {
     private String sellingPoint;
 
     /**
+     * 卖点
+     */
+//    @ApiModelProperty(value = "卖点")
+//    private String sallingPoint;
+
+    /**
      * 来源平台
      */
     @ApiModelProperty(value = "来源平台")

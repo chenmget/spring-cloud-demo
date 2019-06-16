@@ -19,9 +19,9 @@
 			 FROM PUR_APPLY a
 			 WHERE 1=1 
 			 and a.STATUS_CD != '1100'
-		<if test="req.lanId != null and req.lanId != ''">
-            and a.LAN_ID = #{req.lanId}
-        </if>
+		<if test='req.regionId!=null and req.regionId!=""'>
+			and a.LAN_ID= #{req.regionId}
+		</if>
 		<if test='req.applyCode!=null and req.applyCode!=""'>  
 			and a.APPLY_CODE = #{req.applyCode} 
 		</if>
@@ -40,6 +40,9 @@
 		<if test='req.applyMerchantName!=null and req.applyMerchantName!=""'>
 			and b.merchant_name like  CONCAT(CONCAT('%',#{req.applyMerchantName}),'%')
 		</if>
+        <if test='req.merchantId!=null and req.merchantId!=""'>
+            and a.merchant_id= #{req.merchantId}
+        </if>
 		
   </select>
   
@@ -466,14 +469,6 @@
 	 	  AND a.form_id=#{applyId} ORDER BY b.task_item_id DESC LIMIT 1
   	</select>
   
-  <select id="selectNextChangeId" resultType="java.lang.String" >
- 	 select seq_PRODUCT_CHANGE_ID.nextVal
-  </select>
-  
-  <select id="selectNextChangeDetailId" resultType="java.lang.String" >
- 	 select seq_PRODUCT_CHANGE_DETAIL_ID.nextVal
-  </select>
-  	
   <select id="insertProdChangePrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq" >
  	 insert into PROD_PRODUCT_CHANGE(
 	 	 CHANGE_ID,
@@ -650,20 +645,6 @@
 		select product_id from PROD_PRODUCT_CHANGE where change_id = #{changeId}
   </select>
 
-  <select id="selectisFixedLineByBatchId" parameterType="java.lang.String"
-  	resultType="java.lang.String" >
-		select
-			a.is_fixed_line
-		from
-			prod_product_base a,prod_product_change b
-		where
-			a.product_base_id = b.product_base_id
-		and
-			b.batch_id = #{batchId}
-  </select>
-
-
-
 	<select id="countPurApplyItemDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyItemReq" resultType="Integer">
 		SELECT COUNT(mkt_res_inst_nbr) FROM pur_apply_item_detail WHERE apply_item_id=#{req.applyItem} AND product_id=#{req.productId};
 
@@ -674,7 +655,7 @@
 	</select>
 
 
-	<select id="updatePurApplyItemDetailStatusCd" parameterType="java.lang.String" resultType="Integer">
+	<update id="updatePurApplyItemDetailStatusCd" parameterType="java.lang.String" >
 		UPDATE
 		pur_apply_item_detail
 		SET
@@ -685,7 +666,7 @@
 			#{item}
 		</foreach>
 
-	</select>
+	</update>
 	<select id="getPurApplyByAppId" parameterType="String"
 			resultType="com.iwhalecloud.retail.order2b.entity.PurApply">
 		SELECT apply_id as applyId,apply_code as applyCode,apply_name as applyName,

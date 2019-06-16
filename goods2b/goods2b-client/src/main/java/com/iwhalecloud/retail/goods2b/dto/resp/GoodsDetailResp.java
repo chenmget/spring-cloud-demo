@@ -121,6 +121,13 @@ public class GoodsDetailResp implements Serializable {
      */
     @ApiModelProperty(value = "卖点")
     private String sellingPoint;
+
+    /**
+     * 卖点
+     */
+//    @ApiModelProperty(value = "卖点")
+//    private String sallingPoint;
+
     /**
      * regionName
      */

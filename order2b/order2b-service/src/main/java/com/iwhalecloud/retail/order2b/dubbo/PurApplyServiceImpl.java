@@ -12,9 +12,13 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
+import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
+import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
+import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
+import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
@@ -23,11 +27,7 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 
@@ -46,8 +46,15 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Reference
 	private ProductService productService;
+	@Reference
+	MerchantService merchantService;
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
+		log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
+		if (req.getLanId()!=null) {
+			req.setRegionId(req.getLanId());
+		}
+		//req.setRegionId();
 		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApply(req);
 		List<PurApplyResp> list = purApplyResp.getRecords();
 		
@@ -124,6 +131,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
+
 		String isSave = req.getIsSave();
 		// 编辑的时候不做插入操作
 //		if(!isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
@@ -149,6 +157,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 			Map map=new HashMap();
 			if(count>0) {
+				//根据商家ID获取 商家userId
 				map.put("CGJ","0");//
 			}else{
 				map.put("CGJ","1");
@@ -177,6 +186,21 @@ public class PurApplyServiceImpl implements PurApplyService {
 				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
 						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 			}
+			// 申请单上选择的供应商 ，单子就由该供应商来审核  更新wf_task_item  的handler_user_id
+//			MerchantGetReq  merchantGetReq = new MerchantGetReq();
+//			merchantGetReq.setMerchantId(req.getApplyMerchantId());
+//			ResultVO<MerchantDetailDTO> merchantInfo =merchantService.getMerchantDetail(merchantGetReq);
+//			MerchantDetailDTO m = merchantInfo.getResultData();
+//			String userId = m.getUserId();
+//			String supplierName = m.getSupplierName();
+//			List<HandlerUser> list = new ArrayList<HandlerUser>();
+//			HandlerUser hUser = new HandlerUser();
+//			hUser.setHandlerUserId(userId);
+//			hUser.setHandlerUserName(supplierName);
+//			list.add(hUser);
+//			processStartDTO.setNextHandlerUser(list);
+
+
 		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
 			//做编辑处理
 			int count =chooseCount(req);
@@ -357,6 +381,22 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
+		log.info(req.getBatchId()+"********************************************************************************************");
+		String isFixedLine = productService.selectisFixedLineByBatchId(req.getProductId());
+		String applyUserId = req.getApplyUserId();//移动终端 余玲 200012864664           固网终端  胡亚玲  200012829198
+		if("200012829198".equals(applyUserId)) {//固网
+			if(!"1".equals(isFixedLine)) {
+				return ResultVO.error("当前用户没有权限修改移动终端政企价格");
+			}
+		}else if("200012864664".equals(applyUserId)) {//移动
+			if("1".equals(isFixedLine)) {
+				return ResultVO.error("当前用户没有权限修改固网终端政企价格");
+			}
+		}else {
+			return ResultVO.error("当前用户没有权限修改政企价格");
+		}
+		
+		log.info(req.getBatchId()+"********************************************************************************************"+isFixedLine);
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
 		//政企价格修改审核
@@ -364,12 +404,17 @@ public class PurApplyServiceImpl implements PurApplyService {
 		Map map=new HashMap();
 		map.put("GWZD", "1");
 		processStartDTO.setParamsValue(JSON.toJSONString(map));
-
-		processStartDTO.setTitle("政企价格修改审核流程");
 		//业务ID->批次ID
 		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
-		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9504.getTaskSubType());
+		if("1".equals(isFixedLine)) {//如果是固网
+			processStartDTO.setTitle("固网终端政企价格修改审核流程");
+			processStartDTO.setProcessId(PurApplyConsts.GWPROD_PRODUCT_CORPORATION_PRICE_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9605.getTaskSubType());
+		} else {
+			processStartDTO.setTitle("移动终端政企价格修改审核流程");
+			processStartDTO.setProcessId(PurApplyConsts.YDPROD_PRODUCT_CORPORATION_PRICE_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9604.getTaskSubType());
+		}
 		processStartDTO.setApplyUserId(req.getApplyUserId());
 		//根据用户id查询名称
 		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());
@@ -395,7 +440,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		
 		//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
 		String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
-		String changeId = purApplyManager.selectNextChangeId();
+		String changeId = productService.selectNextChangeId();
 		ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
 		prodProductChangeReq.setChangeId(changeId);
 		prodProductChangeReq.setVerNum("1.0");
@@ -407,7 +452,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		prodProductChangeReq.setProductId(req.getProductId());
 		purApplyManager.insertProdChangePrice(prodProductChangeReq);
 		
-		String changeDetailId = purApplyManager.selectNextChangeDetailId();
+		String changeDetailId = productService.selectNextChangeDetailId();
 		String oldValue = purApplyManager.selectOldValue(req.getProductId());
 		ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
 		prodProductChangeDetail.setChangeDetailId(changeDetailId);
@@ -431,19 +476,63 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
+		String applyUserId = req.getApplyUserId();//移动终端 余玲 200012864664           固网终端  胡亚玲  200012829198
+		List<String> listProd = new ArrayList<String>();
+		String isFixedLine = null;
+		if("200012829198".equals(applyUserId)) {//固网终端
+			isFixedLine = "1";
+			List<String> listProductPrice = req.getProductPrice();
+			if(listProductPrice!= null && listProductPrice.size() > 0) {
+				//判断所有产品ID是同一类型
+				for(int i=0;i<listProductPrice.size();i++) {
+					String productId = listProductPrice.get(i).split("\\|")[0];
+					String isFixedLineMa = productService.selectisFixedLineByBatchId(productId);
+					if(!isFixedLine.equals(isFixedLineMa)) {
+						listProd.add(productId);
+					}
+				}
+				if(listProd.size() > 0) {
+					return ResultVO.error("这些产品不是固网终端 ： "+String.valueOf(listProd));
+				}
+			}
+		} else if("200012864664".equals(applyUserId)) {//移动终端
+			isFixedLine = "0";
+			List<String> listProductPrice = req.getProductPrice();
+			if(listProductPrice!= null && listProductPrice.size() > 0) {
+				//判断所有产品ID是同一类型
+				for(int i=0;i<listProductPrice.size();i++) {
+					String productId = listProductPrice.get(i).split("\\|")[0];
+					String isFixedLineMa = productService.selectisFixedLineByBatchId(productId);
+					if(!isFixedLine.equals(isFixedLineMa)) {
+						listProd.add(productId);
+					}
+				}
+				if(listProd.size() > 0) {
+					return ResultVO.error("这些产品不是移动终端 ： " + String.valueOf(listProd));
+				}
+			}
+		} else {
+			return ResultVO.error("当前用户没有权限修改政企价格");
+		}
 		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
-		log.info("----------------------------------------------------------------政企价格修改准备参数 new ProcessStartReq()--------------------------------------------------------------");
+		//政企价格修改审核
 		processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 		Map map=new HashMap();
-		map.put("CORPORATION_PRICE", req.getCorporationPrice());
+		map.put("GWZD", "1");
 		processStartDTO.setParamsValue(JSON.toJSONString(map));
-
-		processStartDTO.setTitle("政企价格修改审核流程");
+		//业务ID->批次ID
 		processStartDTO.setFormId(req.getBatchId());//单个修改政企价格也加个批次号
-		processStartDTO.setProcessId(PurApplyConsts.PROD_PRODUCT_CORPORATION_PRICE_ID);
-		processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9504.getTaskSubType());
+		if("1".equals(isFixedLine)) {//如果是固网
+			processStartDTO.setTitle("固网终端政企价格修改审核流程");
+			processStartDTO.setProcessId(PurApplyConsts.GWPROD_PRODUCT_CORPORATION_PRICE_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9605.getTaskSubType());
+		} else {
+			processStartDTO.setTitle("移动终端政企价格修改审核流程");
+			processStartDTO.setProcessId(PurApplyConsts.YDPROD_PRODUCT_CORPORATION_PRICE_ID);
+			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_9604.getTaskSubType());
+		}
 		processStartDTO.setApplyUserId(req.getApplyUserId());
 		//根据用户id查询名称
 		ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getApplyUserId());
@@ -454,13 +543,16 @@ public class PurApplyServiceImpl implements PurApplyService {
 		processStartDTO.setApplyUserName(userName);
 		ResultVO resultVO = new ResultVO();
 		try {
-			log.info("----------------------------------------------------------------taskService.startProcess--------------------------------------------------------------");
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程start*********************");
+			log.info("****************************************processStartDTO = "+JSON.toJSONString(processStartDTO));
 			resultVO = taskService.startProcess(processStartDTO);
+			log.info("---------PurApplyServiceImpl.updatePrice()  政企价格修改提交启动流程end*********************");
+			log.info("****************************************resultVO = "+JSON.toJSONString(resultVO));
 		} catch (Exception e) {
-			log.error("PurApplyServiceImpl.updatePrice catch exception={}"+ e);
+			log.error("PurApplyServiceImpl.updatePrice catch exception={}", e);
 			return ResultVO.error();
 		} finally {
-			log.info("PurApplyServiceImpl.updatePrice finally req={},resp={}"+
+			log.info("PurApplyServiceImpl.updatePrice finally req={},resp={}",
 					JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 		}
 		
@@ -472,7 +564,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			req.setCorporationPrice(splits[1]+"00");
 			String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
 			//循环插入变更表
-			String changeId = purApplyManager.selectNextChangeId();
+			String changeId = productService.selectNextChangeId();//1151
 			ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
 			prodProductChangeReq.setChangeId(changeId);
 			prodProductChangeReq.setVerNum("1.0");
@@ -486,7 +578,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			
 			//把订单的状态改成待审核
 			
-			String changeDetailId = purApplyManager.selectNextChangeDetailId();
+			String changeDetailId = productService.selectNextChangeDetailId();//1131
 			String oldValue = purApplyManager.selectOldValue(req.getProductId());
 			ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
 			prodProductChangeDetail.setChangeDetailId(changeDetailId);

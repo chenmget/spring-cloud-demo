@@ -72,8 +72,6 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public String getProductBaseIdByProductId(@Param("productId") String productId);
 	public void insertProdProductChangeDetail(@Param("req") ProdProductChangeDetail req);
 	
-	public String selectNextChangeId() ;
-	public String selectNextChangeDetailId() ;
 	public String selectOldValue(@Param("productId") String productId);
 	
 	public void commitPriceExcel(@Param("req") UpdateCorporationPriceReq req);
@@ -88,8 +86,6 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public String selectProductIdByChangeId(@Param("changeId") String changeId);
 	
-	public String selectisFixedLineByBatchId(@Param("batchId") String batchId) ;
-	
 	public void updateProdNoPassPrice(@Param("req") ProdProductChangeDetail req);
 	
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(@Param("keyValue") String keyValue);
@@ -97,7 +93,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public int countPurApplyItemDetail(@Param("req") PurApplyItemReq req);
 	public int countPurApplyItemDetailReving(@Param("req") PurApplyItemReq req);
 
-	public int updatePurApplyItemDetailStatusCd(@Param("mktResInstNbrList") List<String> mktResInstNbrList);
+	public Integer updatePurApplyItemDetailStatusCd(@Param("mktResInstNbrList") List<String> mktResInstNbrList);
 
 
 	public PurApply getPurApplyByAppId(@Param("applyId") String applyId);

@@ -262,4 +262,16 @@ public class ProductManager {
     public List<ProductInfoResp> getProductInfoByIds( List<String> productIdList){
         return productMapper.getProductInfoByIds(productIdList);
     }
+    
+    public String selectNextChangeId() {
+		return productMapper.selectNextChangeId();
+	}
+    
+    public String selectNextChangeDetailId() {
+    	return productMapper.selectNextChangeDetailId();
+    }
+    
+    public String selectisFixedLineByBatchId(String batchId) {
+		return productMapper.selectisFixedLineByBatchId(batchId);
+	}
 }

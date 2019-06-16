@@ -60,4 +60,11 @@ public class PurchaseApplyServiceImplTest extends TestBase {
         System.out.println(resultVO.isSuccess()+"===="+resultVO.getResultMsg());
 
     }
+    @Test
+    public void updateStatuscd() {
+        List<String> l = new ArrayList<String>();
+        l.add("p20p2019061303");
+        Integer i = purchaseApplyService.updatePurApplyItemDetailStatusCd(l);
+        System.out.println(i);
+    }
 }

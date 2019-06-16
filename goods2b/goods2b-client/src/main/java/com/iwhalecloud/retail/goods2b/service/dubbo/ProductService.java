@@ -221,4 +221,11 @@ public interface ProductService {
      * @return
      */
     public List<ProductInfoResp> getProductInfoByIds( List<String> productIdList);
+    
+    public String selectNextChangeId();
+    
+    public String selectNextChangeDetailId() ;
+    
+    public String selectisFixedLineByBatchId(String batchId) ;
+    
 }

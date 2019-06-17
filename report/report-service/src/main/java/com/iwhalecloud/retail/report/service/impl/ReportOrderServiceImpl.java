@@ -69,7 +69,7 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	
 	    	 dto.setNbr(li);
 	    	
-	    	 dto.setShipNum(Integer.toString(li.size()));
+	    	 dto.setShipNum(li.size());
 	    }
 	    return ResultVO.success(page);
 	}
@@ -83,14 +83,14 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	// TODO 通过orderId查出串码
 	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(orderId);
 	    	 dto.setNbr(li);
-	    	 dto.setShipNum(Integer.toString(li.size()));
+	    	 dto.setShipNum(li.size());
 	    }
 	    
 	    List<ReportOrderResp> list2 = new ArrayList<ReportOrderResp>();
 	    for(ReportOrderResp rr : list){
 	    	String status = rr.getStatus();//订单状态
 	    	String orderType = rr.getOrderType();//订单类型
-	    	String type = rr.getType();//交易类型
+	    	String type = rr.getOrderCat();//交易类型
 //	    	String paymentType = rr.getPaymentType();//支付类型
 	    	String payType = rr.getPayType();//支付方式
 	    	String lanId = rr.getLanId();
@@ -164,9 +164,9 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	
 	    	if(type != null){
 	    		if("0".equals(type)){
-	    			rr.setType("普通分销");
+	    			rr.setOrderCat("普通分销");
 	    		}else if("1".equals(type)){
-	    			rr.setType("预售");
+	    			rr.setOrderCat("预售");
 	    		}
 	    	}
 	    	

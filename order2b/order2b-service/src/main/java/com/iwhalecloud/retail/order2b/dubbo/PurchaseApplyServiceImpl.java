@@ -301,6 +301,19 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             if (k < 1) {
                 return ResultVO.error("更新采购申请单状态失败");
             }
+        } else {
+
+            if (req.getStatusCd()!=PurApplyConsts.PUR_APPLY_STATUS_DELIVERYING) {
+                PurApplyReq purApplyReq = new PurApplyReq();
+                purApplyReq.setApplyId(req.getApplyId());
+                purApplyReq.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_RECEIVED);
+                int k = purApplyDeliveryManager.updatePurApplyStatus(purApplyReq);
+                log.info("PurchaseApplyServiceImpl.delivery updatePurApplyStatusResp = {}", k);
+                if (k < 1) {
+                    return ResultVO.error("更新采购申请单状态失败");
+                }
+            }
+
         }
         return ResultVO.success();
     }
@@ -394,8 +407,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             log.info("5.更新确认收货成功数量"+ r);
 
         }
-        //判断是否全部收货完,首先 获取条目表 记录 中的数量  和 详情记录的 已确认收货的数量 作比较 一致则表示完成收完
-        //通过采购申请单查询采购申请单项
+        // 判断是否全部收货完,首先 获取条目表 记录 中的数量  和 详情记录的 已确认收货的数量 作比较 一致则表示完成收完
+        // 通过采购申请单查询采购申请单项
         List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
         int flag = 0; //定义是否完全收货标识
         for (PurApplyItem PurApplyItemTemp : purApplyItem) {

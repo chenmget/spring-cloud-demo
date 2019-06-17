@@ -25,6 +25,7 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.ztesoft.zop.common.message.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,10 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import com.alibaba.fastjson.TypeReference;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service
@@ -502,9 +500,100 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         String updateProductFlow="";
         ProductBaseUpdateReq oldReq = new ProductBaseUpdateReq();
 
+        List<ProductUpdateReq> productUpdateReqs = req.getProductUpdateReqs();
+        List<ProductUpdateReq> OldProductUpdateReqs = oldReq.getProductUpdateReqs();
+        if(CollectionUtils.isEmpty(productUpdateReqs) || CollectionUtils.isEmpty(OldProductUpdateReqs)){
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "修改产品必须传入新老产品产品信息");
+        }
+        if(StringUtils.isEmpty(req.getProductName()) || StringUtils.isEmpty(oldReq.getProductName())){
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "修改产品必须传入新老产品名称");
+        }
 
+        //流程1
+        if(!CollectionUtils.isEmpty(req.getProductAddReqs())){
+            updateProductFlow = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
+        }
+        //流程2
+        if(req.getProductName().equals(oldReq.getProductName())){
+            if(ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
+                updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+            }else{
+                updateProductFlow = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
+            }
+        }
+        //流程2
+        if(!StringUtils.isEmpty(req.getSallingPoint()) && !StringUtils.isEmpty(oldReq.getSallingPoint()) &&
+                req.getSallingPoint().equals(oldReq.getSallingPoint())){
+            if(ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
+                updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+            }else{
+                updateProductFlow = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
+            }
+        }
 
+        for(ProductUpdateReq newUpdateReq: productUpdateReqs){
+            for(ProductUpdateReq oldUpdateReq:OldProductUpdateReqs){
+                if(newUpdateReq.getProductId().equals(oldUpdateReq.getProductId())){
+                    //流程1
+                    if(!newUpdateReq.getSn().equals(oldUpdateReq.getSn())){
+                        if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
+                            updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }else{
+                            updateProductFlow = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }
+                    }
+                    //流程1
+                    if(newUpdateReq.getCost() - oldUpdateReq.getCost() !=0){
+                        if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
+                            updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }else{
+                            updateProductFlow = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }
+                    }
+                    //流程2
+                    if(this.compareProdFile(newUpdateReq.getFileAddReqs(),oldUpdateReq.getFileAddReqs())){
+                        if(ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
+                            updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }else{
+                            updateProductFlow = ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }
+                    }
+                }
+            }
+        }
         return updateProductFlow;
+    }
+
+    private boolean compareProdFile(List<FileAddReq> newFileAddReqs,List<FileAddReq> oldFileAddReqs){
+        if(!CollectionUtils.isEmpty(newFileAddReqs) && CollectionUtils.isEmpty(oldFileAddReqs)){
+            return true;
+        }
+        if(!CollectionUtils.isEmpty(oldFileAddReqs) && CollectionUtils.isEmpty(newFileAddReqs)){
+            return true;
+        }
+        if(newFileAddReqs.size()!=oldFileAddReqs.size()){
+            return true;
+        }
+        for(int i = 0;i<newFileAddReqs.size();i++){
+            FileAddReq newFile = newFileAddReqs.get(i);
+            FileAddReq oldFile = newFileAddReqs.get(i);
+            if(StringUtils.isNotEmpty(newFile.getFileUrl()) && StringUtils.isNotEmpty(oldFile.getFileUrl()) &&
+                    newFile.getFileUrl().equals(oldFile.getFileUrl())){
+            }else {
+                return true;
+            }
+            if(StringUtils.isNotEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isNotEmpty(oldFile.getThreeDimensionsUrl()) &&
+                    newFile.getThreeDimensionsUrl().equals(oldFile.getThreeDimensionsUrl())){
+            }else {
+                return true;
+            }
+            if(StringUtils.isNotEmpty(newFile.getThumbnailUrl()) && StringUtils.isNotEmpty(oldFile.getThumbnailUrl()) &&
+                    newFile.getThumbnailUrl().equals(oldFile.getThumbnailUrl())){
+            }else {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

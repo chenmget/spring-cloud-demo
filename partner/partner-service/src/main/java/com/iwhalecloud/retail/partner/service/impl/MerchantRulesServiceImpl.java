@@ -30,9 +30,7 @@ import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionPageReq;
-import com.iwhalecloud.retail.system.dto.request.UserGetReq;
+import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -163,19 +161,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
     }
 
-    /**
-     * 获取一个 商家 权限规则
-     *
-     * @param merchantRulesId
-     * @return
-     */
-    @Override
-    public ResultVO<MerchantRulesDTO> getMerchantRulesById(String merchantRulesId) {
-        log.info("MerchantRulesServiceImpl.getMerchantRulesById(), 入参merchantRulesId={} ", merchantRulesId);
-        MerchantRulesDTO merchantRulesDTO = merchantRulesManager.getMerchantRulesById(merchantRulesId);
-        log.info("MerchantRulesServiceImpl.getMerchantRulesById(), 出参manufacturerDTO={} ", merchantRulesDTO);
-        return ResultVO.success(merchantRulesDTO);
-    }
 
     /**
      * 删除 商家 权限规则
@@ -201,13 +186,13 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
      * @param req
      * @returns
      */
-    @Override
-    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesListReq req) {
-        log.info("MerchantRulesServiceImpl.listMerchantRules(), input: MerchantRulesListReq={} ", req);
-        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(req);
-        log.info("MerchantRulesServiceImpl.listMerchantRules(), output: list={} ", list);
-        return ResultVO.success(list);
-    }
+//    @Override
+//    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesListReq req) {
+//        log.info("MerchantRulesServiceImpl.listMerchantRules(), input: MerchantRulesListReq={} ", req);
+//        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(req);
+//        log.info("MerchantRulesServiceImpl.listMerchantRules(), output: list={} ", list);
+//        return ResultVO.success(list);
+//    }
 
     /**
      * 商家 权限规则详情 信息 列表查询
@@ -413,16 +398,16 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
-                fieldName = "regionId";
-                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
-                commonRegionListReq.setRegionIdList(targetIdList);
-                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
+//                fieldName = "regionId";
+//                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
+//                commonRegionListReq.setRegionIdList(targetIdList);
+//                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
 
                 // zhong.wenlong 2019.06.13 改查 sys_common_org表
-//                CommonOrgListReq commonOrgListReq = new CommonOrgListReq();
-//                commonOrgListReq.setOrgIdList(targetIdList);
-//                detailList = commonOrgService.listCommonOrg(commonOrgListReq, false).getResultData();
-//                fieldName = "orgId";
+                CommonOrgListReq commonOrgListReq = new CommonOrgListReq();
+                commonOrgListReq.setOrgIdList(targetIdList);
+                detailList = commonOrgService.listCommonOrg(commonOrgListReq, false).getResultData();
+                fieldName = "orgId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
@@ -590,19 +575,19 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
-                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
-                commonRegionPageReq.setRegionIdList(targetIdList);
-                commonRegionPageReq.setPageNo(req.getPageNo());
-                commonRegionPageReq.setPageSize(req.getPageSize());
-                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
-                fieldName = "regionId";
+//                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
+//                commonRegionPageReq.setRegionIdList(targetIdList);
+//                commonRegionPageReq.setPageNo(req.getPageNo());
+//                commonRegionPageReq.setPageSize(req.getPageSize());
+//                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
+//                fieldName = "regionId";
                 // zhong.wenlong 2019.06.13 改查 sys_common_org表
-//                CommonOrgPageReq commonOrgPageReq = new CommonOrgPageReq();
-//                commonOrgPageReq.setOrgIdList(targetIdList);
-//                commonOrgPageReq.setPageNo(req.getPageNo());
-//                commonOrgPageReq.setPageSize(req.getPageSize());
-//                detailPage = commonOrgService.pageCommonOrg(commonOrgPageReq).getResultData();
-//                fieldName = "orgId";
+                CommonOrgPageReq commonOrgPageReq = new CommonOrgPageReq();
+                commonOrgPageReq.setOrgIdList(targetIdList);
+                commonOrgPageReq.setPageNo(req.getPageNo());
+                commonOrgPageReq.setPageSize(req.getPageSize());
+                detailPage = commonOrgService.pageCommonOrg(commonOrgPageReq).getResultData();
+                fieldName = "orgId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId

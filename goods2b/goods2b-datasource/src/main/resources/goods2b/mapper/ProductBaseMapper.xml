@@ -50,7 +50,7 @@
     ,t.UPDATE_DATE
     ,t.AVG_SUPPLY_PRICE
     ,t.PRICE_LEVEL
---     ,t.SALLING_POINT
+    ,t.SALLING_POINT
 </sql>
 
 
@@ -146,9 +146,9 @@
         <if test="null!=req.productName and ''!=req.productName">
             and upper(t.product_name) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
         </if>
-        <!--<if test="null!=req.sallingPoint and ''!=req.sallingPoint">-->
-            <!--and upper(t.salling_point) like CONCAT(CONCAT('%',upper(#{req.sallingPoint})),'%')-->
-        <!--</if>-->
+        <if test="null!=req.sallingPoint and ''!=req.sallingPoint">
+            and upper(t.salling_point) like CONCAT(CONCAT('%',upper(#{req.sallingPoint})),'%')
+        </if>
         <if test="null!=req.unitType and ''!=req.unitType">
             and t.unit_type = #{req.unitType}
         </if>

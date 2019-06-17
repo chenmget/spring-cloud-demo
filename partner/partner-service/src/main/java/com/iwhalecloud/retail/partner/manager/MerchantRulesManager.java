@@ -9,7 +9,6 @@ import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import com.iwhalecloud.retail.partner.mapper.MerchantRulesMapper;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -26,6 +25,15 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
     private MerchantRulesMapper merchantRulesMapper;
 
     /**
+     * 校验 商家经营权限-区域权限
+     * @return
+     */
+    public int checkBusinessRegionPermission() {
+       return 0;
+    }
+
+
+    /**
      * 添加一个 商家 权限规则
      *
      * @param merchantRules
@@ -34,22 +42,6 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
     public int insert(MerchantRules merchantRules) {
         int resultInt = merchantRulesMapper.insert(merchantRules);
         return resultInt;
-    }
-
-    /**
-     * 根据条件 获取一个 商家 权限规则
-     *
-     * @param merchantRulesId
-     * @return
-     */
-    public MerchantRulesDTO getMerchantRulesById(String merchantRulesId) {
-        MerchantRules merchantRules = merchantRulesMapper.selectById(merchantRulesId);
-        if (merchantRules == null) {
-            return null;
-        }
-        MerchantRulesDTO merchantRulesDTO = new MerchantRulesDTO();
-        BeanUtils.copyProperties(merchantRules, merchantRulesDTO);
-        return merchantRulesDTO;
     }
 
     /**

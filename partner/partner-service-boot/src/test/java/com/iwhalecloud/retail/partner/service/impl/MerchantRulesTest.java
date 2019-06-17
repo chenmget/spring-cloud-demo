@@ -34,12 +34,6 @@ public class MerchantRulesTest {
         System.out.print("结果：" + resultVO.toString());
     }
 
-    @Test
-    public void get(){
-        MerchantRulesSaveReq req = new MerchantRulesSaveReq();
-        ResultVO resultVO = merchantRulesService.getMerchantRulesById("10115828");
-        System.out.print("结果：" + resultVO.toString());
-    }
 
     @Test
     public void delete(){
@@ -52,15 +46,6 @@ public class MerchantRulesTest {
         System.out.print("结果：" + resultVO.toString());
     }
 
-    @Test
-    public void list(){
-        MerchantRulesListReq req = new MerchantRulesListReq();
-        req.setMerchantId("777");
-        req.setRuleType("1");
-        req.setTargetType("1");
-        ResultVO resultVO = merchantRulesService.listMerchantRules(req);
-        System.out.print("结果：" + resultVO.toString());
-    }
 
     @Test
     public void listDetail(){

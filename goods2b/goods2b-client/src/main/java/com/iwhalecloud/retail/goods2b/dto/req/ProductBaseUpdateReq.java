@@ -243,8 +243,8 @@ public class ProductBaseUpdateReq extends AbstractRequest implements Serializabl
     @ApiModelProperty(value = "零售商标签")
     private List<String> tagList;
 
-    @ApiModelProperty(value = "oldProductBaseUpdateReqs")
-    private ProductBaseUpdateReq oldProductBaseUpdateReq;
+    @ApiModelProperty(value = "oldProductUpdateReqs")
+    private List<ProductUpdateReq> oldProductUpdateReqs;
 
     /**
      * 价格档位

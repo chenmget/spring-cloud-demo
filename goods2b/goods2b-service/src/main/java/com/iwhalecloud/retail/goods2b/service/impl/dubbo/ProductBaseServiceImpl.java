@@ -505,10 +505,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         ProductBaseUpdateReq oldReq = new ProductBaseUpdateReq();
 
         List<ProductUpdateReq> productUpdateReqs = req.getProductUpdateReqs();
-        if(null == req.getOldProductBaseUpdateReq()){
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "修改产品必须传入老产品产品信息");
-        }
-        List<ProductUpdateReq> OldProductUpdateReqs = req.getOldProductBaseUpdateReq().getOldProductBaseUpdateReq().getProductUpdateReqs();
+        List<ProductUpdateReq> OldProductUpdateReqs = req.getOldProductUpdateReqs();
         if(CollectionUtils.isEmpty(productUpdateReqs) || CollectionUtils.isEmpty(OldProductUpdateReqs)){
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "修改产品必须传入新老产品产品信息");
         }

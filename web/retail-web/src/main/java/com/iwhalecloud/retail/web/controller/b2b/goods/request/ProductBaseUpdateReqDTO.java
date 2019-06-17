@@ -186,6 +186,9 @@ public class ProductBaseUpdateReqDTO implements Serializable {
     @ApiModelProperty(value = "拓展参数")
     private ProductExtUpdateReq productExtUpdateReq;
 
+    @ApiModelProperty(value = "oldProductUpdateReqs")
+    private List<ProductUpdateReq> oldProductUpdateReqs;
+
     /**
      * 产品信息
      */

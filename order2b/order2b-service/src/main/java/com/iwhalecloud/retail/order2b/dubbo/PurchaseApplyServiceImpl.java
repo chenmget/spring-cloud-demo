@@ -79,7 +79,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         List<String> mktResInstNbr = Lists.newArrayList();
         mktResInstNbr = req.getMktResInstNbr(); //串码列表
         int total = mktResInstNbr.size();//串码总数
-        if(mktResInstNbr==null || mktResInstNbr.size()<=0) {
+        if (mktResInstNbr==null || mktResInstNbr.size()<=0) {
             return ResultVO.error("没有收到串码记录");
         }
         //select * from mkt_res_store where store_type = '1100' and lan_id = '731';
@@ -125,16 +125,16 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 //            long count = queryMktResInstNbr.getResultData().getTotal();
             if (resourceInstCheckResp==null) {
                 return ResultVO.error("该仓库查不到该串码"+mktResInstNbr);
-            }else {
+            } else {
                 //开始出理串码和产品id 归类，
 //                List<ResourceInstListPageResp> resultData = queryMktResInstNbr.getResultData().getRecords();
 //                ResourceInstListPageResp resourceInstListPageResp = resultData.get(0);
                 String productId = resourceInstCheckResp.getMktResId();//产品ID
-                if(map.get(productId)==null) {
+                if (map.get(productId)==null) {
                     List<String> mktResInstNbrList = new ArrayList<String>();
                     mktResInstNbrList.add(mktResInstNbrCheck);
                     map.put(productId,mktResInstNbrList);
-                }else {
+                } else {
                     List<String> mktResInstNbrList = map.get(productId);
                     mktResInstNbrList.add(mktResInstNbrCheck);
                     map.put(productId,mktResInstNbrList);
@@ -205,7 +205,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         ResultVO outResult = tradeResourceInstService.tradeOutResourceInst(tradeResourceInstReq);
 
         log.info("9.调用串码出库结果outResult="+JSON.toJSONString(outResult));
-        if(!outResult.isSuccess()) {
+        if (!outResult.isSuccess()) {
             return ResultVO.error(outResult.getResultMsg());
         }
 
@@ -317,7 +317,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         //串码入库
         List<PurApplyItemDetail> purApplyItemDetailList = purApplyItemDetailManager.getPurApplyItemDetail(req.getApplyId());
         log.info("1.查询待收货的串码列表"+ JSON.toJSONString(purApplyItemDetailList));
-        if(purApplyItemDetailList==null || purApplyItemDetailList.size()==0) {
+        if (purApplyItemDetailList==null || purApplyItemDetailList.size()==0) {
             return ResultVO.error("暂无可收货的串码");
         }
 //        StoreGetStoreIdReq storeIdReq  = new StoreGetStoreIdReq();
@@ -353,11 +353,11 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             String productId  =purApplyItemDetail.getProductId();
             String mktResInstNbr = purApplyItemDetail.getMktResInstNbr();
             allMktResInstNbrList.add(mktResInstNbr);
-            if(map.get(productId)==null) {
+            if (map.get(productId)==null) {
                 List<String> mktResInstNbrList = new ArrayList<String>();
                 mktResInstNbrList.add(mktResInstNbr);
                 map.put(productId,mktResInstNbrList);
-            }else {
+            } else {
                 List<String> mktResInstNbrList = map.get(productId);
                 mktResInstNbrList.add(mktResInstNbr);
                 map.put(productId,mktResInstNbrList);
@@ -382,7 +382,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         log.info("3.调用串码入库接口"+ JSON.toJSONString(tradeResourceInstReq));
         ResultVO resultVOIn = tradeResourceInstService.tradeInResourceInst(tradeResourceInstReq);
         log.info("4.调用串码入库接口结果"+ JSON.toJSONString(resultVOIn));
-        if(!resultVOIn.isSuccess()){
+        if (!resultVOIn.isSuccess()){
             return ResultVO.error(resultVOIn.getResultMsg());
         }
 //
@@ -473,10 +473,10 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
        List<ProductInfoResp>  proTemp=productService.getProductInfoByIds(prodIds);
         //获取产品名称 设置到list的结果集中
         int k = deliveryInfo.size();
-        for(int i=0;i<k;i++) {
+        for (int i=0;i<k;i++) {
             PurApplyDeliveryResp purApplyDeliveryResp= deliveryInfo.get(i);
             String productId =purApplyDeliveryResp.getProductId();
-            for(ProductInfoResp productInfoResp:proTemp) {
+            for (ProductInfoResp productInfoResp:proTemp) {
                 String productIdTemp = productInfoResp.getProductId();
                 if (productIdTemp.equals(productId)) {
                     purApplyDeliveryResp.setUnitName(productInfoResp.getUnitName());

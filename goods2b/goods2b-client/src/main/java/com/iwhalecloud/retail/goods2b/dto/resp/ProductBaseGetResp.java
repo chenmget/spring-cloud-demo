@@ -355,6 +355,6 @@ public class ProductBaseGetResp implements Serializable {
     /**
      * 卖点
      */
-//    @ApiModelProperty(value = "卖点")
-//    private String sallingPoint;
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 }

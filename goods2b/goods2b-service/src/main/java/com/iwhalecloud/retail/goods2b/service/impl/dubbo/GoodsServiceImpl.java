@@ -1372,7 +1372,7 @@ public class GoodsServiceImpl implements GoodsService {
         List<ProductResp> productResps = getProductResps(list, req, goods);
 
         if (productBaseGetResp != null && !CollectionUtils.isEmpty(productResps)) {
-//            resp.setSallingPoint(productBaseGetResp.getSallingPoint());
+            resp.setSallingPoint(productBaseGetResp.getSallingPoint());
             for (ProductResp productResp : productResps) {
                 productResp.setUnitType(productBaseGetResp.getUnitType());
                 productResp.setPurchaseType(productBaseGetResp.getPurchaseType());
@@ -1658,15 +1658,15 @@ public class GoodsServiceImpl implements GoodsService {
             for (Goods goods : goodsList) {
                 GoodsDTO goodsDTO = new GoodsDTO();
                 BeanUtils.copyProperties(goods, goodsDTO);
-//                List<GoodsProductRel> list = goodsProductRelManager.listGoodsProductRel(goodsDTO.getGoodsId());
-//                if(CollectionUtils.isNotEmpty(list)){
-//                    GoodsProductRel goodsProductRel = list.get(0);
-//                    String productBaseId = goodsProductRel.getProductBaseId();
-//                    ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
-//                    if(null!=productBaseGetResp){
-//                        goodsDTO.setSallingPoint(productBaseGetResp.getSallingPoint());
-//                    }
-//                }
+                List<GoodsProductRel> list = goodsProductRelManager.listGoodsProductRel(goodsDTO.getGoodsId());
+                if(CollectionUtils.isNotEmpty(list)){
+                    GoodsProductRel goodsProductRel = list.get(0);
+                    String productBaseId = goodsProductRel.getProductBaseId();
+                    ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
+                    if(null!=productBaseGetResp){
+                        goodsDTO.setSallingPoint(productBaseGetResp.getSallingPoint());
+                    }
+                }
 
                 goodsDTOList.add(goodsDTO);
             }

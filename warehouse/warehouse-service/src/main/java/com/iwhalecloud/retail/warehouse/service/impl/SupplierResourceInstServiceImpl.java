@@ -161,6 +161,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }catch (Exception e){
             return ResultVO.error(constant.getGetRepeatStoreMsg());
         }
+        req.setMktResStoreId(destStoreId);
         req.setMerchantType(merchantDTO.getMerchantType());
         req.setDestStoreId(mktResStoreId);
         req.setSourceType(sourceMerchantDTO.getMerchantType());
@@ -320,8 +321,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         updateReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(resultVOInsertResReq.getResultData());
-        updateReq.setMktResStoreId(req.getMktResStoreId());
-        updateReq.setDestStoreId(req.getDestStoreId());
+        updateReq.setMktResStoreId(req.getDestStoreId());
+        updateReq.setDestStoreId(req.getMktResStoreId());
         updateReq.setMktResInstIdList(req.getMktResInstIds());
         updateReq.setOrderId(resultVOInsertResReq.getResultData());
         ResultVO updateResultVO = resourceInstService.updateResourceInstByIds(updateReq);

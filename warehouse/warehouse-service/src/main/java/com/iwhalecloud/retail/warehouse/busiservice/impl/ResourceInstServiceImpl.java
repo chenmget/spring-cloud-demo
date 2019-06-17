@@ -924,6 +924,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         return list;
     }
 
+    @Override
     public String selectMktResInstType(ResourceStoreIdResnbr req) {
     	return resourceInstManager.selectMktResInstType(req);
     }

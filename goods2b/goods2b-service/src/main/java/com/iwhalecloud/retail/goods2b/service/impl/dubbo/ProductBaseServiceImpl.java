@@ -478,17 +478,21 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                          }
                      }
                      if(ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
-                         processId =ProductConst.UPDATE_PRODUCT_FLOW_PROCESS_ID;
+//                         processId =ProductConst.UPDATE_PRODUCT_FLOW_PROCESS_ID;
+                         processId = this.updateProductFlow(req);
                      }
-                     StartProductFlowReq startProductFlowReq = new StartProductFlowReq();
-                     startProductFlowReq.setProductBaseId(req.getProductBaseId());
-                     startProductFlowReq.setDealer(req.getUpdateStaff());
-                     startProductFlowReq.setProductName(product.getResultData().getProductName());
-                     startProductFlowReq.setProcessId(processId);
-                     startProductFlowReq.setParamsValue(req.getBrandId());
-                     ResultVO flowResltVO =productFlowService.startProductFlow(startProductFlowReq);
-                     if(!flowResltVO.isSuccess()){
-                         throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());
+                     //没有修改则不需走流程
+                     if(StringUtils.isNotEmpty(processId)){
+                         StartProductFlowReq startProductFlowReq = new StartProductFlowReq();
+                         startProductFlowReq.setProductBaseId(req.getProductBaseId());
+                         startProductFlowReq.setDealer(req.getUpdateStaff());
+                         startProductFlowReq.setProductName(product.getResultData().getProductName());
+                         startProductFlowReq.setProcessId(processId);
+                         startProductFlowReq.setParamsValue(req.getBrandId());
+                         ResultVO flowResltVO =productFlowService.startProductFlow(startProductFlowReq);
+                         if(!flowResltVO.isSuccess()){
+                             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());
+                         }
                      }
                  }
              }

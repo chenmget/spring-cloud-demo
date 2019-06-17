@@ -160,7 +160,10 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
             		 GoodsQueryByProductIdsReq req = new GoodsQueryByProductIdsReq();
                      req.setProductIds(productIdList);
             		 List<String> goodsIdsList = goodsProductRelService.queryGoodsIdsByProductIds(req).getResultData().getGoodsIds();//获取这个产品下的所有goods_id
-            		 for(int k=0;k<goodsIdsList.size();k++) {
+            		 if(CollectionUtils.isEmpty(goodsIdsList)){
+						 continue;
+					 }
+					 for(int k=0;k<goodsIdsList.size();k++) {
                 		 ProdFileReq prodFileReq = new ProdFileReq();
 //                    		 String fileId = "";//这个序列名未找到
 //                    		 prodFileDTO.setFileId(fileId);

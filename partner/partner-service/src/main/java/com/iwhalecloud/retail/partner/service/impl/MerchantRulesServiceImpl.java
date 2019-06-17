@@ -179,20 +179,14 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         return ResultVO.success("删除商家权限规则信息 条数：" + result, result);
     }
 
-
-    /**
-     * 商家 权限规则信息列表
-     *
-     * @param req
-     * @returns
-     */
-//    @Override
-//    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesListReq req) {
-//        log.info("MerchantRulesServiceImpl.listMerchantRules(), input: MerchantRulesListReq={} ", req);
-//        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(req);
-//        log.info("MerchantRulesServiceImpl.listMerchantRules(), output: list={} ", list);
-//        return ResultVO.success(list);
-//    }
+    @Override
+    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesDetailListReq req) {
+        log.info("MerchantRulesServiceImpl.listMerchantRules(), input: MerchantRulesDetailListReq={} ", req);
+        MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
+        BeanUtils.copyProperties(req, merchantRulesListReq);
+        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(merchantRulesListReq);
+        return ResultVO.success(list);
+    }
 
     /**
      * 商家 权限规则详情 信息 列表查询
@@ -214,15 +208,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     }
 
     @Override
-    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesDetailListReq req) {
-        log.info("MerchantRulesServiceImpl.listMerchantRules(), input: MerchantRulesDetailListReq={} ", req);
-        MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
-        BeanUtils.copyProperties(req, merchantRulesListReq);
-        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(merchantRulesListReq);
-        return ResultVO.success(list);
-    }
-
-    @Override
     public ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRulesDetail(MerchantRulesDetailListReq req) {
         log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), input: MerchantRulesDetailListReq={} ", req);
         MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
@@ -240,7 +225,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = getDetailPageList(req, list);
 
         log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), output: resultList={} ", JSON.toJSONString(merchantRulesDetailDTOPage.getRecords()));
-
         return ResultVO.success(merchantRulesDetailDTOPage);
     }
 
@@ -348,7 +332,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         return ResultVO.success(merchantRulesDetailPageRespPage);
     }
 
-
     /**
      * 根据regionId获取 regionName
      *
@@ -391,131 +374,55 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             // 经营权限
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.BRAND.getType())) {
                 // 品牌
-                BrandQueryReq brandQueryReq = new BrandQueryReq();
-                brandQueryReq.setBrandIdList(targetIdList);
-                detailList = brandService.listBrandFileUrl(brandQueryReq).getResultData();
+                detailList = getBrandList(req, targetIdList);
                 fieldName = "brandId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
+//                detailList = getCommonRegionList(req, targetIdList);
 //                fieldName = "regionId";
-//                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
-//                commonRegionListReq.setRegionIdList(targetIdList);
-//                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
 
                 // zhong.wenlong 2019.06.13 改查 sys_common_org表
-                CommonOrgListReq commonOrgListReq = new CommonOrgListReq();
-                commonOrgListReq.setOrgIdList(targetIdList);
-                detailList = commonOrgService.listCommonOrg(commonOrgListReq, false).getResultData();
+                detailList = getCommonOrgList(req, targetIdList);
                 fieldName = "orgId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
-                ProductsPageReq productsPageReq = new ProductsPageReq();
-                productsPageReq.setUnitName(req.getUnitName());
-                productsPageReq.setProductName(req.getProductName());
-                productsPageReq.setSn(req.getSn());
-                productsPageReq.setUnitType(req.getUnitType());
-                productsPageReq.setPageNo(1);
-                productsPageReq.setPageSize(1000); // 写死 大一点
-                productsPageReq.setProductIdList(targetIdList);
-                productsPageReq.setCatId(req.getCatId());
-                productsPageReq.setTypeId(req.getTypeId());
-
-                // 品牌
-                if (!StringUtils.isEmpty(req.getBrandId())) {
-                    productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
-                }
-
-                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
+                detailList = getProductOrModelList(req, targetIdList);
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())) {
                 // 商家
-                MerchantListReq merchantListReq = new MerchantListReq();
-                merchantListReq.setMerchantType(req.getMerchantType());
-                merchantListReq.setMerchantName(req.getMerchantName());
-                merchantListReq.setMerchantCode(req.getMerchantCode());
-                merchantListReq.setLanId(req.getLanId());
-                merchantListReq.setCity(req.getCity());
-                merchantListReq.setTagId(req.getTagId());
-                merchantListReq.setLoginName(req.getLoginName());
-                merchantListReq.setMerchantIdList(targetIdList);
-                detailList = merchantService.listMerchant(merchantListReq).getResultData();
+                detailList = getMerchantList(req, targetIdList);
                 fieldName = "merchantId";
 
             }
         } else if (StringUtils.equals(req.getRuleType(), PartnerConst.MerchantRuleTypeEnum.GREEN_CHANNEL.getType())) {
             // 绿色通道权限
-            ProductsPageReq productsPageReq = new ProductsPageReq();
-            productsPageReq.setUnitName(req.getUnitName());
-            productsPageReq.setProductName(req.getProductName());
-            productsPageReq.setSn(req.getSn());
-            productsPageReq.setUnitType(req.getUnitType());
-            productsPageReq.setPageNo(1);
-            productsPageReq.setPageSize(1000); // 写死 大一点
-            productsPageReq.setCatId(req.getCatId());
-            productsPageReq.setTypeId(req.getTypeId());
-
-            // 品牌
-            if (!StringUtils.isEmpty(req.getBrandId())) {
-                productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
-            }
-
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.PRODUCT.getType())) {
                 // 产品 productBaseId
-                productsPageReq.setProductBaseIdList(targetIdList);
                 fieldName = "productBaseId";
-
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
-                productsPageReq.setProductIdList(targetIdList);
                 fieldName = "productId";
             }
+            detailList = getProductOrModelList(req, targetIdList);
 
-            detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
         } else if (StringUtils.equals(req.getRuleType(), PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType())) {
             // 调拨权限
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
-                ProductsPageReq productsPageReq = new ProductsPageReq();
-                productsPageReq.setUnitName(req.getUnitName());
-                productsPageReq.setProductName(req.getProductName());
-                productsPageReq.setSn(req.getSn());
-                productsPageReq.setUnitType(req.getUnitType());
-                productsPageReq.setPageNo(1);
-                productsPageReq.setPageSize(1000); // 写死 大一点
-                productsPageReq.setProductIdList(targetIdList);
-                productsPageReq.setCatId(req.getCatId());
-                productsPageReq.setTypeId(req.getTypeId());
-
-                // 品牌
-                if (!StringUtils.isEmpty(req.getBrandId())) {
-                    productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
-                }
-
-                detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
+                detailList = getProductOrModelList(req, targetIdList);
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())) {
                 // 区域
-                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
-                commonRegionListReq.setRegionIdList(targetIdList);
-                detailList = commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
+                detailList = getCommonRegionList(req, targetIdList);
                 fieldName = "regionId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MERCHANT.getType())) {
                 // 商家
-                MerchantListReq merchantListReq = new MerchantListReq();
-                merchantListReq.setMerchantType(req.getMerchantType());
-                merchantListReq.setMerchantName(req.getMerchantName());
-                merchantListReq.setMerchantCode(req.getMerchantCode());
-                merchantListReq.setLanId(req.getLanId());
-                merchantListReq.setCity(req.getCity());
-                merchantListReq.setTagId(req.getTagId());
-                merchantListReq.setLoginName(req.getLoginName());
-                merchantListReq.setMerchantIdList(targetIdList);
-                detailList = merchantService.listMerchant(merchantListReq).getResultData();
+                detailList = getMerchantList(req, targetIdList);
                 fieldName = "merchantId";
             }
         }
@@ -566,135 +473,53 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             // 经营权限
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.BRAND.getType())) {
                 // 品牌
-                BrandPageReq brandPageReq = new BrandPageReq();
-                brandPageReq.setBrandIdList(targetIdList);
-                brandPageReq.setPageNo(req.getPageNo());
-                brandPageReq.setPageSize(req.getPageSize());
-                detailPage = brandService.pageBrandFileUrl(brandPageReq).getResultData();
+                detailPage = getBrandPage(req, targetIdList);
                 fieldName = "brandId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType())) {
                 // 区域
-//                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
-//                commonRegionPageReq.setRegionIdList(targetIdList);
-//                commonRegionPageReq.setPageNo(req.getPageNo());
-//                commonRegionPageReq.setPageSize(req.getPageSize());
-//                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
+//                detailPage = getCommonRegionPage(req, targetIdList);
 //                fieldName = "regionId";
+
                 // zhong.wenlong 2019.06.13 改查 sys_common_org表
-                CommonOrgPageReq commonOrgPageReq = new CommonOrgPageReq();
-                commonOrgPageReq.setOrgIdList(targetIdList);
-                commonOrgPageReq.setPageNo(req.getPageNo());
-                commonOrgPageReq.setPageSize(req.getPageSize());
-                detailPage = commonOrgService.pageCommonOrg(commonOrgPageReq).getResultData();
+                detailPage = getCommonOrgPage(req, targetIdList);
                 fieldName = "orgId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
-                ProductsPageReq productsPageReq = new ProductsPageReq();
-                productsPageReq.setUnitName(req.getUnitName());
-                productsPageReq.setProductName(req.getProductName());
-                productsPageReq.setSn(req.getSn());
-                productsPageReq.setUnitType(req.getUnitType());
-                productsPageReq.setPageNo(req.getPageNo());
-                productsPageReq.setPageSize(req.getPageSize());
-                productsPageReq.setProductIdList(targetIdList);
-                productsPageReq.setCatId(req.getCatId());
-                productsPageReq.setTypeId(req.getTypeId());
-
-                // 品牌
-                if (!StringUtils.isEmpty(req.getBrandId())) {
-                    productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
-                }
-                detailPage = productService.selectPageProductAdminAll(productsPageReq).getResultData();
+                detailPage = getProductOrModelPage(req, targetIdList);
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType())) {
                 // 商家
-                MerchantPageReq merchantPageReq = new MerchantPageReq();
-                merchantPageReq.setMerchantType(req.getMerchantType());
-                merchantPageReq.setMerchantName(req.getMerchantName());
-                merchantPageReq.setMerchantCode(req.getMerchantCode());
-                merchantPageReq.setLanId(req.getLanId());
-                merchantPageReq.setCity(req.getCity());
-                merchantPageReq.setTagId(req.getTagId());
-                merchantPageReq.setLoginName(req.getLoginName());
-                merchantPageReq.setMerchantIdList(targetIdList);
-                detailPage = merchantService.pageMerchant(merchantPageReq).getResultData();
+                detailPage = getMerchantPage(req, targetIdList);
                 fieldName = "merchantId";
             }
         } else if (StringUtils.equals(req.getRuleType(), PartnerConst.MerchantRuleTypeEnum.GREEN_CHANNEL.getType())) {
             // 绿色通道权限
-            ProductsPageReq productsPageReq = new ProductsPageReq();
-            productsPageReq.setUnitName(req.getUnitName());
-            productsPageReq.setProductName(req.getProductName());
-            productsPageReq.setSn(req.getSn());
-            productsPageReq.setUnitType(req.getUnitType());
-            productsPageReq.setPageNo(req.getPageNo());
-            productsPageReq.setPageSize(req.getPageSize());
-            productsPageReq.setCatId(req.getCatId());
-            productsPageReq.setTypeId(req.getTypeId());
-
-            // 品牌
-            if (!StringUtils.isEmpty(req.getBrandId())) {
-                productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
-            }
-
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.PRODUCT.getType())) {
                 // 产品 productBaseId
-                productsPageReq.setProductBaseIdList(targetIdList);
                 fieldName = "productBaseId";
-
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
-                productsPageReq.setProductIdList(targetIdList);
                 fieldName = "productId";
             }
-//            detailList = productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
-            detailPage = productService.selectPageProductAdminAll(productsPageReq).getResultData();
+            detailPage = getProductOrModelPage(req, targetIdList);
         } else if (StringUtils.equals(req.getRuleType(), PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType())) {
             // 调拨权限
             if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType())) {
                 // 机型 productId
-                ProductsPageReq productsPageReq = new ProductsPageReq();
-                productsPageReq.setUnitName(req.getUnitName());
-                productsPageReq.setProductName(req.getProductName());
-                productsPageReq.setSn(req.getSn());
-                productsPageReq.setUnitType(req.getUnitType());
-                productsPageReq.setPageNo(req.getPageNo());
-                productsPageReq.setPageSize(req.getPageSize());
-                productsPageReq.setProductIdList(targetIdList);
-                productsPageReq.setCatId(req.getCatId());
-                productsPageReq.setTypeId(req.getTypeId());
-
-                // 品牌
-                if (!StringUtils.isEmpty(req.getBrandId())) {
-                    productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
-                }
-                detailPage = productService.selectPageProductAdminAll(productsPageReq).getResultData();
+                detailPage = getProductOrModelPage(req, targetIdList);
                 fieldName = "productId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType())) {
                 // 区域
-                CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
-                commonRegionPageReq.setRegionIdList(targetIdList);
-                commonRegionPageReq.setPageNo(req.getPageNo());
-                commonRegionPageReq.setPageSize(req.getPageSize());
-                detailPage = commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
+                detailPage = getCommonRegionPage(req, targetIdList);
                 fieldName = "regionId";
 
             } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantTransferTargetTypeEnum.MERCHANT.getType())) {
                 // 商家
-                MerchantPageReq merchantPageReq = new MerchantPageReq();
-                merchantPageReq.setMerchantType(req.getMerchantType());
-                merchantPageReq.setMerchantName(req.getMerchantName());
-                merchantPageReq.setMerchantCode(req.getMerchantCode());
-                merchantPageReq.setLanId(req.getLanId());
-                merchantPageReq.setCity(req.getCity());
-                merchantPageReq.setTagId(req.getTagId());
-                merchantPageReq.setLoginName(req.getLoginName());
-                merchantPageReq.setMerchantIdList(targetIdList);
-                detailPage = merchantService.pageMerchant(merchantPageReq).getResultData();
+                detailPage = getMerchantPage(req, targetIdList);
                 fieldName = "merchantId";
             }
         }
@@ -720,6 +545,197 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         return respPage;
     }
 
+    /**
+     * 根据条件获取 品牌列表
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private List getBrandList(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        BrandQueryReq brandQueryReq = new BrandQueryReq();
+        brandQueryReq.setBrandIdList(targetIdList);
+        return brandService.listBrandFileUrl(brandQueryReq).getResultData();
+    }
+
+    /**
+     * 根据条件获取 品牌列表 分页
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private Page getBrandPage(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        BrandPageReq brandPageReq = new BrandPageReq();
+        brandPageReq.setBrandIdList(targetIdList);
+        brandPageReq.setPageNo(req.getPageNo());
+        brandPageReq.setPageSize(req.getPageSize());
+        return brandService.pageBrandFileUrl(brandPageReq).getResultData();
+    }
+
+    /**
+     * 根据条件获取 组织列表
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private List getCommonOrgList(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        CommonOrgListReq commonOrgListReq = new CommonOrgListReq();
+        commonOrgListReq.setOrgIdList(targetIdList);
+        return commonOrgService.listCommonOrg(commonOrgListReq, false).getResultData();
+    }
+
+    /**
+     * 根据条件获取 组织列表 分页
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private Page getCommonOrgPage(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        CommonOrgPageReq commonOrgPageReq = new CommonOrgPageReq();
+        commonOrgPageReq.setOrgIdList(targetIdList);
+        commonOrgPageReq.setPageNo(req.getPageNo());
+        commonOrgPageReq.setPageSize(req.getPageSize());
+        return commonOrgService.pageCommonOrg(commonOrgPageReq).getResultData();
+    }
+
+
+    /**
+     * 根据条件获取 产品或机型 列表
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private List getProductOrModelList(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        ProductsPageReq productsPageReq = new ProductsPageReq();
+        productsPageReq.setUnitName(req.getUnitName());
+        productsPageReq.setProductName(req.getProductName());
+        productsPageReq.setSn(req.getSn());
+        productsPageReq.setUnitType(req.getUnitType());
+        productsPageReq.setPageNo(1);
+        productsPageReq.setPageSize(1000); // 写死 大一点
+        productsPageReq.setCatId(req.getCatId());
+        productsPageReq.setTypeId(req.getTypeId());
+        // 品牌
+        if (!StringUtils.isEmpty(req.getBrandId())) {
+            productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
+        }
+
+        if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.PRODUCT.getType())) {
+            // 产品 productBaseId
+            productsPageReq.setProductBaseIdList(targetIdList);
+        } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.MODEL.getType())) {
+            // 机型 productId
+            productsPageReq.setProductIdList(targetIdList);
+        }
+        return productService.selectPageProductAdminAll(productsPageReq).getResultData().getRecords();
+    }
+
+    /**
+     * 根据条件获取 产品或机型列表 分页
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private Page getProductOrModelPage(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        ProductsPageReq productsPageReq = new ProductsPageReq();
+        productsPageReq.setUnitName(req.getUnitName());
+        productsPageReq.setProductName(req.getProductName());
+        productsPageReq.setSn(req.getSn());
+        productsPageReq.setUnitType(req.getUnitType());
+        productsPageReq.setPageNo(req.getPageNo());
+        productsPageReq.setPageSize(req.getPageSize());
+        productsPageReq.setCatId(req.getCatId());
+        productsPageReq.setTypeId(req.getTypeId());
+        // 品牌
+        if (!StringUtils.isEmpty(req.getBrandId())) {
+            productsPageReq.setBrandIdList(Lists.newArrayList(req.getBrandId()));
+        }
+
+        if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.PRODUCT.getType())) {
+            // 产品 productBaseId
+            productsPageReq.setProductBaseIdList(targetIdList);
+        } else if (StringUtils.equals(req.getTargetType(), PartnerConst.MerchantGreenChannelTargetTypeEnum.MODEL.getType())) {
+            // 机型 productId
+            productsPageReq.setProductIdList(targetIdList);
+        }
+        return productService.selectPageProductAdminAll(productsPageReq).getResultData();
+
+    }
+
+    /**
+     * 根据条件获取 区域列表
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private List getCommonRegionList(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
+        commonRegionListReq.setRegionIdList(targetIdList);
+        return commonRegionService.listCommonRegion(commonRegionListReq).getResultData();
+    }
+
+    /**
+     * 根据条件获取 区域列表 分页
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private Page getCommonRegionPage(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        CommonRegionPageReq commonRegionPageReq = new CommonRegionPageReq();
+        commonRegionPageReq.setRegionIdList(targetIdList);
+        commonRegionPageReq.setPageNo(req.getPageNo());
+        commonRegionPageReq.setPageSize(req.getPageSize());
+        return commonRegionService.pageCommonRegion(commonRegionPageReq).getResultData();
+    }
+
+    /**
+     * 根据条件获取 商家列表
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private List getMerchantList(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        MerchantListReq merchantListReq = new MerchantListReq();
+        merchantListReq.setMerchantType(req.getMerchantType());
+        merchantListReq.setMerchantName(req.getMerchantName());
+        merchantListReq.setMerchantCode(req.getMerchantCode());
+        merchantListReq.setLanId(req.getLanId());
+        merchantListReq.setCity(req.getCity());
+        merchantListReq.setTagId(req.getTagId());
+        merchantListReq.setLoginName(req.getLoginName());
+        merchantListReq.setMerchantIdList(targetIdList);
+        return merchantService.listMerchant(merchantListReq).getResultData();
+    }
+
+    /**
+     * 根据条件获取 商家列表 分页
+     *
+     * @param req
+     * @param targetIdList
+     * @return
+     */
+    private Page getMerchantPage(MerchantRulesDetailListReq req, List<String> targetIdList) {
+        MerchantPageReq merchantPageReq = new MerchantPageReq();
+        merchantPageReq.setMerchantType(req.getMerchantType());
+        merchantPageReq.setMerchantName(req.getMerchantName());
+        merchantPageReq.setMerchantCode(req.getMerchantCode());
+        merchantPageReq.setLanId(req.getLanId());
+        merchantPageReq.setCity(req.getCity());
+        merchantPageReq.setTagId(req.getTagId());
+        merchantPageReq.setLoginName(req.getLoginName());
+        merchantPageReq.setMerchantIdList(targetIdList);
+        merchantPageReq.setPageNo(req.getPageNo());
+        merchantPageReq.setPageSize(req.getPageSize());
+        return merchantService.pageMerchant(merchantPageReq).getResultData();
+    }
 
     /**
      * 根据属性名获取属性值

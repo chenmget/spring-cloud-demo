@@ -27,14 +27,13 @@ public interface MerchantRulesMapper extends BaseMapper<MerchantRules> {
      * @param req 条件入参
      * @return List<MerchantRulesDTO>
      */
-    public List<MerchantRulesDTO> queryMerchantRuleByCondition(@Param("req") MerchantRuleGetReq req);
+    List<MerchantRulesDTO> queryMerchantRuleByCondition(@Param("req") MerchantRuleGetReq req);
 
     /**
      * 根据调价查询商家及商家权限
      * @param req
      * @return
      */
-    public Page<MerchantRulesDetailPageResp> pageMerchantRules(Page<MerchantRulesDetailPageResp> page, @Param("req") MerchantRulesDetailPageReq req);
+     Page<MerchantRulesDetailPageResp> pageMerchantRules(Page<MerchantRulesDetailPageResp> page, @Param("req") MerchantRulesDetailPageReq req);
 
-    public Page<MerchantRulesDTO> pageMerchantRulesDetail(Page<MerchantRulesDTO> page, @Param("req") MerchantRulesListReq req);
 }

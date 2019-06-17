@@ -29,7 +29,9 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
      * @return
      */
     public int checkBusinessRegionPermission() {
-       return 0;
+
+
+        return 0;
     }
 
 
@@ -108,11 +110,6 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
         }
         log.info("MerchantRulesManager.listMerchantRules(), output: merchantRulesDTOList={} ", JSON.toJSONString(merchantRulesDTOList));
         return merchantRulesDTOList;
-    }
-
-    public Page<MerchantRulesDTO> pageMerchantRulesDetail(MerchantRulesListReq req) {
-        Page<MerchantRulesDTO> page = new Page<>(req.getPageNo(), req.getPageSize());
-        return merchantRulesMapper.pageMerchantRulesDetail(page, req);
     }
 
     public Page<MerchantRulesDetailPageResp> pageMerchantRules(MerchantRulesDetailPageReq req) {

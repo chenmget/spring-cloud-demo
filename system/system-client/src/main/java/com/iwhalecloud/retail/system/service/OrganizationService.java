@@ -8,19 +8,19 @@ import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
 
 import java.util.List;
 
-public interface OrganizationService{
+public interface OrganizationService {
 
-    public ResultVO saveOrganization(OrganizationDTO organizationDTO);
+    ResultVO saveOrganization(OrganizationDTO organizationDTO);
 
-    public ResultVO listOrganization(String parentId);
+    ResultVO listOrganization(String parentId);
 
-    public ResultVO getOrganization(String orgId);
+    ResultVO getOrganization(String orgId);
 
-    public ResultVO queryOrganizationsForPage(OrganizationsQueryReq organizationsQueryReq);
+    ResultVO queryOrganizationsForPage(OrganizationsQueryReq organizationsQueryReq);
 
-    public ResultVO deleteOrganization(String orgId);
+    ResultVO deleteOrganization(String orgId);
 
-    public ResultVO updateOrganization(OrganizationDTO organizationDTO);
+    ResultVO updateOrganization(OrganizationDTO organizationDTO);
 
     /**
      * 查询十四个地市的org_id(库存入库使用)

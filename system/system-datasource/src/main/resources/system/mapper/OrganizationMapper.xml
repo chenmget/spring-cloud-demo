@@ -6,8 +6,8 @@
 
 <sql id="allFields">
     t.ORG_ID 
-    ,t.PARTNER_ORG_ID
-    ,t.PARTNER_ORG_NAME
+    ,t.PARENT_ORG_ID
+    ,t.PARENT_ORG_NAME
     ,t.ORG_CODE 
     ,t.ORG_NAME 
     ,t.LAN_ID

@@ -54,7 +54,7 @@
 		      and a.CREATE_TIME &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
 		  </if>
 		  <if test="req.outTimeStart!=null and req.outTimeStart!=''">
-		    and a.RECEIVE_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+		      and a.RECEIVE_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
 		  </if>
 		  <if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
 		      and a.RECEIVE_TIME &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
@@ -93,7 +93,7 @@
 		     and a.pay_type=#{req.payType}
 		  </if>
 		  <if test="req.brandName!=null and req.brandName!=''">
-		    and b.BRAND_NAME=#{req.brandName}
+		    and d.BRAND_ID=#{req.brandName}
 		  </if>
 		  <if test="req.productName!=null and req.productName!=''">
 		    and b.product_name like CONCAT(CONCAT('%',#{req.productName}),'%')

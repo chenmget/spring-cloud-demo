@@ -131,9 +131,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             resouceInstTrackDTO.setMktResInstNbr(mktResInstNbr);
             resouceInstTrackDTO.setMktResStoreId(req.getDestStoreId());
             resouceInstTrackDTO.setSourceType(null);
-            if (ResourceConst.MKTResInstType.TEST_FIX_LINE.getCode().equals(req.getMktResInstType())) {
-                resouceInstTrackDTO.setSourceType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
-            }
+            resouceInstTrackDTO.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynSaveTrackForMerchant resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
@@ -683,7 +681,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             resouceInstTrackDTO.setIfGreenChannel(ResourceConst.CONSTANT_YES);
             resouceInstTrackDTO.setMerchantId(req.getMerchantId());
             resouceInstTrackDTO.setLanId(merchantDTO.getLanId());
-            resouceInstTrackDTO.setSourceType(merchantDTO.getMerchantType());
+            resouceInstTrackDTO.setSourceType(ResourceConst.SOURCE_TYPE.RETAILER.getCode());
             resouceInstTrackDTO.setMktResId(req.getMktResId());
             resouceInstTrackDTO.setMktResInstNbr(mktResInstNbr);
             resouceInstTrackDTO.setRegionId(merchantDTO.getCity());

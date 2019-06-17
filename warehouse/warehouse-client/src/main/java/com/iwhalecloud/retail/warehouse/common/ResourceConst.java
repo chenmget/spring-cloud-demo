@@ -43,35 +43,6 @@ public class ResourceConst {
 
 
     /**
-     * 绿色通道流程实例ID
-     */
-    public final static String  GREEN_CHANNEL_WORK_FLOW_INST = "8";
-    /**
-     * 调拨调出方审核流程实例ID
-     */
-    public final static String  ALLOCATE_WORK_FLOW_INST = "7";
-    /**
-     * 调拨两端都要审核流程实例ID
-     */
-    public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
-    /**
-     * 移动串码审核流程
-     */
-    public final static String  WORK_FLOW_PROCESS_13 = "13";
-    /**
-     * 厂商录入固网社采、泛智能终端串码审核流程
-     */
-        public final static String  WORK_FLOW_PROCESS_14 = "14";
-    /**
-     * 厂商串码入库集采流程实例（固网）
-     */
-    public final static String  WORK_FLOW_PROCESS_15 = "15";
-    /**
-     * 厂商录入固网社采(仅指机顶盒、三合一终端）串码审核流程
-     */
-    public final static String  WORK_FLOW_PROCESS_16 = "16";
-
-    /**
      * 调拨返回成功的消息
      */
     public final static String ALLOCATE_SUCESS_MSG = "串码调拨已提交";

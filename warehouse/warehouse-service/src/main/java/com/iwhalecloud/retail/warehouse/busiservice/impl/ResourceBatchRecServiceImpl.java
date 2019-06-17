@@ -61,10 +61,6 @@ public class ResourceBatchRecServiceImpl implements ResourceBatchRecService {
             ResouceEventDTO eventDTO = new ResouceEventDTO();
             BeanUtils.copyProperties(req, eventDTO);
             eventDTO.setMktResId(entry.getKey());
-            String mktResStoreId = req.getMktResStoreId();
-            String destStoreId = req.getDestStoreId();
-            eventDTO.setDestStoreId(mktResStoreId);
-            eventDTO.setMktResStoreId(destStoreId);
             String eventId = resouceEventManager.insertResouceEvent(eventDTO);
             log.info("ResourceInstServiceImpl.addResourceInst resouceEventManager.insertResouceEvent req={},eventId={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
 

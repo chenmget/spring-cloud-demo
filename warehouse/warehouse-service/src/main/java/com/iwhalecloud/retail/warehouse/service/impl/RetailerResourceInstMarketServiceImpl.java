@@ -160,7 +160,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             ProcessStartReq processStartDTO = new ProcessStartReq();
             processStartDTO.setTitle("绿色通道超过限额审批流程");
             processStartDTO.setApplyUserId(req.getCreateStaff());
-            processStartDTO.setProcessId(ResourceConst.GREEN_CHANNEL_WORK_FLOW_INST);
+            processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_1008.getTypeCode());
             processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1090.getTaskSubType());
             processStartDTO.setApplyUserName(req.getApplyUserName());
             if (resultVO != null && resultVO.getResultData() != null) {
@@ -330,7 +330,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         //根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
         addReq.setMktResInstNbrs(mktResInstNbrs);
         addReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        addReq.setSourceType(ResourceConst.SOURCE_TYPE.RETAILER.getCode());
+        addReq.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         addReq.setStorageType(ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode());
         addReq.setMerchantType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
         addReq.setCreateStaff(req.getUpdateStaff());
@@ -410,6 +410,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (null == list || list.isEmpty()) {
             return ResultVO.error("没有查找到申请单");
         }
+        ResourceReqDetailDTO detailDTO = list.get(0);
 
         // step3 源仓库串码入库
         List<SyncTerminalItemSwapReq> syncTerminalItemSwapReqList = new ArrayList<SyncTerminalItemSwapReq>(list.size());
@@ -448,12 +449,14 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             BeanUtils.copyProperties(req, batchAndEventAddReq);
             batchAndEventAddReq.setCreateStaff(req.getUpdateStaff());
             batchAndEventAddReq.setMktResInstNbrs(mktResInstNbrs);
-            batchAndEventAddReq.setLanId(list.get(0).getLanId());
+            batchAndEventAddReq.setLanId(detailDTO.getLanId());
             batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
-            batchAndEventAddReq.setRegionId(list.get(0).getRegionId());
+            batchAndEventAddReq.setRegionId(detailDTO.getRegionId());
             batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
             batchAndEventAddReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
             batchAndEventAddReq.setObjId(req.getResReqId());
+            batchAndEventAddReq.setMktResStoreId(detailDTO.getMktResStoreId());
+            batchAndEventAddReq.setDestStoreId(detailDTO.getDestStoreId());
             batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceBatchRecService.saveEventAndBatch req={}", JSON.toJSONString(batchAndEventAddReq));
@@ -636,7 +639,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ProcessStartReq processStartDTO = new ProcessStartReq();
         processStartDTO.setTitle("调拨审批流程");
         processStartDTO.setApplyUserId(req.getCreateStaff());
-        processStartDTO.setProcessId(ResourceConst.ALLOCATE_WORK_FLOW_INST_2);
+        processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_1012.getTypeCode());
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType());
         // 指定下一环节处理人

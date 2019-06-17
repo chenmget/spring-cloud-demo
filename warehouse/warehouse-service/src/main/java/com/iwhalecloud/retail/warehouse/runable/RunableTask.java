@@ -418,7 +418,7 @@ public class RunableTask {
     }
 
     /**
-     * 零售商串码入库多线程处理
+     * 供应商串码入库多线程处理
      * @param req
      */
     public String exceutorAddNbrForSupplier(ResourceInstAddReq req) {

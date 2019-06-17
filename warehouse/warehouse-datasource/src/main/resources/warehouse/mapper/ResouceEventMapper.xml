@@ -30,12 +30,6 @@
     <update id="updateResourceEventStatusCd" parameterType="com.iwhalecloud.retail.warehouse.entity.ResouceEvent">
         update mkt_res_event t
         set t.STATUS_CD = #{statusCd},t.UPDATE_DATE = #{updateDate},t.STATUS_DATE = #{statusDate},t.UPDATE_STAFF = #{updateStaff}
-        <if test="null!=mktResStoreId and ''!=mktResStoreId">
-            ,t.MKT_RES_STORE_ID = #{mktResStoreId}
-        </if>
-        <if test="null!=destStoreId and ''!=destStoreId">
-            ,t.DEST_STORE_ID = #{destStoreId}
-        </if>
         where EVENT_TYPE = #{eventType}
         and MKT_RES_EVENT_ID = #{mktResEventId}
     </update>

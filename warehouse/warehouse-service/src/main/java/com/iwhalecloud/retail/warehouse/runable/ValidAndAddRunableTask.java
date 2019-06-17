@@ -24,6 +24,7 @@ import org.springframework.stereotype.Component;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -49,7 +50,7 @@ public class ValidAndAddRunableTask {
 
     private final Integer perNum = 5000;
 
-    private List<Future<Boolean>> validFutureTaskResult;
+    private Map<String, List<Future<Boolean>>> validFutureTaskResult;
 
     String reg12 = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){12}$";
     String reg24 = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){24}$";
@@ -94,9 +95,10 @@ public class ValidAndAddRunableTask {
                 }
                 log.info("ValidAndAddRunableTask.exceutorValid newList={}, validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
                 Callable<Boolean> callable = new ValidNbr(req, getReq, newList, batchId);
-                tasks.add(callable);
+                tasks.put(callable);
             }
-            validFutureTaskResult = executorService.invokeAll(tasks);
+            List<Future<Boolean>> futures = executorService.invokeAll(tasks);
+            validFutureTaskResult.put(batchId, futures);
             executorService.shutdown();
             return batchId;
         } catch (Exception e) {
@@ -109,14 +111,15 @@ public class ValidAndAddRunableTask {
     /**
      * 串码校验多线程处理是否完成
      */
-    public Boolean validHasDone() {
+    public Boolean validHasDone(String batchId) {
         try{
             Boolean hasDone = true;
-            log.info("ValidAndAddRunableTask.validHasDone validFutureTaskResult={}", JSON.toJSONString(validFutureTaskResult));
-            if (CollectionUtils.isEmpty(validFutureTaskResult)) {
+            if (null == validFutureTaskResult || CollectionUtils.isEmpty(validFutureTaskResult.get(batchId))) {
                 return false;
             }
-            for (Future<Boolean> future : validFutureTaskResult) {
+            List<Future<Boolean>> futures = validFutureTaskResult.get(batchId);
+            log.info("ValidAndAddRunableTask.validHasDone batchId={}, futures={}", batchId, JSON.toJSONString(futures));
+            for (Future<Boolean> future : futures) {
                 if (!future.isDone()) {
                     return future.isDone();
                 }

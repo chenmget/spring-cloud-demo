@@ -75,12 +75,6 @@ public class ResouceEventManager {
             if (StringUtils.isNotEmpty(resouceEventDTO.getStatusCd())) {
                 event.setStatusCd(resouceEventDTO.getStatusCd());
             }
-            if (StringUtils.isNotEmpty(resouceEventDTO.getMktResStoreId())) {
-                event.setMktResStoreId(resouceEventDTO.getMktResStoreId());
-            }
-            if (StringUtils.isNotEmpty(resouceEventDTO.getDestStoreId())) {
-                event.setDestStoreId(resouceEventDTO.getDestStoreId());
-            }
             event.setUpdateDate(now);
             event.setStatusDate(now);
             event.setUpdateStaff(event.getMerchantId());

@@ -372,6 +372,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         trackGetReq.setMktResStoreId(req.getMktResStoreId());
         CopyOnWriteArrayList<String> mktResInstNbrList = new CopyOnWriteArrayList<String>(nbrList);
         trackGetReq.setMktResInstNbrList(mktResInstNbrList);
+        trackGetReq.setTypeId(req.getTypeId());
         ResultVO<List<ResouceInstTrackDTO>> resourceTrackVO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
         log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.saveBatch req={} resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(resourceTrackVO));
         List<ResouceInstTrackDTO> resourceTrackList = resourceTrackVO.getResultData();
@@ -428,6 +429,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         trackGetReq.setMktResStoreId(req.getMktResStoreId());
         CopyOnWriteArrayList<String> nbrList = new CopyOnWriteArrayList<String>(mktResInstNbrList);
         trackGetReq.setMktResInstNbrList(nbrList);
+        trackGetReq.setTypeId(req.getTypeId());
         ResultVO<List<ResouceInstTrackDTO>> resourceTrackVO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
         log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.saveBatch req={} resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(resourceTrackVO));
         List<ResouceInstTrackDTO> resourceTrackList = resourceTrackVO.getResultData();

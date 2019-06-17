@@ -38,6 +38,7 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	String pay_time = dto.getPayTime();
 	    	String receive_time = dto.getReceiveTime();
 	    	String couponMoney = dto.getCouponMoney();
+	    	String paymentType = dto.getPaymentType();
 	    	if(create_time != null && create_time != "" ){
 	    		String[] createTime = create_time.split("\\.");
 	    		if(createTime.length>0){
@@ -60,6 +61,13 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			dto.setReceiveTime(receive_time);
 	    		}
 			}
+			
+			if("1".equals(paymentType)){
+				dto.setPaymentType("线上支付");
+			}else if ("2".equals(paymentType)) {
+				dto.setPaymentType("线下支付");
+			}
+			
 			if(couponMoney != null && couponMoney != "" && couponMoney.length()>2){
 				couponMoney = couponMoney.substring(0,couponMoney.length()-2);
 				dto.setCouponMoney(couponMoney);

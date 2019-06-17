@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.iwhalecloud.retail.order2b.TestBase;
@@ -177,6 +178,14 @@ public class PurApplyServiceImplTest  extends TestBase {
 //        req.setMerchantId("555");
         purApplyService.cgSearchApply(req);
     }
+    @Test
+    public void ckApplyData2() {
+        PurApplyReq req = new PurApplyReq();
+        req.setApplyId("1878");
+        List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
+        System.out.println(JSON.toJSONString(procureApplyReq2));
+    }
+
 
 
 }

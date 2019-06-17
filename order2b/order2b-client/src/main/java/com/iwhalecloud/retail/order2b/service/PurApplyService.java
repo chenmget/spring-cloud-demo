@@ -76,5 +76,9 @@ public interface PurApplyService {
 
 	public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(UpdateCorporationPriceReq req);
 	public void insertTcProcureApply(ProcureApplyReq req);
+/*
+*  采购申请
+* */
+	public ResultVO applyPurchase(ProcureApplyReq req);
 	
 }

@@ -157,6 +157,42 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         if (total != totalTemp) {
             return ResultVO.error("产品对应的串码数和总的串码数不相等");
         }
+
+        //通过采购申请单查询采购申请单项
+        List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
+
+        //串码出库前 -- 开始验证串码发货数量是否超过申请单数量，并验证产品是否属于申请单的产品
+            Integer flagCount=0;//判断是否发货数量大于申请数量
+            Integer flag=0;// 判断 是否完全发货
+        for (PurApplyItem PurApplyItemTemp : purApplyItem) {
+            String num = PurApplyItemTemp.getPurNum();//数量
+            PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
+            PurApplyItemReq.setApplyItem(PurApplyItemTemp.getApplyItemId());
+            PurApplyItemReq.setProductId(PurApplyItemTemp.getProductId());
+            log.info("5._串码出库前 -- 开始验证串码发货数量是否超过申请单数量"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail =" +JSON.toJSONString(PurApplyItemReq));
+            int count =purApplyManager.countPurApplyItemDetail(PurApplyItemReq);//查询发货的条数
+            log.info("6._串码出库前 -- 开始验证串码发货数量是否超过申请单数量"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail = count ="+count+" = "+JSON.toJSONString(PurApplyItemReq));
+            List<String> mktForProductId = map.get(PurApplyItemTemp.getProductId());
+            Integer countNow=0;
+            if (mktForProductId!=null) {
+                countNow = mktForProductId.size();
+            }
+
+            Integer sumCount = count+countNow;
+            log.info("7._串码出库前 -- 开始验证串码发货数量是否超过申请单数量sumCount="+sumCount+" count="+count+" num="+num+" countNow="+countNow);
+
+            if (Integer.valueOf(num)<sumCount) {
+                flagCount=1;//发货数量与条数数量不符合，标识还未完全发货
+                break;
+            }else{
+                if (Integer.valueOf(num)!=sumCount)
+                flag=1;
+            }
+        }
+        if (flagCount==1) {
+            return ResultVO.error("发货数量超过申请单的数量，请确认！");
+        }
+
        // 开始调用串码出库
        // ResultVO deliveryOutResourceInst(DeliveryResourceInstReq req);
         TradeResourceInstReq tradeResourceInstReq = new TradeResourceInstReq();
@@ -164,11 +200,11 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         tradeResourceInstReq.setLanId(lanId);//申请者地市ID
         tradeResourceInstReq.setSellerMerchantId(merchantId);//供应商商家ID
         tradeResourceInstReq.setTradeResourceInstItemList(tradeResourceInstItemItemList);
-        log.info("5开始调用串码出库.tradeOutResourceInst= tradeResourceInstReq =" + JSON.toJSONString(tradeResourceInstReq));
+        log.info("8开始调用串码出库.tradeOutResourceInst= tradeResourceInstReq =" + JSON.toJSONString(tradeResourceInstReq));
 //        ResultVO outResult = supplierResourceInstService.deliveryOutResourceInst(deliveryResourceInstReq);
         ResultVO outResult = tradeResourceInstService.tradeOutResourceInst(tradeResourceInstReq);
 
-        log.info("6.调用串码出库结果outResult="+JSON.toJSONString(outResult));
+        log.info("9.调用串码出库结果outResult="+JSON.toJSONString(outResult));
         if(!outResult.isSuccess()) {
             return ResultVO.error(outResult.getResultMsg());
         }
@@ -206,8 +242,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 //            String pId = pI.getProductId();
 //            String p = pI.getPurNum();
 //        }
-        //通过采购申请单查询采购申请单项
-        List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
+//        //通过采购申请单查询采购申请单项
+//        List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
         //新增采购申请单项明细
         List<PurApplyItemDetail> purApplyItemDetailList = Lists.newArrayList();
         for (PurApplyItem pI : purApplyItem) {
@@ -240,20 +276,20 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
         //判断是否全部发货完
         // 1查一下 发货明细记录 有几条数据 是否和 条目表的数量一致
-        int flag = 0; //定义是否完全发货标识
-        for (PurApplyItem PurApplyItemTemp : purApplyItem) {
-            String num = PurApplyItemTemp.getPurNum();//数量
-            PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
-            PurApplyItemReq.setApplyItem(PurApplyItemTemp.getApplyItemId());
-            PurApplyItemReq.setProductId(PurApplyItemTemp.getProductId());
-            log.info("7._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail =" +JSON.toJSONString(PurApplyItemReq));
-            int count =purApplyManager.countPurApplyItemDetail(PurApplyItemReq);//查询发货的条数
-            log.info("7._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail = count ="+count+" = "+JSON.toJSONString(PurApplyItemReq));
-            if (Integer.valueOf(num)!=count) {
-                flag=1;//发货数量与条数数量不符合，标识还未完全发货
-                break;
-            }
-        }
+//        int flag = 0; //定义是否完全发货标识
+//        for (PurApplyItem PurApplyItemTemp : purApplyItem) {
+//            String num = PurApplyItemTemp.getPurNum();//数量
+//            PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
+//            PurApplyItemReq.setApplyItem(PurApplyItemTemp.getApplyItemId());
+//            PurApplyItemReq.setProductId(PurApplyItemTemp.getProductId());
+//            log.info("7._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail =" +JSON.toJSONString(PurApplyItemReq));
+//            int count =purApplyManager.countPurApplyItemDetail(PurApplyItemReq);//查询发货的条数
+//            log.info("7._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail = count ="+count+" = "+JSON.toJSONString(PurApplyItemReq));
+//            if (Integer.valueOf(num)!=count) {
+//                flag=1;//发货数量与条数数量不符合，标识还未完全发货
+//                break;
+//            }
+//        }
 
         if (flag==0) {//完全发货，修改采购单状态
             //更新采购申请单状态

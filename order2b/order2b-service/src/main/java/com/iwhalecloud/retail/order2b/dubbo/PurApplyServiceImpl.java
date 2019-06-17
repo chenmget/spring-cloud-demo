@@ -12,13 +12,10 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
-import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
-import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
-import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
@@ -309,7 +306,17 @@ public class PurApplyServiceImpl implements PurApplyService {
 	
 	@Override
 	public List<AddProductReq> ckApplyData2(PurApplyReq req) {
-		return purApplyManager.ckApplyData2(req);
+		List<AddProductReq> result = purApplyManager.ckApplyData2(req);
+		for (AddProductReq p:result) {
+			PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
+			PurApplyItemReq.setApplyItem(p.getApplyItemId());
+			PurApplyItemReq.setProductId(p.getProductId());
+			Integer count =purApplyManager.countPurApplyItemDetailReving(PurApplyItemReq);//查询发货的条数
+			if (count !=null) {
+				p.setDeliverCount(String.valueOf(count));
+			}
+		}
+		return result;
 	}
 	
 	@Override
@@ -605,7 +612,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public void insertTcProcureApply(ProcureApplyReq req) {
 		purApplyManager.tcProcureApply(req);
 	}
-	
+
+	@Override
+	public ResultVO applyPurchase(ProcureApplyReq req) {
+		return null;
+	}
+
 	public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(UpdateCorporationPriceReq req){
 		List<ProdProductChangeDetail> list = purApplyManager.searchCommitPriceInfo(req);
 		return ResultVO.success(list);

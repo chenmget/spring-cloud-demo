@@ -143,6 +143,9 @@ public class CgSearchApplyController extends BaseController {
 		}else if("2".equals(isSave)){//提交
 			statusCd = "20";
 		}
+		if(req.getAddrId()==null) {
+			ResultVO.error("请选择收货地址！");
+		}
 		
 		Date date = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -179,11 +182,11 @@ public class CgSearchApplyController extends BaseController {
 		if(isHaveSave != 0){//表里面有记录的话,申请单的字段就update,添加产品跟附件的就先delete再insert
 
 			purApplyService.updatePurApply(req);//联系电话，项目名称，供应商code可以修改
-			
+
 			purApplyService.delApplyItem(req);
-			
+
 			purApplyService.delApplyFile(req);
-			
+
 			purApplyService.delPurApplyExt(req);
 
 		}else{
@@ -214,6 +217,9 @@ public class CgSearchApplyController extends BaseController {
 		//表里面没记录的话
 
 		MemMemberAddressReq memMeneberAddr = purApplyService.selectMemMeneberAddr(req);
+		if(memMeneberAddr==null) {
+			ResultVO.error("找不到该地址！");
+		}
 		memMeneberAddr.setApplyId(applyId);
 		memMeneberAddr.setCreateStaff(createStaff);
 		memMeneberAddr.setCreateDate(createDate);

@@ -97,7 +97,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		}
 		//获取产品政企价格列表
 		List<ProductInfoResp> productList =new ArrayList<ProductInfoResp>();
-		if(prodIds!=null && prodIds.size()>0) {
+		if (prodIds!=null && prodIds.size()>0) {
 			productList= productService.getProductInfoByIds(prodIds);
 
 		}
@@ -112,8 +112,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 			for (ProductInfoResp productInfoResp:productList) {
 				Double corporationPrice = productInfoResp.getCorporationPrice();
 				String productId = productInfoResp.getProductId();
-				if(productIdItem.equals(productId)) {
-					if(Double.valueOf(tPurPrice)>corporationPrice) {
+				if (productIdItem.equals(productId)) {
+					if (Double.valueOf(tPurPrice)>corporationPrice) {
 						count=count+1;
 						break;
 					}
@@ -139,7 +139,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			int count =chooseCount(req);
 			log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 //		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
-			if(count>0) {
+			if (count>0) {
 				req.setStatusCd("21");
 				//更新省公司待审核状态
 				purApplyManager.updatePurApplyStatusCd(req);
@@ -153,10 +153,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 			//如果采购价大于政企价格 要省公司审核
 			processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 			Map map=new HashMap();
-			if(count>0) {
+			if (count>0) {
 				//根据商家ID获取 商家userId
 				map.put("CGJ","0");//
-			}else{
+			} else {
 				map.put("CGJ","1");
 			}
 			processStartDTO.setParamsValue(JSON.toJSONString(map));
@@ -166,6 +166,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 			processStartDTO.setProcessId(PurApplyConsts.PUR_APPLY_AUDIT_SGS_PROCESS_ID);
 			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040.getTaskSubType());
 			processStartDTO.setApplyUserId(req.getCreateStaff());
+			//
+			processStartDTO.setParamsType(2);
+			processStartDTO.setParamsValue(req.getApplyMerchantId());
 			//根据用户id查询名称
 			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
 			String userName = "";
@@ -203,7 +206,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			int count =chooseCount(req);
 			log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 //		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
-			if(count>0) {
+			if (count>0) {
 				req.setStatusCd("21");
 				//更新省公司待审核状态
 			}else {
@@ -215,9 +218,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 			nextRouteAndReceiveTaskReq.setFormId(req.getApplyId());
 			nextRouteAndReceiveTaskReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 			Map map=new HashMap();
-			if(count>0) {
+			if (count>0) {
 				map.put("CGJ","0");//
-			}else{
+			} else {
 				map.put("CGJ","1");
 			}
 			nextRouteAndReceiveTaskReq.setParamsValue(JSON.toJSONString(map));

@@ -306,7 +306,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             if (req.getStatusCd()!=PurApplyConsts.PUR_APPLY_STATUS_DELIVERYING) {
                 PurApplyReq purApplyReq = new PurApplyReq();
                 purApplyReq.setApplyId(req.getApplyId());
-                purApplyReq.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_RECEIVED);
+                purApplyReq.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_DELIVERYING);
                 int k = purApplyDeliveryManager.updatePurApplyStatus(purApplyReq);
                 log.info("PurchaseApplyServiceImpl.delivery updatePurApplyStatusResp = {}", k);
                 if (k < 1) {

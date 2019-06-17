@@ -37,22 +37,6 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
     }
 
     /**
-     * 根据条件 获取一个 商家 权限规则
-     *
-     * @param merchantRulesId
-     * @return
-     */
-    public MerchantRulesDTO getMerchantRulesById(String merchantRulesId) {
-        MerchantRules merchantRules = merchantRulesMapper.selectById(merchantRulesId);
-        if (merchantRules == null) {
-            return null;
-        }
-        MerchantRulesDTO merchantRulesDTO = new MerchantRulesDTO();
-        BeanUtils.copyProperties(merchantRules, merchantRulesDTO);
-        return merchantRulesDTO;
-    }
-
-    /**
      * 删除 商家 权限规则 信息
      *
      * @param req

@@ -163,19 +163,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
     }
 
-    /**
-     * 获取一个 商家 权限规则
-     *
-     * @param merchantRulesId
-     * @return
-     */
-    @Override
-    public ResultVO<MerchantRulesDTO> getMerchantRulesById(String merchantRulesId) {
-        log.info("MerchantRulesServiceImpl.getMerchantRulesById(), 入参merchantRulesId={} ", merchantRulesId);
-        MerchantRulesDTO merchantRulesDTO = merchantRulesManager.getMerchantRulesById(merchantRulesId);
-        log.info("MerchantRulesServiceImpl.getMerchantRulesById(), 出参manufacturerDTO={} ", merchantRulesDTO);
-        return ResultVO.success(merchantRulesDTO);
-    }
 
     /**
      * 删除 商家 权限规则
@@ -201,13 +188,13 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
      * @param req
      * @returns
      */
-    @Override
-    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesListReq req) {
-        log.info("MerchantRulesServiceImpl.listMerchantRules(), input: MerchantRulesListReq={} ", req);
-        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(req);
-        log.info("MerchantRulesServiceImpl.listMerchantRules(), output: list={} ", list);
-        return ResultVO.success(list);
-    }
+//    @Override
+//    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesListReq req) {
+//        log.info("MerchantRulesServiceImpl.listMerchantRules(), input: MerchantRulesListReq={} ", req);
+//        List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(req);
+//        log.info("MerchantRulesServiceImpl.listMerchantRules(), output: list={} ", list);
+//        return ResultVO.success(list);
+//    }
 
     /**
      * 商家 权限规则详情 信息 列表查询

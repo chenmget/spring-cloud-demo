@@ -21,25 +21,18 @@ public interface MerchantRulesService {
     ResultVO<Integer> saveMerchantRules(MerchantRulesSaveReq req);
 
     /**
-     * 获取一个 商家 权限规则
-     * @param merchantRulesId
-     * @return
-     */
-    ResultVO<MerchantRulesDTO> getMerchantRulesById(String merchantRulesId);
-
-    /**
      * 删除 商家 权限规则
      * @param req
      * @return
      */
     ResultVO<Integer> deleteMerchantRules(MerchantRulesDeleteReq req);
 
-    /**
-     * 商家 权限规则 信息 列表查询
-     * @param req
-     * @return
-     */
-    ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesListReq req);
+//    /**
+//     * 商家 权限规则 信息 列表查询
+//     * @param req
+//     * @return
+//     */
+//    ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesListReq req);
 
     /**
      * 商家 权限规则详情 信息 列表查询

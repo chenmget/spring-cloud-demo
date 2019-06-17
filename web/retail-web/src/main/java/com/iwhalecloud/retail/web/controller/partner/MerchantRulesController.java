@@ -160,39 +160,6 @@ public class MerchantRulesController {
         return merchantRulesService.pageMerchantRules(req);
     }
 
-
-/*** 绿色通道权限 star ***/
-
-    /**
-     * 商家 绿色通道权限--按机型或产品修改限额 列表接口
-     * @param req
-     * @return
-     */
-//    @ApiOperation(value = "商家 绿色通道权限--按机型或产品修改限额 列表接口", notes = "商家 绿色通道权限--按机型或产品修改限额 列表接口")
-//    @ApiResponses({
-//            @ApiResponse(code=400,message="请求参数没填好"),
-//            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-//    })
-//    @RequestMapping(value = "/updateLimit", method = RequestMethod.POST)
-//    @Transactional
-//    public ResultVO<Integer> updateLimit(@RequestBody @ApiParam(value = "商家 绿色通道权限--按机型或产品修改限额 参数", required = true) MerchantRulesUpdateReq req) {
-//        // 校验 限额（暂时不做）
-//        MerchantRulesDTO merchantRulesDTO = merchantRulesService.getMerchantRulesById(req.getMerchantRuleId()).getResultData();
-//        if (merchantRulesDTO == null) {
-//            return ResultVO.error("商家权限规则记录ID有误，没有找到该记录！");
-//        }
-//        //
-//        if (req.getMaxSerialNum() == null || req.getMaxSerialNum() < 0) {
-//            return ResultVO.error("额度应为正整数,输入小数会自动取整数部分！");
-//        }
-////        return ResultVO.success(11);
-//
-//        return merchantRulesService.updateMerchantRules(req);
-//    }
-
-/*** 绿色通道权限 end ***/
-
-
     /**
      * 新建 商家经营权限规则
      *

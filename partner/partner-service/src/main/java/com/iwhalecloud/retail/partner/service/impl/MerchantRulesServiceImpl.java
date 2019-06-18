@@ -987,6 +987,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     }
 
     /**
+     * 通过merchantId查询 调拨权限的 商家区域和对象权限集合
      * 旧逻辑
      * 四种情况
      * 1、只添加对象权限时，可选对象是设置的对象列表；
@@ -995,8 +996,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
      * 4、同时添加了区域权限：长沙和株洲市，对象权限：浏阳市对象1，那么可选对象是浏阳市对象1和长沙和株洲市的所有对象
      * 5、同时添加了区域权限：长沙和株洲市，对象权限：长沙市对象1、衡阳市对象2，那么可选对象是长沙市对象1、衡阳市对象2和株洲市的所有对象
      */
-//    @Override
-    public ResultVO<List<String>> getRegionAndMerchantPermission1(MerchantRulesCommonReq req) {
+    @Override
+    public ResultVO<List<String>> getTransferRegionAndMerchantPermission(MerchantRulesCommonReq req) {
         List<String> merchantIdList = null;
         List<String> mixedId = null;
 
@@ -1087,6 +1088,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     }
 
     /**
+     *  通过merchantId查询 经营权限的   商家区域和对象权限集合
+     *
      * 新逻辑：经营权限--区域  改为 sys_common_org表主键
      * 四种情况
      * 1、只添加对象权限时，可选对象是设置的对象列表；
@@ -1096,7 +1099,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
      * 5、同时添加了区域权限：长沙和株洲市，对象权限：长沙市对象1、衡阳市对象2，那么可选对象是长沙市对象1、衡阳市对象2和株洲市的所有对象
      */
     @Override
-    public ResultVO<List<String>> getRegionAndMerchantPermission(MerchantRulesCommonReq req) {
+    public ResultVO<List<String>> getBusinessRegionAndMerchantPermission(MerchantRulesCommonReq req) {
         List<String> merchantIdList = null;
         List<String> mixedId = null;
 

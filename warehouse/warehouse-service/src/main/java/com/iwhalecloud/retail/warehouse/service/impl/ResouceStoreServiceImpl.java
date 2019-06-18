@@ -136,7 +136,7 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
         MerchantRulesCommonReq commonReq = new MerchantRulesCommonReq();
         commonReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType());
         commonReq.setMerchantId(req.getMerchantId());
-        ResultVO<List<String>> permissionMerchantIdListVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+        ResultVO<List<String>> permissionMerchantIdListVO = merchantRulesService.getTransferRegionAndMerchantPermission(commonReq);
         log.info("ResouceStoreServiceImpl.pageMerchantAllocateStore merchantService.getRegionAndMerchantPermission req={},resp={}", JSON.toJSONString(commonReq), JSON.toJSONString(permissionMerchantIdListVO));
         if (permissionMerchantIdListVO != null && permissionMerchantIdListVO.isSuccess() && !CollectionUtils.isEmpty(permissionMerchantIdListVO.getResultData())) {
             List<String> permissionMerchantIdList = permissionMerchantIdListVO.getResultData();

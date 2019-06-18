@@ -303,7 +303,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         processStartDTO.setParamsValue(JSON.toJSONString(map));
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
-        if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
+        if (!startResultVO.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
         // step4 修改源仓库串码为调拨中

@@ -33,13 +33,15 @@ import com.iwhalecloud.retail.workflow.model.TaskItemDetailModel;
 import com.iwhalecloud.retail.workflow.sal.system.UserClient;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
-import org.junit.Test;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 import java.util.stream.Collectors;
 
 
@@ -236,6 +238,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
         //获取处理人
         List<HandlerUser> allHandlerUsers = Lists.newArrayList();
         List<NodeRights> nodeRightsList = nodeRightsManager.listNodeRights(nextNodeId);
+        log.info("TaskManager getHandlerUsers nodeRightsManager.listNodeRights nextNodeId={}, nodeRightsList={}", nextNodeId, JSON.toJSONString(nodeRightsList));
         //找出配置了条件的节点
         List<NodeRights> conditionNodeRights = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(ruleDefs)) {
@@ -528,7 +531,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
      */
 
     public Route selectNextNodeByRouteCondition(List<RuleDef> checkedRule, Route curRoute) {
-
+        log.info("TaskManager selectNextNodeByRouteCondition checkedRule={}, curRoute={}", JSON.toJSONString(checkedRule), JSON.toJSONString(curRoute));
         if (CollectionUtils.isEmpty(checkedRule)) {
             return curRoute;
         }
@@ -542,6 +545,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
         }
 
         List<Route> nextRouteList = routeManager.listRoute(curRoute.getProcessId(), curRoute.getNextNodeId());
+        log.info("TaskManager selectNextNodeByRouteCondition routeManager.listRoute processId={}, nodeId={},nextRouteList={}", curRoute.getProcessId(), curRoute.getNextNodeId(), JSON.toJSONString(nextRouteList));
         if (CollectionUtils.isEmpty(nextRouteList)) {
             return null;
         }

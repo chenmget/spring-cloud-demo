@@ -61,7 +61,7 @@ public class BssInfoSyncServiceImpl implements BssInfoSyncService {
         BeanUtils.copyProperties(bssUserInfoRequestModel, user);
         user.setRemark((String) systemUserMap.get("sysUserDesc"));
         user.setLoginName((String) systemUserMap.get("sysUserCode"));
-        user.setStatusCd(Integer.valueOf(bssUserInfoRequestModel.getStatusCd()));
+        user.setStatusCd(1);
         user.setLoginName((String) systemUserMap.get("sysUserCode"));
         user.setLoginPwd((String) systemUserMap.get("password"));
         user.setUserName(bssUserInfoRequestModel.getUserName());

@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.iwhalecloud.retail.goods2b.entity.GoodsRegionRel;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsRegionRelMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -28,6 +29,9 @@ public class GoodsRegionRelManager {
 
     public int saveGoodsRegionRel(GoodsRegionRel goodsRegionRel) {
         log.info("GoodsRegionRelManager.saveGoodsRegionRel(), input：GoodsRegionRel={} ", JSON.toJSONString(goodsRegionRel));
+        if (StringUtils.isEmpty(goodsRegionRel.getGoodsId()) || StringUtils.isEmpty(goodsRegionRel.getRegionId())) {
+            log.info("GoodsRegionRelManager.saveGoodsRegionRel(), 插入商品组织区域关联表时 goodsId 或 regionId 不能为空 GoodsRegionRel={} ", JSON.toJSONString(goodsRegionRel));
+        }
         int result = goodsRegionRelMapper.insert(goodsRegionRel);
         log.info("GoodsRegionRelManager.saveGoodsRegionRel(), output：insert effect rows={} ", result);
         return result;

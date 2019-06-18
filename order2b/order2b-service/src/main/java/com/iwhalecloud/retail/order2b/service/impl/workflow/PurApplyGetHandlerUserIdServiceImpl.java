@@ -11,6 +11,9 @@ import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.system.dto.request.UserGetReq;
+import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.extservice.WFServiceExecutor;
 import com.iwhalecloud.retail.workflow.extservice.params.ServiceParamContext;
@@ -31,28 +34,27 @@ import java.util.List;
 public class PurApplyGetHandlerUserIdServiceImpl implements WFServiceExecutor {
 
     @Reference
-    private MerchantService merchantService;
+    private UserService userService;
     @Autowired
     private PurApplyManager purApplyManager;
     @Override
     public ResultVO<List<HandlerUser>> execute(ServiceParamContext context) {
-        log.info("PurApplyGetHandlerUserIdServiceImpl.run params={}", JSON.toJSONString(context));
+        log.info("PurApplyGetHandlerUserIdServiceImpl.execute params={}", JSON.toJSONString(context));
         if (context == null || StringUtils.isEmpty(context.getBusinessId())) {
             return ResultVO.error(ResultCodeEnum.LACK_OF_PARAM);
         }
         PurApply purApply = purApplyManager.getPurApplyByAppId(context.getBusinessId());
         String merchantId = purApply.getMerchantId();
          List<HandlerUser> handlerUsers = Lists.newArrayList();
+         UserGetReq userGetReq = new UserGetReq();
+         userGetReq.setRelCode(merchantId);
+        UserDTO userDTO = userService.getUser(userGetReq);
+        System.out.println("PurApplyGetHandlerUserIdServiceImpl.execute userDTO={}"+ JSON.toJSONString(userDTO));
+
         HandlerUser handlerUser = new HandlerUser();
-        MerchantGetReq merchantGetReq = new MerchantGetReq();
-        merchantGetReq.setMerchantId(merchantId);
-        ResultVO<MerchantDetailDTO> merchantInfo =merchantService.getMerchantDetail(merchantGetReq);
-        log.info("PurApplyGetHandlerUserIdServiceImpl.run merchantInfo={}", JSON.toJSONString(merchantInfo));
-        MerchantDetailDTO m = merchantInfo.getResultData();
-        String userId = m.getUserId();
-        String supplierName = m.getSupplierName();
-        handlerUser.setHandlerUserId(userId);
-        handlerUser.setHandlerUserName(supplierName);
+
+        handlerUser.setHandlerUserId(userDTO.getUserId());
+        handlerUser.setHandlerUserName(userDTO.getUserName());
         handlerUsers.add(handlerUser);
 
         //以下实现获取处理人的逻辑

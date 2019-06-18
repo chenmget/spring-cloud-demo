@@ -16,7 +16,7 @@ public class ReportCodeStatementsResp implements Serializable  {
 	private String statusCd;//在库状态
 	private String mktResInstType;//串码类型	01 交易 02 备机 03 集采
 	private String sourceType;//串码来源  01 厂商 02 供应商 03 零售商
-	private String productType;//产品类型
+	private String typeName;//产品类型
 	private String brandName;//品牌
 	private String productName;//产品名称
 	private String unitType;//产品型号

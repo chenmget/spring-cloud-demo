@@ -114,11 +114,11 @@ public class ValidAndAddRunableTask {
     public Boolean validHasDone(String batchId) {
         try{
             Boolean hasDone = true;
+            log.info("ValidAndAddRunableTask.validHasDone batchId={}, futures={}", batchId, JSON.toJSONString(validFutureTaskResult));
             if (null == validFutureTaskResult || CollectionUtils.isEmpty(validFutureTaskResult.get(batchId))) {
                 return false;
             }
             List<Future<Boolean>> futures = validFutureTaskResult.get(batchId);
-            log.info("ValidAndAddRunableTask.validHasDone batchId={}, futures={}", batchId, JSON.toJSONString(futures));
             for (Future<Boolean> future : futures) {
                 if (!future.isDone()) {
                     return future.isDone();

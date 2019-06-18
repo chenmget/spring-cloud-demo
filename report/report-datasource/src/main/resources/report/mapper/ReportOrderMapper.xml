@@ -38,7 +38,7 @@
 				 a.create_time 
 			FROM 
 				 ord_order a
-				 LEFT JOIN par_merchant par ON par.merchant_id = a.user_id
+				 LEFT JOIN par_merchant par ON par.merchant_code = a.user_id
 				 ,ord_order_items b
 				 LEFT JOIN prod_product c ON b.PRODUCT_ID=c.PRODUCT_ID
 				 LEFT JOIN prod_product_base d ON c.product_base_id= d.product_base_id
@@ -62,6 +62,9 @@
 		  <if test="req.status!=null and req.status !=''">
 		     and a.status=#{req.status}
 		  </if>	
+		  <if test="req.orderId!=null and req.orderId !=''">
+		     and a.order_id like CONCAT(CONCAT('%',#{req.orderId}),'%')
+		  </if>	
 		  <if test="req.lanIdName !=null and req.lanIdName !=''">
 		     and par.LAN_ID =#{req.lanIdName}
 		  </if>
@@ -75,13 +78,13 @@
 		    and a.SUPPLIER_NAME like CONCAT(CONCAT('%',#{req.suplierName}),'%')
 		  </if>
 		  <if test="req.suplierCode!=null and req.suplierCode!=''">
-		    and a.SUPPLIER_ID like CONCAT(CONCAT('%',#{req.suplierCode}),'%')
+		    and a.SUPPLIER_ID = #{req.suplierCode}
 		  </if>
 		  <if test="req.merchantName!=null and req.merchantName!=''">
 		    and a.USER_NAME like CONCAT(CONCAT('%',#{req.merchantName}),'%')
 		  </if>
 		  <if test="req.merchantCode!=null and req.merchantCode!=''">
-		    and par.MERCHANT_CODE like CONCAT(CONCAT('%',#{req.merchantCode}),'%')
+		    and par.MERCHANT_CODE = #{req.merchantCode}
 		  </if>	 
 		  <if test="req.businessEntityName!=null and req.businessEntityName!=''">
 		    and par.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')
@@ -108,16 +111,16 @@
 		    and b.SN like CONCAT(CONCAT('%',#{req.sn}),'%')
 		  </if>
 		  <if test="req.orderType!=null and req.orderType!=''">
-		    and a.order_type like CONCAT(CONCAT('%',#{req.orderType}),'%')
+		    and a.order_type = #{req.orderType}
 		  </if>
 		 <if test="req.activeName!=null and req.activeName!=''">
-	 		l.name LIKE CONCAT(CONCAT('%',#{req.activeName}),'%')
+	 		and l.name LIKE CONCAT(CONCAT('%',#{req.activeName}),'%')
 		 </if>
 		 <if test="req.couponType!=null and req.couponType!=''">
-	 		k.PROMOTION_TYPE =#{req.couponType}
+	 		and k.PROMOTION_TYPE = #{req.couponType}
 		 </if> 
 		 <if test="req.typeName!=null and req.typeName!='' and req.typeName!='-1'">
-	 		d.type_id =#{req.typeName}
+	 		and d.type_id = #{req.typeName}
 		 </if>
 				GROUP BY b.item_id
 				ORDER BY a.create_time DESC        

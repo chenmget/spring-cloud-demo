@@ -480,6 +480,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                      if(ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)){
 //                         processId =ProductConst.UPDATE_PRODUCT_FLOW_PROCESS_ID;
                          processId = this.updateProductFlow(req);
+                         log.info("ProductBaseServiceImpl.updateProductBase processId={}",processId);
                      }
                      //没有修改则不需走流程
                      if(StringUtils.isNotEmpty(processId)){
@@ -502,7 +503,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     private String updateProductFlow(ProductBaseUpdateReq req){
         String updateProductFlow="";
-        ProductBaseUpdateReq oldReq = req.getOldProductBaseUpdateReq();
+        OldProductBaseUpdateReq oldReq = req.getOldProductBaseUpdateReq();
 
         List<ProductUpdateReq> productUpdateReqs = req.getProductUpdateReqs();
         if(null == oldReq){
@@ -521,7 +522,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             updateProductFlow = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
         }
         //流程2
-        if(req.getProductName().equals(oldReq.getProductName())){
+        if(!req.getProductName().equals(oldReq.getProductName())){
             if(ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                 updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
             }else{
@@ -530,7 +531,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
         //流程2
         if(!StringUtils.isEmpty(req.getSallingPoint()) && !StringUtils.isEmpty(oldReq.getSallingPoint()) &&
-                req.getSallingPoint().equals(oldReq.getSallingPoint())){
+                !req.getSallingPoint().equals(oldReq.getSallingPoint())){
             if(ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                 updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
             }else{
@@ -572,6 +573,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     private boolean compareProdFile(List<FileAddReq> newFileAddReqs,List<FileAddReq> oldFileAddReqs){
+        if(CollectionUtils.isEmpty(newFileAddReqs) && CollectionUtils.isEmpty(oldFileAddReqs)){
+            return false;
+        }
         if(!CollectionUtils.isEmpty(newFileAddReqs) && CollectionUtils.isEmpty(oldFileAddReqs)){
             return true;
         }

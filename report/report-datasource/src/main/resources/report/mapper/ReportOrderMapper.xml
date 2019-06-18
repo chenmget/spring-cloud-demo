@@ -116,6 +116,9 @@
 		 <if test="req.couponType!=null and req.couponType!=''">
 	 		k.PROMOTION_TYPE =#{req.couponType}
 		 </if> 
+		 <if test="req.typeName!=null and req.typeName!='' and req.typeName!='-1'">
+	 		d.type_id =#{req.typeName}
+		 </if>
 				GROUP BY b.item_id
 				ORDER BY a.create_time DESC        
     </select>

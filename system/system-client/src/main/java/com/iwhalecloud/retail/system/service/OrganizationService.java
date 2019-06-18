@@ -27,4 +27,10 @@ public interface OrganizationService {
      * @return
      */
     ResultVO<List<OrganizationRegionResp>> queryRegionOrganizationId();
+
+    /**
+     * @return
+     */
+//    ResultVO<List<OrganizationRegionResp>> listOrganization();
+
 }

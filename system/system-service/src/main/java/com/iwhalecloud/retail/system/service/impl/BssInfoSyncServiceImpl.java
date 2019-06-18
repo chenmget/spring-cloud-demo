@@ -61,7 +61,7 @@ public class BssInfoSyncServiceImpl implements BssInfoSyncService {
         BeanUtils.copyProperties(bssUserInfoRequestModel, user);
         user.setRemark((String) systemUserMap.get("sysUserDesc"));
         user.setLoginName((String) systemUserMap.get("sysUserCode"));
-        user.setStatusCd(Integer.valueOf(bssUserInfoRequestModel.getStatusCd()));
+        user.setStatusCd(1);
         user.setLoginName((String) systemUserMap.get("sysUserCode"));
         user.setLoginPwd((String) systemUserMap.get("password"));
         user.setUserName(bssUserInfoRequestModel.getUserName());
@@ -113,11 +113,11 @@ public class BssInfoSyncServiceImpl implements BssInfoSyncService {
         organizationDTO.setMerchantCode(bssOrgRequestModel.getSaleBoxCode());
         // 上级组织id
         String parentOrgId = bssOrgRequestModel.getParentOrgId();
-        organizationDTO.setPartnerOrgId(parentOrgId);
+        organizationDTO.setParentOrgId(parentOrgId);
         OrganizationDTO organization = organizationManager.getOrganization(parentOrgId);
         if (!Objects.isNull(organization)) {
             String parentOrgName = organization.getOrgName();
-            organizationDTO.setPartnerOrgName(parentOrgName);
+            organizationDTO.setParentOrgName(parentOrgName);
         }
         // 本地网id
         String lanId = bssOrgRequestModel.getLanId();

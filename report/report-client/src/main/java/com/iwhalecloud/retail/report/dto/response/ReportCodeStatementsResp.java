@@ -12,13 +12,14 @@ public class ReportCodeStatementsResp implements Serializable  {
 	*/
 	private static final long serialVersionUID = 1L;
 	private String mktResInstNbr;//串码
-	private String storageType;//在库状态
-	private String mktResInstType;//串码类型
-	private String sourceType;//串码来源
-	private String productType;//产品类型
-	private String brandId;//品牌
-	private String productBaseName;//产品名称
-	private String productName;//产品型号
+	private String mktResStoreId; //仓库ID
+	private String statusCd;//在库状态
+	private String mktResInstType;//串码类型	01 交易 02 备机 03 集采
+	private String sourceType;//串码来源  01 厂商 02 供应商 03 零售商
+	private String typeName;//产品类型
+	private String brandName;//品牌
+	private String productName;//产品名称
+	private String unitType;//产品型号
 	private String productCode;//产品25位编码
 	private String orderId;//订单编号
 	private String createTime;//下单时间
@@ -39,6 +40,5 @@ public class ReportCodeStatementsResp implements Serializable  {
 	private String destCityId;//串码流向所属地市
 	private String destCountyId;//串码流向所属区县
 	private String selfRegStatus;//自注册状态
-	private	String typeId;	//产品类型
-	private String mktResStoreId; //仓库ID
+	
 }

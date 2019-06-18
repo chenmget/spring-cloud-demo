@@ -95,7 +95,7 @@ public class ReportCodeStateServiceImpl implements ReportCodeStateService {
 		List<ReportCodeStatementsResp> list = (List<ReportCodeStatementsResp>) reportCodeStateManager.getCodeStatementsReportdc(req);
 		List<ReportCodeStatementsResp> list2 = new ArrayList<ReportCodeStatementsResp>();
 		for (ReportCodeStatementsResp rr : list) {
-			String storageType = rr.getStorageType();//在库状态
+			String statusCd = rr.getStatusCd();//在库状态
 			String mktResInstType = rr.getMktResInstType();//串码类型
 			String sourceType = rr.getSourceType();//串码来源
 			String cityId = rr.getCityId();//店中商所属地市
@@ -104,21 +104,21 @@ public class ReportCodeStateServiceImpl implements ReportCodeStateService {
 			String day90 = rr.getDay90();
 			String destCityId = rr.getDestCityId();//串码流向所属地市
 			String selfRegStatus = rr.getSelfRegStatus();//自注册状态
-			if (storageType != null) {
-				if ("1000".equals(storageType)) {
-					rr.setStorageType("在库可用");
-				} else if ("1202".equals(storageType)) {
-					rr.setStorageType("已领用可销售");
-				} else if ("1203".equals(storageType)) {
-					rr.setStorageType("已销售未补贴");
-				} else if ("1204".equals(storageType)) {
-					rr.setStorageType("已销售已补贴");
-				} else if ("1205".equals(storageType)) {
-					rr.setStorageType("退换货已冻结");
-				} else if ("1210".equals(storageType)) {
-					rr.setStorageType("终端调拨中");
-				} else if ("1211".equals(storageType)) {
-					rr.setStorageType("终端已调拨");
+			if (statusCd != null) {
+				if ("1000".equals(statusCd)) {
+					rr.setStatusCd("在库可用");
+				} else if ("1202".equals(statusCd)) {
+					rr.setStatusCd("已领用可销售");
+				} else if ("1203".equals(statusCd)) {
+					rr.setStatusCd("已销售未补贴");
+				} else if ("1204".equals(statusCd)) {
+					rr.setStatusCd("已销售已补贴");
+				} else if ("1205".equals(statusCd)) {
+					rr.setStatusCd("退换货已冻结");
+				} else if ("1210".equals(statusCd)) {
+					rr.setStatusCd("终端调拨中");
+				} else if ("1211".equals(statusCd)) {
+					rr.setStatusCd("终端已调拨");
 				} 
 			}
 			if( mktResInstType != null){
@@ -226,15 +226,8 @@ public class ReportCodeStateServiceImpl implements ReportCodeStateService {
 				}
 			}
 			
-			String typeId = rr.getTypeId();
-			if("201903142030001".equals(typeId)){
-				rr.setTypeId("手机");
-			}
-			
 			list2.add(rr);
 		}
-		
-		
 		
         return ResultVO.success(list2);	
 	}
@@ -244,7 +237,7 @@ public class ReportCodeStateServiceImpl implements ReportCodeStateService {
 		List<ReportCodeStatementsResp> list = (List<ReportCodeStatementsResp>) reportCodeStateManager.getCodeStatementsReportAdmindc(req);
 		List<ReportCodeStatementsResp> list2 = new ArrayList<ReportCodeStatementsResp>();
 		for (ReportCodeStatementsResp rr : list) {
-			String storageType = rr.getStorageType();//在库状态
+			String statusCd = rr.getStatusCd();//在库状态
 			String mktResInstType = rr.getMktResInstType();//串码类型
 			String sourceType = rr.getSourceType();//串码来源
 			String cityId = rr.getCityId();//店中商所属地市
@@ -253,21 +246,21 @@ public class ReportCodeStateServiceImpl implements ReportCodeStateService {
 			String day90 = rr.getDay90();
 			String destCityId = rr.getDestCityId();//串码流向所属地市
 			String selfRegStatus = rr.getSelfRegStatus();//自注册状态
-			if (storageType != null) {
-				if ("1000".equals(storageType)) {
-					rr.setStorageType("在库可用");
-				} else if ("1202".equals(storageType)) {
-					rr.setStorageType("已领用可销售");
-				} else if ("1203".equals(storageType)) {
-					rr.setStorageType("已销售未补贴");
-				} else if ("1204".equals(storageType)) {
-					rr.setStorageType("已销售已补贴");
-				} else if ("1205".equals(storageType)) {
-					rr.setStorageType("退换货已冻结");
-				} else if ("1210".equals(storageType)) {
-					rr.setStorageType("终端调拨中");
-				} else if ("1211".equals(storageType)) {
-					rr.setStorageType("终端已调拨");
+			if (statusCd != null) {
+				if ("1000".equals(statusCd)) {
+					rr.setStatusCd("在库可用");
+				} else if ("1202".equals(statusCd)) {
+					rr.setStatusCd("已领用可销售");
+				} else if ("1203".equals(statusCd)) {
+					rr.setStatusCd("已销售未补贴");
+				} else if ("1204".equals(statusCd)) {
+					rr.setStatusCd("已销售已补贴");
+				} else if ("1205".equals(statusCd)) {
+					rr.setStatusCd("退换货已冻结");
+				} else if ("1210".equals(statusCd)) {
+					rr.setStatusCd("终端调拨中");
+				} else if ("1211".equals(statusCd)) {
+					rr.setStatusCd("终端已调拨");
 				} 
 			}
 			if( mktResInstType != null){
@@ -373,11 +366,6 @@ public class ReportCodeStateServiceImpl implements ReportCodeStateService {
 				}else if("1".equals(selfRegStatus)){
 					rr.setSelfRegStatus("已注册");
 				}
-			}
-			
-			String typeId = rr.getTypeId();
-			if("201903142030001".equals(typeId)){
-				rr.setTypeId("手机");
 			}
 			
 			list2.add(rr);

@@ -62,13 +62,13 @@ public class ValidAndAddRunableTask {
      * @param req
      */
     public String exceutorValid(ResourceInstValidReq req) {
+        String batchId = resourceInstService.getPrimaryKey();
         try {
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             List<String> nbrList = req.getMktResInstNbrs();
             List<String> ctCodeList = req.getCtCodeList();
             List<String> snCodeList = req.getSnCodeList();
             List<String> macCodeList = req.getMacCodeList();
-            String batchId = resourceInstService.getPrimaryKey();
             Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
             BlockingQueue<Callable<Boolean>> tasks = new LinkedBlockingQueue<>();
             for (Integer i = 0; i < excutorNum; i++) {
@@ -93,7 +93,7 @@ public class ValidAndAddRunableTask {
                     CopyOnWriteArrayList<String> subMacCodeList = new CopyOnWriteArrayList(macCodeList.subList(perNum * i, macCodeMaxNum));
                     getReq.setMacCodeList(subMacCodeList);
                 }
-                log.info("ValidAndAddRunableTask.exceutorValid newList={}, validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
+                log.info("ValidAndAddRunableTask.exceutorValid newList={}, batchId={}", JSON.toJSONString(newList), batchId);
                 Callable<Boolean> callable = new ValidNbr(req, getReq, newList, batchId);
                 tasks.put(callable);
             }
@@ -104,7 +104,7 @@ public class ValidAndAddRunableTask {
         } catch (Exception e) {
             log.error("串码查询异常", e);
         }
-        return null;
+        return batchId;
     }
 
 

@@ -648,6 +648,10 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         user.setHandlerUserName(destMerchantDTO.getMerchantName());
         List<HandlerUser> uerList = new ArrayList<HandlerUser>(1);
         processStartDTO.setNextHandlerUser(uerList);
+        processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+        Map map=new HashMap();
+        map.put(sourceMerchantDTO.getLanId(), sourceMerchantDTO.getLanId());
+        processStartDTO.setParamsValue(JSON.toJSONString(map));
         ResultVO taskServiceRV = taskService.startProcess(processStartDTO);
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst taskService.startProcess req={},resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
         if (!taskServiceRV.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {

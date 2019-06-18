@@ -297,6 +297,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
         processStartDTO.setTaskSubType(taskSubType);
         processStartDTO.setExtends1(sourceMerchantDTO.getCityName());
+        processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+        Map map=new HashMap();
+        map.put(sourceMerchantDTO.getLanId(), sourceMerchantDTO.getLanId());
+        processStartDTO.setParamsValue(JSON.toJSONString(map));
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
         if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {

@@ -192,4 +192,23 @@ public class CacheController extends BaseController {
         log.info("CacheController.cleanCacheGoodSaleNum clean GoodSaleNum table cache success!!!");
         return ResultVO.success(true);
     }
+    @RequestMapping(value = "/cleanCacheNameWfNoteRights", method = RequestMethod.GET)
+    @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_NODE_RIGHTS, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWfNoteRights() {
+        log.info("CacheController.cleanCacheNameWfNote clean wf_node_rights table cache success!!!");
+        return ResultVO.success(true);
+    }
+    @RequestMapping(value = "/cleanCacheNameWfRouteService", method = RequestMethod.GET)
+    @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_ROUTE_SERVICE, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWfRouteService() {
+        log.info("CacheController.cleanCacheNameWfRouteService clean wf_route_service table cache success!!!");
+        return ResultVO.success(true);
+    }
+
+    @RequestMapping(value = "/cleanCacheNameWfService", method = RequestMethod.GET)
+    @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_SERVICE, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWfService() {
+        log.info("CacheController.cleanCacheNameWfService clean wf_service table cache success!!!");
+        return ResultVO.success(true);
+    }
 }

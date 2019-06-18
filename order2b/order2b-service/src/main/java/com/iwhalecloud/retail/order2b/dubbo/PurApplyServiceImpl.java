@@ -167,8 +167,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040.getTaskSubType());
 			processStartDTO.setApplyUserId(req.getCreateStaff());
 			//
-			processStartDTO.setParamsType(2);
-			processStartDTO.setParamsValue(req.getApplyMerchantId());
+//			processStartDTO.setParamsType(2);
+//			processStartDTO.setParamsValue(req.getApplyMerchantId());
 			//根据用户id查询名称
 			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
 			String userName = "";

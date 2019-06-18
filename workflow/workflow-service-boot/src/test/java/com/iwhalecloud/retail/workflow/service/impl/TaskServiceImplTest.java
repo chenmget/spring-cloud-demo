@@ -61,20 +61,22 @@ public class TaskServiceImplTest {
     @Test
     public void startProcess() {
         ProcessStartReq req = new ProcessStartReq();
-        req.setProcessId("17");
-        req.setTaskSubType("3020");
-        req.setFormId("1652");
+        req.setProcessId("528");
+        req.setTaskSubType("3040");
+        req.setFormId("1911");
         req.setTitle("采购申请单审核流程");
 
-        req.setApplyUserId("1");
-        req.setApplyUserName("admin");
-//        req.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+        req.setApplyUserId("22796");
+//        req.setApplyUserName("admin");
+        req.setParamsType(2);
+        req.setParamsValue("10000696");
+        req.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
         Map map=new HashMap();
-//        map.put("PP","huawei");
-//        req.setParamsValue(JSON.toJSONString(map));
+        map.put("CGJ","0");//
+        req.setParamsValue(JSON.toJSONString(map));
         ResultVO resultVO = taskService.startProcess(req);
         System.out.println(resultVO.isSuccess());
-        Assert.assertEquals("0", resultVO.getResultCode());
+//        Assert.assertEquals("0", resultVO.getResultCode());
     }
 
     @Test
@@ -91,9 +93,9 @@ public class TaskServiceImplTest {
 
     @Test
     public void nextRoute() {
-        String json = "{\"appendixType\":\"2\",\"appendixUrl\":\"\",\"handlerMsg\":\"333\",\"handlerUserId\":\"200012813991\",\"handlerUserName\":\"zte管理员\",\"nextHandlerUser\":[],\"nextNodeId\":\"1559\",\"routeId\":\"20190528005\",\"taskId\":\"12330136\",\"taskItemId\":\"12330137\"}\n";
+//        String json = "{\"appendixType\":\"2\",\"appendixUrl\":\"\",\"handlerMsg\":\"333\",\"handlerUserId\":\"200012813991\",\"handlerUserName\":\"zte管理员\",\"nextHandlerUser\":[],\"nextNodeId\":\"1559\",\"routeId\":\"20190528005\",\"taskId\":\"12330136\",\"taskItemId\":\"12330137\"}\n";
 //        RouteNextReq req = (RouteNextReq) JSON.parse(json);
-
+       String json ="{\"routeId\":\"20190528004\",\"handlerMsg\":\"饿\",\"nextNodeId\":\"1549\",\"taskId\":\"12335986\",\"taskItemId\":\"12335996\",\"handlerUserId\":\"22796\",\"nextHandlerUser\":[],\"appendixType\":\"2\",\"appendixUrl\":\"\"}";
         Gson gson = new Gson();
         RouteNextReq routeNextReq  = gson.fromJson(json, new TypeToken<RouteNextReq>(){}.getType());
 

@@ -59,6 +59,12 @@ public class PurApplyItem implements Serializable {
     private String purType;
 
     /**
+     * 初始采购类型
+     */
+    @ApiModelProperty(value = "oringinPurType")
+    private String oringinPurType;
+
+    /**
      * 状态
      */
     @ApiModelProperty(value = "statusCd")

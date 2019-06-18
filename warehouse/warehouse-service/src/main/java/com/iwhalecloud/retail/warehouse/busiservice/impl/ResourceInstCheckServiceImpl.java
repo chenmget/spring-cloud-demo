@@ -5,11 +5,20 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.TypeConst;
+import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq;
+import com.iwhalecloud.retail.goods2b.dto.req.TagRelListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeSelectByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.TypeDetailResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.TagRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TypeService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
+import com.iwhalecloud.retail.partner.service.MerchantRulesService;
+import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.service.PublicDictService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
@@ -45,21 +54,24 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
 
     @Autowired
     private ResourceInstManager resourceInstManager;
-
     @Reference
     private ProductService productService;
-
     @Value("${addNbrService.checkMaxNum}")
     private Integer checkMaxNum;
-
     @Autowired
     private ResouceInstTrackService resouceInstTrackService;
-
     @Autowired
     private MarketingZopClientUtil zopClientUtil;
-
     @Reference
     private TypeService typeService;
+    @Reference
+    private PublicDictService publicDictService;
+    @Reference
+    private MerchantRulesService merchantRulesService;
+    @Reference
+    private MerchantTagRelService merchantTagRelService;
+    @Reference
+    private TagRelService tagRelService;
 
 
     @Override
@@ -172,7 +184,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3010.getTaskSubType();
             if (req.getMktResInstNbrs().size() < checkMaxNum || ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
                 requestStatusCd = ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode();
-                processId = ResourceConst.WORK_FLOW_PROCESS_15;
+                processId = WorkFlowConst.PROCESS_ID.PROCESS_1015.getTypeCode();
             }else {
                 TypeSelectByIdReq typeReq = new TypeSelectByIdReq();
                 typeReq.setTypeId(req.getTypeId());
@@ -182,10 +194,10 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                 }
                 String detailCode = typeDetailRespResultVO.getResultData().getDetailCode();
                 if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(detailCode) || TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(detailCode)) {
-                    processId = ResourceConst.WORK_FLOW_PROCESS_16;
+                    processId = WorkFlowConst.PROCESS_ID.PROCESS_1016.getTypeCode();
                     requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK_CUSTSUP.getCode();
                 } else{
-                    processId = ResourceConst.WORK_FLOW_PROCESS_14;
+                    processId = WorkFlowConst.PROCESS_ID.PROCESS_1014.getTypeCode();
                     requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK.getCode();
                 }
             }
@@ -193,7 +205,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             // 移动串码审核流程
             taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1020.getTaskSubType();
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
-            processId = ResourceConst.WORK_FLOW_PROCESS_13;
+            processId = WorkFlowConst.PROCESS_ID.PROCESS_1013.getTypeCode();
         }
         SelectProcessResp resp = new SelectProcessResp();
         resp.setProcessId(processId);
@@ -220,7 +232,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             request.put("code", addMethod);
             request.put("params", params.toString());
             resultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
-            log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS resp={}", JSON.toJSONString(resultVO));
+            log.info("ResourceInstCheckServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS resp={}", JSON.toJSONString(resultVO));
             if (resultVO.isSuccess()) {
                 successList.add(mktResInstNbr);
             }else {
@@ -236,11 +248,56 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                 request.put("code", dellMethod);
                 request.put("params", params.toString());
                 ResultVO dellResultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
-                log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS dellResultVO={}", JSON.toJSONString(dellResultVO));
+                log.info("ResourceInstCheckServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS dellResultVO={}", JSON.toJSONString(dellResultVO));
             }
             return resultVO;
         } else {
             return ResultVO.success();
         }
+    }
+
+    @Override
+    public ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId) {
+        TagRelListReq tagRelListReq = new TagRelListReq();
+        tagRelListReq.setProductId(mktResId);
+        tagRelListReq.setRelTagIdList(Lists.newArrayList(SystemConst.GreenChannelType.SpecialType.getType()));
+        ResultVO<List<TagRelListResp>> tagRelVO = tagRelService.listTagRel(tagRelListReq);
+        log.info("ResourceInstCheckServiceImpl.greenChannelValid publicDictService.queryPublicDictListByType req={}, resp={}", JSON.toJSONString(tagRelListReq), JSON.toJSONString(tagRelVO));
+        // 特殊权限机型
+        if (tagRelVO.isSuccess() && CollectionUtils.isNotEmpty(tagRelVO.getResultData())) {
+            return ResultVO.success(true);
+        }
+        MerchantTagRelListReq tagReq = new MerchantTagRelListReq();
+        tagReq.setMerchantId(merchantId);
+        tagReq.setRelTagIdList(Lists.newArrayList(SystemConst.GreenChannelType.ChainStore.getType(),
+                SystemConst.GreenChannelType.Echannle.getType(),
+                SystemConst.GreenChannelType.Honor.getType(),
+                SystemConst.GreenChannelType.XiaoMi.getType(),
+                SystemConst.GreenChannelType.HuaWei.getType()));
+        ResultVO<List<MerchantTagRelDTO>> merchantTagVO = merchantTagRelService.listMerchantAndTag(tagReq);
+        if (merchantTagVO.isSuccess() && CollectionUtils.isNotEmpty(merchantTagVO.getResultData())) {
+            List<MerchantTagRelDTO> merchantTagRelList = merchantTagVO.getResultData();
+            TagRelListReq tagRelReq = new TagRelListReq();
+            for (MerchantTagRelDTO dto : merchantTagRelList) {
+                tagRelReq.setRelTagIdList(Lists.newArrayList(dto.getRelTagId()));
+                ResultVO<List<TagRelListResp>> tagRelTagVO = tagRelService.listTagRel(tagRelReq);
+                // 既有商家权限，又有对应的机型权限，通过
+                if (tagRelTagVO.isSuccess() && CollectionUtils.isNotEmpty(tagRelTagVO.getResultData())) {
+                    return ResultVO.success(true);
+                }
+            }
+        }
+        ResultVO<List<String>> transferPermissionVO = merchantRulesService.getGreenChannelPermission(merchantId);
+        log.info("ResourceInstCheckServiceImpl.greenChannelValid merchantRulesService.getGreenChannelPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
+        if (null == transferPermissionVO || !transferPermissionVO.isSuccess() || CollectionUtils.isEmpty(transferPermissionVO.getResultData())) {
+            // 没有权限，返回false
+            return ResultVO.success(false);
+        }
+
+        List<String> productIdList = transferPermissionVO.getResultData();
+        if (productIdList.contains(mktResId)) {
+            return ResultVO.success(true);
+        }
+        return ResultVO.success(false);
     }
 }

@@ -148,7 +148,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
             processStartDTO.setTitle("绿色通道超过限额审批流程");
             processStartDTO.setApplyUserId(req.getCreateStaff());
             processStartDTO.setApplyUserName(merchantDTO.getMerchantName());
-            processStartDTO.setProcessId(ResourceConst.GREEN_CHANNEL_WORK_FLOW_INST);
+            processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_1008.getTypeCode());
             processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1090.getTaskSubType());
             processStartDTO.setApplyUserName(req.getApplyUserName());
             if (resultVO != null && resultVO.getResultData() != null) {
@@ -484,7 +484,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         processStartDTO.setTitle("调拨审批流程");
         processStartDTO.setApplyUserId(createStaff);
         processStartDTO.setApplyUserName(sourceMerchantDTO.getMerchantName());
-        processStartDTO.setProcessId(ResourceConst.ALLOCATE_WORK_FLOW_INST);
+        processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_1007.getTypeCode());
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType());
 
@@ -516,6 +516,11 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
     @Deprecated
     public ResultVO pickResourceInst(ResourceInstPickupReq req) {
         return ResultVO.success();
+    }
+
+    @Override
+    public ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId){
+        return null;
     }
 
 }

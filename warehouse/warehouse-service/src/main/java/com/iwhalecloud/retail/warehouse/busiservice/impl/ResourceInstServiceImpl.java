@@ -23,6 +23,7 @@ import com.iwhalecloud.retail.promo.service.HistoryPurchaseService;
 import com.iwhalecloud.retail.warehouse.busiservice.*;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
+import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
@@ -367,8 +368,16 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         String batchId = resourceInstManager.getPrimaryKey();
         List<String> nbrList = req.getMktResInstNbrs();
         List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(nbrList.size());
+        ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
+        trackGetReq.setMktResStoreId(req.getMktResStoreId());
+        CopyOnWriteArrayList<String> mktResInstNbrList = new CopyOnWriteArrayList<String>(nbrList);
+        trackGetReq.setMktResInstNbrList(mktResInstNbrList);
+        trackGetReq.setTypeId(req.getTypeId());
+        ResultVO<List<ResouceInstTrackDTO>> resourceTrackVO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
+        log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.saveBatch req={} resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(resourceTrackVO));
+        List<ResouceInstTrackDTO> resourceTrackList = resourceTrackVO.getResultData();
         Date now = new Date();
-        for (String mktResInstNbr : nbrList) {
+        for (ResouceInstTrackDTO trackDTO : resourceTrackList) {
             ResourceInst resourceInst = new ResourceInst();
             BeanUtils.copyProperties(req, resourceInst);
             resourceInst.setMktResInstId(resourceInstManager.getPrimaryKey());
@@ -380,7 +389,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             }
             resourceInst.setCreateDate(now);
             resourceInst.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-            resourceInst.setMktResInstNbr(mktResInstNbr);
+            resourceInst.setMktResInstNbr(trackDTO.getMktResInstNbr());
+            resourceInst.setCtCode(trackDTO.getCtCode());
+            resourceInst.setSnCode(trackDTO.getSnCode());
+            resourceInst.setMacCode(trackDTO.getMacCode());
             resourceInst.setMerchantId(null);
             resourceInst.setStatusDate(now);
             resourceInsts.add(resourceInst);
@@ -413,24 +425,26 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         String batchId = resourceInstManager.getPrimaryKey();
         List<String> mktResInstNbrList = req.getMktResInstNbrs();
         List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(mktResInstNbrList.size());
+        ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
+        trackGetReq.setMktResStoreId(req.getMktResStoreId());
+        CopyOnWriteArrayList<String> nbrList = new CopyOnWriteArrayList<String>(mktResInstNbrList);
+        trackGetReq.setMktResInstNbrList(nbrList);
+        trackGetReq.setTypeId(req.getTypeId());
+        ResultVO<List<ResouceInstTrackDTO>> resourceTrackVO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
+        log.info("ResourceInstServiceImpl.addResourceInst resourceInstManager.saveBatch req={} resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(resourceTrackVO));
+        List<ResouceInstTrackDTO> resourceTrackList = resourceTrackVO.getResultData();
         Date now = new Date();
-        for (String mktResInstNbr : mktResInstNbrList) {
+        for (ResouceInstTrackDTO trackDTO : resourceTrackList) {
             ResourceInst resourceInst = new ResourceInst();
             BeanUtils.copyProperties(req, resourceInst);
             resourceInst.setMktResInstId(resourceInstManager.getPrimaryKey());
-            resourceInst.setMktResInstNbr(mktResInstNbr);
+            resourceInst.setMktResInstNbr(trackDTO.getMktResInstNbr());
             resourceInst.setMktResBatchId(batchId);
             // 目标仓库是串码所属人的仓库
             resourceInst.setMktResStoreId(req.getDestStoreId());
-            if (null != req.getCtCodeMap()) {
-                resourceInst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
-            }
-            if (null != req.getSnCodeMap()) {
-                resourceInst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
-            }
-            if (null != req.getMacCodeMap()) {
-                resourceInst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
-            }
+            resourceInst.setCtCode(trackDTO.getCtCode());
+            resourceInst.setSnCode(trackDTO.getSnCode());
+            resourceInst.setMacCode(trackDTO.getMacCode());
             resourceInst.setCreateDate(now);
             resourceInst.setStatusDate(now);
             resourceInst.setSourceType(req.getSourceType());
@@ -460,8 +474,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         resourceInstLogService.addResourceInstLog(req, resourceInsts, batchId);
         return ResultVO.success();
     }
-
-
 
 
     /**
@@ -914,4 +926,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         return list;
     }
 
+    @Override
+    public String selectMktResInstType(ResourceStoreIdResnbr req) {
+    	return resourceInstManager.selectMktResInstType(req);
+    }
 }

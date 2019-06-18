@@ -1,15 +1,14 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.TestBase;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
-import com.iwhalecloud.retail.order2b.service.PurApplyService;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import org.junit.Test;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -52,12 +51,19 @@ public class PurchaseApplyServiceImplTest extends TestBase {
         req.setCreateStaff(userId);
         req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        req.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
+        req.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
         req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
         req.setMerchantId("4331301049118");
         ResultVO resultVO = purchaseApplyService.receiving(req);
         System.out.println(resultVO.isSuccess()+"===="+resultVO.getResultMsg());
 
+    }
+    @Test
+    public void updateStatuscd() {
+        List<String> l = new ArrayList<String>();
+        l.add("p20p2019061303");
+        Integer i = purchaseApplyService.updatePurApplyItemDetailStatusCd(l);
+        System.out.println(i);
     }
 }

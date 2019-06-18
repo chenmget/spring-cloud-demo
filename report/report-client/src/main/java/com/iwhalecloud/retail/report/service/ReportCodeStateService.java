@@ -12,6 +12,12 @@ public interface ReportCodeStateService {
 	//串码报表
 	public ResultVO<Page<ReportCodeStatementsResp>> getCodeStatementsReport(ReportCodeStatementsReq req);
 	
+	//串码报表管理员
+		public ResultVO<Page<ReportCodeStatementsResp>> getCodeStatementsReportAdmin(ReportCodeStatementsReq req);
+	
 	//导出串码报表
 	public ResultVO<List<ReportCodeStatementsResp>> getCodeStatementsReportdc(ReportCodeStatementsReq req);
+	
+	//导出串码报表管理员
+	public ResultVO<List<ReportCodeStatementsResp>> getCodeStatementsReportAdmindc(ReportCodeStatementsReq req);
 }

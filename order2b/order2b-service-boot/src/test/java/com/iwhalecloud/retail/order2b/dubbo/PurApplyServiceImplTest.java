@@ -1,18 +1,19 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
-import com.alibaba.dubbo.config.annotation.Reference;
-import com.iwhalecloud.retail.dto.ResultVO;
+import com.alibaba.fastjson.JSON;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.iwhalecloud.retail.order2b.TestBase;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
-import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
-import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.workflow.dto.req.RouteNextReq;
 import org.junit.Test;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class PurApplyServiceImplTest  extends TestBase {
@@ -167,7 +168,24 @@ public class PurApplyServiceImplTest  extends TestBase {
 
 
 
-
     }
+    @Test
+    public void purApplysearch() {
+        String can="{\"applyCode\":\"\",\"startDate\":\"\",\"endDate\":\"\",\"applyName\":\"\",\"pageNo\":1,\"pageSize\":10,\"sourceFrom\":\"\"}";
+        Gson gson = new Gson();
+        PurApplyReq req = gson.fromJson(can, new TypeToken<PurApplyReq>(){}.getType());
+        req.setLanId("730");
+//        req.setMerchantId("555");
+        purApplyService.cgSearchApply(req);
+    }
+    @Test
+    public void ckApplyData2() {
+        PurApplyReq req = new PurApplyReq();
+        req.setApplyId("1878");
+        List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
+        System.out.println(JSON.toJSONString(procureApplyReq2));
+    }
+
+
 
 }

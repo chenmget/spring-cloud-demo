@@ -131,4 +131,5 @@ public interface ResourceInstService {
      */
     List<ResourceInstListPageResp> getResourceInstListManual(ResourceInstListPageReq req);
 
+    String selectMktResInstType(ResourceStoreIdResnbr req);
 }

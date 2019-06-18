@@ -27,9 +27,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public ResultVO saveOrganization(OrganizationDTO organizationDTO) {
         int ret = organizationManager.savaOrganization(organizationDTO);
-        if(ret > 0){
+        if (ret > 0) {
             return ResultVO.errorEnum(ResultCodeEnum.SUCCESS);
-        }else{
+        } else {
             return ResultVO.errorEnum(ResultCodeEnum.ERROR);
         }
     }
@@ -38,7 +38,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     public ResultVO listOrganization(String parentId) {
         List<Organization> list = organizationManager.listOrganization(parentId);
         List<OrganizationDTO> OrganizationDTOList = new ArrayList<>();
-        for(Organization m : list){
+        for (Organization m : list) {
             OrganizationDTO dto = new OrganizationDTO();
             BeanUtils.copyProperties(m, dto);
             OrganizationDTOList.add(dto);
@@ -49,9 +49,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public ResultVO getOrganization(String orgId) {
         OrganizationDTO dto = organizationManager.getOrganization(orgId);
-        if(dto == null ){
+        if (dto == null) {
             return ResultVO.error();
-        }else{
+        } else {
             return ResultVO.success(dto);
         }
     }
@@ -68,9 +68,9 @@ public class OrganizationServiceImpl implements OrganizationService {
     @Override
     public ResultVO deleteOrganization(String orgId) {
         int ret = organizationManager.deleteOrganization(orgId);
-        if(ret > 0){
+        if (ret > 0) {
             return ResultVO.errorEnum(ResultCodeEnum.SUCCESS);
-        }else{
+        } else {
             return ResultVO.errorEnum(ResultCodeEnum.ERROR);
         }
     }
@@ -79,15 +79,15 @@ public class OrganizationServiceImpl implements OrganizationService {
     public ResultVO updateOrganization(OrganizationDTO OrganizationDTO) {
         OrganizationDTO.setUpdateDate(new Date());
         int ret = organizationManager.updateOrganization(OrganizationDTO);
-        if(ret > 0){
+        if (ret > 0) {
             return ResultVO.errorEnum(ResultCodeEnum.SUCCESS);
-        }else{
+        } else {
             return ResultVO.errorEnum(ResultCodeEnum.ERROR);
         }
     }
 
     @Override
-    public ResultVO<List<OrganizationRegionResp>> queryRegionOrganizationId(){
+    public ResultVO<List<OrganizationRegionResp>> queryRegionOrganizationId() {
         return ResultVO.success(organizationManager.queryRegionOrganizationId());
     }
 }

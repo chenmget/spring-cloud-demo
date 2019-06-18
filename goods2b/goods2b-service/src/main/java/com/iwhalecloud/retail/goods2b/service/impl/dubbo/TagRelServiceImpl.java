@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.TagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
+import com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp;
 import com.iwhalecloud.retail.goods2b.entity.TagRel;
 import com.iwhalecloud.retail.goods2b.manager.TagRelManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TagRelService;
@@ -105,4 +106,8 @@ public class TagRelServiceImpl implements TagRelService {
         return ResultVO.success(tagRelManager.listTagByProductBaseId(relListByGoodsIdReq.getProductBaseId()));
     }
 
+    @Override
+    public ResultVO<List<TagRelListResp>> listTagRel(TagRelListReq req) {
+        return ResultVO.success(tagRelManager.listTagRel(req));
+    }
 }

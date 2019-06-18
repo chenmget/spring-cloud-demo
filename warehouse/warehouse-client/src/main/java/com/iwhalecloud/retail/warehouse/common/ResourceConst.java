@@ -43,35 +43,6 @@ public class ResourceConst {
 
 
     /**
-     * 绿色通道流程实例ID
-     */
-    public final static String  GREEN_CHANNEL_WORK_FLOW_INST = "8";
-    /**
-     * 调拨调出方审核流程实例ID
-     */
-    public final static String  ALLOCATE_WORK_FLOW_INST = "7";
-    /**
-     * 调拨两端都要审核流程实例ID
-     */
-    public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
-    /**
-     * 移动串码审核流程
-     */
-    public final static String  WORK_FLOW_PROCESS_13 = "13";
-    /**
-     * 厂商录入固网社采、泛智能终端串码审核流程
-     */
-        public final static String  WORK_FLOW_PROCESS_14 = "14";
-    /**
-     * 厂商串码入库集采流程实例（固网）
-     */
-    public final static String  WORK_FLOW_PROCESS_15 = "15";
-    /**
-     * 厂商录入固网社采(仅指机顶盒、三合一终端）串码审核流程
-     */
-    public final static String  WORK_FLOW_PROCESS_16 = "16";
-
-    /**
      * 调拨返回成功的消息
      */
     public final static String ALLOCATE_SUCESS_MSG = "串码调拨已提交";
@@ -965,6 +936,40 @@ public class ResourceConst {
                 }
             }
             return "";
+        }
+    }
+
+    /**
+     * 申请单详情状态
+     */
+    public enum DetailStatusCd{
+        STATUS_CD_1002("1002","处理中"),
+        STATUS_CD_1003("1003","完成"),
+        STATUS_CD_1004("1004","取消/审核不通过"),
+        STATUS_CD_1005("1005","审核通过"),
+        STATUS_CD_1009("1009","待审核");
+        private String code;
+        private String name;
+
+        DetailStatusCd(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
         }
     }
 }

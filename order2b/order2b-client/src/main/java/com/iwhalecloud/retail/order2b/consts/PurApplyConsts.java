@@ -116,5 +116,10 @@ public class PurApplyConsts {
      * 状态：已收货
      */
     public final static String PUR_APPLY_MKT_STATUS_RECEIVED = "6";
+
+    /**
+     * 状态：发货中
+     */
+    public final static String PUR_APPLY_STATUS_DELIVERYING = "41";
 }
 

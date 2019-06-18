@@ -97,4 +97,10 @@ public class GoodsPageReq extends PageVO {
      */
     @ApiModelProperty(value = "价格档位")
     private String priceLevel;
+
+    /**
+     * 是否预售
+     */
+    @ApiModelProperty(value = "是否预售")
+    private Integer isAdvanceSale;
 }

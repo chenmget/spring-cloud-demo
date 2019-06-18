@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailUpdateReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceReqDetail;
 import org.apache.ibatis.annotations.Mapper;
@@ -54,4 +55,11 @@ public interface ResourceReqDetailMapper extends BaseMapper<ResourceReqDetail>{
      * @return
      */
     List<ResourceReqDetailPageResp> executorResourceRequestPage(@Param("req") ResourceReqDetailPageReq req);
+
+    /**
+     * 根据申请单项主键修改申请单详情状态
+     * @param req
+     * @return
+     */
+    Integer updateResourceReqDetailStatusCd(ResourceReqDetailUpdateReq req);
 }

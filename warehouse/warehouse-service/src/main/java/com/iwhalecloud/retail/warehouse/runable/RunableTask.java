@@ -149,7 +149,7 @@ public class RunableTask {
                         detailReq.setMacCode(instDTO.getMacCode());
                         detailReq.setCreateDate(now);
                         detailReq.setStatusDate(now);
-                        detailReq.setStatusCd(ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode());
+                        detailReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
                         detailList.add(detailReq);
                     }
                     Boolean addReqDetail = detailManager.saveBatch(detailList);
@@ -418,7 +418,7 @@ public class RunableTask {
     }
 
     /**
-     * 零售商串码入库多线程处理
+     * 供应商串码入库多线程处理
      * @param req
      */
     public String exceutorAddNbrForSupplier(ResourceInstAddReq req) {

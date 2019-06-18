@@ -378,4 +378,33 @@ public class WorkFlowConst {
             return name;
         }
     }
+
+    /**
+     * 流程process_id
+     */
+    public enum PROCESS_ID {
+        PROCESS_1007("1007","调拨调出方审核流程实例"),
+        PROCESS_1008("1008","绿色通道流程实例"),
+        PROCESS_1012("1012","调拨两端都要审核流程实例"),
+        PROCESS_1013("1013","移动串码审核流程"),
+        PROCESS_1014("1014","厂商录入固网、泛智能终端串码审核流程（两步审核）"),
+        PROCESS_1015("1015","厂商串码入库集采流程实例（固网）（一步审核）"),
+        PROCESS_1016("1016","厂商录入固网社采(仅指机顶盒、三合一终端）串码审核流程（三步审核）");
+
+        private String typeCode;
+        private String typeName;
+
+        PROCESS_ID(String typeCode, String typeName) {
+            this.typeCode = typeCode;
+            this.typeName = typeName;
+        }
+
+        public String getTypeCode() {
+            return typeCode;
+        }
+
+        public String getTypeName() {
+            return typeName;
+        }
+    }
 }

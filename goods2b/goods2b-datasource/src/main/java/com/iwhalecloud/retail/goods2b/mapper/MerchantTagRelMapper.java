@@ -19,5 +19,11 @@ public interface MerchantTagRelMapper extends BaseMapper<MerchantTagRel>{
 
     List<MerchantTagRelDTO> listMerchantTagRel(@Param("req") MerchantTagRelListReq req);
 
+    /**
+     * 查询商家和标签的集合
+     * @param req
+     * @return
+     */
+    List<MerchantTagRelDTO> listMerchantAndTag(MerchantTagRelListReq req);
 
 }

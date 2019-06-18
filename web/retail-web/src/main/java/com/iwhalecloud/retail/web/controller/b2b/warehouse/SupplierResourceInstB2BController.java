@@ -108,7 +108,7 @@ public class SupplierResourceInstB2BController {
         req.setCreateStaff(userId);
         req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        req.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
+        req.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         BeanUtils.copyProperties(dto, req);
         req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
         req.setMerchantId(UserContext.getMerchantId());

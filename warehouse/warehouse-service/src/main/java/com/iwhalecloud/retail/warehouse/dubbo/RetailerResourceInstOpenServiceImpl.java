@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
@@ -39,6 +40,8 @@ public class RetailerResourceInstOpenServiceImpl implements RetailerResourceInst
 
     @Autowired
     private ProfileUtil profileUtil;
+    @Autowired
+    private ResourceInstCheckService resourceInstCheckService;
 
     @Autowired
     private ResouceInstTrackService resouceInstTrackService;
@@ -149,5 +152,9 @@ public class RetailerResourceInstOpenServiceImpl implements RetailerResourceInst
             return resp;
         }
     }
-    
+
+    @Override
+    public ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId){
+        return resourceInstCheckService.greenChannelValid(mktResId, merchantId);
+    }
 }

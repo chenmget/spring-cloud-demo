@@ -49,7 +49,7 @@ public class ResouceEventManager {
             queryWrapper.eq(ResouceEvent.FieldNames.mktResId.getTableFieldName(), resouceEventDTO.getMktResId());
             queryWrapper.eq(ResouceEvent.FieldNames.eventType.getTableFieldName(), resouceEventDTO.getEventType());
             event = resouceEventMapper.selectOne(queryWrapper);
-            log.info("ResouceEventManager.insertResouceEvent resouceEventMapper.selectOne req={}, event={}", JSON.toJSONString(queryWrapper), JSON.toJSONString(event));
+            log.info("ResouceEventManager.insertResouceEvent resouceEventMapper.selectOne, event={}", JSON.toJSONString(event));
             if (null == event) {
                 exist = false;
             } else {
@@ -74,12 +74,6 @@ public class ResouceEventManager {
             event.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             if (StringUtils.isNotEmpty(resouceEventDTO.getStatusCd())) {
                 event.setStatusCd(resouceEventDTO.getStatusCd());
-            }
-            if (StringUtils.isNotEmpty(resouceEventDTO.getMktResStoreId())) {
-                event.setMktResStoreId(resouceEventDTO.getMktResStoreId());
-            }
-            if (StringUtils.isNotEmpty(resouceEventDTO.getDestStoreId())) {
-                event.setDestStoreId(resouceEventDTO.getDestStoreId());
             }
             event.setUpdateDate(now);
             event.setStatusDate(now);

@@ -1034,7 +1034,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         }
         //1.2比较活动时间（包括开始时间和结束时间）
         // 1.2.1 活动开始时间
-        if ((changedActivity.getStartTime() != null) && !changedActivity.getStartTime().equals(originalActivity.getStartTime())) {
+        if ((changedActivity.getStartTime() != null&&changedActivity.getStartTime().getTime()>0) && !changedActivity.getStartTime().equals(originalActivity.getStartTime())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1050,7 +1050,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetails.add(activityChangeDetail);
         }
         //1.2.2 活动结束时间
-        if ((changedActivity.getEndTime() != null) && !changedActivity.getEndTime().equals(originalActivity.getEndTime())) {
+        if ((changedActivity.getEndTime() != null&&changedActivity.getEndTime().getTime()>0) && !changedActivity.getEndTime().equals(originalActivity.getEndTime())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1067,7 +1067,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         }
         //1.3比较发货时间（包括开始时间和结束时间）
         // 1.3.1 活动发货开始时间
-        if ((changedActivity.getDeliverStartTime() != null) && !changedActivity.getDeliverStartTime().equals(originalActivity.getDeliverStartTime())) {
+        if ((changedActivity.getDeliverStartTime() != null&&changedActivity.getDeliverStartTime().getTime()>0) && !changedActivity.getDeliverStartTime().equals(originalActivity.getDeliverStartTime())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1083,7 +1083,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetails.add(activityChangeDetail);
         }
         //1.3.2 活动发货结束时间
-        if ((changedActivity.getDeliverEndTime() != null) && !changedActivity.getDeliverEndTime().equals(originalActivity.getDeliverEndTime())) {
+        if ((changedActivity.getDeliverEndTime() != null&&changedActivity.getDeliverEndTime().getTime()>0) && !changedActivity.getDeliverEndTime().equals(originalActivity.getDeliverEndTime())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1100,7 +1100,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
         //1.4比较支付定金时间（包括开始时间和结束时间）
         // 1.4.1 支付定金开始时间
-        if ((changedActivity.getPreStartTime() != null) && !changedActivity.getPreStartTime().equals(originalActivity.getPreStartTime())) {
+        if ((changedActivity.getPreStartTime() != null&&changedActivity.getPreStartTime().getTime()>0) && !changedActivity.getPreStartTime().equals(originalActivity.getPreStartTime())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1116,7 +1116,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetails.add(activityChangeDetail);
         }
         //1.4.2 支付定金结束时间
-        if ((changedActivity.getPreEndTime() != null) && !changedActivity.getPreEndTime().equals(originalActivity.getPreEndTime())) {
+        if ((changedActivity.getPreEndTime() != null&&changedActivity.getPreEndTime().getTime()>0) && !changedActivity.getPreEndTime().equals(originalActivity.getPreEndTime())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1133,7 +1133,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
         //1.5比较支付尾款时间（包括开始时间和结束时间）
         // 1.5.1 支付尾款开始时间
-        if ((changedActivity.getTailPayStartTime() != null) && !changedActivity.getTailPayStartTime().equals(originalActivity.getTailPayStartTime())) {
+        if ((changedActivity.getTailPayStartTime() != null&&changedActivity.getTailPayStartTime().getTime()>0) && !changedActivity.getTailPayStartTime().equals(originalActivity.getTailPayStartTime())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1148,7 +1148,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetails.add(activityChangeDetail);
         }
         //1.5.2 支付尾款结束时间
-        if ((changedActivity.getTailPayEndTime() != null) && !changedActivity.getTailPayEndTime().equals(originalActivity.getTailPayEndTime())) {
+        if ((changedActivity.getTailPayEndTime() != null&&changedActivity.getTailPayEndTime().getTime()>0) && !changedActivity.getTailPayEndTime().equals(originalActivity.getTailPayEndTime())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);

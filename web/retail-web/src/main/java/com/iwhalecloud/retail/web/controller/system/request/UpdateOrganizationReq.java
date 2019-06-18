@@ -16,17 +16,26 @@ public class UpdateOrganizationReq implements java.io.Serializable {
     @ApiModelProperty(value = "ID")
     private java.lang.String orgId;
 
-    /**
-     * partnerOrgId
-     */
-    @ApiModelProperty(value = "父级ID")
-    private java.lang.String partnerOrgId;
+//    /**
+//     * partnerOrgId
+//     */
+//    @ApiModelProperty(value = "父级ID")
+//    private java.lang.String partnerOrgId;
+//
+//    /**
+//     * partnerOrgName
+//     */
+//    @ApiModelProperty(value = "父级名称")
+//    private java.lang.String partnerOrgName;
 
-    /**
-     * partnerOrgName
-     */
-    @ApiModelProperty(value = "父级名称")
-    private java.lang.String partnerOrgName;
+    @ApiModelProperty(value = "上级组织标识,直接记录组织的直接管理上级标识")
+    private java.lang.String parentOrgId;
+
+    @ApiModelProperty(value = "上级组织标识,直接记录组织的直接管理上级标识名称")
+    private java.lang.String parentOrgName;
+
+    @ApiModelProperty(value = "层次路径编码")
+    private java.lang.String pathCode;
 
     /**
      * orgCode

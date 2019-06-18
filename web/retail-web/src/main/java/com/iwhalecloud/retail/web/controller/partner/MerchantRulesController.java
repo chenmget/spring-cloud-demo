@@ -4,9 +4,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods.dto.resp.ProdBrandGetResp;
-
-import com.iwhalecloud.retail.goods2b.dto.req.BrandGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.BrandUrlResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.BrandService;
@@ -112,11 +109,6 @@ public class MerchantRulesController {
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-//    @RequestMapping(value = "/list", method = RequestMethod.POST)
-//    public ResultVO<List<MerchantRulesDTO>> listMerchantRules(@RequestBody @ApiParam(value = "列表查询参数", required = true) MerchantRulesListReq req) {
-//        // 判空
-//        return merchantRulesService.listMerchantRules(req);
-//    }
     @RequestMapping(value = "/list", method = RequestMethod.POST)
     @Transactional
     public ResultVO<List<MerchantRulesDetailDTO>> listMerchantRulesDetail(@RequestBody @ApiParam(value = "查询商家权限规则列表参数", required = true) MerchantRulesDetailListReq req) {
@@ -167,39 +159,6 @@ public class MerchantRulesController {
 
         return merchantRulesService.pageMerchantRules(req);
     }
-
-
-/*** 绿色通道权限 star ***/
-
-    /**
-     * 商家 绿色通道权限--按机型或产品修改限额 列表接口
-     * @param req
-     * @return
-     */
-//    @ApiOperation(value = "商家 绿色通道权限--按机型或产品修改限额 列表接口", notes = "商家 绿色通道权限--按机型或产品修改限额 列表接口")
-//    @ApiResponses({
-//            @ApiResponse(code=400,message="请求参数没填好"),
-//            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-//    })
-//    @RequestMapping(value = "/updateLimit", method = RequestMethod.POST)
-//    @Transactional
-//    public ResultVO<Integer> updateLimit(@RequestBody @ApiParam(value = "商家 绿色通道权限--按机型或产品修改限额 参数", required = true) MerchantRulesUpdateReq req) {
-//        // 校验 限额（暂时不做）
-//        MerchantRulesDTO merchantRulesDTO = merchantRulesService.getMerchantRulesById(req.getMerchantRuleId()).getResultData();
-//        if (merchantRulesDTO == null) {
-//            return ResultVO.error("商家权限规则记录ID有误，没有找到该记录！");
-//        }
-//        //
-//        if (req.getMaxSerialNum() == null || req.getMaxSerialNum() < 0) {
-//            return ResultVO.error("额度应为正整数,输入小数会自动取整数部分！");
-//        }
-////        return ResultVO.success(11);
-//
-//        return merchantRulesService.updateMerchantRules(req);
-//    }
-
-/*** 绿色通道权限 end ***/
-
 
     /**
      * 新建 商家经营权限规则
@@ -302,8 +261,8 @@ public class MerchantRulesController {
     })
     @RequestMapping(value = "/checkProdListRule", method = RequestMethod.GET)
     @Transactional
-    public ResultVO<Boolean> checkProdListRule(@RequestParam(value = "merchantId") String merchantId, @RequestParam(value = "productBaseId")String productBaseId) {
+    public ResultVO<Boolean> checkProdListRule(@RequestParam(value = "merchantId") String merchantId, @RequestParam(value = "productBaseId") String productBaseId) {
 
-        return merchantRulesService.checkProdListRule(merchantId,productBaseId);
+        return merchantRulesService.checkProdListRule(merchantId, productBaseId);
     }
 }

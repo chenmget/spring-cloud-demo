@@ -18,10 +18,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantLimitDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantLimitUpdateReq;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResouceEventService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
+import com.iwhalecloud.retail.warehouse.busiservice.*;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
@@ -100,6 +97,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     private Constant constant;
     @Autowired
     private ResouceStoreManager resouceStoreManager;
+    @Autowired
+    private ResourceInstCheckService resourceInstCheckService;
 
     private final String CLASS_TYPE_1 = "1";
     private final String CLASS_TYPE_2 = "2";
@@ -153,7 +152,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
             resourceRequestAddReq.setLanId(merchantDTOResultVO.getResultData().getLanId());
             resourceRequestAddReq.setRegionId(merchantDTOResultVO.getResultData().getCity());
-
+            resourceRequestAddReq.setDetailStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
             resourceRequestAddReq.setMktResStoreId(mktResStoreId);
             ResultVO<String> resultVO = requestService.insertResourceRequest(resourceRequestAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel() resourceRequestService.insertResourceRequest req={}, resultVO={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVO));
@@ -161,7 +160,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             ProcessStartReq processStartDTO = new ProcessStartReq();
             processStartDTO.setTitle("绿色通道超过限额审批流程");
             processStartDTO.setApplyUserId(req.getCreateStaff());
-            processStartDTO.setProcessId(ResourceConst.GREEN_CHANNEL_WORK_FLOW_INST);
+            processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_1008.getTypeCode());
             processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1090.getTaskSubType());
             processStartDTO.setApplyUserName(req.getApplyUserName());
             if (resultVO != null && resultVO.getResultData() != null) {
@@ -331,7 +330,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         //根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
         addReq.setMktResInstNbrs(mktResInstNbrs);
         addReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        addReq.setSourceType(ResourceConst.SOURCE_TYPE.RETAILER.getCode());
+        addReq.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         addReq.setStorageType(ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode());
         addReq.setMerchantType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
         addReq.setCreateStaff(req.getUpdateStaff());
@@ -411,6 +410,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (null == list || list.isEmpty()) {
             return ResultVO.error("没有查找到申请单");
         }
+        ResourceReqDetailDTO detailDTO = list.get(0);
 
         // step3 源仓库串码入库
         List<SyncTerminalItemSwapReq> syncTerminalItemSwapReqList = new ArrayList<SyncTerminalItemSwapReq>(list.size());
@@ -449,12 +449,14 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             BeanUtils.copyProperties(req, batchAndEventAddReq);
             batchAndEventAddReq.setCreateStaff(req.getUpdateStaff());
             batchAndEventAddReq.setMktResInstNbrs(mktResInstNbrs);
-            batchAndEventAddReq.setLanId(list.get(0).getLanId());
+            batchAndEventAddReq.setLanId(detailDTO.getLanId());
             batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
-            batchAndEventAddReq.setRegionId(list.get(0).getRegionId());
+            batchAndEventAddReq.setRegionId(detailDTO.getRegionId());
             batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
             batchAndEventAddReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
             batchAndEventAddReq.setObjId(req.getResReqId());
+            batchAndEventAddReq.setMktResStoreId(detailDTO.getMktResStoreId());
+            batchAndEventAddReq.setDestStoreId(detailDTO.getDestStoreId());
             batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceBatchRecService.saveEventAndBatch req={}", JSON.toJSONString(batchAndEventAddReq));
@@ -584,6 +586,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             return ResultVO.error("商家获取失败");
         }
         String requestStatusCd = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
+        String detailStatusCd = ResourceConst.DetailStatusCd.STATUS_CD_1002.getCode();
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         String auditType = validAllocateNbr(sourceMerchantDTO, destMerchantDTO, mktResInstNbrs);
@@ -593,6 +596,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         }else if(ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode().equals(auditType)){
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
             successMessage = ResourceConst.ALLOCATE_AUDITING_MSG + reqCode;
+            detailStatusCd = ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode();
         }
         // 此处应该调用BSS3.0接口查
         ResourceInstBatchReq resourceInstBatchReq = new ResourceInstBatchReq();
@@ -624,6 +628,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         resourceRequestAddReq.setLanId(destMerchantDTO.getLanId());
         resourceRequestAddReq.setRegionId(destMerchantDTO.getCity());
         resourceRequestAddReq.setReqCode(reqCode);
+        resourceRequestAddReq.setDetailStatusCd(detailStatusCd);
         ResultVO<String> resultVOInsertResReq = requestService.insertResourceRequest(resourceRequestAddReq);
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resourceRequestService.insertResourceRequest req={},resp={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVOInsertResReq));
         if (!resultVOInsertResReq.isSuccess()) {
@@ -634,7 +639,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ProcessStartReq processStartDTO = new ProcessStartReq();
         processStartDTO.setTitle("调拨审批流程");
         processStartDTO.setApplyUserId(req.getCreateStaff());
-        processStartDTO.setProcessId(ResourceConst.ALLOCATE_WORK_FLOW_INST_2);
+        processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_1012.getTypeCode());
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType());
         // 指定下一环节处理人
@@ -695,7 +700,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         		ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
         		resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbr);
         		resourceStoreIdResnbr.setMktResStoreId(mktResStoreId);
-        		String mktResInstType = resourceInstManager.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
+        		String mktResInstType = resourceInstService.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
         		if("4".equals(mktResInstType)) {
         			fhNbrList.add(mktResInstNbr);
         		}else {
@@ -708,7 +713,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         		ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
         		resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbr);
         		resourceStoreIdResnbr.setMktResStoreId(mktResStoreId);
-        		String mktResInstType = resourceInstManager.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
+        		String mktResInstType = resourceInstService.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
         		if("3".equals(mktResInstType)) {
         			fhNbrList.add(mktResInstNbr);
         		}else {
@@ -993,4 +998,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         return ResultVO.success();
     }
 
+    @Override
+    public ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId){
+        return resourceInstCheckService.greenChannelValid(mktResId, merchantId);
+    }
 }

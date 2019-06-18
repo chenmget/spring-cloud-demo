@@ -303,6 +303,12 @@ public class ProductBase implements Serializable {
 	@ApiModelProperty(value = "价格档位")
 	private String priceLevel;
 
+	/**
+	 * 卖点
+	 */
+	@ApiModelProperty(value = "卖点")
+	private String sallingPoint;
+
   	//属性 end
 	
     /** 字段名称枚举. */
@@ -438,6 +444,9 @@ public class ProductBase implements Serializable {
 
 		/** priceLevel. */
 		priceLevel("priceLevel","price_level"),
+
+		/** 卖点 */
+		sallingPoint("sallingPoint","salling_point"),
 
 		/**平均供货价*/
 		avgSupplyPrice("avgSupplyPrice","AVG_SUPPLY_PRICE");

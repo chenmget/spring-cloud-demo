@@ -72,14 +72,22 @@ public class CgSearchApplyController extends BaseController {
 		String userId = UserContext.getUserId();
 //		String userId = "100028487";
 		PriCityManagerResp login = purApplyService.getLoginInfo(userId);
-		String userType = login.getUserType();
+		Integer userFounder = UserContext.getUser().getUserFounder();
 		//传过来的APPLY_TYPE看
 		
 		String lanId = login.getLanId();
 		
-		log.info("查询采购申请单报表*******************lanId = "+lanId +" **************userType = "+userType);
-		if("2".equals(userType) || "2" == userType){//地市管理员
-			req.setLanId(lanId);
+		log.info("1查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
+		if(userFounder!=null) {
+			if(9==userFounder){//地市管理员
+				log.info("2查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
+				req.setLanId(lanId);
+			}
+		}
+		Boolean isMerchant= UserContext.isMerchant();
+		if(isMerchant==true) {
+			req.setMerchantId(UserContext.getMerchantId());
+            log.info("查询采购申请单报表*******************isMerchant = "+isMerchant +" **************UserContext.getMerchantId() = "+UserContext.getMerchantId());
 		}
 		
 		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
@@ -135,6 +143,9 @@ public class CgSearchApplyController extends BaseController {
 		}else if("2".equals(isSave)){//提交
 			statusCd = "20";
 		}
+		if(req.getAddrId()==null) {
+			ResultVO.error("请选择收货地址！");
+		}
 		
 		Date date = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -171,11 +182,11 @@ public class CgSearchApplyController extends BaseController {
 		if(isHaveSave != 0){//表里面有记录的话,申请单的字段就update,添加产品跟附件的就先delete再insert
 
 			purApplyService.updatePurApply(req);//联系电话，项目名称，供应商code可以修改
-			
+
 			purApplyService.delApplyItem(req);
-			
+
 			purApplyService.delApplyFile(req);
-			
+
 			purApplyService.delPurApplyExt(req);
 
 		}else{
@@ -206,6 +217,9 @@ public class CgSearchApplyController extends BaseController {
 		//表里面没记录的话
 
 		MemMemberAddressReq memMeneberAddr = purApplyService.selectMemMeneberAddr(req);
+		if(memMeneberAddr==null) {
+			ResultVO.error("找不到该地址！");
+		}
 		memMeneberAddr.setApplyId(applyId);
 		memMeneberAddr.setCreateStaff(createStaff);
 		memMeneberAddr.setCreateDate(createDate);

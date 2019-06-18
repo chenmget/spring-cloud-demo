@@ -58,6 +58,6 @@ public interface PurchaseApplyService {
      */
     ResultVO<Page<PurApplyDeliveryResp>> getDeliveryInfoByApplyID(PurApplyReq req);
 
-
+   public  Integer updatePurApplyItemDetailStatusCd(List<String> list);
 
 }

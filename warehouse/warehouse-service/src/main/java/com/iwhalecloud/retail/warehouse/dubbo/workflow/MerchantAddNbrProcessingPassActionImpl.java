@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.warehouse.dubbo.workflow;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
@@ -15,6 +16,7 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailUpdateReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
 import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
@@ -63,6 +65,9 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
 
     @Reference
     private ProductService productService;
+
+    @Autowired
+    private ResourceReqDetailManager resourceReqDetailManager;
     
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
@@ -138,6 +143,12 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
         ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
         log.info("MerchantAddNbrProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
+        // step4 修改申请单详情状态为通过
+        ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
+        detailUpdateReq.setMktResReqItemIdList(Lists.newArrayList(detailDTO.getMktResReqItemId()));
+        detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
+        Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
+        log.info("MerchantAddNbrProcessingPassActionImpl.run resourceReqDetailManager.updateResourceReqDetailStatusCd detailUpdateReq={}, resp={}", JSON.toJSONString(detailUpdateReq), detailNum);
         runableTask.exceutorAddNbrTrack(addReq);
         return ResultVO.success();
     }

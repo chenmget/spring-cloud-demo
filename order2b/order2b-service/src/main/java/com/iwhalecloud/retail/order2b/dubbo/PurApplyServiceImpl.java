@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
+import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -23,11 +24,7 @@ import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 
@@ -46,8 +43,15 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Reference
 	private ProductService productService;
+	@Reference
+	MerchantService merchantService;
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
+		log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
+		if (req.getLanId()!=null) {
+			req.setRegionId(req.getLanId());
+		}
+		//req.setRegionId();
 		Page<PurApplyResp> purApplyResp = purApplyManager.cgSearchApply(req);
 		List<PurApplyResp> list = purApplyResp.getRecords();
 		
@@ -93,7 +97,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		}
 		//获取产品政企价格列表
 		List<ProductInfoResp> productList =new ArrayList<ProductInfoResp>();
-		if(prodIds!=null && prodIds.size()>0) {
+		if (prodIds!=null && prodIds.size()>0) {
 			productList= productService.getProductInfoByIds(prodIds);
 
 		}
@@ -108,8 +112,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 			for (ProductInfoResp productInfoResp:productList) {
 				Double corporationPrice = productInfoResp.getCorporationPrice();
 				String productId = productInfoResp.getProductId();
-				if(productIdItem.equals(productId)) {
-					if(Double.valueOf(tPurPrice)>corporationPrice) {
+				if (productIdItem.equals(productId)) {
+					if (Double.valueOf(tPurPrice)>corporationPrice) {
 						count=count+1;
 						break;
 					}
@@ -124,6 +128,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
+
 		String isSave = req.getIsSave();
 		// 编辑的时候不做插入操作
 //		if(!isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
@@ -134,7 +139,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			int count =chooseCount(req);
 			log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 //		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
-			if(count>0) {
+			if (count>0) {
 				req.setStatusCd("21");
 				//更新省公司待审核状态
 				purApplyManager.updatePurApplyStatusCd(req);
@@ -148,9 +153,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 			//如果采购价大于政企价格 要省公司审核
 			processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 			Map map=new HashMap();
-			if(count>0) {
+			if (count>0) {
+				//根据商家ID获取 商家userId
 				map.put("CGJ","0");//
-			}else{
+			} else {
 				map.put("CGJ","1");
 			}
 			processStartDTO.setParamsValue(JSON.toJSONString(map));
@@ -160,6 +166,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 			processStartDTO.setProcessId(PurApplyConsts.PUR_APPLY_AUDIT_SGS_PROCESS_ID);
 			processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3040.getTaskSubType());
 			processStartDTO.setApplyUserId(req.getCreateStaff());
+			//
+			processStartDTO.setParamsType(2);
+			processStartDTO.setParamsValue(req.getApplyMerchantId());
 			//根据用户id查询名称
 			ResultVO<UserDetailDTO> userDetailDTO = userService.getUserDetailByUserId(req.getCreateStaff());
 			String userName = "";
@@ -177,12 +186,27 @@ public class PurApplyServiceImpl implements PurApplyService {
 				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
 						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 			}
+			// 申请单上选择的供应商 ，单子就由该供应商来审核  更新wf_task_item  的handler_user_id
+//			MerchantGetReq  merchantGetReq = new MerchantGetReq();
+//			merchantGetReq.setMerchantId(req.getApplyMerchantId());
+//			ResultVO<MerchantDetailDTO> merchantInfo =merchantService.getMerchantDetail(merchantGetReq);
+//			MerchantDetailDTO m = merchantInfo.getResultData();
+//			String userId = m.getUserId();
+//			String supplierName = m.getSupplierName();
+//			List<HandlerUser> list = new ArrayList<HandlerUser>();
+//			HandlerUser hUser = new HandlerUser();
+//			hUser.setHandlerUserId(userId);
+//			hUser.setHandlerUserName(supplierName);
+//			list.add(hUser);
+//			processStartDTO.setNextHandlerUser(list);
+
+
 		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
 			//做编辑处理
 			int count =chooseCount(req);
 			log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 //		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
-			if(count>0) {
+			if (count>0) {
 				req.setStatusCd("21");
 				//更新省公司待审核状态
 			}else {
@@ -194,9 +218,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 			nextRouteAndReceiveTaskReq.setFormId(req.getApplyId());
 			nextRouteAndReceiveTaskReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 			Map map=new HashMap();
-			if(count>0) {
+			if (count>0) {
 				map.put("CGJ","0");//
-			}else{
+			} else {
 				map.put("CGJ","1");
 			}
 			nextRouteAndReceiveTaskReq.setParamsValue(JSON.toJSONString(map));
@@ -285,7 +309,17 @@ public class PurApplyServiceImpl implements PurApplyService {
 	
 	@Override
 	public List<AddProductReq> ckApplyData2(PurApplyReq req) {
-		return purApplyManager.ckApplyData2(req);
+		List<AddProductReq> result = purApplyManager.ckApplyData2(req);
+		for (AddProductReq p:result) {
+			PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
+			PurApplyItemReq.setApplyItem(p.getApplyItemId());
+			PurApplyItemReq.setProductId(p.getProductId());
+			Integer count =purApplyManager.countPurApplyItemDetailReving(PurApplyItemReq);//查询发货的条数
+			if (count !=null) {
+				p.setDeliverCount(String.valueOf(count));
+			}
+		}
+		return result;
 	}
 	
 	@Override
@@ -357,9 +391,22 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
+		log.info(req.getBatchId()+"********************************************************************************************");
+		String isFixedLine = productService.selectisFixedLineByBatchId(req.getProductId());
+		String applyUserId = req.getApplyUserId();//移动终端 余玲 200012864664           固网终端  胡亚玲  200012829198
+		if("200012829198".equals(applyUserId)) {//固网
+			if(!"1".equals(isFixedLine)) {
+				return ResultVO.error("当前用户没有权限修改移动终端政企价格");
+			}
+		}else if("200012864664".equals(applyUserId)) {//移动
+			if("1".equals(isFixedLine)) {
+				return ResultVO.error("当前用户没有权限修改固网终端政企价格");
+			}
+		}else {
+			return ResultVO.error("当前用户没有权限修改政企价格");
+		}
 		
-		String isFixedLine = purApplyManager.selectisFixedLineByBatchId(req.getBatchId());
-		
+		log.info(req.getBatchId()+"********************************************************************************************"+isFixedLine);
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
 		//政企价格修改审核
@@ -439,8 +486,44 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
-		
-		String isFixedLine = purApplyManager.selectisFixedLineByBatchId(req.getBatchId());
+		String applyUserId = req.getApplyUserId();//移动终端 余玲 200012864664           固网终端  胡亚玲  200012829198
+		List<String> listProd = new ArrayList<String>();
+		String isFixedLine = null;
+		if("200012829198".equals(applyUserId)) {//固网终端
+			isFixedLine = "1";
+			List<String> listProductPrice = req.getProductPrice();
+			if(listProductPrice!= null && listProductPrice.size() > 0) {
+				//判断所有产品ID是同一类型
+				for(int i=0;i<listProductPrice.size();i++) {
+					String productId = listProductPrice.get(i).split("\\|")[0];
+					String isFixedLineMa = productService.selectisFixedLineByBatchId(productId);
+					if(!isFixedLine.equals(isFixedLineMa)) {
+						listProd.add(productId);
+					}
+				}
+				if(listProd.size() > 0) {
+					return ResultVO.error("这些产品不是固网终端 ： "+String.valueOf(listProd));
+				}
+			}
+		} else if("200012864664".equals(applyUserId)) {//移动终端
+			isFixedLine = "0";
+			List<String> listProductPrice = req.getProductPrice();
+			if(listProductPrice!= null && listProductPrice.size() > 0) {
+				//判断所有产品ID是同一类型
+				for(int i=0;i<listProductPrice.size();i++) {
+					String productId = listProductPrice.get(i).split("\\|")[0];
+					String isFixedLineMa = productService.selectisFixedLineByBatchId(productId);
+					if(!isFixedLine.equals(isFixedLineMa)) {
+						listProd.add(productId);
+					}
+				}
+				if(listProd.size() > 0) {
+					return ResultVO.error("这些产品不是移动终端 ： " + String.valueOf(listProd));
+				}
+			}
+		} else {
+			return ResultVO.error("当前用户没有权限修改政企价格");
+		}
 		
 		//政企价格修改提交启动流程
 		ProcessStartReq processStartDTO = new ProcessStartReq();
@@ -532,7 +615,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public void insertTcProcureApply(ProcureApplyReq req) {
 		purApplyManager.tcProcureApply(req);
 	}
-	
+
+	@Override
+	public ResultVO applyPurchase(ProcureApplyReq req) {
+		return null;
+	}
+
 	public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(UpdateCorporationPriceReq req){
 		List<ProdProductChangeDetail> list = purApplyManager.searchCommitPriceInfo(req);
 		return ResultVO.success(list);

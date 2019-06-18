@@ -55,35 +55,46 @@ public class ProductBrandNodeRightsServiceExecutorImpl implements WFServiceExecu
 
         String productBaseId = context.getBusinessId();
         String brandId = context.getParamsValue();
-//        ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
-//        log.info("ProductBrandNodeRightsServiceExecutorImpl productBaseGetResp={}" + productBaseGetResp);
-        String type = "BRAND_AUDIT_PEOPLE"; //品牌审核人
-        List<PublicDictDTO> publicDictDTOs = PublicDictService.queryPublicDictListByType(type);
-        log.info("ProductBrandNodeRightsServiceExecutorImpl publicDictDTOs={}" + publicDictDTOs);
-        if(CollectionUtils.isEmpty(publicDictDTOs)){
-            return ResultVO.success(handlerUsers);
-        }
-        HashMap<String,String> brandMap = new HashMap<>();
-        for(PublicDictDTO publicDictDTO:publicDictDTOs){
-            brandMap.put(publicDictDTO.getCodec(),publicDictDTO.getCodeb());
-        }
-        log.info("ProductBrandNodeRightsServiceExecutorImpl brandMap={}",brandMap);
-        HandlerUser handlerUser = new HandlerUser();
-        Brand brand = brandManager.getBrandByBrandId(brandId);
-        if(null!=brand && StringUtils.isNotEmpty(brand.getName())){
-            UserGetReq userGetReq = new UserGetReq();
-            if(brandMap.containsKey(brand.getName())){
-                userGetReq.setLoginName(brandMap.get(brand.getName()));
+        ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
+        log.info("ProductBrandNodeRightsServiceExecutorImpl productBaseGetResp={}" + productBaseGetResp);
+        if(null!=productBaseGetResp){
+            String isFixedLine = productBaseGetResp.getIsFixedLine();
+            if(StringUtils.isNotEmpty(isFixedLine) && "1".equals(isFixedLine)){
+                HandlerUser handlerUser = new HandlerUser();
+                handlerUser.setHandlerUserId("200012864642");
+                handlerUser.setHandlerUserName("胡一辰");
+                handlerUsers.add(handlerUser);
             }else{
-                userGetReq.setLoginName(brandMap.get("其他品牌"));
+                String type = "BRAND_AUDIT_PEOPLE"; //品牌审核人
+                List<PublicDictDTO> publicDictDTOs = PublicDictService.queryPublicDictListByType(type);
+                log.info("ProductBrandNodeRightsServiceExecutorImpl publicDictDTOs={}" + publicDictDTOs);
+                if(CollectionUtils.isEmpty(publicDictDTOs)){
+                    return ResultVO.success(handlerUsers);
+                }
+                HashMap<String,String> brandMap = new HashMap<>();
+                for(PublicDictDTO publicDictDTO:publicDictDTOs){
+                    brandMap.put(publicDictDTO.getCodec(),publicDictDTO.getCodeb());
+                }
+                log.info("ProductBrandNodeRightsServiceExecutorImpl brandMap={}",brandMap);
+                HandlerUser handlerUser = new HandlerUser();
+                Brand brand = brandManager.getBrandByBrandId(brandId);
+                if(null!=brand && StringUtils.isNotEmpty(brand.getName())){
+                    UserGetReq userGetReq = new UserGetReq();
+                    if(brandMap.containsKey(brand.getName())){
+                        userGetReq.setLoginName(brandMap.get(brand.getName()));
+                    }else{
+                        userGetReq.setLoginName(brandMap.get("其他品牌"));
+                    }
+                    UserDTO userDTO = userService.getUser(userGetReq);
+                    if(null!=userDTO){
+                        handlerUser.setHandlerUserName(userDTO.getUserName());
+                        handlerUser.setHandlerUserId(userDTO.getUserId());
+                    }
+                    handlerUsers.add(handlerUser);
+                }
             }
-            UserDTO userDTO = userService.getUser(userGetReq);
-            if(null!=userDTO){
-                handlerUser.setHandlerUserName(userDTO.getUserName());
-                handlerUser.setHandlerUserId(userDTO.getUserId());
-            }
-            handlerUsers.add(handlerUser);
         }
+
 //        if(null!=productBaseGetResp){
 //            HandlerUser handlerUser = new HandlerUser();
 //            String brandId = productBaseGetResp.getBrandId();

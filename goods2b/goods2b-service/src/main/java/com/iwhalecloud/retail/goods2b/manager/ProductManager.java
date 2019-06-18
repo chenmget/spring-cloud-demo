@@ -270,4 +270,8 @@ public class ProductManager {
     public String selectNextChangeDetailId() {
     	return productMapper.selectNextChangeDetailId();
     }
+    
+    public String selectisFixedLineByBatchId(String batchId) {
+		return productMapper.selectisFixedLineByBatchId(batchId);
+	}
 }

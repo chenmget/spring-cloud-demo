@@ -43,6 +43,10 @@ public class MerchantTagRelDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "商家 ID")
 	private String merchantId;
 
+	@ApiModelProperty(value = "relTagId")
+	private String relTagId;
 
+	@ApiModelProperty(value = "tagType")
+	private String tagType;
 
 }

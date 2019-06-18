@@ -97,4 +97,12 @@
         order by detail.MKT_RES_INST_NBR DESC
         LIMIT #{req.pageStartNo}, #{req.pageSize}
     </select>
+
+    <update id="updateResourceReqDetailStatusCd" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailUpdateReq">
+        UPDATE MKT_RES_REQ_DETAIL set UPDATE_STAFF = #{updateStaff}, UPDATE_DATE = #{updateDate}, STATUS_DATE = #{statusDate}, STATUS_CD = #{statusCd}
+        WHERE MKT_RES_REQ_ITEM_ID in
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResReqItemIdList">
+            #{item}
+        </foreach>
+    </update>
 </mapper>

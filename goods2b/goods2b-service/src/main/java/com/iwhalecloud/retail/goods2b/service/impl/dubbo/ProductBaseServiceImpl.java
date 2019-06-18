@@ -522,7 +522,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             updateProductFlow = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
         }
         //流程2
-        if(req.getProductName().equals(oldReq.getProductName())){
+        if(!req.getProductName().equals(oldReq.getProductName())){
             if(ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                 updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
             }else{
@@ -531,7 +531,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
         //流程2
         if(!StringUtils.isEmpty(req.getSallingPoint()) && !StringUtils.isEmpty(oldReq.getSallingPoint()) &&
-                req.getSallingPoint().equals(oldReq.getSallingPoint())){
+                !req.getSallingPoint().equals(oldReq.getSallingPoint())){
             if(ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                 updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
             }else{
@@ -573,6 +573,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
     private boolean compareProdFile(List<FileAddReq> newFileAddReqs,List<FileAddReq> oldFileAddReqs){
+        if(CollectionUtils.isEmpty(newFileAddReqs) && CollectionUtils.isEmpty(oldFileAddReqs)){
+            return false;
+        }
         if(!CollectionUtils.isEmpty(newFileAddReqs) && CollectionUtils.isEmpty(oldFileAddReqs)){
             return true;
         }

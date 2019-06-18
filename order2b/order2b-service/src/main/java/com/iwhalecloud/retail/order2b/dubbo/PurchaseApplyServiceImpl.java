@@ -302,7 +302,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 return ResultVO.error("更新采购申请单状态失败");
             }
         } else {
-
+//          分批发货
             if (req.getStatusCd()!=PurApplyConsts.PUR_APPLY_STATUS_DELIVERYING) {
                 PurApplyReq purApplyReq = new PurApplyReq();
                 purApplyReq.setApplyId(req.getApplyId());

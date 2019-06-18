@@ -34,7 +34,7 @@ public class SyncMktToITMSJob implements SimpleJob {
             return;
         }
         try {
-            resourceInstStoreService.syncMktToITMS();
+//            resourceInstStoreService.syncMktToITMS();
 
         } catch (RuntimeException e) {
             log.error("串码入库，与ITMS集成", e);

@@ -444,37 +444,36 @@ public class GoodsB2BController extends GoodsBaseController {
         return orgPathCode;
     }
 
-    private void setRegionIdAndTargetId(GoodsForPageQueryReq req) {
-        // 根据商家所属地市，过滤商品发布区域
-        String merchantId = UserContext.getMerchantId();
-        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
-        log.info("GoodsB2BController.queryGoodsForPage merchantId={},merchantDTOResultVO={}", merchantId,
-                JSON.toJSONString(merchantDTOResultVO));
-        if (merchantDTOResultVO.isSuccess() && merchantDTOResultVO.getResultData() != null) {
-            MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
-            req.setRegionId(merchantDTO.getCity());
-        }
-        // 根据商家id过滤发布对象类型
-        req.setTargetId(merchantId);
-    }
-
-    private ResultVO<Page<GoodsForPageQueryResp>> getPageResultVO(GoodsForPageQueryReq req) {
-        // 查询省包商品
-        ResultVO<Page<GoodsForPageQueryResp>> pageResultVO;
-        MerchantListReq merchantList = new MerchantListReq();
-        // 类型为省包供应商
-        merchantList.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
-        log.info("GoodsB2BController.getPageResultVO merchantListReq={}", JSON.toJSONString(merchantList));
-        ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(merchantList);
-        if (resultVO.isSuccess() && !CollectionUtils.isEmpty(resultVO.getResultData())) {
-            List<MerchantDTO> merchantDTOList = resultVO.getResultData();
-            List<String> supplierIdList = merchantDTOList.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
-            req.setSupplierIdList(supplierIdList);
-        }
-        log.info("GoodsB2BController.getPageResultVO req={}", JSON.toJSONString(req));
-        pageResultVO = goodsService.queryGoodsForPage(req);
-        return pageResultVO;
-    }
+//    private void setRegionIdAndTargetId(GoodsForPageQueryReq req) {
+//        // 根据商家所属地市，过滤商品发布区域
+//        String merchantId = UserContext.getMerchantId();
+//        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
+//        log.info("GoodsB2BController.queryGoodsForPage merchantId={},merchantDTOResultVO={}", merchantId,
+//                JSON.toJSONString(merchantDTOResultVO));
+//        if (merchantDTOResultVO.isSuccess() && merchantDTOResultVO.getResultData() != null) {
+//            MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
+//            req.setRegionId(merchantDTO.getCity());
+//        }
+//        // 根据商家id过滤发布对象类型
+//        req.setTargetId(merchantId);
+//    }
+//    private ResultVO<Page<GoodsForPageQueryResp>> getPageResultVO(GoodsForPageQueryReq req) {
+//        // 查询省包商品
+//        ResultVO<Page<GoodsForPageQueryResp>> pageResultVO;
+//        MerchantListReq merchantList = new MerchantListReq();
+//        // 类型为省包供应商
+//        merchantList.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+//        log.info("GoodsB2BController.getPageResultVO merchantListReq={}", JSON.toJSONString(merchantList));
+//        ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(merchantList);
+//        if (resultVO.isSuccess() && !CollectionUtils.isEmpty(resultVO.getResultData())) {
+//            List<MerchantDTO> merchantDTOList = resultVO.getResultData();
+//            List<String> supplierIdList = merchantDTOList.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
+//            req.setSupplierIdList(supplierIdList);
+//        }
+//        log.info("GoodsB2BController.getPageResultVO req={}", JSON.toJSONString(req));
+//        pageResultVO = goodsService.queryGoodsForPage(req);
+//        return pageResultVO;
+//    }
 
     private void setTarGetCodeList(GoodsForPageQueryReq req) throws UserNoMerchantException {
         req.setIsLogin(true);

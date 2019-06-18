@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.system;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.common.SysOrgConst;
 import com.iwhalecloud.retail.system.dto.request.OrganizationChildListReq;
+import com.iwhalecloud.retail.system.dto.request.OrganizationListReq;
 import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
 import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
 import com.iwhalecloud.retail.system.service.OrganizationService;
@@ -40,6 +41,14 @@ public class OrganizationServerTest {
         System.out.print("结果：" + resultVO.getResultData().toString());
     }
 
+    @org.junit.Test
+    public void listOrganization(){
+        OrganizationListReq req = new OrganizationListReq();
+        req.setOrgIdList(Lists.newArrayList("843073102060000", "84307300504000"));
+//        req.setOrgLevel(SysOrgConst.ORG_LEVEL.LEVEL_6.getCode());
+        ResultVO<List<OrganizationListResp>> resultVO = organizationService.listOrganization(req);
+        System.out.print("结果：" + resultVO.getResultData().toString());
+    }
 
 
 }

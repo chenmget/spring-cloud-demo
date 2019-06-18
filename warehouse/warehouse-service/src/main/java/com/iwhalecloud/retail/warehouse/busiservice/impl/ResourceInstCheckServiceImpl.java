@@ -184,7 +184,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3010.getTaskSubType();
             if (req.getMktResInstNbrs().size() < checkMaxNum || ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
                 requestStatusCd = ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode();
-                processId = WorkFlowConst.PROCESS_ID.PROCESS_1015.getTypeCode();
+                processId = WorkFlowConst.PROCESS_ID.PROCESS_15.getTypeCode();
             }else {
                 TypeSelectByIdReq typeReq = new TypeSelectByIdReq();
                 typeReq.setTypeId(req.getTypeId());
@@ -194,10 +194,10 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                 }
                 String detailCode = typeDetailRespResultVO.getResultData().getDetailCode();
                 if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(detailCode) || TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(detailCode)) {
-                    processId = WorkFlowConst.PROCESS_ID.PROCESS_1016.getTypeCode();
+                    processId = WorkFlowConst.PROCESS_ID.PROCESS_16.getTypeCode();
                     requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK_CUSTSUP.getCode();
                 } else{
-                    processId = WorkFlowConst.PROCESS_ID.PROCESS_1014.getTypeCode();
+                    processId = WorkFlowConst.PROCESS_ID.PROCESS_14.getTypeCode();
                     requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK.getCode();
                 }
             }
@@ -205,7 +205,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             // 移动串码审核流程
             taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1020.getTaskSubType();
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
-            processId = WorkFlowConst.PROCESS_ID.PROCESS_1013.getTypeCode();
+            processId = WorkFlowConst.PROCESS_ID.PROCESS_13.getTypeCode();
         }
         SelectProcessResp resp = new SelectProcessResp();
         resp.setProcessId(processId);

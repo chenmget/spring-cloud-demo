@@ -255,10 +255,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
         String reqCode = resourceInstManager.getPrimaryKey();
 
-        String processId = WorkFlowConst.PROCESS_ID.PROCESS_1007.getTypeCode();
+        String processId = WorkFlowConst.PROCESS_ID.PROCESS_07.getTypeCode();
         String taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType();
         if (!sameLanId) {
-            processId = WorkFlowConst.PROCESS_ID.PROCESS_1012.getTypeCode();
+            processId = WorkFlowConst.PROCESS_ID.PROCESS_12.getTypeCode();
             taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType() ;
         }
         // step2 新增申请单

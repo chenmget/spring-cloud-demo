@@ -44,6 +44,8 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	String receive_time = dto.getReceiveTime();
 	    	String couponMoney = dto.getCouponMoney();
 	    	String paymentType = dto.getPaymentType();
+	    	dto.setPrice(dto.getPrice()/100);
+	    	dto.setTotalMoney(dto.getTotalMoney()/100);
 	    	if(create_time != null && create_time != "" ){
 	    		String[] createTime = create_time.split("\\.");
 	    		if(createTime.length>0){
@@ -71,6 +73,8 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 				dto.setPaymentType("线上支付");
 			}else if ("2".equals(paymentType)) {
 				dto.setPaymentType("线下支付");
+			}else {
+				dto.setPaymentType("其他");
 			}
 			
 			if(couponMoney != null && couponMoney != "" && couponMoney.length()>2){
@@ -103,12 +107,13 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    for(ReportOrderResp rr : list){
 	    	String status = rr.getStatus();//订单状态
 	    	String orderType = rr.getOrderType();//订单类型
-	    	String type = rr.getOrderCat();//交易类型
-//	    	String paymentType = rr.getPaymentType();//支付类型
+	    	String orderCat = rr.getOrderCat();//交易类型
+	    	String paymentType = rr.getPaymentType();//支付类型
 	    	String payType = rr.getPayType();//支付方式
 	    	String lanId = rr.getLanId();
 	    	String couponType = rr.getCouponType();//优惠类型
-
+	    	rr.setPrice(rr.getPrice()/100);
+	    	rr.setTotalMoney(rr.getTotalMoney()/100);
 	    	if(status != null){
 	    		if("2".equals(status)){
 	    			rr.setStatus("待支付");
@@ -152,13 +157,13 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			rr.setStatus("已换货");
 	    		}else if("41".equals(status)){
 	    			rr.setStatus("部分发货");
+	    		}else {
+	    			rr.setStatus("其他");
 	    		}
 	    	}
 	    	
 	    	if(orderType != null){
-	    		if("2".equals(orderType)){
-	    			rr.setOrderType("未知");
-	    		}else if("11".equals(orderType)){
+	    		if("11".equals(orderType)){
 	    			rr.setOrderType("省包至地包交易订单");
 	    		}else if("12".equals(orderType)){
 	    			rr.setOrderType("省包至零售商交易订单");
@@ -172,24 +177,30 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			rr.setOrderType("零售商到客户交易订单");
 	    		}else if("21".equals(orderType)){
 	    			rr.setOrderType("分销交易订单");
+	    		}else {
+	    			rr.setOrderType("其他");
 	    		}
 	    	}
 	    	
-	    	if(type != null){
-	    		if("0".equals(type)){
+	    	if(orderCat != null){
+	    		if("0".equals(orderCat)){
 	    			rr.setOrderCat("普通分销");
-	    		}else if("1".equals(type)){
+	    		}else if("1".equals(orderCat)){
 	    			rr.setOrderCat("预售");
+	    		}else {
+	    			rr.setOrderCat("其他");
 	    		}
 	    	}
 	    	
-//	    	if(paymentType != null){
-//	    		if("1".equals(paymentType)){
-//	    			rr.setPaymentType("在线支付");
-//	    		}else if("2".equals(paymentType)){
-//	    			rr.setPaymentType("线下支付");
-//	    		}
-//	    	}
+	    	if(paymentType != null){
+	    		if("1".equals(paymentType)){
+	    			rr.setPaymentType("在线支付");
+	    		}else if("2".equals(paymentType)){
+	    			rr.setPaymentType("线下支付");
+	    		} else {
+	    			rr.setPaymentType("其他");
+	    		} 
+	    	}
 	    	
 	    	if(payType != null){
 	    		if("1".equals(payType)){
@@ -200,6 +211,8 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			rr.setPayType("支付宝支付");
 	    		}else if("4".equals(payType)){
 	    			rr.setPayType("线下支付");
+	    		}else {
+	    			rr.setPayType("其他");
 	    		}
 	    	}
 	    	
@@ -247,6 +260,8 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			rr.setCouponType("赠送");
 	    		}else if("50".equals(couponType)){
 	    			rr.setCouponType("红包");
+	    		}else {
+	    			rr.setCouponType("其他");
 	    		}
 	    	}
 	    	

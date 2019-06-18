@@ -101,11 +101,18 @@ public interface MerchantRulesService {
     ResultVO<List<String>> getProductAndBrandPermission(String merchantId);
 
     /**
-     * 通过merchantId查询商家区域和对象权限集合
+     * 通过merchantId查询 调拨权限的 商家区域和对象权限集合
      * @param req
      * @return 机型id集合
      */
-    ResultVO<List<String>> getRegionAndMerchantPermission(MerchantRulesCommonReq req);
+    ResultVO<List<String>> getTransferRegionAndMerchantPermission(MerchantRulesCommonReq req);
+
+    /**
+     * 通过merchantId查询 经营权限的   商家区域和对象权限集合
+     * @param req
+     * @return 机型id集合
+     */
+    ResultVO<List<String>> getBusinessRegionAndMerchantPermission(MerchantRulesCommonReq req);
 
     /**
      * 批量添加 商家 权限规则

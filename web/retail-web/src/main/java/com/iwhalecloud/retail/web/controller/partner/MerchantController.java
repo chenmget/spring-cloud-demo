@@ -324,7 +324,7 @@ public class MerchantController {
                 });
             }
         }
-        
+
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         excelTitleNames = MerchantColumn.complementSupplyMerchantFileds(excelTitleNames);
         OutputStream output = null;
@@ -594,7 +594,7 @@ public class MerchantController {
     @RequestMapping(value = "/governmentEnterpriseSuppliers", method = RequestMethod.GET)
     public ResultVO<Boolean> governmentEnterpriseSuppliers() {
         UserDTO curLoginUserDTO = UserContext.getUser();
-        if( curLoginUserDTO == null ){
+        if (curLoginUserDTO == null) {
             return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
         }
         MerchantTagRelListReq req = new MerchantTagRelListReq();
@@ -616,7 +616,7 @@ public class MerchantController {
      */
     @ApiOperation(value = "删除商家标签", notes = "获取商家标签接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "relId", value = "商家-标签关联ID", paramType = "query", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "relId", value = "商家-标签关联ID", paramType = "query", required = true, dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
@@ -655,14 +655,14 @@ public class MerchantController {
         if (UserContext.getUserOtherMsg() != null && UserContext.getUserOtherMsg().getMerchant() != null && !isAdminType) {
             String merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
             commonReq.setMerchantId(merchantId);
-            ResultVO<List<String>> permissionVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+            ResultVO<List<String>> permissionVO = merchantRulesService.getBusinessRegionAndMerchantPermission(commonReq);
             if (permissionVO.isSuccess() && !CollectionUtils.isEmpty(permissionVO.getResultData())) {
                 req.setMerchantIdList(permissionVO.getResultData());
             }
         } else if (isAdminType && StringUtils.isNotBlank(req.getMerchantId())) {
             // 管理员登陆且指定商家
             commonReq.setMerchantId(req.getMerchantId());
-            ResultVO<List<String>> permissionVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+            ResultVO<List<String>> permissionVO = merchantRulesService.getBusinessRegionAndMerchantPermission(commonReq);
             if (permissionVO.isSuccess() && !CollectionUtils.isEmpty(permissionVO.getResultData())) {
                 req.setMerchantIdList(permissionVO.getResultData());
             }

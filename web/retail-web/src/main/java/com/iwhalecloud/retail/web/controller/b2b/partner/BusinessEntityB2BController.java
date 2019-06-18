@@ -145,7 +145,7 @@ public class BusinessEntityB2BController {
         if (UserContext.getUserOtherMsg() != null && UserContext.getUserOtherMsg().getMerchant() != null && !isAdminType) {
             String merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
             commonReq.setMerchantId(merchantId);
-            ResultVO<List<String>> permissionVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+            ResultVO<List<String>> permissionVO = merchantRulesService.getBusinessRegionAndMerchantPermission(commonReq);
             log.info("BusinessEntityB2BController.pageBusinessEntityByRight merchantRulesService.getRegionAndMerchantPermission, req= {} ", merchantId, JSON.toJSONString(permissionVO));
             if (permissionVO.isSuccess() && !CollectionUtils.isEmpty(permissionVO.getResultData())) {
                 req.setMerchantIdList(permissionVO.getResultData());
@@ -154,7 +154,7 @@ public class BusinessEntityB2BController {
             // 管理员登陆且指定商家
             String merchantId = req.getMerchantId();
             commonReq.setMerchantId(merchantId);
-            ResultVO<List<String>> permissionVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+            ResultVO<List<String>> permissionVO = merchantRulesService.getBusinessRegionAndMerchantPermission(commonReq);
             log.info("BusinessEntityB2BController.pageBusinessEntityByRight merchantRulesService.getRegionAndMerchantPermission, req= {} ", req.getMerchantId(), JSON.toJSONString(permissionVO));
             if (permissionVO.isSuccess() && !CollectionUtils.isEmpty(permissionVO.getResultData())) {
                 req.setMerchantIdList(permissionVO.getResultData());

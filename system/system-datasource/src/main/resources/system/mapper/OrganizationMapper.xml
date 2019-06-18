@@ -61,6 +61,7 @@
         select org_id, org_name, lan_id, region_id from sys_organization WHERE ORG_LEVEL = '2' and lan_id != '10000000' GROUP BY lan_id
     </select>
 
+    <!--根据条件查询组织列表-->
     <select id="listOrganization" resultType="com.iwhalecloud.retail.system.dto.response.OrganizationListResp"
             parameterType="com.iwhalecloud.retail.system.dto.request.OrganizationListReq">
         select
@@ -87,7 +88,7 @@
         order by ORG_ID desc
     </select>
 
-
+    <!--根据orgId集合查询下属的子组织-->
     <select id="listOrganizationChild" resultType="com.iwhalecloud.retail.system.dto.response.OrganizationListResp"
             parameterType="com.iwhalecloud.retail.system.dto.request.OrganizationChildListReq">
         select

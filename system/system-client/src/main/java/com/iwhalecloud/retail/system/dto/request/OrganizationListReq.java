@@ -30,12 +30,4 @@ public class OrganizationListReq implements Serializable {
     @ApiModelProperty(value = "orgLevel")
     private Long orgLevel;
 
-    public static void main(String[] args) {
-        List<String> list = Lists.newArrayList("1", "1", "12", "12", "221");
-        List<String> list1 = Lists.newArrayList("1", "12", "123", "124", "2213");
-        list1.removeAll(list);
-        System.out.print(list1);
-    }
-
-
 }

@@ -27,7 +27,7 @@ import java.util.List;
  */
 
 @Slf4j
-@Service
+@Service(group = "order")
 public class PurApplyGetHandlerUserIdServiceImpl implements WFServiceExecutor {
 
     @Reference

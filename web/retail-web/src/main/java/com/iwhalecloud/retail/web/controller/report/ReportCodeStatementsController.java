@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
@@ -30,6 +31,10 @@ import com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp;
 import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportCodeStateService;
+import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.StorePageReq;
+import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -53,6 +58,9 @@ public class ReportCodeStatementsController extends BaseController  {
     private IReportDataInfoService iReportDataInfoService;
 	
 	@Reference
+	private ResouceStoreService resouceStoreService;
+	
+	@Reference
     private ReportCodeStateService reportCodeStateService;
 	
 	@Autowired
@@ -66,40 +74,7 @@ public class ReportCodeStatementsController extends BaseController  {
     @PostMapping("/getCodeStatementsReport")
 	@UserLoginToken
     public ResultVO<Page<ReportCodeStatementsResp>> getCodeStatementsReport(@RequestBody ReportCodeStatementsReq req) {
-		//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
-//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-//		String retailerCodes = req.getLssCode();//是否输入了零售商账号
-		//String userType = UserContext.getUser().getUserFounder()+"";
-		String userType=req.getUserType();
-//		if("2".equals(legacyAccount) && !"3".equals(userType) && retailerCodes != null){
-//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-//			req.setLssCode(retailerCodes);
-//		}
-		if(userType!=null&&!"".equals(userType)&&userType.equals("1")){
-			return reportCodeStateService.getCodeStatementsReportAdmin(req);
-		}
-		if(userType!=null&&!"".equals(userType)&&userType.equals("2")){
-			String lanId=UserContext.getUser().getLanId();
-			req.setLanId(lanId);
-			return reportCodeStateService.getCodeStatementsReportAdmin(req);
-		}else if("3".equals(userType)){
-			String lssCode = UserContext.getUser().getRelCode();
-			req.setLssCode(lssCode);
-			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(lssCode);
-			req.setMktResStoreId(mktResStoreId);
-		}else if("4".equals(userType)){
-			String gysCode = UserContext.getUser().getRelCode();
-			req.setGysCode(gysCode);
-			//供应商只能看自己的仓库
-			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(gysCode);
-			req.setMktResStoreId(mktResStoreId);
-		}else if("5".equals(userType)){
-			String manufacturerCode = UserContext.getUser().getRelCode();
-			req.setManufacturerCode(manufacturerCode);
-			//厂商也只能看自己的仓库
-			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(manufacturerCode);
-			req.setMktResStoreId(mktResStoreId);
-		}
+		log.info("****************ReportOrderController getCodeStatementsReport()  ************start param={}",JSON.toJSONString(req));
 		String xdCreateTimeStart = req.getXdCreateTimeStart();
 		String xdCreateTimeEnd = req.getXdCreateTimeEnd();
 		Date date = new Date();
@@ -114,6 +89,26 @@ public class ReportCodeStatementsController extends BaseController  {
 		if(xdCreateTimeStart==null && xdCreateTimeEnd==null){
 			xdCreateTimeStart = format3.format(date3);
 			xdCreateTimeEnd = df.format(date);
+			req.setXdCreateTimeStart(xdCreateTimeStart);
+			req.setXdCreateTimeEnd(xdCreateTimeEnd);
+		}
+		int userType=UserContext.getUser().getUserFounder();
+		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
+			return reportCodeStateService.getCodeStatementsReportAdmin(req);
+		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+			String lanId=UserContext.getUser().getLanId();
+			req.setCityId(lanId);
+			return reportCodeStateService.getCodeStatementsReportAdmin(req);
+		} else if (userType == SystemConst.USER_FOUNDER_4 ||
+				userType == SystemConst.USER_FOUNDER_5 ||
+				userType == SystemConst.USER_FOUNDER_3 ) {//省供应商  地市供应商  零售商 （只能查看自己的仓库）
+			StorePageReq storePageReq = new StorePageReq();
+			List<String> merchantIds = new ArrayList<String>();
+			merchantIds.add(UserContext.getUser().getRelCode());
+			Page<ResouceStoreDTO> pageResouceStoreDTO = resouceStoreService.pageStore(storePageReq);
+			req.setMktResStoreId(pageResouceStoreDTO.getRecords().get(0).getMktResStoreId());
+		} else {
+			return ResultVO.error("当前用户 没有权限");
 		}
 		
 			return reportCodeStateService.getCodeStatementsReport(req);
@@ -130,40 +125,10 @@ public class ReportCodeStatementsController extends BaseController  {
     @PostMapping(value="/codeStatementsReportExport")
     @UserLoginToken
     public void StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
-    	String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-		String retailerCodes = req.getLssCode();//是否输入了零售商账号
-		//String userType = UserContext.getUser().getUserFounder()+"";
 		req.setPageNo(1);
 		req.setPageSize(60000);
-		String userType=req.getUserType();
 		ResultVO<List<ReportCodeStatementsResp>> resultVO = null;
-		if(userType!=null&&!"".equals(userType)&&"1".equals(userType)) {
-			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
-		}else if(userType!=null&&!"".equals(userType)&&"2".equals(userType)){
-			String lanId=UserContext.getUser().getLanId();
-			req.setLanId(lanId);
-			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
-		}else if("3".equals(userType)){
-			String lssCode = UserContext.getUser().getRelCode();
-			req.setLssCode(lssCode);
-			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(lssCode);
-			req.setMktResStoreId(mktResStoreId);
-			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
-		}else if("4".equals(userType)){
-			String gysCode = UserContext.getUser().getRelCode();
-			req.setGysCode(gysCode);
-			//供应商只能看自己的仓库
-			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(gysCode);
-			req.setMktResStoreId(mktResStoreId);
-			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
-		}else if("5".equals(userType)){
-			String manufacturerCode = UserContext.getUser().getRelCode();
-			req.setManufacturerCode(manufacturerCode);
-			//厂商也只能看自己的仓库
-			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(manufacturerCode);
-			req.setMktResStoreId(mktResStoreId);
-			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
-		}
+		log.info("****************ReportOrderController getCodeStatementsReport()  ************start param={}",JSON.toJSONString(req));
 		String xdCreateTimeStart = req.getXdCreateTimeStart();
 		String xdCreateTimeEnd = req.getXdCreateTimeEnd();
 		Date date = new Date();
@@ -178,8 +143,29 @@ public class ReportCodeStatementsController extends BaseController  {
 		if(xdCreateTimeStart==null && xdCreateTimeEnd==null){
 			xdCreateTimeStart = format3.format(date3);
 			xdCreateTimeEnd = df.format(date);
+			req.setXdCreateTimeStart(xdCreateTimeStart);
+			req.setXdCreateTimeEnd(xdCreateTimeEnd);
 		}
-        
+		int userType=UserContext.getUser().getUserFounder();
+		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
+			resultVO =  reportCodeStateService.getCodeStatementsReportAdmindc(req);
+		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+			String lanId=UserContext.getUser().getLanId();
+			req.setCityId(lanId);
+			resultVO =  reportCodeStateService.getCodeStatementsReportAdmindc(req);
+		} else if (userType == SystemConst.USER_FOUNDER_4 ||
+				userType == SystemConst.USER_FOUNDER_5 ||
+				userType == SystemConst.USER_FOUNDER_3 ) {//省供应商  地市供应商  零售商 （只能查看自己的仓库）
+			StorePageReq storePageReq = new StorePageReq();
+			List<String> merchantIds = new ArrayList<String>();
+			merchantIds.add(UserContext.getUser().getRelCode());
+			Page<ResouceStoreDTO> pageResouceStoreDTO = resouceStoreService.pageStore(storePageReq);
+			req.setMktResStoreId(pageResouceStoreDTO.getRecords().get(0).getMktResStoreId());
+			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
+		} else {
+			return ;
+		}
+		
         ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {
             result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
@@ -193,13 +179,13 @@ public class ReportCodeStatementsController extends BaseController  {
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
         orderMap.add(new ExcelTitleName("mktResStoreId", "仓库ID"));
-        orderMap.add(new ExcelTitleName("storageType", "在库状态"));
+        orderMap.add(new ExcelTitleName("statusCd", "在库状态"));
         orderMap.add(new ExcelTitleName("mktResInstType", "串码类型"));
         orderMap.add(new ExcelTitleName("sourceType", "串码来源"));
         orderMap.add(new ExcelTitleName("productType", "产品类型"));
-        orderMap.add(new ExcelTitleName("brandId", "品牌"));
-        orderMap.add(new ExcelTitleName("productBaseName", "产品名称"));
-        orderMap.add(new ExcelTitleName("productName", "产品型号"));
+        orderMap.add(new ExcelTitleName("brandName", "品牌"));
+        orderMap.add(new ExcelTitleName("productName", "产品名称"));
+        orderMap.add(new ExcelTitleName("unitType", "产品型号"));
         orderMap.add(new ExcelTitleName("productCode", "产品编码"));
         orderMap.add(new ExcelTitleName("orderId", "订单编号"));
         orderMap.add(new ExcelTitleName("createTime", "下单时间"));
@@ -226,32 +212,6 @@ public class ReportCodeStatementsController extends BaseController  {
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
         		orderMap, "串码明细报表");
         deliveryGoodsResNberExcel.exportExcel("串码明细报表",workbook,response);
-//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
-//        OutputStream output = null;
-//        try{
-//        	//创建Excel
-//            Workbook workbook = new HSSFWorkbook();
-//            String fileName = "串码明细报表";
-//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
-//
-//            output = response.getOutputStream();
-//            response.reset();
-//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-//            response.setContentType("application/msexcel;charset=UTF-8");
-//            response.setCharacterEncoding("UTF-8");
-//            workbook.write(output);
-////            output.close();
-//        }catch (Exception e){
-//            log.error("串码明细报表导出失败",e);
-//        } finally {
-//            if (null != output){
-//                try {
-//                    output.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
         
     }
     

@@ -133,7 +133,6 @@ public class ReportDataInfoController extends BaseController {
 		return iReportDataInfoService.getUerRoleForView(req);
     }
 	
-	
 	 /**
      * 导出按钮
      */

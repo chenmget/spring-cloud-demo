@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.web.controller.report;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
@@ -13,6 +14,7 @@ import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.ReportOrderService;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -62,7 +64,7 @@ public class ReportOrderController extends BaseController {
     @PostMapping("/getReportOrderList1")
 	@UserLoginToken
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
-		log.info("****************ReportOrderController getReportOrderList1");
+		log.info("****************ReportOrderController getReportOrderList1()  ************start param={}",JSON.toJSONString(req));
 		int userType = UserContext.getUser().getUserFounder();
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
@@ -178,4 +180,5 @@ public class ReportOrderController extends BaseController {
 	    		orderMap, "订单明细报表");
 	    deliveryGoodsResNberExcel.exportExcel("订单明细报表",workbook,response);
 	}
+	
 }

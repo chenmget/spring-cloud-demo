@@ -29,6 +29,11 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 
 	@Override
 	public ResultVO<Page<ReportOrderResp>> getReportOrderList1(ReportOrderDaoReq req) {
+		String productName = req.getProductName();
+		if(productName != null) {
+			productName = productName.replace(" ", "%");
+			req.setProductName(productName);
+		}
  		Page<ReportOrderResp> page = (Page<ReportOrderResp>) reportOrderManager.listReportOrder(req);
 	    List<ReportOrderResp> list = page.getRecords();
 	    

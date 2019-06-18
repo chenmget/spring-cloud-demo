@@ -86,7 +86,7 @@ WHERE 1=1
 			and a.PARTNER_NAME like CONCAT(CONCAT('%', #{req.partnerName}),'%')   
 		</if>
 		<if test="req.partnerCode!=null and req.partnerCode!=''">
-			and a.PARTNER_CODE like CONCAT(CONCAT('%', #{req.partnerCode}),'%')   
+			and a.PARTNER_CODE = #{req.partnerCode}
 		</if>
 		<if test="req.businessEntityName!=null and req.businessEntityName!=''">
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%', #{req.businessEntityName}),'%')   
@@ -101,7 +101,7 @@ WHERE 1=1
 			and a.SUPPLIER_NAME like CONCAT(CONCAT('%', #{req.supplierName}),'%')   
 		</if>
 		<if test="req.supplierCode!=null and req.supplierCode!=''">
-			and a.SUPPLIER_CODE like CONCAT(CONCAT('%', #{req.supplierCode}),'%')   
+			and a.SUPPLIER_CODE = #{req.supplierCode} 
 		</if>
 		<if test="req.cityId!=null and req.cityId!=''">
 			and s1.region_id = #{req.cityId}
@@ -115,7 +115,7 @@ WHERE 1=1
 		<if test="req.mktResInstType!=null and req.mktResInstType!=''">
 			and a.MKT_RES_INST_TYPE = #{req.mktResInstType}
 		</if>
-		<if test="req.productType!=null and req.productType!=''">
+		<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">
 			and a.product_type = #{req.productType}
 		</if>
   </select>
@@ -204,7 +204,7 @@ WHERE 1=1
 			and a.PARTNER_NAME like CONCAT(CONCAT('%', #{req.partnerName}),'%')   
 		</if>
 		<if test="req.partnerCode!=null and req.partnerCode!=''">
-			and a.PARTNER_CODE like CONCAT(CONCAT('%', #{req.partnerCode}),'%')   
+			and a.PARTNER_CODE = #{req.partnerCode}  
 		</if>
 		<if test="req.businessEntityName!=null and req.businessEntityName!=''">
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%', #{req.businessEntityName}),'%')   
@@ -219,7 +219,7 @@ WHERE 1=1
 			and a.SUPPLIER_NAME like CONCAT(CONCAT('%', #{req.supplierName}),'%')   
 		</if>
 		<if test="req.supplierCode!=null and req.supplierCode!=''">
-			and a.SUPPLIER_CODE like CONCAT(CONCAT('%', #{req.supplierCode}),'%')   
+			and a.SUPPLIER_CODE = #{req.supplierCode} 
 		</if>
 		<if test="req.cityId!=null and req.cityId!=''">
 			and s1.region_id = #{req.cityId}
@@ -233,7 +233,7 @@ WHERE 1=1
 		<if test="req.mktResInstType!=null and req.mktResInstType!=''">
 			and a.MKT_RES_INST_TYPE = #{req.mktResInstType}
 		</if>
-		<if test="req.productType!=null and req.productType!=''">
+		<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">
 			and a.product_type = #{req.productType}
 		</if>
   </select>

@@ -2,8 +2,12 @@ package com.iwhalecloud.retail.system.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.OrganizationDTO;
+import com.iwhalecloud.retail.system.dto.request.OrganizationChildListReq;
+import com.iwhalecloud.retail.system.dto.request.OrganizationListReq;
 import com.iwhalecloud.retail.system.dto.request.OrganizationsQueryReq;
+import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
 import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
 import com.iwhalecloud.retail.system.entity.Organization;
 import com.iwhalecloud.retail.system.mapper.OrganizationMapper;
@@ -29,7 +33,6 @@ public class OrganizationManager {
     public List listOrganization(String parentId) {
         QueryWrapper<Organization> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(parentId)) {
-//            queryWrapper.eq("PARTNER_ORG_ID", parentId);
             queryWrapper.eq(Organization.FieldNames.parentOrgId.getTableFieldName(), parentId);
         }
         return organizationMapper.selectList(queryWrapper);
@@ -70,4 +73,23 @@ public class OrganizationManager {
         return organizationMapper.queryRegionOrganizationId();
     }
 
+    /**
+     * 根据条件查询组织列表
+     *
+     * @param req
+     * @return
+     */
+    public List<OrganizationListResp> listOrganization(OrganizationListReq req) {
+        return organizationMapper.listOrganization(req);
+    }
+
+    /**
+     * 根据orgId集合查询下属的子组织
+     *
+     * @param req
+     * @return
+     */
+    public List<OrganizationListResp> listOrganizationChild(OrganizationChildListReq req) {
+        return organizationMapper.listOrganizationChild(req);
+    }
 }

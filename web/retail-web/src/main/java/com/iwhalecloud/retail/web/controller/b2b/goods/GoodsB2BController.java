@@ -373,13 +373,17 @@ public class GoodsB2BController extends GoodsBaseController {
                 req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC_MERCHANT_TYPE_ASC.getValue());
 
                 // 设置零售商的组织路径编码 zhong.wenlong 2019.06.13
-//                req.setOrgPathCode(getOrgPathCode(merchantId));
+                req.setOrgPathCode(getOrgPathCode(merchantId));
 
             } else if (userFounder == SystemConst.USER_FOUNDER_5) {
                 String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType();
                 // 商家类型为省包供应商
                 // 如果用户是地包供应商，只能查到省包商品
                 req.setMerchantType(merchantType);
+
+                // 设置地包商的组织路径编码 zhong.wenlong 2019.06.13
+                req.setOrgPathCode(getOrgPathCode(merchantId));
+
             } else {
                 // 省包供应商查询不到任何商品
                 req.setSourceFrom("-1");
@@ -419,6 +423,7 @@ public class GoodsB2BController extends GoodsBaseController {
     /**
      * zhong.wenlong
      * 获取零售商的 组织路径 OrgPathCode
+     *
      * @param merchantId
      */
     private String getOrgPathCode(String merchantId) {
@@ -427,9 +432,8 @@ public class GoodsB2BController extends GoodsBaseController {
         MerchantDTO merchantDTO = merchantService.getMerchantById(merchantId).getResultData();
         log.info("GoodsB2BController.getOrgPathCode() merchantService.getMerchantById() input: merchantId={}, output: merchantDTO ={}", merchantId, JSON.toJSONString(merchantDTO));
         if (Objects.nonNull(merchantDTO)) {
-            // 判断是否 是零售商  组织ID 是否为空
-            if (StringUtils.equals(merchantDTO.getMerchantType(), PartnerConst.MerchantTypeEnum.PARTNER.getType())
-                    && StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
+            // 判断 组织ID 是否为空
+            if (StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
                 CommonOrgDTO commonOrgDTO = commonOrgService.getCommonOrgById(merchantDTO.getParCrmOrgId()).getResultData();
                 log.info("GoodsB2BController.getOrgPathCode() commonOrgService.getCommonOrgById() input: orgId={}, output: CommonOrgDTO ={}", merchantDTO.getParCrmOrgId(), JSON.toJSONString(commonOrgDTO));
                 if (Objects.nonNull(commonOrgDTO) && StringUtils.isNotEmpty(commonOrgDTO.getPathCode())) {

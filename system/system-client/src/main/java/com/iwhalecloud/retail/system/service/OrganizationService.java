@@ -3,7 +3,10 @@ package com.iwhalecloud.retail.system.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.OrganizationDTO;
+import com.iwhalecloud.retail.system.dto.request.OrganizationChildListReq;
+import com.iwhalecloud.retail.system.dto.request.OrganizationListReq;
 import com.iwhalecloud.retail.system.dto.request.OrganizationsQueryReq;
+import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
 import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
 
 import java.util.List;
@@ -29,8 +32,17 @@ public interface OrganizationService {
     ResultVO<List<OrganizationRegionResp>> queryRegionOrganizationId();
 
     /**
+     * 根据条件查询组织列表
+     * @param req
      * @return
      */
-//    ResultVO<List<OrganizationRegionResp>> listOrganization();
+    ResultVO<List<OrganizationListResp>> listOrganization(OrganizationListReq req);
+
+    /**
+     * 根据orgId集合查询下属的子组织
+     * @param req
+     * @return
+     */
+    ResultVO<List<OrganizationListResp>> listOrganizationChild(OrganizationChildListReq req);
 
 }

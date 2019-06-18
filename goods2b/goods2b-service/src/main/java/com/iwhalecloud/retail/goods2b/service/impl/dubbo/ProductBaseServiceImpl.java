@@ -502,7 +502,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     private String updateProductFlow(ProductBaseUpdateReq req){
         String updateProductFlow="";
-        ProductBaseUpdateReq oldReq = req.getOldProductBaseUpdateReq();
+        OldProductBaseUpdateReq oldReq = req.getOldProductBaseUpdateReq();
 
         List<ProductUpdateReq> productUpdateReqs = req.getProductUpdateReqs();
         if(null == oldReq){

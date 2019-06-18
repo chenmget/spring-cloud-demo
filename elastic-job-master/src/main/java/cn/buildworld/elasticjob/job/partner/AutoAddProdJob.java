@@ -8,6 +8,8 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantRulesDeleteReq;
+import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.partner.service.NewParMerchAddProdService;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
@@ -36,6 +38,9 @@ public class AutoAddProdJob implements SimpleJob {
     @Reference(timeout = 10000)
     private MerchantService merchantService;
 
+    @Reference(timeout = 10000)
+    private MerchantRulesService merchantRulesService;
+
     @Override
     public void execute(ShardingContext shardingContext) {
         MerchantListReq merchantListReq = new MerchantListReq();
@@ -45,6 +50,12 @@ public class AutoAddProdJob implements SimpleJob {
             List<MerchantDTO> merchantDTOList = resultVO.getResultData();
             if(CollectionUtils.isNotEmpty(merchantDTOList)){
                 for(MerchantDTO merchantDTO:merchantDTOList){
+                    MerchantRulesDeleteReq merchantRulesDeleteReq = new MerchantRulesDeleteReq();
+                    merchantRulesDeleteReq.setMerchantId(merchantDTO.getMerchantId());
+                    merchantRulesDeleteReq.setRuleType("1");
+                    merchantRulesDeleteReq.setTargetType("2");
+                    merchantRulesService.deleteMerchantRules(merchantRulesDeleteReq);
+
                     LSSAddControlReq req = new LSSAddControlReq();
                     req.setMerchantId(merchantDTO.getMerchantId());
                     req.setRuleType("1");

@@ -252,4 +252,7 @@ public class ProductBaseUpdateReqDTO implements Serializable {
     @ApiModelProperty(value = "产品列表")
     private List<ProductAddReq> productAddReqs;
 
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
+
 }

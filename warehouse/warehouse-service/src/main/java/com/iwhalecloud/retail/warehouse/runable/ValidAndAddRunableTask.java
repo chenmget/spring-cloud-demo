@@ -121,6 +121,7 @@ public class ValidAndAddRunableTask {
             List<Future<Boolean>> futures = validFutureTaskResult.get(batchId);
             for (Future<Boolean> future : futures) {
                 if (!future.isDone()) {
+                    validFutureTaskResult.remove(batchId);
                     return future.isDone();
                 }
             }

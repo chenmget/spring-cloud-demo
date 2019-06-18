@@ -19,11 +19,11 @@ import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
 import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import com.iwhalecloud.retail.warehouse.manager.ResourceChngEvtDetailManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
-import com.iwhalecloud.retail.warehouse.manager.MktResItmsReturnRecManager;
 import com.iwhalecloud.retail.warehouse.mapper.MktResItmsReturnRecMapper;
 import com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceEventMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
+import com.iwhalecloud.retail.warehouse.runable.ResourceInstStoreRunableTask;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceInstStoreService;
 import lombok.extern.slf4j.Slf4j;
@@ -127,6 +127,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     @Autowired
     private ResourceChngEvtDetailManager resourceChngEvtDetailManager;
 
+    @Autowired
+    private ResourceInstStoreRunableTask resourceInstStoreRunableTask;
 
     @Override
     public ResultVO<Integer> getQuantityByMerchantId(String merchantId) {
@@ -249,7 +251,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
      */
     @Override
     public void syncMktToITMS() {
-
+        log.info("ResourceInstStoreServiceImpl.syncMktToITMS start.....");
 
         //备份文件
         this.backItmsFile();
@@ -291,7 +293,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             resourceInstMapper.updateCfValueByCfId(CONF_STR, sdf.format(newStartStr));
         }
 
-
+        log.info("ResourceInstStoreServiceImpl.syncMktToITMS end.....");
 
     }
 
@@ -313,6 +315,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         }
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {
+            List<MktResItmsSyncRec> mktList = new ArrayList<>();
             String lanId = latIdList.get(i);
         	String sendDir = getSendDir(brand, ops);
         	String type = getType(ops);
@@ -335,6 +338,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             pw = getPrintWriter(destFile);
 
             for (int j = 0; j < list.size(); j++) {
+                MktResItmsSyncRec req = new MktResItmsSyncRec();
                 if (j > 0 && j % 10000 == 0) {
                     seqNb++;
                     seq = getSeqStr(seqNb);
@@ -347,8 +351,18 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                 pw.println();
                 String syncFileName = sendDir+"/"+destFileName;
                 //更新MktResItmsSyncRec表数据
-                mktResItmsSyncRecMapper.updateByMktResChngEvtDetailId(list.get(j).getMktResChngEvtDetailId(),syncFileName,time + seq);
+                req.setMktResChngEvtDetailId(list.get(j).getMktResChngEvtDetailId());
+                req.setSyncFileName(syncFileName);
+                req.setSyncBatchId(time + seq);
+                mktList.add(req);
+                //更新
+//                mktResItmsSyncRecMapper.updateByMktResChngEvtDetailId(list.get(j).getMktResChngEvtDetailId(),syncFileName,time + seq);
             }
+            //调用线程更新
+            if(!CollectionUtils.isEmpty(mktList)){
+                resourceInstStoreRunableTask.exceutorUpdateMktResItmsSyncRec(mktList);
+            }
+
             //批量更新
 //            mktResItmsSyncRecMapper.updateBatchById(list);
         }
@@ -581,6 +595,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             }
         }
         for(ResouceEvent resouceEvent:evenList){
+            String is_itms = null;
             List<ResourceChngEvtDetail> detailList = resourceChngEvtDetailManager.resourceChngEvtDetailList(resouceEvent);
             if(!CollectionUtils.isEmpty(detailList)){
                 for(ResourceChngEvtDetail detail : detailList){
@@ -588,12 +603,18 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 //                    List<MktResItmsSyncRec> mktResItmsSyncRecs = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent);
                     if(!CollectionUtils.isEmpty(mktResItmsSyncRecs)){
                         mktResItmsSyncRecList.addAll(mktResItmsSyncRecs);
-                        resouceEventRemove.add(resouceEvent);
+                        for(MktResItmsSyncRec mktResItmsSyncRec : mktResItmsSyncRecs){
+                            if(mktResItmsSyncRec.getRemark().equals("3")){
+                                is_itms = "3";
+                                continue;
+                            }
+                        }
                     }
                 }
-
             }
-
+            if(is_itms != null && is_itms != "3"){
+                resouceEventRemove.add(resouceEvent);
+            }
         }
         if(!CollectionUtils.isEmpty(resouceEventRemove)){
             map.put(type,resouceEventRemove);
@@ -791,7 +812,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
                         mktResItmsReturnRecMapper.batchAddMKTReturnInfo(dataList);
                         log.info("syncMktToITMSBack insertDate插入"+dataList.size()+"条数据成功");
                     }catch (Exception e){
-                        log.error("---------------"+e.getMessage());
+                        log.error("syncMktToITMSBack insertDate插入"+e.getMessage());
                     }
 
                 }

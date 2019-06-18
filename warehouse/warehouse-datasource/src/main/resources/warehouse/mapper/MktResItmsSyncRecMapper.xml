@@ -109,7 +109,8 @@
 		'0' AS STATUS_CD,
 		#{even.statusDate} AS STATUS_DATE,
 		'admin' CREATE_STAFF,
-		#{even.createDate} AS CREATE_DATE
+		#{even.createDate} AS CREATE_DATE,
+		t.IS_ITMS AS REMARK
 		FROM(
 		SELECT
 		base.IS_ITMS,#{det.mktResEventId} AS MKT_RES_EVENT_ID,store.LAN_ID STORE_LAN_ID,par.MERCHANT_TYPE,inst.MKT_RES_ID,
@@ -119,11 +120,11 @@
 		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.destStoreId}) AS DET_LAN_ID,
 		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.mktResStoreId}) AS ORIG_LAN_ID
 		FROM
-		<if test="eventType == 1003 or eventType == 1007">
+		<if test="eventType == 1002 or eventType == 1003 or eventType == 1007">
 			(select * from MKT_RES_INST m where m.MKT_RES_STORE_ID = #{even.mktResStoreId} AND m.MKT_RES_INST_NBR =#{det.mktResInstNbr}) inst
 			INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = #{even.mktResStoreId}
 		</if>
-		<if test="eventType == 1001 or eventType == 1002  or eventType == 1009">
+		<if test="eventType == 1001 or  eventType == 1009">
 			(select * from MKT_RES_INST m where m.MKT_RES_STORE_ID = #{even.destStoreId} AND m.MKT_RES_INST_NBR =#{det.mktResInstNbr}) inst
 			INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = #{even.destStoreId}
 		</if>

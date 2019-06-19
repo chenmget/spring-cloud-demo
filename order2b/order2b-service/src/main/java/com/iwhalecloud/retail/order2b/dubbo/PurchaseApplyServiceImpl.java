@@ -163,14 +163,20 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
 //        判断是否有申请单外的串码类型
         String othersProductId="";
+
         for (String key : map.keySet()) {
+            Integer otherFlag=0;
             for (PurApplyItem PurApplyItemTemp : purApplyItem) {
                 String productId = PurApplyItemTemp.getProductId();
-                if (!key.equals(productId)) {
-                    log.info("判断是否有申请单外的串码类型=key="+key+" ===  productId="+productId);
-                    othersProductId=othersProductId+key+",";
+                if (key.equals(productId)) {
+                    otherFlag=1;
+
                     break;
                 }
+            }
+            if (otherFlag==0) {
+                othersProductId=othersProductId+key+",";
+                log.info("判断是否有申请单外的串码类型=key="+key+" othersProductId= "+othersProductId);
             }
         }
 

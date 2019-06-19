@@ -621,6 +621,29 @@ public class PurApplyServiceImpl implements PurApplyService {
 		return null;
 	}
 
+	@Override
+	@Transactional
+	public ResultVO updatePurTypeByApplyId(ProcureApplyReq req) {
+		log.info("updatePurTypeByApplyId  req= "+JSON.toJSONString(req));
+		List<AddProductReq> list=req.getAddProductReq();
+		ResultVO resultVO = new ResultVO();
+		if ( list!=null && list.size()>0 ) {
+			for (AddProductReq product:list) {
+				log.info("updatePurTypeByApplyId  product= "+JSON.toJSONString(product));
+				Integer count = purApplyManager.updatePurTypeByApplyId(product);
+				log.info("updatePurTypeByApplyId  count= "+count);
+				if (count<=0) {
+					return resultVO.error("更新采购单采购类型失败");
+				}
+
+			}
+
+		}
+
+
+		return resultVO;
+	}
+
 	public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(UpdateCorporationPriceReq req){
 		List<ProdProductChangeDetail> list = purApplyManager.searchCommitPriceInfo(req);
 		return ResultVO.success(list);

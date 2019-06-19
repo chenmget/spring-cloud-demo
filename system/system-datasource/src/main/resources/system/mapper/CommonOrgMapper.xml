@@ -25,4 +25,13 @@
     ,t.PATH_CODE
 </sql>
 
+	<select id="getSysCommonOrg" resultType="com.iwhalecloud.retail.system.dto.SysCommonOrgResp">
+		   SELECT 
+		   <include refid="allFields" />
+		   from sys_common_org t 
+		   where org_level='3'  
+	 </select>
+
+
+
 </mapper>

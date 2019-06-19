@@ -48,4 +48,16 @@ public class TypeDetailResp implements Serializable {
      */
     @ApiModelProperty(value = "上级类型ID")
     private String detailName;
+
+    /**
+     * CRM资源大类
+     */
+    @ApiModelProperty(value = "CRM资源大类")
+    private java.lang.String crmResKind;
+
+    /**
+     * CRM资源小类
+     */
+    @ApiModelProperty(value = "CRM资源小类")
+    private java.lang.String crmResType;
 }

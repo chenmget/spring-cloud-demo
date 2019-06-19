@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityReq;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityResp;
 import com.iwhalecloud.retail.promo.dto.req.AdvanceActivityProductInfoReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
 import com.iwhalecloud.retail.promo.dto.resp.AdvanceActivityProductInfoResp;
@@ -150,6 +152,16 @@ public class MarketingActivityManager{
         return prodGoodsPage;
     }
 
+    /**
+     * 通过营销活动名字查询营销活动
+     * @param req
+     * @return
+     */
+    public List<MarketingActivityResp> getMarketingCampaign(MarketingActivityReq req){
+    	return marketingActivityMapper.getMarketingCampaign(req);
+    }
+    
+    
     /**
      * 根据ID查询营销活动
      * @param id 询营销活动ID

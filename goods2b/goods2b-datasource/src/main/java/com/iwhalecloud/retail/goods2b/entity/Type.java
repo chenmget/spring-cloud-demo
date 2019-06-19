@@ -87,6 +87,17 @@ public class Type implements Serializable {
     @ApiModelProperty(value = "sourceFrom")
     private java.lang.String sourceFrom;
 
+    /**
+     * CRM资源大类
+     */
+    @ApiModelProperty(value = "CRM资源大类")
+    private java.lang.String crmResKind;
+
+    /**
+     * CRM资源小类
+     */
+    @ApiModelProperty(value = "CRM资源小类")
+    private java.lang.String crmResType;
 
     //属性 end
 
@@ -118,6 +129,12 @@ public class Type implements Serializable {
 
         /** 修改时间. */
         updateDate("updateDate","UPDATE_DATE"),
+
+        /** CRM资源大类. */
+        crmResKind("crmResKind","CRM_RES_KIND"),
+
+        /** CRM资源小类. */
+        crmResType("crmResType","CRM_RES_TYPE"),
 
         /** sourceFrom. */
         sourceFrom("sourceFrom","SOURCE_FROM");

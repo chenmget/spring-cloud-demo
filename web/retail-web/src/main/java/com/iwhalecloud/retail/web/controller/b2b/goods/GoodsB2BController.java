@@ -19,10 +19,7 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantAccountDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantAccountListReq;
-import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
-import com.iwhalecloud.retail.partner.dto.req.MerchantRulesListReq;
 import com.iwhalecloud.retail.partner.service.MerchantAccountService;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -31,9 +28,9 @@ import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityProductListReq;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.system.common.SystemConst;
-import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.service.CommonOrgService;
+import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -97,8 +94,7 @@ public class GoodsB2BController extends GoodsBaseController {
     private GoodsSaleNumService goodsSaleNumService;
 
     @Reference
-    private CommonOrgService commonOrgService;
-
+    private OrganizationService organizationService;
 
     @ApiOperation(value = "添加商品", notes = "添加商品")
     @ApiResponses({
@@ -434,10 +430,10 @@ public class GoodsB2BController extends GoodsBaseController {
         if (Objects.nonNull(merchantDTO)) {
             // 判断 组织ID 是否为空
             if (StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
-                CommonOrgDTO commonOrgDTO = commonOrgService.getCommonOrgById(merchantDTO.getParCrmOrgId()).getResultData();
-                log.info("GoodsB2BController.getOrgPathCode() commonOrgService.getCommonOrgById() input: orgId={}, output: CommonOrgDTO ={}", merchantDTO.getParCrmOrgId(), JSON.toJSONString(commonOrgDTO));
-                if (Objects.nonNull(commonOrgDTO) && StringUtils.isNotEmpty(commonOrgDTO.getPathCode())) {
-                    orgPathCode = commonOrgDTO.getPathCode();
+                OrganizationDTO organizationDTO = organizationService.getOrganization(merchantDTO.getParCrmOrgId()).getResultData();
+                log.info("GoodsB2BController.getOrgPathCode() organizationService.getOrganization() input: orgId={}, output: CommonOrgDTO ={}", merchantDTO.getParCrmOrgId(), JSON.toJSONString(organizationDTO));
+                if (Objects.nonNull(organizationDTO) && StringUtils.isNotEmpty(organizationDTO.getPathCode())) {
+                    orgPathCode = organizationDTO.getPathCode();
                 }
             }
         }

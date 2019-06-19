@@ -5,46 +5,50 @@
     <select id="ListReportOrder" parameterType="com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportOrderResp">
             SELECT 
-				 a.order_id as orderId,
-				 b.item_id as itemId,
-				 a.STATUS as status,
-				 a.source_from as sourceFrom,
-				 a.ORDER_CAT orderCat,
-				 a.ORDER_TYPE as orderType,
-				 a.PAYMENT_TYPE as paymentType,
-				 a.PAY_TYPE as payType,
-				 e.type_name as typeName,
-				 b.brand_name as brandName,
-				 b.product_name as productName,
-				 d.UNIT_TYPE as unitType,
-				 b.sn as sn,
-				 b.num as num,
-				 b.price as price,
-				 (b.num*b.price) as totalMoney,
-				 '' AS shipNum,
-				 a.CREATE_TIME as createTime,
-				 a.PAY_TIME as payTime,
-				 a.RECEIVE_TIME as receiveTime,
-				 GROUP_CONCAT(l.name) as activeName,
-				 k.PROMOTION_TYPE as couponType,
-				 k.DISCOUNT as couponMoney,
-				 a.SUPPLIER_NAME as supplierName,
-				 a.SUPPLIER_ID AS supplierCode,
-				 a.USER_NAME as merchantName,
-				 par.MERCHANT_CODE as merchantCode,
-				 par.BUSINESS_ENTITY_NAME as businessEntityName,
-				 par.LAN_ID as lanId,
-				 par.CITY as city,
-				 a.create_time 
-			FROM 
-				 ord_order a
-				 LEFT JOIN par_merchant par ON par.merchant_code = a.user_id
-				 ,ord_order_items b
-				 LEFT JOIN prod_product c ON b.PRODUCT_ID=c.PRODUCT_ID
-				 LEFT JOIN prod_product_base d ON c.product_base_id= d.product_base_id
-				 LEFT JOIN prod_type e ON d.type_id = e.type_id
-				 LEFT OUTER JOIN ORD_PROMOTION k ON b.item_id = k.order_item_id
-				 LEFT OUTER JOIN act_marketing_activity l ON k.MKT_ACT_ID = l.id
+	 b.product_name AS productName,
+	 d.UNIT_TYPE AS unitType,
+	 e.type_name AS typeName,
+	 b.brand_name AS brandName,
+	 c.attr_value1 AS attrValue1,
+	 c.attr_value2 AS attrValue2,
+	 c.attr_value3 AS attrValue3,
+	 a.order_id AS orderId,
+	 a.STATUS AS STATUS,
+	 a.source_from AS sourceFrom,
+	 a.ORDER_CAT orderCat,
+	 a.ORDER_TYPE AS orderType,
+	 a.PAYMENT_TYPE AS paymentType,
+	 b.sn AS sn,
+	 b.num AS num,
+	 b.price AS price,
+	 (b.num*b.price) AS totalMoney,
+	 a.CREATE_TIME AS createTime,
+	 a.PAY_TIME AS payTime,
+	 a.RECEIVE_TIME AS receiveTime,
+	 GROUP_CONCAT(l.name) AS activeName,
+	 k.PROMOTION_TYPE AS couponType,
+	 k.DISCOUNT AS couponMoney,
+	 (b.num*k.DISCOUNT) AS totalCouponMoney,
+	 a.SUPPLIER_NAME AS supplierName,
+	 a.SUPPLIER_ID AS supplierCode,
+	 a.USER_NAME AS merchantName,
+	 par.MERCHANT_CODE AS merchantCode,
+	 par.BUSINESS_ENTITY_NAME AS businessEntityName,
+	 par.LAN_ID AS lanId,
+	 so.org_name as orgName,
+	 a.create_time,
+	 b.item_id AS itemId
+FROM 
+	 ord_order a
+	 LEFT JOIN par_merchant par ON par.merchant_code = a.user_id
+	 LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
+	 ,ord_order_items b
+	 LEFT JOIN prod_product c ON b.PRODUCT_ID=c.PRODUCT_ID
+	 LEFT JOIN prod_product_base d ON c.product_base_id= d.product_base_id
+	 LEFT JOIN prod_type e ON d.type_id = e.type_id
+	 LEFT OUTER JOIN ORD_PROMOTION k ON b.item_id = k.order_item_id
+	 LEFT OUTER JOIN act_marketing_activity l ON k.MKT_ACT_ID = l.id
+	 
 			WHERE 
 				 a.order_id = b.order_id
 		  <if test="req.createTimeStart!=null and req.createTimeStart!=''">
@@ -63,14 +67,17 @@
 		     and a.status=#{req.status}
 		  </if>	
 		  <if test="req.orderId!=null and req.orderId !=''">
-		     and a.order_id like CONCAT(CONCAT('%',#{req.orderId}),'%')
+		     and a.order_id = #{req.orderId}
 		  </if>	
-		  <if test="req.lanIdName !=null and req.lanIdName !=''">
-		     and par.LAN_ID =#{req.lanIdName}
+		  <if test="req.lanIdName !=null and req.lanIdName !=''" >
+		      and par.LAN_ID in
+		      <foreach item="item" index="index" open="(" separator="," close=")" collection="req.lanIdName">
+		        #{item}
+		      </foreach>
 		  </if>
-		  <if test="req.city!=null and req.city!=''">
-		     and par.CITY =#{req.city}
-		  </if> 		 
+		  <if test="req.orgName!=null and req.orgName!=''">
+		  	and INSTR( so.path_code, #{req.orgName}) 
+		  </if> 
 		  <if test="req.orderCat!=null and req.orderCat !=''">
 	         and a.ORDER_CAT =#{req.orderCat}
 	      </if>	 
@@ -78,7 +85,7 @@
 		    and a.SUPPLIER_NAME like CONCAT(CONCAT('%',#{req.suplierName}),'%')
 		  </if>
 		  <if test="req.suplierCode!=null and req.suplierCode!=''">
-		    and a.SUPPLIER_ID = #{req.suplierCode}
+		    and a.SUPPLIER_CODE = #{req.suplierCode}
 		  </if>
 		  <if test="req.merchantName!=null and req.merchantName!=''">
 		    and a.USER_NAME like CONCAT(CONCAT('%',#{req.merchantName}),'%')
@@ -108,7 +115,7 @@
 		    and d.PRODUCT_BASE_ID=#{req.productBaseId}
 		  </if>
 		  <if test="req.sn!=null and req.sn!=''">
-		    and b.SN like CONCAT(CONCAT('%',#{req.sn}),'%')
+		    and b.SN = #{req.sn}
 		  </if>
 		  <if test="req.orderType!=null and req.orderType!=''">
 		    and a.order_type = #{req.orderType}
@@ -116,9 +123,6 @@
 		 <if test="req.activeName!=null and req.activeName!=''">
 	 		and l.name LIKE CONCAT(CONCAT('%',#{req.activeName}),'%')
 		 </if>
-		 <if test="req.couponType!=null and req.couponType!=''">
-	 		and k.PROMOTION_TYPE = #{req.couponType}
-		 </if> 
 		 <if test="req.typeName!=null and req.typeName!='' and req.typeName!='-1'">
 	 		and d.type_id = #{req.typeName}
 		 </if>
@@ -146,14 +150,19 @@
 	 
 	 <select id="ListReportOrderNbr3" parameterType="com.iwhalecloud.retail.report.dto.request.ReportOrderNbrDaoReq"
 	            resultType="com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp">
-	            select c.UNIT_NAME,b.res_nbr,a.create_time,a.status state
-	            from ORD_ORDER a,
-	            ORD_ORDER_ITEM_DETAIL b, 
-	            prod_product c
-	            where 1=1 and a.order_id=b.order_id
-	            and c.product_id=b.product_id
-		  <if test="req.orderId!=null and req.orderId!=''">
-			and a.order_id = #{req.orderId}
+	       SELECT 
+            	c.UNIT_NAME,
+            	b.res_nbr,
+            	a.create_time,
+            	a.status state
+            FROM 
+            	ORD_ORDER a,
+            	ORD_ORDER_ITEM_DETAIL b  
+            LEFT JOIN prod_product c ON c.product_id=b.product_id
+            WHERE  
+            	a.order_id=b.order_id
+		  <if test="orderId!=null and orderId!=''">
+			and a.order_id = #{orderId}
 		  </if>
 	 </select>
  

@@ -657,7 +657,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         instPutInReq.setInsts(map);
         instPutInReq.setCreateStaff(req.getUpdateStaff());
         instPutInReq.setStorageType(ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode());
-        instPutInReq.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         instPutInReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
         instPutInReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         instPutInReq.setDestStoreId(resourceRequestResp.getDestStoreId());

@@ -695,12 +695,10 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 resourceInst.setMktResInstId(null);
                 ResourceInst t = new ResourceInst();
                 BeanUtils.copyProperties(resourceInst, t);
-                BeanUtils.copyProperties(req, t);
                 Date now = new Date();
                 t.setMktResBatchId(batchId);
                 t.setMktResStoreId(req.getDestStoreId());
                 t.setStorageType(req.getStorageType());
-                t.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
                 t.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
                 t.setCreateStaff(req.getMerchantId());
                 t.setStatusDate(now);

@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -25,7 +26,6 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.ztesoft.zop.common.message.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,9 +34,11 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import com.alibaba.fastjson.TypeReference;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -198,7 +200,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setProductBaseId(productBaseId);
                 par.setCreateStaff(t.getCreateStaff());
                 par.setAuditState(auditState);
-                productService.addProduct(par);
+                String productId = productService.addProduct(par);
+                if (!CollectionUtils.isEmpty(req.getTagList())) {
+                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+                    relBatchAddReq.setProductId(productId);
+                    relBatchAddReq.setTagList(req.getTagList());
+                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
+                }
             }
         }
 
@@ -424,10 +432,17 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     par.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
                 }
-                ResultVO<Integer> addResultVO = productService.addProduct(par);
-                if (!addResultVO.isSuccess() || addResultVO.getResultData() < 1) {
-                    throw new RetailTipException(addResultVO.getResultCode(), addResultVO.getResultMsg());
+                if (!CollectionUtils.isEmpty(tagList)) {
+                    TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+                    relDeleteByGoodsIdReq.setProductId(productId);
+                    tagRelService.deleteTagRelByProductId(relDeleteByGoodsIdReq);
+                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+                    relBatchAddReq.setTagList(tagList);
+                    relBatchAddReq.setProductId(productId);
+                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
                 }
+
+                productService.addProduct(par);
                 continue;
             }
         }
@@ -459,7 +474,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setProductBaseId(req.getProductBaseId());
                 par.setCreateStaff(req.getUpdateStaff());
                 par.setAuditState(auditState);
-                productService.addProduct(par);
+                String productId = productService.addProduct(par);
+                if (!CollectionUtils.isEmpty(tagList)) {
+                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+                    relBatchAddReq.setTagList(tagList);
+                    relBatchAddReq.setProductId(productId);
+                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
+                }
             }
         }
         req.setUpdateDate(new Date());

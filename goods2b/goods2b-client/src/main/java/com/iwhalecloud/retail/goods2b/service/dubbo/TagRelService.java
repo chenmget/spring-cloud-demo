@@ -71,4 +71,18 @@ public interface TagRelService {
      * @return
      */
     ResultVO<List<TagRelListResp>> listTagRel(TagRelListReq req);
+
+    /**
+     * 查询产品标签关联集合(绿色权限标签)
+     * @param req
+     * @return
+     */
+    ResultVO<Boolean> batchAddTagRelProductId(TagRelBatchAddReq req);
+
+    /**
+     * 根据productId删除标签产品关系
+     * @param req
+     * @return
+     */
+    ResultVO<Boolean> deleteTagRelByProductId(TagRelDeleteByGoodsIdReq req);
 }

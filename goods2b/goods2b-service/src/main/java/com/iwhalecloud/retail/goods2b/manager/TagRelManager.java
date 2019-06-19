@@ -148,4 +148,15 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
     public List<TagRelListResp> listTagRel(TagRelListReq req){
         return tagRelMapper.listTagRel(req);
     }
+
+    /**
+     * 删除标签产品关系
+     * @param productId
+     * @return
+     */
+    public int deleteTagRelByProductId(String productId){
+        UpdateWrapper<TagRel> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("PRODUCT_ID",productId);
+        return tagRelMapper.delete(updateWrapper);
+    }
 }

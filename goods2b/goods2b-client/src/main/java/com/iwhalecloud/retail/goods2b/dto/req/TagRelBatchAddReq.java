@@ -31,5 +31,11 @@ public class TagRelBatchAddReq extends AbstractRequest implements Serializable {
   	 */
 	@ApiModelProperty(value = "productBaseId")
   	private String productBaseId;
+
+	/**
+	 * productId
+	 */
+	@ApiModelProperty(value = "productId")
+	private String productId;
   	
 }

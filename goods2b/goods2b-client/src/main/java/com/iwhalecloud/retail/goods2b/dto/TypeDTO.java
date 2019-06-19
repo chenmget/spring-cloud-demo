@@ -83,6 +83,18 @@ public class TypeDTO implements Serializable {
     private java.lang.String sourceFrom;
 
     /**
+     * CRM资源大类
+     */
+    @ApiModelProperty(value = "CRM资源大类")
+    private java.lang.String crmResKind;
+
+    /**
+     * CRM资源小类
+     */
+    @ApiModelProperty(value = "CRM资源小类")
+    private java.lang.String crmResType;
+
+    /**
      * attrDTOS
      */
     @ApiModelProperty(value = "属性")

@@ -516,6 +516,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     }
 
     @Override
+    public ResultVO<List<MarketingActivityResp>> getMarketingCampaign(MarketingActivityReq req){
+    	 log.info("MarketingActivityServiceImpl.getMarketingCampaign req={}", JSON.toJSONString(req));
+         return ResultVO.success(marketingActivityManager.getMarketingCampaign(req));
+    }
+    
+    @Override
     public ResultVO<Boolean> cancleMarketingActivity(CancelMarketingActivityStatusReq req) {
         log.info("MarketingActivityServiceImpl.endMarketingActivity id={}", req.getActivityId());
         return ResultVO.success(marketingActivityManager.deleteMarketingActivityById(req.getActivityId(), PromoConst.STATUSCD.STATUS_CD_PLUS_1.getCode()));

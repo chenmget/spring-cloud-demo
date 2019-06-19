@@ -62,8 +62,8 @@ public class ProductServiceTest {
 //        req.setSn("1000");
         req.setUnitName("锤子火爆款 坚果T1 灰色 16G");
         req.setCreateStaff("张三");
-        ResultVO<Integer> resultVO = productService.addProduct(req);
-        System.out.println("resultVO=" + JSON.toJSON(resultVO));
+        String productId = productService.addProduct(req);
+        System.out.println("resultVO=" + JSON.toJSON(productId));
     }
 
     @Test

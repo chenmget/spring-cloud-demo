@@ -81,7 +81,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public ResultVO<Integer> addProduct(ProductAddReq req){
+    public String addProduct(ProductAddReq req){
         Product t = new Product();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -94,7 +94,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Integer num = productManager.insert(t);
-
         // 添加图片
         String productId = t.getProductId();
         String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
@@ -108,7 +107,7 @@ public class ProductServiceImpl implements ProductService {
                 fileManager.addFile(file);
             }
         }
-        return ResultVO.success(num);
+        return productId;
     }
 
     @Override
@@ -637,7 +636,7 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(num);
     }
 
-    
+
     public List<ProductInfoResp> getProductInfoByIds(List<String> productIdList) {
         log.info("ProductServiceImpl.getDuplicate productIdList={}", productIdList);
         return productManager.getProductInfoByIds(productIdList);

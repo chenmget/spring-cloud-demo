@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.TagRelDTO;
@@ -109,5 +110,28 @@ public class TagRelServiceImpl implements TagRelService {
     @Override
     public ResultVO<List<TagRelListResp>> listTagRel(TagRelListReq req) {
         return ResultVO.success(tagRelManager.listTagRel(req));
+    }
+
+    @Override
+    public ResultVO<Boolean> batchAddTagRelProductId(TagRelBatchAddReq req) {
+        log.info("TagRelServiceImpl.batchAddTagRelProductId req={}", JSON.toJSONString(req));
+        List<TagRel> tagRelList = Lists.newArrayList();
+        for (String tag : req.getTagList()) {
+            TagRel tagRel = new TagRel();
+            tagRel.setProductId(req.getProductId());
+            tagRel.setTagId(tag);
+            tagRelList.add(tagRel);
+        }
+        boolean saveFlag = tagRelManager.saveBatch(tagRelList);
+        log.info("TagRelServiceImpl.batchAddTagRelProductId saveFlag={}", saveFlag);
+        return ResultVO.success(saveFlag);
+    }
+
+
+    @Override
+    public ResultVO<Boolean> deleteTagRelByProductId(TagRelDeleteByGoodsIdReq req){
+        log.info("TagRelServiceImpl.deleteTagRelByProductId req={}", JSON.toJSONString(req));
+        tagRelManager.deleteTagRelByProductId(req.getProductId());
+        return ResultVO.success(true);
     }
 }

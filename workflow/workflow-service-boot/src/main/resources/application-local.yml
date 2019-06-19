@@ -13,7 +13,7 @@ spring.dubbo:
       password:
     protocol:
       name: dubbo
-      port: 21112
+      port: 23332
     scan: com.iwhalecloud.retail
 
 spring.redis:

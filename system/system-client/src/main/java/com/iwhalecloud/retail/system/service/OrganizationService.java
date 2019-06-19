@@ -17,7 +17,12 @@ public interface OrganizationService {
 
     ResultVO listOrganization(String parentId);
 
-    ResultVO getOrganization(String orgId);
+    /**
+     * 根据ID 获取组织信息
+     * @param orgId
+     * @return
+     */
+    ResultVO<OrganizationDTO> getOrganization(String orgId);
 
     ResultVO queryOrganizationsForPage(OrganizationsQueryReq organizationsQueryReq);
 

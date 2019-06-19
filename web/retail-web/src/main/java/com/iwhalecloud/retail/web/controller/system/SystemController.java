@@ -425,13 +425,8 @@ public class SystemController {
 
     @ApiOperation(value = "查询组织架构详情", notes = "")
     @GetMapping(value = "/getOrganization/{orgId}")
-    public ResultVO getOrganization(@PathVariable("orgId") String orgId) {
-        ResultVO listOrganizationResp = new ResultVO();
-        ResultVO list = organizationService.getOrganization(orgId);
-        listOrganizationResp.setResultCode(list.getResultCode());
-        listOrganizationResp.setResultMsg(list.getResultMsg());
-        listOrganizationResp.setResultData(list.getResultData());
-        return listOrganizationResp;
+    public ResultVO<OrganizationDTO> getOrganization(@PathVariable("orgId") String orgId) {
+        return organizationService.getOrganization(orgId);
     }
 
     /**

@@ -5,11 +5,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityReq;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityResp;
 import com.iwhalecloud.retail.promo.dto.PromotionWithMarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.*;
 import com.iwhalecloud.retail.promo.dto.resp.*;
 
 import java.util.List;
+
 
 public interface MarketingActivityService{
 
@@ -27,6 +30,7 @@ public interface MarketingActivityService{
 
     ResultVO<Boolean> startMarketingActivity(StartMarketingActivityStatusReq req);
 
+    ResultVO<List<MarketingActivityResp>> getMarketingCampaign(MarketingActivityReq req);
     /**
      * 查询B2B产品适用活动
      * 逻辑：先检查商家是否有可以参加的活动 ，可以参加  就返回 活动产品 关联对象（主要是获取活动价格）

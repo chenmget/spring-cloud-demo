@@ -1,5 +1,7 @@
 package com.iwhalecloud.retail.report.dto.request;
 
+import java.util.List;
+
 import com.iwhalecloud.retail.dto.PageVO;
 import lombok.Data;
 
@@ -28,9 +30,8 @@ public class ReportOrderDaoReq extends PageVO {
 	private String merchantName;//零售商名称
 	private String merchantCode;//零售商编码
 	private String orderId;//订单编码
-	private String lanIdName;//地市
-	private String city;//区县
-	private String couponType; //优惠类型
+	private List<String> lanIdName;//地市
+	private String orgName;//经营单元
 	private String productName;//产品名称
 	private String typeName;	//产品类型
 	private String unitType;//产品型号

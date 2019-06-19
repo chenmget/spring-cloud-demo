@@ -84,7 +84,11 @@ public class ReportOrderController extends BaseController {
 			}
 			req.setSuplierCode(merchantDTO.getMerchantCode());
 		} else if (userType == SystemConst.USER_FOUNDER_5) {//地市供应商
-			req.setSuplierCode(UserContext.getUser().getRelCode());
+			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
+			if ( merchantDTO == null) {
+				return ;
+			}
+			req.setSuplierCode(merchantDTO.getMerchantCode());
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdName(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3) {//零售商

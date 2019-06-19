@@ -239,7 +239,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (null == sourceMerchantDTO) {
             return ResultVO.error("商家获取失败");
         }
-        ResultVO<MerchantDTO> destMerchantVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
+        ResultVO<MerchantDTO> destMerchantVO = resouceStoreService.getMerchantByStore(req.getDestStoreId());
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getDestStoreId(), JSON.toJSONString(destMerchantVO));
         MerchantDTO destMerchantDTO = destMerchantVO.getResultData();
         if (null == destMerchantDTO) {
@@ -665,6 +665,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         instPutInReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         instPutInReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         instPutInReq.setObjId(resReqId);
+        instPutInReq.setLanId(list.get(0).getLanId());
+        instPutInReq.setRegionId(list.get(0).getRegionId());
         ResultVO resultResourceInstPutIn = resourceInstService.resourceInstPutIn(instPutInReq);
         log.info("SupplierResourceInstServiceImpl.confirmReciveNbr resourceInstService.resourceInstPutIn req={}, resp={}", JSON.toJSONString(instPutInReq), JSON.toJSONString(resultResourceInstPutIn));
         return ResultVO.success(instPutInReq.getUnUse());

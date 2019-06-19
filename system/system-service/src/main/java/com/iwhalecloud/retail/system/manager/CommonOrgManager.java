@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
+import com.iwhalecloud.retail.system.dto.SysCommonOrgReq;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgResp;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgListReq;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgPageReq;
@@ -98,9 +99,9 @@ public class CommonOrgManager {
         return respPage;
     }
     
-    public List<SysCommonOrgResp> getSysCommonOrg() {
+    public List<SysCommonOrgResp> getSysCommonOrg(SysCommonOrgReq req) {
     	
-    	return commonOrgMapper.getSysCommonOrg();
+    	return commonOrgMapper.getSysCommonOrg(req);
     }
     
 

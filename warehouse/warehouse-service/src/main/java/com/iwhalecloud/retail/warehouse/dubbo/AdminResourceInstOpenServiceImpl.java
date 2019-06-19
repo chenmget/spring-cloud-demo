@@ -5,16 +5,16 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
-import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
-import com.iwhalecloud.retail.warehouse.dto.request.InventoryChangeReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.*;
 import com.iwhalecloud.retail.warehouse.manager.CallService;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
+
 @Service
 @Slf4j
 public class AdminResourceInstOpenServiceImpl implements AdminResourceInstService {
@@ -56,6 +56,33 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
 		log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));
 		return	adminResourceInstService.inventoryChange(req);
 	}
+
+    @Override
+    public ResultVO<Page<ResourceReqDetailPageResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
+        log.info("AdminResourceInstOpenServiceImpl.listResourceUploadTemp req={}", JSON.toJSONString(req));
+        return	adminResourceInstService.listResourceUploadTemp(req);
+    }
+
+    @Override
+    public ResultVO<String> batchAuditNbr(ResourceInstCheckReq req) {
+        return adminResourceInstService.batchAuditNbr(req);
+    }
+
+
+    @Override
+    public ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String createStaff) {
+        return adminResourceInstService.uploadNbrDetail(data,createStaff);
+    }
+
+    @Override
+    public ResultVO<String> submitNbrAudit(ResourceUploadTempListPageReq req) {
+        return adminResourceInstService.submitNbrAudit(req);
+    }
+
+    @Override
+    public ResultVO<ResourceUploadTempCountResp> countResourceUploadTemp(ResourceUploadTempDelReq req) {
+        return adminResourceInstService.countResourceUploadTemp(req);
+    }
 
 
 }

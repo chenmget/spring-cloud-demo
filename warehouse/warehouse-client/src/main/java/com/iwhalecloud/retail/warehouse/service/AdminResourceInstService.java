@@ -2,12 +2,11 @@ package com.iwhalecloud.retail.warehouse.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
-import com.iwhalecloud.retail.warehouse.dto.request.InventoryChangeReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.*;
+
+import java.util.List;
 
 public interface AdminResourceInstService {
 
@@ -43,4 +42,33 @@ public interface AdminResourceInstService {
      */
     ResultVO inventoryChange(InventoryChangeReq req);
 
+    ResultVO<Page<ResourceReqDetailPageResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req);
+
+    /**
+     * 批量审核串码
+     * @return
+     */
+    ResultVO<String> batchAuditNbr(ResourceInstCheckReq req);
+
+
+    /**
+     * 导入审核串码excel
+     * @param
+     * @return
+     */
+    ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String createStaff);
+
+    /**
+     * 提交导入的串码审核
+     * @param req
+     * @return
+     */
+    ResultVO<String> submitNbrAudit(ResourceUploadTempListPageReq req);
+
+    /**
+     * 查询串码审核临时记录的成功失败次数
+     * @param req
+     * @return
+     */
+    ResultVO<ResourceUploadTempCountResp> countResourceUploadTemp(ResourceUploadTempDelReq req);
 }

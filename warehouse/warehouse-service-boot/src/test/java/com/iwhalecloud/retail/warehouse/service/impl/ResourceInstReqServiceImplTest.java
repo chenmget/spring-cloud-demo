@@ -24,7 +24,7 @@ public class ResourceInstReqServiceImplTest {
     public void tradeInResourceInst(){
         ResourceReqDetailUpdateReq req = new ResourceReqDetailUpdateReq();
         req.setStatusCd("1002");
-        req.setMktResReqItemIdList(Lists.newArrayList("12334389"));
+        req.setMktResReqItemIdList(Lists.newArrayList("12334431"));
         resourceReqDetailManager.updateResourceReqDetailStatusCd(req);
     }
 }

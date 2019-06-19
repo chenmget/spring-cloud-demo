@@ -36,10 +36,18 @@ public class ResourceUploadTempListPageReq extends PageVO {
 	@ApiModelProperty(value = "状态")
   	private String result;
 
+	@ApiModelProperty(value = "记录状态。LOVB=PUB-C-0001。")
+	private String statusCd;
+
 	/**
 	 * 起始数量
 	 */
 	@ApiModelProperty(value = "起始数量")
 	private Integer pageStartNo;
+
+	@ApiModelProperty(value = "审核对象")
+	private String updateStaff;
+
+
 
 }

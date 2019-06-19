@@ -25,4 +25,7 @@ public class ResourceReqDetailReq implements Serializable {
     @ApiModelProperty(value = "是否抽检")
     private String isInspection;
 
+    @ApiModelProperty(value = "实列状态")
+    private String statusCd;
+
 }

@@ -129,4 +129,10 @@ public class ResourceInstPutInReq implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "对象标识")
 	private String objId;
+
+	/**
+	 * 记录本地网标识。
+	 */
+	@ApiModelProperty(value = "记录本地网标识")
+	private String regionId;
 }

@@ -28,11 +28,14 @@ import com.iwhalecloud.retail.partner.manager.MerchantManager;
 import com.iwhalecloud.retail.partner.manager.MerchantRulesManager;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.common.SysOrgConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.*;
+import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -69,6 +72,9 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
     @Reference
     private CommonOrgService commonOrgService;
+
+    @Reference
+    private OrganizationService organizationService;
 
     @Reference
     private MerchantService merchantService;
@@ -160,7 +166,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             }
         }
     }
-
 
     /**
      * 删除 商家 权限规则
@@ -982,6 +987,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     }
 
     /**
+     * 通过merchantId查询 调拨权限的 商家区域和对象权限集合
+     * 旧逻辑
      * 四种情况
      * 1、只添加对象权限时，可选对象是设置的对象列表；
      * 2、只添加区域权限时，可选对象是设置的区域下的所有对象；
@@ -990,7 +997,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
      * 5、同时添加了区域权限：长沙和株洲市，对象权限：长沙市对象1、衡阳市对象2，那么可选对象是长沙市对象1、衡阳市对象2和株洲市的所有对象
      */
     @Override
-    public ResultVO<List<String>> getRegionAndMerchantPermission(MerchantRulesCommonReq req) {
+    public ResultVO<List<String>> getTransferRegionAndMerchantPermission(MerchantRulesCommonReq req) {
         List<String> merchantIdList = null;
         List<String> mixedId = null;
 
@@ -1081,6 +1088,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     }
 
     /**
+     *  通过merchantId查询 经营权限的   商家区域和对象权限集合
+     *
      * 新逻辑：经营权限--区域  改为 sys_common_org表主键
      * 四种情况
      * 1、只添加对象权限时，可选对象是设置的对象列表；
@@ -1089,7 +1098,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
      * 4、同时添加了区域权限：长沙和株洲市，对象权限：浏阳市对象1，那么可选对象是浏阳市对象1和长沙和株洲市的所有对象
      * 5、同时添加了区域权限：长沙和株洲市，对象权限：长沙市对象1、衡阳市对象2，那么可选对象是长沙市对象1、衡阳市对象2和株洲市的所有对象
      */
-    public ResultVO<List<String>> newgetRegionAndMerchantPermission(MerchantRulesCommonReq req) {
+    @Override
+    public ResultVO<List<String>> getBusinessRegionAndMerchantPermission(MerchantRulesCommonReq req) {
         List<String> merchantIdList = null;
         List<String> mixedId = null;
 
@@ -1102,71 +1112,89 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         merchantRulesReq.setTargetType(PartnerConst.MerchantBusinessTargetTypeEnum.MERCHANT.getType());
         ResultVO<List<String>> merchantResultVO = this.getCommonPermission(merchantRulesReq);
         log.info("MerchantRulesServiceImpl.getCommonPermission merchant req={}, resp={}", merchantRulesReq, JSON.toJSONString(merchantResultVO));
-        if (merchantResultVO.isSuccess() && !CollectionUtils.isEmpty(merchantResultVO.getResultData())) {
-            merchantIdList = merchantResultVO.getResultData();
-            mixedId = merchantIdList;
-        }
+        // 商家对应的有权限的  商家ID集合
+        merchantIdList = merchantResultVO.getResultData();
 
         // 经营权限--区域
         merchantRulesReq.setTargetType(PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType());
         ResultVO<List<String>> regionResultVO = this.getCommonPermission(merchantRulesReq);
         log.info("MerchantRulesServiceImpl.getCommonPermission region req={}, resp={}", merchantRulesReq, JSON.toJSONString(regionResultVO));
-        if (regionResultVO.isSuccess() && !CollectionUtils.isEmpty(regionResultVO.getResultData())) {
-            List<String> parentRegionIdList = regionResultVO.getResultData();
-            // 把本地网转换为它下面的regionId
-            List<String> childRegionIdList = getRegionIdListByLanIdOrRegionIdList(parentRegionIdList);
-            MerchantListReq regionAndMerchantIdListReq = new MerchantListReq();
-            regionAndMerchantIdListReq.setCityList(childRegionIdList);
-            regionAndMerchantIdListReq.setMerchantIdList(merchantIdList);
-            ResultVO<List<MerchantDTO>> merchantVO = merchantService.listMerchant(regionAndMerchantIdListReq);
-            log.info("MerchantRulesServiceImpl.getRegionAndMerchantPermission merchantService.listMerchant req={}, resp={}", JSON.toJSONString(regionAndMerchantIdListReq), JSON.toJSONString(merchantVO));
-            if (merchantVO.isSuccess() && !CollectionUtils.isEmpty(merchantVO.getResultData()) && !CollectionUtils.isEmpty(merchantIdList)) {
-                // 有对象权限，有区域权限，有交集
-                List<MerchantDTO> regionByMerchantList = merchantVO.getResultData();
-                List<String> regionIdListTemp = childRegionIdList;
-                // 筛选出设置区域权限且关联的商家也设置了权限的区域ID
-                regionByMerchantList = regionByMerchantList.stream().filter(t -> regionIdListTemp.contains(t.getCity())).collect(Collectors.toList());
-                List<String> relatedRegionId = regionByMerchantList.stream().map(MerchantDTO::getCity).collect(Collectors.toList());
-                List<String> relatedParentRegionId = getParentRegionIdListByRegionIdList(relatedRegionId);
-                // 如果区域下的对象不为空，去除此区域内的商家ID,选的区域权限不是本地网但是有对应对象也去除
-                parentRegionIdList.removeAll(relatedParentRegionId);
-                if (!CollectionUtils.isEmpty(parentRegionIdList)) {
-                    // 去除了重回的区域id
-                    List<String> noRepeatRegionIdList = getRegionIdListByLanIdOrRegionIdList(parentRegionIdList);
-                    MerchantListReq regionListReq = new MerchantListReq();
-                    regionListReq.setCityList(noRepeatRegionIdList);
-                    ResultVO<List<MerchantDTO>> regionMerchantVO = merchantService.listMerchant(regionListReq);
-                    log.info("MerchantRulesServiceImpl.getRegionAndMerchantPermission merchantService.listMerchant req={}, resp={}", JSON.toJSONString(regionListReq), JSON.toJSONString(regionMerchantVO));
+        // 商家有权限的 组织ID集合
+        List<String> orgIdList = regionResultVO.getResultData();
 
-                    List<MerchantDTO> merchantResps = regionMerchantVO.getResultData();
-                    List<String> notRelatedMerchantId = merchantResps.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
-                    merchantIdList.addAll(notRelatedMerchantId);
-                }
-                mixedId = merchantIdList;
-            } else if (merchantVO.isSuccess() && CollectionUtils.isEmpty(merchantVO.getResultData()) && !CollectionUtils.isEmpty(merchantIdList)) {
-                // 有对象权限，有区域权限，但是没有交集
-                MerchantListReq regionIdListReq = new MerchantListReq();
-                regionIdListReq.setCityList(childRegionIdList);
-                ResultVO<List<MerchantDTO>> regionIdMerchantVO = merchantService.listMerchant(regionIdListReq);
-                log.info("MerchantRulesServiceImpl.getRegionAndMerchantPermission merchantService.listMerchant regionIdListReq={}, resp={}", JSON.toJSONString(regionIdListReq), JSON.toJSONString(regionIdMerchantVO));
-                if (regionIdMerchantVO.isSuccess() && !CollectionUtils.isEmpty(regionIdMerchantVO.getResultData())) {
-                    List<MerchantDTO> notRelateMerchants = regionIdMerchantVO.getResultData();
-                    List<String> notRelateMerchantIds = notRelateMerchants.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
-                    notRelateMerchantIds.addAll(merchantIdList);
-                    mixedId = notRelateMerchantIds;
-                }
-            } else if (merchantVO.isSuccess() && !CollectionUtils.isEmpty(merchantVO.getResultData()) && CollectionUtils.isEmpty(merchantIdList)) {
-                // 没有对象权限,有区域权限
-                MerchantListReq regionIdListReq = new MerchantListReq();
-                regionIdListReq.setCityList(childRegionIdList);
-                ResultVO<List<MerchantDTO>> regionIdMerchantVO = merchantService.listMerchant(regionIdListReq);
-                log.info("MerchantRulesServiceImpl.getRegionAndMerchantPermission merchantService.listMerchant regionIdListReq={}, resp={}", JSON.toJSONString(regionIdListReq), JSON.toJSONString(regionIdMerchantVO));
-                if (regionIdMerchantVO.isSuccess() && !CollectionUtils.isEmpty(regionIdMerchantVO.getResultData())) {
-                    List<MerchantDTO> notRelateMerchants = regionIdMerchantVO.getResultData();
-                    List<String> notRelateMerchantIds = notRelateMerchants.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
-                    mixedId = notRelateMerchantIds;
+        // 逻辑：
+        if (!CollectionUtils.isEmpty(merchantIdList) && CollectionUtils.isEmpty(orgIdList)) {
+            // 有对象权限, 没有组织区域权限
+            mixedId = merchantIdList;
+            log.info("MerchantRulesServiceImpl.getCommonPermission() 有对象权限, 没有有组织区域权限 merchantIdList={}, orgIdList={}", JSON.toJSONString(merchantIdList), JSON.toJSONString(orgIdList));
+
+        } else if (CollectionUtils.isEmpty(merchantIdList) && !CollectionUtils.isEmpty(orgIdList)) {
+            // 没有对象权限, 有组织区域权限
+            log.info("MerchantRulesServiceImpl.getCommonPermission() 没有对象权限, 有组织区域权限 merchantIdList={}, orgIdList={}", JSON.toJSONString(merchantIdList), JSON.toJSONString(orgIdList));
+
+            // 找出orgId集合下的所有 下属的第6级 组织ID集合
+            OrganizationChildListReq childListReq =  new OrganizationChildListReq();
+            childListReq.setOrgIdList(orgIdList);
+            childListReq.setOrgLevel(SysOrgConst.ORG_LEVEL.LEVEL_6.getCode());
+            List<OrganizationListResp> allChildOrgList = organizationService.listOrganizationChild(childListReq).getResultData();
+            List<String> allChildOrgIdList = allChildOrgList.stream().map(OrganizationListResp::getOrgId).collect(Collectors.toList());
+
+            // 根据orgid集合找商家信息
+            if (!CollectionUtils.isEmpty(allChildOrgIdList)) {
+                MerchantListReq merchantListReq = new MerchantListReq();
+                merchantListReq.setParCrmOrgIdList(merchantIdList);
+                List<MerchantDTO> allMerchantList = merchantService.listMerchant(merchantListReq).getResultData();
+                List<String> allMerchantIdList = allMerchantList.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
+                mixedId = allMerchantIdList;
+            }
+
+        } else if (!CollectionUtils.isEmpty(merchantIdList) && !CollectionUtils.isEmpty(orgIdList)) {
+            // 有对象权限, 有组织区域权限
+            log.info("MerchantRulesServiceImpl.getCommonPermission() 有对象权限, 有组织区域权限 merchantIdList={}, orgIdList={}", JSON.toJSONString(merchantIdList), JSON.toJSONString(orgIdList));
+
+            // 找出有权限的商家信息里面的  组织信息 集合
+            MerchantListReq merchantListReq = new MerchantListReq();
+            merchantListReq.setMerchantIdList(merchantIdList);
+            List<MerchantDTO> merchantDTOList = merchantService.listMerchant(merchantListReq).getResultData();
+            List<String> merchantOrgIdList = merchantDTOList.stream().map(MerchantDTO::getParCrmOrgId).collect(Collectors.toList());
+            List<OrganizationListResp> merchantOrgList = Lists.newArrayList();
+            if (!CollectionUtils.isEmpty(merchantOrgIdList)) {
+                // 取出商家 组织信息 集合
+                OrganizationListReq organizationListReq = new OrganizationListReq();
+                organizationListReq.setOrgIdList(merchantOrgIdList);
+                merchantOrgList = organizationService.listOrganization(organizationListReq).getResultData();
+            }
+            List<String> relateOrgIdList =  Lists.newArrayList();
+            if (!CollectionUtils.isEmpty(merchantOrgList)) {
+                // 筛选出设置组织区域权限且关联的商家也设置了权限的 组织区域ID
+                for (OrganizationListResp org : merchantOrgList) {
+                    for (String orgId : orgIdList) {
+                        if (StringUtils.contains(org.getPathCode(), orgId)) {
+                            relateOrgIdList.add(orgId);
+                        }
+                    }
                 }
             }
+
+            // 组织ID集合里面 去除掉有关联的 orgId
+            orgIdList.removeAll(relateOrgIdList);
+
+            // 找出筛选后的orgId集合下的所有 下属的第6级 组织ID集合
+            OrganizationChildListReq childListReq =  new OrganizationChildListReq();
+            childListReq.setOrgIdList(orgIdList);
+            childListReq.setOrgLevel(SysOrgConst.ORG_LEVEL.LEVEL_6.getCode());
+            List<OrganizationListResp> allChildOrgList = organizationService.listOrganizationChild(childListReq).getResultData();
+            List<String> allChildOrgIdList = allChildOrgList.stream().map(OrganizationListResp::getOrgId).collect(Collectors.toList());
+            // 根据orgid集合找商家信息
+            if (!CollectionUtils.isEmpty(allChildOrgIdList)) {
+                MerchantListReq merchantListReq1 = new MerchantListReq();
+                merchantListReq1.setParCrmOrgIdList(merchantIdList);
+                List<MerchantDTO> allMerchantList = merchantService.listMerchant(merchantListReq1).getResultData();
+                List<String> allMerchantIdList = allMerchantList.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
+                merchantIdList.addAll(allMerchantIdList);
+            }
+
+            mixedId = merchantIdList;
         }
 
         if (CollectionUtils.isEmpty(mixedId)) {
@@ -1325,15 +1353,68 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             }
         });
 
+        // 原先的逻辑 判断： 目标商家 是否在有权限的商家集合里面 或者 目标商家的 lanId或regionId 是否再有权限的 区域ID集合
+//        for (MerchantDTO merchantDTO : merchantDTOS) {
+//            String merchantId = merchantDTO.getMerchantId();
+//            String city = merchantDTO.getCity();
+//            String lanId = merchantDTO.getLanId();
+//            if (!merchantList.contains(merchantId) && !regionList.contains(city) && !regionList.contains(lanId)) {
+//                return ResultVO.error(merchantDTO.getMerchantName() + ": " + merchantDTO.getMerchantId() + "不符合权限规则");
+//            }
+//        }
+
+        // 新逻辑 判断： 1、目标商家 是否在有权限的商家集合里面
+        // 或者 2、目标商家的 对应的组织信息里面的 pathCode 字段 是否包含 有权限的组织区域ID集合里面的其中一个
+        List<String> merchantOrgIdList = merchantDTOS.stream().map(MerchantDTO::getParCrmOrgId).collect(Collectors.toList());
+        List<OrganizationListResp> merchantOrgList = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(merchantOrgIdList)) {
+            // 取出目标商家 组织信息 集合
+            OrganizationListReq organizationListReq = new OrganizationListReq();
+            organizationListReq.setOrgIdList(merchantOrgIdList);
+            merchantOrgList = organizationService.listOrganization(organizationListReq).getResultData();
+        }
         for (MerchantDTO merchantDTO : merchantDTOS) {
             String merchantId = merchantDTO.getMerchantId();
-            String city = merchantDTO.getCity();
-            String lanId = merchantDTO.getLanId();
-            if (!merchantList.contains(merchantId) && !regionList.contains(city) && !regionList.contains(lanId)) {
+            if (!merchantList.contains(merchantId) && !checkOrgPermission(merchantOrgIdList, merchantOrgList, merchantDTO.getParCrmOrgId())) {
                 return ResultVO.error(merchantDTO.getMerchantName() + ": " + merchantDTO.getMerchantId() + "不符合权限规则");
             }
         }
         return ResultVO.success();
+    }
+
+    /**
+     *
+     * 校验 商家经营权限-区域权限
+     * 逻辑： 目标商家的 对应的组织信息里面的 pathCode 字段 是否包含 有权限的组织区域ID集合里面的其中一个
+     * @param sourceOrgIdList  有权限的 组织区域ID集合
+     * @param targetOrgList 目标商家集合对应的  组织信息集合(避免每次去数据库 取数据）
+     * @param targetOrgId 需要校验的 目标商家的 组织区域ID
+     * @return
+     */
+    private boolean checkOrgPermission(List<String> sourceOrgIdList, List<OrganizationListResp> targetOrgList, String targetOrgId) {
+        if (CollectionUtils.isEmpty(sourceOrgIdList) || CollectionUtils.isEmpty(targetOrgList) || Objects.isNull(targetOrgId)) {
+            return false;
+        }
+        // 找到 targetOrgId 对应的 org信息对象
+        OrganizationListResp targetOrg = null;
+        for (OrganizationListResp org : targetOrgList) {
+            if (StringUtils.equals(org.getOrgId(), targetOrgId)) {
+                targetOrg = org;
+                break;
+            }
+        }
+        if (Objects.isNull(targetOrg)) {
+            log.info("MerchantRulesServiceImpl.checkOrgPermission() 没找到targetOrgId={} 对应的组织信息", JSON.toJSONString(targetOrgId));
+            return false;
+        }
+
+        // 目标 组织区域对象的pathCode 是否包含 有权限组织区域ID
+        for (String sourceOrgId : sourceOrgIdList) {
+            if (StringUtils.contains(targetOrg.getPathCode(), sourceOrgId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

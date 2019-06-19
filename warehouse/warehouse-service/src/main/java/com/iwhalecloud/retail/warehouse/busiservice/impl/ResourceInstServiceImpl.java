@@ -683,45 +683,24 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public synchronized ResultVO resourceInstPutIn(ResourceInstPutInReq req){
-        String merchantId = req.getMerchantId();
-        ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(merchantId);
-        log.info("ResourceInstServiceImpl.resourceInstPutIn merchantService.getMerchantById req={},resp={}", JSON.toJSONString(merchantId), JSON.toJSONString(merchantResultVO));
-        MerchantDTO merchantDTO = merchantResultVO.getResultData();
-        if (null == merchantDTO) {
-            return ResultVO.error("商家获取失败");
-        }
-        // 厂商和零售商新增不会传仓库ID，调用接口查询
-        ResouceStoreDTO store = resouceStoreManager.getStore(merchantId, ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        log.info("ResourceInstServiceImpl.resourceInstPutIn resouceStoreManager.getStore req={},resp={}", JSON.toJSONString(merchantId), JSON.toJSONString(store));
-        if (null == store) {
-            return ResultVO.error(constant.getNoStoreMsg());
-        }
-        req.setMktResStoreId(store.getMktResStoreId());
-        req.setLanId(merchantDTO.getLanId());
-        req.setMerchantName(merchantDTO.getMerchantName());
-        req.setMerchantType(merchantDTO.getMerchantType());
-        req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        log.info("ResourceInstServiceImpl.resourceInstPutIn req={}, resp={}", JSON.toJSONString(req));
         Long allocateNum = 0L;
         Map<String, List<ResourceInstDTO>> insts = req.getInsts();
         for (Map.Entry<String, List<ResourceInstDTO>> entry : insts.entrySet()) {
             List<ResourceInstDTO> dtoList = entry.getValue();
             ResourceInstDTO inst = dtoList.get(0);
-
             String batchId = resourceInstManager.getPrimaryKey();
             List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(dtoList.size());
             for (ResourceInstDTO resourceInst : dtoList) {
                 resourceInst.setMktResInstId(null);
                 ResourceInst t = new ResourceInst();
                 BeanUtils.copyProperties(resourceInst, t);
-                BeanUtils.copyProperties(req, t);
                 Date now = new Date();
                 t.setMktResBatchId(batchId);
                 t.setMktResStoreId(req.getDestStoreId());
                 t.setStorageType(req.getStorageType());
-                t.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
                 t.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-                t.setCreateStaff("1");
+                t.setCreateStaff(req.getMerchantId());
                 t.setStatusDate(now);
                 t.setCreateDate(now);
                 resourceInsts.add(t);
@@ -737,6 +716,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             BeanUtils.copyProperties(inst, resourceInstStoreDTO);
             resourceInstStoreDTO.setQuantity(Long.valueOf(dtoList.size()));
             resourceInstStoreDTO.setQuantityAddFlag(true);
+            resourceInstStoreDTO.setMerchantId(req.getMerchantId());
             resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
             Integer updateRestInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
             log.info("ResourceInstServiceImpl.resourceInstPutIn resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateRestInstStore));

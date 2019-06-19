@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.system.mapper.OrganizationMapper">
 
-<sql id="allFields">
+    <sql id="allFields">
     t.ORG_ID 
     ,t.PARENT_ORG_ID
     ,t.PARENT_ORG_NAME
@@ -24,15 +24,31 @@
     ,t.UPDATE_DATE 
 </sql>
 
-    <select id="queryOrganizationForPage" resultType="com.iwhalecloud.retail.system.dto.OrganizationDTO" parameterType="com.iwhalecloud.retail.system.dto.request.OrganizationsQueryReq">
+<sql id="listFields">
+    t.ORG_ID
+    ,t.PARENT_ORG_ID
+    ,t.PARENT_ORG_NAME
+    ,t.ORG_CODE
+    ,t.ORG_NAME
+    ,t.LAN_ID
+    ,t.LAN
+    ,t.REGION_ID
+    ,t.REGION
+    ,t.ORG_LEVEL
+    ,t.STATUS_CD
+</sql>
+
+
+    <select id="queryOrganizationForPage" resultType="com.iwhalecloud.retail.system.dto.OrganizationDTO"
+            parameterType="com.iwhalecloud.retail.system.dto.request.OrganizationsQueryReq">
         select
         <include refid="allFields"></include>
         from sys_organization t where 1=1
         <if test="req.orgId != null and req.orgId != ''">
-            and t.ORG_ID like CONCAT(CONCAT('%', #{req.orgId }), '%')
+            and t.ORG_ID like CONCAT(CONCAT('%', #{req.orgId}), '%')
         </if>
         <if test="req.orgName != null and req.orgName != ''">
-            and lower(t.ORG_NAME) like lower(CONCAT(CONCAT('%', #{req.orgName }), '%'))
+            and lower(t.ORG_NAME) like lower(CONCAT(CONCAT('%', #{req.orgName}), '%'))
         </if>
         <if test="req.lanId != null and req.lanId != ''">
             and t.LAN_ID = #{req.lanId}
@@ -40,8 +56,54 @@
         order by ORG_ID desc
     </select>
 
-    <select id="queryRegionOrganizationId" resultType="com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp">
+    <select id="queryRegionOrganizationId"
+            resultType="com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp">
         select org_id, org_name, lan_id, region_id from sys_organization WHERE ORG_LEVEL = '2' and lan_id != '10000000' GROUP BY lan_id
+    </select>
+
+    <!--根据条件查询组织列表-->
+    <select id="listOrganization" resultType="com.iwhalecloud.retail.system.dto.response.OrganizationListResp"
+            parameterType="com.iwhalecloud.retail.system.dto.request.OrganizationListReq">
+        select
+        <include refid="listFields"></include>
+        from sys_organization t where 1=1
+        <if test="req.orgIdList != null and req.orgIdList.size() > 0">
+            and ORG_ID in
+            <foreach collection="req.orgIdList" item="item1" index="index" open="(" close=")" separator=",">
+                #{item1}
+            </foreach>
+        </if>
+        <if test="req.parentOrgId != null and req.parentOrgId != ''">
+            and t.PARENT_ORG_ID = #{req.parentOrgId}
+        </if>
+        <if test="req.lanId != null and req.lanId != ''">
+            and t.LAN_ID = #{req.lanId}
+        </if>
+        <if test="req.regionId != null and req.regionId != ''">
+            and t.REGION_ID = #{req.regionId}
+        </if>
+        <if test="req.orgLevel != null and req.orgLevel != ''">
+            and t.ORG_LEVEL = #{req.orgLevel}
+        </if>
+        order by ORG_ID desc
+    </select>
+
+    <!--根据orgId集合查询下属的子组织-->
+    <select id="listOrganizationChild" resultType="com.iwhalecloud.retail.system.dto.response.OrganizationListResp"
+            parameterType="com.iwhalecloud.retail.system.dto.request.OrganizationChildListReq">
+        select
+        <include refid="listFields"></include>
+        from sys_organization t where 1=1
+        <if test="req.orgIdList != null and req.orgIdList.size() > 0">
+            and
+            <foreach collection="req.orgIdList" item="item1" index="index" open="(" close=")" separator=" or ">
+                t.PATH_CODE like CONCAT(CONCAT('%', #{item1}), '%')
+            </foreach>
+        </if>
+        <if test="req.orgLevel != null and req.orgLevel != ''">
+            and t.ORG_LEVEL = #{req.orgLevel}
+        </if>
+        order by ORG_ID desc
     </select>
 
 </mapper>

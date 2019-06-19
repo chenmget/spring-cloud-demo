@@ -1,16 +1,14 @@
 package com.iwhalecloud.retail.warehouse.dubbo.workflow;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.iwhalecloud.retail.warehouse.service.AllocateResourceInstPassActionService;
+import com.iwhalecloud.retail.warehouse.service.AuditPassActionService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 public class AllocateResourceInstPassActionImplTest {
 
     @Reference
-    private AllocateResourceInstPassActionService allocateResourceInstPassActionService;
+    private AuditPassActionService allocateResourceInstPassActionService;
 
     @Test
     public void run() {

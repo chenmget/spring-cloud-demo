@@ -8,12 +8,12 @@ spring.dubbo:
     application:
       name: wf-provider
     registry:
-      address: zookeeper://localhost:2181
+      address: zookeeper://172.21.72.75:8121
       username:
       password:
     protocol:
       name: dubbo
-      port: 20789
+      port: 21112
     scan: com.iwhalecloud.retail
 
 spring.redis:

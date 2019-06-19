@@ -160,7 +160,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             ProcessStartReq processStartDTO = new ProcessStartReq();
             processStartDTO.setTitle("绿色通道超过限额审批流程");
             processStartDTO.setApplyUserId(req.getCreateStaff());
-            processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_1008.getTypeCode());
+            processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_08.getTypeCode());
             processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1090.getTaskSubType());
             processStartDTO.setApplyUserName(req.getApplyUserName());
             if (resultVO != null && resultVO.getResultData() != null) {
@@ -639,7 +639,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ProcessStartReq processStartDTO = new ProcessStartReq();
         processStartDTO.setTitle("调拨审批流程");
         processStartDTO.setApplyUserId(req.getCreateStaff());
-        processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_1012.getTypeCode());
+        processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_12.getTypeCode());
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType());
         // 指定下一环节处理人
@@ -648,6 +648,10 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         user.setHandlerUserName(destMerchantDTO.getMerchantName());
         List<HandlerUser> uerList = new ArrayList<HandlerUser>(1);
         processStartDTO.setNextHandlerUser(uerList);
+        processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+        Map map=new HashMap();
+        map.put(sourceMerchantDTO.getLanId(), sourceMerchantDTO.getLanId());
+        processStartDTO.setParamsValue(JSON.toJSONString(map));
         ResultVO taskServiceRV = taskService.startProcess(processStartDTO);
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst taskService.startProcess req={},resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
         if (!taskServiceRV.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {

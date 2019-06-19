@@ -239,7 +239,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (null == sourceMerchantDTO) {
             return ResultVO.error("商家获取失败");
         }
-        ResultVO<MerchantDTO> destMerchantVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
+        ResultVO<MerchantDTO> destMerchantVO = resouceStoreService.getMerchantByStore(req.getDestStoreId());
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getDestStoreId(), JSON.toJSONString(destMerchantVO));
         MerchantDTO destMerchantDTO = destMerchantVO.getResultData();
         if (null == destMerchantDTO) {
@@ -255,10 +255,10 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
         String reqCode = resourceInstManager.getPrimaryKey();
 
-        String processId = WorkFlowConst.PROCESS_ID.PROCESS_1007.getTypeCode();
+        String processId = WorkFlowConst.PROCESS_ID.PROCESS_07.getTypeCode();
         String taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType();
         if (!sameLanId) {
-            processId = WorkFlowConst.PROCESS_ID.PROCESS_1012.getTypeCode();
+            processId = WorkFlowConst.PROCESS_ID.PROCESS_12.getTypeCode();
             taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType() ;
         }
         // step2 新增申请单
@@ -297,9 +297,13 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
         processStartDTO.setTaskSubType(taskSubType);
         processStartDTO.setExtends1(sourceMerchantDTO.getCityName());
+        processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+        Map map=new HashMap();
+        map.put(sourceMerchantDTO.getLanId(), sourceMerchantDTO.getLanId());
+        processStartDTO.setParamsValue(JSON.toJSONString(map));
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
-        if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
+        if (!startResultVO.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
             throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
         }
         // step4 修改源仓库串码为调拨中
@@ -608,13 +612,13 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         reqUpdate.setMktResReqId(resReqId);
         reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
         ResultVO<Boolean> updateResourceRequestStateVO = requestService.updateResourceRequestState(reqUpdate);
-        log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr requestService.updateResourceRequestState req={},resp={}", JSON.toJSONString(reqUpdate),JSON.toJSONString(updateResourceRequestStateVO));
+        log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr requestService.updateResourceRequestState req={},resp={}", JSON.toJSONString(reqUpdate),JSON.toJSONString(updateResourceRequestStateVO));
 
         // step1 找到串码明细
         ResourceReqDetailQueryReq queryReq = new ResourceReqDetailQueryReq();
         queryReq.setMktResReqId(req.getResReqId());
         List<ResourceReqDetailDTO> list = resourceReqDetailManager.listDetail(queryReq);
-        log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceReqDetailManager.listDetail req={},resp={}", JSON.toJSONString(queryReq),JSON.toJSONString(list));
+        log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resourceReqDetailManager.listDetail req={},resp={}", JSON.toJSONString(queryReq),JSON.toJSONString(list));
         if (null == list || list.isEmpty()) {
             return ResultVO.error("没有查找到申请单");
         }
@@ -636,8 +640,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(resReqId);
         updateReq.setUpdateStaff(req.getUpdateStaff());
-        updateReq.setDestStoreId(resourceRequestResp.getDestStoreId());
-        updateReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
+        updateReq.setDestStoreId(resourceRequestResp.getMktResStoreId());
+        updateReq.setMktResStoreId(resourceRequestResp.getDestStoreId());
         updateReq.setMerchantId(resourceRequestResp.getMerchantId());
         ResultVO<List<String>> updateVO = resourceInstService.updateResourceInstByIds(updateReq);
         log.info("SupplierResourceInstServiceImpl.confirmReciveNbr resourceInstService.updateResourceInstByIds req={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updateVO));
@@ -645,15 +649,15 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         // step3 领用方入库
         ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
         selectReq.setMktResInstIdList(mktResInstIds);
-        selectReq.setMktResStoreId(resourceRequestResp.getDestStoreId());
+        selectReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
+        log.info("SupplierResourceInstServiceImpl.confirmReciveNbr resourceInstManager.selectByIds req={}, resp={}", JSON.toJSONString(selectReq), JSON.toJSONString(insts));
         // 按产品维度组装数据
         Map<String, List<ResourceInstDTO>> map = insts.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
         ResourceInstPutInReq instPutInReq = new ResourceInstPutInReq();
         instPutInReq.setInsts(map);
         instPutInReq.setCreateStaff(req.getUpdateStaff());
         instPutInReq.setStorageType(ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode());
-        instPutInReq.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         instPutInReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
         instPutInReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         instPutInReq.setDestStoreId(resourceRequestResp.getDestStoreId());
@@ -661,6 +665,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         instPutInReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         instPutInReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         instPutInReq.setObjId(resReqId);
+        instPutInReq.setLanId(list.get(0).getLanId());
+        instPutInReq.setRegionId(list.get(0).getRegionId());
         ResultVO resultResourceInstPutIn = resourceInstService.resourceInstPutIn(instPutInReq);
         log.info("SupplierResourceInstServiceImpl.confirmReciveNbr resourceInstService.resourceInstPutIn req={}, resp={}", JSON.toJSONString(instPutInReq), JSON.toJSONString(resultResourceInstPutIn));
         return ResultVO.success(instPutInReq.getUnUse());

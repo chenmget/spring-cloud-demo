@@ -21,10 +21,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -50,7 +47,7 @@ public class ValidAndAddRunableTask {
 
     private final Integer perNum = 5000;
 
-    private Map<String, List<Future<Boolean>>> validFutureTaskResult;
+    private Map<String, List<Future<Boolean>>> validFutureTaskResult = new Hashtable();
 
     String reg12 = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){12}$";
     String reg24 = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){24}$";
@@ -62,13 +59,13 @@ public class ValidAndAddRunableTask {
      * @param req
      */
     public String exceutorValid(ResourceInstValidReq req) {
+        String batchId = resourceInstService.getPrimaryKey();
         try {
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             List<String> nbrList = req.getMktResInstNbrs();
             List<String> ctCodeList = req.getCtCodeList();
             List<String> snCodeList = req.getSnCodeList();
             List<String> macCodeList = req.getMacCodeList();
-            String batchId = resourceInstService.getPrimaryKey();
             Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
             BlockingQueue<Callable<Boolean>> tasks = new LinkedBlockingQueue<>();
             for (Integer i = 0; i < excutorNum; i++) {
@@ -93,7 +90,7 @@ public class ValidAndAddRunableTask {
                     CopyOnWriteArrayList<String> subMacCodeList = new CopyOnWriteArrayList(macCodeList.subList(perNum * i, macCodeMaxNum));
                     getReq.setMacCodeList(subMacCodeList);
                 }
-                log.info("ValidAndAddRunableTask.exceutorValid newList={}, validFutureTaskResult={}", JSON.toJSONString(newList), JSON.toJSONString(validFutureTaskResult));
+                log.info("ValidAndAddRunableTask.exceutorValid newList={}, batchId={}", JSON.toJSONString(newList), batchId);
                 Callable<Boolean> callable = new ValidNbr(req, getReq, newList, batchId);
                 tasks.put(callable);
             }
@@ -104,7 +101,7 @@ public class ValidAndAddRunableTask {
         } catch (Exception e) {
             log.error("串码查询异常", e);
         }
-        return null;
+        return batchId;
     }
 
 
@@ -114,13 +111,14 @@ public class ValidAndAddRunableTask {
     public Boolean validHasDone(String batchId) {
         try{
             Boolean hasDone = true;
+            log.info("ValidAndAddRunableTask.validHasDone batchId={}, futures={}", batchId, JSON.toJSONString(validFutureTaskResult));
             if (null == validFutureTaskResult || CollectionUtils.isEmpty(validFutureTaskResult.get(batchId))) {
                 return false;
             }
             List<Future<Boolean>> futures = validFutureTaskResult.get(batchId);
-            log.info("ValidAndAddRunableTask.validHasDone batchId={}, futures={}", batchId, JSON.toJSONString(futures));
             for (Future<Boolean> future : futures) {
                 if (!future.isDone()) {
+                    validFutureTaskResult.remove(batchId);
                     return future.isDone();
                 }
             }

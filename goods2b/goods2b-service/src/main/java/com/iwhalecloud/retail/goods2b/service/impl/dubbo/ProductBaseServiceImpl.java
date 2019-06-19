@@ -267,6 +267,44 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             log.error(e.getMessage());
         }
     }
+
+//        例子：
+//       {"content":{"Good_id":"3033","u_kind_id":"27325","u_kind_name":"泛智能终端","GOOD_BAND":"中维世纪","sales_resource_id":"16297","terminal_type":"5014","sales_resource_name":"JVS-T-BC8WH2M-A0(室外摄像头)","Good_price":"299","terminal_type_name":"智能监控(室外机)"},"method":"ord.res.BandTerminalInDB","access_token":"a1a683ad0c7230088f3d51e215cd275b","version":"1.0"}
+//       {"res_code":"00000","res_message":"Success","result":{"Result":{"resultCode":"0","resultMsg":"数据同步成功"},"Message":"成功","ExchangeId":"HNYIGW201905081012191211332008","Code":"0000"}}
+
+    private void pushCrm(Map request){
+        String b = "";
+        String callUrl = "ord.res.BandTerminalInDB";
+        try {
+            log.info("ProductBaseServiceImpl.addProductBase pushCrm.req={}",request);
+            b = this.zopService(callUrl,zopUrl,request,zopSecret);
+            log.info("ProductBaseServiceImpl.addProductBase pushCrm.resp={}",b);
+            if(StringUtils.isNotEmpty(b)){
+                Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
+                String res_code = String.valueOf(parseObject.get("res_code"));
+                if("00000".equals(res_code)){
+                    String body = String.valueOf(parseObject.get("result"));
+                    Map result = JSON.parseObject(body, new TypeReference<HashMap>(){});
+                    String code = String.valueOf(result.get("Code"));
+                    if("0000".equals(code)){
+                        String crmResultStr = String.valueOf(parseObject.get("result"));
+                        Map crmResult = JSON.parseObject(crmResultStr, new TypeReference<HashMap>(){});
+                        String resultCode = String.valueOf(crmResult.get("resultCode"));
+                        if(!"0".equals(resultCode)){
+                            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "推送固网规格到CRM报错："+String.valueOf(crmResult.get("resultMsg")));
+                        }
+                    }else{
+                        throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "推送固网规格到CRM报错："+String.valueOf(result.get("Message")));
+                    }
+                }else{
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "推送固网规格到CRM报错："+String.valueOf(parseObject.get("res_message")));
+                }
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+        }
+    }
+
     private String getPriceLevel(Double cost){
         String priceLevel = "";
         if(cost>0.01 && (cost-60000)<=0.01){
@@ -551,7 +589,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                         }
                     }
                     //流程1
-                    if(newUpdateReq.getCost() - oldUpdateReq.getCost() !=0){
+                    if(newUpdateReq.getCost() - oldUpdateReq.getCost() !=0 ||
+                            newUpdateReq.getLocalSupplyFeeLower() - oldUpdateReq.getLocalSupplyFeeLower() != 0 ||
+                            newUpdateReq.getLocalSupplyFeeUpper() - oldUpdateReq.getLocalSupplyFeeUpper() != 0 ||
+                            newUpdateReq.getSupplyFeeLower() - oldUpdateReq.getSupplyFeeLower() !=0 ||
+                            newUpdateReq.getSupplyFeeUpper() - oldUpdateReq.getSupplyFeeUpper() !=0){
                         if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                             updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
                         }else{

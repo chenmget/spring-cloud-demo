@@ -684,9 +684,9 @@ public class UserController extends BaseController {
             return "";
         }
         String orgName = "";
-        com.iwhalecloud.retail.dto.ResultVO resultVO = organizationService.getOrganization(orgId);
-        if (resultVO.getResultData() != null) {
-            orgName = ((OrganizationDTO) resultVO.getResultData()).getOrgName();
+        OrganizationDTO organizationDTO = organizationService.getOrganization(orgId).getResultData();
+        if (organizationDTO != null) {
+            orgName = organizationDTO.getOrgName();
         }
         return orgName;
     }

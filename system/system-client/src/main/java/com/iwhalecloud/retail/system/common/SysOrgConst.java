@@ -14,9 +14,9 @@ public class SysOrgConst {
         LEVEL_1(1L, "湖南电信"),
         LEVEL_2(2L, "地市分公司"),
         LEVEL_3(3L, "区县分公司"),
-        LEVEL_4(4L, ""),
-        LEVEL_5(5L, ""),
-        LEVEL_6(6L, "网点经营部");
+        LEVEL_4(4L, "第四级组织"),
+        LEVEL_5(5L, "第五级组织"),
+        LEVEL_6(6L, "第六级：具体零售商级别");
 
         private Long code;
         private String value;

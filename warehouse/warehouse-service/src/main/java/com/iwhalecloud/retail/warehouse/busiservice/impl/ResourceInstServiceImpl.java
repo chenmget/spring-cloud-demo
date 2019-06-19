@@ -683,7 +683,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public synchronized ResultVO resourceInstPutIn(ResourceInstPutInReq req){
-
+        log.info("ResourceInstServiceImpl.resourceInstPutIn req={}, resp={}", JSON.toJSONString(req));
         Long allocateNum = 0L;
         Map<String, List<ResourceInstDTO>> insts = req.getInsts();
         for (Map.Entry<String, List<ResourceInstDTO>> entry : insts.entrySet()) {
@@ -716,6 +716,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             BeanUtils.copyProperties(inst, resourceInstStoreDTO);
             resourceInstStoreDTO.setQuantity(Long.valueOf(dtoList.size()));
             resourceInstStoreDTO.setQuantityAddFlag(true);
+            resourceInstStoreDTO.setMerchantId(req.getMerchantId());
             resourceInstStoreDTO.setMktResStoreId(req.getDestStoreId());
             Integer updateRestInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
             log.info("ResourceInstServiceImpl.resourceInstPutIn resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateRestInstStore));

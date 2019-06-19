@@ -651,6 +651,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         selectReq.setMktResInstIdList(mktResInstIds);
         selectReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
+        log.info("SupplierResourceInstServiceImpl.confirmReciveNbr resourceInstManager.selectByIds req={}, resp={}", JSON.toJSONString(selectReq), JSON.toJSONString(insts));
         // 按产品维度组装数据
         Map<String, List<ResourceInstDTO>> map = insts.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
         ResourceInstPutInReq instPutInReq = new ResourceInstPutInReq();

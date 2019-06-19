@@ -622,6 +622,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	}
 
 	@Override
+	@Transactional
 	public ResultVO updatePurTypeByApplyId(ProcureApplyReq req) {
 		log.info("updatePurTypeByApplyId  req= "+JSON.toJSONString(req));
 		List<AddProductReq> list=req.getAddProductReq();

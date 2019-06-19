@@ -312,7 +312,7 @@ public class CgSearchApplyController extends BaseController {
 			@ApiResponse(code=400,message="请求参数没填好"),
 			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
 	})
-	@PostMapping("/tcProcureApply")
+	@PostMapping("/updatePurTypeByApplyId")
 	@UserLoginToken
 	public ResultVO updatePurTypeByApplyId(@RequestBody ProcureApplyReq req) {
 		ResultVO v= purApplyService.updatePurTypeByApplyId(req);

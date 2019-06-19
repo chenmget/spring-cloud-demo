@@ -91,9 +91,11 @@ public class SupplierResourceInstServiceImplTest {
         req.setSellerMerchantId("4301811025392");
 
         String json = "{\"deliveryResourceInstItemList\":[{\"mktResInstNbrs\":[\"013001\"],\"orderItemId\":\"20190129103506630775894\",\"productId\":\"1089765013613895682\"}],\"sellerMerchantId\":\"4301811025392\"}";
+        json = "{\"buyerMerchantId\":\"10000696\",\"deliveryResourceInstItemList\":[{\"mktResInstNbrs\":[\"201906191448000000000001\",\"201906191452000000000001\"],\"orderItemId\":\"201906194710002186\",\"productId\":\"10661373\"}],\"orderId\":\"201906194710002166\",\"sellerMerchantId\":\"10000659\",\"updateStockReq\":{\"itemList\":[{\"num\":-2,\"productId\":\"10661373\"}],\"merchantId\":\"10000659\"}}";
         Gson gson = new Gson();
         req  = gson.fromJson(json, new TypeToken<DeliveryResourceInstReq>(){}.getType());
-        supplierResourceInstService.deliveryOutResourceInst(req);
+        ResultVO resultVO = supplierResourceInstService.deliveryOutResourceInst(req);
+        System.out.print(resultVO);
     }
 
     //场景二：地保(卖) 零售商(买)   省包发货

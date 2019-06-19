@@ -86,7 +86,7 @@ public class ReportOrderController extends BaseController {
 		} else if (userType == SystemConst.USER_FOUNDER_5) {//地市供应商
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {
-				return ;
+				return ResultVO.error("当前用户 没有商家编码");
 			}
 			req.setSuplierCode(merchantDTO.getMerchantCode());
 			list.add(UserContext.getUser().getLanId());

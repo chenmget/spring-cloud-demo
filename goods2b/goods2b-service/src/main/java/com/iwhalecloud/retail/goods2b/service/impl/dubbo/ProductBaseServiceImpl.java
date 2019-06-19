@@ -635,13 +635,16 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }else {
                 return true;
             }
-            if(StringUtils.isNotEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isNotEmpty(oldFile.getThreeDimensionsUrl()) &&
-                    newFile.getThreeDimensionsUrl().equals(oldFile.getThreeDimensionsUrl())){
+            if(StringUtils.isNotEmpty(newFile.getThumbnailUrl()) && StringUtils.isNotEmpty(oldFile.getThumbnailUrl()) &&
+                    newFile.getThumbnailUrl().equals(oldFile.getThumbnailUrl())){
             }else {
                 return true;
             }
-            if(StringUtils.isNotEmpty(newFile.getThumbnailUrl()) && StringUtils.isNotEmpty(oldFile.getThumbnailUrl()) &&
-                    newFile.getThumbnailUrl().equals(oldFile.getThumbnailUrl())){
+            if(StringUtils.isEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isEmpty(newFile.getThreeDimensionsUrl())){
+                continue;
+            }
+            if(StringUtils.isNotEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isNotEmpty(oldFile.getThreeDimensionsUrl()) &&
+                    newFile.getThreeDimensionsUrl().equals(oldFile.getThreeDimensionsUrl())){
             }else {
                 return true;
             }

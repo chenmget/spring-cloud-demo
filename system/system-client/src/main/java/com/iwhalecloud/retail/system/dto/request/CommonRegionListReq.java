@@ -18,6 +18,12 @@ public class CommonRegionListReq implements Serializable {
     @ApiModelProperty(value = "公共管理区域标识id 集合")
     private List<String> regionIdList;
 
+    /**
+     * 父级区域ids
+     */
+    @ApiModelProperty(value = "父级区域ids 集合")
+    private List<String> parRegionIdList;
+
     @ApiModelProperty(value = "记录上级区域标识。")
     private String parRegionId;
 

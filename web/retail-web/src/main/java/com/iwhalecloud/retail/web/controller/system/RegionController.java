@@ -73,28 +73,16 @@ public class RegionController {
     }
 
     @ApiOperation(value = "查询本地网区域列表", notes = "不传参数，默认查湖南 本地网 列表")
-    @ApiImplicitParams({
-        @ApiImplicitParam(name="parRegionId", value = "父级区域ID，为空默认查湖南本地网列表", paramType = "query", required = false, dataType = "String"),
-        @ApiImplicitParam(name = "levelFlag", value = "查询层级", paramType = "query", required = false, dataType = "String")
-    })
+    @ApiImplicitParam(name="parRegionId", value = "父级区域ID，为空默认查湖南本地网列表", paramType = "query", required = false, dataType = "String")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value = "/listCommonRegion")
-    public ResultVO<List<CommonRegionDTO>> listCommonRegion(@RequestParam(required = false, value = "parRegionId") String parRegionId,
-                                                            @RequestParam(required = false, value = "levelFlag") String levelFlag){
+    public ResultVO<List<CommonRegionDTO>> listCommonRegion(@RequestParam(required = false, value = "parRegionId") String parRegionId){
         CommonRegionListReq req = new CommonRegionListReq();
         if (!StringUtils.isEmpty(parRegionId)) {
             req.setParRegionId(parRegionId);
-            if(StringUtils.isEmpty(levelFlag)){
-                //没有传入查询标记时，如果当前等级是30(地市公司级)，无需查询下一级
-                ResultVO<CommonRegionDTO> resultVO = commonRegionService.getCommonRegionById(parRegionId);
-                CommonRegionDTO commonRegionDTO = resultVO.getResultData();
-                if(SystemConst.REGION_LEVEL.LEVEL_30.getCode().equals(commonRegionDTO.getRegionLevel())){
-                    return ResultVO.success();
-                }
-            }
         }
 
         return commonRegionService.listCommonRegion(req);

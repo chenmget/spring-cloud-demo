@@ -307,7 +307,16 @@ public class CgSearchApplyController extends BaseController {
 		purApplyService.addShippingAddress(req);
 		return ResultVO.success();
 	}
-	
-	
+	@ApiOperation(value = "修改采购类型", notes = "修改采购类型")
+	@ApiResponses({
+			@ApiResponse(code=400,message="请求参数没填好"),
+			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+	})
+	@PostMapping("/tcProcureApply")
+	@UserLoginToken
+	public ResultVO updatePurTypeByApplyId(@RequestBody ProcureApplyReq req) {
+		ResultVO v= purApplyService.updatePurTypeByApplyId(req);
+		return v;
+	}
 	
 }

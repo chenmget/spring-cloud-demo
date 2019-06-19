@@ -7,6 +7,12 @@ import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
+import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
+import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.system.dto.request.UserGetReq;
+import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.WorkFlowServiceApplication;
 import com.iwhalecloud.retail.workflow.bizservice.RunRouteService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -58,6 +64,10 @@ public class TaskServiceImplTest {
     @Resource
     private RuleDefManager ruleDefManager;
 
+    @Reference
+    private UserService userService;
+
+
     @Test
     public void startProcess() {
         ProcessStartReq req = new ProcessStartReq();
@@ -95,7 +105,7 @@ public class TaskServiceImplTest {
     public void nextRoute() {
 //        String json = "{\"appendixType\":\"2\",\"appendixUrl\":\"\",\"handlerMsg\":\"333\",\"handlerUserId\":\"200012813991\",\"handlerUserName\":\"zte管理员\",\"nextHandlerUser\":[],\"nextNodeId\":\"1559\",\"routeId\":\"20190528005\",\"taskId\":\"12330136\",\"taskItemId\":\"12330137\"}\n";
 //        RouteNextReq req = (RouteNextReq) JSON.parse(json);
-       String json ="{\"routeId\":\"20190528004\",\"handlerMsg\":\"饿\",\"nextNodeId\":\"1549\",\"taskId\":\"12335986\",\"taskItemId\":\"12335996\",\"handlerUserId\":\"22796\",\"nextHandlerUser\":[],\"appendixType\":\"2\",\"appendixUrl\":\"\"}";
+       String json ="{\"routeId\":\"20190528004\",\"handlerMsg\":\"4\",\"nextNodeId\":\"1549\",\"taskId\":\"12336041\",\"taskItemId\":\"12336042\",\"handlerUserId\":\"22796\",\"nextHandlerUser\":[],\"appendixType\":\"2\",\"appendixUrl\":\"\"}";
         Gson gson = new Gson();
         RouteNextReq routeNextReq  = gson.fromJson(json, new TypeToken<RouteNextReq>(){}.getType());
 
@@ -247,6 +257,20 @@ public class TaskServiceImplTest {
     public void queryRuleDefByParams(){
         List<RuleDef> ruleDef = ruleDefManager.queryRuleDefByParams("1","huawei");
         System.out.println(JSON.toJSONString(ruleDef));
+    }
+
+    @Test
+    public  void  m() {
+//        MerchantGetReq merchantGetReq = new MerchantGetReq();
+//        merchantGetReq.setMerchantId("10000696");
+//        ResultVO<MerchantDetailDTO> merchantInfo =merchantService.getMerchantDetail(merchantGetReq);
+//        System.out.println("PurApplyGetHandlerUserIdServiceImpl.run merchantInfo={}"+ JSON.toJSONString(merchantInfo));
+
+        UserGetReq userGetReq = new UserGetReq();
+        userGetReq.setRelCode("10000696");
+        UserDTO userDTO = userService.getUser(userGetReq);
+        System.out.println("PurApplyGetHandlerUserIdServiceImpl.run merchantInfo={}"+ JSON.toJSONString(userDTO));
+
     }
 
 }

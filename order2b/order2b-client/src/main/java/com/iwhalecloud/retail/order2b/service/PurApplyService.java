@@ -80,5 +80,7 @@ public interface PurApplyService {
 *  采购申请
 * */
 	public ResultVO applyPurchase(ProcureApplyReq req);
-	
+
+
+	public ResultVO updatePurTypeByApplyId(ProcureApplyReq req);
 }

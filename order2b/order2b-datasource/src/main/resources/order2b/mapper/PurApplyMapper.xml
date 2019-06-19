@@ -677,7 +677,10 @@
 		region_id as regionId,rel_apply_id as relApplyId,status_cd as statusCd,create_staff as createStaff,
 		create_date as createDate,update_staff as updateStaff,update_date as updateDate FROM PUR_APPLY WHERE apply_id=#{applyId}
 	</select>
+    <update id="updatePurTypeByApplyId" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq">
+		UPDATE pur_apply_item SET PUR_TYPE=#{req.purType} WHERE APPLY_ITEM_ID=#{req.applyItemId}
 
+	</update>
 
 
 </mapper>

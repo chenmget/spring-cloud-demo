@@ -2,9 +2,7 @@ package com.iwhalecloud.retail.promo.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityReq;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityResp;

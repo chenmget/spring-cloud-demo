@@ -249,4 +249,23 @@ public class TaskServiceImplTest {
         System.out.println(JSON.toJSONString(ruleDef));
     }
 
+    @Test
+    public void startDiaoBoProcess() {
+        ProcessStartReq req = new ProcessStartReq();
+        req.setProcessId("7");
+        req.setTaskSubType("1010");
+        req.setFormId("12336295");
+        req.setTitle("调拨审批流程");
+
+        req.setApplyUserId("10000692");
+        req.setApplyUserName("湖南龙裕实业有限公司_三星平台");
+        req.setExtends1("长沙市分公司");
+        req.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+        Map map=new HashMap();
+        map.put("731","731");//
+        req.setParamsValue(JSON.toJSONString(map));
+        ResultVO resultVO = taskService.startProcess(req);
+        System.out.println(resultVO.isSuccess());
+//        Assert.assertEquals("0", resultVO.getResultCode());
+    }
 }

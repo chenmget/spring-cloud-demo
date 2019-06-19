@@ -205,7 +205,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
                     relBatchAddReq.setProductId(productId);
                     relBatchAddReq.setTagList(req.getTagList());
-                    tagRelService.batchAddTagRel(relBatchAddReq);
+                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
                 }
             }
         }

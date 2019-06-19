@@ -653,17 +653,20 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             FileAddReq oldFile = newFileAddReqs.get(i);
             if(StringUtils.isNotEmpty(newFile.getFileUrl()) && StringUtils.isNotEmpty(oldFile.getFileUrl()) &&
                     newFile.getFileUrl().equals(oldFile.getFileUrl())){
-            }else {
-                return true;
-            }
-            if(StringUtils.isNotEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isNotEmpty(oldFile.getThreeDimensionsUrl()) &&
-                    newFile.getThreeDimensionsUrl().equals(oldFile.getThreeDimensionsUrl())){
+            }else if(StringUtils.isEmpty(newFile.getFileUrl()) && StringUtils.isEmpty(oldFile.getFileUrl())){
             }else {
                 return true;
             }
             if(StringUtils.isNotEmpty(newFile.getThumbnailUrl()) && StringUtils.isNotEmpty(oldFile.getThumbnailUrl()) &&
                     newFile.getThumbnailUrl().equals(oldFile.getThumbnailUrl())){
+            }else if(StringUtils.isEmpty(newFile.getThumbnailUrl()) && StringUtils.isEmpty(oldFile.getThumbnailUrl())) {
             }else {
+                return true;
+            }
+            if(StringUtils.isNotEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isNotEmpty(oldFile.getThreeDimensionsUrl()) &&
+                    newFile.getThreeDimensionsUrl().equals(oldFile.getThreeDimensionsUrl())){
+            }else if(StringUtils.isEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isEmpty(newFile.getThreeDimensionsUrl())){
+            }else{
                 return true;
             }
         }

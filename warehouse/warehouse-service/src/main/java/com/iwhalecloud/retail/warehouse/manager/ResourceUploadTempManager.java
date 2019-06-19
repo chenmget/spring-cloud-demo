@@ -3,12 +3,15 @@ package com.iwhalecloud.retail.warehouse.manager;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.iwhalecloud.retail.partner.common.PartnerConst;
+import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempDelReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceUploadTemp;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceUploadTempMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -60,4 +63,14 @@ public class ResourceUploadTempManager  extends ServiceImpl<ResourceUploadTempMa
     public List<ResourceUploadTempListResp> executorlistResourceUploadTemp(ResourceUploadTempListPageReq req){
         return resourceUploadTempMapper.executorlistResourceUploadTemp(req);
     }
+
+    /**
+     * 查询校验串码不分页
+     * @param req
+     * @return
+     */
+    public List<ResourceUploadTempListResp> listResourceUpload(ResourceUploadTempListPageReq req){
+        return resourceUploadTempMapper.listResourceUploadTemp(req);
+    }
+
 }

@@ -1,20 +1,69 @@
 package com.iwhalecloud.retail.warehouse.dto.request;
 
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @Author My
  * @Date 2019/1/11
  **/
 @Data
-public class ResourceReqDetailQueryReq implements Serializable {
+public class ResourceReqDetailQueryReq extends PageVO implements Serializable {
+
     /**
      * 记录营销资源申请单标识
      */
     @ApiModelProperty(value = "记录营销资源申请单标识")
     private String mktResReqId;
 
+    @ApiModelProperty(value = "申请单号")
+    private String reqCode;
+
+    @ApiModelProperty(value = "串码")
+    private List<String> mktResInstNbrs;
+
+    @ApiModelProperty(value = "记录营销资源申请单明细标识")
+    private List<String> mktResReqDetailIds;
+
+    @ApiModelProperty(value = "产品类型")
+    private String typeId;
+
+    @ApiModelProperty(value = "厂商名称")
+    private String merchantName;
+
+    @ApiModelProperty(value = "厂商id")
+    private List<String> merchantId;
+
+    @ApiModelProperty(value = "产品名称")
+    private String productName;
+
+    @ApiModelProperty(value = "产品id")
+    private List<String> productId;
+
+//    @ApiModelProperty(value = "品牌名称")
+//    private String brandName;
+
+
+    @ApiModelProperty(value = "产品基本信息表里的品牌ID")
+    private String brandId;
+
+    @ApiModelProperty(value = "实列状态")
+    private String statusCd;
+
+    @ApiModelProperty(value = "申请开始时间")
+    private String createStartDate;
+
+    @ApiModelProperty(value = "申请结束时间")
+    private String createEndDate;
+
+    @ApiModelProperty(value = "审核开始时间")
+    private String statusStartDate;
+
+    @ApiModelProperty(value = "审核结束时间")
+    private String statusEndDate;
 }

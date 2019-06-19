@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.warehouse.dto.response;
+package com.iwhalecloud.retail.warehouse.dto;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class ResourceReqDetailPageResp implements Serializable {
+public class ResourceReqDetailPageDTO implements Serializable {
 
     @ApiModelProperty(value = "记录营销资源申请单标识")
     private String mktResReqId;
@@ -14,7 +14,7 @@ public class ResourceReqDetailPageResp implements Serializable {
     @ApiModelProperty(value = "营销资源标识")
     private String mktResId;
 
-    @ApiModelProperty(value = "产品分类")
+    @ApiModelProperty(value = "产品类型")
     private String typeName;
 
     @ApiModelProperty(value = "品牌名称")
@@ -40,11 +40,14 @@ public class ResourceReqDetailPageResp implements Serializable {
      * 记录营销资源申请单明细标识
      */
     @ApiModelProperty(value = "记录营销资源申请单明细标识")
-    private java.lang.String mktResReqDetailId;
+    private String mktResReqDetailId;
 
     @ApiModelProperty(value = "申请单号")
     private String reqCode;
 
+
+    @ApiModelProperty(value = "厂商id")
+    private String merchantId;
 
     @ApiModelProperty(value = "厂商名")
     private String merchantName;
@@ -73,8 +76,30 @@ public class ResourceReqDetailPageResp implements Serializable {
 
     @ApiModelProperty(value = "状态说明")
     private String remark;
+    /**
+     * 串码类型
+     */
+    @ApiModelProperty(value = "mktResInstType")
+    private String mktResInstType;
 
-    @ApiModelProperty(value = "验证描述，记录出错的原因")
-    private String resultDesc;
+    /**
+     * SN码
+     */
+    @ApiModelProperty(value = "SN码")
+    private String snCode;
 
+    /**
+     * 网络终端（包含光猫、机顶盒、融合终端）记录MAC码
+     */
+    @ApiModelProperty(value = "macCode")
+    private String macCode;
+
+    @ApiModelProperty(value = "记录首次创建的用户标识。")
+    private java.lang.String createStaff;
+
+    @ApiModelProperty(value = "目标营销资源仓库")
+    private String destStoreId;
+
+    @ApiModelProperty(value = "明细id")
+    private String mktResReqItemId;
 }

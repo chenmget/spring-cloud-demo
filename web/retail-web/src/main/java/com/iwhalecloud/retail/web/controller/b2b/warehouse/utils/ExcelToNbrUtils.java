@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAndCteiResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAndMacResp;
@@ -311,6 +312,44 @@ public class ExcelToNbrUtils {
 				resp.setMktResInstNbr(getCellValue(row.getCell(firstCellNum)));
 				resp.setSnCode(getCellValue(row.getCell(firstCellNum + 1)));
 				resp.setCtCode(getCellValue(row.getCell(firstCellNum + 2)));
+				data.add(resp);
+			}
+		} catch (Exception e) {
+			log.error("解析excel异常", e);
+			throw new Exception(e);
+		}
+		return data;
+	}
+
+	public static List<ExcelResourceReqDetailDTO> getNbrDetailData(InputStream inputStream) throws Exception {
+		List<ExcelResourceReqDetailDTO> data = new ArrayList<ExcelResourceReqDetailDTO>();
+		try {
+			// 这种方式 Excel2003/2007/2010都是可以处理的
+			Workbook workbook = WorkbookFactory.create(inputStream);
+			// 只读第一页
+			Sheet sheet = workbook.getSheetAt(0);
+			//获得当前sheet的开始行
+			int firstRowNum  = sheet.getFirstRowNum();
+			//获得当前sheet的结束行
+			int lastRowNum = sheet.getLastRowNum();
+			//循环除了第一行的所有行
+			for(int rowNum = firstRowNum+1;rowNum <= lastRowNum;rowNum++){
+				//获得当前行
+				Row row = sheet.getRow(rowNum);
+				if(row == null){
+					continue;
+				}
+				//获得当前行的开始列
+				int firstCellNum = row.getFirstCellNum();
+				//获得当前行的列数
+				int lastCellNum = row.getPhysicalNumberOfCells();
+				ExcelResourceReqDetailDTO resp = new ExcelResourceReqDetailDTO();
+				resp.setMktResReqDetailId(getCellValue(row.getCell(firstCellNum)));//第一列申请单号
+				resp.setReqCode(getCellValue(row.getCell(1)));//第2列申请单号
+				resp.setMktResInstNbr(getCellValue(row.getCell(2)));//第3列串码
+				//resp.setStatusCdName(ResourceConst.REQ_DETAIL_STATUS.getCodeByName(getCellValue(row.getCell(8))));//第9列审核结果
+				resp.setStatusCdName(getCellValue(row.getCell(8)));//第9列审核结果
+				resp.setRemark(getCellValue(row.getCell(9)));//第10列状态说明
 				data.add(resp);
 			}
 		} catch (Exception e) {

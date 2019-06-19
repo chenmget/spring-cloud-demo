@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -15,10 +17,10 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "串码校验类")
-public class ResourceInstCheckReq {
+public class ResourceInstCheckReq implements Serializable {
 
-  	private static final long serialVersionUID = 1L;
 
+	private static final long serialVersionUID = -2024838499123412492L;
 	/**
 	 * 商家ID
 	 */
@@ -29,7 +31,8 @@ public class ResourceInstCheckReq {
 	 * 校验状态
 	 */
 	@ApiModelProperty(value = "状态")
-	private List<String> checkStatusCd;
+	@NotNull
+	private String checkStatusCd;
 
 	/**
 	 * 仓库ID
@@ -48,5 +51,15 @@ public class ResourceInstCheckReq {
 	 */
 	@ApiModelProperty(value = "记录营销资源实例编码。")
 	private List<String> mktResInstNbr;
+
+	@ApiModelProperty(value = "记录营销资源申请单明细标识")
+	@NotNull
+	private List<String> mktResReqDetailIds;
+
+	@ApiModelProperty(value = "审核说明")
+	private String remark;
+
+	@ApiModelProperty(value = "审核对象")
+	private String updateStaff;
 
 }

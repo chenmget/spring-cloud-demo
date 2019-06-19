@@ -4,8 +4,8 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
@@ -104,11 +104,12 @@ public class TaskServiceImplTest {
     @Test
     public void nextRoute() {
 //        String json = "{\"appendixType\":\"2\",\"appendixUrl\":\"\",\"handlerMsg\":\"333\",\"handlerUserId\":\"200012813991\",\"handlerUserName\":\"zte管理员\",\"nextHandlerUser\":[],\"nextNodeId\":\"1559\",\"routeId\":\"20190528005\",\"taskId\":\"12330136\",\"taskItemId\":\"12330137\"}\n";
-//        RouteNextReq req = (RouteNextReq) JSON.parse(json);
-       String json ="{\"routeId\":\"20190528004\",\"handlerMsg\":\"4\",\"nextNodeId\":\"1549\",\"taskId\":\"12336041\",\"taskItemId\":\"12336042\",\"handlerUserId\":\"22796\",\"nextHandlerUser\":[],\"appendixType\":\"2\",\"appendixUrl\":\"\"}";
-        Gson gson = new Gson();
-        RouteNextReq routeNextReq  = gson.fromJson(json, new TypeToken<RouteNextReq>(){}.getType());
 
+          String json ="{\"routeId\":\"20190528004\",\"handlerMsg\":\"饿\",\"nextNodeId\":\"1549\",\"taskId\":\"12335986\",\"taskItemId\":\"12335996\",\"handlerUserId\":\"22796\",\"nextHandlerUser\":[],\"appendixType\":\"2\",\"appendixUrl\":\"\"}";
+          json = "{\"appendixType\":\"2\",\"appendixUrl\":\"\",\"handlerMsg\":\"123\",\"handlerUserId\":\"100029872\",\"handlerUserName\":\"文科\",\"nextHandlerUser\":[],\"nextNodeId\":\"1032\",\"routeId\":\"54\",\"taskId\":\"12336713\",\"taskItemId\":\"12336714\"}";
+//          RouteNextReq req = (RouteNextReq) JSON.parse(json);
+          Gson gson = new Gson();
+          RouteNextReq routeNextReq  = gson.fromJson(json, new TypeToken<RouteNextReq>(){}.getType());
 //        req.setTaskId("12330129");
 //        req.setTaskItemId("12330130");
 //        req.setHandlerUserId("200012813991");
@@ -122,8 +123,9 @@ public class TaskServiceImplTest {
 //        user.setHandlerUserId("1079205258011422722");
 //        user.setHandlerUserName("经营主体");
 //        req.setNextHandlerUser(userList);
-        ResultVO resultVO = taskService.nextRoute(routeNextReq);
-        System.out.println(resultVO.isSuccess());
+          ResultVO resultVO = taskService.nextRoute(routeNextReq);
+          System.out.println(resultVO.isSuccess());
+
     }
 
     @Test

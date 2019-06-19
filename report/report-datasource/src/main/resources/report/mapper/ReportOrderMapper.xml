@@ -69,7 +69,7 @@ FROM
 		  <if test="req.orderId!=null and req.orderId !=''">
 		     and a.order_id = #{req.orderId}
 		  </if>	
-		  <if test="req.lanIdName !=null and req.lanIdName !=''" >
+		  <if test="req.lanIdName!=null and lanIdName.size>0" >
 		      and par.LAN_ID in
 		      <foreach item="item" index="index" open="(" separator="," close=")" collection="req.lanIdName">
 		        #{item}

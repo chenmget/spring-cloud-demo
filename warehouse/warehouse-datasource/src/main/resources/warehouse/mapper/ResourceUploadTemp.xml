@@ -12,6 +12,9 @@
     ,t.CT_CODE
     ,t.sn_code
     ,t.mac_code
+    ,t.MKT_RES_REQ_DETAIL_ID
+    ,t.STATUS_CD
+    ,t.remark
 </sql>
 
 
@@ -25,6 +28,9 @@
         </if>
         <if test="req.result != null">
             and RESULT = #{req.result}
+        </if>
+        <if test="req.statusCd != null">
+            and status_cd = #{req.statusCd}
         </if>
         ORDER BY T.MKT_RES_INST_NBR DESC
     </select>

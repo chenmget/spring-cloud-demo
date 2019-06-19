@@ -35,9 +35,5 @@ public class ReportOrderDaoReq extends PageVO {
 	private String productName;//产品名称
 	private String typeName;	//产品类型
 	private String unitType;//产品型号
-	
-	private String userType;
-	private String userId;
-    
 
 }

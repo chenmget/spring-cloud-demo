@@ -299,7 +299,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         processStartDTO.setExtends1(sourceMerchantDTO.getCityName());
         processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
         Map map=new HashMap();
+        String secondStepFlag = "1";
         map.put(sourceMerchantDTO.getLanId(), sourceMerchantDTO.getLanId());
+        map.put(destMerchantDTO.getLanId() + secondStepFlag, destMerchantDTO.getLanId() + secondStepFlag);
         processStartDTO.setParamsValue(JSON.toJSONString(map));
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
@@ -721,13 +723,17 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Override
     public ResultVO validResourceInst(DeliveryValidResourceInstReq req) {
-        ResouceStoreDTO storeDTO = resouceStoreManager.getStore(req.getMerchantId(), ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        log.info("SupplierResourceInstServiceImpl.validResourceInst resouceStoreManager.getStore req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(storeDTO));
-        if (null == storeDTO) {
-            return ResultVO.error(constant.getCannotGetStoreMsg());
+        try{
+            ResouceStoreDTO storeDTO = resouceStoreManager.getStore(req.getMerchantId(), ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+            log.info("SupplierResourceInstServiceImpl.validResourceInst resouceStoreManager.getStore req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(storeDTO));
+            if (null == storeDTO) {
+                return ResultVO.error(constant.getCannotGetStoreMsg());
+            }
+            req.setMktResStoreId(storeDTO.getMktResStoreId());
+            return ResultVO.success(resourceInstManager.validResourceInst(req));
+        }catch (Exception e){
+            return ResultVO.error(constant.getGetRepeatStoreMsg());
         }
-        req.setMktResStoreId(storeDTO.getMktResStoreId());
-        return ResultVO.success(resourceInstManager.validResourceInst(req));
     }
 
     @Override

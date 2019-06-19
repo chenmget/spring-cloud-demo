@@ -43,6 +43,35 @@ public class ResourceConst {
 
 
     /**
+     * 绿色通道流程实例ID
+     */
+    public final static String  GREEN_CHANNEL_WORK_FLOW_INST = "8";
+    /**
+     * 调拨调出方审核流程实例ID
+     */
+    public final static String  ALLOCATE_WORK_FLOW_INST = "7";
+    /**
+     * 调拨两端都要审核流程实例ID
+     */
+    public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
+    /**
+     * 移动串码审核流程
+     */
+    public final static String  MOVE_NBR_WORK_FLOW_INST = "13";
+    /**
+     * 一步抽检流程（固网）
+     */
+    public final static String  ONE_STEP_WORK_FLOW_INST = "14";
+    /**
+     * 厂商串码入库集采流程实例（固网）
+     */
+    public final static String  FIXED_NBR_WORK_FLOW_INST = "15";
+    /**
+     * 两步抽检流程（固网）
+     */
+    public final static String  TWO_STEP_WORK_FLOW_INST = "16";
+
+    /**
      * 调拨返回成功的消息
      */
     public final static String ALLOCATE_SUCESS_MSG = "串码调拨已提交";
@@ -945,7 +974,7 @@ public class ResourceConst {
     public enum DetailStatusCd{
         STATUS_CD_1002("1002","处理中"),
         STATUS_CD_1003("1003","完成"),
-        STATUS_CD_1004("1004","取消/审核不通过"),
+        STATUS_CD_1004("1004","审核不通过"),
         STATUS_CD_1005("1005","审核通过"),
         STATUS_CD_1009("1009","待审核");
         private String code;
@@ -970,6 +999,25 @@ public class ResourceConst {
 
         public void setCode(String code) {
             this.code = code;
+        }
+
+        public static String getNameByCode(String code) {
+            DetailStatusCd[] enums = values();
+            for (DetailStatusCd obj : enums) {
+                if (obj.code.equals(code)) {
+                    return obj.name;
+                }
+            }
+            return null;
+        }
+        public static String getCodeByName(String name) {
+            DetailStatusCd[] enums = values();
+            for (DetailStatusCd obj : enums) {
+                if (obj.name.equals(name)) {
+                    return obj.code;
+                }
+            }
+            return null;
         }
     }
 }

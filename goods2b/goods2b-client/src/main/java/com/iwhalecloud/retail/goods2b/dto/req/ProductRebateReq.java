@@ -17,4 +17,8 @@ public class ProductRebateReq implements Serializable {
     private String brandName;
     @ApiModelProperty(value = "产品型号")
     private String unitType;
+    @ApiModelProperty(value = "产品类型")
+    private String typeId;
+    @ApiModelProperty(value = "品牌id")
+    private String brandId;
 }

@@ -15,8 +15,13 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
+
+import com.iwhalecloud.retail.warehouse.service.ResourceReqDetailService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
+import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
+import com.iwhalecloud.retail.web.controller.b2b.order.service.OrderExportUtil;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstUpdateReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
@@ -31,6 +36,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
@@ -58,8 +64,14 @@ public class MerchantResourceInstB2BController {
     @Reference
     private AttrSpecService attrSpecService;
 
+    @Reference
+    private ResourceReqDetailService resourceReqDetailService;
+
     @Value("${fdfs.suffix.allowUpload}")
     private String allowUploadSuffix;
+
+    @Autowired
+    private DeliveryGoodsResNberExcel deliveryGoodsResNberExcel;
 
     @ApiOperation(value = "厂商串码管理页面", notes = "条件分页查询")
     @ApiResponses({
@@ -292,5 +304,36 @@ public class MerchantResourceInstB2BController {
     public ResultVO exceutorQueryTempNbr(@RequestBody ResourceUploadTempDelReq req) {
         List<ResourceUploadTempListResp> pageResultVO = resourceInstService.exceutorQueryTempNbr(req);
         return ResultVO.success(pageResultVO);
+    }
+
+    @ApiOperation(value = "查询申请单详情串码分页列表", notes = "厂商查看串码的列表")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value="listResourceRequestDetailPage")
+    public ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestDetailPage(ResourceReqDetailQueryReq req) {
+        req.setMerchantId(Lists.newArrayList(UserContext.getMerchantId()));
+        return resourceReqDetailService.listResourceRequestDetailPage(req);
+    }
+
+    @ApiOperation(value = "导出串码明细", notes = "导出串码数据")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="exportNbrDetail")
+    @UserLoginToken
+    public void exportNbrDetail(@RequestBody ResourceReqDetailQueryReq req, HttpServletResponse response) {
+        req.setMerchantId(Lists.newArrayList(UserContext.getMerchantId()));
+        ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listResourceRequestDetailPage(req);
+        List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
+        log.info("ResourceReqDetailB2BController.nbrDetailExport resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
+        //创建Excel
+        Workbook workbook = new HSSFWorkbook();
+        //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+                OrderExportUtil.getResReqDetail(), "串码");
+        deliveryGoodsResNberExcel.exportExcel("导出待审核串码",workbook,response);
     }
 }

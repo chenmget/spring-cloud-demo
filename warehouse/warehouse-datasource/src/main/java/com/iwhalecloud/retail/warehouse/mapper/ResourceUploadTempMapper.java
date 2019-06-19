@@ -48,4 +48,11 @@ public interface ResourceUploadTempMapper extends BaseMapper<ResouceUploadTemp> 
      * @return
      */
     List<ResourceUploadTempListResp> executorlistResourceUploadTemp(@Param("req") ResourceUploadTempListPageReq req);
+
+    /**
+     * 查询校验串码不分页
+     * @param req
+     * @return
+     */
+    List<ResourceUploadTempListResp> listResourceUploadTemp(@Param("req") ResourceUploadTempListPageReq req);
 }

@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.Goods2BServiceApplication;
+import com.iwhalecloud.retail.goods2b.dto.req.FileAddReq;
 import com.iwhalecloud.retail.goods2b.dto.req.OldProductBaseUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductUpdateReq;
@@ -42,17 +43,32 @@ public class ProductBaseServiceImplTest {
         oldupdatereq.setSn("1111111111111111111");
         oldupdatereq.setCost(12000D);
         oldproductUpdateReqs.add(oldupdatereq);
+        List<FileAddReq> fileAddReqs = new ArrayList<>();
+        FileAddReq fileAddReq = new FileAddReq();
+        fileAddReq.setFileUrl("http://134.176.97.50:8081/group1/M00/00/0C/hrBhM1yWMVSAOYO9ABWrW3y72_U220.mp4");
+        fileAddReq.setSubType("7");
+        fileAddReq.setThumbnailUrl("http://134.176.97.50:8081/group1/M00/00/0C/hrBhMlyWMVSAAJcZAAAcob6DVNg540.png");
+        fileAddReqs.add(fileAddReq);
+        oldupdatereq.setFileAddReqs(fileAddReqs);
         oldreq.setProductUpdateReqs(oldproductUpdateReqs);
         req.setOldProductBaseUpdateReq(oldreq);
 
         req.setProductBaseId("12335342");
-        req.setProductName("小米卖点测试123");
-        req.setSallingPoint("小米卖点测试123");
+        req.setProductName("小米卖点测试");
+        req.setSallingPoint("小米卖点测试");
         List<ProductUpdateReq> newproductUpdateReqs = new ArrayList<>();
         ProductUpdateReq newupdatereq = new ProductUpdateReq();
         newupdatereq.setProductId("12335343");
         newupdatereq.setSn("1111111111111111111");
         newupdatereq.setCost(13000D);
+
+        List<FileAddReq> nfileAddReqs = new ArrayList<>();
+        FileAddReq nfileAddReq = new FileAddReq();
+        nfileAddReq.setFileUrl("http://134.176.97.50:8081/group1/M00/00/0C/hrBhM1yWMVSAOYO9ABWrW3y72_U220.mp4");
+        nfileAddReq.setSubType("7");
+        nfileAddReq.setThumbnailUrl("http://134.176.97.50:8081/group1/M00/00/0C/hrBhMlyWMVSAAJcZAAAcob6DVNg540.png");
+        nfileAddReqs.add(nfileAddReq);
+        newupdatereq.setFileAddReqs(nfileAddReqs);
         newproductUpdateReqs.add(newupdatereq);
         req.setProductUpdateReqs(newproductUpdateReqs);
 

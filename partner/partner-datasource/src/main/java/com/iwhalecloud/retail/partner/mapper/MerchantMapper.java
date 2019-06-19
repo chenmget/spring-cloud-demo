@@ -15,11 +15,11 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * @Class: MerchantMapper
  * @author autoCreate
+ * @Class: MerchantMapper
  */
 @Mapper
-public interface MerchantMapper extends BaseMapper<Merchant>{
+public interface MerchantMapper extends BaseMapper<Merchant> {
 
     Page<MerchantPageResp> pageMerchant(Page<MerchantPageResp> page, @Param("req") MerchantPageReq req);
 

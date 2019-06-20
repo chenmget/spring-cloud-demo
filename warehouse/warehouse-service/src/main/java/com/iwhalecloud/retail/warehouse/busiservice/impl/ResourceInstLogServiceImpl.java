@@ -54,6 +54,7 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
         }
         batchRecDTO.setQuantity((long) resourceInsts.size());
         batchRecDTO.setMktResBatchId(batchId);
+        batchRecDTO.setCreateStaff(merchantId);
         batchRecManager.insertResourceBatchRec(batchRecDTO);
         log.info("ResourceInstLogServiceImpl.addResourceInstLog batchRecManager.insertResourceBatchRec req={},batchId={}", JSON.toJSONString(batchRecDTO), JSON.toJSONString(batchId));
         // 增加事件

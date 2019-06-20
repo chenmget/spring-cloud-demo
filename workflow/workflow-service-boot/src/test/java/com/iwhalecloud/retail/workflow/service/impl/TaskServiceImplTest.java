@@ -106,8 +106,7 @@ public class TaskServiceImplTest {
 //        String json = "{\"appendixType\":\"2\",\"appendixUrl\":\"\",\"handlerMsg\":\"333\",\"handlerUserId\":\"200012813991\",\"handlerUserName\":\"zte管理员\",\"nextHandlerUser\":[],\"nextNodeId\":\"1559\",\"routeId\":\"20190528005\",\"taskId\":\"12330136\",\"taskItemId\":\"12330137\"}\n";
 
           String json ="{\"routeId\":\"20190528004\",\"handlerMsg\":\"饿\",\"nextNodeId\":\"1549\",\"taskId\":\"12335986\",\"taskItemId\":\"12335996\",\"handlerUserId\":\"22796\",\"nextHandlerUser\":[],\"appendixType\":\"2\",\"appendixUrl\":\"\"}";
-          json = "{\"appendixType\":\"2\",\"appendixUrl\":\"\",\"handlerMsg\":\"123\",\"handlerUserId\":\"100029872\",\"handlerUserName\":\"文科\",\"nextHandlerUser\":[],\"nextNodeId\":\"1032\",\"routeId\":\"54\",\"taskId\":\"12336713\",\"taskItemId\":\"12336714\"}";
-//          RouteNextReq req = (RouteNextReq) JSON.parse(json);
+          json = "{\"routeId\":\"20190528009\",\"handlerMsg\":\"7\",\"nextNodeId\":\"1539\",\"taskId\":\"12337800\",\"taskItemId\":\"12337999\",\"handlerUserId\":\"10000692\",\"nextHandlerUser\":[]}\n";
           Gson gson = new Gson();
           RouteNextReq routeNextReq  = gson.fromJson(json, new TypeToken<RouteNextReq>(){}.getType());
 //        req.setTaskId("12330129");

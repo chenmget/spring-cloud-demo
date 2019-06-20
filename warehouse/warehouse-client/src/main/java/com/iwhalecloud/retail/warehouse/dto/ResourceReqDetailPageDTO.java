@@ -102,4 +102,23 @@ public class ResourceReqDetailPageDTO implements Serializable {
 
     @ApiModelProperty(value = "明细id")
     private String mktResReqItemId;
+
+
+    /**
+     * 记录本地网标识。
+     */
+    @ApiModelProperty(value = "记录本地网标识。")
+    private java.lang.String lanId;
+
+    /**
+     * 指向公共管理区域标识
+     */
+    @ApiModelProperty(value = "指向公共管理区域标识")
+    private java.lang.String regionId;
+
+    /**
+     * 营销资源仓库标识
+     */
+    @ApiModelProperty(value = "营销资源仓库标识")
+    private String mktResStoreId;
 }

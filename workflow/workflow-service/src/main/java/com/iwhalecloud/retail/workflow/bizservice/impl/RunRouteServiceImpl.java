@@ -26,6 +26,7 @@ public class RunRouteServiceImpl implements RunRouteService {
 
     @Override
     public ResultVO invokeRouteService(InvokeRouteServiceRequest invokeRouteServiceRequest, List<Service> serviceList) {
+        log.info("RunRouteServiceImpl invokeRouteService serviceList={}", JSON.toJSON(serviceList));
         //执行业务代码
         for (Service service : serviceList) {
             String classPath = service.getClassPath();

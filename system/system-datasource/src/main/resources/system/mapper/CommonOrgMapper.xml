@@ -37,7 +37,7 @@
 		   <if test="req.lanIdName!=null and req.lanIdName !=''">
 		     and t.lan_id=#{req.lanIdName}
 		  </if>	
-		  <if test="req.orgId !=null or req.orgId !=''">
+		  <if test="req.orgId !=null and req.orgId !=''">
 		   	and t.org_id=#{req.orgId} 
 		   </if>
 	 </select>

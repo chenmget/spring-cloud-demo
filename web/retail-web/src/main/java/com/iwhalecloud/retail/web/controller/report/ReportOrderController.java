@@ -238,7 +238,10 @@ public class ReportOrderController extends BaseController {
 				return ResultVO.error("当前用户 没有商家编码");
 			}
 			req.setOrgId(merchantDTO.getParCrmOrgId());
+		} else {
+			return ResultVO.error("当前用户 没有权限");
 		}
 		return commonOrgService.getSysCommonOrg(req);
 	}	
+	
 }

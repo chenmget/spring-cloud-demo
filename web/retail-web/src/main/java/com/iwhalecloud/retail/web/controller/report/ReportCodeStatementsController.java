@@ -88,7 +88,8 @@ public class ReportCodeStatementsController extends BaseController  {
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdName(list);
 			return reportCodeStateService.getCodeStatementsReportAdmin(req);
-		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 || userType == SystemConst.USER_FOUNDER_3) {//省供应商4，地市供应商5，零售商3
+		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 
+				|| userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//省供应商4，地市供应商5，零售商3,厂商8
 			StorePageReq storePageReq = new StorePageReq();
 			List<String> merchantIds = new ArrayList<String>();
 			merchantIds.add(UserContext.getUser().getRelCode());

@@ -37,12 +37,4 @@ public class ReportStSaleDaoResp implements Serializable {
 	private String turnoverRate; 	//库存周转率：取TURNOVER_RATE字段		
 	private String stockWarning; 	//库存预警：库存周转率>=10为充裕；5<=库存周转率<10为缺货 库存周转率<5为严重缺货
 	
-	
-	
-	private String date; 		//统计日期
-	private String transOutNum; 	//调拨出库量：取TRANS_OUT_NUM字段求和
-	private String returnNum; 		//退库量：取RETURN_NUM字段求和
-	private String actOfProvinces;   //外省激活量：待定，经分系统统计
-	private String proActRate; //外省激活率（外省激活量/销售量）：待定，经分系统统计
-	
 }

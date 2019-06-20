@@ -69,14 +69,18 @@ FROM
 		  <if test="req.orderId!=null and req.orderId !=''">
 		     and a.order_id = #{req.orderId}
 		  </if>	
-		  <if test="req.lanIdName!=null and lanIdName.size>0" >
-		      and par.LAN_ID in
-		      <foreach item="item" index="index" open="(" separator="," close=")" collection="req.lanIdName">
-		        #{item}
-		      </foreach>
-		  </if>
-		  <if test="req.orgName!=null and req.orgName!=''">
-		  	and INSTR( so.path_code, #{req.orgName}) 
+		  <if test="req.lanIdList !=null and req.lanIdList.size()>0">
+                and par.LAN_ID in
+                <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+          </if>
+		  <if test="req.orgName!=null and req.orgName.size()>0">
+		  	and (
+		  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
+		  		INSTR( so.path_code, #{item}) 
+		  	</foreach>
+			)		  
 		  </if> 
 		  <if test="req.orderCat!=null and req.orderCat !=''">
 	         and a.ORDER_CAT =#{req.orderCat}

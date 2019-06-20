@@ -75,13 +75,13 @@ public class GoodsProductB2BController {
     })
     @PostMapping(value="addProduct")
     @UserLoginToken
-    public ResultVO<Integer> addProduct(@RequestBody @Valid ProductAddReqDTO dto){
+    public ResultVO<String> addProduct(@RequestBody @Valid ProductAddReqDTO dto){
         // 获取userId
         String userId = UserContext.getUserId();
         ProductAddReq req = new ProductAddReq();
         BeanUtils.copyProperties(dto, req);
         req.setCreateStaff(userId);
-        return productService.addProduct(req);
+        return ResultVO.success(productService.addProduct(req));
         
     }
 

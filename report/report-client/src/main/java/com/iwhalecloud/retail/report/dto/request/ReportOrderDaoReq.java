@@ -72,10 +72,10 @@ public class ReportOrderDaoReq extends PageVO {
 	private String orderId;//订单编码
 	
 	@ApiModelProperty(value = "lanIdName")
-	private List<String> lanIdName;//地市
+	private List<String> lanIdList;//地市
 	
 	@ApiModelProperty(value = "orgName")
-	private String orgName;//经营单元
+	private List<String> orgName;//经营单元
 	
 	@ApiModelProperty(value = "productName")
 	private String productName;//产品名称

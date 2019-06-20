@@ -28,8 +28,18 @@
 	<select id="getSysCommonOrg" resultType="com.iwhalecloud.retail.system.dto.SysCommonOrgResp">
 		   SELECT 
 		   <include refid="allFields" />
-		   from sys_common_org t 
-		   where org_level='3'  
+		   from 
+		   	sys_common_org t 
+		   where 1=1
+		   <if test="req.orgId==null or req.orgId ==''">
+		   	and t.org_level='3' 
+		   </if> 
+		   <if test="req.lanIdName!=null and req.lanIdName !=''">
+		     and t.lan_id=#{req.lanIdName}
+		  </if>	
+		  <if test="req.orgId !=null and req.orgId !=''">
+		   	and t.org_id=#{req.orgId} 
+		   </if>
 	 </select>
 
 

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.SysCommonOrgReq;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgResp;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgListReq;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgPageReq;
@@ -49,6 +50,6 @@ public interface CommonOrgService {
      * 获取经营单元
      * @return
      */
-    ResultVO<List<SysCommonOrgResp>> getSysCommonOrg() ;
+    ResultVO<List<SysCommonOrgResp>> getSysCommonOrg(SysCommonOrgReq req) ;
 
 }

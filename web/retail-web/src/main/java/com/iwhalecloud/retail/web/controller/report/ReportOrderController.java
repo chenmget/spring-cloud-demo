@@ -16,6 +16,7 @@ import com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
 import com.iwhalecloud.retail.report.service.ReportOrderService;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.dto.SysCommonOrgReq;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgResp;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -76,7 +77,7 @@ public class ReportOrderController extends BaseController {
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
-			req.setLanIdName(list);
+			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_4) {//省供应商
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {
@@ -90,7 +91,7 @@ public class ReportOrderController extends BaseController {
 			}
 			req.setSuplierCode(merchantDTO.getMerchantCode());
 			list.add(UserContext.getUser().getLanId());
-			req.setLanIdName(list);
+			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3) {//零售商
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {
@@ -127,7 +128,7 @@ public class ReportOrderController extends BaseController {
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
-			req.setLanIdName(list);
+			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_4) {//省供应商
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {
@@ -141,7 +142,7 @@ public class ReportOrderController extends BaseController {
 			}
 			req.setSuplierCode(merchantDTO.getMerchantCode());
 			list.add(UserContext.getUser().getLanId());
-			req.setLanIdName(list);
+			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3) {//零售商
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {
@@ -226,6 +227,21 @@ public class ReportOrderController extends BaseController {
 	@UserLoginToken
     public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg() {
 		log.info("****************ReportOrderController getSysCommonOrg()  ************start param={}");
-		return commonOrgService.getSysCommonOrg();
+		int userType = UserContext.getUser().getUserFounder();
+		SysCommonOrgReq req = new SysCommonOrgReq();
+		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2 || userType == SystemConst.USER_FOUNDER_4) {//超级管理员  省管理员  省供应商
+		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员   地市供应商
+			req.setLanIdName(UserContext.getUser().getLanId());
+		} else if (userType == SystemConst.USER_FOUNDER_3) {//零售商
+			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
+			if ( merchantDTO == null) {
+				return ResultVO.error("当前用户 没有商家编码");
+			}
+			req.setOrgId(merchantDTO.getParCrmOrgId());
+		} else {
+			return ResultVO.error("当前用户 没有权限");
+		}
+		return commonOrgService.getSysCommonOrg(req);
 	}	
+	
 }

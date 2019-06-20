@@ -862,6 +862,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             copyOnWriteArrayList.add(resourceReqDetailDTO.getMktResInstNbr());
             getReq.setMktResInstNbrList(copyOnWriteArrayList);
             getReq.setMktResId(resourceReqDetailDTO.getMktResId());
+            getReq.setMktResStoreId(detailDTO.getMktResStoreId());
             List<ResouceInstTrackDTO> resouceInstTrackDTOList = resouceInstTrackManager.listResourceInstsTrack(getReq);
             if (CollectionUtils.isNotEmpty(resouceInstTrackDTOList)) {
                 ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOList.get(0);

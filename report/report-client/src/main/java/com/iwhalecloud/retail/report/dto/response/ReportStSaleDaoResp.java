@@ -17,7 +17,7 @@ public class ReportStSaleDaoResp implements Serializable {
 	private String orgName; 		//零售商所属经营单元
 	private String productName;   //产品名称
 	private String productBaseName; //产品型号
-	private String typeName; 		//产品类型
+	private String productType; 		//产品类型
 	private String brandName; 		//品牌：取BRAND_NAME字段
 	private String priceLevel; 		//机型档位：取PRICE_LEVEL字段
 	private String totalInNum; 	    //总入库量：取TOTAL_IN_NUM字段求和

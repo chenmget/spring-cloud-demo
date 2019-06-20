@@ -75,10 +75,11 @@ public class ReportStoreController extends BaseController {
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
 		log.info("****************************ReportStoreController getReportStSaleList    req={}",JSON.toJSONString(req));
 		int userType=UserContext.getUser().getUserFounder();
+		List<String> list = new ArrayList<String>();
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
-			String lanId=UserContext.getUser().getLanId();
-			req.setCityId(lanId);
+			list.add(UserContext.getUser().getLanId());
+			req.setCityId(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3 ) {//零售商 （只能查看自己的仓库）
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {
@@ -103,10 +104,11 @@ public class ReportStoreController extends BaseController {
     @UserLoginToken
     public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
     	int userType=UserContext.getUser().getUserFounder();
+    	List<String> list = new ArrayList<String>();
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
-			String lanId=UserContext.getUser().getLanId();
-			req.setCityId(lanId);
+			list.add(UserContext.getUser().getLanId());
+			req.setCityId(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3 ) {//零售商 （只能查看自己的仓库）
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {

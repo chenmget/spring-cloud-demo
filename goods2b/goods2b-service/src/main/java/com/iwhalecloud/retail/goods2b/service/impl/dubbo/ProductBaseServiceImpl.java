@@ -12,11 +12,12 @@ import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
+import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.entity.ProductBase;
 import com.iwhalecloud.retail.goods2b.entity.Type;
+import com.iwhalecloud.retail.goods2b.manager.BrandManager;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
-import com.iwhalecloud.retail.goods2b.manager.TypeManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.DateUtil;
 import com.iwhalecloud.retail.goods2b.utils.GenerateCodeUtil;
@@ -64,7 +65,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     private TagRelService tagRelService;
 
     @Autowired
-    private TypeManager typeManager;
+    private TypeService typeService;
+    @Autowired
+    private BrandManager brandManager;
     @Reference
     private PublicDictService publicDictService;
 
@@ -150,40 +153,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 }
             }
         }
-
-        //易购网下线固网规格同步CRM开关
-        String syncSpecCrm = "";
-        List<PublicDictDTO> publicDictDTOs = publicDictService.queryPublicDictListByType("SYNC_SPEC_CRM");
-        log.info("ProductBaseServiceImpl.addProductBase publicDictDTOs={}" , publicDictDTOs);
-        if(!CollectionUtils.isEmpty(publicDictDTOs)){
-            PublicDictDTO publicDictDTO = publicDictDTOs.get(0);
-            if(null!=publicDictDTO){
-                syncSpecCrm = publicDictDTO.getCodeb();
-            }
-        }
-        if(StringUtils.isEmpty(syncSpecCrm)){
-            syncSpecCrm = "F";
-        }
-
-        //是固网产品并且开发打开才同步CRM
-        String isFixedLine = req.getIsFixedLine();
-        if(StringUtils.isNotEmpty(isFixedLine) && "1".equals(isFixedLine) && "T".equals(syncSpecCrm)){
-            Type type = typeManager.selectById(req.getTypeId());
-            if(null!=type){
-                Map request = new HashMap<>();
-                request.put("Good_id","");
-                request.put("u_kind_id",type.getCrmResKind());
-                request.put("u_kind_name","");
-                request.put("GOOD_BAND",req.getBrandId());
-                request.put("sales_resource_id","");
-                request.put("terminal_type",type.getCrmResType());
-                request.put("sales_resource_name","");
-                request.put("Good_price","");
-                request.put("terminal_type_name","");
-                this.pushCrm(request);
-            }
-        }
-
         if(StringUtils.isEmpty(req.getPriceLevel())){
             Double minCost = 0.0;
             List<ProductAddReq> productAddReqs = req.getProductAddReqs();
@@ -217,6 +186,27 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         List<ProductAddReq> productAddReqs = req.getProductAddReqs();
         String status = "";
         Boolean addResult = true;
+        TypeSelectByIdReq typeSelectByIdReq = new TypeSelectByIdReq();
+        typeSelectByIdReq.setTypeId(req.getTypeId());
+        ResultVO<TypeDetailResp> respResultVO = typeService.getDetailType(typeSelectByIdReq);
+        TypeDetailResp type = new TypeDetailResp();
+        if(respResultVO.isSuccess() && null !=respResultVO.getResultData()){
+            type = respResultVO.getResultData();
+        }
+        Brand brand = brandManager.getBrandByBrandId(req.getBrandId());
+        //易购网下线固网规格同步CRM开关,默认是关闭
+        String syncSpecCrm = "";
+        List<PublicDictDTO> publicDictDTOs = publicDictService.queryPublicDictListByType("SYNC_SPEC_CRM");
+        log.info("ProductBaseServiceImpl.addProductBase publicDictDTOs={}" , publicDictDTOs);
+        if(!CollectionUtils.isEmpty(publicDictDTOs)){
+            PublicDictDTO publicDictDTO = publicDictDTOs.get(0);
+            if(null!=publicDictDTO){
+                syncSpecCrm = publicDictDTO.getCodeb();
+            }
+        }
+        if(StringUtils.isEmpty(syncSpecCrm)){
+            syncSpecCrm = "F";
+        }
         if (null != productAddReqs && !productAddReqs.isEmpty()){
             for (ProductAddReq par : productAddReqs){
                 //
@@ -241,6 +231,21 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setCreateStaff(t.getCreateStaff());
                 par.setAuditState(auditState);
                 String productId = productService.addProduct(par);
+                //是固网产品并且开发打开才同步CRM
+                if(StringUtils.isNotEmpty(req.getIsFixedLine()) && "1".equals(req.getIsFixedLine()) &&
+                        "T".equals(syncSpecCrm) && null!=type && null!=brand){
+                    Map request = new HashMap<>();
+                    request.put("Good_id",productId);
+                    request.put("u_kind_id",type.getCrmResKind());
+                    request.put("u_kind_name",type.getDetailName());
+                    request.put("GOOD_BAND",brand.getName());
+                    request.put("sales_resource_id",par.getSn());
+                    request.put("terminal_type",type.getCrmResType());
+                    request.put("sales_resource_name",par.getUnitName());
+                    request.put("Good_price",par.getCost());
+                    request.put("terminal_type_name",type.getTypeName());
+                    this.pushCrm(request);
+                }
                 if (!CollectionUtils.isEmpty(req.getTagList())) {
                     TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
                     relBatchAddReq.setProductId(productId);

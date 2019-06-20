@@ -58,18 +58,17 @@ public class PayServiceImpl implements PayService {
     public ResultVO pay(PayOrderRequest request) {
         ResultVO resultVO = new ResultVO();
         Order order = orderManager.getOrderById(request.getOrderId());
-        if (order == null) {
+        if (null == order) {
             resultVO.setResultMsg("支付,未查询到订单");
             resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             return resultVO;
         }
-        CommonResultResp resp = updateOrderFlowService.checkFlowType(request,order);
+        CommonResultResp resp = updateOrderFlowService.checkFlowType(request, order);
         if (resp.isFailure()) {
             resultVO.setResultMsg(resp.getResultMsg());
             resultVO.setResultCode(resp.getResultCode());
             return resultVO;
         }
-
         ActionFlowType actionFlowType = ActionFlowType.matchOpCode(request.getFlowType());
         switch (actionFlowType) {
             case ORDER_HANDLER_ZF: //订单支付

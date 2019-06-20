@@ -242,5 +242,8 @@
 			and
 				b.batch_id = #{batchId}
 	  </select>
-    
+
+    <select id="getSeq" resultType="java.lang.String">
+        SELECT seq_fixed_line_sn.nextval
+    </select>
 </mapper>

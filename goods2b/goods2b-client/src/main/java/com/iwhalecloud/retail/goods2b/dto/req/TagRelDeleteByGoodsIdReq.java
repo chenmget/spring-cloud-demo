@@ -25,5 +25,11 @@ public class TagRelDeleteByGoodsIdReq extends AbstractRequest implements Seriali
 	@ApiModelProperty(value = "productBaseId")
   	private String productBaseId;
 
+	/**
+	 * productId
+	 */
+	@ApiModelProperty(value = "productId")
+	private String productId;
+
   	
 }

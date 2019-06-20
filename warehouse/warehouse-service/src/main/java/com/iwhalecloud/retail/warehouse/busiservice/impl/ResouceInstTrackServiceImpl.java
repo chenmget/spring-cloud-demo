@@ -862,11 +862,13 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             copyOnWriteArrayList.add(resourceReqDetailDTO.getMktResInstNbr());
             getReq.setMktResInstNbrList(copyOnWriteArrayList);
             getReq.setMktResId(resourceReqDetailDTO.getMktResId());
+            getReq.setMktResStoreId(detailDTO.getMktResStoreId());
             List<ResouceInstTrackDTO> resouceInstTrackDTOList = resouceInstTrackManager.listResourceInstsTrack(getReq);
             if (CollectionUtils.isNotEmpty(resouceInstTrackDTOList)) {
                 ResouceInstTrackDTO resouceInstTrackDTO = resouceInstTrackDTOList.get(0);
                 resouceInstTrackDTO.setMktResId(resourceReqDetailDTO.getMktResId());
                 resouceInstTrackDTO.setMktResInstType(resourceReqDetailDTO.getMktResInstType());
+                resouceInstTrackDTO.setMktResStoreId(detailDTO.getDestStoreId());
                 if (targetMerchantResultVO.isSuccess() && null != targetMerchantResultVO.getResultData()) {
                     MerchantDTO targetMerchant = targetMerchantResultVO.getResultData();
                     resouceInstTrackDTO.setMerchantId(targetMerchant.getMerchantId());

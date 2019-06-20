@@ -466,6 +466,9 @@
       and upper(pb.name) like CONCAT(CONCAT('%',upper(#{req.brandName})),'%')
 
     </if>
+    <if test="null!=req.brandId and ''!=req.brandId">
+      and pb.BRAND_ID =#{req.brandId}
+    </if>
     <if test="null!=req.unitType and ''!=req.unitType">
       and upper(ppb.unit_Type) like CONCAT(CONCAT('%',upper(#{req.unitType})),'%')
     </if>

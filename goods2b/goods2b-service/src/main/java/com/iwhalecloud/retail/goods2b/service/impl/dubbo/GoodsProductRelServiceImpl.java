@@ -29,8 +29,10 @@ import com.iwhalecloud.retail.promo.dto.resp.ActivityProductRespDTO;
 import com.iwhalecloud.retail.promo.dto.resp.PreSubsidyProductRespDTO;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
+import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -72,8 +74,11 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
     @Reference
     private UserService userService;
 
+//    @Reference
+//    private CommonOrgService commonOrgService;
+
     @Reference
-    private CommonOrgService commonOrgService;
+    private OrganizationService organizationService;
 
     @Autowired
     private GoodsRegionRelManager goodsRegionRelManager;
@@ -223,9 +228,10 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
                 // 判断是否 是零售商  组织ID 是否为空
                 if (StringUtils.equals(merchantDTO.getMerchantType(), PartnerConst.MerchantTypeEnum.PARTNER.getType())
                         && StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
-                    CommonOrgDTO commonOrgDTO = commonOrgService.getCommonOrgById(merchantDTO.getParCrmOrgId()).getResultData();
-                    if (Objects.nonNull(commonOrgDTO) && StringUtils.isNotEmpty(commonOrgDTO.getPathCode())) {
-                        orgPathCode = commonOrgDTO.getPathCode();
+//                    CommonOrgDTO commonOrgDTO = commonOrgService.getCommonOrgById(merchantDTO.getParCrmOrgId()).getResultData();
+                    OrganizationDTO organizationDTO = organizationService.getOrganization(merchantDTO.getParCrmOrgId()).getResultData();
+                    if (Objects.nonNull(organizationDTO) && StringUtils.isNotEmpty(organizationDTO.getPathCode())) {
+                        orgPathCode = organizationDTO.getPathCode();
                         isNeedCheckOrgId = true;
                         log.info("GoodsProductRelServiceImpl.checkBuyCount 需要根据零售商的orgId去校验商品发布区域，merchantId={}, orgId={}, orgPathCode={}", merchantId, merchantDTO.getParCrmOrgId(), orgPathCode);
                     }

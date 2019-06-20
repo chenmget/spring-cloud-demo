@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.order2b.dubbo;
 import com.alibaba.fastjson.JSON;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.TestBase;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
@@ -185,7 +186,26 @@ public class PurApplyServiceImplTest  extends TestBase {
         List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
         System.out.println(JSON.toJSONString(procureApplyReq2));
     }
-
+    @Test
+    public void updatePurTypeByApplyId() {
+//        PurApplyReq req = new PurApplyReq();
+//        req.setApplyId("1878");
+//        List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
+//        System.out.println(JSON.toJSONString(procureApplyReq2));
+        ProcureApplyReq req = new ProcureApplyReq();
+        List<AddProductReq> procureApplyReq =new ArrayList<AddProductReq>();
+        AddProductReq ad =new AddProductReq();
+        ad.setPurchaseType("1");
+        ad.setApplyItemId("6272");
+        procureApplyReq.add(ad);
+        AddProductReq ad1 =new AddProductReq();
+        ad1.setPurchaseType("1");
+        ad1.setApplyItemId("6273");
+        procureApplyReq.add(ad1);
+        req.setAddProductReq(procureApplyReq);
+        ResultVO v= purApplyService.updatePurTypeByApplyId(req);
+        System.out.println(JSON.toJSONString(v));
+    }
 
 
 }

@@ -92,6 +92,19 @@ public class ResouceUploadTemp implements Serializable {
 	@ApiModelProperty(value = "macCode")
 	private java.lang.String macCode;
 
+	@ApiModelProperty(value = "记录营销资源申请单明细标识")
+	private String mktResReqDetailId;
+
+	@ApiModelProperty(value = "记录状态。LOVB=PUB-C-0001。")
+	private String statusCd;
+
+	/**
+	 * 备注
+	 */
+	@ApiModelProperty(value = "备注")
+	private String remark;
+
+
   	//属性 end
 	
     /** 字段名称枚举. */
@@ -127,7 +140,13 @@ public class ResouceUploadTemp implements Serializable {
 		snCode("snCode","sn_code"),
 
 		/** 网络终端（包含光猫、机顶盒、融合终端）记录MAC码. */
-		macCode("macCode","mac_code");
+		macCode("macCode","mac_code"),
+
+		mktResReqDetailId("mktResReqDetailId","MKT_RES_REQ_DETAIL_ID"),
+
+		statusCd("statusCd","STATUS_CD"),
+
+		remark("remark","remark");
 
 		private String fieldName;
 		private String tableFieldName;

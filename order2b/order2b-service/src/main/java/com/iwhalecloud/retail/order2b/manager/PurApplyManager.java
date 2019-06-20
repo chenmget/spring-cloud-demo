@@ -209,6 +209,14 @@ public class PurApplyManager {
 	public Integer updatePurApplyItemDetailStatusCd(List<String> mktResInstNbrList) {
 		return purApplyMapper.updatePurApplyItemDetailStatusCd(mktResInstNbrList);
 	}
+	/**
+	 * 更新采购类型
+	 * @param req
+	 * @return
+	 */
+	public Integer updatePurTypeByApplyId(AddProductReq req) {
+		return purApplyMapper.updatePurTypeByApplyId(req);
+	}
 
 	
 }

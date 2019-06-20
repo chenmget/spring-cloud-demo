@@ -45,7 +45,7 @@ public interface ProductService {
      * @param req
      * @return
      */
-    public ResultVO<Integer> addProduct (ProductAddReq req);
+    public String addProduct (ProductAddReq req);
 
 //    /**
 //     * 根据产品编码获取产品对象

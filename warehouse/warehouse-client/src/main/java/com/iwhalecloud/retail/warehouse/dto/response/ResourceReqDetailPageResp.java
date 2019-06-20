@@ -34,4 +34,47 @@ public class ResourceReqDetailPageResp implements Serializable {
 
     @ApiModelProperty(value = "产品编码")
     private String sn;
+
+    //属性 begin
+    /**
+     * 记录营销资源申请单明细标识
+     */
+    @ApiModelProperty(value = "记录营销资源申请单明细标识")
+    private java.lang.String mktResReqDetailId;
+
+    @ApiModelProperty(value = "申请单号")
+    private String reqCode;
+
+
+    @ApiModelProperty(value = "厂商名")
+    private String merchantName;
+
+    /**
+     * 记录首次创建的时间。
+     */
+    @ApiModelProperty(value = "记录首次创建的时间。")
+    private java.util.Date createDate;
+
+    /**
+     * 记录状态变更的时间。
+     */
+    @ApiModelProperty(value = "记录状态变更的时间。")
+    private java.util.Date statusDate;
+
+    /**
+     * 记录状态。LOVB=PUB-C-0001。
+     */
+    @ApiModelProperty(value = "记录状态。LOVB=PUB-C-0001。")
+    private String statusCd;
+
+    @ApiModelProperty(value = "记录状态中文。LOVB=PUB-C-0001。")
+    private String statusCdName;
+
+
+    @ApiModelProperty(value = "状态说明")
+    private String remark;
+
+    @ApiModelProperty(value = "验证描述，记录出错的原因")
+    private String resultDesc;
+
 }

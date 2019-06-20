@@ -59,4 +59,13 @@ public class ResourceUploadTempListResp implements java.io.Serializable {
 	@ApiModelProperty(value = "macCode")
 	private java.lang.String macCode;
 
+	@ApiModelProperty(value = "记录营销资源申请单明细标识")
+	private String mktResReqDetailId;
+
+	@ApiModelProperty(value = "记录状态。LOVB=PUB-C-0001。")
+	private String statusCd;
+
+	@ApiModelProperty(value = "状态说明")
+	private String remark;
+
 }

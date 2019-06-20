@@ -125,6 +125,16 @@
         order by t.GMT_CREATE DESC
     </select>
 
+	<select id="getMarketingCampaign" parameterType="com.iwhalecloud.retail.promo.dto.MarketingActivityReq" resultType="com.iwhalecloud.retail.promo.dto.MarketingActivityResp">
+        select
+        <include refid="listMarketingActivityFieIds"></include>
+        from act_marketing_activity t where 1=1
+        and t.IS_DELETED = '0'
+        <if test="req.name != null and req.name != '' ">
+            AND t.NAME like CONCAT(CONCAT('%', #{req.name}), '%')
+        </if>
+    </select>
+
 
     <!-- 查询预售活动的单个产品信息 -->
     <select id="getAdvanceActivityProductInfo" resultType="com.iwhalecloud.retail.promo.dto.resp.AdvanceActivityProductInfoResp" parameterType="com.iwhalecloud.retail.promo.dto.req.AdvanceActivityProductInfoReq">

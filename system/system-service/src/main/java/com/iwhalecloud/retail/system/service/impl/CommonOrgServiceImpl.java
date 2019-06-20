@@ -7,6 +7,8 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
+import com.iwhalecloud.retail.system.dto.SysCommonOrgReq;
+import com.iwhalecloud.retail.system.dto.SysCommonOrgResp;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgListReq;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgPageReq;
 import com.iwhalecloud.retail.system.entity.CommonOrg;
@@ -95,6 +97,16 @@ public class CommonOrgServiceImpl implements CommonOrgService {
         Page<CommonOrgDTO> respPage = commonOrgManager.pageCommonOrg(req);
         log.info("CommonOrgServiceImpl.pageCommonOrg(), output：list={} ", JSON.toJSONString(respPage.getRecords()));
         return ResultVO.success(respPage);
+    }
+    
+    /**
+     * 获取经营单元
+     */
+    @Override
+    public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg(SysCommonOrgReq req) {
+    	log.info("CommonOrgServiceImpl.getSysCommonOrg() start ******************************** ");
+    	List<SysCommonOrgResp>  respList = commonOrgManager.getSysCommonOrg(req);
+    	return ResultVO.success(respList);
     }
 
 }

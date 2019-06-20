@@ -6,14 +6,17 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.InventoryChangeResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.*;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
+import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
+import com.iwhalecloud.retail.warehouse.service.ResourceReqDetailService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
+import com.iwhalecloud.retail.web.controller.b2b.order.service.OrderExportUtil;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.InventoryQueryReq;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAndCteiResp;
@@ -26,6 +29,8 @@ import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +39,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.InputStream;
 import java.util.List;
@@ -52,6 +58,9 @@ public class AdminResourceInstB2BController {
 
     @Value("${fdfs.suffix.allowUpload}")
     private String allowUploadSuffix;
+
+    @Reference
+    private ResourceReqDetailService resourceReqDetailService;
 
     @Autowired
     private DeliveryGoodsResNberExcel deliveryGoodsResNberExcel;
@@ -273,4 +282,126 @@ public class AdminResourceInstB2BController {
         }
         return resultVO;
     }
+
+
+    @ApiOperation(value = "查询串码申请明细分页列表", notes = "管理员后台审核厂商串码的列表")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value="listResourceRequestDetailPage")
+    public ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestPage(ResourceReqDetailQueryReq req) {
+        return resourceReqDetailService.listResourceRequestDetailPage(req);
+    }
+
+    @ApiOperation(value = "导出串码明细", notes = "导出串码数据")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="exportNbrDetail")
+    public void exportNbrDetail(@RequestBody ResourceReqDetailQueryReq req, HttpServletResponse response) {
+        ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listResourceRequestDetailPage(req);
+        List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
+        log.info("ResourceReqDetailB2BController.nbrDetailExport resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
+        //创建Excel
+        Workbook workbook = new HSSFWorkbook();
+        //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+                OrderExportUtil.getResReqDetail(), "串码");
+        deliveryGoodsResNberExcel.exportExcel("导出待审核串码",workbook,response);
+    }
+
+    @ApiOperation(value = "导入审核的串码文件", notes = "支持xlsx、xls格式")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/uploadNbrDetail",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
+    @UserLoginToken
+    public ResultVO<String> uploadNbrDetail(@RequestParam("file") MultipartFile file) {
+
+        String suffix = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        //如果不在允许范围内的附件后缀直接抛出错误
+        if (allowUploadSuffix.indexOf(suffix) <= -1) {
+            return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
+        }
+        InputStream is = null;
+        try {
+            is = file.getInputStream();
+            List<ExcelResourceReqDetailDTO> data = ExcelToNbrUtils.getNbrDetailData(is);
+            UserDTO userDTO = UserContext.getUser();
+            String userId=userDTO.getUserId();
+            return resourceInstService.uploadNbrDetail(data,userId);
+       } catch (Exception e) {
+            log.error("excel解析失败",e);
+            return ResultVO.error("excel解析失败");
+        }
+
+    }
+
+    @ApiOperation(value = "获取串码审核临时记录", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value="listResourceUploadTemp")
+    public ResultVO<Page<ResourceReqDetailPageResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
+        return resourceInstService.listResourceUploadTemp(req);
+    }
+
+    @ApiOperation(value = "查询串码审核临时记录的成功失败次数", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value="countResourceUploadTemp")
+    public ResultVO<ResourceUploadTempCountResp> countResourceUploadTemp(ResourceUploadTempDelReq req) {
+        return resourceInstService.countResourceUploadTemp(req);
+    }
+
+    @ApiOperation(value = "导出串码明细", notes = "导出串码数据")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="exportResourceUploadTemp")
+    public void exportResourceUploadTemp(@RequestBody ResourceUploadTempListPageReq req, HttpServletResponse response) {
+        ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceInstService.listResourceUploadTemp(req);
+        List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
+        log.info("ResourceReqDetailB2BController.nbrDetailExport resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
+        //创建Excel
+        Workbook workbook = new HSSFWorkbook();
+        //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data, OrderExportUtil.getResourceUploadTemp(), "串码");
+        deliveryGoodsResNberExcel.exportExcel("导入失败的串码",workbook,response);
+    }
+
+    @ApiOperation(value = "提交导入excel的审批", notes = "提交串码审核的excel")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/submitNbrAudit",method = RequestMethod.POST)
+    @UserLoginToken
+    public ResultVO<String> submitNbrAudit(@RequestBody ResourceUploadTempListPageReq req) {
+        String userId = UserContext.getUserId();
+        req.setUpdateStaff(userId);
+        return resourceInstService.submitNbrAudit(req);
+    }
+
+    @ApiOperation(value = "批量审核串码", notes = "批量审核串码")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/batchAuditNbr",method = RequestMethod.POST)
+    @UserLoginToken
+    public ResultVO<String> batchAuditNbr(@RequestBody ResourceInstCheckReq req) {
+        String userId = UserContext.getUserId();
+        req.setUpdateStaff(userId);
+        return resourceInstService.batchAuditNbr(req);
+    }
+
+
 }

@@ -4,6 +4,7 @@ package com.iwhalecloud.retail.warehouse.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailReq;
@@ -55,6 +56,13 @@ public interface ResourceReqDetailMapper extends BaseMapper<ResourceReqDetail>{
      * @return
      */
     List<ResourceReqDetailPageResp> executorResourceRequestPage(@Param("req") ResourceReqDetailPageReq req);
+
+    /**
+     * 申请单详情分页（条件查询）
+     * @param req
+     * @return
+     */
+    Page<ResourceReqDetailPageDTO> listResourceRequestPage(Page<ResourceReqDetailPageDTO> page, @Param("req")ResourceReqDetailQueryReq req);
 
     /**
      * 根据申请单项主键修改申请单详情状态

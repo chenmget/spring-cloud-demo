@@ -53,7 +53,7 @@ public class OrganizationServiceImpl implements OrganizationService {
     }
 
     @Override
-    public ResultVO getOrganization(String orgId) {
+    public ResultVO<OrganizationDTO> getOrganization(String orgId) {
         OrganizationDTO dto = organizationManager.getOrganization(orgId);
         if (dto == null) {
             return ResultVO.error();

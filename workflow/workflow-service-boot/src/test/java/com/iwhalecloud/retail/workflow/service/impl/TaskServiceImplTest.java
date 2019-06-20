@@ -4,9 +4,15 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
+import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
+import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.system.dto.request.UserGetReq;
+import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.WorkFlowServiceApplication;
 import com.iwhalecloud.retail.workflow.bizservice.RunRouteService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -58,6 +64,10 @@ public class TaskServiceImplTest {
     @Resource
     private RuleDefManager ruleDefManager;
 
+    @Reference
+    private UserService userService;
+
+
     @Test
     public void startProcess() {
         ProcessStartReq req = new ProcessStartReq();
@@ -94,11 +104,11 @@ public class TaskServiceImplTest {
     @Test
     public void nextRoute() {
 //        String json = "{\"appendixType\":\"2\",\"appendixUrl\":\"\",\"handlerMsg\":\"333\",\"handlerUserId\":\"200012813991\",\"handlerUserName\":\"zte管理员\",\"nextHandlerUser\":[],\"nextNodeId\":\"1559\",\"routeId\":\"20190528005\",\"taskId\":\"12330136\",\"taskItemId\":\"12330137\"}\n";
-//        RouteNextReq req = (RouteNextReq) JSON.parse(json);
-       String json ="{\"routeId\":\"20190528004\",\"handlerMsg\":\"饿\",\"nextNodeId\":\"1549\",\"taskId\":\"12335986\",\"taskItemId\":\"12335996\",\"handlerUserId\":\"22796\",\"nextHandlerUser\":[],\"appendixType\":\"2\",\"appendixUrl\":\"\"}";
-        Gson gson = new Gson();
-        RouteNextReq routeNextReq  = gson.fromJson(json, new TypeToken<RouteNextReq>(){}.getType());
 
+          String json ="{\"routeId\":\"20190528004\",\"handlerMsg\":\"饿\",\"nextNodeId\":\"1549\",\"taskId\":\"12335986\",\"taskItemId\":\"12335996\",\"handlerUserId\":\"22796\",\"nextHandlerUser\":[],\"appendixType\":\"2\",\"appendixUrl\":\"\"}";
+          json = "{\"routeId\":\"20190528009\",\"handlerMsg\":\"7\",\"nextNodeId\":\"1539\",\"taskId\":\"12337800\",\"taskItemId\":\"12337999\",\"handlerUserId\":\"10000692\",\"nextHandlerUser\":[]}\n";
+          Gson gson = new Gson();
+          RouteNextReq routeNextReq  = gson.fromJson(json, new TypeToken<RouteNextReq>(){}.getType());
 //        req.setTaskId("12330129");
 //        req.setTaskItemId("12330130");
 //        req.setHandlerUserId("200012813991");
@@ -112,8 +122,9 @@ public class TaskServiceImplTest {
 //        user.setHandlerUserId("1079205258011422722");
 //        user.setHandlerUserName("经营主体");
 //        req.setNextHandlerUser(userList);
-        ResultVO resultVO = taskService.nextRoute(routeNextReq);
-        System.out.println(resultVO.isSuccess());
+          ResultVO resultVO = taskService.nextRoute(routeNextReq);
+          System.out.println(resultVO.isSuccess());
+
     }
 
     @Test
@@ -249,4 +260,37 @@ public class TaskServiceImplTest {
         System.out.println(JSON.toJSONString(ruleDef));
     }
 
+    @Test
+    public  void  m() {
+//        MerchantGetReq merchantGetReq = new MerchantGetReq();
+//        merchantGetReq.setMerchantId("10000696");
+//        ResultVO<MerchantDetailDTO> merchantInfo =merchantService.getMerchantDetail(merchantGetReq);
+//        System.out.println("PurApplyGetHandlerUserIdServiceImpl.run merchantInfo={}"+ JSON.toJSONString(merchantInfo));
+
+        UserGetReq userGetReq = new UserGetReq();
+        userGetReq.setRelCode("10000696");
+        UserDTO userDTO = userService.getUser(userGetReq);
+        System.out.println("PurApplyGetHandlerUserIdServiceImpl.run merchantInfo={}"+ JSON.toJSONString(userDTO));
+
+    }
+
+    @Test
+    public void startDiaoBoProcess() {
+        ProcessStartReq req = new ProcessStartReq();
+        req.setProcessId("7");
+        req.setTaskSubType("1010");
+        req.setFormId("12336295");
+        req.setTitle("调拨审批流程");
+
+        req.setApplyUserId("10000692");
+        req.setApplyUserName("湖南龙裕实业有限公司_三星平台");
+        req.setExtends1("长沙市分公司");
+        req.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+        Map map=new HashMap();
+        map.put("731","731");//
+        req.setParamsValue(JSON.toJSONString(map));
+        ResultVO resultVO = taskService.startProcess(req);
+        System.out.println(resultVO.isSuccess());
+//        Assert.assertEquals("0", resultVO.getResultCode());
+    }
 }

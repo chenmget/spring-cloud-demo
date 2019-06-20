@@ -1,9 +1,11 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceReqDetail;
@@ -86,7 +88,30 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
      * @param req
      * @return
      */
-    public Integer updateResourceReqDetailStatusCd(ResourceReqDetailUpdateReq req){
+    public Integer updateResourceReqDetailStatusCd(ResourceReqDetailUpdateReq req) {
         return resourceReqDetailMapper.updateResourceReqDetailStatusCd(req);
+    }
+
+    public Page<ResourceReqDetailPageDTO> listResourceRequestPage(ResourceReqDetailQueryReq req) {
+        Page<ResourceReqDetailPageDTO> page = new Page<ResourceReqDetailPageDTO>(req.getPageNo(), req.getPageSize());
+        return resourceReqDetailMapper.listResourceRequestPage(page,req);
+    }
+
+    /**
+     * 批量修改申请单明细
+     * @param req
+     */
+    public boolean updateDetailById(ResourceReqDetailUpdateReq req) {
+        ResourceReqDetail detail=new ResourceReqDetail();
+        detail.setStatusCd(req.getStatusCd());
+        detail.setRemark(req.getRemark());
+        detail.setUpdateStaff(req.getUpdateStaff());
+        detail.setUpdateDate(req.getUpdateDate());
+        detail.setRemark(req.getRemark());
+        detail.setStatusDate(req.getStatusDate());
+        UpdateWrapper updateWrapper=new UpdateWrapper();
+        updateWrapper.in(ResourceReqDetail.FieldNames.mktResReqDetailId.getTableFieldName(),req.getMktResReqDetailIdList());
+        updateWrapper.eq(ResourceReqDetail.FieldNames.createDate.getTableFieldName(), req.getCreateDate());
+        return resourceReqDetailMapper.update(detail,updateWrapper)>0;
     }
 }

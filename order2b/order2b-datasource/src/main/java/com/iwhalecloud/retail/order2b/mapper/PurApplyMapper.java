@@ -98,4 +98,6 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 
 	public PurApply getPurApplyByAppId(@Param("applyId") String applyId);
 
+	public Integer updatePurTypeByApplyId(@Param("req")AddProductReq req);
+
 }

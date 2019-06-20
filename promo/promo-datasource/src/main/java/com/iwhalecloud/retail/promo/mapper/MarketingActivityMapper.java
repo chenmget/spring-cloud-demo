@@ -2,10 +2,10 @@ package com.iwhalecloud.retail.promo.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityReq;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityResp;
 import com.iwhalecloud.retail.promo.dto.req.AdvanceActivityProductInfoReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
 import com.iwhalecloud.retail.promo.dto.resp.AdvanceActivityProductInfoResp;
@@ -30,6 +30,12 @@ public interface MarketingActivityMapper extends BaseMapper<MarketingActivity> {
      */
     Page<MarketingActivityListResp> listMarketingActivity(Page<MarketingActivityListResp> page, @Param("req") MarketingActivityListReq req);
 
+    /**
+	 * 通过营销活动名字查询营销活动
+	 * @param req
+	 * @return
+	 */
+    List<MarketingActivityResp> getMarketingCampaign(@Param("req") MarketingActivityReq req);
     /**
      * 查询预售活动的单个产品信息
      *

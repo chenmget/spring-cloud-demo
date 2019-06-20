@@ -109,7 +109,6 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	String orderType = rr.getOrderType();//订单类型
 	    	String orderCat = rr.getOrderCat();//交易类型
 	    	String paymentType = rr.getPaymentType();//支付类型
-	    	String payType = rr.getPayType();//支付方式
 	    	String lanId = rr.getLanId();
 	    	String couponType = rr.getCouponType();//优惠类型
 	    	rr.setPrice(rr.getPrice()/100);
@@ -201,21 +200,6 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			rr.setPaymentType("其他");
 	    		} 
 	    	}
-	    	
-	    	if(payType != null){
-	    		if("1".equals(payType)){
-	    			rr.setPayType("翼支付");
-	    		}else if("2".equals(payType)){
-	    			rr.setPayType("微信支付");
-	    		}else if("3".equals(payType)){
-	    			rr.setPayType("支付宝支付");
-	    		}else if("4".equals(payType)){
-	    			rr.setPayType("线下支付");
-	    		}else {
-	    			rr.setPayType("其他");
-	    		}
-	    	}
-	    	
 	    	if(lanId != null){
 				if("730".equals(lanId)){
 					rr.setLanId("岳阳市");

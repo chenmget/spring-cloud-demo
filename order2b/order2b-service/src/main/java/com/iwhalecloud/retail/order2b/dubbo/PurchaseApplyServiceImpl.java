@@ -161,6 +161,28 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         //通过采购申请单查询采购申请单项
         List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
 
+//        判断是否有申请单外的串码类型
+        String othersProductId="";
+
+        for (String key : map.keySet()) {
+            Integer otherFlag=0;
+            for (PurApplyItem PurApplyItemTemp : purApplyItem) {
+                String productId = PurApplyItemTemp.getProductId();
+                if (key.equals(productId)) {
+                    otherFlag=1;
+
+                    break;
+                }
+            }
+            if (otherFlag==0) {
+                othersProductId=othersProductId+key+",";
+                log.info("判断是否有申请单外的串码类型=key="+key+" othersProductId= "+othersProductId);
+            }
+        }
+
+        if (othersProductId.length()>0) {
+            return ResultVO.error(othersProductId+"这些机型不在申请单中,请检查！");
+        }
         //串码出库前 -- 开始验证串码发货数量是否超过申请单数量，并验证产品是否属于申请单的产品
             Integer flagCount=0;//判断是否发货数量大于申请数量
             Integer flag=0;// 判断 是否完全发货

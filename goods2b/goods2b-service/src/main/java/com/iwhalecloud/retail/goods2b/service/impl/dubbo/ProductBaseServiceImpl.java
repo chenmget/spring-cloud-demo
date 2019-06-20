@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -12,8 +13,10 @@ import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.ProductBase;
+import com.iwhalecloud.retail.goods2b.entity.Type;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
+import com.iwhalecloud.retail.goods2b.manager.TypeManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.DateUtil;
 import com.iwhalecloud.retail.goods2b.utils.GenerateCodeUtil;
@@ -22,10 +25,11 @@ import com.iwhalecloud.retail.goods2b.utils.ZopClientUtil;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.PublicDictDTO;
+import com.iwhalecloud.retail.system.service.PublicDictService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.ztesoft.zop.common.message.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +38,6 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
-import com.alibaba.fastjson.TypeReference;
 
 import java.util.*;
 
@@ -59,6 +62,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Autowired
     private TagRelService tagRelService;
+
+    @Autowired
+    private TypeManager typeManager;
+    @Reference
+    private PublicDictService publicDictService;
 
     @Value("${zop.secret}")
     private String zopSecret;
@@ -142,6 +150,40 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 }
             }
         }
+
+        //易购网下线固网规格同步CRM开关
+        String syncSpecCrm = "";
+        List<PublicDictDTO> publicDictDTOs = publicDictService.queryPublicDictListByType("SYNC_SPEC_CRM");
+        log.info("ProductBaseServiceImpl.addProductBase publicDictDTOs={}" , publicDictDTOs);
+        if(!CollectionUtils.isEmpty(publicDictDTOs)){
+            PublicDictDTO publicDictDTO = publicDictDTOs.get(0);
+            if(null!=publicDictDTO){
+                syncSpecCrm = publicDictDTO.getCodeb();
+            }
+        }
+        if(StringUtils.isEmpty(syncSpecCrm)){
+            syncSpecCrm = "F";
+        }
+
+        //是固网产品并且开发打开才同步CRM
+        String isFixedLine = req.getIsFixedLine();
+        if(StringUtils.isNotEmpty(isFixedLine) && "1".equals(isFixedLine) && "T".equals(syncSpecCrm)){
+            Type type = typeManager.selectById(req.getTypeId());
+            if(null!=type){
+                Map request = new HashMap<>();
+                request.put("Good_id","");
+                request.put("u_kind_id",type.getCrmResKind());
+                request.put("u_kind_name","");
+                request.put("GOOD_BAND",req.getBrandId());
+                request.put("sales_resource_id","");
+                request.put("terminal_type",type.getCrmResType());
+                request.put("sales_resource_name","");
+                request.put("Good_price","");
+                request.put("terminal_type_name","");
+                this.pushCrm(request);
+            }
+        }
+
         if(StringUtils.isEmpty(req.getPriceLevel())){
             Double minCost = 0.0;
             List<ProductAddReq> productAddReqs = req.getProductAddReqs();
@@ -198,7 +240,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setProductBaseId(productBaseId);
                 par.setCreateStaff(t.getCreateStaff());
                 par.setAuditState(auditState);
-                productService.addProduct(par);
+                String productId = productService.addProduct(par);
+                if (!CollectionUtils.isEmpty(req.getTagList())) {
+                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+                    relBatchAddReq.setProductId(productId);
+                    relBatchAddReq.setTagList(req.getTagList());
+                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
+                }
             }
         }
 
@@ -424,10 +472,17 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     par.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
                 }
-                ResultVO<Integer> addResultVO = productService.addProduct(par);
-                if (!addResultVO.isSuccess() || addResultVO.getResultData() < 1) {
-                    throw new RetailTipException(addResultVO.getResultCode(), addResultVO.getResultMsg());
+                if (!CollectionUtils.isEmpty(tagList)) {
+                    TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+                    relDeleteByGoodsIdReq.setProductId(productId);
+                    tagRelService.deleteTagRelByProductId(relDeleteByGoodsIdReq);
+                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+                    relBatchAddReq.setTagList(tagList);
+                    relBatchAddReq.setProductId(productId);
+                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
                 }
+
+                productService.addProduct(par);
                 continue;
             }
         }
@@ -459,7 +514,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setProductBaseId(req.getProductBaseId());
                 par.setCreateStaff(req.getUpdateStaff());
                 par.setAuditState(auditState);
-                productService.addProduct(par);
+                String productId = productService.addProduct(par);
+                if (!CollectionUtils.isEmpty(tagList)) {
+                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+                    relBatchAddReq.setTagList(tagList);
+                    relBatchAddReq.setProductId(productId);
+                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
+                }
             }
         }
         req.setUpdateDate(new Date());
@@ -632,17 +693,20 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             FileAddReq oldFile = newFileAddReqs.get(i);
             if(StringUtils.isNotEmpty(newFile.getFileUrl()) && StringUtils.isNotEmpty(oldFile.getFileUrl()) &&
                     newFile.getFileUrl().equals(oldFile.getFileUrl())){
-            }else {
-                return true;
-            }
-            if(StringUtils.isNotEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isNotEmpty(oldFile.getThreeDimensionsUrl()) &&
-                    newFile.getThreeDimensionsUrl().equals(oldFile.getThreeDimensionsUrl())){
+            }else if(StringUtils.isEmpty(newFile.getFileUrl()) && StringUtils.isEmpty(oldFile.getFileUrl())){
             }else {
                 return true;
             }
             if(StringUtils.isNotEmpty(newFile.getThumbnailUrl()) && StringUtils.isNotEmpty(oldFile.getThumbnailUrl()) &&
                     newFile.getThumbnailUrl().equals(oldFile.getThumbnailUrl())){
+            }else if(StringUtils.isEmpty(newFile.getThumbnailUrl()) && StringUtils.isEmpty(oldFile.getThumbnailUrl())) {
             }else {
+                return true;
+            }
+            if(StringUtils.isNotEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isNotEmpty(oldFile.getThreeDimensionsUrl()) &&
+                    newFile.getThreeDimensionsUrl().equals(oldFile.getThreeDimensionsUrl())){
+            }else if(StringUtils.isEmpty(newFile.getThreeDimensionsUrl()) && StringUtils.isEmpty(newFile.getThreeDimensionsUrl())){
+            }else{
                 return true;
             }
         }
@@ -736,6 +800,18 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         productBaseUpdateReq.setAvgSupplyPrice(avgSupplyPrice);
         productBaseManager.updateProductBase(productBaseUpdateReq);
         return ResultVO.success(true);
+    }
+
+    @Override
+    public ResultVO<List<String>> getSeq(int i) {
+        List<String> list = new ArrayList<>();
+        if(i==0){
+            ResultVO.success(list);
+        }
+        for(int j=0;j<i;j++){
+            list.add(productBaseManager.getSeq());
+        }
+        return ResultVO.success(list);
     }
 
     public String zopService(String method, String zopUrl, Object request, String zopSecret) {

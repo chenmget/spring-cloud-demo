@@ -169,7 +169,7 @@ public class ReportOrderController extends BaseController {
 	    orderMap.add(new ExcelTitleName("productName", "产品名称"));
 	    orderMap.add(new ExcelTitleName("unitType", "产品型号"));
 	    orderMap.add(new ExcelTitleName("typeName", "产品类型"));
-	    orderMap.add(new ExcelTitleName("brandName", "品牌"));
+	    orderMap.add(new ExcelTitleName("brandName", "产品品牌"));
 	    orderMap.add(new ExcelTitleName("attrValue1", "规格1"));
 	    orderMap.add(new ExcelTitleName("attrValue2", "规格2"));
 	    orderMap.add(new ExcelTitleName("attrValue3", "规格3"));
@@ -197,7 +197,7 @@ public class ReportOrderController extends BaseController {
 	    orderMap.add(new ExcelTitleName("merchantCode", "店中商编码"));
 	    orderMap.add(new ExcelTitleName("businessEntityName", "经营主体名称"));
 	    orderMap.add(new ExcelTitleName("lanId", "店中商所属地市"));
-	    orderMap.add(new ExcelTitleName("city", "店中商所属区县"));
+	    orderMap.add(new ExcelTitleName("orgName", "店中商所属经营单元"));
 	    
 	  //创建orderItemDetail
 	    deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,

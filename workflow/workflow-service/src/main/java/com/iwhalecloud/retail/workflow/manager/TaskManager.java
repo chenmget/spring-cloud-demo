@@ -229,7 +229,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
      * @return 处理人列表
      */
     private List<HandlerUser> getHandlerUsers(Task task, String nextNodeId, List<HandlerUser> handlerUserList, List<RuleDef> ruleDefs) {
-        log.info("getHandlerUsers task={},curNodeId={}", JSON.toJSONString(task), nextNodeId, JSON.toJSONString(handlerUserList));
+        log.info("getHandlerUsers task={},curNodeId={}, ruleDefs={}", JSON.toJSONString(task), nextNodeId, JSON.toJSONString(handlerUserList), JSON.toJSONString(ruleDefs));
         // 已经指定处理人
         if (CollectionUtils.isNotEmpty(handlerUserList)) {
             return handlerUserList;

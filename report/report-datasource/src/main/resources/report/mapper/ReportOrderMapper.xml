@@ -164,7 +164,7 @@
             LEFT JOIN prod_product c ON c.product_id=b.product_id
             WHERE  
             	a.order_id=b.order_id
-		  <if test="orderId!=null and orderId!=''">
+		  <if test="req.orderId!=null and req.orderId!=''">
 			and a.order_id = #{req.orderId}
 		  </if>
 	 </select>

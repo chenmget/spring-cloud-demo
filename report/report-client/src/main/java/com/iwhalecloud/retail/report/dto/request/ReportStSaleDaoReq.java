@@ -15,7 +15,7 @@ public class ReportStSaleDaoReq extends PageVO {
 	
 	private String dateStart;//统计起始时间
 	private String dateEnd;//统计结束时间
-	private List<String> cityId; 		//地市
+	private List<String> lanIdList; 		//地市
 	private List<String> orgName; 		//经营单元
 	private String stockWarning; 	//库存预警
 	private String productType; 		//产品类型

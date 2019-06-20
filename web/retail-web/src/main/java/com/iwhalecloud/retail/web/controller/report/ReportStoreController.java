@@ -79,7 +79,7 @@ public class ReportStoreController extends BaseController {
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
-			req.setCityId(list);
+			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3 ) {//零售商 （只能查看自己的仓库）
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {
@@ -108,7 +108,7 @@ public class ReportStoreController extends BaseController {
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
-			req.setCityId(list);
+			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3 ) {//零售商 （只能查看自己的仓库）
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {

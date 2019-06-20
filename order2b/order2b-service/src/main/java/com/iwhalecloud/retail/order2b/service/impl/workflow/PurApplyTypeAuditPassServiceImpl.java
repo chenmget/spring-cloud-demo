@@ -27,7 +27,7 @@ public class PurApplyTypeAuditPassServiceImpl implements PurApplyTypeAuditPassSe
 
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
-        log.info("PurApplyAuditPassServiceImpl.run params={}", JSON.toJSONString(params));
+        log.info("PurApplyTypeAuditPassServiceImpl.run params={}", JSON.toJSONString(params));
         if (params == null || StringUtils.isEmpty(params.getBusinessId())) {
             return ResultVO.error(ResultCodeEnum.LACK_OF_PARAM);
         }
@@ -35,7 +35,7 @@ public class PurApplyTypeAuditPassServiceImpl implements PurApplyTypeAuditPassSe
         req.setApplyId(params.getBusinessId());
         //审核通过
 //        req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_PASS);
-        purApplyManager.updatePurApplyStatusCd(req);
+         purApplyManager.updatePurApplyStatusCd(req);
         return ResultVO.success();
     }
 }

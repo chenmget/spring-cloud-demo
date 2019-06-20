@@ -234,7 +234,7 @@ public class ReportCodeStateServiceImpl implements ReportCodeStateService {
 	
 	@Override
 	public ResultVO<List<ReportCodeStatementsResp>> getCodeStatementsReportAdmindc(ReportCodeStatementsReq req) {
-		List<ReportCodeStatementsResp> list = (List<ReportCodeStatementsResp>) reportCodeStateManager.getCodeStatementsReportAdmindc(req);
+		List<ReportCodeStatementsResp> list = reportCodeStateManager.getCodeStatementsReportAdmindc(req);
 		List<ReportCodeStatementsResp> list2 = new ArrayList<ReportCodeStatementsResp>();
 		for (ReportCodeStatementsResp rr : list) {
 			String statusCd = rr.getStatusCd();//在库状态

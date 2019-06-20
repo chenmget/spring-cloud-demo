@@ -2,6 +2,8 @@ package com.iwhalecloud.retail.goods2b.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.Goods2BServiceApplication;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
@@ -12,6 +14,7 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.goods2b.utils.ZopClientUtil;
+import com.iwhalecloud.retail.workflow.dto.req.RouteNextReq;
 import com.ztesoft.zop.common.message.ResponseResult;
 import org.junit.Assert;
 import org.junit.Test;
@@ -129,4 +132,15 @@ public class ProductServiceTest {
         }
 
     }
+    @Test
+    public void getP() {
+        String json="{\"pageNo\":1,\"pageSize\":10,\"typeId\":\"201903142030001\",\"statusList\":[3]}";
+        Gson gson = new Gson();
+        ProductsPageReq req  = gson.fromJson(json, new TypeToken<ProductsPageReq>(){}.getType());
+//        ProductsPageReq req=new ProductsPageReq();
+
+        ResultVO<Page<ProductPageResp>>  r=  productService.selectPageProductAdmin(req);
+        System.out.println(JSON.toJSONString(r));
+    }
+
 }

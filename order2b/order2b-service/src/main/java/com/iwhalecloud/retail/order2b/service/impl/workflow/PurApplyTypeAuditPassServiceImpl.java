@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 
 @Slf4j
-@Service(group="order")
+@Service
 public class PurApplyTypeAuditPassServiceImpl implements PurApplyTypeAuditPassService {
 
     @Autowired

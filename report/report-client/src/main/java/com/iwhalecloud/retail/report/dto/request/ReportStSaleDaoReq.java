@@ -26,6 +26,4 @@ public class ReportStSaleDaoReq extends PageVO {
 	private String partnerCode; 	//零售商编码
 	private String businessEntityName; //经营主体名称
 	
-	
-	
 }

@@ -71,7 +71,7 @@ public class ReportCodeStatementsController extends BaseController  {
 		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
-		cal.add(Calendar.MONTH, -1);
+		cal.add(Calendar.MONTH, -3);
 		Date date3 = cal.getTime();
 		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
 		if(xdCreateTimeStart==null && xdCreateTimeEnd==null){
@@ -128,7 +128,7 @@ public class ReportCodeStatementsController extends BaseController  {
 		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
-		cal.add(Calendar.MONTH, -1);
+		cal.add(Calendar.MONTH, -3);
 		Date date3 = cal.getTime();
 		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
 		if(xdCreateTimeStart==null && xdCreateTimeEnd==null){

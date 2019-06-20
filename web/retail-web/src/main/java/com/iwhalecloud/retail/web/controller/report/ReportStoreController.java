@@ -1,7 +1,11 @@
 package com.iwhalecloud.retail.web.controller.report;
 
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -74,6 +78,22 @@ public class ReportStoreController extends BaseController {
 	@UserLoginToken
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
 		log.info("****************************ReportStoreController getReportStSaleList    req={}",JSON.toJSONString(req));
+		//默认最大跨度查询三个月
+		String dateStart = req.getDateStart();
+		String dateEnd = req.getDateEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(dateStart==null && dateEnd==null){
+			dateStart = format3.format(date3);
+			dateEnd = df.format(date);
+			req.setDateStart(dateStart);
+			req.setDateEnd(dateEnd);
+		}
 		int userType=UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
@@ -103,6 +123,21 @@ public class ReportStoreController extends BaseController {
     @PostMapping(value="/cjStorePurchaserReportExport")
     @UserLoginToken
     public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
+    	String dateStart = req.getDateStart();
+		String dateEnd = req.getDateEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(dateStart==null && dateEnd==null){
+			dateStart = format3.format(date3);
+			dateEnd = df.format(date);
+			req.setDateStart(dateStart);
+			req.setDateEnd(dateEnd);
+		}
     	int userType=UserContext.getUser().getUserFounder();
     	List<String> list = new ArrayList<String>();
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员

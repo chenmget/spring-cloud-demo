@@ -704,6 +704,8 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 t.setStatusDate(now);
                 t.setCreateDate(now);
                 resourceInsts.add(t);
+                t.setLanId(req.getLanId());
+                t.setRegionId(req.getRegionId());
                 allocateNum ++;
             }
             Boolean saveBatch = resourceInstManager.saveBatch(resourceInsts);
@@ -725,6 +727,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             }
             // step4 增加事件
             ResourceInstAddReq resourceInstAddReq = new ResourceInstAddReq();
+            resourceInstAddReq.setMktResId(entry.getKey());
             BeanUtils.copyProperties(req, resourceInstAddReq);
             resourceInstLogService.addResourceInstLog(resourceInstAddReq, resourceInsts, batchId);
         }

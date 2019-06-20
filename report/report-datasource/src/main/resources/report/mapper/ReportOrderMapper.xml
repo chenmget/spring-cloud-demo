@@ -30,7 +30,7 @@
 				 k.DISCOUNT AS couponMoney,
 				 (b.num*k.DISCOUNT) AS totalCouponMoney,
 				 a.SUPPLIER_NAME AS supplierName,
-				 a.SUPPLIER_ID AS supplierCode,
+				 a.SUPPLIER_CODE AS supplierCode,
 				 a.USER_NAME AS merchantName,
 				 par.MERCHANT_CODE AS merchantCode,
 				 par.BUSINESS_ENTITY_NAME AS businessEntityName,

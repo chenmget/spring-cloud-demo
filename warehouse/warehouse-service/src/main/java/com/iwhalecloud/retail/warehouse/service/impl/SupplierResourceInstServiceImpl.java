@@ -625,6 +625,13 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (null == list || list.isEmpty()) {
             return ResultVO.error("没有查找到申请单");
         }
+
+        ResultVO<MerchantDTO> merchantDTOResultVO = resouceStoreService.getMerchantByStore(list.get(0).getDestStoreId());
+        log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resouceStoreService.getMerchantByStore req={},resp={}", list.get(0).getDestStoreId(),JSON.toJSONString(merchantDTOResultVO));
+        if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData() ) {
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
+        }
+        MerchantDTO destMerchant = merchantDTOResultVO.getResultData();
         List<String> mktResInstIds = list.stream().map(ResourceReqDetailDTO::getMktResInstId).collect(Collectors.toList());
 
         // step2 把状态改为已调拨
@@ -668,8 +675,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         instPutInReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         instPutInReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         instPutInReq.setObjId(resReqId);
-        instPutInReq.setLanId(list.get(0).getLanId());
-        instPutInReq.setRegionId(list.get(0).getRegionId());
+        instPutInReq.setLanId(destMerchant.getLanId());
+        instPutInReq.setRegionId(destMerchant.getCity());
         ResultVO resultResourceInstPutIn = resourceInstService.resourceInstPutIn(instPutInReq);
         log.info("SupplierResourceInstServiceImpl.confirmReciveNbr resourceInstService.resourceInstPutIn req={}, resp={}", JSON.toJSONString(instPutInReq), JSON.toJSONString(resultResourceInstPutIn));
         return ResultVO.success(instPutInReq.getUnUse());

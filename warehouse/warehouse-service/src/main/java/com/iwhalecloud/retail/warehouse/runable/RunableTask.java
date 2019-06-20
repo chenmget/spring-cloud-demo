@@ -663,32 +663,32 @@ public class RunableTask {
 
 
 
-    /**
-     * 串码入库插入多线程并判断申请单明细是否都已处理
-     * @param req
-     */
-    public void exceutorAddNbrAndDealRes(ResourceInstAddReq req,List<String> reqIds) {
-        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
-        List<String> nbrList = req.getMktResInstNbrs();
-        Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
-
-        for (Integer i = 0; i < excutorNum; i++) {
-            Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
-            log.info("RunableTask.exceutorAddNbr maxNum={}", maxNum);
-            List subList = nbrList.subList(perNum*i, maxNum);
-            CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
-            Callable callable = new Callable<Boolean>() {
-                @Override
-                public Boolean call() throws Exception {
-                    Boolean addSuccess = resourceInstService.addResourceInstByMerchant(req, newList);
-                    log.info("RunableTask.exceutorAddNbr resourceInstService.addResourceInstByMerchant req={}, resp={}", JSON.toJSONString(req), addSuccess);
-                    return addSuccess;
-                }
-            };
-            addNbrFutureTask = executorService.submit(callable);
-        }
-        executorService.shutdown();
-    }
+//    /**
+//     * 串码入库插入多线程并判断申请单明细是否都已处理
+//     * @param req
+//     */
+//    public void exceutorAddNbrAndDealRes(ResourceInstAddReq req,List<String> reqIds) {
+//        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
+//        List<String> nbrList = req.getMktResInstNbrs();
+//        Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
+//
+//        for (Integer i = 0; i < excutorNum; i++) {
+//            Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
+//            log.info("RunableTask.exceutorAddNbr maxNum={}", maxNum);
+//            List subList = nbrList.subList(perNum*i, maxNum);
+//            CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
+//            Callable callable = new Callable<Boolean>() {
+//                @Override
+//                public Boolean call() throws Exception {
+//                    Boolean addSuccess = resourceInstService.addResourceInstByMerchant(req, newList);
+//                    log.info("RunableTask.exceutorAddNbr resourceInstService.addResourceInstByMerchant req={}, resp={}", JSON.toJSONString(req), addSuccess);
+//                    return addSuccess;
+//                }
+//            };
+//            addNbrFutureTask = executorService.submit(callable);
+//        }
+//        executorService.shutdown();
+//    }
 
     /**
      * 串码校验多线程处理

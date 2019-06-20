@@ -244,4 +244,6 @@ public class ProductBaseManager {
     public String selectisFixedLineByBatchId(String batchId) {
 		return productBaseMapper.selectisFixedLineByBatchId(batchId);
 	}
+
+    public String getSeq(){return productBaseMapper.getSeq(); }
 }

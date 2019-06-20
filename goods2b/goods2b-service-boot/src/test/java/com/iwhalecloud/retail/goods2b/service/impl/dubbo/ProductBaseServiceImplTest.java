@@ -75,4 +75,11 @@ public class ProductBaseServiceImplTest {
         ResultVO<Integer> resultVO = productBaseService.updateProductBase(req);
         System.out.println(resultVO.isSuccess());
     }
+
+    @Test
+    public void updatetest() {
+
+       List<String> list = productBaseService.getSeq(5).getResultData();
+        System.out.println(list);
+    }
 }

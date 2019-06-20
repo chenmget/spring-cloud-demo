@@ -165,7 +165,7 @@
             WHERE  
             	a.order_id=b.order_id
 		  <if test="orderId!=null and orderId!=''">
-			and a.order_id = #{orderId}
+			and a.order_id = #{req.orderId}
 		  </if>
 	 </select>
  

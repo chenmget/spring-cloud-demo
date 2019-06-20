@@ -133,16 +133,16 @@ public class ReportStoreController extends BaseController {
         orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
         orderMap.add(new ExcelTitleName("partnerCode", "零售商编码"));
         orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
+        orderMap.add(new ExcelTitleName("cityId", "零售商所属地市"));
+        orderMap.add(new ExcelTitleName("orgName", "经营单元"));
+        orderMap.add(new ExcelTitleName("productName", "产品名称"));
+        orderMap.add(new ExcelTitleName("productBaseName", "产品型号"));
         orderMap.add(new ExcelTitleName("typeName", "产品类型"));
-        orderMap.add(new ExcelTitleName("stockWarning", "库存预警"));
-        orderMap.add(new ExcelTitleName("date", "统计日期"));
-        orderMap.add(new ExcelTitleName("cityId", "所属城市"));
-        orderMap.add(new ExcelTitleName("countryId", "所属区县"));
-        orderMap.add(new ExcelTitleName("productBaseName", "机型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
         orderMap.add(new ExcelTitleName("priceLevel", "机型档位"));
-        orderMap.add(new ExcelTitleName("totalInNum", "入库总量"));
-        orderMap.add(new ExcelTitleName("totalOutNum", "出库总量"));
+        orderMap.add(new ExcelTitleName("totalInNum", "总入库量"));
+        orderMap.add(new ExcelTitleName("totalOutNum", "总出库量"));
+        orderMap.add(new ExcelTitleName("stockNum", "总库存量"));
         orderMap.add(new ExcelTitleName("purchaseNum", "交易入库量"));
         orderMap.add(new ExcelTitleName("manualNum", "手工入库量"));
         orderMap.add(new ExcelTitleName("transInNum", "调拨入库量"));
@@ -152,12 +152,10 @@ public class ReportStoreController extends BaseController {
         orderMap.add(new ExcelTitleName("uncontractNum", "手工销售量"));
         orderMap.add(new ExcelTitleName("contractNum", "CRM合约销量"));
         orderMap.add(new ExcelTitleName("registerNum", "自注册销量"));
-        orderMap.add(new ExcelTitleName("transOutNum", "调拨出库量"));
-        orderMap.add(new ExcelTitleName("returnNum", "退库量"));
         orderMap.add(new ExcelTitleName("weekAvgSellNum", "近7天日均销量"));
         orderMap.add(new ExcelTitleName("stockAmount", "库存金额"));
-        orderMap.add(new ExcelTitleName("stockNum", "库存量"));
         orderMap.add(new ExcelTitleName("turnoverRate", "库存周转率"));
+        orderMap.add(new ExcelTitleName("stockWarning", "库存预警"));
         
       //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,

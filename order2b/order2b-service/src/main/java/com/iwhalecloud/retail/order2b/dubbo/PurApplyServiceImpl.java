@@ -128,21 +128,46 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
-
+		log.info("tcProcureApply****************************************ProcureApplyReq = "+JSON.toJSONString(req));
 		String isSave = req.getIsSave();
 		// 编辑的时候不做插入操作
 //		if(!isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
 //			purApplyManager.tcProcureApply(req);
 //		}
 		if (isSave.equals(PurApplyConsts.PUR_APPLY_SUBMIT)) {
+			Map map=new HashMap();
 			//如果采购价大于政企价格 要省公司审核
 			int count =chooseCount(req);
 			log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 //		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
+//			if (count>0) {
+//				//根据商家ID获取 商家userId
+//				map.put("CGJ","0");//
+//			} else {
+//				map.put("CGJ","1");
+//			}
 			if (count>0) {
+				map.put("CGJ","0");//
 				req.setStatusCd("21");
 				//更新省公司待审核状态
 				purApplyManager.updatePurApplyStatusCd(req);
+			}else {
+				map.put("CGJ","1");
+//				List<AddProductReq> productList =  req.getAddProductReq();
+//				for (AddProductReq addProductReq:productList) {
+//					String parentTypeId = addProductReq.getParentTypeId();
+//					String  purchaseType= addProductReq.getPurchaseType();
+//					if ("10000".equals(parentTypeId)) {
+////						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
+//						if ("2".equals(purchaseType)) {
+//							map.put("CGJ","0");//
+//							//更新省公司待审核状态
+//							req.setStatusCd("21");
+//							purApplyManager.updatePurApplyStatusCd(req);
+//							break;
+//						}
+//					}
+//				}
 			}
 
 //		String isSave = req.getIsSave();
@@ -152,13 +177,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 			//如果采购价大于政企价格 要省公司审核
 			processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
-			Map map=new HashMap();
-			if (count>0) {
-				//根据商家ID获取 商家userId
-				map.put("CGJ","0");//
-			} else {
-				map.put("CGJ","1");
-			}
+
+
 			processStartDTO.setParamsValue(JSON.toJSONString(map));
 
 			processStartDTO.setTitle("采购申请单审核流程");
@@ -206,23 +226,42 @@ public class PurApplyServiceImpl implements PurApplyService {
 			int count =chooseCount(req);
 			log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
 //		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
-			if (count>0) {
-				req.setStatusCd("21");
-				//更新省公司待审核状态
-			}else {
-				req.setStatusCd("20");
-			}
+//			if (count>0) {
+//				req.setStatusCd("21");
+//				//更新省公司待审核状态
+//			}else {
+//				req.setStatusCd("20");
+//
+//			}
 //			purApplyManager.updatePurApply(req);
-			purApplyManager.updatePurApplyStatusCd(req);
+
 			NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new  NextRouteAndReceiveTaskReq();
 			nextRouteAndReceiveTaskReq.setFormId(req.getApplyId());
 			nextRouteAndReceiveTaskReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 			Map map=new HashMap();
 			if (count>0) {
+				req.setStatusCd("21");
 				map.put("CGJ","0");//
 			} else {
+				req.setStatusCd("20");
 				map.put("CGJ","1");
+//				List<AddProductReq> productList =  req.getAddProductReq();
+//				for (AddProductReq addProductReq:productList) {
+//					String parentTypeId = addProductReq.getParentTypeId();
+//					String  purchaseType= addProductReq.getPurchaseType();
+//					if ("10000".equals(parentTypeId)) {
+////						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
+//						if ("2".equals(purchaseType)) {
+//							map.put("CGJ","0");//
+//							//更新省公司待审核状态
+//							req.setStatusCd("21");
+//							purApplyManager.updatePurApplyStatusCd(req);
+//							break;
+//						}
+//					}
+//				}
 			}
+			purApplyManager.updatePurApplyStatusCd(req);
 			nextRouteAndReceiveTaskReq.setParamsValue(JSON.toJSONString(map));
 			nextRouteAndReceiveTaskReq.setHandlerUserId(req.getHandleUserId());
 			nextRouteAndReceiveTaskReq.setHandlerUserName(req.getHandleUserName());

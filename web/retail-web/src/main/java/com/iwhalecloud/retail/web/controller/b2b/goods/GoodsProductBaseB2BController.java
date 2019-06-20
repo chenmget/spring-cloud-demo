@@ -365,4 +365,15 @@ public class GoodsProductBaseB2BController {
         return prodProductBaseService.getProductBaseList(req);
     }
 
+    @ApiOperation(value = "根据输入数量取序列", notes = "根据输入数量取序列")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/queryGoodsSaleOrder")
+    ResultVO<List<String>> getSeq(@RequestParam(value = "num") int num) {
+        log.info("GoodsController getSeq num={}", num);
+        return prodProductBaseService.getSeq(num);
+
+    }
 }

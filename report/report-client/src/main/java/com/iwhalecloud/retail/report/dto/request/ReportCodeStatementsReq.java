@@ -21,8 +21,8 @@ public class ReportCodeStatementsReq extends PageVO  {
 	@ApiModelProperty(value = "lanIdName")
     private List<String> lanIdName; // 地市
 	
-	@ApiModelProperty(value = "OrgName")
-    private List<String> OrgName; // 经营单元
+	@ApiModelProperty(value = "orgName")
+    private List<String> orgName; // 经营单元
 	
 	@ApiModelProperty(value = "statusCd")
     private String statusCd; // 串码状态
@@ -93,6 +93,12 @@ public class ReportCodeStatementsReq extends PageVO  {
 	@ApiModelProperty(value = "businessEntityName")
     private String businessEntityName; // 经营主体名称
 	
+	@ApiModelProperty(value = "destMerchantName")
+    private String destMerchantName; // 串码流向
+	
 	@ApiModelProperty(value = "mktResStoreId")
 	private String mktResStoreId; //仓库ID
+	
+	@ApiModelProperty(value = "shangJiaId")
+	private String shangJiaId; //厂商或者供应商或者零售商ID
 }

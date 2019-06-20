@@ -34,7 +34,7 @@
 			(CASE WHEN a.stock_age &gt;=90  THEN '1' ELSE '0' END) as  day90,
 			a.DEST_MERCHANT_ID AS destMerchantId,
 			s3.region_name AS destCityId,
-			s4.region_name AS destCountyId,
+			so.org_name AS destCountyOrgName,
 			a.CRM_STATUS AS crmStatus,
 			a.SELF_REG_STATUS AS selfRegStatus
 		FROM 
@@ -59,13 +59,12 @@
                 #{item}
             </foreach>
         </if>
-        
-				<if test="req.orgName!=null and req.orgName.size()>0">
-				  	and 
-				  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
-				  		INSTR( so.path_code, #{item}) 
-				  	</foreach>
-				</if> 
+		<if test="req.orgName!=null and req.orgName.size()>0">
+		  	and 
+		  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
+		  		INSTR( so.path_code, #{item}) 
+		  	</foreach>
+		</if> 
 		<if test="req.statusCd!=null and req.statusCd!=''">
 			and a.STATUS_CD = #{req.statusCd}
 		</if>
@@ -141,7 +140,9 @@
 		<if test="req.businessEntityName!=null and req.businessEntityName!=''">
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%', #{req.businessEntityName}),'%')   
 		</if>
-		
+		<if test="req.destMerchantName!=null and req.destMerchantName!=''">
+			and par.MERCHANT_NAME like CONCAT(CONCAT('%', #{req.destMerchantName}),'%')   
+		</if>
   </select>
     
     <select id="getCodeStatementsReport" parameterType="com.iwhalecloud.retail.report.dto.request.ReportCodeStatementsReq"
@@ -176,7 +177,7 @@
 			(CASE WHEN a.stock_age &gt;=90  THEN '1' ELSE '0' END) as  day90,
 			a.DEST_MERCHANT_ID AS destMerchantId,
 			s3.region_name AS destCityId,
-			s4.region_name AS destCountyId,
+			so2.org_name AS destCountyOrgName,
 			a.CRM_STATUS AS crmStatus,
 			a.SELF_REG_STATUS AS selfRegStatus
 		FROM 
@@ -188,6 +189,8 @@
 			LEFT JOIN sys_common_region s3 ON a.DEST_CITY_ID = s3.region_id
 			LEFT JOIN par_merchant par ON par.merchant_id = a.DEST_MERCHANT_ID
 			LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
+			LEFT JOIN par_merchant par2 ON par2.merchant_id = #{req.shangJiaId}
+			LEFT JOIN sys_organization so2 ON par2.par_crm_org_id = so2.org_id
 		WHERE 1=1
 		<if test="req.xdCreateTimeStart!=null and req.xdCreateTimeStart!=''">
 			and a.CREATE_TIME &gt;= str_to_date(#{req.xdCreateTimeStart}, '%Y-%m-%d')
@@ -201,13 +204,12 @@
                 #{item}
             </foreach>
         </if>
-        
-			<if test="req.orgName!=null and req.orgName.size()>0">
-			  	and 
-			  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
-			  		INSTR( so.path_code, #{item}) 
-			  	</foreach>
-			</if> 
+		<if test="req.orgName!=null and req.orgName.size()>0">
+		  	and 
+		  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
+		  		INSTR( so2.path_code, #{item}) 
+		  	</foreach>
+		</if> 
 		<if test="req.statusCd!=null and req.statusCd!=''">
 			and a.STATUS_CD = #{req.statusCd}
 		</if>
@@ -282,6 +284,9 @@
 		</if>
 		<if test="req.businessEntityName!=null and req.businessEntityName!=''">
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%', #{req.businessEntityName}),'%')   
+		</if>
+		<if test="req.destMerchantName!=null and req.destMerchantName!=''">
+			and par.MERCHANT_NAME like CONCAT(CONCAT('%', #{req.destMerchantName}),'%')   
 		</if>
 		<if test="req.mktResStoreId!=null and req.mktResStoreId!=''">
 			and a.mkt_res_store_id = #{req.mktResStoreId} 

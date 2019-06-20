@@ -97,6 +97,7 @@ public class ReportCodeStatementsController extends BaseController  {
 			if(pageResouceStoreDTO == null) {
 				return ResultVO.error("当前商家没有仓库");
 			}
+			req.setShangJiaId(UserContext.getUser().getRelCode());
 			req.setMktResStoreId(pageResouceStoreDTO.getRecords().get(0).getMktResStoreId());
 		} else {
 			return ResultVO.error("当前用户 没有权限");

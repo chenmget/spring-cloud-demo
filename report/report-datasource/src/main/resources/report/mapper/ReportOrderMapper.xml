@@ -5,50 +5,50 @@
     <select id="ListReportOrder" parameterType="com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportOrderResp">
             SELECT 
-	 b.product_name AS productName,
-	 d.UNIT_TYPE AS unitType,
-	 e.type_name AS typeName,
-	 b.brand_name AS brandName,
-	 c.attr_value1 AS attrValue1,
-	 c.attr_value2 AS attrValue2,
-	 c.attr_value3 AS attrValue3,
-	 a.order_id AS orderId,
-	 a.STATUS AS STATUS,
-	 a.source_from AS sourceFrom,
-	 a.ORDER_CAT orderCat,
-	 a.ORDER_TYPE AS orderType,
-	 a.PAYMENT_TYPE AS paymentType,
-	 b.sn AS sn,
-	 b.num AS num,
-	 b.price AS price,
-	 (b.num*b.price) AS totalMoney,
-	 a.CREATE_TIME AS createTime,
-	 a.PAY_TIME AS payTime,
-	 a.RECEIVE_TIME AS receiveTime,
-	 GROUP_CONCAT(l.name) AS activeName,
-	 k.PROMOTION_TYPE AS couponType,
-	 k.DISCOUNT AS couponMoney,
-	 (b.num*k.DISCOUNT) AS totalCouponMoney,
-	 a.SUPPLIER_NAME AS supplierName,
-	 a.SUPPLIER_ID AS supplierCode,
-	 a.USER_NAME AS merchantName,
-	 par.MERCHANT_CODE AS merchantCode,
-	 par.BUSINESS_ENTITY_NAME AS businessEntityName,
-	 par.LAN_ID AS lanId,
-	 so.org_name as orgName,
-	 a.create_time,
-	 b.item_id AS itemId
-FROM 
-	 ord_order a
-	 LEFT JOIN par_merchant par ON par.merchant_code = a.user_id
-	 LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
-	 ,ord_order_items b
-	 LEFT JOIN prod_product c ON b.PRODUCT_ID=c.PRODUCT_ID
-	 LEFT JOIN prod_product_base d ON c.product_base_id= d.product_base_id
-	 LEFT JOIN prod_type e ON d.type_id = e.type_id
-	 LEFT OUTER JOIN ORD_PROMOTION k ON b.item_id = k.order_item_id
-	 LEFT OUTER JOIN act_marketing_activity l ON k.MKT_ACT_ID = l.id
-	 
+				 b.product_name AS productName,
+				 d.UNIT_TYPE AS unitType,
+				 e.type_name AS typeName,
+				 b.brand_name AS brandName,
+				 c.attr_value1 AS attrValue1,
+				 c.attr_value2 AS attrValue2,
+				 c.attr_value3 AS attrValue3,
+				 a.order_id AS orderId,
+				 a.STATUS AS STATUS,
+				 a.source_from AS sourceFrom,
+				 a.ORDER_CAT orderCat,
+				 a.ORDER_TYPE AS orderType,
+				 a.PAYMENT_TYPE AS paymentType,
+				 b.sn AS sn,
+				 b.num AS num,
+				 b.price AS price,
+				 (b.num*b.price) AS totalMoney,
+				 a.CREATE_TIME AS createTime,
+				 a.PAY_TIME AS payTime,
+				 a.RECEIVE_TIME AS receiveTime,
+				 GROUP_CONCAT(l.name) AS activeName,
+				 k.PROMOTION_TYPE AS couponType,
+				 k.DISCOUNT AS couponMoney,
+				 (b.num*k.DISCOUNT) AS totalCouponMoney,
+				 a.SUPPLIER_NAME AS supplierName,
+				 a.SUPPLIER_ID AS supplierCode,
+				 a.USER_NAME AS merchantName,
+				 par.MERCHANT_CODE AS merchantCode,
+				 par.BUSINESS_ENTITY_NAME AS businessEntityName,
+				 par.LAN_ID AS lanId,
+				 so.org_name as orgName,
+				 a.create_time,
+				 b.item_id AS itemId
+			FROM 
+				 ord_order a
+				 LEFT JOIN par_merchant par ON par.merchant_code = a.user_id
+				 LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
+				 ,ord_order_items b
+				 LEFT JOIN prod_product c ON b.PRODUCT_ID=c.PRODUCT_ID
+				 LEFT JOIN prod_product_base d ON c.product_base_id= d.product_base_id
+				 LEFT JOIN prod_type e ON d.type_id = e.type_id
+				 LEFT OUTER JOIN ORD_PROMOTION k ON b.item_id = k.order_item_id
+				 LEFT OUTER JOIN act_marketing_activity l ON k.MKT_ACT_ID = l.id
+				 
 			WHERE 
 				 a.order_id = b.order_id
 		  <if test="req.createTimeStart!=null and req.createTimeStart!=''">
@@ -76,11 +76,10 @@ FROM
                 </foreach>
           </if>
 		  <if test="req.orgName!=null and req.orgName.size()>0">
-		  	and (
+		  	and 
 		  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
 		  		INSTR( so.path_code, #{item}) 
 		  	</foreach>
-			)		  
 		  </if> 
 		  <if test="req.orderCat!=null and req.orderCat !=''">
 	         and a.ORDER_CAT =#{req.orderCat}

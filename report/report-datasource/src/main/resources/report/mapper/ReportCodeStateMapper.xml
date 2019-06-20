@@ -4,50 +4,70 @@
     
     <select id="getCodeStatementsReportAdmin" parameterType="com.iwhalecloud.retail.report.dto.request.ReportCodeStatementsReq"
              resultType="com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp">
-	SELECT a.MKT_RES_INST_NBR AS mktResInstNbr,
-	'' AS mktResStoreId,
-	a.STATUS_CD AS statusCd,
-	a.MKT_RES_INST_TYPE AS mktResInstType,
-	a.SOURCE_TYPE AS sourceType,
-	b.TYPE_NAME AS typeName,
-	a.BRAND_NAME AS brandName,
-	a.PRODUCT_NAME AS productName,
-	a.UNIT_TYPE AS unitType,
-	a.PRODUCT_CODE AS productCode,
-	a.ORDER_ID AS orderId,
-	a.CREATE_TIME AS createTime,
-	a.SUPPLIER_NAME AS supplierName,
-	a.SUPPLIER_CODE AS supplierCode,
-	a.PARTNER_NAME AS partnerName,
-	a.PARTNER_CODE AS partnerCode,
-	s1.region_name AS cityId,
-	s2.region_name AS countyId,
-	a.BUSINESS_ENTITY_NAME AS businessEntityName,
-	a.RECEIVE_TIME AS receiveTime,
-	a.OUT_TIME AS outTime,
-	a.STOCK_AGE AS stockAge,
-	(CASE WHEN a.stock_age &gt;=30 AND a.stock_age &lt;60 THEN '1' ELSE '0' END) as day30,
-	(CASE WHEN a.stock_age &gt;=60 AND a.stock_age &lt;90 THEN '1' ELSE '0' END) as day60,
-	(CASE WHEN a.stock_age &gt;=90  THEN '1' ELSE '0' END) as  day90,
-	a.DEST_MERCHANT_ID AS destMerchantId,
-	s3.region_name AS destCityId,
-	s4.region_name AS destCountyId,
-	a.SELF_REG_STATUS AS selfRegStatus
-FROM 
-	rpt_res_inst_detail_admin a
-	LEFT JOIN prod_type b ON a.product_code = b.type_id
-	LEFT JOIN prod_product c ON a.product_id = c.product_id
-	LEFT JOIN prod_product_base d ON c.product_base_id = d.product_base_id
-	LEFT JOIN sys_common_region s1 ON a.city_id = s1.region_id
-	LEFT JOIN sys_common_region s2 ON a.county_id = s2.region_id
-	LEFT JOIN sys_common_region s3 ON a.DEST_CITY_ID = s3.region_id
-	LEFT JOIN sys_common_region s4 ON a.DEST_COUNTY_ID = s4.region_id
-WHERE 1=1
+		SELECT 
+			a.MKT_RES_INST_NBR AS mktResInstNbr,
+			a.PRODUCT_NAME AS productName,
+			a.UNIT_TYPE AS unitType,
+			b.TYPE_NAME AS typeName,
+			a.BRAND_NAME AS brandName,
+			c.ATTR_VALUE1 AS attrValue1,
+			c.ATTR_VALUE2 AS attrValue2,
+			c.ATTR_VALUE3 AS attrValue3,
+			a.STATUS_CD AS statusCd,
+			a.MKT_RES_INST_TYPE AS mktResInstType,
+			a.SOURCE_TYPE AS sourceType,
+			a.PRODUCT_CODE AS productCode,
+			a.ORDER_ID AS orderId,
+			a.CREATE_TIME AS createTime,
+			a.SUPPLIER_NAME AS supplierName,
+			a.SUPPLIER_CODE AS supplierCode,
+			a.PARTNER_NAME AS partnerName,
+			a.PARTNER_CODE AS partnerCode,
+			s1.region_name AS cityId,
+			so.org_name AS countyOrgName,
+			a.BUSINESS_ENTITY_NAME AS businessEntityName,
+			a.RECEIVE_TIME AS receiveTime,
+			a.OUT_TIME AS outTime,
+			a.STOCK_AGE AS stockAge,
+			(CASE WHEN a.stock_age &gt;=30 AND a.stock_age &lt;60 THEN '1' ELSE '0' END) as day30,
+			(CASE WHEN a.stock_age &gt;=60 AND a.stock_age &lt;90 THEN '1' ELSE '0' END) as day60,
+			(CASE WHEN a.stock_age &gt;=90  THEN '1' ELSE '0' END) as  day90,
+			a.DEST_MERCHANT_ID AS destMerchantId,
+			s3.region_name AS destCityId,
+			s4.region_name AS destCountyId,
+			a.CRM_STATUS AS crmStatus,
+			a.SELF_REG_STATUS AS selfRegStatus
+		FROM 
+			rpt_res_inst_detail_admin a
+			LEFT JOIN prod_type b ON a.product_code = b.type_id
+			LEFT JOIN prod_product c ON a.product_id = c.product_id
+			LEFT JOIN prod_product_base d ON c.product_base_id = d.product_base_id
+			LEFT JOIN sys_common_region s1 ON a.city_id = s1.region_id
+			LEFT JOIN sys_common_region s3 ON a.DEST_CITY_ID = s3.region_id
+			LEFT JOIN par_merchant par ON par.merchant_id = a.DEST_MERCHANT_ID
+			LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
+		WHERE 1=1
 		<if test="req.xdCreateTimeStart!=null and req.xdCreateTimeStart!=''">
 			and a.CREATE_TIME &gt;= str_to_date(#{req.xdCreateTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.xdCreateTimeEnd!=null and req.xdCreateTimeEnd!=''">
 			and a.CREATE_TIME &lt;= str_to_date(#{req.xdCreateTimeEnd}, '%Y-%m-%d')
+		</if>
+		<if test="req.lanIdName !=null and req.lanIdName.size()>0">
+            and s1.region_id in
+            <foreach collection="req.lanIdName" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        
+				<if test="req.orgName!=null and req.orgName.size()>0">
+				  	and 
+				  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
+				  		INSTR( so.path_code, #{item}) 
+				  	</foreach>
+				</if> 
+		<if test="req.statusCd!=null and req.statusCd!=''">
+			and a.STATUS_CD = #{req.statusCd}
 		</if>
 		<if test="req.createTimeStart!=null and req.createTimeStart!=''">
 			and a.RECEIVE_TIME &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
@@ -55,14 +75,8 @@ WHERE 1=1
 		<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
 			and a.RECEIVE_TIME &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
 		</if>
-		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
-			and a.OUT_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
-		</if>
-		<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
-			and a.OUT_TIME &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
-		</if>
-		<if test="req.statusCd!=null and req.statusCd!=''">
-			and a.STATUS_CD = #{req.statusCd}
+		<if test="req.mktResInstType!=null and req.mktResInstType!=''">
+			and a.MKT_RES_INST_TYPE = #{req.mktResInstType}
 		</if>
 		<if test="req.sourceType!=null and req.sourceType!=''">
 			and a.SOURCE_TYPE = #{req.sourceType}
@@ -70,18 +84,54 @@ WHERE 1=1
 		<if test="req.selfRegStatus!=null and req.selfRegStatus!=''">
 			and a.SELF_REG_STATUS = #{req.selfRegStatus}
 		</if>
+		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
+			and a.OUT_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+		</if>
+		<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
+			and a.OUT_TIME &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+		</if>
+		<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">
+			and a.product_type = #{req.productType}
+		</if>
 		<if test="req.brandName!=null and req.brandName!=''">
 			and a.BRAND_ID = #{req.brandName}
 		</if>
-		<if test="req.productBaseId !=null and req.productBaseId !=''">
-			and d.PRODUCT_BASE_ID = #{req.productBaseId}
+		<if test="req.crmStatus!=null and req.crmStatus!=''">
+			and a.CRM_STATUS = #{req.crmStatus}
 		</if>
-		<if test="req.destCityId!=null and req.destCityId!=''">
-			and s3.region_id = #{req.destCityId}
+		<if test="req.mktResInstNbr!=null and req.mktResInstNbr!=''">
+			and a.MKT_RES_INST_NBR = #{req.mktResInstNbr}
 		</if>
-		<if test="req.destCountyId!=null and req.destCountyId!=''">
-			and s4.region_id = #{req.destCountyId}
+		<if test="req.unitType!=null and req.unitType!=''">
+			and a.UNIT_TYPE = #{req.unitType}
 		</if>
+		<if test="req.productName!=null and req.productName!=''">
+			and a.PRODUCT_NAME = #{req.productName}
+		</if>
+		<if test="req.orderId!=null and req.orderId!=''">
+			and a.ORDER_ID = #{req.orderId}
+		</if>
+		<if test="req.productCode!=null and req.productCode!=''">
+			and a.PRODUCT_CODE = #{req.productCode}
+		</if>
+		<if test="req.destLanIdName !=null and req.destLanIdName.size()>0">
+            and s3.region_id in
+            <foreach collection="req.destLanIdName" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.supplierName!=null and req.supplierName!=''">
+			and a.SUPPLIER_NAME like CONCAT(CONCAT('%', #{req.supplierName}),'%')   
+		</if>
+		<if test="req.supplierCode!=null and req.supplierCode!=''">
+			and a.SUPPLIER_CODE = #{req.supplierCode} 
+		</if>
+		<if test="req.destOrgName!=null and req.destOrgName.size()>0">
+		  	and 
+		  	<foreach collection="req.destOrgName" open="(" item="item" index="index" separator=" or " close=")">
+		  		INSTR( so.path_code, #{item}) 
+		  	</foreach>
+		</if> 
 		<if test="req.partnerName!=null and req.partnerName!=''">
 			and a.PARTNER_NAME like CONCAT(CONCAT('%', #{req.partnerName}),'%')   
 		</if>
@@ -91,81 +141,75 @@ WHERE 1=1
 		<if test="req.businessEntityName!=null and req.businessEntityName!=''">
 			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%', #{req.businessEntityName}),'%')   
 		</if>
-		<if test="req.orderId!=null and req.orderId!=''">
-			and a.ORDER_ID like CONCAT(CONCAT('%', #{req.orderId}),'%')   
-		</if>
-		<if test="req.productCode!=null and req.productCode!=''">
-			and a.PRODUCT_CODE = #{req.productCode}
-		</if>
-		<if test="req.supplierName!=null and req.supplierName!=''">
-			and a.SUPPLIER_NAME like CONCAT(CONCAT('%', #{req.supplierName}),'%')   
-		</if>
-		<if test="req.supplierCode!=null and req.supplierCode!=''">
-			and a.SUPPLIER_CODE = #{req.supplierCode} 
-		</if>
-		<if test="req.cityId!=null and req.cityId!=''">
-			and s1.region_id = #{req.cityId}
-		</if>
-		<if test="req.countyId!=null and req.countyId!=''">
-			and s2.region_id = #{req.countyId}
-		</if>
-		<if test="req.mktResInstNbr!=null and req.mktResInstNbr!=''">
-			and a.MKT_RES_INST_NBR = #{req.mktResInstNbr}
-		</if>
-		<if test="req.mktResInstType!=null and req.mktResInstType!=''">
-			and a.MKT_RES_INST_TYPE = #{req.mktResInstType}
-		</if>
-		<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">
-			and a.product_type = #{req.productType}
-		</if>
+		
   </select>
     
     <select id="getCodeStatementsReport" parameterType="com.iwhalecloud.retail.report.dto.request.ReportCodeStatementsReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp">
-	SELECT a.MKT_RES_INST_NBR AS mktResInstNbr,
-	a.MKT_RES_STORE_ID AS mktResStoreId,
-	a.STATUS_CD AS statusCd,
-	a.MKT_RES_INST_TYPE AS mktResInstType,
-	a.SOURCE_TYPE AS sourceType,
-	b.TYPE_NAME AS typeName,
-	a.BRAND_NAME AS brandName,
-	a.PRODUCT_NAME AS productName,
-	a.UNIT_TYPE AS unitType,
-	a.PRODUCT_CODE AS productCode,
-	a.ORDER_ID AS orderId,
-	a.CREATE_TIME AS createTime,
-	a.SUPPLIER_NAME AS supplierName,
-	a.SUPPLIER_CODE AS supplierCode,
-	a.PARTNER_NAME AS partnerName,
-	a.PARTNER_CODE AS partnerCode,
-	s1.region_name AS cityId,
-	s2.region_name AS countyId,
-	a.BUSINESS_ENTITY_NAME AS businessEntityName,
-	a.RECEIVE_TIME AS receiveTime,
-	a.OUT_TIME AS outTime,
-	a.STOCK_AGE AS stockAge,
-	(CASE WHEN a.stock_age &gt;=30 AND a.stock_age &lt;60 THEN '1' ELSE '0' END) day30,
-	(CASE WHEN a.stock_age &gt;=60 AND a.stock_age &lt;90 THEN '1' ELSE '0' END) day60,
-	(CASE WHEN a.stock_age &gt;=90  THEN '1' ELSE '0' END) day90,
-	a.DEST_MERCHANT_ID AS destMerchantId,
-	s3.region_name AS destCityId,
-	s4.region_name AS destCountyId,
-	a.SELF_REG_STATUS AS selfRegStatus
-FROM 
-	rpt_res_inst_detail_merchant a
-	LEFT JOIN prod_type b ON a.product_code = b.type_id
-	LEFT JOIN prod_product c ON a.product_id = c.product_id
-	LEFT JOIN prod_product_base d ON c.product_base_id = d.product_base_id
-	LEFT JOIN sys_common_region s1 ON a.city_id = s1.region_id
-	LEFT JOIN sys_common_region s2 ON a.county_id = s2.region_id
-	LEFT JOIN sys_common_region s3 ON a.DEST_CITY_ID = s3.region_id
-	LEFT JOIN sys_common_region s4 ON a.DEST_COUNTY_ID = s4.region_id
-WHERE 1=1
+	SELECT 
+			a.MKT_RES_INST_NBR AS mktResInstNbr,
+			a.PRODUCT_NAME AS productName,
+			a.UNIT_TYPE AS unitType,
+			b.TYPE_NAME AS typeName,
+			a.BRAND_NAME AS brandName,
+			c.ATTR_VALUE1 AS attrValue1,
+			c.ATTR_VALUE2 AS attrValue2,
+			c.ATTR_VALUE3 AS attrValue3,
+			a.STATUS_CD AS statusCd,
+			a.MKT_RES_INST_TYPE AS mktResInstType,
+			a.SOURCE_TYPE AS sourceType,
+			a.PRODUCT_CODE AS productCode,
+			a.ORDER_ID AS orderId,
+			a.CREATE_TIME AS createTime,
+			a.SUPPLIER_NAME AS supplierName,
+			a.SUPPLIER_CODE AS supplierCode,
+			a.PARTNER_NAME AS partnerName,
+			a.PARTNER_CODE AS partnerCode,
+			s1.region_name AS cityId,
+			so.org_name AS countyOrgName,
+			a.BUSINESS_ENTITY_NAME AS businessEntityName,
+			a.RECEIVE_TIME AS receiveTime,
+			a.OUT_TIME AS outTime,
+			a.STOCK_AGE AS stockAge,
+			(CASE WHEN a.stock_age &gt;=30 AND a.stock_age &lt;60 THEN '1' ELSE '0' END) as day30,
+			(CASE WHEN a.stock_age &gt;=60 AND a.stock_age &lt;90 THEN '1' ELSE '0' END) as day60,
+			(CASE WHEN a.stock_age &gt;=90  THEN '1' ELSE '0' END) as  day90,
+			a.DEST_MERCHANT_ID AS destMerchantId,
+			s3.region_name AS destCityId,
+			s4.region_name AS destCountyId,
+			a.CRM_STATUS AS crmStatus,
+			a.SELF_REG_STATUS AS selfRegStatus
+		FROM 
+			rpt_res_inst_detail_admin a
+			LEFT JOIN prod_type b ON a.product_code = b.type_id
+			LEFT JOIN prod_product c ON a.product_id = c.product_id
+			LEFT JOIN prod_product_base d ON c.product_base_id = d.product_base_id
+			LEFT JOIN sys_common_region s1 ON a.city_id = s1.region_id
+			LEFT JOIN sys_common_region s3 ON a.DEST_CITY_ID = s3.region_id
+			LEFT JOIN par_merchant par ON par.merchant_id = a.DEST_MERCHANT_ID
+			LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
+		WHERE 1=1
 		<if test="req.xdCreateTimeStart!=null and req.xdCreateTimeStart!=''">
 			and a.CREATE_TIME &gt;= str_to_date(#{req.xdCreateTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.xdCreateTimeEnd!=null and req.xdCreateTimeEnd!=''">
 			and a.CREATE_TIME &lt;= str_to_date(#{req.xdCreateTimeEnd}, '%Y-%m-%d')
+		</if>
+		<if test="req.lanIdName !=null and req.lanIdName.size()>0">
+            and s1.region_id in
+            <foreach collection="req.lanIdName" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        
+			<if test="req.orgName!=null and req.orgName.size()>0">
+			  	and 
+			  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
+			  		INSTR( so.path_code, #{item}) 
+			  	</foreach>
+			</if> 
+		<if test="req.statusCd!=null and req.statusCd!=''">
+			and a.STATUS_CD = #{req.statusCd}
 		</if>
 		<if test="req.createTimeStart!=null and req.createTimeStart!=''">
 			and a.RECEIVE_TIME &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
@@ -173,14 +217,8 @@ WHERE 1=1
 		<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
 			and a.RECEIVE_TIME &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
 		</if>
-		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
-			and a.OUT_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
-		</if>
-		<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
-			and a.OUT_TIME &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
-		</if>
-		<if test="req.statusCd!=null and req.statusCd!=''">
-			and a.STATUS_CD = #{req.statusCd}
+		<if test="req.mktResInstType!=null and req.mktResInstType!=''">
+			and a.MKT_RES_INST_TYPE = #{req.mktResInstType}
 		</if>
 		<if test="req.sourceType!=null and req.sourceType!=''">
 			and a.SOURCE_TYPE = #{req.sourceType}
@@ -188,53 +226,65 @@ WHERE 1=1
 		<if test="req.selfRegStatus!=null and req.selfRegStatus!=''">
 			and a.SELF_REG_STATUS = #{req.selfRegStatus}
 		</if>
+		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
+			and a.OUT_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+		</if>
+		<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
+			and a.OUT_TIME &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+		</if>
+		<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">
+			and a.product_type = #{req.productType}
+		</if>
 		<if test="req.brandName!=null and req.brandName!=''">
 			and a.BRAND_ID = #{req.brandName}
 		</if>
-		<if test="req.productBaseId !=null and req.productBaseId !=''">
-			and d.PRODUCT_BASE_ID = #{req.productBaseId}
+		<if test="req.crmStatus!=null and req.crmStatus!=''">
+			and a.CRM_STATUS = #{req.crmStatus}
 		</if>
-		<if test="req.destCityId!=null and req.destCityId!=''">
-			and s3.region_id = #{req.destCityId}
+		<if test="req.mktResInstNbr!=null and req.mktResInstNbr!=''">
+			and a.MKT_RES_INST_NBR = #{req.mktResInstNbr}
 		</if>
-		<if test="req.destCountyId!=null and req.destCountyId!=''">
-			and s4.region_id = #{req.destCountyId}
+		<if test="req.unitType!=null and req.unitType!=''">
+			and a.UNIT_TYPE = #{req.unitType}
 		</if>
-		<if test="req.partnerName!=null and req.partnerName!=''">
-			and a.PARTNER_NAME like CONCAT(CONCAT('%', #{req.partnerName}),'%')   
-		</if>
-		<if test="req.partnerCode!=null and req.partnerCode!=''">
-			and a.PARTNER_CODE = #{req.partnerCode}  
-		</if>
-		<if test="req.businessEntityName!=null and req.businessEntityName!=''">
-			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%', #{req.businessEntityName}),'%')   
+		<if test="req.productName!=null and req.productName!=''">
+			and a.PRODUCT_NAME = #{req.productName}
 		</if>
 		<if test="req.orderId!=null and req.orderId!=''">
-			and a.ORDER_ID like CONCAT(CONCAT('%', #{req.orderId}),'%')   
+			and a.ORDER_ID = #{req.orderId}
 		</if>
 		<if test="req.productCode!=null and req.productCode!=''">
 			and a.PRODUCT_CODE = #{req.productCode}
 		</if>
-		<if test="req.supplierName!=null and req.supplierName!=''">
+		<if test="req.destLanIdName !=null and req.destLanIdName.size()>0">
+            and s3.region_id in
+            <foreach collection="req.destLanIdName" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="req.supplierName!=null and req.supplierName!=''">
 			and a.SUPPLIER_NAME like CONCAT(CONCAT('%', #{req.supplierName}),'%')   
 		</if>
 		<if test="req.supplierCode!=null and req.supplierCode!=''">
 			and a.SUPPLIER_CODE = #{req.supplierCode} 
 		</if>
-		<if test="req.cityId!=null and req.cityId!=''">
-			and s1.region_id = #{req.cityId}
+		<if test="req.destOrgName!=null and req.destOrgName.size()>0">
+		  	and 
+		  	<foreach collection="req.destOrgName" open="(" item="item" index="index" separator=" or " close=")">
+		  		INSTR( so.path_code, #{item}) 
+		  	</foreach>
+		</if> 
+		<if test="req.partnerName!=null and req.partnerName!=''">
+			and a.PARTNER_NAME like CONCAT(CONCAT('%', #{req.partnerName}),'%')   
 		</if>
-		<if test="req.countyId!=null and req.countyId!=''">
-			and s2.region_id = #{req.countyId}
+		<if test="req.partnerCode!=null and req.partnerCode!=''">
+			and a.PARTNER_CODE = #{req.partnerCode}
 		</if>
-		<if test="req.mktResInstNbr!=null and req.mktResInstNbr!=''">
-			and a.MKT_RES_INST_NBR = #{req.mktResInstNbr}
+		<if test="req.businessEntityName!=null and req.businessEntityName!=''">
+			and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%', #{req.businessEntityName}),'%')   
 		</if>
-		<if test="req.mktResInstType!=null and req.mktResInstType!=''">
-			and a.MKT_RES_INST_TYPE = #{req.mktResInstType}
-		</if>
-		<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">
-			and a.product_type = #{req.productType}
+		<if test="req.mktResStoreId!=null and req.mktResStoreId!=''">
+			and a.mkt_res_store_id = #{req.mktResStoreId} 
 		</if>
   </select>
   

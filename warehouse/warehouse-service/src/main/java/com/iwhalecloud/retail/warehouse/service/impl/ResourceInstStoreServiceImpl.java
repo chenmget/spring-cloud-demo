@@ -94,7 +94,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private int num;
 
     private static String[] brands = {"10350143", "10350148"};
-    private static String[][] types = {{"1001", "1003"}, {"1002"}, {"1007", "1009"}};
+    private static String[][] types = {{"1001", "1003", "1004"}, {"1002"}, {"1007", "1009"}};
     private static String[][] isItms = {{"1","3"},{"2","3"}};
 
     private static final String SEQ_CONF_STR = "ITMS_PUSH_SEQ";
@@ -586,21 +586,26 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private List<MktResItmsSyncRec> insertDateToMRISR(String lanId,String type, String[] isItms,List<ResouceEvent> evenList, Map<String,List<ResouceEvent>> map) {
         List<MktResItmsSyncRec> mktResItmsSyncRecList = new ArrayList<MktResItmsSyncRec>();
         List<ResouceEvent> resouceEventRemove = new ArrayList<ResouceEvent>();
-        if(map.size()>0){
+        /*if(map.size()>0){
             if(!CollectionUtils.isEmpty(map.get(type))){
                 //移除已查询过的事件
                 evenList = evenList(evenList,map.get(type));
                 //查询过的事件
                 resouceEventRemove.addAll(map.get(type));
             }
-        }
+        }*/
         for(ResouceEvent resouceEvent:evenList){
-            String is_itms = null;
+            List<MktResItmsSyncRec> mktResItmsSyncRecs = mktResItmsSyncRecMapper.findDateMKTInfoByParamsOld(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent);
+            if(!CollectionUtils.isEmpty(mktResItmsSyncRecs)){
+                mktResItmsSyncRecList.addAll(mktResItmsSyncRecs);
+            }
+
+            /*String is_itms = null;
             List<ResourceChngEvtDetail> detailList = resourceChngEvtDetailManager.resourceChngEvtDetailList(resouceEvent);
             if(!CollectionUtils.isEmpty(detailList)){
                 for(ResourceChngEvtDetail detail : detailList){
                     List<MktResItmsSyncRec> mktResItmsSyncRecs = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent,detail);
-//                    List<MktResItmsSyncRec> mktResItmsSyncRecs = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent);
+                    //                    List<MktResItmsSyncRec> mktResItmsSyncRecs = mktResItmsSyncRecMapper.findDateMKTInfoByParams(lanId,type,resouceEvent.getEventType(),isItms,resouceEvent);
                     if(!CollectionUtils.isEmpty(mktResItmsSyncRecs)){
                         mktResItmsSyncRecList.addAll(mktResItmsSyncRecs);
                         for(MktResItmsSyncRec mktResItmsSyncRec : mktResItmsSyncRecs){
@@ -614,12 +619,12 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
             }
             if(is_itms != null && is_itms != "3"){
                 resouceEventRemove.add(resouceEvent);
-            }
+            }*/
         }
-        if(!CollectionUtils.isEmpty(resouceEventRemove)){
+        /*if(!CollectionUtils.isEmpty(resouceEventRemove)){
             map.put(type,resouceEventRemove);
 //            log.info("移除已查询过的事件1:"+JSON.toJSONString(map));
-        }
+        }*/
         if(mktResItmsSyncRecList.size()!=0){
             ArrayList<List<MktResItmsSyncRec>> mktList = this.mktListSplit(mktResItmsSyncRecList);
             //批量插入

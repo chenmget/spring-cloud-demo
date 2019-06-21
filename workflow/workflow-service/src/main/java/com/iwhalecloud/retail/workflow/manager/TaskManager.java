@@ -229,7 +229,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
      * @return 处理人列表
      */
     private List<HandlerUser> getHandlerUsers(Task task, String nextNodeId, List<HandlerUser> handlerUserList, List<RuleDef> ruleDefs) {
-        log.info("getHandlerUsers task={},curNodeId={}, ruleDefs={}", JSON.toJSONString(task), nextNodeId, JSON.toJSONString(handlerUserList), JSON.toJSONString(ruleDefs));
+        log.info("getHandlerUsers task={},curNodeId={}, ruleDefs={}", JSON.toJSONString(task), nextNodeId, JSON.toJSONString(handlerUserList), JSON.toJSON(ruleDefs));
         // 已经指定处理人
         if (CollectionUtils.isNotEmpty(handlerUserList)) {
             return handlerUserList;
@@ -244,6 +244,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
         if (CollectionUtils.isNotEmpty(ruleDefs)) {
             for (NodeRights nodeRights : nodeRightsList) {
                 for (RuleDef ruleDef : ruleDefs) {
+                    log.info("getHandlerUsers ruleId={},RouteCondition={}", ruleDef.getRuleId(), nodeRights.getRouteCondition());
                     if (ruleDef.getRuleId().equals(nodeRights.getRouteCondition())) {
                         conditionNodeRights.add(nodeRights);
                         break;

@@ -30,7 +30,7 @@
 				 k.DISCOUNT AS couponMoney,
 				 (b.num*k.DISCOUNT) AS totalCouponMoney,
 				 a.SUPPLIER_NAME AS supplierName,
-				 a.SUPPLIER_ID AS supplierCode,
+				 a.SUPPLIER_CODE AS supplierCode,
 				 a.USER_NAME AS merchantName,
 				 par.MERCHANT_CODE AS merchantCode,
 				 par.BUSINESS_ENTITY_NAME AS businessEntityName,
@@ -52,16 +52,16 @@
 			WHERE 
 				 a.order_id = b.order_id
 		  <if test="req.createTimeStart!=null and req.createTimeStart!=''">
-		    	and a.CREATE_TIME &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+		    	and str_to_date(a.CREATE_TIME,'%Y-%m-%d') &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
 		  </if>
 		  <if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
-		      and a.CREATE_TIME &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+		      and str_to_date(a.CREATE_TIME,'%Y-%m-%d') &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
 		  </if>
 		  <if test="req.outTimeStart!=null and req.outTimeStart!=''">
-		      and a.RECEIVE_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+		      and str_to_date(a.RECEIVE_TIME,'%Y-%m-%d') &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
 		  </if>
 		  <if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
-		      and a.RECEIVE_TIME &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+		      and str_to_date(a.RECEIVE_TIME,'%Y-%m-%d') &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
 		  </if>	 
 		  <if test="req.status!=null and req.status !=''">
 		     and a.status=#{req.status}
@@ -164,8 +164,8 @@
             LEFT JOIN prod_product c ON c.product_id=b.product_id
             WHERE  
             	a.order_id=b.order_id
-		  <if test="orderId!=null and orderId!=''">
-			and a.order_id = #{orderId}
+		  <if test="req.orderId!=null and req.orderId!=''">
+			and a.order_id = #{req.orderId}
 		  </if>
 	 </select>
  

@@ -82,6 +82,19 @@ public class ActivityParticipant implements Serializable {
 	@ApiModelProperty(value = "销售点名称")
   	private java.lang.String shopName;
 
+	/**
+	 * 筛选类型
+	 */
+	@ApiModelProperty(value = "筛选类型")
+	private java.lang.String filterType;
+
+	/**
+	 * 筛选条件json值
+	 */
+	@ApiModelProperty(value = "筛选条件json值")
+	private java.lang.String filterValue;
+
+
 	@ApiModelProperty(value = "创建人。")
 	private java.lang.String creator;
 
@@ -143,6 +156,12 @@ public class ActivityParticipant implements Serializable {
 		
 		/** 销售点名称. */
 		shopName("shopName","SHOP_NAME"),
+
+		/** 筛选类型. */
+		filterType("filterType","filter_type"),
+
+		/** 筛选条件json值 */
+		filterValue("filterValue","filter_value"),
 
 		/** 是否删除：0未删、1删除。. */
 		isDeleted("isDeleted","IS_DELETED"),

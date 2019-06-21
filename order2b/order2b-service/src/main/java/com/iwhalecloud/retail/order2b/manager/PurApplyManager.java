@@ -132,15 +132,15 @@ public class PurApplyManager {
 		purApplyMapper.updateProdProduct(req);
 	}
 	
-	public String getProductBaseIdByProductId(String productId) {
-		return purApplyMapper.getProductBaseIdByProductId(productId);
+	public String getProductBaseIdByProductId(String sn) {
+		return purApplyMapper.getProductBaseIdByProductId(sn);
 	}
 	public void insertProdProductChangeDetail(ProdProductChangeDetail req){
 		purApplyMapper.insertProdProductChangeDetail(req);
 	}
 	
-	public String selectOldValue(String productId) {
-		return purApplyMapper.selectOldValue(productId);
+	public String selectOldValue(String sn) {
+		return purApplyMapper.selectOldValue(sn);
 	}
 	
 	public void commitPriceExcel(UpdateCorporationPriceReq req){

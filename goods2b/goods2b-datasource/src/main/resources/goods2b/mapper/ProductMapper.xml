@@ -110,7 +110,7 @@
   </sql>
   <select id="selectPageProductAdmin" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
-    select <include refid="pageProductFields"/>
+    select <include refid="pageProductFields"/>,t.PARENT_TYPE_ID
     from prod_product p
     inner join prod_product_base b on p.PRODUCT_BASE_ID = b.PRODUCT_BASE_ID
     left join prod_cat c on b.CAT_ID = c.CAT_ID
@@ -514,6 +514,6 @@
 		where
 			a.product_base_id = b.product_base_id
 		and
-			b.product_id = #{productId}
+			b.sn = #{batchId}
   </select>
 </mapper>

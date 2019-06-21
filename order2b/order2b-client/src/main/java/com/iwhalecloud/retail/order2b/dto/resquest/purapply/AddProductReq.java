@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.order2b.dto.resquest.purapply;
 
 import java.io.Serializable;
+import java.util.List;
 
 import com.iwhalecloud.retail.dto.PageVO;
 
@@ -38,6 +39,8 @@ public class AddProductReq extends PageVO implements Serializable {
 
 	private String deliverCount;	//已发货数量
 	private String parentTypeId;	//产品采购类型
+
+	private List<String> deliverMktResInstNbrList; // 发货串码列表
 
 
 }

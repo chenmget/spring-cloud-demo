@@ -648,8 +648,8 @@
 		select sn from PROD_PRODUCT_CHANGE where change_id = #{changeId}
   </select>
 
-	<select id="countPurApplyItemDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyItemReq" resultType="Integer">
-		SELECT COUNT(mkt_res_inst_nbr) FROM pur_apply_item_detail WHERE apply_item_id=#{req.applyItem} AND product_id=#{req.productId};
+	<select id="countPurApplyItemDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyItemReq" resultType="java.lang.String">
+		SELECT mkt_res_inst_nbr FROM pur_apply_item_detail WHERE apply_item_id=#{req.applyItem} AND product_id=#{req.productId};
 
 	</select>
 

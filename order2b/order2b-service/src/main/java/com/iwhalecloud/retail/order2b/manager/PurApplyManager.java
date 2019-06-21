@@ -188,7 +188,7 @@ public class PurApplyManager {
 	 * @param req
 	 * @return
 	 */
-	public int countPurApplyItemDetail(PurApplyItemReq req) {
+	public List<String> countPurApplyItemDetail(PurApplyItemReq req) {
 		return purApplyMapper.countPurApplyItemDetail(req);
 	}
 

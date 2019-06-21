@@ -353,10 +353,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 			PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
 			PurApplyItemReq.setApplyItem(p.getApplyItemId());
 			PurApplyItemReq.setProductId(p.getProductId());
-			Integer count =purApplyManager.countPurApplyItemDetailReving(PurApplyItemReq);//查询发货的条数
+			List<String> deliverMktResInstNbrList =  purApplyManager.countPurApplyItemDetail(PurApplyItemReq);
+			Integer count = deliverMktResInstNbrList.size();//查询发货的条数
 			if (count !=null) {
 				p.setDeliverCount(String.valueOf(count));
 			}
+			p.setDeliverMktResInstNbrList(deliverMktResInstNbrList);
 		}
 		return result;
 	}

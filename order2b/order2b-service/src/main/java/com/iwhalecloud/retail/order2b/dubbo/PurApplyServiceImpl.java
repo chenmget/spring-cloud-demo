@@ -159,7 +159,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 					String  purchaseType= addProductReq.getPurchaseType();
 //					if ("10000".equals(parentTypeId)) {
 //						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
-						if ("2".equals(purchaseType)) {
+						if ("1".equals(purchaseType)) {
 							map.put("CGJ","0");//
 							//更新省公司待审核状态
 							req.setStatusCd("21");
@@ -251,7 +251,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 					String  purchaseType= addProductReq.getPurchaseType();
 //					if ("10000".equals(parentTypeId)) {
 //						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
-						if ("2".equals(purchaseType)) {
+						if ("1".equals(purchaseType)) {
 							map.put("CGJ","0");//
 							//更新省公司待审核状态
 							req.setStatusCd("21");

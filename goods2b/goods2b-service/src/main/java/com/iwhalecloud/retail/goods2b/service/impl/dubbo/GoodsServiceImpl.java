@@ -1095,6 +1095,8 @@ public class GoodsServiceImpl implements GoodsService {
                 if (listResultVO.getResultData().size() > 0) {
                     List<String> supplierMerchantIds = listResultVO.getResultData().stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
                     req.setSupplierIds(supplierMerchantIds);
+                    log.info("GoodsServiceImpl.queryPageByConditionAdmin 调用 merchantService.listMerchant() 查要过滤的供应商的结果 req={}， idList:",
+                            JSON.toJSONString(req), JSON.toJSONString(supplierMerchantIds));
 //                    String supplierId = listResultVO.getResultData().get(0).getMerchantId();
 //                    if (StringUtils.isNotEmpty(supplierId)) {
 //                        req.setSupplierId(supplierId);

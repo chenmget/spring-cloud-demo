@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -34,7 +35,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Autowired
     private PurApplyManager purApplyManager;
-
+	@Value("${fdfs.showUrl}")
+	private String dfsShowIp;
 	@Reference
     private TaskService taskService;
 
@@ -363,7 +365,14 @@ public class PurApplyServiceImpl implements PurApplyService {
 	
 	@Override
 	public List<AddFileReq> ckApplyData3(PurApplyReq req) {
-		return purApplyManager.ckApplyData3(req);
+		List<AddFileReq> list = purApplyManager.ckApplyData3(req);
+//		for ( AddFileReq file:list ) {
+//			String fileUrl = file.getFileUrl();
+//			String realUrl = dfsShowIp+fileUrl;
+//			file.setFileUrl(realUrl);
+//			log.info("ckApplyData3 =====realUrl="+realUrl +" fileUrl="+fileUrl);
+//		}
+		return list;
 	}
 	
 	@Override

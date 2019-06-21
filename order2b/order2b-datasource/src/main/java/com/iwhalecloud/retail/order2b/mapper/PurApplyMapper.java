@@ -69,10 +69,10 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public void insertProdChangePrice(@Param("req") ProdProductChangeReq req);
 	public void updateProdProduct(@Param("req") ProdProductChangeReq req);
 	
-	public String getProductBaseIdByProductId(@Param("productId") String productId);
+	public String getProductBaseIdByProductId(@Param("sn") String sn);
 	public void insertProdProductChangeDetail(@Param("req") ProdProductChangeDetail req);
 	
-	public String selectOldValue(@Param("productId") String productId);
+	public String selectOldValue(@Param("sn") String sn);
 	
 	public void commitPriceExcel(@Param("req") UpdateCorporationPriceReq req);
 

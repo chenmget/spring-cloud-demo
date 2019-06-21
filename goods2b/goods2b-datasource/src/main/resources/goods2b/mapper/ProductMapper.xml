@@ -514,6 +514,6 @@
 		where
 			a.product_base_id = b.product_base_id
 		and
-			b.product_id = #{productId}
+			b.sn = #{batchId}
   </select>
 </mapper>

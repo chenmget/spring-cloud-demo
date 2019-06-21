@@ -153,21 +153,21 @@ public class PurApplyServiceImpl implements PurApplyService {
 				purApplyManager.updatePurApplyStatusCd(req);
 			}else {
 				map.put("CGJ","1");
-//				List<AddProductReq> productList =  req.getAddProductReq();
-//				for (AddProductReq addProductReq:productList) {
+				List<AddProductReq> productList =  req.getAddProductReq();
+				for (AddProductReq addProductReq:productList) {
 //					String parentTypeId = addProductReq.getParentTypeId();
-//					String  purchaseType= addProductReq.getPurchaseType();
+					String  purchaseType= addProductReq.getPurchaseType();
 //					if ("10000".equals(parentTypeId)) {
-////						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
-//						if ("2".equals(purchaseType)) {
-//							map.put("CGJ","0");//
-//							//更新省公司待审核状态
-//							req.setStatusCd("21");
-//							purApplyManager.updatePurApplyStatusCd(req);
-//							break;
-//						}
+//						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
+						if ("2".equals(purchaseType)) {
+							map.put("CGJ","0");//
+							//更新省公司待审核状态
+							req.setStatusCd("21");
+							purApplyManager.updatePurApplyStatusCd(req);
+							break;
+						}
 //					}
-//				}
+				}
 			}
 
 //		String isSave = req.getIsSave();
@@ -245,21 +245,21 @@ public class PurApplyServiceImpl implements PurApplyService {
 			} else {
 				req.setStatusCd("20");
 				map.put("CGJ","1");
-//				List<AddProductReq> productList =  req.getAddProductReq();
-//				for (AddProductReq addProductReq:productList) {
+				List<AddProductReq> productList =  req.getAddProductReq();
+				for (AddProductReq addProductReq:productList) {
 //					String parentTypeId = addProductReq.getParentTypeId();
-//					String  purchaseType= addProductReq.getPurchaseType();
+					String  purchaseType= addProductReq.getPurchaseType();
 //					if ("10000".equals(parentTypeId)) {
-////						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
-//						if ("2".equals(purchaseType)) {
-//							map.put("CGJ","0");//
-//							//更新省公司待审核状态
-//							req.setStatusCd("21");
+//						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
+						if ("2".equals(purchaseType)) {
+							map.put("CGJ","0");//
+							//更新省公司待审核状态
+							req.setStatusCd("21");
 //							purApplyManager.updatePurApplyStatusCd(req);
-//							break;
-//						}
+							break;
+						}
 //					}
-//				}
+				}
 			}
 			purApplyManager.updatePurApplyStatusCd(req);
 			nextRouteAndReceiveTaskReq.setParamsValue(JSON.toJSONString(map));

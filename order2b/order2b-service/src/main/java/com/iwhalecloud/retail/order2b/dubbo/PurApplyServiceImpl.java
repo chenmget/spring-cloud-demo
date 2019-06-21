@@ -147,22 +147,22 @@ public class PurApplyServiceImpl implements PurApplyService {
 //				map.put("CGJ","1");
 //			}
 			if (count>0) {
-				map.put("CGJ","0");//
-				req.setStatusCd("21");
+				map.put("CGJ",PurApplyConsts.PUR_APPLY_ADMIN_VALUE);// 0
+				req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
 				//更新省公司待审核状态
 				purApplyManager.updatePurApplyStatusCd(req);
 			}else {
-				map.put("CGJ","1");
+				map.put("CGJ",PurApplyConsts.PUR_APPLY_VALUE); // 1
 				List<AddProductReq> productList =  req.getAddProductReq();
 				for (AddProductReq addProductReq:productList) {
 //					String parentTypeId = addProductReq.getParentTypeId();
 					String  purchaseType= addProductReq.getPurchaseType();
 //					if ("10000".equals(parentTypeId)) {
 //						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
-						if ("1".equals(purchaseType)) {
-							map.put("CGJ","0");//
+						if (PurApplyConsts.PUR_APPLY_SOCIAL_TYPE.equals(purchaseType)) {
+							map.put("CGJ",PurApplyConsts.PUR_APPLY_ADMIN_VALUE);// 0
 							//更新省公司待审核状态
-							req.setStatusCd("21");
+							req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
 							purApplyManager.updatePurApplyStatusCd(req);
 							break;
 						}
@@ -240,21 +240,21 @@ public class PurApplyServiceImpl implements PurApplyService {
 			nextRouteAndReceiveTaskReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 			Map map=new HashMap();
 			if (count>0) {
-				req.setStatusCd("21");
-				map.put("CGJ","0");//
+				req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
+				map.put("CGJ",PurApplyConsts.PUR_APPLY_ADMIN_VALUE);//
 			} else {
-				req.setStatusCd("20");
-				map.put("CGJ","1");
+				req.setStatusCd(PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
+				map.put("CGJ",PurApplyConsts.PUR_APPLY_VALUE);
 				List<AddProductReq> productList =  req.getAddProductReq();
 				for (AddProductReq addProductReq:productList) {
 //					String parentTypeId = addProductReq.getParentTypeId();
 					String  purchaseType= addProductReq.getPurchaseType();
 //					if ("10000".equals(parentTypeId)) {
 //						移动终端默认选择集采，如果选择社采则需要地市管理审核，然后供应商再审核
-						if ("1".equals(purchaseType)) {
-							map.put("CGJ","0");//
+						if (PurApplyConsts.PUR_APPLY_SOCIAL_TYPE.equals(purchaseType)) {
+							map.put("CGJ",PurApplyConsts.PUR_APPLY_ADMIN_VALUE);//
 							//更新省公司待审核状态
-							req.setStatusCd("21");
+							req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
 //							purApplyManager.updatePurApplyStatusCd(req);
 							break;
 						}

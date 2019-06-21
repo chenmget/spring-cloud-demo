@@ -2,18 +2,19 @@ project:
   name: 本机环境
   
 server:
-  port: 8925
+  port: 8325
 
 spring.dubbo:
     application:
       name: wf-provider
     registry:
-      address: zookeeper://172.21.72.75:8121
+#      address: zookeeper://172.21.72.75:8121
+      address: zookeeper://localhost:2181
       username:
       password:
     protocol:
       name: dubbo
-      port: 23332
+      port: 20880
     scan: com.iwhalecloud.retail
 
 spring.redis:

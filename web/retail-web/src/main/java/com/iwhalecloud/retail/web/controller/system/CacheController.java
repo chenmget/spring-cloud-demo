@@ -109,6 +109,21 @@ public class CacheController extends BaseController {
         return ResultVO.success(true);
     }
 
+    /**
+     * 这个方法会清除通用组织信息两个缓存
+     */
+    @ApiOperation(value = "cleanCacheCommonOrg(通用组织信息）表缓存", notes = "sys_common_org（通用组织信息）表缓存")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/cleanCacheCommonOrg", method = RequestMethod.GET)
+    @CacheEvict(value = {SystemConst.CACHE_NAME_SYS_COMMON_ORG, SystemConst.CACHE_NAME_SYS_COMMON_ORG_LIST}, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheCommonOrg() {
+        log.info("CacheController.cleanCacheCommonOrg clean sys_common_org table cache success!!!");
+        return ResultVO.success(true);
+    }
+
     @ApiOperation(value = "清空par_merchant(商家）表缓存", notes = "清空par_merchant(商家）表缓存")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),

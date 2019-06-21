@@ -55,7 +55,6 @@ public class ResourceRequestManager{
     public int updateResourceRequestState(ResourceRequestUpdateReq req){
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(ResourceRequest.FieldNames.mktResReqId.getTableFieldName(),req.getMktResReqId());
-        queryWrapper.eq(ResourceRequest.FieldNames.createDate.getTableFieldName(),req.getCreateDate());
         ResourceRequest request = new ResourceRequest();
         request.setStatusCd(req.getStatusCd());
         return resourceRequestMapper.update(request,queryWrapper);

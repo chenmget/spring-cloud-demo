@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.warehouse.dubbo.workflow;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
@@ -13,11 +14,9 @@ import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailUpdateReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
 import com.iwhalecloud.retail.warehouse.service.MerchantAddNbrProcessingPassActionService;
@@ -122,17 +121,28 @@ public class MerchantAddNbrProcessingPassActionImpl implements MerchantAddNbrPro
         addReq.setCreateStaff(detailDTO.getCreateStaff());
         addReq.setTypeId(typeId);
 
-        ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
-        String merchantId = null;
-        if(null == resultVO || null == resultVO.getResultData()){
-            log.warn("MerchantAddNbrProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
-            return ResultVO.error("MerchantAddNbrProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
+        if (ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(detailDTO.getMktResInstType())) {
+            StorePageReq storePageReq = new StorePageReq();
+            storePageReq.setMktResStoreId(detailDTO.getDestStoreId());
+            Page<ResouceStoreDTO> page = resouceStoreService.pageStore(storePageReq);
+            log.info("MerchantAddNbrProcessingPassActionImpl.run resouceStoreService.pageStore storePageReq={}", JSON.toJSONString(page.getRecords()));
+            ResouceStoreDTO storeDTO = page.getRecords().get(0);
+            addReq.setLanId(storeDTO.getLanId());
+            addReq.setRegionId(storeDTO.getRegionId());
+            addReq.setMerchantId(storeDTO.getMerchantId());
         } else {
-            MerchantDTO merchantDTO = resultVO.getResultData();
-            merchantId = merchantDTO.getMerchantId();
-            addReq.setLanId(merchantDTO.getLanId());
-            addReq.setRegionId(merchantDTO.getCity());
-            addReq.setMerchantId(merchantId);
+            ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
+            String merchantId = null;
+            if(null == resultVO || null == resultVO.getResultData()){
+                log.warn("MerchantAddNbrProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
+                return ResultVO.error("MerchantAddNbrProcessingPassActionImpl.run resouceStoreService.getMerchantByStore resultVO is null");
+            } else {
+                MerchantDTO merchantDTO = resultVO.getResultData();
+                merchantId = merchantDTO.getMerchantId();
+                addReq.setLanId(merchantDTO.getLanId());
+                addReq.setRegionId(merchantDTO.getCity());
+                addReq.setMerchantId(merchantId);
+            }
         }
         runableTask.exceutorAddNbr(addReq);
         log.info("MerchantAddNbrProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}", addReq);

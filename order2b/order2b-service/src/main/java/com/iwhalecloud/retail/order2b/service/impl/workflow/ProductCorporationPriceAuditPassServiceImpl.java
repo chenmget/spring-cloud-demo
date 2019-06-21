@@ -41,10 +41,10 @@ public class ProductCorporationPriceAuditPassServiceImpl implements ProductCorpo
             prodProductChangeReq.setAuditState(PurApplyConsts.AUDIT_STATE_PASS);
             purApplyManager.updateProductChange(prodProductChangeReq);//修改change表的状态
             //通过changeId查询productId
-            String productId = purApplyManager.selectProductIdByChangeId(changeId);
+            String sn = purApplyManager.selectProductIdByChangeId(changeId);
             //把change表的状态更新到prod_product
             prodProductChangeDetail.setPriceStatus(PurApplyConsts.AUDIT_STATE_PASS);
-            prodProductChangeDetail.setProductId(productId);
+            prodProductChangeDetail.setSn(sn);
             purApplyManager.updateProductCorpPrice(prodProductChangeDetail);
         	
         }

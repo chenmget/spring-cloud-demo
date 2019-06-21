@@ -388,6 +388,15 @@
             <if test="req.deliveryPriceStart == null and req.deliveryPriceEnd != null">
                 and g.GOODS_ID in (select goods_id from prod_goods_product_rel where DELIVERY_PRICE &lt;= #{req.deliveryPriceEnd })
             </if>
+            <if test="req.attrValue1 != null and req.attrValue1 == null">
+                and g.GOODS_ID in (select GOODS_ID from prod_goods_product_rel t1,prod_product t2 where t1.PRODUCT_ID=t2.PRODUCT_ID and t2.attr_Value1 = #{req.attrValue1 })
+            </if>
+            <if test="req.attrValue2 != null and req.attrValue2 == null">
+                and g.GOODS_ID in (select GOODS_ID from prod_goods_product_rel t1,prod_product t2 where t1.PRODUCT_ID=t2.PRODUCT_ID and t2.attr_Value2 = #{req.attrValue2 })
+            </if>
+            <if test="req.attrValue3 != null and req.attrValue3 == null">
+                and g.GOODS_ID in (select GOODS_ID from prod_goods_product_rel t1,prod_product t2 where t1.PRODUCT_ID=t2.PRODUCT_ID and t2.attr_Value3 = #{req.attrValue3 })
+            </if>
             <if test="null!=req.productBaseId">
                 and t.PRODUCT_BASE_ID=#{req.productBaseId}
             </if>

@@ -42,7 +42,6 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	String create_time = dto.getCreateTime();
 	    	String pay_time = dto.getPayTime();
 	    	String receive_time = dto.getReceiveTime();
-	    	double couponMoney = dto.getCouponMoney();
 	    	String paymentType = dto.getPaymentType();
 	    	dto.setPrice(dto.getPrice()/100);
 	    	dto.setTotalMoney(dto.getTotalMoney()/100);
@@ -77,9 +76,8 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 				dto.setPaymentType("其他");
 			}
 			
-			
-			dto.setCouponMoney(couponMoney/100);
-			
+			dto.setCouponMoney(dto.getCouponMoney()/100);
+			dto.setTotalCouponMoney(dto.getTotalCouponMoney());
 	    	// TODO 通过orderId查出串码
 	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(orderId);
 	    	

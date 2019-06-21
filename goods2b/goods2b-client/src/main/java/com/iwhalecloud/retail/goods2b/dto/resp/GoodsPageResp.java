@@ -31,6 +31,12 @@ public class GoodsPageResp implements Serializable {
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
 
+    @ApiModelProperty(value = "供应商地市ID（本地网）")
+    private String supplierLanId;
+
+    @ApiModelProperty(value = "供应商名称地市名称（本地网）")
+    private String supplierLanName;
+
     @ApiModelProperty(value = "商品名称")
     private String goodsName;
 

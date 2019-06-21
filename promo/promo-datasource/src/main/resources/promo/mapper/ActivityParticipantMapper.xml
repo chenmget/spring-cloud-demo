@@ -21,6 +21,8 @@
     ,t.SOURCE_FROM
     ,t.IS_DELETED
     ,t.status
+    ,filter_type
+    ,filter_value
 </sql>
     <delete id="deleteActivityParticipantBatch" parameterType="java.lang.String">
         delete

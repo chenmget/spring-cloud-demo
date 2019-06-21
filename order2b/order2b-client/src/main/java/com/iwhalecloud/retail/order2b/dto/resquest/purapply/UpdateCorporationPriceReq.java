@@ -10,7 +10,7 @@ import lombok.Data;
 public class UpdateCorporationPriceReq extends PageVO {
 	
 	private static final long serialVersionUID = 1L;
-	private String productId;	//产品ID
+	private String sn;	//产品编码
 	private String applyUserId;
 	private String corporationPrice;  //政企价格
 //	private String productBaseId;

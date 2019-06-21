@@ -137,7 +137,8 @@ public class AccountServiceImplTest {
         //测试通过，需要改造
         AccountBalanceCalculationReq req = new AccountBalanceCalculationReq();
         req.setBalanceSourceType(RebateConst.Const.ACCOUNT_BALANCE_DETAIL_BALANCE_SOURCE_TYPE_ID.getValue());
-        req.setCustId("4300001063072");
+//        req.setCustId("4300001063072");
+        req.setCustId("10511269");
         req.setUserId("1082191485979451394");
         List<AccountBalanceCalculationOrderItemReq> orderItemList = new ArrayList<AccountBalanceCalculationOrderItemReq>();
         AccountBalanceCalculationOrderItemReq itemReq = new AccountBalanceCalculationOrderItemReq();

@@ -438,7 +438,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Transactional
 	public ResultVO updatePrice(UpdateCorporationPriceReq req){
 		log.info(req.getBatchId()+"********************************************************************************************");
-		String isFixedLine = productService.selectisFixedLineByBatchId(req.getProductId());
+		String isFixedLine = productService.selectisFixedLineByBatchId(req.getSn());
 		String applyUserId = req.getApplyUserId();//移动终端 余玲 200012864664           固网终端  胡亚玲  200012829198
 		if("200012829198".equals(applyUserId)) {//固网
 			if(!"1".equals(isFixedLine)) {
@@ -495,7 +495,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		}
 		
 		//把数据写到PROD_PRODUCT_CHANGE_DETAIL(产品变更记录明细表)，PROD_PRODUCT_CHANGE(产品变更记录表)
-		String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
+		String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getSn());
 		String changeId = productService.selectNextChangeId();
 		ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
 		prodProductChangeReq.setChangeId(changeId);
@@ -505,11 +505,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 		prodProductChangeReq.setCreateDate(new Date());
 		prodProductChangeReq.setCreateStaff(req.getApplyUserId());
 		prodProductChangeReq.setBatchId(req.getBatchId());
-		prodProductChangeReq.setProductId(req.getProductId());
+		prodProductChangeReq.setSn(req.getSn());
 		purApplyManager.insertProdChangePrice(prodProductChangeReq);
 		
 		String changeDetailId = productService.selectNextChangeDetailId();
-		String oldValue = purApplyManager.selectOldValue(req.getProductId());
+		String oldValue = purApplyManager.selectOldValue(req.getSn());
 		ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
 		prodProductChangeDetail.setChangeDetailId(changeDetailId);
 		prodProductChangeDetail.setChangeId(changeId);
@@ -520,7 +520,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		prodProductChangeDetail.setChangeFieldName("政企供货价");//变更字段中文注释的名字
 		prodProductChangeDetail.setOldValue(oldValue);//	原始值
 		prodProductChangeDetail.setNewValue(req.getCorporationPrice());//	变更值
-		prodProductChangeDetail.setKeyValue(req.getProductId());//product_id	业务ID
+		prodProductChangeDetail.setKeyValue(req.getSn());//product_id	业务ID
 		prodProductChangeDetail.setCreateDate(new Date());//创建时间
 		prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
 		purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);
@@ -541,10 +541,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 			if(listProductPrice!= null && listProductPrice.size() > 0) {
 				//判断所有产品ID是同一类型
 				for(int i=0;i<listProductPrice.size();i++) {
-					String productId = listProductPrice.get(i).split("\\|")[0];
-					String isFixedLineMa = productService.selectisFixedLineByBatchId(productId);
+					String sn = listProductPrice.get(i).split("\\|")[0];
+					String isFixedLineMa = productService.selectisFixedLineByBatchId(sn);
 					if(!isFixedLine.equals(isFixedLineMa)) {
-						listProd.add(productId);
+						listProd.add(sn);
 					}
 				}
 				if(listProd.size() > 0) {
@@ -557,10 +557,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 			if(listProductPrice!= null && listProductPrice.size() > 0) {
 				//判断所有产品ID是同一类型
 				for(int i=0;i<listProductPrice.size();i++) {
-					String productId = listProductPrice.get(i).split("\\|")[0];
-					String isFixedLineMa = productService.selectisFixedLineByBatchId(productId);
+					String sn = listProductPrice.get(i).split("\\|")[0];
+					String isFixedLineMa = productService.selectisFixedLineByBatchId(sn);
 					if(!isFixedLine.equals(isFixedLineMa)) {
-						listProd.add(productId);
+						listProd.add(sn);
 					}
 				}
 				if(listProd.size() > 0) {
@@ -616,9 +616,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		for(int i=0;i<productPriceList.size();i++){
 			String productPrice = productPriceList.get(i);
 			String[] splits = productPrice.split("\\|");
-			req.setProductId(splits[0]);
+			req.setSn(splits[0]);
 			req.setCorporationPrice(splits[1]+"00");
-			String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getProductId());
+			String productBaseId = purApplyManager.getProductBaseIdByProductId(req.getSn());
 			//循环插入变更表
 			String changeId = productService.selectNextChangeId();//1151
 			ProdProductChangeReq prodProductChangeReq = new ProdProductChangeReq();
@@ -629,13 +629,13 @@ public class PurApplyServiceImpl implements PurApplyService {
 			prodProductChangeReq.setCreateDate(new Date());
 			prodProductChangeReq.setCreateStaff(req.getApplyUserId());
 			prodProductChangeReq.setBatchId(req.getBatchId());
-			prodProductChangeReq.setProductId(req.getProductId());
+			prodProductChangeReq.setSn(req.getSn());
 			purApplyManager.insertProdChangePrice(prodProductChangeReq);
 			
 			//把订单的状态改成待审核
 			
 			String changeDetailId = productService.selectNextChangeDetailId();//1131
-			String oldValue = purApplyManager.selectOldValue(req.getProductId());
+			String oldValue = purApplyManager.selectOldValue(req.getSn());
 			ProdProductChangeDetail prodProductChangeDetail = new ProdProductChangeDetail();
 			prodProductChangeDetail.setChangeDetailId(changeDetailId);
 			prodProductChangeDetail.setChangeId(changeId);
@@ -646,7 +646,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			prodProductChangeDetail.setChangeFieldName("政企供货价");//变更字段中文注释的名字
 			prodProductChangeDetail.setOldValue(oldValue);//	原始值
 			prodProductChangeDetail.setNewValue(req.getCorporationPrice());//	变更值
-			prodProductChangeDetail.setKeyValue(req.getProductId());//product_id	业务ID
+			prodProductChangeDetail.setKeyValue(req.getSn());//product_id	业务ID
 			prodProductChangeDetail.setCreateDate(new Date());//创建时间
 			prodProductChangeDetail.setCreateStaff(req.getApplyUserId());//创建人
 			purApplyManager.insertProdProductChangeDetail(prodProductChangeDetail);

@@ -48,10 +48,10 @@
 			LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
 		WHERE 1=1
 		<if test="req.xdCreateTimeStart!=null and req.xdCreateTimeStart!=''">
-			and a.CREATE_TIME &gt;= str_to_date(#{req.xdCreateTimeStart}, '%Y-%m-%d')
+			and str_to_date(a.CREATE_TIME,'%Y-%m-%d') &gt;= str_to_date(#{req.xdCreateTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.xdCreateTimeEnd!=null and req.xdCreateTimeEnd!=''">
-			and a.CREATE_TIME &lt;= str_to_date(#{req.xdCreateTimeEnd}, '%Y-%m-%d')
+			and str_to_date(a.CREATE_TIME,'%Y-%m-%d') &lt;= str_to_date(#{req.xdCreateTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.lanIdName !=null and req.lanIdName.size()>0">
             and s1.region_id in
@@ -69,10 +69,10 @@
 			and a.STATUS_CD = #{req.statusCd}
 		</if>
 		<if test="req.createTimeStart!=null and req.createTimeStart!=''">
-			and a.RECEIVE_TIME &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+			and str_to_date(a.RECEIVE_TIME,'%Y-%m-%d') &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
-			and a.RECEIVE_TIME &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+			and str_to_date(a.RECEIVE_TIME,'%Y-%m-%d') &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.mktResInstType!=null and req.mktResInstType!=''">
 			and a.MKT_RES_INST_TYPE = #{req.mktResInstType}
@@ -84,10 +84,10 @@
 			and a.SELF_REG_STATUS = #{req.selfRegStatus}
 		</if>
 		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
-			and a.OUT_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+			and str_to_date(a.OUT_TIME,'%Y-%m-%d') &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
-			and a.OUT_TIME &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+			and str_to_date(a.OUT_TIME,'%Y-%m-%d') &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">
 			and a.product_type = #{req.productType}
@@ -193,10 +193,10 @@
 			LEFT JOIN sys_organization so2 ON par2.par_crm_org_id = so2.org_id
 		WHERE 1=1
 		<if test="req.xdCreateTimeStart!=null and req.xdCreateTimeStart!=''">
-			and a.CREATE_TIME &gt;= str_to_date(#{req.xdCreateTimeStart}, '%Y-%m-%d')
+			and str_to_date(a.CREATE_TIME, '%Y-%m-%d') &gt;= str_to_date(#{req.xdCreateTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.xdCreateTimeEnd!=null and req.xdCreateTimeEnd!=''">
-			and a.CREATE_TIME &lt;= str_to_date(#{req.xdCreateTimeEnd}, '%Y-%m-%d')
+			and str_to_date(a.CREATE_TIME, '%Y-%m-%d') &lt;= str_to_date(#{req.xdCreateTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.lanIdName !=null and req.lanIdName.size()>0">
             and s1.region_id in
@@ -214,10 +214,10 @@
 			and a.STATUS_CD = #{req.statusCd}
 		</if>
 		<if test="req.createTimeStart!=null and req.createTimeStart!=''">
-			and a.RECEIVE_TIME &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+			and str_to_date(a.RECEIVE_TIME, '%Y-%m-%d') &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
-			and a.RECEIVE_TIME &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+			and str_to_date(a.RECEIVE_TIME, '%Y-%m-%d') &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.mktResInstType!=null and req.mktResInstType!=''">
 			and a.MKT_RES_INST_TYPE = #{req.mktResInstType}
@@ -229,10 +229,10 @@
 			and a.SELF_REG_STATUS = #{req.selfRegStatus}
 		</if>
 		<if test="req.outTimeStart!=null and req.outTimeStart!=''">
-			and a.OUT_TIME &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+			and str_to_date(a.OUT_TIME, '%Y-%m-%d') &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
 		</if>
 		<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
-			and a.OUT_TIME &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+			and str_to_date(a.OUT_TIME, '%Y-%m-%d') &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
 		</if>
 		<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">
 			and a.product_type = #{req.productType}

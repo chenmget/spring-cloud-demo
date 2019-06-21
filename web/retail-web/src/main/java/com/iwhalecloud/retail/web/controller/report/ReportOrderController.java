@@ -33,7 +33,12 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
@@ -72,6 +77,22 @@ public class ReportOrderController extends BaseController {
 	@UserLoginToken
     public ResultVO<Page<ReportOrderResp>> getReportOrderList1(@RequestBody ReportOrderDaoReq req) {
 		log.info("****************ReportOrderController getReportOrderList1()  ************start param={}",JSON.toJSONString(req));
+		//最大跨度查询三个月createTimeStart   createTimeEnd
+		String CreateTimeStart = req.getCreateTimeStart();
+		String CreateTimeEnd = req.getCreateTimeEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(CreateTimeStart==null && CreateTimeEnd==null){
+			CreateTimeStart = format3.format(date3);
+			CreateTimeEnd = df.format(date);
+			req.setCreateTimeStart(CreateTimeStart);
+			req.setCreateTimeEnd(CreateTimeEnd);
+		}
 		int userType = UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
@@ -121,6 +142,21 @@ public class ReportOrderController extends BaseController {
 	@RequestMapping(value = "/orderReportDataExport", method = RequestMethod.POST)
 	@UserLoginToken
 	public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
+		String CreateTimeStart = req.getCreateTimeStart();
+		String CreateTimeEnd = req.getCreateTimeEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(CreateTimeStart==null && CreateTimeEnd==null){
+			CreateTimeStart = format3.format(date3);
+			CreateTimeEnd = df.format(date);
+			req.setCreateTimeStart(CreateTimeStart);
+			req.setCreateTimeEnd(CreateTimeEnd);
+		}
 		int userType = UserContext.getUser().getUserFounder();
 		req.setPageNo(1);
 		req.setPageSize(60000);
@@ -169,7 +205,7 @@ public class ReportOrderController extends BaseController {
 	    orderMap.add(new ExcelTitleName("productName", "产品名称"));
 	    orderMap.add(new ExcelTitleName("unitType", "产品型号"));
 	    orderMap.add(new ExcelTitleName("typeName", "产品类型"));
-	    orderMap.add(new ExcelTitleName("brandName", "品牌"));
+	    orderMap.add(new ExcelTitleName("brandName", "产品品牌"));
 	    orderMap.add(new ExcelTitleName("attrValue1", "规格1"));
 	    orderMap.add(new ExcelTitleName("attrValue2", "规格2"));
 	    orderMap.add(new ExcelTitleName("attrValue3", "规格3"));
@@ -197,7 +233,7 @@ public class ReportOrderController extends BaseController {
 	    orderMap.add(new ExcelTitleName("merchantCode", "店中商编码"));
 	    orderMap.add(new ExcelTitleName("businessEntityName", "经营主体名称"));
 	    orderMap.add(new ExcelTitleName("lanId", "店中商所属地市"));
-	    orderMap.add(new ExcelTitleName("city", "店中商所属区县"));
+	    orderMap.add(new ExcelTitleName("orgName", "店中商所属经营单元"));
 	    
 	  //创建orderItemDetail
 	    deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,

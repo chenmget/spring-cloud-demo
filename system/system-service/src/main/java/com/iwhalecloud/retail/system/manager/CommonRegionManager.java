@@ -50,6 +50,9 @@ public class CommonRegionManager {
         if (!CollectionUtils.isEmpty(req.getRegionIdList())) {
             queryWrapper.in(CommonRegion.FieldNames.regionId.getTableFieldName(), req.getRegionIdList());
         }
+        if (!CollectionUtils.isEmpty(req.getParRegionIdList())) {
+            queryWrapper.in(CommonRegion.FieldNames.parRegionId.getTableFieldName(), req.getParRegionIdList());
+        }
         if (!StringUtils.isEmpty(req.getParRegionId())) {
             queryWrapper.eq(CommonRegion.FieldNames.parRegionId.getTableFieldName(), req.getParRegionId());
         }

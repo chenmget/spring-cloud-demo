@@ -310,8 +310,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         File dir = new File(basePath);
         //删除文件
         this.delTempChild(dir);
-        if (!dir.isDirectory()) {
-            dir.mkdir();
+        if (!dir.exists()) {
+            dir.mkdirs();
         }
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {

@@ -12,7 +12,10 @@ import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
+import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.entity.ProductBase;
+import com.iwhalecloud.retail.goods2b.entity.Type;
+import com.iwhalecloud.retail.goods2b.manager.BrandManager;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
@@ -23,6 +26,8 @@ import com.iwhalecloud.retail.goods2b.utils.ZopClientUtil;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.PublicDictDTO;
+import com.iwhalecloud.retail.system.service.PublicDictService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.ztesoft.zop.common.message.ResponseResult;
 import lombok.extern.slf4j.Slf4j;
@@ -35,10 +40,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 
 @Service
@@ -61,6 +63,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Autowired
     private TagRelService tagRelService;
+
+    @Autowired
+    private TypeService typeService;
+    @Autowired
+    private BrandManager brandManager;
+    @Reference
+    private PublicDictService publicDictService;
 
     @Value("${zop.secret}")
     private String zopSecret;
@@ -177,6 +186,27 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         List<ProductAddReq> productAddReqs = req.getProductAddReqs();
         String status = "";
         Boolean addResult = true;
+        TypeSelectByIdReq typeSelectByIdReq = new TypeSelectByIdReq();
+        typeSelectByIdReq.setTypeId(req.getTypeId());
+        ResultVO<TypeDetailResp> respResultVO = typeService.getDetailType(typeSelectByIdReq);
+        TypeDetailResp type = new TypeDetailResp();
+        if(respResultVO.isSuccess() && null !=respResultVO.getResultData()){
+            type = respResultVO.getResultData();
+        }
+        Brand brand = brandManager.getBrandByBrandId(req.getBrandId());
+        //易购网下线固网规格同步CRM开关,默认是关闭
+        String syncSpecCrm = "";
+        List<PublicDictDTO> publicDictDTOs = publicDictService.queryPublicDictListByType("SYNC_SPEC_CRM");
+        log.info("ProductBaseServiceImpl.addProductBase publicDictDTOs={}" , publicDictDTOs);
+        if(!CollectionUtils.isEmpty(publicDictDTOs)){
+            PublicDictDTO publicDictDTO = publicDictDTOs.get(0);
+            if(null!=publicDictDTO){
+                syncSpecCrm = publicDictDTO.getCodeb();
+            }
+        }
+        if(StringUtils.isEmpty(syncSpecCrm)){
+            syncSpecCrm = "F";
+        }
         if (null != productAddReqs && !productAddReqs.isEmpty()){
             for (ProductAddReq par : productAddReqs){
                 //
@@ -201,6 +231,21 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 par.setCreateStaff(t.getCreateStaff());
                 par.setAuditState(auditState);
                 String productId = productService.addProduct(par);
+                //是固网产品并且开发打开才同步CRM
+                if(StringUtils.isNotEmpty(req.getIsFixedLine()) && "1".equals(req.getIsFixedLine()) &&
+                        "T".equals(syncSpecCrm) && null!=type && null!=brand){
+                    Map request = new HashMap<>();
+                    request.put("Good_id",productId);
+                    request.put("u_kind_id",type.getCrmResKind());
+                    request.put("u_kind_name",type.getDetailName());
+                    request.put("GOOD_BAND",brand.getName());
+                    request.put("sales_resource_id",par.getSn());
+                    request.put("terminal_type",type.getCrmResType());
+                    request.put("sales_resource_name",par.getUnitName());
+                    request.put("Good_price",par.getCost());
+                    request.put("terminal_type_name",type.getTypeName());
+                    this.pushCrm(request);
+                }
                 if (!CollectionUtils.isEmpty(req.getTagList())) {
                     TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
                     relBatchAddReq.setProductId(productId);
@@ -760,6 +805,18 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         productBaseUpdateReq.setAvgSupplyPrice(avgSupplyPrice);
         productBaseManager.updateProductBase(productBaseUpdateReq);
         return ResultVO.success(true);
+    }
+
+    @Override
+    public ResultVO<List<String>> getSeq(int i) {
+        List<String> list = new ArrayList<>();
+        if(i==0){
+            ResultVO.success(list);
+        }
+        for(int j=0;j<i;j++){
+            list.add(productBaseManager.getSeq());
+        }
+        return ResultVO.success(list);
     }
 
     public String zopService(String method, String zopUrl, Object request, String zopSecret) {

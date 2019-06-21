@@ -34,8 +34,8 @@ public class ReportOrderResp implements Serializable {
 	private String receiveTime;//发货时间
 	private String activeName;//营销活动
 	private String couponType;//优惠类型
-	private String couponMoney;//优惠单价
-	private String totalCouponMoney;//优惠总额
+	private double couponMoney;//优惠单价
+	private double totalCouponMoney;//优惠总额
 	private String supplierName;//供货商名称
 	private String supplierCode;//供货商编码
 	private String merchantName;//店中商名称

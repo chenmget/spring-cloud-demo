@@ -165,5 +165,8 @@ public class ProductPageResp implements Serializable {
 
     @ApiModelProperty(value = "地包供货价上限")
     private String localSupplyFeeUpper;
+
+    @ApiModelProperty(value = "产品类型父ID")
+    private String parentTypeId;
     
 }

@@ -56,9 +56,8 @@ public class CommonRegionServiceImpl implements CommonRegionService {
     @Override
     public ResultVO<List<CommonRegionDTO>> listCommonRegion(CommonRegionListReq req) {
         log.info("CommonRegionServiceImpl.listCommonRegion(), input：req={} ", JSON.toJSONString(req));
-        if (StringUtils.isEmpty(req.getParRegionId())
-                && CollectionUtils.isEmpty(req.getRegionIdList())
-                && StringUtils.isEmpty(req.getRegionName())) {
+        if (CollectionUtils.isEmpty(req.getRegionIdList()) && CollectionUtils.isEmpty(req.getParRegionIdList())
+                && StringUtils.isEmpty(req.getParRegionId()) && StringUtils.isEmpty(req.getRegionName())) {
             // 三个条件都为空 默认查湖南的 本地网
             req.setParRegionId(SystemConst.HN_DEFAULT_PAR_REGION_ID);
         }

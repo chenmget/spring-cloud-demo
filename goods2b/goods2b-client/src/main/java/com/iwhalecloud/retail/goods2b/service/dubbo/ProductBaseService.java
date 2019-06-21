@@ -80,4 +80,6 @@ public interface ProductBaseService {
      * @return
      */
     ResultVO<Boolean> updateAvgApplyPrice(ProductBaseUpdateReq req);
+
+    public ResultVO<List<String>> getSeq(int i);
 }

@@ -1,7 +1,11 @@
 package com.iwhalecloud.retail.web.controller.report;
 
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletResponse;
@@ -74,11 +78,28 @@ public class ReportStoreController extends BaseController {
 	@UserLoginToken
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
 		log.info("****************************ReportStoreController getReportStSaleList    req={}",JSON.toJSONString(req));
+		//默认最大跨度查询三个月
+		String dateStart = req.getDateStart();
+		String dateEnd = req.getDateEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(dateStart==null && dateEnd==null){
+			dateStart = format3.format(date3);
+			dateEnd = df.format(date);
+			req.setDateStart(dateStart);
+			req.setDateEnd(dateEnd);
+		}
 		int userType=UserContext.getUser().getUserFounder();
+		List<String> list = new ArrayList<String>();
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
-			String lanId=UserContext.getUser().getLanId();
-			req.setCityId(lanId);
+			list.add(UserContext.getUser().getLanId());
+			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3 ) {//零售商 （只能查看自己的仓库）
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {
@@ -102,11 +123,27 @@ public class ReportStoreController extends BaseController {
     @PostMapping(value="/cjStorePurchaserReportExport")
     @UserLoginToken
     public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
+    	String dateStart = req.getDateStart();
+		String dateEnd = req.getDateEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(dateStart==null && dateEnd==null){
+			dateStart = format3.format(date3);
+			dateEnd = df.format(date);
+			req.setDateStart(dateStart);
+			req.setDateEnd(dateEnd);
+		}
     	int userType=UserContext.getUser().getUserFounder();
+    	List<String> list = new ArrayList<String>();
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
-			String lanId=UserContext.getUser().getLanId();
-			req.setCityId(lanId);
+			list.add(UserContext.getUser().getLanId());
+			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3 ) {//零售商 （只能查看自己的仓库）
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
 			if ( merchantDTO == null) {
@@ -133,16 +170,16 @@ public class ReportStoreController extends BaseController {
         orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
         orderMap.add(new ExcelTitleName("partnerCode", "零售商编码"));
         orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
+        orderMap.add(new ExcelTitleName("cityId", "零售商所属地市"));
+        orderMap.add(new ExcelTitleName("orgName", "经营单元"));
+        orderMap.add(new ExcelTitleName("productName", "产品名称"));
+        orderMap.add(new ExcelTitleName("productBaseName", "产品型号"));
         orderMap.add(new ExcelTitleName("typeName", "产品类型"));
-        orderMap.add(new ExcelTitleName("stockWarning", "库存预警"));
-        orderMap.add(new ExcelTitleName("date", "统计日期"));
-        orderMap.add(new ExcelTitleName("cityId", "所属城市"));
-        orderMap.add(new ExcelTitleName("countryId", "所属区县"));
-        orderMap.add(new ExcelTitleName("productBaseName", "机型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
         orderMap.add(new ExcelTitleName("priceLevel", "机型档位"));
-        orderMap.add(new ExcelTitleName("totalInNum", "入库总量"));
-        orderMap.add(new ExcelTitleName("totalOutNum", "出库总量"));
+        orderMap.add(new ExcelTitleName("totalInNum", "总入库量"));
+        orderMap.add(new ExcelTitleName("totalOutNum", "总出库量"));
+        orderMap.add(new ExcelTitleName("stockNum", "总库存量"));
         orderMap.add(new ExcelTitleName("purchaseNum", "交易入库量"));
         orderMap.add(new ExcelTitleName("manualNum", "手工入库量"));
         orderMap.add(new ExcelTitleName("transInNum", "调拨入库量"));
@@ -152,12 +189,10 @@ public class ReportStoreController extends BaseController {
         orderMap.add(new ExcelTitleName("uncontractNum", "手工销售量"));
         orderMap.add(new ExcelTitleName("contractNum", "CRM合约销量"));
         orderMap.add(new ExcelTitleName("registerNum", "自注册销量"));
-        orderMap.add(new ExcelTitleName("transOutNum", "调拨出库量"));
-        orderMap.add(new ExcelTitleName("returnNum", "退库量"));
         orderMap.add(new ExcelTitleName("weekAvgSellNum", "近7天日均销量"));
         orderMap.add(new ExcelTitleName("stockAmount", "库存金额"));
-        orderMap.add(new ExcelTitleName("stockNum", "库存量"));
         orderMap.add(new ExcelTitleName("turnoverRate", "库存周转率"));
+        orderMap.add(new ExcelTitleName("stockWarning", "库存预警"));
         
       //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,

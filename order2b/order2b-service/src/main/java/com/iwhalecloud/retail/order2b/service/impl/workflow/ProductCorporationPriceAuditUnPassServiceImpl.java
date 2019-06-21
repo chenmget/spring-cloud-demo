@@ -40,9 +40,9 @@ public class ProductCorporationPriceAuditUnPassServiceImpl implements ProductCor
 	            prodProductChangeReq.setChangeId(changeId);
 	            prodProductChangeReq.setAuditState(PurApplyConsts.AUDIT_STATE_NO_PASS);
 	            purApplyManager.updateProductChange(prodProductChangeReq);//修改change表的状态
-	            String productId = purApplyManager.selectProductIdByChangeId(changeId);
+	            String sn = purApplyManager.selectProductIdByChangeId(changeId);
 	            prodProductChangeDetail.setPriceStatus(PurApplyConsts.AUDIT_STATE_NO_PASS);
-	            prodProductChangeDetail.setProductId(productId);
+	            prodProductChangeDetail.setSn(sn);
 	            purApplyManager.updateProdNoPassPrice(prodProductChangeDetail);
 	        	
 	        }

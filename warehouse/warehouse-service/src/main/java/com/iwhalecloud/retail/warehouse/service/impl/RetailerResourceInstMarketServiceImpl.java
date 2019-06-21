@@ -461,7 +461,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceBatchRecService.saveEventAndBatch req={}", JSON.toJSONString(batchAndEventAddReq));
         }
-
+        if (syncTerminalVO.getResultMsg().contains(constant.getZopNbrExists())) {
+            return syncTerminalVO;
+        }
         return syncTerminalVO;
     }
 
@@ -997,6 +999,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 ResultVO eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
                 log.info("RetailerResourceInstMarketServiceImpl.syncTerminal marketingResStoreService.ebuyTerminal req={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
                 if (!eBuyTerminalResultVO.isSuccess()) {
+                    if (eBuyTerminalResultVO.getResultMsg().contains(constant.getZopNbrExists())) {
+                        return eBuyTerminalResultVO;
+                    }
                     return ResultVO.error(constant.getZopInterfaceError());
                 }
             }

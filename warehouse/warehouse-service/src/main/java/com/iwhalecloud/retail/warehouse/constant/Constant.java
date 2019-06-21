@@ -172,4 +172,9 @@ public class Constant {
      */
     private String zopInterfaceError;
 
+    /**
+     * 串码已存在
+     */
+    private String zopNbrExists;
+
 }

@@ -35,8 +35,6 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Autowired
     private PurApplyManager purApplyManager;
-	@Value("${fdfs.showUrl}")
-	private String dfsShowIp;
 	@Reference
     private TaskService taskService;
 

@@ -579,7 +579,7 @@
 	SET 
 		CORPORATION_PRICE=#{req.newValue},PRICE_STATUS=#{req.priceStatus}
 	WHERE
-		product_id = #{req.productId}
+		sn = #{req.sn}
   </select>
 
   <select id="updateProdNoPassPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail">
@@ -588,7 +588,7 @@
 	SET
 		PRICE_STATUS=#{req.priceStatus}
 	WHERE 
-		product_id = #{req.productId}	
+		sn = #{req.sn}	
   </select>
   
   <select id="getProductBaseIdByProductId" parameterType="java.lang.String" resultType="java.lang.String" >
@@ -644,7 +644,7 @@
 
   <select id="selectProductIdByChangeId" parameterType="java.lang.String"
   	resultType="java.lang.String" >
-		select product_id from PROD_PRODUCT_CHANGE where change_id = #{changeId}
+		select sn from PROD_PRODUCT_CHANGE where change_id = #{changeId}
   </select>
 
 	<select id="countPurApplyItemDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyItemReq" resultType="Integer">

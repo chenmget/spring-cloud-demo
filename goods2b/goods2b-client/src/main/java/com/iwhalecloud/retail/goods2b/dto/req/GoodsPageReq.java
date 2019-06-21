@@ -33,9 +33,6 @@ public class GoodsPageReq extends PageVO {
     @ApiModelProperty(value = "地市ID或编码（暂不可用）")
     private String regionCity;
 
-    /*@ApiModelProperty(value = "供应商名称")
-    private String supplierName;*/
-
     @ApiModelProperty(value = "供应商ID列表(仅供管理员选择用)")
     private List<String> supplierIds;
 
@@ -85,6 +82,9 @@ public class GoodsPageReq extends PageVO {
 
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
+
+    @ApiModelProperty(value = "供应商 所属 地市ID （本地网）")
+    private String supplierLanId;
 
     @ApiModelProperty(value = "供应商类型")
     private String merchantType;

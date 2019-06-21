@@ -1085,9 +1085,11 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public ResultVO<Page<GoodsPageResp>> queryPageByConditionAdmin(GoodsPageReq req) {
         log.info("GoodsServiceImpl.queryPageByConditionAdmin req={}", req);
-        if (StringUtils.isNotEmpty(req.getSupplierName())) {
+        // 筛选供应商
+        if (StringUtils.isNotEmpty(req.getSupplierName()) || StringUtils.isNotEmpty(req.getSupplierLanId())) {
             MerchantListReq merchantListReq = new MerchantListReq();
             merchantListReq.setMerchantName(req.getSupplierName());
+            merchantListReq.setLanId(req.getSupplierLanId());
             ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchant(merchantListReq);
             if (listResultVO.isSuccess() && null != listResultVO.getResultData()) {
                 if (listResultVO.getResultData().size() > 0) {
@@ -1161,7 +1163,7 @@ public class GoodsServiceImpl implements GoodsService {
                 }
             }
 
-            // 补充供应商名称及等级
+            // 补充供应商名称 、供应商地市名称 及等级
             resp.setImagesUrl(getDefaultPicUrl(resp.getGoodsId()));
             try {
                 ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(resp.getSupplierId());
@@ -1169,6 +1171,8 @@ public class GoodsServiceImpl implements GoodsService {
                     MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
                     resp.setSupplierName(merchantDTO.getMerchantName());
                     resp.setSupplierType(merchantDTO.getMerchantType());
+                    resp.setSupplierId(merchantDTO.getLanId());
+                    resp.setSupplierLanName(getCommonRegionName(merchantDTO.getLanId()));
                 }
             } catch (Exception ex) {
                 log.error("GoodsServiceImpl.queryPageByConditionAdmin getMerchantById throw exception ex={}", ex);
@@ -1176,6 +1180,22 @@ public class GoodsServiceImpl implements GoodsService {
             }
         }
         return ResultVOUtils.genQueryResultVO(respPage);
+    }
+
+    /**
+     * 根据ID 获取区域信息
+     * @param regionId
+     * @return
+     */
+    private String getCommonRegionName(String regionId) {
+        if (StringUtils.isEmpty(regionId)) {
+            return null;
+        }
+        CommonRegionDTO commonRegionDTO = commonRegionService.getCommonRegionById(regionId).getResultData();
+        if (Objects.nonNull(commonRegionDTO)) {
+            return commonRegionDTO.getRegionName();
+        }
+        return null;
     }
 
     /**

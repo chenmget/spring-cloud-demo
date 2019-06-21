@@ -43,7 +43,7 @@
         <if test='req.merchantId!=null and req.merchantId!=""'>
             and a.merchant_id= #{req.merchantId}
         </if>
-		order by a.CREATE_DATE
+		order by a.CREATE_DATE DESC
 		
   </select>
   

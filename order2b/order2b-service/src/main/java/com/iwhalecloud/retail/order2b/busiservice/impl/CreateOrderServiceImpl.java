@@ -117,7 +117,8 @@ public class CreateOrderServiceImpl implements CreateOrderService {
         /**
          * 预售订单
          */
-        if (OrderManagerConsts.ORDER_CAT_1.equals(request.getOrderCat())) {
+        Boolean advanceType = CollectionUtils.isEmpty(request.getOrderCatList()) && (request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+        if (advanceType) {
             resp = advanceSaleOrderBuilderService.checkRule(request, list);
         } else { //普通订单
             resp = ordinaryOrderBuilderService.checkRule(request, list);
@@ -242,7 +243,8 @@ public class CreateOrderServiceImpl implements CreateOrderService {
         /**
          * 预售订单
          */
-        if (OrderManagerConsts.ORDER_CAT_1.equals(request.getOrderCat())) {
+        Boolean advanceType = CollectionUtils.isEmpty(request.getOrderCatList()) && (request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+        if (advanceType) {
             resp = advanceSaleOrderBuilderService.orderOtherHandler(request, list);
         } else { //普通订单
             resp = ordinaryOrderBuilderService.orderOtherHandler(request, list);
@@ -295,22 +297,22 @@ public class CreateOrderServiceImpl implements CreateOrderService {
 
             Order order = builderOrderModel.getOrder();
             order.setPayStatus(TypeStatus.TYPE_11.getCode());
-            order.setOrderCat(request.getOrderCat());
-            if (StringUtils.isEmpty(order.getOrderCat())) {
-                order.setOrderCat(OrderManagerConsts.ORDER_CAT_0);
+
+            order.setOrderCat(request.getOrderCatList().get(0));
+            if (CollectionUtils.isEmpty(request.getOrderCatList())) {
+                order.setOrderCat(OrderManagerConsts.ORDER_CAT.ORDER_CAT_0.getCode());
+            }else {
+                order.setOrderCat(request.getOrderCatList().get(0));
             }
             builderOrderModel.setOrderCat(order.getOrderCat());
 
-            /**
-             * 订单类型（预售，正常）
-             */
-            switch (order.getOrderCat()) {
-                case OrderManagerConsts.ORDER_CAT_1://预售订单
-                    order.setStatus(OrderAllStatus.ORDER_STATUS_13.getCode());
-                    break;
-                default: //正常
-                    order.setStatus(OrderAllStatus.ORDER_STATUS_2.getCode());
-                    break;
+            // 预售类型
+            Boolean advanceType = CollectionUtils.isEmpty(request.getOrderCatList()) && (request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+            if (advanceType) {
+                order.setStatus(OrderAllStatus.ORDER_STATUS_13.getCode());
+            } else {
+                //普通订单
+                order.setStatus(OrderAllStatus.ORDER_STATUS_2.getCode());
             }
 
             //如果是配送方式是客户自提，需要录入手机串码
@@ -381,10 +383,11 @@ public class CreateOrderServiceImpl implements CreateOrderService {
                         orderModel.getOrder().getCreateUserId(), orderModel.getOrder().getMerchantId());
             } else {
                 String messge = "";
-                if (OrderManagerConsts.ORDER_CAT_1.equals(orderModel.getOrder().getOrderCat())) {
-                    messge = "待付定金";
-                } else {
+                Boolean advanceType = CollectionUtils.isEmpty(request.getOrderCatList()) && (request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+                if (advanceType) {
                     messge = "待付款";
+                } else {
+                    messge = "待付定金";
                 }
 
                 taskManagerReference.addTaskByHandlerOne(messge, orderModel.getOrder().getOrderId(),
@@ -407,7 +410,7 @@ public class CreateOrderServiceImpl implements CreateOrderService {
         /**
          * 预售订单
          */
-        if (OrderManagerConsts.ORDER_CAT_1.equals(log.getOrderCat())) {
+        if (OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode().equals(log.getOrderCat()) || OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode().equals(log.getOrderCat())) {
             resp = advanceSaleOrderBuilderService.rollback(list, log);
         } else { //普通订单
             resp = ordinaryOrderBuilderService.rollback(list, log);

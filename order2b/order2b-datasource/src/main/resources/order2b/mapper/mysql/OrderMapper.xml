@@ -101,8 +101,11 @@
             <if test="req.paymentType!=null and req.paymentType!=''">
                 and pay_type = #{req.paymentType}
             </if>
-            <if test="req.orderCat !=null and req.orderCat !=''">
-                and ORDER_CAT =#{req.orderCat}
+            <if test="req.orderCatList !=null and req.orderCatList.size()>0">
+                AND ORDER_CAT IN
+                <foreach collection="req.orderCatList" open="(" close=")" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
             </if>
             <if test="req.sourceFrom !=null and req.sourceFrom !=''">
                 and SOURCE_FROM=#{req.sourceFrom}

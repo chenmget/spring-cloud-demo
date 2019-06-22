@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.member.dto.response.MemberAddressRespDTO;
 import com.iwhalecloud.retail.member.service.MemberAddressService;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
-import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.consts.OrderManagerConsts;
 import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
 import com.iwhalecloud.retail.order2b.dto.model.order.CouponInsDTO;
@@ -69,8 +68,8 @@ public class SelectOrderServiceImpl implements SelectOrderService {
         /**
          * 默认查询普通订单
          */
-        if (OrderManagerConsts.ORDER_CAT_1.equals(req.getOrderCat())) {
-            req.setOrderCat(OrderManagerConsts.ORDER_CAT_1);
+        Boolean advanceType = !CollectionUtils.isEmpty(req.getOrderCatList()) && (req.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || req.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+        if (advanceType) {
             if (!CollectionUtils.isEmpty(req.getStatusAll())) {
                 req.getStatusAll().add(OrderAllStatus.ORDER_STATUS_13.getCode());
                 req.getStatusAll().add(OrderAllStatus.ORDER_STATUS_14.getCode());
@@ -303,7 +302,7 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     }
 
     @Override
-    public List<String> getOrderStatusByUser(String userType, String orderType) {
+    public List<String> getOrderStatusByUser(String userType, List<String> orderTypeList) {
         List<String> statusList = new ArrayList<>();
 
         statusList.add(OrderAllStatus.ORDER_STATUS_12.getCode());
@@ -329,14 +328,10 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             case OrderManagerConsts.USER_EXPORT_TYPE_3:
                 break;
         }
-
-        switch (orderType) {
-            case OrderManagerConsts.ORDER_CAT_1:
-                statusList.add(OrderAllStatus.ORDER_STATUS_14.getCode());
-                statusList.add(OrderAllStatus.ORDER_STATUS_13.getCode());
-                break;
-            default:
-                break;
+        Boolean advanceType = !CollectionUtils.isEmpty(orderTypeList) && (orderTypeList.contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || orderTypeList.contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+        if (advanceType) {
+            statusList.add(OrderAllStatus.ORDER_STATUS_14.getCode());
+            statusList.add(OrderAllStatus.ORDER_STATUS_13.getCode());
         }
         return statusList;
     }
@@ -460,10 +455,10 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     }
 
     public static void main(String[] args) {
-        List<String> list = new ArrayList<>();
-        list.add("-1");
-        list.retainAll(new ArrayList<>());
-        System.out.println(list);
+        List<String> list = null;
+        Boolean test = !CollectionUtils.isEmpty(list) && list.contains(0);
+        System.out.println(test);
+//        list.retainAll(new ArrayList<>());
     }
 
 

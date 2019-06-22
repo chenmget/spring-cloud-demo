@@ -85,11 +85,23 @@ public class GoodsDetailDTO implements java.io.Serializable {
 	/**
 	 * 预售标识(1=预售，0否)
 	 */
-	private String isAdvanceSale;
+	private Integer isAdvanceSale;
 
 	/**
 	 * 前置补贴标识(1=前置补贴，0否)
 	 */
 	private String isSubsidy;
+
+	/**
+	 * 是否分货
+	 */
+	@ApiModelProperty(value = "是否分货")
+	private Integer isAllot;
+
+	/**
+	 * 商品发布对象
+	 */
+	@ApiModelProperty(value = "商品发布对象")
+	private String targetType;
 
 }

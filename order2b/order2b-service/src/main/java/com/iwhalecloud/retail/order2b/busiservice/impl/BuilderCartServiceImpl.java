@@ -125,7 +125,7 @@ public class BuilderCartServiceImpl implements BuilderCartService {
         createOrderRequest.setUserId(req.getUserId());
         createOrderRequest.setUserCode(userInfoModel.getRelCode());
         createOrderRequest.setMerchantId(req.getSupplierId());
-        createOrderRequest.setOrderCat(OrderManagerConsts.ORDER_CAT_0);
+        createOrderRequest.setOrderCatList(Lists.newArrayList(OrderManagerConsts.ORDER_CAT.ORDER_CAT_0.getCode()));
         resp= createOrderService.checkRule(createOrderRequest,cartItemModels);
         if (resp.isFailure()) {
             return resp;

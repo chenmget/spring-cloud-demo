@@ -20,6 +20,6 @@ public class ResourceInstCheckServiceImplTest {
 
     @Test
     public void tradeInResourceInst(){
-        tradeResourceInstService.greenChannelValid("12345", "4301811025392");
+        tradeResourceInstService.greenChannelValid("10519293", "10171065");
     }
 }

@@ -2,8 +2,10 @@ package com.iwhalecloud.retail.order2b.reference;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
+import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.*;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ExchangeObjectGetResp;
@@ -118,6 +120,17 @@ public class GoodsManagerReference {
 
     }
 
+    /**
+     * 根据订单的商品确认订单类型（一个订单只能有一个包含预售或分货的商品，前端已经校验）
+     0. 普通订单（不预售不分货 商品表 IS_ALLOT、IS_ADVANCE_SALE）
+     1. 预售订单（预售不分货）
+     2. 分货订单（分货不预售）
+     3. 预售分货（既预售又分货）
+     4.定向分货（商品表TARGET_TYPE 按对象，普通订单的子项）
+     * @param request
+     * @param req
+     * @return
+     */
     public CartItemModel builderCart(PreCreateOrderReq request, OrderGoodsItemDTO req) {
         //查询产品信息
         ProductGetByIdReq prodectReq = new ProductGetByIdReq();
@@ -159,17 +172,25 @@ public class GoodsManagerReference {
             // 前置补贴活动的统一货价(转换为Double)
             detail.setDeliveryPrice(activityProductDTO.getPrice() * 1D);
         }
-
-        // 查询预售活动
-        if (StringUtils.isEmpty(request.getActivityId())) {
-            request.setOrderCat(OrderManagerConsts.ORDER_CAT_0);
-        } else {
-            if (StringUtils.isEmpty(detail.getIsAdvanceSale())) {
-                request.setOrderCat(OrderManagerConsts.ORDER_CAT_0);
-            } else {
-                request.setOrderCat(detail.getIsAdvanceSale());
+        String orderCat = null;
+        // 是否分货 1是 0否
+        Integer isAllot = detail.getIsAllot();
+        // 是否为预售商品
+        Integer isAdvanceSale = detail.getIsAdvanceSale();
+        // 商品发布对象
+        String targetType = detail.getTargetType();
+        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(isAllot) && GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(isAdvanceSale)) {
+            orderCat = OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode();
+        } else if(!GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(isAllot) && GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(isAdvanceSale)) {
+            orderCat = OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode();
+        }else if(GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(isAllot) && !GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(isAdvanceSale)) {
+            orderCat = OrderManagerConsts.ORDER_CAT.ORDER_CAT_2.getCode();
+        }else if(!GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(isAllot) && !GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(isAdvanceSale)) {
+            if (GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
+                orderCat = OrderManagerConsts.ORDER_CAT.ORDER_CAT_4.getCode();
             }
         }
+        request.setOrderCatList(Lists.newArrayList(orderCat));
 
         CartItemModel cartItemModel = new CartItemModel();
 
@@ -220,7 +241,9 @@ public class GoodsManagerReference {
         goodsProductRelEditReq.setBuyCountCheckDTOList(buyCountCheckDTOS);
         goodsProductRelEditReq.setUserId(request.getUserId());
         goodsProductRelEditReq.setMerchantId(request.getUserCode());
-        goodsProductRelEditReq.setIsAdvanceSale(request.getOrderCat());
+        if (!CollectionUtils.isEmpty(request.getOrderCatList())) {
+            goodsProductRelEditReq.setIsAdvanceSale(request.getOrderCatList().get(0));
+        }
         goodsProductRelEditReq.setMarketingActivityId(request.getActivityId());
         ResultVO resultVO = goodsProductRelService.checkBuyCount(goodsProductRelEditReq);
         log.info("gs_10010_qryMinAndMaxNum req{},resp{}", JSON.toJSONString(goodsProductRelEditReq), JSON.toJSONString(resultVO));

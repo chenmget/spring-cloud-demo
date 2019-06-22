@@ -18,6 +18,7 @@ import com.iwhalecloud.retail.order2b.model.SupplierModel;
 import com.iwhalecloud.retail.order2b.reference.*;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.rights.consts.RightsStatusConsts;
+import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -134,7 +135,9 @@ public class OrdinaryOrderBuilderServiceImpl implements OrdinaryOrderBuilderServ
         logModel.setUserId(request.getUserId());
         logModel.setUserCode(request.getUserCode());
         logModel.setMerchantId(request.getMerchantId());
-        logModel.setOrderCat(request.getOrderCat());
+        if (CollectionUtils.isNotEmpty(request.getOrderCatList())) {
+            logModel.setOrderCat(request.getOrderCatList().get(0));
+        }
         logModel.setCouponInsList(request.getCouponInsList());
         resp.setResultData(logModel);
 

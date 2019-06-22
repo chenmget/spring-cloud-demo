@@ -31,11 +31,16 @@ public interface ResourceReqDetailService {
     ResultVO<List<ResourceReqDetailPageResp>> resourceRequestList(ResourceReqDetailPageReq req);
 
     /**
-     * 串码申请单详情分页（条件查询）
+     * 管理平台串码申请单详情分页（条件查询）
      * @param req
      * @return
      */
     ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestDetailPage(ResourceReqDetailQueryReq req);
 
-
+    /**
+     * 交易平台串码申请单详情分页（条件查询）
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ResourceReqDetailPageResp>> listMerchantResourceRequestDetailPage(ResourceReqDetailQueryReq req);
 }

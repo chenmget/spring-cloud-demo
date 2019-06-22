@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.dto.RouteDTO;
+import com.iwhalecloud.retail.workflow.dto.req.RouteReq;
 import com.iwhalecloud.retail.workflow.entity.Route;
 import com.iwhalecloud.retail.workflow.manager.RouteManager;
 import com.iwhalecloud.retail.workflow.service.RouteService;
@@ -13,6 +14,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -59,5 +61,17 @@ public class RouteServiceImpl implements RouteService {
             }
         }
         return ResultVO.success(routeDTOList);
+    }
+
+    @Override
+    public ResultVO<List<RouteDTO>> listRoute(RouteReq req) {
+        List<Route> routeList = routeManager.listRoute(req.getProcessId(), req.getCurNodeId());
+        List<RouteDTO> resultList=new ArrayList<>();
+        for(Route route : routeList) {
+            RouteDTO dto = new RouteDTO();
+            BeanUtils.copyProperties(route, dto);
+            resultList.add(dto);
+        }
+        return ResultVO.success(resultList);
     }
 }

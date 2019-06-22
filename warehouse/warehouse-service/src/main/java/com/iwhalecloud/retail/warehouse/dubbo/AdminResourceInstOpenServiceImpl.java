@@ -68,7 +68,6 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
         return adminResourceInstService.batchAuditNbr(req);
     }
 
-
     @Override
     public ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String createStaff) {
         return adminResourceInstService.uploadNbrDetail(data,createStaff);

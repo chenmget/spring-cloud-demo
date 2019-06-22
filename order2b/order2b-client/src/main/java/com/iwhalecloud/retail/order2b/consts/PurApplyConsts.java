@@ -72,9 +72,13 @@ public class PurApplyConsts {
     public final static String PUR_APPLY_STATUS_PASS = "40";
 
     /**
-     * 申请单状态省公司审核 ：审核通过
+     * 申请单状态 ：供应商待审核
      */
     public final static String SGS_PUR_APPLY_STATUS_PASS = "20";
+    /**
+     * 申请单状态 ：地市管理员待审核
+     */
+    public final static String PUR_APPLY_STATUS_ADMIN_PASS = "21";
 
     /**
      * 政企价格修改审核通过
@@ -121,5 +125,26 @@ public class PurApplyConsts {
      * 状态：发货中
      */
     public final static String PUR_APPLY_STATUS_DELIVERYING = "41";
+
+    /**
+     * 采购类型：集采
+     */
+    public final static String PUR_APPLY_CENTRAL_TYPE = "1";
+
+    /**
+     * 采购类型：社采
+     */
+    public final static String PUR_APPLY_SOCIAL_TYPE = "2";
+
+    /**
+     * 需要地市管理员审核Map 值：0
+     */
+    public final static String PUR_APPLY_ADMIN_VALUE = "0";
+    /**
+     * 需要供应商审核Map 值：1
+     */
+    public final static String PUR_APPLY_VALUE = "1";
+
+
 }
 

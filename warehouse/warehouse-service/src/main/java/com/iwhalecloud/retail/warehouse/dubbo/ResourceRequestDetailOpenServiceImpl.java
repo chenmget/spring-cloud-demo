@@ -43,6 +43,10 @@ public class ResourceRequestDetailOpenServiceImpl implements ResourceReqDetailSe
         return resourceReqDetailService.listResourceRequestDetailPage(req);
     }
 
+    @Override
+    public ResultVO<Page<ResourceReqDetailPageResp>> listMerchantResourceRequestDetailPage(ResourceReqDetailQueryReq req) {
+        return resourceReqDetailService.listMerchantResourceRequestDetailPage(req);
+    }
 
 
 }

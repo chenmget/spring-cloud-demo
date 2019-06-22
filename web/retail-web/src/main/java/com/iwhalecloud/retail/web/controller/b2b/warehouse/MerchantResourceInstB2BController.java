@@ -314,7 +314,7 @@ public class MerchantResourceInstB2BController {
     @GetMapping(value="listResourceRequestDetailPage")
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestDetailPage(ResourceReqDetailQueryReq req) {
         req.setMerchantId(Lists.newArrayList(UserContext.getMerchantId()));
-        return resourceReqDetailService.listResourceRequestDetailPage(req);
+        return resourceReqDetailService.listMerchantResourceRequestDetailPage(req);
     }
 
     @ApiOperation(value = "导出串码明细", notes = "导出串码数据")

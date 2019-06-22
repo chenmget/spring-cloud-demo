@@ -615,7 +615,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
      *
      * @return
      */
-    private void nodeEndHandle(String handleUserId, String handleUserName, String taskId, Route route) {
+    public void nodeEndHandle(String handleUserId, String handleUserName, String taskId, Route route) {
         updateTaskStatusById(taskId, WorkFlowConst.TASK_STATUS_FINISH, route.getNextNodeId(), route.getNextNodeName());
 
         TaskItem taskItem = new TaskItem();

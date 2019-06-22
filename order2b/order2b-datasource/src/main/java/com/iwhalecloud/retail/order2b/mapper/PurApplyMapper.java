@@ -90,7 +90,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(@Param("keyValue") String keyValue);
 
-	public int countPurApplyItemDetail(@Param("req") PurApplyItemReq req);
+	public List<String> countPurApplyItemDetail(@Param("req") PurApplyItemReq req);
 	public int countPurApplyItemDetailReving(@Param("req") PurApplyItemReq req);
 
 	public Integer updatePurApplyItemDetailStatusCd(@Param("mktResInstNbrList") List<String> mktResInstNbrList);

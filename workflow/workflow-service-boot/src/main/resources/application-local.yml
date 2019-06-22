@@ -2,18 +2,19 @@ project:
   name: 本机环境
   
 server:
-  port: 8925
+  port: 8325
 
 spring.dubbo:
     application:
       name: wf-provider
     registry:
-      address: zookeeper://172.21.72.75:8121
+#      address: zookeeper://172.21.72.75:8121
+      address: zookeeper://localhost:2181
       username:
       password:
     protocol:
       name: dubbo
-      port: 23332
+      port: 20880
     scan: com.iwhalecloud.retail
 
 spring.redis:
@@ -21,7 +22,7 @@ spring.redis:
 #    host: 127.0.0.1
 #    port: 6379
     cluster:
-      nodes: 10.45.47.129:7021,10.45.47.129:7022,10.45.47.129:7023,10.45.47.129:7024,10.45.47.129:7025,10.45.47.129:7026
+      nodes: 10.45.46.241:7001,10.45.46.242:7001,10.45.46.243:7001
       timeout: 10000
       max-redirects: 3
     expireSeconds: 120

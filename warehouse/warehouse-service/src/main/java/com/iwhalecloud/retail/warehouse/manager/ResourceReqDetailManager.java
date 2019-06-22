@@ -101,7 +101,7 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
      * 批量修改申请单明细
      * @param req
      */
-    public boolean updateDetailById(ResourceReqDetailUpdateReq req) {
+    public boolean updateDetailByIds(ResourceReqDetailUpdateReq req) {
         ResourceReqDetail detail=new ResourceReqDetail();
         detail.setStatusCd(req.getStatusCd());
         detail.setRemark(req.getRemark());

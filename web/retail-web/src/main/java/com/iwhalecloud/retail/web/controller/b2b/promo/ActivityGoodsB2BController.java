@@ -9,10 +9,10 @@ import com.iwhalecloud.retail.promo.dto.req.MarketingActivityByMerchantListReq;
 import com.iwhalecloud.retail.promo.dto.req.VerifyProductPurchasesLimitReq;
 import com.iwhalecloud.retail.promo.dto.resp.ActivityGoodsByMerchantResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityByMerchantResp;
-import com.iwhalecloud.retail.promo.dto.resp.UserDTO;
 import com.iwhalecloud.retail.promo.dto.resp.VerifyProductPurchasesLimitResp;
 import com.iwhalecloud.retail.promo.service.ActivityGoodService;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -51,10 +51,11 @@ public class ActivityGoodsB2BController {
     public ResultVO<Page<MarketingActivityByMerchantResp>> listMarketingActivityByMerchant(@RequestBody MarketingActivityByMerchantListReq req){
         log.info("ActivityGoodsB2BController listMarketingActivityByMerchant MarketingActivityByMerchantListReq={} ", req);
         if(UserContext.isUserLogin()) {
-            com.iwhalecloud.retail.system.dto.UserDTO userDTO = UserContext.getUser();
-            UserDTO promoUserDTO = new UserDTO();
-            BeanUtils.copyProperties(userDTO, promoUserDTO);
-            req.setUserInfo(promoUserDTO);
+            UserDTO userDTO = UserContext.getUser();
+            if(userDTO!=null){
+                req.setLanId(userDTO.getLanId());
+                req.setRegionId(userDTO.getRegionId());
+            }
             req.setMerchantId(UserContext.getMerchantId());
         }
         return activityGoodService.listMarketingActivityByMerchant(req);

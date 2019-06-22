@@ -4,6 +4,8 @@ import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * 我的待办查询入参
  * @author Z
@@ -69,4 +71,7 @@ public class TaskPageReq extends PageVO {
 
     @ApiModelProperty(value = "最后处理结束时间，格式YYYY-MM-DD")
     private String lastDealTimeEnd;
+
+    @ApiModelProperty(value = "流程类型" )
+    private List<String> taskSubTypeList;
 }

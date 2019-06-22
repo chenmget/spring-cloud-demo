@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.workflow.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.workflow.dto.RouteDTO;
 import com.iwhalecloud.retail.workflow.dto.TaskDTO;
 import com.iwhalecloud.retail.workflow.dto.req.*;
 import com.iwhalecloud.retail.workflow.dto.resp.DealTaskDetailGetResp;
@@ -120,5 +121,7 @@ public interface TaskService{
      * @return
      */
     ResultVO<TaskDTO> getTaskById(String taskId);
+
+    ResultVO<String> endProcess(String handleUserId, String handleUserName, String taskId, String routeId);
 
 }

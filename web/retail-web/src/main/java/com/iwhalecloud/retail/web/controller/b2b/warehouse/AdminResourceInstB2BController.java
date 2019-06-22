@@ -290,7 +290,10 @@ public class AdminResourceInstB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value="listResourceRequestDetailPage")
+    @UserLoginToken
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestPage(ResourceReqDetailQueryReq req) {
+        UserDTO userDTO = UserContext.getUser();
+        req.setUpdateStaff(userDTO.getUserId());
         return resourceReqDetailService.listResourceRequestDetailPage(req);
     }
 
@@ -399,7 +402,9 @@ public class AdminResourceInstB2BController {
     @UserLoginToken
     public ResultVO<String> batchAuditNbr(@RequestBody ResourceInstCheckReq req) {
         String userId = UserContext.getUserId();
+        String userName=UserContext.getUser().getUserName();
         req.setUpdateStaff(userId);
+        req.setUpdateStaffName(userName);
         return resourceInstService.batchAuditNbr(req);
     }
 

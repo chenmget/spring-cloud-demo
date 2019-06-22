@@ -472,6 +472,9 @@
     <if test="null!=req.unitType and ''!=req.unitType">
       and upper(ppb.unit_Type) like CONCAT(CONCAT('%',upper(#{req.unitType})),'%')
     </if>
+    <if test="null!=req.typeId and ''!=req.typeId">
+      and ppb.type_id =#{req.typeId}
+    </if>
   </select>
 
   <!-- getProductForResource-->

@@ -366,4 +366,11 @@ public class TaskServiceImpl implements TaskService {
         return null;
     }
 
+    @Override
+    public ResultVO<String> endProcess(String handleUserId, String handleUserName, String taskId, String routeId) {
+        Route route = routeManager.queryRouteById(routeId);
+        taskManager.nodeEndHandle(handleUserId,handleUserName,taskId,route);
+        return ResultVO.success();
+    }
+
 }

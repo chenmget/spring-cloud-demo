@@ -332,8 +332,19 @@ public class ProductServiceImpl implements ProductService {
         for (ProductPageResp resp : respList){
         	Double corporationPrice = resp.getCorporationPrice();
         	Double cost = resp.getCost();
-        	resp.setCorporationPrice(corporationPrice/100);
-        	resp.setCost(cost/100);
+        	String isFixedLine = resp.getIsFixedLine();//是否固网  1固网  0非固网
+        	String supplyFeeLower = resp.getSupplyFeeLower();//政企价格下限
+        	if(corporationPrice == 0.0 || corporationPrice == null) {
+        		if("1".equals(isFixedLine)) {
+        			resp.setCorporationPrice(Integer.parseInt(supplyFeeLower)/100);
+        		}else {
+        			resp.setCorporationPrice(cost);
+        		}
+        	} else {
+        		resp.setCorporationPrice(corporationPrice/100);
+        	}
+//        	resp.setCorporationPrice(corporationPrice/100);
+//        	resp.setCost(cost/100);
         	String purchaseType = resp.getPurchaseType();
         	if("1".equals(purchaseType)){
         		resp.setPurchaseType("集采");

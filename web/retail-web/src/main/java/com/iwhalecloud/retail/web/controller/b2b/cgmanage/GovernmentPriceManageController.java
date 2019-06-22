@@ -90,8 +90,8 @@ public class GovernmentPriceManageController extends BaseController {
         orderMap.add(new ExcelTitleName("attrValue2", "颜色"));
         orderMap.add(new ExcelTitleName("attrValue3", "内存版本"));
         orderMap.add(new ExcelTitleName("sn", "营销资源编码"));
-        orderMap.add(new ExcelTitleName("cost", "零售价格"));
-        orderMap.add(new ExcelTitleName("corporationPrice", "政企价格"));
+//        orderMap.add(new ExcelTitleName("cost", "零售价格"));
+        orderMap.add(new ExcelTitleName("corporationPrice", "政企销售上限价"));
         orderMap.add(new ExcelTitleName("purchaseType", "采购类型"));
         orderMap.add(new ExcelTitleName("effDate", "产品生效期"));
         orderMap.add(new ExcelTitleName("expDate", "产品失效期"));

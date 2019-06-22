@@ -354,6 +354,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			PurApplyItemReq.setApplyItem(p.getApplyItemId());
 			PurApplyItemReq.setProductId(p.getProductId());
 			List<String> deliverMktResInstNbrList =  purApplyManager.countPurApplyItemDetail(PurApplyItemReq);
+			log.info("ckApplyData2 data deliverMktResInstNbrList="+JSON.toJSONString(deliverMktResInstNbrList));
 			Integer count = deliverMktResInstNbrList.size();//查询发货的条数
 			if (count !=null) {
 				p.setDeliverCount(String.valueOf(count));

@@ -352,14 +352,15 @@ public class SelectOrderServiceImpl implements SelectOrderService {
          * 组装订单id
          */
         promotionModel.setOrderIdList(new ArrayList<>(modelList.size()));
+        promotionModel.setLanIdList(new ArrayList<>(modelList.size()));
         for (OrderInfoModel orderInfoModel:modelList){
             promotionModel.getOrderIdList().add(orderInfoModel.getOrderId());
-
-            if(StringUtils.isEmpty(Order2bContext.getDubboRequest().getLanId())){
-                List<String> lanIds=new ArrayList<>(1);
-                lanIds.add(orderInfoModel.getLanId());
-                promotionModel.setLanIdList(lanIds);
-            }
+            promotionModel.getLanIdList().add(orderInfoModel.getLanId());
+//            if(StringUtils.isEmpty(Order2bContext.getDubboRequest().getLanId())){
+//                List<String> lanIds=new ArrayList<>(1);
+//                lanIds.add(orderInfoModel.getLanId());
+//                promotionModel.setLanIdList(lanIds);
+//            }
         }
 
         List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);

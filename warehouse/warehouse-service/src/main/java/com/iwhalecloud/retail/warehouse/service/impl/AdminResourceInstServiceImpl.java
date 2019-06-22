@@ -216,7 +216,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             List<ResourceReqDetailPageResp> resultList=new ArrayList<>();
             for(ResourceUploadTempListResp temp : uploadList){
                 ResourceReqDetailPageResp resp=new ResourceReqDetailPageResp();
-                Optional<ResourceReqDetailPageDTO> option =detailList.stream().filter(t->t.getMktResInstNbr().equals(temp.getMktResInstNbr())).findFirst();
+                Optional<ResourceReqDetailPageDTO> option =detailList.stream()
+                        .filter(t->t.getMktResInstNbr().equals(temp.getMktResInstNbr()))
+                        .filter(t->t.getMktResReqDetailId().equals(temp.getMktResReqDetailId())).findFirst();
                 if(option.isPresent()){
                     ResourceReqDetailPageDTO dto=option.get();
                     BeanUtils.copyProperties(dto, resp);
@@ -237,7 +239,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
                     BeanUtils.copyProperties(prodResp, resp);
                     resultList.add(resp);
                     //删除该信息，否则串码重复情况下，取到的详情永远是第一个
-                    detailList.remove(dto);
+                    //detailList.remove(dto);
                 }
 
             }

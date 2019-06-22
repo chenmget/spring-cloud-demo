@@ -53,7 +53,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         String payId = IdWorker.getIdStr();
         orderAmount = d2l(orderAmount);
         ToBestPayReq toBestPayReq = new ToBestPayReq();
-        toBestPayReq.setOrderId(orderId);
+        toBestPayReq.setOrderId(payId);
         toBestPayReq.setOrderAmount(orderAmount);
         toBestPayReq.setOperationType(operationType);
         toBestPayReq.setOrgLoginCode(orgLoginCode);

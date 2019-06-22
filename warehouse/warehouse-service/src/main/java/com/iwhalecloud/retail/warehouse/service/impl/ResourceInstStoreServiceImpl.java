@@ -307,6 +307,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         String time = sdf.format(new Date());
         File dir = new File(basePath);
         try{
+            //删除文件
+            this.delTempChild(dir);
             log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs basePath:{} exists:{} isDirectory:{}",basePath,dir.exists(),dir.isDirectory());
             if (!dir.exists() || !dir.isDirectory()) {
                 log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs start.....");
@@ -316,8 +318,7 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         }catch (Exception e){
             log.error("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs{}",e.getMessage());
         }
-        //删除文件
-        this.delTempChild(dir);
+
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {
             List<MktResItmsSyncRec> mktList = new ArrayList<>();

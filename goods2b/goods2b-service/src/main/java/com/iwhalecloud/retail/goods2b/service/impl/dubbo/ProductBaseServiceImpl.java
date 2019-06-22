@@ -461,8 +461,17 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     productUpdateReq.setStatus(ProductConst.StatusType.AUDIT.getCode());
                 }
-
+                if (!CollectionUtils.isEmpty(tagList)) {
+                    TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+                    relDeleteByGoodsIdReq.setProductId(productId);
+                    tagRelService.deleteTagRelByProductId(relDeleteByGoodsIdReq);
+                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+                    relBatchAddReq.setTagList(tagList);
+                    relBatchAddReq.setProductId(productId);
+                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
+                }
                 productService.updateProdProduct(productUpdateReq);
+                log.info("ProductBaseServiceImpl.updateProductBase productService.updateProdProduct,req={}", JSON.toJSONString(productUpdateReq));
                 continue;
             }
             if(StringUtils.isBlank(productId)){
@@ -476,16 +485,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     par.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
                 }
-                if (!CollectionUtils.isEmpty(tagList)) {
-                    TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
-                    relDeleteByGoodsIdReq.setProductId(productId);
-                    tagRelService.deleteTagRelByProductId(relDeleteByGoodsIdReq);
-                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-                    relBatchAddReq.setTagList(tagList);
-                    relBatchAddReq.setProductId(productId);
-                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
-                }
-
                 productService.addProduct(par);
                 continue;
             }

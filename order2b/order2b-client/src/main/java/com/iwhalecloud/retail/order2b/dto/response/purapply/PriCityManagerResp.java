@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.order2b.dto.response.purapply;
 
-import java.io.Serializable;
-
 import com.iwhalecloud.retail.dto.PageVO;
-
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class PriCityManagerResp extends PageVO implements Serializable {/**

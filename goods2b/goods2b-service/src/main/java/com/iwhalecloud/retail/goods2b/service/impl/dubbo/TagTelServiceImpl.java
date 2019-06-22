@@ -8,7 +8,6 @@ import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.entity.TagTel;
 import com.iwhalecloud.retail.goods2b.manager.TagTelManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TagTelService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.TagTelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

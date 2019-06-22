@@ -3,13 +3,12 @@ package com.iwhalecloud.retail.oms.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.oms.consts.OmsConst;
 import com.iwhalecloud.retail.oms.dto.CloudShelfBindUserDTO;
-import com.iwhalecloud.retail.oms.dto.CloudShelfDTO;
 import com.iwhalecloud.retail.oms.entity.CloudShelfBindUser;
+import com.iwhalecloud.retail.oms.mapper.CloudShelfBindUserMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.oms.mapper.CloudShelfBindUserMapper;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 

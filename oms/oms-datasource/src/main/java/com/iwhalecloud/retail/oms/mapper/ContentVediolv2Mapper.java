@@ -2,12 +2,12 @@ package com.iwhalecloud.retail.oms.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import java.util.List;
-
 import com.iwhalecloud.retail.oms.dto.ContentVediolv2DTO;
 import com.iwhalecloud.retail.oms.entity.ContentVediolv2;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @Class: ContentVediolv2Mapper

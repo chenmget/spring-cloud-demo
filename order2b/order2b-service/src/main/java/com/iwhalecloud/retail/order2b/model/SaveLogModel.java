@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.order2b.model;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;

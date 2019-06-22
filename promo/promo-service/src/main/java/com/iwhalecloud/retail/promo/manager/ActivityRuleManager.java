@@ -1,17 +1,14 @@
 package com.iwhalecloud.retail.promo.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
-import com.iwhalecloud.retail.promo.entity.ActivityProduct;
 import com.iwhalecloud.retail.promo.entity.ActivityRule;
-import com.iwhalecloud.retail.promo.entity.ActivityScope;
-import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
 import com.iwhalecloud.retail.promo.mapper.ActivityRuleMapper;
-import org.springframework.util.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 

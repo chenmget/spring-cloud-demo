@@ -1,7 +1,6 @@
 package com.iwhalecloud.retail.workflow.service;
 
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.dto.NodeRightsDTO;
 

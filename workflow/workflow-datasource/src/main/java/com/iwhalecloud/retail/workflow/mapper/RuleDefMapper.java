@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.workflow.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.workflow.entity.RuleDef;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

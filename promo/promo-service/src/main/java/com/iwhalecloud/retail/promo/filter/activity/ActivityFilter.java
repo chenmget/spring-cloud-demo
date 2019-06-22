@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.promo.filter.activity;
 
-import com.iwhalecloud.retail.promo.entity.MarketingActivity;
 import com.iwhalecloud.retail.promo.filter.activity.model.ActivityAuthModel;
 
 /**

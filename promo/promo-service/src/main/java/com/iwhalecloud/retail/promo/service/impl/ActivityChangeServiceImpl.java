@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.promo.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityChangeDetailDTO;
@@ -9,13 +10,11 @@ import com.iwhalecloud.retail.promo.dto.ActivityScopeDTO;
 import com.iwhalecloud.retail.promo.dto.resp.ActivityChangeResp;
 import com.iwhalecloud.retail.promo.entity.*;
 import com.iwhalecloud.retail.promo.manager.*;
+import com.iwhalecloud.retail.promo.service.ActivityChangeService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
-import com.iwhalecloud.retail.system.mapper.CommonRegionMapper;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.promo.service.ActivityChangeService;
 
 import java.util.ArrayList;
 import java.util.List;

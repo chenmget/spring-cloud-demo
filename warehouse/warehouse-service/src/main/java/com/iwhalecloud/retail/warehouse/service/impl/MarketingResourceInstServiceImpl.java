@@ -201,6 +201,9 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
             ResultVO eBuyTerminalResultVO = marketingResStoreService.ebuyTerminal(eBuyTerminalSwapReq);
             log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.ebuyTerminal req={}, resp={}", JSON.toJSONString(eBuyTerminalSwapReq), JSON.toJSONString(eBuyTerminalResultVO));
             if (!eBuyTerminalResultVO.isSuccess()) {
+                if (eBuyTerminalResultVO.getResultMsg().contains(constant.getZopNbrExists())) {
+                    return eBuyTerminalResultVO;
+                }
                 return ResultVO.error(constant.getZopInterfaceError());
             }
         }
@@ -210,6 +213,9 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
             ResultVO syncTerminalResultVO = marketingResStoreService.syncTerminal(syncTerminalSwapReq);
             log.info("MarketingResourceInstServiceImpl.deliveryInResourceInst marketingResStoreService.syncTerminal req={}, resp={}", JSON.toJSONString(syncTerminalSwapReq), JSON.toJSONString(syncTerminalResultVO));
             if (!syncTerminalResultVO.isSuccess()) {
+                if (syncTerminalResultVO.getResultMsg().contains(constant.getZopNbrExists())) {
+                    return syncTerminalResultVO;
+                }
                 return ResultVO.error(constant.getZopInterfaceError());
             }
         }

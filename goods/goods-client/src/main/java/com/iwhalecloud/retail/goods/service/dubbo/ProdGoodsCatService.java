@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.goods.service.dubbo;
 
-import java.util.List;
-
 import com.iwhalecloud.retail.goods.dto.ResultVO;
 import com.iwhalecloud.retail.goods.dto.req.ProdCatComplexAddReq;
 import com.iwhalecloud.retail.goods.dto.req.ProdGoodsCatsListByIdReq;
 import com.iwhalecloud.retail.goods.dto.resp.ComplexGoodsGetResp;
 import com.iwhalecloud.retail.goods.dto.resp.ProdGoodsCatListResp;
+
+import java.util.List;
 
 
 public interface ProdGoodsCatService{

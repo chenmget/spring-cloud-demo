@@ -1,16 +1,10 @@
 package com.iwhalecloud.retail.order2b.manager;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.iwhalecloud.retail.order2b.config.Order2bContext;
-import com.iwhalecloud.retail.order2b.config.TelDBDefValueConfig;
 import com.iwhalecloud.retail.order2b.dto.model.order.SettleRecordOrderDTO;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.DeliveryReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.promo.AddActSupRecordReq;
 import com.iwhalecloud.retail.order2b.entity.Delivery;
 import com.iwhalecloud.retail.order2b.mapper.DeliveryMapper;
 import org.apache.commons.lang.StringUtils;
-import org.apache.ibatis.annotations.Param;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 

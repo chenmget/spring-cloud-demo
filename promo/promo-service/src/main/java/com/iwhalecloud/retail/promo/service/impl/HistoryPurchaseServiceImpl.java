@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.promo.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
@@ -8,13 +9,12 @@ import com.iwhalecloud.retail.promo.dto.req.ActHistoryPurChaseAddReq;
 import com.iwhalecloud.retail.promo.dto.req.ActHistoryPurChaseUpReq;
 import com.iwhalecloud.retail.promo.dto.req.HistoryPurchaseQueryExistReq;
 import com.iwhalecloud.retail.promo.entity.HistoryPurchase;
+import com.iwhalecloud.retail.promo.manager.HistoryPurchaseManager;
+import com.iwhalecloud.retail.promo.service.HistoryPurchaseService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.promo.manager.HistoryPurchaseManager;
-import com.iwhalecloud.retail.promo.service.HistoryPurchaseService;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;

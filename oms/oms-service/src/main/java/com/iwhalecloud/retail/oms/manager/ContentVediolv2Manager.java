@@ -2,11 +2,11 @@ package com.iwhalecloud.retail.oms.manager;
 
 import com.iwhalecloud.retail.oms.dto.ContentVediolv2DTO;
 import com.iwhalecloud.retail.oms.entity.ContentVediolv2;
+import com.iwhalecloud.retail.oms.mapper.ContentVediolv2Mapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.oms.mapper.ContentVediolv2Mapper;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

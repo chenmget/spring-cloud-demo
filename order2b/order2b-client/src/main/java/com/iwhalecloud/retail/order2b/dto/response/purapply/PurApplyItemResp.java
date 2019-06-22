@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.order2b.dto.response.purapply;
 
-import com.iwhalecloud.retail.dto.PageVO;
 import lombok.Data;
 
 import java.io.Serializable;

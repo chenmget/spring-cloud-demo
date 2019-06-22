@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.partner.service.impl;
 
 import com.iwhalecloud.retail.partner.PartnerServiceApplication;
 import com.iwhalecloud.retail.partner.dto.SupplyRelDTO;
-import com.iwhalecloud.retail.partner.dto.req.SupplierQueryReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplyRelAddReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplyRelDeleteReq;
 import com.iwhalecloud.retail.partner.service.SupplyRelService;

@@ -3,12 +3,12 @@ package com.iwhalecloud.retail.warehouse.manager;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceBatchRecDTO;
 import com.iwhalecloud.retail.warehouse.entity.ResourceBatchRec;
+import com.iwhalecloud.retail.warehouse.mapper.ResourceBatchRecMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.warehouse.mapper.ResourceBatchRecMapper;
 
+import javax.annotation.Resource;
 import java.util.Calendar;
 
 

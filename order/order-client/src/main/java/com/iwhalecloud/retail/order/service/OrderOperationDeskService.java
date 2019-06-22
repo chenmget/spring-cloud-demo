@@ -4,9 +4,7 @@ import com.iwhalecloud.retail.order.dto.ReportOrderShopRankDTO;
 import com.iwhalecloud.retail.order.dto.ReportOrderTimeIntervalDTO;
 import com.iwhalecloud.retail.order.dto.resquest.ReportOrderOpeDeskReq;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 运营人员工作台数据展示接口

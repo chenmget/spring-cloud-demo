@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.system.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.system.dto.ConfigInfoDTO;
 import com.iwhalecloud.retail.system.entity.ConfigInfo;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.system.manager.ConfigInfoManager;
 import com.iwhalecloud.retail.system.service.ConfigInfoService;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Service

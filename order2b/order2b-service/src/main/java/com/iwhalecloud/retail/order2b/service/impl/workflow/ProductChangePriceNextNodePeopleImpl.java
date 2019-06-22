@@ -1,20 +1,16 @@
 package com.iwhalecloud.retail.order2b.service.impl.workflow;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
-import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.extservice.WFServiceExecutor;
 import com.iwhalecloud.retail.workflow.extservice.params.ServiceParamContext;
-
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.List;
 
 @Service
 @Slf4j

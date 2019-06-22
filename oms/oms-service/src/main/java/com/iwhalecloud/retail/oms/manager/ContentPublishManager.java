@@ -2,15 +2,12 @@ package com.iwhalecloud.retail.oms.manager;
 
 import com.iwhalecloud.retail.oms.dto.ContentPublishDTO;
 import com.iwhalecloud.retail.oms.entity.ContentPublish;
+import com.iwhalecloud.retail.oms.mapper.ContentPublishMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-
-import com.iwhalecloud.retail.oms.mapper.ContentPublishMapper;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 

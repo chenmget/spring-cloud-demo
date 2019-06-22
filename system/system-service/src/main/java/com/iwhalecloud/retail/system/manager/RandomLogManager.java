@@ -1,16 +1,15 @@
 package com.iwhalecloud.retail.system.manager;
 
-import javax.annotation.Resource;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
-
 import com.iwhalecloud.retail.system.dto.request.RandomLogAddReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogGetReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogUpdateReq;
 import com.iwhalecloud.retail.system.dto.response.RandomLogGetResp;
 import com.iwhalecloud.retail.system.entity.RandomLog;
 import com.iwhalecloud.retail.system.mapper.RandomLogMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 @Component
 public class RandomLogManager{

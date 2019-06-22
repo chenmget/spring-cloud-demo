@@ -1,9 +1,9 @@
 package com.iwhalecloud.retail.oms.dto.response.gift;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import lombok.Data;
 
 @Data
 public class UserPointRecordRespDTO implements Serializable{

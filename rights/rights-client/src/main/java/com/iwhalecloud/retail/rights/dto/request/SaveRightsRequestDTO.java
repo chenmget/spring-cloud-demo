@@ -1,9 +1,9 @@
 package com.iwhalecloud.retail.rights.dto.request;
 
-import java.io.Serializable;
-
 import com.iwhalecloud.retail.dto.AbstractRequest;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class SaveRightsRequestDTO extends AbstractRequest implements Serializable{

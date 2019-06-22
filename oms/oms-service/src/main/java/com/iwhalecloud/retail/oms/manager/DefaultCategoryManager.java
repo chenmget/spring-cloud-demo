@@ -1,9 +1,10 @@
 package com.iwhalecloud.retail.oms.manager;
 
 import com.iwhalecloud.retail.oms.entity.DefaultCategory;
-import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
 import com.iwhalecloud.retail.oms.mapper.DefaultCategoryMapper;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 import java.util.List;
 
 

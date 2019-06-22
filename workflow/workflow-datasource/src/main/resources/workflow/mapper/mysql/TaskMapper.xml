@@ -54,6 +54,12 @@
         <if test="req.taskSubType!=null and req.taskSubType!=''" >
             and a.task_sub_type = #{req.taskSubType,jdbcType=VARCHAR}
         </if>
+        <if test = "null != req.taskSubTypeList and req.taskSubTypeList.size()>0">
+            and a.task_sub_type in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.taskSubTypeList">
+                #{item}
+            </foreach>
+        </if>
 
         <!-- 根据当前节点查询 -->
         <if test="req.curNodeName!=null and req.curNodeName!=''" >

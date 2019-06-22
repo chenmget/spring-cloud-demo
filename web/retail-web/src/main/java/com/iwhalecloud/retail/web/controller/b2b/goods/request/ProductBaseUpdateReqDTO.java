@@ -1,7 +1,10 @@
 package com.iwhalecloud.retail.web.controller.b2b.goods.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.iwhalecloud.retail.goods2b.dto.req.*;
+import com.iwhalecloud.retail.goods2b.dto.req.OldProductBaseUpdateReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductAddReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductExtUpdateReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductUpdateReq;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;

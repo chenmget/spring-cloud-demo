@@ -7,7 +7,6 @@ import com.iwhalecloud.retail.oms.mapper.GoodsCountRankMapper;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.List;
 
 @Component
 public class GoodsCountRankManager {

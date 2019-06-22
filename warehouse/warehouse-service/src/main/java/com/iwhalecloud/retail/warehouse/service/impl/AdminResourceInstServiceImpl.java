@@ -21,11 +21,9 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
-import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.*;
-import com.iwhalecloud.retail.warehouse.entity.ResourceReqItem;
 import com.iwhalecloud.retail.warehouse.entity.ResourceRequest;
 import com.iwhalecloud.retail.warehouse.manager.*;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
@@ -34,6 +32,13 @@ import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.warehouse.util.ZopClientUtil;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
+import com.iwhalecloud.retail.workflow.dto.RouteDTO;
+import com.iwhalecloud.retail.workflow.dto.TaskDTO;
+import com.iwhalecloud.retail.workflow.dto.req.RouteReq;
+import com.iwhalecloud.retail.workflow.service.RouteService;
+import com.iwhalecloud.retail.workflow.service.TaskItemService;
+import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -44,9 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j
@@ -96,6 +98,15 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Autowired
     private ResourceReqDetailManager detailManager;
+
+    @Reference
+    private TaskService taskService;
+
+    @Reference
+    private TaskItemService taskItemService;
+
+    @Reference
+    private RouteService routeService;
 
     @Value("${zop.secret}")
     private String zopSecret;
@@ -241,6 +252,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVO<String> batchAuditNbr(ResourceInstCheckReq req) {
+        //TODO 验证当前申请单是否该审批人审批
         //申请单明细主键集合
         List<String> mktResReqDetailIds=req.getMktResReqDetailIds();
         log.info("AdminResourceInstServiceImpl.batchAuditNbr mktResReqDetailIds={}", JSON.toJSONString(mktResReqDetailIds));
@@ -273,34 +285,35 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             detailUpdateReq.setUpdateDate(now);
             detailUpdateReq.setStatusDate(now);
             detailUpdateReq.setCreateDate(entry.getKey());
+            detailUpdateReq.setRemark(req.getRemark());
             //审核不通过
             if (req.getCheckStatusCd().equals(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode())) {
                 detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode());
-                resourceReqDetailManager.updateDetailById(detailUpdateReq);
-                //Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
-                //runableTask.batchUpdateReqDetail(req,reqIds);
-                return  ResultVO.success("审核成功");
+                resourceReqDetailManager.updateDetailByIds(detailUpdateReq);
             }
             //审核通过
             if (req.getCheckStatusCd().equals(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode())) {
                 //执行串码审核通过流程
                 auditPassResDetail(resDetailList,reqIds);
                 detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
-                resourceReqDetailManager.updateDetailById(detailUpdateReq);
-                //Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
-                //runableTask.batchUpdateReqDetail(req,reqIds);
+                resourceReqDetailManager.updateDetailByIds(detailUpdateReq);
             }
         }
         //验证明细是否已经全都完成
-        dealResRequest(reqIds);
+        ResourceReqUpdateReq resourceReqUpdateReq=new ResourceReqUpdateReq();
+        resourceReqUpdateReq.setMktResReqIdList(reqIds);
+        resourceReqUpdateReq.setUpdateStaff(req.getUpdateStaff());
+        resourceReqUpdateReq.setUpdateStaffName(req.getUpdateStaffName());
+        dealResRequest(resourceReqUpdateReq);
         return ResultVO.success("审核成功");
     }
 
     /**
      * 判断申请单下的申请明细是否都已完成，完成了修改申请单状态
-     * @param reqIds
+     * @param
      */
-    public ResultVO<String> dealResRequest(List<String> reqIds) {
+    public ResultVO<String> dealResRequest(ResourceReqUpdateReq resourceReqUpdateReq) {
+        List<String> reqIds = resourceReqUpdateReq.getMktResReqIdList();
         for(String resReqId : reqIds){
             //获取该申请单明细总数
             ResourceReqDetailReq req=new ResourceReqDetailReq();
@@ -335,11 +348,65 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
                     //审核状态改为完成
                     updateReq.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
                 }
-                resourceRequestManager.updateResourceRequestState(updateReq);
+                resourceRequestManager.updateResourceRequestStatus(updateReq);
+                //将流程办结
+                ResourceProcessUpdateReq resourceProcessUpdateReq = new ResourceProcessUpdateReq();
+                BeanUtils.copyProperties(resourceReqUpdateReq, resourceProcessUpdateReq);
+                resourceProcessUpdateReq.setFormId(resReqId);
+                finishProcess(resourceProcessUpdateReq);
             }
 
         }
         return ResultVO.success();
+    }
+
+    /**
+     * 办结串码审核流程
+     * @param
+     */
+    private void finishProcess(ResourceProcessUpdateReq resourceProcessUpdateReq) {
+        //根据formId找到task
+        String formId=resourceProcessUpdateReq.getFormId();
+        ResultVO<List<TaskDTO>> taskResult=this.taskService.getTaskByFormId(formId);
+        if(!taskResult.isSuccess()||CollectionUtils.isEmpty(taskResult.getResultData())||taskResult.getResultData().size()>1){
+            log.info("AdminResourceInstServiceImpl.finishProcess.getTaskByFormId formId ={},taskList={}", formId, JSON.toJSONString(taskResult.getResultData()));
+            return;
+        }
+        List<TaskDTO> taskList=taskResult.getResultData();
+        TaskDTO task = taskList.get(0);
+//        //找到taskItem
+//        ResultVO<TaskItemDTO> taskItemDTOResultVO=taskItemService.queryTaskItemByTaskId(task.getTaskId());
+//        if(!taskItemDTOResultVO.isSuccess()||taskItemDTOResultVO.getResultData()==null){
+//            log.info("AdminResourceInstServiceImpl.finishProcess.queryTaskItemByTaskId taskId ={},taskList={}", task.getTaskId(), JSON.toJSONString(taskItemDTOResultVO.getResultData()));
+//        }
+//        TaskItemDTO taskItem=taskItemDTOResultVO.getResultData();
+        //根据路由找到下一节点可选项
+        RouteReq routeReq=new RouteReq();
+        routeReq.setProcessId(task.getProcessId());
+        routeReq.setCurNodeId(task.getCurNodeId());
+        ResultVO<List<RouteDTO>> routeResult=routeService.listRoute(routeReq);
+        log.info("AdminResourceInstServiceImpl.finishProcess.routeResult req={} resp={}",JSON.toJSONString(routeReq),JSON.toJSONString(routeResult));
+        if(!routeResult.isSuccess()){
+            return;
+        }
+        //判断下一节点是否有结束节点，如果有，执行该节点
+        List<RouteDTO>  routeList=routeResult.getResultData();
+        for(RouteDTO route : routeList) {
+            if (WorkFlowConst.WF_NODE.NODE_END.getId().equals(route.getNextNodeId())) {
+                // 执行流程下一步
+                taskService.endProcess(resourceProcessUpdateReq.getUpdateStaff(), resourceProcessUpdateReq.getUpdateStaffName(), task.getTaskId(), route.getRouteId());
+//                RouteNextReq routeNextReq =new RouteNextReq();
+//                routeNextReq.setTaskItemId(taskItem.getTaskItemId());
+//                routeNextReq.setNextNodeId(route.getNextNodeId());
+//                routeNextReq.setRouteId(route.getRouteId());
+//                routeNextReq.setTaskId(task.getTaskId());
+//                routeNextReq.setHandlerUserId(resourceProcessUpdateReq.getUpdateStaff());
+//                routeNextReq.setHandlerUserName(resourceProcessUpdateReq.getUpdateStaffName());
+//                routeNextReq.setHandlerMsg("审核结束");
+//                taskService.nextRoute(routeNextReq);
+            }
+        }
+
     }
 
     /**

@@ -1,11 +1,10 @@
 package com.iwhalecloud.retail.order2b.dto.resquest.purapply;
 
+import com.iwhalecloud.retail.dto.PageVO;
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
-
-import com.iwhalecloud.retail.dto.PageVO;
-
-import lombok.Data;
 
 @Data
 public class AddProductReq extends PageVO implements Serializable {

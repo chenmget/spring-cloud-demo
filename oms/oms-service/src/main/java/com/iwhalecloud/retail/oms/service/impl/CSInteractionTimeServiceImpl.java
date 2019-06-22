@@ -7,10 +7,8 @@ import com.iwhalecloud.retail.oms.dto.RankDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.CountGoodsReq;
 import com.iwhalecloud.retail.oms.dto.resquest.CountKeyWordReq;
 import com.iwhalecloud.retail.oms.dto.resquest.EventInteractionTimeReq;
-import com.iwhalecloud.retail.oms.entity.EventInteractionTime;
 import com.iwhalecloud.retail.oms.manager.CSInteractionTimeManager;
 import com.iwhalecloud.retail.oms.service.CSInteractionTimeService;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;

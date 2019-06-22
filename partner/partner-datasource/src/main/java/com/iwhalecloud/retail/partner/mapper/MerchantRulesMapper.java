@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantRuleGetReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantRulesDetailPageReq;
-import com.iwhalecloud.retail.partner.dto.req.MerchantRulesListReq;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import org.apache.ibatis.annotations.Mapper;

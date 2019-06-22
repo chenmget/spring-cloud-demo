@@ -1,12 +1,8 @@
 package com.iwhalecloud.retail.member.service.impl;
 
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.member.dto.request.BindingAddReq;
 import com.iwhalecloud.retail.member.dto.request.BindingDeleteReq;
 import com.iwhalecloud.retail.member.dto.request.BindingQueryReq;
@@ -14,6 +10,9 @@ import com.iwhalecloud.retail.member.dto.request.BindingUpdateReq;
 import com.iwhalecloud.retail.member.dto.response.BindingQueryResp;
 import com.iwhalecloud.retail.member.manager.BindingManager;
 import com.iwhalecloud.retail.member.service.BindingService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 
 @Service

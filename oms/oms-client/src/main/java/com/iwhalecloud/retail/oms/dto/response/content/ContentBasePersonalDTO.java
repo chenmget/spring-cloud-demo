@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.oms.dto.response.content;
 import com.iwhalecloud.retail.oms.dto.*;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
+
 import java.util.List;
 
 

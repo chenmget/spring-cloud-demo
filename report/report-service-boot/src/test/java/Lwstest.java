@@ -1,21 +1,18 @@
-import java.util.ArrayList;
-import java.util.List;
-
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.report.ReportServiceApplication;
+import com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq;
+import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
+import com.iwhalecloud.retail.report.service.ReportOrderService;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.report.ReportServiceApplication;
-import com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq;
-import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
-import com.iwhalecloud.retail.report.service.ReportOrderService;
-import com.iwhalecloud.retail.system.service.CommonOrgService;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @RunWith(SpringRunner.class)

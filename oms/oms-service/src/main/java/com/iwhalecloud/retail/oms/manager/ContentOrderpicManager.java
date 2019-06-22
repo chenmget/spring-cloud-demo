@@ -2,15 +2,11 @@ package com.iwhalecloud.retail.oms.manager;
 
 import com.iwhalecloud.retail.oms.dto.ContentOrderpicDTO;
 import com.iwhalecloud.retail.oms.entity.ContentOrderpic;
-import com.iwhalecloud.retail.oms.dto.response.ContentOrderpicListRespDTO;
-import com.iwhalecloud.retail.oms.entity.ContentPic;
-import org.apache.ibatis.annotations.Param;
-import com.iwhalecloud.retail.oms.entity.ContentOrderpic;
+import com.iwhalecloud.retail.oms.mapper.ContentOrderpicMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.oms.mapper.ContentOrderpicMapper;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

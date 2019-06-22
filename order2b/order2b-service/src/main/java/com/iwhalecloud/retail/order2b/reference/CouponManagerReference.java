@@ -12,7 +12,6 @@ import com.iwhalecloud.retail.order2b.entity.Promotion;
 import com.iwhalecloud.retail.order2b.model.BuilderOrderModel;
 import com.iwhalecloud.retail.order2b.model.CreateOrderLogModel;
 import com.iwhalecloud.retail.rights.dto.request.*;
-import com.iwhalecloud.retail.rights.dto.response.CheckRightsResponseDTO;
 import com.iwhalecloud.retail.rights.service.CouponInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;

@@ -6,10 +6,11 @@ import com.iwhalecloud.retail.partner.dto.req.SupplierAccountAddReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplierAccountQueryReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplierAccountUpdateReq;
 import com.iwhalecloud.retail.partner.entity.SupplierAccount;
+import com.iwhalecloud.retail.partner.mapper.SupplierAccountMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Resource;
-import com.iwhalecloud.retail.partner.mapper.SupplierAccountMapper;
 
 
 @Component

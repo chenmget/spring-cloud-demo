@@ -4,8 +4,6 @@ package com.iwhalecloud.retail.report.service;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.report.dto.MenuDTO;
 
-import java.util.List;
-
 public interface MenuService {
 
     public ResultVO saveMenu(MenuDTO menuDTO);

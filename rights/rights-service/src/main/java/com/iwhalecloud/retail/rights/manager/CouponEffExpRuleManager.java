@@ -1,22 +1,20 @@
 package com.iwhalecloud.retail.rights.manager;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.iwhalecloud.retail.rights.consts.RightsStatusConsts;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.rights.consts.RightsStatusConsts;
 import com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.SaveCouponEffExpRuleReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.UpdateCouponEffExpRuleReqDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponEffExpRuleRespDTO;
 import com.iwhalecloud.retail.rights.entity.CouponEffExpRule;
 import com.iwhalecloud.retail.rights.mapper.CouponEffExpRuleMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
 
 
 @Component

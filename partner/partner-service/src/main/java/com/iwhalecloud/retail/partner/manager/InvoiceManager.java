@@ -4,7 +4,6 @@ package com.iwhalecloud.retail.partner.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.common.ParInvoiceConst;
 import com.iwhalecloud.retail.partner.dto.req.InvoiceListReq;
 import com.iwhalecloud.retail.partner.dto.req.InvoicePageReq;

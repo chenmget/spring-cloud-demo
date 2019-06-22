@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.partner.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.dto.SupplyProductRelDTO;
 import com.iwhalecloud.retail.partner.dto.resp.SupplyProductQryResp;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.partner.manager.SupplyProductRelManager;
 import com.iwhalecloud.retail.partner.service.SupplyProductRelService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Service

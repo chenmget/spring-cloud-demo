@@ -1,9 +1,8 @@
 package com.iwhalecloud.retail.system.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.system.entity.RandomLog;
+import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
 public interface RandomLogMapper extends BaseMapper<RandomLog> {

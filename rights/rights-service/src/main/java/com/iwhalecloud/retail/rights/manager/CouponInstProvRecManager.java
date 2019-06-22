@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.rights.dto.request.QueryCouponInstProvRecNumReqDTO;
 import com.iwhalecloud.retail.rights.entity.CouponInstProvRec;
 import com.iwhalecloud.retail.rights.mapper.CouponInstProvRecMapper;
-import io.swagger.models.auth.In;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;

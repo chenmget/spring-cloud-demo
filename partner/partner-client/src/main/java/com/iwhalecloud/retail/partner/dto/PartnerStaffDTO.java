@@ -6,7 +6,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @ApiModel(value = "对应模型par_partner_staff,对应实体PartnerStaff类")

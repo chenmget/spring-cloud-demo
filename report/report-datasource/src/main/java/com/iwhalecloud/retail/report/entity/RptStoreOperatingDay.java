@@ -1,13 +1,12 @@
 package com.iwhalecloud.retail.report.entity;
 
-import java.io.Serializable;
-
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 @TableName("rpt_partner_operating_day")

@@ -59,7 +59,12 @@ public class ResourceInstCheckReq implements Serializable {
 	@ApiModelProperty(value = "审核说明")
 	private String remark;
 
-	@ApiModelProperty(value = "审核对象")
+	@ApiModelProperty(value = "审核对象id")
 	private String updateStaff;
+
+	@ApiModelProperty(value = "审核对象名字")
+	private String updateStaffName;
+
+
 
 }

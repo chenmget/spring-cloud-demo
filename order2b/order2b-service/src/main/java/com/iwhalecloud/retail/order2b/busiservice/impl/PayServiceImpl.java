@@ -13,7 +13,6 @@ import com.iwhalecloud.retail.order2b.consts.order.TypeStatus;
 import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.PayOrderRequest;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.OffLinePayReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.UpdateOrdOrderReq;
 import com.iwhalecloud.retail.order2b.entity.AdvanceOrder;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.manager.AdvanceOrderManager;

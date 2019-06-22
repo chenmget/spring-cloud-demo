@@ -4,7 +4,6 @@ import lombok.Data;
 import org.springframework.util.StringUtils;
 
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 public class OrderModel implements Serializable {

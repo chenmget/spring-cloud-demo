@@ -1,11 +1,5 @@
 package com.iwhalecloud.retail.goods.service.impl.dubbo;
 
-import java.util.List;
-
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.goods.common.ResultCodeEnum;
 import com.iwhalecloud.retail.goods.dto.ResultVO;
@@ -14,6 +8,11 @@ import com.iwhalecloud.retail.goods.dto.req.ProdSpecValuesGetReq;
 import com.iwhalecloud.retail.goods.dto.resp.ProdSpecValuesGetResp;
 import com.iwhalecloud.retail.goods.manager.ProdSpecValuesManager;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdSpecValuesService;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component("prodSpecValuesService")
 @Service

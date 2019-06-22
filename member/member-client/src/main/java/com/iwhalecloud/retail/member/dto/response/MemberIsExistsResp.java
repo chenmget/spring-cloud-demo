@@ -1,9 +1,9 @@
 package com.iwhalecloud.retail.member.dto.response;
 
-import java.io.Serializable;
-
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class MemberIsExistsResp implements Serializable{

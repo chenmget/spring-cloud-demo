@@ -14,7 +14,6 @@ import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.entity.ProductBase;
-import com.iwhalecloud.retail.goods2b.entity.Type;
 import com.iwhalecloud.retail.goods2b.manager.BrandManager;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
@@ -462,8 +461,17 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     productUpdateReq.setStatus(ProductConst.StatusType.AUDIT.getCode());
                 }
-
+                if (!CollectionUtils.isEmpty(tagList)) {
+                    TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+                    relDeleteByGoodsIdReq.setProductId(productId);
+                    tagRelService.deleteTagRelByProductId(relDeleteByGoodsIdReq);
+                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+                    relBatchAddReq.setTagList(tagList);
+                    relBatchAddReq.setProductId(productId);
+                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
+                }
                 productService.updateProdProduct(productUpdateReq);
+                log.info("ProductBaseServiceImpl.updateProductBase productService.updateProdProduct,req={}", JSON.toJSONString(productUpdateReq));
                 continue;
             }
             if(StringUtils.isBlank(productId)){
@@ -477,16 +485,6 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     par.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
                 }
-                if (!CollectionUtils.isEmpty(tagList)) {
-                    TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
-                    relDeleteByGoodsIdReq.setProductId(productId);
-                    tagRelService.deleteTagRelByProductId(relDeleteByGoodsIdReq);
-                    TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-                    relBatchAddReq.setTagList(tagList);
-                    relBatchAddReq.setProductId(productId);
-                    tagRelService.batchAddTagRelProductId(relBatchAddReq);
-                }
-
                 productService.addProduct(par);
                 continue;
             }

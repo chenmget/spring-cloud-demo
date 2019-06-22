@@ -1,24 +1,20 @@
 package com.iwhalecloud.retail.partner.service.impl;
 
-import java.util.List;
-
+import com.alibaba.dubbo.config.annotation.Service;
+import com.google.common.collect.Lists;
+import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq;
+import com.iwhalecloud.retail.partner.entity.MerchantRules;
+import com.iwhalecloud.retail.partner.manager.MerchantRulesManager;
+import com.iwhalecloud.retail.partner.manager.NewParMerchAddProdManager;
+import com.iwhalecloud.retail.partner.service.NewParMerchAddProdService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import com.alibaba.dubbo.config.annotation.Service;
-import com.google.common.collect.Lists;
-import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq;
-import com.iwhalecloud.retail.partner.dto.resp.ProductIdListResp;
-import com.iwhalecloud.retail.partner.entity.MerchantRules;
-import com.iwhalecloud.retail.partner.manager.ManufacturerManager;
-import com.iwhalecloud.retail.partner.manager.MerchantRulesManager;
-import com.iwhalecloud.retail.partner.manager.NewParMerchAddProdManager;
-import com.iwhalecloud.retail.partner.service.NewParMerchAddProdService;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.List;
 
 @Slf4j
 @Service

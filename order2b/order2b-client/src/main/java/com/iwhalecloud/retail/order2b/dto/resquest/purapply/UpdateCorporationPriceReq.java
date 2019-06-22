@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.order2b.dto.resquest.purapply;
 
-import java.util.List;
-
 import com.iwhalecloud.retail.dto.PageVO;
-
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class UpdateCorporationPriceReq extends PageVO {

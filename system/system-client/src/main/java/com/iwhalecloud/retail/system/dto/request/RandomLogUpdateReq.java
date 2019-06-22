@@ -1,11 +1,10 @@
 package com.iwhalecloud.retail.system.dto.request;
 
-import java.io.Serializable;
-import java.util.Date;
-
+import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-import lombok.Data;
+import java.io.Serializable;
+import java.util.Date;
 
 @Data
 public class RandomLogUpdateReq implements Serializable{

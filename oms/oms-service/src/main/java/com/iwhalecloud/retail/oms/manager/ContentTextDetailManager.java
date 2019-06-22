@@ -2,11 +2,11 @@ package com.iwhalecloud.retail.oms.manager;
 
 import com.iwhalecloud.retail.oms.dto.ContentTextDetailDTO;
 import com.iwhalecloud.retail.oms.entity.ContentTextDetail;
+import com.iwhalecloud.retail.oms.mapper.ContentTextDetailMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.oms.mapper.ContentTextDetailMapper;
 
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -3,6 +3,8 @@ package com.iwhalecloud.retail.order.dbservice.impl;
 
 import com.iwhalecloud.retail.order.OrderServiceApplication;
 import com.iwhalecloud.retail.order.consts.order.ActionFlowType;
+import com.iwhalecloud.retail.order.dbservice.ContractOrderService;
+import com.iwhalecloud.retail.order.dbservice.OrderZFlowService;
 import com.iwhalecloud.retail.order.dto.model.ContractPInfoModel;
 import com.iwhalecloud.retail.order.dto.resquest.BuilderOrderRequest;
 import com.iwhalecloud.retail.order.dto.resquest.PayOrderRequest;
@@ -10,8 +12,6 @@ import com.iwhalecloud.retail.order.dto.resquest.SendGoodsRequest;
 import com.iwhalecloud.retail.order.dto.resquest.UpdateOrderStatusRequest;
 import com.iwhalecloud.retail.order.manager.OrderZFlowManager;
 import com.iwhalecloud.retail.order.model.OrderUpdateAttrEntity;
-import com.iwhalecloud.retail.order.dbservice.ContractOrderService;
-import com.iwhalecloud.retail.order.dbservice.OrderZFlowService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,14 +2,11 @@ package com.iwhalecloud.retail.rights.dto.request;
 
 import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.io.Serializable;
-
-import javax.validation.constraints.NotNull;
-
+import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-import lombok.Data;
+import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 
 @Data
 public class CheckRightsRequestDTO extends AbstractRequest implements Serializable{

@@ -4,9 +4,7 @@ import com.iwhalecloud.retail.oms.dto.ReportEventShopRankDTO;
 import com.iwhalecloud.retail.oms.dto.ReportEventTimeIntervalDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.report.ReportOperationDeskReq;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 public interface EventOperationDeskService {
 

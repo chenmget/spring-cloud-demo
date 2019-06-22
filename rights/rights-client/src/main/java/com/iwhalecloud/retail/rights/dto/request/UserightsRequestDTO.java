@@ -1,10 +1,10 @@
 package com.iwhalecloud.retail.rights.dto.request;
 
-import java.io.Serializable;
-
 import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class UserightsRequestDTO extends AbstractRequest implements Serializable{

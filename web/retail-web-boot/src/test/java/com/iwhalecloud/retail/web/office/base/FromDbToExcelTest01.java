@@ -7,12 +7,9 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.io.FileOutputStream;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 public class FromDbToExcelTest01 {
     public static void main(String[] args) throws Exception {

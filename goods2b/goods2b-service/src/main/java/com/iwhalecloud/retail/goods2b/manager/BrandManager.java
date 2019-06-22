@@ -12,7 +12,6 @@ import com.iwhalecloud.retail.goods2b.dto.req.BrandUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.BrandUrlResp;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.mapper.BrandMapper;
-import com.iwhalecloud.retail.system.dto.UserDTO;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;

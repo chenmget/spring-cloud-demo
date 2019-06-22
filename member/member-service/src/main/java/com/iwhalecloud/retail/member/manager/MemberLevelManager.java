@@ -7,10 +7,11 @@ import com.iwhalecloud.retail.member.dto.MemberLevelDTO;
 import com.iwhalecloud.retail.member.dto.request.MemberLevelQueryReq;
 import com.iwhalecloud.retail.member.dto.response.MemberLevelQueryResp;
 import com.iwhalecloud.retail.member.entity.MemberLevel;
+import com.iwhalecloud.retail.member.mapper.MemberLevelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Resource;
-import com.iwhalecloud.retail.member.mapper.MemberLevelMapper;
 
 
 @Component

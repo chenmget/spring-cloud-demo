@@ -7,7 +7,6 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.TestBase;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
-import com.iwhalecloud.retail.workflow.dto.req.RouteNextReq;
 import org.junit.Test;
 
 import javax.annotation.Resource;

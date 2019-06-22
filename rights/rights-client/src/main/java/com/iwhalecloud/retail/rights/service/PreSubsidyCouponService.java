@@ -1,7 +1,10 @@
 package com.iwhalecloud.retail.rights.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.rights.dto.request.*;
+import com.iwhalecloud.retail.rights.dto.request.AddPreSubsidyCouponReqDTO;
+import com.iwhalecloud.retail.rights.dto.request.AddPromotionProductReqDTO;
+import com.iwhalecloud.retail.rights.dto.request.QueryPreSubsidyReqDTO;
+import com.iwhalecloud.retail.rights.dto.request.UpdatePreSubsidyCouponReqDTO;
 import com.iwhalecloud.retail.rights.dto.response.MktResCouponRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.PreSubsidyProductPromResqDTO;
 import com.iwhalecloud.retail.rights.dto.response.QueryPreSubsidyCouponResqDTO;

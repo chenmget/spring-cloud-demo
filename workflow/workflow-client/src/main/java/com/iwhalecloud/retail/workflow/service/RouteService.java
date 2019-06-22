@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.workflow.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.dto.RouteDTO;
+import com.iwhalecloud.retail.workflow.dto.req.RouteReq;
 
 import java.util.List;
 
@@ -39,5 +40,13 @@ public interface RouteService{
      * @return
      */
     ResultVO<List<RouteDTO>> listRouteByCondition(String routeName);
+
+    /**
+     * 查询路由列表
+     *
+     * @param
+     * @return
+     */
+    ResultVO<List<RouteDTO>> listRoute(RouteReq req);
 
 }

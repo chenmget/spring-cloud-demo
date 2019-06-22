@@ -1,11 +1,11 @@
 package com.iwhalecloud.retail.web.controller.member.requst;
 
-import java.io.Serializable;
-
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
+
+import java.io.Serializable;
 
 @Data
 @ApiModel(value = "登录请求对象")

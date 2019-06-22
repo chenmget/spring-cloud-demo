@@ -2,8 +2,8 @@ package com.iwhalecloud.retail.partner.service;
 
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.partner.dto.PartnerDTO;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.partner.dto.PartnerDTO;
 import com.iwhalecloud.retail.partner.dto.req.PartnerPageReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplierReq;
 

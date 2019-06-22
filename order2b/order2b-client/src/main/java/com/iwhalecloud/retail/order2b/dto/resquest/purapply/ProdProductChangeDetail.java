@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.order2b.dto.resquest.purapply;
 
-import java.util.Date;
-
 import com.iwhalecloud.retail.dto.PageVO;
-
 import lombok.Data;
+
+import java.util.Date;
 
 @Data
 public class ProdProductChangeDetail extends PageVO {

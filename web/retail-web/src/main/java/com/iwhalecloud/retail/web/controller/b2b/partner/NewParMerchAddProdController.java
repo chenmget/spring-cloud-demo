@@ -1,27 +1,16 @@
 package com.iwhalecloud.retail.web.controller.b2b.partner;
 
-import java.util.List;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.partner.dto.ManufacturerDTO;
 import com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq;
-import com.iwhalecloud.retail.partner.dto.req.ManufacturerSaveReq;
-import com.iwhalecloud.retail.partner.dto.resp.ProductIdListResp;
-import com.iwhalecloud.retail.partner.service.ManufacturerService;
 import com.iwhalecloud.retail.partner.service.NewParMerchAddProdService;
-
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController

@@ -2,12 +2,9 @@ package com.iwhalecloud.retail.partner.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.dto.PartnerAccountDTO;
-import com.iwhalecloud.retail.partner.dto.PartnerDTO;
 import com.iwhalecloud.retail.partner.dto.req.PartnerAccountPageReq;
-import com.iwhalecloud.retail.partner.dto.req.PartnerPageReq;
 import com.iwhalecloud.retail.partner.entity.PartnerAccount;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

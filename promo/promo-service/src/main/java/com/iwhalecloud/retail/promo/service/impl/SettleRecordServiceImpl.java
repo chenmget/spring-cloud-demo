@@ -18,7 +18,6 @@ import com.iwhalecloud.retail.partner.service.MerchantAccountService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.SettleRecordDTO;
-import com.iwhalecloud.retail.promo.entity.SettleRecord;
 import com.iwhalecloud.retail.promo.manager.SettleRecordManager;
 import com.iwhalecloud.retail.promo.service.SettleRecordService;
 import com.iwhalecloud.retail.promo.utils.DateUtil;
@@ -35,7 +34,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**

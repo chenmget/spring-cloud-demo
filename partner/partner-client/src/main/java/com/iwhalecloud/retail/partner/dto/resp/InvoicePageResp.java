@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.partner.dto.resp;
 
-import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

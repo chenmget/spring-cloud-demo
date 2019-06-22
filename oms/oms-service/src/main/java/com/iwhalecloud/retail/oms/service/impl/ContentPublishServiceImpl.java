@@ -1,16 +1,14 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
-import com.iwhalecloud.retail.oms.dto.ContentPublishDTO;
-import com.iwhalecloud.retail.oms.entity.ContentPublish;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
-import lombok.extern.slf4j.Slf4j;
+import com.iwhalecloud.retail.oms.dto.ContentPublishDTO;
 import com.iwhalecloud.retail.oms.manager.ContentPublishManager;
 import com.iwhalecloud.retail.oms.service.ContentPublishService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 

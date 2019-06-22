@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.warehouse.dto.request;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -15,11 +14,11 @@ import java.util.List;
 @Data
 public class ResourceReqDetailQueryReq extends PageVO implements Serializable {
 
-    /**
-     * 记录营销资源申请单标识
-     */
     @ApiModelProperty(value = "记录营销资源申请单标识")
     private String mktResReqId;
+
+    @ApiModelProperty(value = "记录营销资源申请单标识集合")
+    private List<String> mktResReqIdList;
 
     @ApiModelProperty(value = "申请单号")
     private String reqCode;
@@ -66,4 +65,7 @@ public class ResourceReqDetailQueryReq extends PageVO implements Serializable {
 
     @ApiModelProperty(value = "审核结束时间")
     private String statusEndDate;
+
+    @ApiModelProperty(value = "审核人id")
+    private String updateStaff;
 }

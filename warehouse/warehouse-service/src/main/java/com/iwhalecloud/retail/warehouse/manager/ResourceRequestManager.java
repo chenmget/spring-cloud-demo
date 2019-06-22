@@ -71,4 +71,18 @@ public class ResourceRequestManager{
         return  resourceRequestMapper.selectOne(queryWrapper);
     }
 
+    /**
+     * 修改申请单状态
+     * @param req
+     * @return
+     */
+    public int updateResourceRequestStatus(ResourceRequestUpdateReq req){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(ResourceRequest.FieldNames.mktResReqId.getTableFieldName(),req.getMktResReqId());
+        queryWrapper.eq(ResourceRequest.FieldNames.createDate.getTableFieldName(),req.getCreateDate());
+        ResourceRequest request = new ResourceRequest();
+        request.setStatusCd(req.getStatusCd());
+        return resourceRequestMapper.update(request,queryWrapper);
+    }
+
 }

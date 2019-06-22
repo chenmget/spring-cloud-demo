@@ -18,11 +18,7 @@ import com.iwhalecloud.retail.order2b.dto.response.OrderPayInfoResp;
 import com.iwhalecloud.retail.order2b.dto.response.ToPayResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.PayOrderRequest;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.UpdateOrderStatusRequest;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.OffLinePayReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.OrderPayInfoReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.ToPayReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.UpdateOrdOrderReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.pay.*;
 import com.iwhalecloud.retail.order2b.entity.AdvanceOrder;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.manager.AdvanceOrderManager;
@@ -30,6 +26,7 @@ import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.manager.OrderZFlowManager;
 import com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel;
 import com.iwhalecloud.retail.order2b.model.SaveLogModel;
+import com.iwhalecloud.retail.order2b.reference.BestPayManagerReference;
 import com.iwhalecloud.retail.order2b.reference.MemberInfoReference;
 import com.iwhalecloud.retail.order2b.reference.TaskManagerReference;
 import com.iwhalecloud.retail.order2b.service.BestPayEnterprisePaymentService;
@@ -79,6 +76,9 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
     
     @Autowired
     private OrderZFlowManager orderZFlowManager;
+
+    @Autowired
+    private BestPayManagerReference bestPayManagerReference;
     
     @Value("${pay.type}")
     private String payType;
@@ -245,6 +245,11 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
         log.info("BestPayEnterprisePaymentOpenServiceImpl.offLinePay req={}", JSON.toJSONString(req));
         int i = bpepPayLogService.offLinePay(req);
         return ResultVO.success();
+    }
+
+    @Override
+    public ToPayResp handlePayData(ToBestPayReq req) {
+        return bestPayManagerReference.handlePayData(req);
     }
 
 }

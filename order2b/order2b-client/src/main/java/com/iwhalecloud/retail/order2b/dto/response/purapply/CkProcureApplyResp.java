@@ -1,15 +1,13 @@
 package com.iwhalecloud.retail.order2b.dto.response.purapply;
 
-import java.io.Serializable;
-import java.util.List;
-
 import com.iwhalecloud.retail.dto.PageVO;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
-
 import lombok.Data;
+
+import java.io.Serializable;
+import java.util.List;
 
 @Data
 public class CkProcureApplyResp extends PageVO implements Serializable {

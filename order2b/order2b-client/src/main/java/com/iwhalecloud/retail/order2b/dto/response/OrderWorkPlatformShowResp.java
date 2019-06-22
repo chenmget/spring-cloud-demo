@@ -2,11 +2,9 @@ package com.iwhalecloud.retail.order2b.dto.response;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.models.auth.In;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.List;
 
 @Data
 @ApiModel(value = "订单现量统计响应类")

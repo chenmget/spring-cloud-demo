@@ -156,6 +156,20 @@ public class GoodsSaleNumServiceImpl implements GoodsSaleNumService {
         return ResultVO.success(true);
     }
 
+    @Override
+    public ResultVO<List<GoodsSaleNumDTO>> queryProductSaleOrderByProductId(String productId) {
+        List<GoodsSaleNumDTO> list = new ArrayList<>();
+        List<GoodsSaleOrderDTO> goodsSaleOrderDTOs = goodSaleOrderService.getGoodsSaleNumByProductId(productId);
+        if(!CollectionUtils.isEmpty(goodsSaleOrderDTOs)){
+            for(GoodsSaleOrderDTO goodsSaleOrderDTO:goodsSaleOrderDTOs){
+                GoodsSaleNumDTO goodsSaleNumDTO = new GoodsSaleNumDTO();
+                BeanUtils.copyProperties(goodsSaleOrderDTO,goodsSaleNumDTO);
+                list.add(goodsSaleNumDTO);
+            }
+        }
+        return ResultVO.success(list);
+    }
+
     private void setGoodsImageUrl(List<GoodsSaleNumDTO> goodsDTOList, List<String> productIds) {
         // 查询商品默认图片
         List<ProdFileDTO> prodFileDTOList = prodFileManager.queryProductImage(productIds, FileConst.SubType.THUMBNAILS_SUB);

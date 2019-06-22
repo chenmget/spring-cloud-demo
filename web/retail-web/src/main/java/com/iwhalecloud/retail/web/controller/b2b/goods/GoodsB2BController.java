@@ -742,6 +742,38 @@ public class GoodsB2BController extends GoodsBaseController {
 
     }
 
+    @ApiOperation(value = "查询产品销售数据量", notes = "查询产品销售数据量")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/queryProductSaleOrder")
+    ResultVO<List<GoodsSaleNumDTO>> queryProductSaleOrder() {
+        log.info("GoodsController queryProductSaleOrder ");
+        List<GoodsSaleNumDTO> list = new ArrayList<>();
+        ResultVO<List<GoodsSaleNumDTO>> listResultVO = goodsSaleNumService.getProductSaleOrder();
+        if (listResultVO.isSuccess()) {
+            list = listResultVO.getResultData();
+        }
+        return ResultVO.success(list);
+    }
+
+    @ApiOperation(value = "查询指定产品ID当天销售数据量", notes = "查询指定产品ID当天销售数据量")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/queryProductSaleOrderByProductId")
+    ResultVO<List<GoodsSaleNumDTO>> queryProductSaleOrderByProductId(@RequestParam(value = "productId") String productId) {
+        log.info("GoodsController queryProductSaleOrderByProductId productId = {}", productId);
+        List<GoodsSaleNumDTO> list = new ArrayList<>();
+        ResultVO<List<GoodsSaleNumDTO>> listResultVO = goodsSaleNumService.queryProductSaleOrderByProductId(productId);
+        if (listResultVO.isSuccess()) {
+            list = listResultVO.getResultData();
+        }
+        return ResultVO.success(list);
+    }
+
     @ApiOperation(value = "根据商品ID和产品id省包推荐商品", notes = "根据商品ID和产品id省包推荐商品")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),

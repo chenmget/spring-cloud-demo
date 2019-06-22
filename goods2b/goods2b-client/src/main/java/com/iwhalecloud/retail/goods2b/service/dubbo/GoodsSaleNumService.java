@@ -23,4 +23,6 @@ public interface GoodsSaleNumService {
     ResultVO<List<GoodsSaleNumDTO>> getProductSaleOrder();
 
     public ResultVO<Boolean> cleanCacheProductSaleNum();
+
+    ResultVO<List<GoodsSaleNumDTO>> queryProductSaleOrderByProductId(String productId);
 }

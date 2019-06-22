@@ -21,7 +21,7 @@ spring:
     #    host: 127.0.0.1
     #    port: 6379
     cluster:
-      nodes: 10.45.47.129:7021,10.45.47.129:7022,10.45.47.129:7023,10.45.47.129:7024,10.45.47.129:7025,10.45.47.129:7026
+      nodes: 10.45.46.241:7001,10.45.46.242:7001,10.45.46.243:7001
       timeout: 10000
       max-redirects: 3
     expireSeconds: 86400 #一天
@@ -44,7 +44,7 @@ spring:
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://10.45.46.67:8866/YHJDB_TEST?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
   username: szxtest
   #password: szxtest.2019
   password: kw0KpgWfOpAVqO4sdMTlLIcXrbbZOIXl4gwhUZqqNehmasEh/58907TPY7kguZ91Ke7rGLUVEkX5YpOBemm18g==

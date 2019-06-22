@@ -769,11 +769,14 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }
         }
         if(CollectionUtils.isEmpty(productDetail.getTagList())){
-            productDetail.setTagList(listTagRelId);
+            List<String> distinctList = listTagRelId.stream().distinct().collect(Collectors.toList());
+            productDetail.setTagList(distinctList);
         } else {
             List<String> tagList = productDetail.getTagList();
             if (!CollectionUtils.isEmpty(listTagRelId)) {
                 tagList.addAll(listTagRelId);
+                List<String> distinctList = tagList.stream().distinct().collect(Collectors.toList());
+                productDetail.setTagList(distinctList);
             }
         }
 

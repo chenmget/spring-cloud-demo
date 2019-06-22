@@ -3,19 +3,17 @@ package com.iwhalecloud.retail.goods2b.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsRulesConst;
-import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
-import com.iwhalecloud.retail.goods2b.entity.Goods;
 import com.iwhalecloud.retail.goods2b.entity.GoodsRules;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsMapper;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsRulesMapper;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class GoodsRulesManager {

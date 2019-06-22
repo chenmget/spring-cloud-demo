@@ -8,7 +8,6 @@ import com.iwhalecloud.retail.workflow.dto.req.TaskPageReq;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskPageResp;
 import com.iwhalecloud.retail.workflow.dto.resp.TaskPageResp;
 import com.iwhalecloud.retail.workflow.entity.Task;
-import com.iwhalecloud.retail.workflow.model.TaskItemDetailModel;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 

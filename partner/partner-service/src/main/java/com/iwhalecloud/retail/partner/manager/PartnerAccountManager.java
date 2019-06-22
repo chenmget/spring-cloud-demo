@@ -3,14 +3,13 @@ package com.iwhalecloud.retail.partner.manager;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.PartnerAccountDTO;
-import com.iwhalecloud.retail.partner.dto.PartnerDTO;
 import com.iwhalecloud.retail.partner.dto.req.PartnerAccountPageReq;
-import com.iwhalecloud.retail.partner.dto.req.PartnerPageReq;
 import com.iwhalecloud.retail.partner.entity.PartnerAccount;
+import com.iwhalecloud.retail.partner.mapper.PartnerAccountMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Resource;
-import com.iwhalecloud.retail.partner.mapper.PartnerAccountMapper;
 
 
 @Component

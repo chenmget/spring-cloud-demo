@@ -2,13 +2,13 @@ package com.iwhalecloud.retail.web.controller.goods;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods.dto.GoodsDTO;
 import com.iwhalecloud.retail.goods.dto.GoodsGroupDTO;
 import com.iwhalecloud.retail.goods.dto.req.GoodGroupQueryReq;
 import com.iwhalecloud.retail.goods.dto.req.GoodsGroupAddReq;
 import com.iwhalecloud.retail.goods.dto.req.GoodsGroupUpdateReq;
 import com.iwhalecloud.retail.goods.service.dubbo.GoodsGroupService;
-import com.iwhalecloud.retail.dto.ResultVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;

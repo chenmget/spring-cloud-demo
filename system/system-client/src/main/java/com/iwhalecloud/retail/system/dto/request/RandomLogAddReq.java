@@ -1,9 +1,9 @@
 package com.iwhalecloud.retail.system.dto.request;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import lombok.Data;
 
 @Data
 public class RandomLogAddReq implements Serializable{

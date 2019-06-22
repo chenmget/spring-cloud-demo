@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.promo.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
 import com.iwhalecloud.retail.promo.entity.ActivityParticipant;
 import org.apache.ibatis.annotations.Mapper;

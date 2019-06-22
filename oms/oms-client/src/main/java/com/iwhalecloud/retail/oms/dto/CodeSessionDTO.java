@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.oms.dto;
 
-import java.io.Serializable;
-
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 小程序通过code获取用户的appid信息

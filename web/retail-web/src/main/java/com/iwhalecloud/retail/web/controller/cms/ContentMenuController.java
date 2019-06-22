@@ -1,10 +1,11 @@
 package com.iwhalecloud.retail.web.controller.cms;
 
-import java.util.List;
-
-
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSONObject;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.oms.OmsCommonConsts;
+import com.iwhalecloud.retail.oms.dto.CataLogDTO;
+import com.iwhalecloud.retail.oms.service.ContentMenuService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -12,15 +13,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import com.alibaba.dubbo.config.annotation.Reference;
-import com.iwhalecloud.retail.oms.OmsCommonConsts;
-import com.iwhalecloud.retail.oms.dto.CataLogDTO;
-import com.iwhalecloud.retail.oms.service.ContentMenuService;
+import java.util.List;
 
 /**
  * @Auther: lin.wh

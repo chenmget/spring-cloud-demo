@@ -10,9 +10,6 @@ import com.iwhalecloud.retail.oms.dto.resquest.CloudShelfPageReq;
 import com.iwhalecloud.retail.oms.dto.resquest.cloud.CloudShelfAddReq;
 import com.iwhalecloud.retail.oms.dto.resquest.cloud.CloudShelfRequestDTO;
 import com.iwhalecloud.retail.oms.service.CloudShelfService;
-import com.iwhalecloud.retail.web.annotation.UserLoginToken;
-import com.iwhalecloud.retail.web.controller.BaseController;
-import com.iwhalecloud.retail.web.interceptor.UserContext;
 import com.iwhalecloud.retail.partner.dto.PartnerShopDTO;
 import com.iwhalecloud.retail.partner.service.PartnerShopService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
@@ -20,10 +17,11 @@ import com.iwhalecloud.retail.system.dto.request.RegionsGetReq;
 import com.iwhalecloud.retail.system.dto.response.RegionsGetResp;
 import com.iwhalecloud.retail.system.service.RegionsService;
 import com.iwhalecloud.retail.system.service.UserService;
-
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
+import com.iwhalecloud.retail.web.controller.BaseController;
+import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.bind.annotation.*;
 

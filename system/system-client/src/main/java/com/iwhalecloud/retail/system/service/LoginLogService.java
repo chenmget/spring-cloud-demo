@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.system.service;
 
-import java.util.Date;
-
 import com.iwhalecloud.retail.system.dto.LoginLogDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 

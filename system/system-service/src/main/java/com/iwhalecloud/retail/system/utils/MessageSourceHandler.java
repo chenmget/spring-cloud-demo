@@ -5,8 +5,6 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Locale;
-
 /**
  * 国际化工具类.系统需根据要展示的编码做拦截，设置Locale<br>
  * 设置Locale的方法：

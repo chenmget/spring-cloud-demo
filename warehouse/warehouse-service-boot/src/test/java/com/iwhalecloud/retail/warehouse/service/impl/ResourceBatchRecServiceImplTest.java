@@ -2,8 +2,8 @@ package com.iwhalecloud.retail.warehouse.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
-import com.iwhalecloud.retail.warehouse.dto.ResourceBatchRecDTO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
+import com.iwhalecloud.retail.warehouse.dto.ResourceBatchRecDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;

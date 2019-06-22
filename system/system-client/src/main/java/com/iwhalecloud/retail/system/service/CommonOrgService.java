@@ -4,12 +4,10 @@ package com.iwhalecloud.retail.system.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
-import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgReq;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgResp;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgListReq;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgPageReq;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionPageReq;
 
 import java.util.List;
 

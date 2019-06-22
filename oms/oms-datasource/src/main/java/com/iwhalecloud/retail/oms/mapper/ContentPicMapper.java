@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.oms.dto.ContentPicDTO;
 import com.iwhalecloud.retail.oms.entity.ContentPic;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 /**
  * @Class: ContentPicMapper

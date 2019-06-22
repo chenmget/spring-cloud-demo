@@ -1,11 +1,10 @@
 package com.iwhalecloud.retail.member.dto.request;
 
-import java.io.Serializable;
-
-import org.hibernate.validator.constraints.NotBlank;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.hibernate.validator.constraints.NotBlank;
+
+import java.io.Serializable;
 
 @Data
 public class BindingUpdateReq implements Serializable{

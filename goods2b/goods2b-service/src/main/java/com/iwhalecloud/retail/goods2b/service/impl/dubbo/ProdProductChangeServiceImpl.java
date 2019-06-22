@@ -1,22 +1,16 @@
 package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.iwhalecloud.retail.goods2b.dto.ProdProductChangeDTO;
-import com.iwhalecloud.retail.goods2b.dto.ProdProductChangeDetailDTO;
 import com.iwhalecloud.retail.goods2b.entity.ProdProductChange;
-import com.iwhalecloud.retail.goods2b.entity.ProdProductChangeDetail;
 import com.iwhalecloud.retail.goods2b.manager.ProdProductChangeDetailManager;
 import com.iwhalecloud.retail.goods2b.manager.ProdProductChangeManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProdProductChangeService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Created by Administrator on 2019/5/16.

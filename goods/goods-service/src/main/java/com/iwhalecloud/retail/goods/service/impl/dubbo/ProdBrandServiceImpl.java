@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.goods.service.impl.dubbo;
 
-import java.util.List;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.goods.common.ResultCodeEnum;
 import com.iwhalecloud.retail.goods.dto.ResultVO;
@@ -13,14 +11,14 @@ import com.iwhalecloud.retail.goods.dto.resp.ProdBrandGetResp;
 import com.iwhalecloud.retail.goods.entity.ProdBrand;
 import com.iwhalecloud.retail.goods.manager.ProdBrandManager;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdBrandService;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Component("prodBrandService")

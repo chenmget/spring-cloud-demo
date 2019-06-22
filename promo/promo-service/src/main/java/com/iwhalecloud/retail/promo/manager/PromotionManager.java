@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.promo.manager;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.entity.Promotion;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.promo.mapper.PromotionMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;

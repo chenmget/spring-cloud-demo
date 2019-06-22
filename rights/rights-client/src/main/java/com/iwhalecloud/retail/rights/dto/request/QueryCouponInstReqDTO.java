@@ -3,10 +3,9 @@ package com.iwhalecloud.retail.rights.dto.request;
 import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 /**
  * 优惠券实例查询

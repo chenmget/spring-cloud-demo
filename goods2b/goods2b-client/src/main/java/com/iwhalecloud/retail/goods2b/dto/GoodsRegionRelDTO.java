@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.goods2b.dto;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
 
 /**

@@ -3,17 +3,14 @@ package com.iwhalecloud.retail.web.controller.partner;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.partner.dto.PartnerAccountDTO;
-import com.iwhalecloud.retail.partner.dto.PartnerDTO;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.req.PartnerAccountPageReq;
-import com.iwhalecloud.retail.partner.dto.req.PartnerPageReq;
-import io.swagger.annotations.*;
-import org.springframework.web.bind.annotation.*;
-
-import lombok.extern.slf4j.Slf4j;
 import com.iwhalecloud.retail.partner.service.PartnerAccountService;
+import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController

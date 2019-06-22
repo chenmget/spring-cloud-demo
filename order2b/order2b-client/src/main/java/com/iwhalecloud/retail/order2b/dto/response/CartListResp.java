@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.order2b.dto.response;
 import com.iwhalecloud.retail.order2b.dto.model.cart.CartItemDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.util.List;

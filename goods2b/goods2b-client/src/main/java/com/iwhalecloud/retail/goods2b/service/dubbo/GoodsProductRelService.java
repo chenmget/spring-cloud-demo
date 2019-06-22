@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.goods2b.service.dubbo;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ActivityGoodsDTO;
-import com.iwhalecloud.retail.goods2b.dto.BuyCountCheckDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsProductRelEditReq;

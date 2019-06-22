@@ -1,20 +1,14 @@
 package com.iwhalecloud.retail.web.controller.order;
 
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.oms.dto.ListGoodsRankingsDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.ListGoodsRankingsReq;
 import com.iwhalecloud.retail.oms.service.GoodsRankingsService;
-import com.iwhalecloud.retail.dto.ResultVO;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController

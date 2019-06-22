@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRightDTO;
-import com.iwhalecloud.retail.goods2b.entity.Goods;
 import com.iwhalecloud.retail.goods2b.entity.GoodsRight;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsRightMapper;
 import org.springframework.beans.BeanUtils;

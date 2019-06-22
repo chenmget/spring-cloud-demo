@@ -1,17 +1,16 @@
 package com.iwhalecloud.retail.web.controller.cloud;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.oms.OmsCommonConsts;
+import com.iwhalecloud.retail.oms.dto.BindContentDTO;
+import com.iwhalecloud.retail.oms.dto.BindProductDTO;
 import com.iwhalecloud.retail.oms.service.OperatingPositionBindService;
+import com.iwhalecloud.retail.web.controller.BaseController;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.alibaba.dubbo.config.annotation.Reference;
-import com.iwhalecloud.retail.oms.OmsCommonConsts;
-import com.iwhalecloud.retail.oms.dto.BindContentDTO;
-import com.iwhalecloud.retail.oms.dto.BindProductDTO;
-import com.iwhalecloud.retail.web.controller.BaseController;
 
 /**
  * @Auther: lin.wh

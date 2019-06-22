@@ -6,7 +6,6 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.constant.Constant;
-import com.iwhalecloud.retail.promo.entity.ActivityChange;
 import com.iwhalecloud.retail.promo.manager.ActivityChangeManager;
 import com.iwhalecloud.retail.promo.manager.MarketingActivityManager;
 import com.iwhalecloud.retail.promo.service.MarketingActivityChangeFinalReviewNotPassService;

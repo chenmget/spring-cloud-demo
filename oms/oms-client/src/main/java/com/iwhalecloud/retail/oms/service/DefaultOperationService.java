@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.oms.dto.DefaultOperatingDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.cloud.DefaultOperatingQueryReq;
 
-import java.util.List;
-
 public interface DefaultOperationService{
 
     /**

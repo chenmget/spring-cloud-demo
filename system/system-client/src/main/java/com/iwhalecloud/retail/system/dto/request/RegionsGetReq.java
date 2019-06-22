@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.system.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 @Data
 public class RegionsGetReq implements Serializable{

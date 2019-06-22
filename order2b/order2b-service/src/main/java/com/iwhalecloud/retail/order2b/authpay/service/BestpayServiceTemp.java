@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.order2b.authpay.service;
 
-import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.order2b.authpay.handler.BestpayHandler;
 import com.iwhalecloud.retail.order2b.authpay.util.ZopClientUtil;
 import com.ztesoft.zop.common.message.ResponseResult;

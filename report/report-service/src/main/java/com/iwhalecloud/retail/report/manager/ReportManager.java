@@ -1,17 +1,14 @@
 package com.iwhalecloud.retail.report.manager;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
 import com.iwhalecloud.retail.report.dto.response.ProductListAllResp;
 import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
 import com.iwhalecloud.retail.report.mapper.ReportMapper;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 
 @Component

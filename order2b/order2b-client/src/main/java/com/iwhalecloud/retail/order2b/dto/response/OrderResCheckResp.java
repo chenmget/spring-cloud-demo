@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.order2b.dto.response;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 

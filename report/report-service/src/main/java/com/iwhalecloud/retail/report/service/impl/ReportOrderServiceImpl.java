@@ -1,26 +1,18 @@
 package com.iwhalecloud.retail.report.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.report.dto.MenuDTO;
-import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
 import com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq;
 import com.iwhalecloud.retail.report.dto.request.ReportOrderNbrDaoReq;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
-import com.iwhalecloud.retail.report.entity.Menu;
-import com.iwhalecloud.retail.report.manager.MenuManager;
-import com.iwhalecloud.retail.report.manager.ReportManager;
 import com.iwhalecloud.retail.report.manager.ReportOrderManager;
 import com.iwhalecloud.retail.report.service.ReportOrderService;
-import com.iwhalecloud.retail.report.service.ReportService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
 @Service
 public class ReportOrderServiceImpl implements ReportOrderService {
 	 

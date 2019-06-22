@@ -1,21 +1,19 @@
 package com.iwhalecloud.retail.system.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.UserCollectionDTO;
 import com.iwhalecloud.retail.system.dto.request.UserCollectionCancelReq;
 import com.iwhalecloud.retail.system.dto.request.UserCollectionJudgeReq;
 import com.iwhalecloud.retail.system.dto.request.UserCollectionListReq;
 import com.iwhalecloud.retail.system.entity.UserCollection;
+import com.iwhalecloud.retail.system.manager.UserCollectionManager;
+import com.iwhalecloud.retail.system.service.UserCollectionService;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.system.manager.UserCollectionManager;
-import com.iwhalecloud.retail.system.service.UserCollectionService;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;

@@ -7,8 +7,6 @@ import com.iwhalecloud.retail.oms.dto.resquest.report.ReportOperationDeskReq;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 

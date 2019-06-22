@@ -3,19 +3,18 @@ package com.iwhalecloud.retail.member;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.dto.SourceFromContext;
-import com.iwhalecloud.retail.member.dto.request.*;
+import com.iwhalecloud.retail.member.dto.request.GroupMerchantAddReq;
+import com.iwhalecloud.retail.member.dto.request.GroupMerchantDeleteReq;
+import com.iwhalecloud.retail.member.dto.request.GroupMerchantQueryReq;
+import com.iwhalecloud.retail.member.dto.request.GroupMerchantUpdateReq;
 import com.iwhalecloud.retail.member.dto.response.GroupMerchantQueryResp;
-import com.iwhalecloud.retail.member.dto.response.GroupQueryResp;
 import com.iwhalecloud.retail.member.service.GroupMerchantService;
-import com.iwhalecloud.retail.member.service.GroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Date;
 
 /**
  * @Author: wang.jiaxin

@@ -4,11 +4,11 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.camera.service.ICameraService;
 import com.iwhalecloud.retail.consts.RetailConst;
 import com.iwhalecloud.retail.entity.VisitDataEntity;
-import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.param.req.QueryVipInfoReq;
 import com.iwhalecloud.retail.param.resp.*;
 import com.iwhalecloud.retail.param.resp.dto.RepeatDetailsDto;
 import com.iwhalecloud.retail.param.resp.dto.VisitHistoryDto;
+import com.iwhalecloud.retail.web.controller.BaseController;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 

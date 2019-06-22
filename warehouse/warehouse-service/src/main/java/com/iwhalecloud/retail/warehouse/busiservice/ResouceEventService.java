@@ -4,7 +4,6 @@ package com.iwhalecloud.retail.warehouse.busiservice;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceEventDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.EventAndDetailReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResouceEventUpdateReq;
 
 public interface ResouceEventService{
     /**

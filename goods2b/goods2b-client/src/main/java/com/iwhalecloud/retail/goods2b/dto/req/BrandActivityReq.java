@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.goods2b.dto.req;
 
-import com.iwhalecloud.retail.dto.AbstractRequest;
 import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

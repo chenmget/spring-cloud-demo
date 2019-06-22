@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.promo.entity.ActSupRecord;
 import com.iwhalecloud.retail.promo.mapper.ActSupRecordMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Resource;
 import java.util.Date;
 

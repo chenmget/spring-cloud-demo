@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.warehouse.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.warehouse.entity.ResourceReqItem;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

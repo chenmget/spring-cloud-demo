@@ -1,9 +1,7 @@
 package com.iwhalecloud.retail.promo.dto.req;
 
-import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
 

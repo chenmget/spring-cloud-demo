@@ -4,14 +4,9 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.report.dto.request.ReportCityTotalInvReq;
-import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
-import com.iwhalecloud.retail.report.dto.response.ProductListAllResp;
 import com.iwhalecloud.retail.report.dto.response.ReportCityTotalInvResp;
-import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
 import com.iwhalecloud.retail.report.manager.ReportCityTotalInvManager;
-import com.iwhalecloud.retail.report.manager.ReportManager;
 import com.iwhalecloud.retail.report.service.ReportCityTotalInvService;
-import com.iwhalecloud.retail.report.service.ReportService;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;

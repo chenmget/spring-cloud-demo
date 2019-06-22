@@ -1,24 +1,21 @@
 package com.iwhalecloud.retail.rights.manager;
 
-import javax.annotation.Resource;
-
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.rights.dto.request.QueryPreSubsidyReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.QueryProductCouponReq;
+import com.iwhalecloud.retail.rights.dto.request.QueryRightsReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.UpdateMktResCouponReqDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponSupplyRuleRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.MktResCouponRespDTO;
+import com.iwhalecloud.retail.rights.dto.response.QueryMktResCouponRespDTO;
+import com.iwhalecloud.retail.rights.dto.response.QueryRightsRespDTO;
 import com.iwhalecloud.retail.rights.entity.MktResCoupon;
+import com.iwhalecloud.retail.rights.mapper.MktResCouponMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.rights.dto.request.QueryRightsReqDTO;
-import com.iwhalecloud.retail.rights.dto.response.QueryRightsRespDTO;
-import com.iwhalecloud.retail.rights.dto.response.QueryMktResCouponRespDTO;
-import com.iwhalecloud.retail.rights.mapper.MktResCouponMapper;
-
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 

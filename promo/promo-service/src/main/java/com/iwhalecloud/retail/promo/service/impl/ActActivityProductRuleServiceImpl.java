@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.promo.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
@@ -17,18 +18,17 @@ import com.iwhalecloud.retail.promo.entity.ActActivityProductRule;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
 import com.iwhalecloud.retail.promo.entity.ActivityRule;
 import com.iwhalecloud.retail.promo.entity.MarketingActivity;
+import com.iwhalecloud.retail.promo.manager.ActActivityProductRuleManager;
 import com.iwhalecloud.retail.promo.manager.ActivityProductManager;
 import com.iwhalecloud.retail.promo.manager.ActivityRuleManager;
 import com.iwhalecloud.retail.promo.manager.MarketingActivityManager;
+import com.iwhalecloud.retail.promo.service.ActActivityProductRuleService;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import com.iwhalecloud.retail.promo.utils.ReflectUtils;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.promo.manager.ActActivityProductRuleManager;
-import com.iwhalecloud.retail.promo.service.ActActivityProductRuleService;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;

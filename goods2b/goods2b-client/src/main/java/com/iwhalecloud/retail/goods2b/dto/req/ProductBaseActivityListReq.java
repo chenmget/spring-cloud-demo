@@ -1,10 +1,8 @@
 package com.iwhalecloud.retail.goods2b.dto.req;
 
-import com.iwhalecloud.retail.goods2b.dto.PageVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**

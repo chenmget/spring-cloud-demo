@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.goods2b.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
@@ -12,7 +11,6 @@ import com.iwhalecloud.retail.goods2b.service.GoodsDockingAbilityService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
-import org.apache.commons.collections.MapUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;

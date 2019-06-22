@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.order2b.interceptor;
 
 import com.alibaba.dubbo.common.extension.Activate;
 import com.alibaba.dubbo.rpc.*;
-import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.SourceFromContext;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

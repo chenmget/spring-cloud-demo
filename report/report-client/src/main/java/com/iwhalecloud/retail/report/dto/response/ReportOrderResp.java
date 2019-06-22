@@ -1,9 +1,9 @@
 package com.iwhalecloud.retail.report.dto.response;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
-
-import lombok.Data;
 
 @Data
 public class ReportOrderResp implements Serializable {

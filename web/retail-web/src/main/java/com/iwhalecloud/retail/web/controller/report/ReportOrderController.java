@@ -266,7 +266,7 @@ public class ReportOrderController extends BaseController {
 		int userType = UserContext.getUser().getUserFounder();
 		SysCommonOrgReq req = new SysCommonOrgReq();
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2 || userType == SystemConst.USER_FOUNDER_4) {//超级管理员  省管理员  省供应商
-		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员   地市供应商
+		} else if (userType == SystemConst.USER_FOUNDER_9 || userType == SystemConst.USER_FOUNDER_5) {//地市管理员   地市供应商
 			req.setLanIdName(UserContext.getUser().getLanId());
 		} else if (userType == SystemConst.USER_FOUNDER_3) {//零售商
 			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());

@@ -14,31 +14,17 @@ import com.iwhalecloud.retail.oms.dto.response.content.ContentBaseBatchResponse;
 import com.iwhalecloud.retail.oms.dto.response.content.ContentBasePersonalDTO;
 import com.iwhalecloud.retail.oms.dto.response.content.ContentBaseResponseDTO;
 import com.iwhalecloud.retail.oms.dto.response.content.ContentIdLIstResp;
-import com.iwhalecloud.retail.oms.dto.resquest.content.ContentAddReq;
-import com.iwhalecloud.retail.oms.dto.resquest.content.ContentBaseBatchReq;
-import com.iwhalecloud.retail.oms.dto.resquest.content.ContentBaseByObjTypePageReq;
-import com.iwhalecloud.retail.oms.dto.resquest.content.ContentBasePageReq;
-import com.iwhalecloud.retail.oms.dto.resquest.content.ContentBaseRequestDTO;
-import com.iwhalecloud.retail.oms.dto.resquest.content.ContentEditReq;
 import com.iwhalecloud.retail.oms.dto.resquest.content.*;
 import com.iwhalecloud.retail.oms.service.*;
+import com.iwhalecloud.retail.partner.service.PartnerShopService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
-import com.iwhalecloud.retail.partner.service.PartnerShopService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
-
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Date;

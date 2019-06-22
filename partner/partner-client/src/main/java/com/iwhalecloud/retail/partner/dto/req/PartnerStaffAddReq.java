@@ -5,7 +5,6 @@ import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 public class PartnerStaffAddReq implements Serializable {

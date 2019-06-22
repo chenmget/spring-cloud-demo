@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.member.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -9,12 +10,11 @@ import com.iwhalecloud.retail.member.dto.request.MemberLevelDeleteReq;
 import com.iwhalecloud.retail.member.dto.request.MemberLevelQueryReq;
 import com.iwhalecloud.retail.member.dto.request.MemberLevelUpdateReq;
 import com.iwhalecloud.retail.member.dto.response.MemberLevelQueryResp;
+import com.iwhalecloud.retail.member.manager.MemberLevelManager;
+import com.iwhalecloud.retail.member.service.MemberLevelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.member.manager.MemberLevelManager;
-import com.iwhalecloud.retail.member.service.MemberLevelService;
 import org.springframework.stereotype.Component;
 
 @Slf4j

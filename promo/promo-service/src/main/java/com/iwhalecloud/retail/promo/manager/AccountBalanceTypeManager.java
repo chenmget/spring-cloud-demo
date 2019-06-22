@@ -2,22 +2,15 @@ package com.iwhalecloud.retail.promo.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.common.RebateConst;
-import com.iwhalecloud.retail.promo.dto.AccountBalanceTypeDTO;
-import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceReq;
-import com.iwhalecloud.retail.promo.entity.AccountBalanceRule;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceType;
-import com.iwhalecloud.retail.promo.mapper.AccountBalanceRuleMapper;
+import com.iwhalecloud.retail.promo.mapper.AccountBalanceTypeMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.promo.mapper.AccountBalanceTypeMapper;
 
+import javax.annotation.Resource;
 import java.util.Date;
-import java.util.List;
 
 
 @Component

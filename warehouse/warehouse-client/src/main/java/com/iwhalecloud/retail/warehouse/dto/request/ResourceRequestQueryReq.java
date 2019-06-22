@@ -1,10 +1,8 @@
 package com.iwhalecloud.retail.warehouse.dto.request;
 
 import com.iwhalecloud.retail.dto.PageVO;
-import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 
 import java.io.Serializable;
 import java.util.List;

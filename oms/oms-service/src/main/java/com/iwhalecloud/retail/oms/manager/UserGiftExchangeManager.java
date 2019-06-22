@@ -1,14 +1,13 @@
 package com.iwhalecloud.retail.oms.manager;
 
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.oms.dto.response.gift.UserGiftExchangeRespDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.gift.ListUserGiftExchangeReqDTO;
 import com.iwhalecloud.retail.oms.entity.gif.UserGiftExchange;
 import com.iwhalecloud.retail.oms.mapper.UserGiftExchangeMapper;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 
 /**

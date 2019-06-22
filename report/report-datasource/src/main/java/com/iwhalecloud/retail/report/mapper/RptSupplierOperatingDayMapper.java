@@ -1,17 +1,15 @@
 package com.iwhalecloud.retail.report.mapper;
 
-import java.util.List;
-import java.util.Map;
-
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.report.dto.request.MktResInstEventReq;
 import com.iwhalecloud.retail.report.dto.request.RptSupplierOperatingDayReq;
 import com.iwhalecloud.retail.report.dto.response.MktResEventruchu;
 import com.iwhalecloud.retail.report.dto.response.MktResInstResq;
 import com.iwhalecloud.retail.report.dto.response.ParMerchantResp;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 @Mapper
 public interface RptSupplierOperatingDayMapper extends BaseMapper<RptSupplierOperatingDayReq> {

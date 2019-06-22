@@ -1,7 +1,7 @@
 package com.iwhalecloud.retail.pay.service.impl;
 
-import com.iwhalecloud.retail.pay.service.JobService;
 import com.alibaba.dubbo.config.annotation.Service;
+import com.iwhalecloud.retail.pay.service.JobService;
 
 @Service
 public class JobServiceImpl implements JobService {

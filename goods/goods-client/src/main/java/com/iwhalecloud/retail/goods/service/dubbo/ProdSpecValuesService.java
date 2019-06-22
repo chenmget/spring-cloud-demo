@@ -1,11 +1,11 @@
 package com.iwhalecloud.retail.goods.service.dubbo;
 
-import java.util.List;
-
 import com.iwhalecloud.retail.goods.dto.ResultVO;
 import com.iwhalecloud.retail.goods.dto.req.ProdSpecValuesAddReq;
 import com.iwhalecloud.retail.goods.dto.req.ProdSpecValuesGetReq;
 import com.iwhalecloud.retail.goods.dto.resp.ProdSpecValuesGetResp;
+
+import java.util.List;
 
 
 public interface ProdSpecValuesService{

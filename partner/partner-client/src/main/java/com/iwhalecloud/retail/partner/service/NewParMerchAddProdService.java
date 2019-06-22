@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.partner.service;
 
-import java.util.List;
-
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq;
-import com.iwhalecloud.retail.partner.dto.resp.ProductIdListResp;
+
+import java.util.List;
 
 public interface NewParMerchAddProdService {
 

@@ -2,11 +2,11 @@ package com.iwhalecloud.retail.oms.manager;
 
 import com.iwhalecloud.retail.oms.dto.CloudDeviceLogDTO;
 import com.iwhalecloud.retail.oms.entity.CloudDeviceLog;
+import com.iwhalecloud.retail.oms.mapper.CloudDeviceLogMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.oms.mapper.CloudDeviceLogMapper;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 

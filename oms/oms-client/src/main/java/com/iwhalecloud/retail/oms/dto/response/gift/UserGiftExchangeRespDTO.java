@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.oms.dto.response.gift;
 
-import java.util.Date;
-
+import com.iwhalecloud.retail.oms.dto.PageVO;
 import lombok.Data;
 
-import com.iwhalecloud.retail.oms.dto.PageVO;
+import java.util.Date;
 
 @Data
 public class UserGiftExchangeRespDTO extends PageVO{

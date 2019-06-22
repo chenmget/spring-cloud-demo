@@ -8,7 +8,6 @@ import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceAllReq;
 import com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceReq;
 import com.iwhalecloud.retail.promo.dto.resp.AccountBalanceStResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceAllResp;
-import com.iwhalecloud.retail.promo.dto.resp.QueryAccountForPageResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalance;
 import com.iwhalecloud.retail.promo.mapper.AccountBalanceMapper;
 import org.springframework.stereotype.Component;

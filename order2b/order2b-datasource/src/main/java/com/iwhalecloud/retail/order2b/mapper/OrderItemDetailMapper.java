@@ -2,11 +2,8 @@ package com.iwhalecloud.retail.order2b.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.config.WhaleCloudDBKeySequence;
-import com.iwhalecloud.retail.order2b.dto.model.order.OrderItemDetailDTO;
 import com.iwhalecloud.retail.order2b.dto.response.OrderItemDetailReBateResp;
-import com.iwhalecloud.retail.order2b.dto.response.ReBateOrderInDetailResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.promo.ReBateOrderInDetailReq;
 import com.iwhalecloud.retail.order2b.entity.OrderItemDetail;
 import com.iwhalecloud.retail.order2b.model.OrderItemDetailModel;

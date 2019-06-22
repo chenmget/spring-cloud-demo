@@ -1,13 +1,11 @@
 package com.iwhalecloud.retail.order2b.dto.resquest.promo;
 
-import com.iwhalecloud.retail.dto.AbstractRequest;
 import com.iwhalecloud.retail.order2b.dto.base.PageVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @author lhr 2019-03-30 10:10:30

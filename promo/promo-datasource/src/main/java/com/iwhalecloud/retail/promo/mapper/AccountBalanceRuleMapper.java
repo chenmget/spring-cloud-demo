@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.promo.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.promo.dto.req.AccountBalanceRuleReq;
 import com.iwhalecloud.retail.promo.dto.resp.AccountBalanceRuleResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceRule;

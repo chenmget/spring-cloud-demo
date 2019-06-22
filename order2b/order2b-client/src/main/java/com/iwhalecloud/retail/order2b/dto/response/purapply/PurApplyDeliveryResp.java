@@ -1,10 +1,8 @@
 package com.iwhalecloud.retail.order2b.dto.response.purapply;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * @auther lin.wenhui@iwhalecloud.com

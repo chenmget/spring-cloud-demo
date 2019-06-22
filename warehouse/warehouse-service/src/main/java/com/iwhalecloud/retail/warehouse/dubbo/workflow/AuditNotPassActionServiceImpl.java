@@ -53,6 +53,7 @@ public class AuditNotPassActionServiceImpl implements AuditNotPassActionService 
         ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
         detailUpdateReq.setMktResReqItemIdList(mktResReqItemId);
         detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode());
+        detailUpdateReq.setUpdateStaff(params.getHandlerUserId());
         Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
         log.info("AuditNotPassActionServiceImpl.run resourceReqDetailManager.updateResourceReqDetailStatusCd detailUpdateReq={}, resp={}", JSON.toJSONString(detailUpdateReq), detailNum);
         // 申请单ID->明细

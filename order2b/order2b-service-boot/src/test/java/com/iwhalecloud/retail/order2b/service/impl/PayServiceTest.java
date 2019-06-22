@@ -5,7 +5,6 @@ import com.iwhalecloud.retail.order2b.TestBase;
 import com.iwhalecloud.retail.order2b.config.TelDBDefValueConfig;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.PayOrderRequest;
 import com.iwhalecloud.retail.order2b.entity.ZFlow;
-import com.iwhalecloud.retail.order2b.manager.OrderZFlowManager;
 import com.iwhalecloud.retail.order2b.mapper.OrderZFlowMapper;
 import com.iwhalecloud.retail.order2b.service.OrderPayOpenService;
 import org.junit.Test;

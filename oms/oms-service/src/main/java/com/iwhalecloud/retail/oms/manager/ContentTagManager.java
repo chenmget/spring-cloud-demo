@@ -1,14 +1,12 @@
 package com.iwhalecloud.retail.oms.manager;
 
-import com.iwhalecloud.retail.oms.entity.ContentTag;
 import com.iwhalecloud.retail.oms.dto.ContentTagDTO;
 import com.iwhalecloud.retail.oms.entity.ContentTag;
+import com.iwhalecloud.retail.oms.mapper.ContentTagMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.oms.mapper.ContentTagMapper;
 
-import java.util.ArrayList;
+import javax.annotation.Resource;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

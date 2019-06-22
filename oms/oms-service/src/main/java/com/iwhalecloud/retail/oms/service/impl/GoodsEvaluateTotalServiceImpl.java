@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.iwhalecloud.retail.oms.consts.GoodsEvaluateConsts;
 import com.iwhalecloud.retail.oms.dto.resquest.TGoodsEvaluateTotalDTO;
@@ -7,7 +8,6 @@ import com.iwhalecloud.retail.oms.manager.GoodsEvaluateTotalManager;
 import com.iwhalecloud.retail.oms.service.GoodsEvaluateTotalService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;

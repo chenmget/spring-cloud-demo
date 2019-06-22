@@ -3,7 +3,10 @@ package com.iwhalecloud.retail.partner.service.impl;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.PartnerServiceApplication;
-import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.req.ManufacturerGetReq;
+import com.iwhalecloud.retail.partner.dto.req.ManufacturerPageReq;
+import com.iwhalecloud.retail.partner.dto.req.ManufacturerSaveReq;
+import com.iwhalecloud.retail.partner.dto.req.ManufacturerUpdateReq;
 import com.iwhalecloud.retail.partner.service.ManufacturerService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

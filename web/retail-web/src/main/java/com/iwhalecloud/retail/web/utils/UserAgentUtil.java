@@ -1,9 +1,8 @@
 package com.iwhalecloud.retail.web.utils;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
 
 public class UserAgentUtil {
 	

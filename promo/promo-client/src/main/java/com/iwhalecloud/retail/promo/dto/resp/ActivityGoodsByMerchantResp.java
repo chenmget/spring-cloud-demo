@@ -1,7 +1,6 @@
 package com.iwhalecloud.retail.promo.dto.resp;
 
 import com.iwhalecloud.retail.promo.dto.ActivityGoodDTO;
-import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

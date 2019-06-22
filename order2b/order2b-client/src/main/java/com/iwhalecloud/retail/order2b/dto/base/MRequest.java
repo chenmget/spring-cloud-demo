@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.order2b.dto.base;
 
-import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

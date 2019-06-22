@@ -1,9 +1,7 @@
 package com.iwhalecloud.retail.rights.manager;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iwhalecloud.retail.rights.common.RightsConst;
 import com.iwhalecloud.retail.rights.entity.MktResCouponTask;
 import com.iwhalecloud.retail.rights.mapper.MktResCouponTaskMapper;
 import org.springframework.stereotype.Component;

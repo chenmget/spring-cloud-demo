@@ -116,6 +116,7 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
             detailUpdateReq.setMktResReqItemIdList(Lists.newArrayList(detailDTO.getMktResReqItemId()));
             detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
+            detailUpdateReq.setUpdateStaff(params.getHandlerUserId());
             Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
             log.info("MerchantAddNbrProcessingPassActionImpl.run resourceReqDetailManager.updateResourceReqDetailStatusCd detailUpdateReq={}, resp={}", JSON.toJSONString(detailUpdateReq), detailNum);
 

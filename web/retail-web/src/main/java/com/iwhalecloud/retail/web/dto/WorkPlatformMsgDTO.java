@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.web.dto;
 
-import com.iwhalecloud.retail.partner.dto.*;
-import com.iwhalecloud.retail.system.dto.UserDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

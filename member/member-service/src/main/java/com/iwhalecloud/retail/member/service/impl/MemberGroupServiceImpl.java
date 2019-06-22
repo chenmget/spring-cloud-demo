@@ -1,19 +1,18 @@
 package com.iwhalecloud.retail.member.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.member.dto.GroupDTO;
 import com.iwhalecloud.retail.member.dto.MemberGroupDTO;
 import com.iwhalecloud.retail.member.dto.request.*;
 import com.iwhalecloud.retail.member.dto.response.GroupQueryResp;
 import com.iwhalecloud.retail.member.dto.response.MemberGroupQueryResp;
+import com.iwhalecloud.retail.member.manager.MemberGroupManager;
+import com.iwhalecloud.retail.member.service.MemberGroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.member.manager.MemberGroupManager;
-import com.iwhalecloud.retail.member.service.MemberGroupService;
 import org.springframework.stereotype.Component;
 
 @Slf4j

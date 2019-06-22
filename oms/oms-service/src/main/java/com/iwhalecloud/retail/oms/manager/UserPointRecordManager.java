@@ -1,14 +1,13 @@
 package com.iwhalecloud.retail.oms.manager;
 
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.oms.dto.response.gift.UserPointRecordRespDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.gift.ListUserPointRecordReqDTO;
 import com.iwhalecloud.retail.oms.entity.gif.UserPointRecord;
 import com.iwhalecloud.retail.oms.mapper.UserPointRecordMapper;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 
 /**

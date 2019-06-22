@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.promo.service;
 
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.dto.SettleRecordDTO;
 
 import java.util.List;

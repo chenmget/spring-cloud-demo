@@ -1,16 +1,14 @@
 package com.iwhalecloud.retail.oms.service.impl.gift;
 
-import com.iwhalecloud.retail.oms.dto.UserPointRecordDTO;
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.dubbo.config.annotation.Service;
+import com.iwhalecloud.retail.oms.dto.UserPointRecordDTO;
 import com.iwhalecloud.retail.oms.dto.response.gift.UserPointRecordRespDTO;
 import com.iwhalecloud.retail.oms.entity.gif.UserPointRecord;
 import com.iwhalecloud.retail.oms.manager.UserPointRecordManager;
 import com.iwhalecloud.retail.oms.service.gift.UserPointRecordService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 /**

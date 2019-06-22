@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.promo.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -14,8 +13,6 @@ import com.iwhalecloud.retail.promo.entity.Account;
 import com.iwhalecloud.retail.promo.manager.AccountBalanceLogManager;
 import com.iwhalecloud.retail.promo.manager.AccountBalanceManager;
 import com.iwhalecloud.retail.promo.manager.AccountManager;
-import com.iwhalecloud.retail.promo.service.AccountBalanceLogService;
-import com.iwhalecloud.retail.promo.service.AccountBalanceService;
 import com.iwhalecloud.retail.promo.service.AccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;

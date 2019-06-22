@@ -1,9 +1,8 @@
 package com.iwhalecloud.retail.web.config;
 
+import com.alibaba.dubbo.config.ConsumerConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.alibaba.dubbo.config.ConsumerConfig;
 
 @Configuration
 public class DubboConfiguration {

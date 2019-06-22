@@ -1,8 +1,6 @@
 package com.iwhalecloud.retail.promo.dto.req;
 
 import com.iwhalecloud.retail.dto.AbstractRequest;
-import com.iwhalecloud.retail.promo.dto.resp.UserDTO;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -20,10 +18,16 @@ public class MarketingActivityByMerchantListReq extends AbstractRequest implemen
     private static final long serialVersionUID = 1L;
 
     /**
-     * 用户信息
+     * 用户归属本地网
      */
-    @ApiModelProperty(value = "用户信息")
-    private UserDTO userInfo;
+    @ApiModelProperty(value = "用户归属本地网")
+    private java.lang.String lanId;
+
+    /**
+     * 区域ID
+     */
+    @ApiModelProperty(value = "区域ID")
+    private java.lang.String regionId;
 
     /**
      * 商家ID

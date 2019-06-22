@@ -13,13 +13,11 @@ import com.iwhalecloud.retail.goods.dto.req.ProdGoodsQueryReq;
 import com.iwhalecloud.retail.goods.dto.resp.ComplexGoodsGetResp;
 import com.iwhalecloud.retail.goods.entity.ProdGoods;
 import com.iwhalecloud.retail.goods.mapper.ProdGoodsMapper;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

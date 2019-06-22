@@ -1,20 +1,16 @@
 package com.iwhalecloud.retail.promo.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
-import com.iwhalecloud.retail.promo.dto.ActivityScopeDTO;
-import com.iwhalecloud.retail.promo.entity.ActivityChange;
 import com.iwhalecloud.retail.promo.entity.ActivityParticipant;
-import com.iwhalecloud.retail.promo.entity.ActivityScope;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
 import com.iwhalecloud.retail.promo.mapper.ActivityParticipantMapper;
-import org.springframework.util.CollectionUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;

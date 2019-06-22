@@ -1,15 +1,14 @@
 package com.iwhalecloud.retail.rights.mapper;
 
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.UpdateCouponSupplyRuleReqDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponSupplyRuleRespDTO;
 import com.iwhalecloud.retail.rights.entity.CouponSupplyRule;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * @Class: CouponSupplyRuleMapper

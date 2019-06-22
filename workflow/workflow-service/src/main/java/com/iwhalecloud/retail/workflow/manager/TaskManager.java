@@ -24,8 +24,8 @@ import com.iwhalecloud.retail.workflow.dto.resp.DealTaskDetailGetResp;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskDetailGetResp;
 import com.iwhalecloud.retail.workflow.dto.resp.HandleTaskPageResp;
 import com.iwhalecloud.retail.workflow.dto.resp.TaskPageResp;
-import com.iwhalecloud.retail.workflow.entity.*;
 import com.iwhalecloud.retail.workflow.entity.Process;
+import com.iwhalecloud.retail.workflow.entity.*;
 import com.iwhalecloud.retail.workflow.extservice.WFServiceExecutor;
 import com.iwhalecloud.retail.workflow.extservice.params.NodeRightsServiceParamContext;
 import com.iwhalecloud.retail.workflow.mapper.TaskMapper;
@@ -615,7 +615,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
      *
      * @return
      */
-    private void nodeEndHandle(String handleUserId, String handleUserName, String taskId, Route route) {
+    public void nodeEndHandle(String handleUserId, String handleUserName, String taskId, Route route) {
         updateTaskStatusById(taskId, WorkFlowConst.TASK_STATUS_FINISH, route.getNextNodeId(), route.getNextNodeName());
 
         TaskItem taskItem = new TaskItem();

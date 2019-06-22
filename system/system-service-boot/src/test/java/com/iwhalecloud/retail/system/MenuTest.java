@@ -2,9 +2,7 @@ package com.iwhalecloud.retail.system;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.MenuDTO;
-import com.iwhalecloud.retail.system.dto.request.NoticeSaveReq;
 import com.iwhalecloud.retail.system.service.MenuService;
-import com.iwhalecloud.retail.system.service.NoticeService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

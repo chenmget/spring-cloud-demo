@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.goods.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.goods.dto.CommentsDTO;
 import com.iwhalecloud.retail.goods.dto.req.ListCommentsReqDTO;
 import com.iwhalecloud.retail.goods.entity.Comments;
 import org.apache.ibatis.annotations.Mapper;

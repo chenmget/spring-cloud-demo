@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.oms.dto.resquest.content;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 

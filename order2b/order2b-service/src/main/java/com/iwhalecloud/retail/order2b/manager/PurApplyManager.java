@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.order2b.manager;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
@@ -188,7 +187,7 @@ public class PurApplyManager {
 	 * @param req
 	 * @return
 	 */
-	public int countPurApplyItemDetail(PurApplyItemReq req) {
+	public List<String> countPurApplyItemDetail(PurApplyItemReq req) {
 		return purApplyMapper.countPurApplyItemDetail(req);
 	}
 

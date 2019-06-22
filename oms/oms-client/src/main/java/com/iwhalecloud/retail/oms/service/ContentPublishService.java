@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.oms.service;
 
 import com.iwhalecloud.retail.oms.dto.ContentPublishDTO;
 
-import java.util.HashMap;
 import java.util.List;
 
 public interface ContentPublishService {

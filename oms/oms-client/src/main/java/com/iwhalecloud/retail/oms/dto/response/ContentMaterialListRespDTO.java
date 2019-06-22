@@ -1,8 +1,9 @@
 package com.iwhalecloud.retail.oms.dto.response;
 
 import com.iwhalecloud.retail.oms.dto.ContentMaterialDTO;
-import java.util.List;
 import lombok.Data;
+
+import java.util.List;
 
 
 /**

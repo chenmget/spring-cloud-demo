@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.order2b.service;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.dto.response.OrderRecommenderPageResp;
 import com.iwhalecloud.retail.order2b.dto.response.OrderRecommenderRankResp;
 import com.iwhalecloud.retail.order2b.dto.response.OrderRecommenderResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.report.AddOrderRecommenderReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.report.ListOrderRecommenderReq;
+
+import java.util.List;
 
 
 public interface OrderRecommenderService{

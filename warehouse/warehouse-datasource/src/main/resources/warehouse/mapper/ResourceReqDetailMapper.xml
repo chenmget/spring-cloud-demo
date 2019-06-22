@@ -120,6 +120,12 @@
                 #{item}
             </foreach>
         </if>
+        <if test = "null != req.mktResReqIdList and req.mktResReqIdList.size()>0">
+            and rest.MKT_RES_REQ_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResReqIdList">
+                #{item}
+            </foreach>
+        </if>
         <if test = "null != req.mktResReqDetailIds and req.mktResReqDetailIds.size()>0">
             and detail.MKT_RES_REQ_DETAIL_ID in
             <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResReqDetailIds">
@@ -151,11 +157,14 @@
             and detail.CREATE_DATE &lt;= #{req.createEndDate}
         </if>
         <if test = "null != req.statusStartDate and '' != req.statusStartDate">
-            and detail.STATUS_DATE &gt;={req.statusStartDate}
+            and detail.STATUS_DATE &gt;=#{req.statusStartDate}
         </if>
         <if test = "null != req.statusEndDate and '' != req.statusEndDate">
-            and detail.STATUS_DATE &lt;={req.statusEndDate}
+            and detail.STATUS_DATE &lt;=#{req.statusEndDate}
         </if>
-        order by detail.MKT_RES_INST_NBR DESC
+        <if test = "null != req.updateStaff and '' != req.updateStaff">
+            and detail.UPDATE_STAFF = #{req.updateStaff}
+        </if>
+        order by detail.CREATE_DATE DESC
     </select>
 </mapper>

@@ -1,16 +1,14 @@
 package com.iwhalecloud.retail.order2b.mapper;
 
-import java.util.List;
-
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
-import com.iwhalecloud.retail.order2b.entity.PurApplyItem;
+import com.iwhalecloud.retail.order2b.entity.PurApply;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.order2b.entity.PurApply;
+import java.util.List;
 
 @Mapper
 public interface PurApplyMapper extends BaseMapper<PurApply>  {
@@ -90,7 +88,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(@Param("keyValue") String keyValue);
 
-	public int countPurApplyItemDetail(@Param("req") PurApplyItemReq req);
+	public List<String> countPurApplyItemDetail(@Param("req") PurApplyItemReq req);
 	public int countPurApplyItemDetailReving(@Param("req") PurApplyItemReq req);
 
 	public Integer updatePurApplyItemDetailStatusCd(@Param("mktResInstNbrList") List<String> mktResInstNbrList);

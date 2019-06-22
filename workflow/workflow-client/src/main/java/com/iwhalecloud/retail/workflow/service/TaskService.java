@@ -121,4 +121,6 @@ public interface TaskService{
      */
     ResultVO<TaskDTO> getTaskById(String taskId);
 
+    ResultVO<String> endProcess(String handleUserId, String handleUserName, String taskId, String routeId);
+
 }

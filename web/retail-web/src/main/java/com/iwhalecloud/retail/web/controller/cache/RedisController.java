@@ -5,7 +5,6 @@ import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import redis.clients.jedis.JedisCluster;
 
 @Slf4j
 @RestController

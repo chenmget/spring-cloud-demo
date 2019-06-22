@@ -1,9 +1,9 @@
 package com.iwhalecloud.retail.report.dto.request;
 
-import java.util.List;
-
 import com.iwhalecloud.retail.dto.PageVO;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class ReportStSaleDaoReq extends PageVO {

@@ -192,7 +192,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             PurApplyItemReq.setApplyItem(PurApplyItemTemp.getApplyItemId());
             PurApplyItemReq.setProductId(PurApplyItemTemp.getProductId());
             log.info("5._串码出库前 -- 开始验证串码发货数量是否超过申请单数量"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail =" +JSON.toJSONString(PurApplyItemReq));
-            int count =purApplyManager.countPurApplyItemDetail(PurApplyItemReq);//查询发货的条数
+            List<String> mktList =purApplyManager.countPurApplyItemDetail(PurApplyItemReq);//查询发货的条数
+             Integer count = mktList.size();
             log.info("6._串码出库前 -- 开始验证串码发货数量是否超过申请单数量"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail = count ="+count+" = "+JSON.toJSONString(PurApplyItemReq));
             List<String> mktForProductId = map.get(PurApplyItemTemp.getProductId());
             Integer countNow=0;

@@ -1,11 +1,10 @@
 package com.iwhalecloud.retail.rights.mapper;
 
 
-import org.apache.ibatis.annotations.Mapper;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.rights.dto.response.CouponInstAttrRespDTO;
 import com.iwhalecloud.retail.rights.entity.CouponInstAttr;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
  * @Class: CouponInstAttrMapper

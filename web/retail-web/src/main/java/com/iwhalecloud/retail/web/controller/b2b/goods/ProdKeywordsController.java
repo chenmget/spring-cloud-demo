@@ -1,39 +1,20 @@
 package com.iwhalecloud.retail.web.controller.b2b.goods;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.common.GoodsConst;
-import com.iwhalecloud.retail.goods2b.common.GoodsResultCodeEnum;
-import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProdKeywordsDTO;
-import com.iwhalecloud.retail.goods2b.dto.req.AttrSpecValueReq;
-import com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdKeywordsPageQueryReq;
-import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
-import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
-import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
-import com.iwhalecloud.retail.partner.dto.req.SupplierListReq;
-import com.iwhalecloud.retail.system.common.SystemConst;
-import com.iwhalecloud.retail.web.interceptor.UserContext;
+import com.iwhalecloud.retail.goods2b.service.ProdKeywordsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.*;
-
 import lombok.extern.slf4j.Slf4j;
-import com.iwhalecloud.retail.goods2b.service.ProdKeywordsService;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController

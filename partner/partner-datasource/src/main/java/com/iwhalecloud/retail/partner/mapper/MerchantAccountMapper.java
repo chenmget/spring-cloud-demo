@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.partner.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.partner.entity.MerchantAccount;
 import org.apache.ibatis.annotations.Mapper;
 

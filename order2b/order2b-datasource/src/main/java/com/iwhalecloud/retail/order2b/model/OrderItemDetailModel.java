@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.order2b.model;
 
 import com.iwhalecloud.retail.order2b.entity.OrderItemDetail;
 import lombok.Data;
-import org.apache.ibatis.annotations.Param;
 
 import java.io.Serializable;
 import java.util.List;

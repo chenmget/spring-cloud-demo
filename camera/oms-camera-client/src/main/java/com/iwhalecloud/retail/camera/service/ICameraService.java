@@ -1,13 +1,9 @@
 package com.iwhalecloud.retail.camera.service;
 
-import java.util.List;
-
 import com.iwhalecloud.retail.entity.VisitDataEntity;
-import com.iwhalecloud.retail.param.resp.CameraPersonCountResp;
-import com.iwhalecloud.retail.param.resp.CameraVipInfoResp;
-import com.iwhalecloud.retail.param.resp.RevaDailyReportResp;
-import com.iwhalecloud.retail.param.resp.RevaRepeatDetailsResp;
-import com.iwhalecloud.retail.param.resp.VisitHistoryResp;
+import com.iwhalecloud.retail.param.resp.*;
+
+import java.util.List;
 
 public interface ICameraService {
 

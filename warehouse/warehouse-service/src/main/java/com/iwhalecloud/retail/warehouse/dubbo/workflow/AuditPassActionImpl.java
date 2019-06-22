@@ -63,6 +63,7 @@ public class AuditPassActionImpl implements AuditPassActionService {
         ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
         detailUpdateReq.setMktResReqItemIdList(mktResReqItemId);
         detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
+        detailUpdateReq.setUpdateStaff(params.getHandlerUserId());
         Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
         log.info("AuditPassActionServiceImpl.run resourceReqDetailManager.updateResourceReqDetailStatusCd detailUpdateReq={}, resp={}", JSON.toJSONString(detailUpdateReq), detailNum);
 

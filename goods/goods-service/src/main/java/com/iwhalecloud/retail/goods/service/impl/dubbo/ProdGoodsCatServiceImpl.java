@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.goods.service.impl.dubbo;
 
-import java.util.List;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.goods.common.ResultCodeEnum;
@@ -14,12 +12,12 @@ import com.iwhalecloud.retail.goods.manager.ProdCatComplexManager;
 import com.iwhalecloud.retail.goods.manager.ProdGoodsCatManager;
 import com.iwhalecloud.retail.goods.manager.ProdGoodsManager;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsCatService;
-
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Component("prodGoodsCatService")

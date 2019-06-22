@@ -1,13 +1,10 @@
 package com.iwhalecloud.retail.oms.dto.resquest.cloud;
 
-import com.iwhalecloud.retail.oms.dto.ShelfTemplatesDetailDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.Date;
-import java.util.List;
 
 /**
  * @Auther: Ji.kai

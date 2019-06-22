@@ -3,15 +3,11 @@ package com.iwhalecloud.retail.warehouse.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.warehouse.dto.ResourceRequestDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestQueryReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestQueryResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceRequest;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 /**
  * @Class: ResourceRequest  Mapper

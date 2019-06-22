@@ -16,7 +16,6 @@ import com.iwhalecloud.retail.warehouse.dto.response.InventoryWarningResp;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsReturnRec;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
-import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import com.iwhalecloud.retail.warehouse.manager.ResourceChngEvtDetailManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
 import com.iwhalecloud.retail.warehouse.mapper.MktResItmsReturnRecMapper;
@@ -306,13 +305,20 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         latIdList.add("999");
         SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
         String time = sdf.format(new Date());
-
         File dir = new File(basePath);
-        //删除文件
-        this.delTempChild(dir);
-        if (!dir.exists()) {
-            dir.mkdirs();
+        try{
+            //删除文件
+            this.delTempChild(dir);
+            log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs basePath:{} exists:{} isDirectory:{}",basePath,dir.exists(),dir.isDirectory());
+            if (!dir.exists() || !dir.isDirectory()) {
+                log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs start.....");
+                dir.mkdirs();
+                log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs end.....");
+            }
+        }catch (Exception e){
+            log.error("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs{}",e.getMessage());
         }
+
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {
             List<MktResItmsSyncRec> mktList = new ArrayList<>();

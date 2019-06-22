@@ -2,20 +2,15 @@ package com.iwhalecloud.retail.order.manager;
 
 
 import com.alibaba.fastjson.JSON;
-import com.iwhalecloud.retail.order.consts.OrderManagerConsts;
-import com.iwhalecloud.retail.order.consts.order.ActionFlowType;
-import com.iwhalecloud.retail.order.consts.order.OrderPayType;
-import com.iwhalecloud.retail.order.dto.resquest.BuilderOrderRequest;
 import com.iwhalecloud.retail.order.dto.model.OrderZFlowModel;
+import com.iwhalecloud.retail.order.dto.resquest.BuilderOrderRequest;
 import com.iwhalecloud.retail.order.mapper.OrderZFlowMapper;
 import com.iwhalecloud.retail.order.model.OrderFlowInitEntity;
 import com.iwhalecloud.retail.order.model.ZFlowEntity;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 @Component

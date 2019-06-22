@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.order.dto.model;
 
-import com.iwhalecloud.retail.order.dto.base.SelectBaseRequest;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.springframework.util.StringUtils;

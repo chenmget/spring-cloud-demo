@@ -6,7 +6,6 @@ import com.iwhalecloud.retail.dto.SourceFromContext;
 import com.iwhalecloud.retail.member.dto.request.*;
 import com.iwhalecloud.retail.member.dto.response.GroupQueryResp;
 import com.iwhalecloud.retail.member.dto.response.MemberGroupQueryResp;
-import com.iwhalecloud.retail.member.service.GroupService;
 import com.iwhalecloud.retail.member.service.MemberGroupService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -14,8 +13,6 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Date;
 
 /**
  * @Author: wang.jiaxin

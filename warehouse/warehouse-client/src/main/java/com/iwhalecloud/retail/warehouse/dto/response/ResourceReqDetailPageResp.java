@@ -77,4 +77,16 @@ public class ResourceReqDetailPageResp implements Serializable {
     @ApiModelProperty(value = "验证描述，记录出错的原因")
     private String resultDesc;
 
+    /**
+     * 记录首次创建的时间。
+     */
+    @ApiModelProperty(value = "记录首次创建的时间。")
+    private String createDateStr;
+
+    /**
+     * 记录状态变更的时间。
+     */
+    @ApiModelProperty(value = "记录状态变更的时间。")
+    private String statusDateStr;
+
 }

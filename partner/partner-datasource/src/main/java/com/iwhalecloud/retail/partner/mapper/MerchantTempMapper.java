@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.partner.entity.MerchantTemp;
 import org.apache.ibatis.annotations.Mapper;
 
-import java.util.List;
-
 /**
  * @author autoCreate
  * @Class: MerchantTempMapper

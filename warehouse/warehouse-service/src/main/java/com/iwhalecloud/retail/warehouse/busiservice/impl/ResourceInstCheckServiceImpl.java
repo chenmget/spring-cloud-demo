@@ -275,12 +275,15 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                 SystemConst.GreenChannelType.XiaoMi.getType(),
                 SystemConst.GreenChannelType.HuaWei.getType()));
         ResultVO<List<MerchantTagRelDTO>> merchantTagVO = merchantTagRelService.listMerchantAndTag(tagReq);
+        log.info("ResourceInstCheckServiceImpl.greenChannelValid merchantTagRelService.listMerchantAndTag req={}, resp={}", JSON.toJSONString(tagReq), JSON.toJSONString(merchantTagVO));
         if (merchantTagVO.isSuccess() && CollectionUtils.isNotEmpty(merchantTagVO.getResultData())) {
             List<MerchantTagRelDTO> merchantTagRelList = merchantTagVO.getResultData();
             TagRelListReq tagRelReq = new TagRelListReq();
             for (MerchantTagRelDTO dto : merchantTagRelList) {
                 tagRelReq.setRelTagIdList(Lists.newArrayList(dto.getRelTagId()));
+                tagRelReq.setProductId(mktResId);
                 ResultVO<List<TagRelListResp>> tagRelTagVO = tagRelService.listTagRel(tagRelReq);
+                log.info("ResourceInstCheckServiceImpl.greenChannelValid tagRelService.listTagRel req={}, resp={}", JSON.toJSONString(tagRelReq), JSON.toJSONString(tagRelTagVO));
                 // 既有商家权限，又有对应的机型权限，通过
                 if (tagRelTagVO.isSuccess() && CollectionUtils.isNotEmpty(tagRelTagVO.getResultData())) {
                     return ResultVO.success(true);

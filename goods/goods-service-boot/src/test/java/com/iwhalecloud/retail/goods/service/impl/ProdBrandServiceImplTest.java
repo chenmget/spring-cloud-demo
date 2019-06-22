@@ -1,28 +1,9 @@
 package com.iwhalecloud.retail.goods.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import com.iwhalecloud.retail.goods.GoodsServiceApplication;
 import com.iwhalecloud.retail.goods.dto.ResultVO;
-import com.iwhalecloud.retail.goods.dto.req.ProdBrandAddReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdBrandDeleteReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdBrandGetReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdBrandUpdateReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdCatComplexAddReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdGoodsAddReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdGoodsCatsListByIdReq;
+import com.iwhalecloud.retail.goods.dto.req.*;
 import com.iwhalecloud.retail.goods.dto.resp.ComplexGoodsGetResp;
-import com.iwhalecloud.retail.goods.dto.resp.ProdGoodsAddResp;
-import com.iwhalecloud.retail.goods.entity.GoodsExt;
-import com.iwhalecloud.retail.goods.entity.ProdBrand;
 import com.iwhalecloud.retail.goods.entity.ProdGoodsCat;
 import com.iwhalecloud.retail.goods.manager.ProdBrandManager;
 import com.iwhalecloud.retail.goods.mapper.GoodsExtMapper;
@@ -30,6 +11,14 @@ import com.iwhalecloud.retail.goods.mapper.ProdGoodsCatMapper;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdBrandService;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsCatService;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsService;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = GoodsServiceApplication.class)

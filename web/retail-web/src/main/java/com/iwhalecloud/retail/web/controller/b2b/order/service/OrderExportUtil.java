@@ -3,9 +3,7 @@ package com.iwhalecloud.retail.web.controller.b2b.order.service;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OrderExportUtil {
 
@@ -128,10 +126,10 @@ public class OrderExportUtil {
         orderMap.add(new ExcelTitleName("unitName", "产品名称"));
         orderMap.add(new ExcelTitleName("unitType", "产品型号"));
         orderMap.add(new ExcelTitleName("merchantName", "厂商名称"));
-        //orderMap.add(new ExcelTitleName("createDate", "申请时间"));
+        orderMap.add(new ExcelTitleName("createDateStr", "申请时间"));
         orderMap.add(new ExcelTitleName("statusCdName", "状态"));
         orderMap.add(new ExcelTitleName("remark", "状态说明"));
-        //orderMap.add(new ExcelTitleName("statusDate", "审核时间"));
+        orderMap.add(new ExcelTitleName("statusDateStr", "审核时间"));
         return orderMap;
     }
 

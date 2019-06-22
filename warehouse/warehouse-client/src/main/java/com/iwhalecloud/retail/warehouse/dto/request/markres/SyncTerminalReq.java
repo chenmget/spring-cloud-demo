@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.warehouse.dto.request.markres;
 
-import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;

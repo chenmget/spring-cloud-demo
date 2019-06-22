@@ -26,18 +26,16 @@
             and t.start_time <![CDATA[ <= ]]> now()
             and t.end_time <![CDATA[ >= ]]> now()
             and t.status = '20'
-            <if test="req.merchantId != null or req.userInfo != null">
+            <if test="req.merchantId != null or req.lanId != null or req.regionId != null">
                 and(
                 <if test="req.merchantId != null and req.merchantId !=''">
                     lower(p.shop_code) = #{req.merchantId} or
                 </if>
-                <if test="req.userInfo != null">
-                    <if test="req.userInfo.lanId != null and req.userInfo.lanId !=''">
-                        lower(p.lan_id) = #{req.userInfo.lanId} or
-                    </if>
-                    <if test="req.userInfo.regionId != null and req.userInfo.regionId !=''">
-                        lower(p.city) = #{req.userInfo.regionId} or
-                    </if>
+                <if test="req.lanId != null and req.lanId !=''">
+                    lower(p.lan_id) = #{req.lanId} or
+                </if>
+                <if test="req.regionId != null and req.regionId !=''">
+                    lower(p.city) = #{req.regionId} or
                 </if>
                 1=0
                 )

@@ -2,8 +2,6 @@ package com.iwhalecloud.retail.order.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.order.dto.CartItemDTO;
-import com.iwhalecloud.retail.order.dto.resquest.AddCartReqDTO;
-import com.iwhalecloud.retail.order.dto.resquest.DeleteCartReqDTO;
 import com.iwhalecloud.retail.order.dto.resquest.ListCartReqDTO;
 import com.iwhalecloud.retail.order.dto.resquest.UpdateCartReqDTO;
 import com.iwhalecloud.retail.order.entity.Cart;

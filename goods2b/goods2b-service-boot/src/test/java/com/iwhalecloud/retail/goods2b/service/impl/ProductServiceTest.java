@@ -14,7 +14,6 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.goods2b.utils.ZopClientUtil;
-import com.iwhalecloud.retail.workflow.dto.req.RouteNextReq;
 import com.ztesoft.zop.common.message.ResponseResult;
 import org.junit.Assert;
 import org.junit.Test;

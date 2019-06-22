@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.oms.dto.resquest.content;
 
 import lombok.Data;
+
 import java.util.List;
 /**
  * ContentBase

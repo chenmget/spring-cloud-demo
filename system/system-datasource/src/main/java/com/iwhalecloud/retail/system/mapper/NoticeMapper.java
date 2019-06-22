@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.system.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.system.dto.NoticeDTO;
 import com.iwhalecloud.retail.system.dto.request.NoticePagePersonalReq;

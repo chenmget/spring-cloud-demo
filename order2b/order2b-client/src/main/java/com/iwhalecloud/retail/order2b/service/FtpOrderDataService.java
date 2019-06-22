@@ -1,10 +1,7 @@
 package com.iwhalecloud.retail.order2b.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq;
-
-import java.util.List;
 
 /**
  * @author 吴良勇

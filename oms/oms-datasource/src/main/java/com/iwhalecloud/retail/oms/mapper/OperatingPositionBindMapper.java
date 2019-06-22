@@ -8,7 +8,6 @@ import com.iwhalecloud.retail.oms.entity.OperatingPositionBind;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import javax.annotation.ParametersAreNonnullByDefault;
 import java.util.List;
 
 @Mapper

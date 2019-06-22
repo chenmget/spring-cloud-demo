@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.order2b.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderLogDTO;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.OrderLogGetReq;
 import com.iwhalecloud.retail.order2b.entity.OrderLog;

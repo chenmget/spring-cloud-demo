@@ -2,10 +2,9 @@ package com.iwhalecloud.retail.rights.dto.request;
 
 import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 @Data
 public class QueryCouponInstProvRecNumReqDTO extends AbstractRequest implements Serializable{

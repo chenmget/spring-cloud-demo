@@ -2,14 +2,11 @@ package com.iwhalecloud.retail.rights.dto.request;
 
 import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.io.Serializable;
+import lombok.Data;
+import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
-
-import lombok.Data;
-
-import org.hibernate.validator.constraints.NotEmpty;
+import java.io.Serializable;
 
 @Data
 public class ChangeCouponApplyObjectReqDTO extends AbstractRequest implements Serializable{

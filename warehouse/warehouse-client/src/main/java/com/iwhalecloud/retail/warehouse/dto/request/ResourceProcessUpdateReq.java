@@ -3,8 +3,6 @@ package com.iwhalecloud.retail.warehouse.dto.request;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class ResourceProcessUpdateReq {
 

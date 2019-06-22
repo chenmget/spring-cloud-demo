@@ -4,7 +4,6 @@ package com.iwhalecloud.retail.rights.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.rights.dto.request.QueryCouponInstProvRecNumReqDTO;
 import com.iwhalecloud.retail.rights.entity.CouponInstProvRec;
-
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;

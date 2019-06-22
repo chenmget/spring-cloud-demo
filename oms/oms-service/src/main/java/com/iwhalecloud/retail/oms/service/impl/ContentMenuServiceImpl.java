@@ -1,11 +1,11 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.oms.dto.CataLogDTO;
 import com.iwhalecloud.retail.oms.manager.ContentMenuManager;
 import com.iwhalecloud.retail.oms.service.ContentMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 
 import java.util.List;
 

@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.system.dto.request;
 
-import com.google.common.collect.Lists;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

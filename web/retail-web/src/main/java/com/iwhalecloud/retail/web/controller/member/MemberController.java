@@ -22,7 +22,6 @@ import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.RandomLogAddReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogGetReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogUpdateReq;
-import com.iwhalecloud.retail.system.dto.request.UserGetReq;
 import com.iwhalecloud.retail.system.dto.response.RandomLogGetResp;
 import com.iwhalecloud.retail.system.service.RandomLogService;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -37,8 +36,6 @@ import com.iwhalecloud.retail.web.interceptor.MemberContext;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import com.iwhalecloud.retail.web.utils.JWTTokenUtil;
 import com.twmacinta.util.MD5;
-
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -50,11 +47,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * @author

@@ -1,10 +1,7 @@
 package com.iwhalecloud.retail.promo.manager;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.promo.dto.req.AccountBalanceLogStReq;
-import com.iwhalecloud.retail.promo.dto.req.QueryAccountIncomeDetailReq;
-import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceLog;
 import com.iwhalecloud.retail.promo.mapper.AccountBalanceLogMapper;
 import org.springframework.stereotype.Component;

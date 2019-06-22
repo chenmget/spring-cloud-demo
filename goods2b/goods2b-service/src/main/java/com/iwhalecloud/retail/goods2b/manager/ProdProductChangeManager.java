@@ -2,14 +2,12 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
-import com.iwhalecloud.retail.goods2b.dto.ProdProductChangeDTO;
 import com.iwhalecloud.retail.goods2b.entity.ProdProductChange;
 import com.iwhalecloud.retail.goods2b.mapper.ProdProductChangeMapper;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 /**

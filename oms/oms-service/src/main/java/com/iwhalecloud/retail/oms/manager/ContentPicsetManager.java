@@ -1,14 +1,12 @@
 package com.iwhalecloud.retail.oms.manager;
 
-import com.iwhalecloud.retail.oms.entity.ContentPicset;
 import com.iwhalecloud.retail.oms.dto.ContentPicsetDTO;
-import com.iwhalecloud.retail.oms.dto.response.ContentPicsetListRespDTO;
 import com.iwhalecloud.retail.oms.entity.ContentPicset;
+import com.iwhalecloud.retail.oms.mapper.ContentPicsetMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.oms.mapper.ContentPicsetMapper;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;

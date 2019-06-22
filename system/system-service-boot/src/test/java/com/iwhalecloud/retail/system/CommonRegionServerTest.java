@@ -6,7 +6,6 @@ import com.iwhalecloud.retail.system.dto.request.CommonRegionPageReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.utils.MessageSourceHandler;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.Lists;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

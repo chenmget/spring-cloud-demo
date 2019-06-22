@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.core.incrementer.IKeyGenerator;
 import com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.iwhalecloud.retail.member.interceptor.MysqlKeyGenerator;
-import com.iwhalecloud.retail.member.interceptor.SourceFromInterceptor;
 import com.iwhalecloud.retail.member.interceptor.TelDbKeyGenerator;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;

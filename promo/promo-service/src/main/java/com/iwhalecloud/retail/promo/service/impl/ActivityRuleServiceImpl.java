@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.promo.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.promo.dto.ActivityRuleDTO;
 import com.iwhalecloud.retail.promo.entity.ActivityRule;
-import com.iwhalecloud.retail.promo.utils.ReflectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.promo.manager.ActivityRuleManager;
 import com.iwhalecloud.retail.promo.service.ActivityRuleService;
+import com.iwhalecloud.retail.promo.utils.ReflectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;

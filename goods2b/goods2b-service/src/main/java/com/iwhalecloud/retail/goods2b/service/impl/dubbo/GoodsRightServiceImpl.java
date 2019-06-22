@@ -9,7 +9,6 @@ import com.iwhalecloud.retail.goods2b.dto.RightDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsRightAddReq;
 import com.iwhalecloud.retail.goods2b.entity.GoodsRight;
 import com.iwhalecloud.retail.goods2b.manager.GoodsRightManager;
-import com.iwhalecloud.retail.goods2b.mapper.GoodsRightMapper;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsRightService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;

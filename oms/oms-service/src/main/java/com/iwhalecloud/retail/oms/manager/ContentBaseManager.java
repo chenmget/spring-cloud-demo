@@ -1,22 +1,18 @@
 package com.iwhalecloud.retail.oms.manager;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.oms.consts.OmsConst;
 import com.iwhalecloud.retail.oms.dto.ContentBaseDTO;
-import com.iwhalecloud.retail.oms.dto.ContentMaterialDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.content.ContentBaseByObjTypePageReq;
 import com.iwhalecloud.retail.oms.dto.resquest.content.ContentBasePTPageReq;
 import com.iwhalecloud.retail.oms.dto.resquest.content.ContentBasePageReq;
 import com.iwhalecloud.retail.oms.entity.ContentBase;
 import com.iwhalecloud.retail.oms.mapper.ContentBaseMapper;
 import com.iwhalecloud.retail.oms.mapper.ContentMaterialMapper;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
 import java.util.List;
 
 

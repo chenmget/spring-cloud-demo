@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.goods.dto.ProdTagsDTO;
 import com.iwhalecloud.retail.goods.dto.ResultVO;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdTagsService;
-import io.swagger.annotations.*;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;

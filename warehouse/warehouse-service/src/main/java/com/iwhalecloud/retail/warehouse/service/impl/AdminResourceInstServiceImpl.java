@@ -21,11 +21,9 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
-import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.*;
-import com.iwhalecloud.retail.warehouse.entity.ResourceReqItem;
 import com.iwhalecloud.retail.warehouse.entity.ResourceRequest;
 import com.iwhalecloud.retail.warehouse.manager.*;
 import com.iwhalecloud.retail.warehouse.runable.RunableTask;
@@ -37,8 +35,6 @@ import com.iwhalecloud.retail.warehouse.util.ZopClientUtil;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.RouteDTO;
 import com.iwhalecloud.retail.workflow.dto.TaskDTO;
-import com.iwhalecloud.retail.workflow.dto.TaskItemDTO;
-import com.iwhalecloud.retail.workflow.dto.req.RouteNextReq;
 import com.iwhalecloud.retail.workflow.dto.req.RouteReq;
 import com.iwhalecloud.retail.workflow.service.RouteService;
 import com.iwhalecloud.retail.workflow.service.TaskItemService;
@@ -53,9 +49,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 @Slf4j

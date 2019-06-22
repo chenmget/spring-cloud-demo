@@ -1,8 +1,9 @@
 package com.iwhalecloud.retail.goods.manager;
 
-import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
 import com.iwhalecloud.retail.goods.mapper.GoodsExtMapper;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 
 @Component

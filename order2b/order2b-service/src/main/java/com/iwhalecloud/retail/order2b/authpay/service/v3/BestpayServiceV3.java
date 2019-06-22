@@ -8,8 +8,6 @@ import net.sf.json.JsonConfig;
 import org.apache.commons.lang.RandomStringUtils;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.TreeMap;
 

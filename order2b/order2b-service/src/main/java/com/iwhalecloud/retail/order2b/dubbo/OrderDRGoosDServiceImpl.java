@@ -4,7 +4,6 @@ import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.DeliverGoodsService;
 import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.consts.order.TypeStatus;

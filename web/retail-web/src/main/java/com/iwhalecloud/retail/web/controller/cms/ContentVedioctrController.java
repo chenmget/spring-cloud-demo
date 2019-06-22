@@ -13,19 +13,9 @@ import com.iwhalecloud.retail.oms.dto.response.content.ContentVedioctrQryResp;
 import com.iwhalecloud.retail.oms.dto.response.content.ContentVedioctrSeqResp;
 import com.iwhalecloud.retail.oms.dto.resquest.content.ContentVedioctrAddReq;
 import com.iwhalecloud.retail.oms.service.ContentVedioctrService;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
+import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController

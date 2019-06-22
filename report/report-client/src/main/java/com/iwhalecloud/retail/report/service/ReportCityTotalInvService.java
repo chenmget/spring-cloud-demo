@@ -3,10 +3,7 @@ package com.iwhalecloud.retail.report.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.report.dto.request.ReportCityTotalInvReq;
-import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
-import com.iwhalecloud.retail.report.dto.response.ProductListAllResp;
 import com.iwhalecloud.retail.report.dto.response.ReportCityTotalInvResp;
-import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
 
 import java.util.List;
 /**

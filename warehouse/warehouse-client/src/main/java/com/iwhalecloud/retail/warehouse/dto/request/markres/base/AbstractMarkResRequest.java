@@ -2,10 +2,7 @@ package com.iwhalecloud.retail.warehouse.dto.request.markres.base;
 
 import lombok.Data;
 
-import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 
 /**
  * 营销资源接口请求基类

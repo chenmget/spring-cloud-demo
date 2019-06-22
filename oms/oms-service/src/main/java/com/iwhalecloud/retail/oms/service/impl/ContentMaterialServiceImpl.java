@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
 
-import com.iwhalecloud.retail.oms.dto.ContentMaterialDTO;
-import com.iwhalecloud.retail.oms.entity.ContentMaterial;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
-import lombok.extern.slf4j.Slf4j;
+import com.iwhalecloud.retail.oms.dto.ContentMaterialDTO;
 import com.iwhalecloud.retail.oms.manager.ContentMaterialManager;
 import com.iwhalecloud.retail.oms.service.ContentMaterialService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.ArrayList;
 import java.util.List;
 

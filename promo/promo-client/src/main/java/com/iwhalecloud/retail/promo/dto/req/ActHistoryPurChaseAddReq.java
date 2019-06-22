@@ -1,11 +1,10 @@
 package com.iwhalecloud.retail.promo.dto.req;
 
 
-import com.iwhalecloud.retail.promo.dto.PromotionDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
 import java.io.Serializable;
-import java.util.List;
 
 /**
  * @author lhr 2019-03-13 14:46:30

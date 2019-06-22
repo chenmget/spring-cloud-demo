@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.order.mapper;
 
-import com.iwhalecloud.retail.order.dto.resquest.PayOrderRequest;
 import com.iwhalecloud.retail.order.model.OrderFlowEntity;
 import com.iwhalecloud.retail.order.model.OrderUpdateAttrEntity;
 import org.apache.ibatis.annotations.Mapper;

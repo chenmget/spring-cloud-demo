@@ -16,7 +16,6 @@ import com.iwhalecloud.retail.warehouse.dto.response.InventoryWarningResp;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsReturnRec;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
-import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import com.iwhalecloud.retail.warehouse.manager.ResourceChngEvtDetailManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
 import com.iwhalecloud.retail.warehouse.mapper.MktResItmsReturnRecMapper;

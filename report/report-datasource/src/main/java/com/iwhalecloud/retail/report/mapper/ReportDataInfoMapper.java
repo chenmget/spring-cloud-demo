@@ -1,19 +1,14 @@
 package com.iwhalecloud.retail.report.mapper;
 
-import java.util.List;
-
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
+import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
+import com.iwhalecloud.retail.report.entity.RptPartnerOperatingDay;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
-import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
-import com.iwhalecloud.retail.report.dto.response.ProductListAllResp;
-import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
-import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
-import com.iwhalecloud.retail.report.entity.RptPartnerOperatingDay;
-import com.iwhalecloud.retail.report.entity.RptSupplierOperatingDay;
+import java.util.List;
 
 @Mapper
 public interface ReportDataInfoMapper extends BaseMapper<RptPartnerOperatingDay> {

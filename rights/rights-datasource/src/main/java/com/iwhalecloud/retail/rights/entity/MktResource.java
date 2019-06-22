@@ -1,12 +1,13 @@
 package com.iwhalecloud.retail.rights.entity;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import lombok.Data;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 记录电信涉及的各类营销资源规格定义信息，可以按类别、品牌、型号、颜色等维度根据业务需要组合定义。

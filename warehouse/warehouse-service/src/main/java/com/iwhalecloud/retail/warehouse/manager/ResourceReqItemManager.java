@@ -4,11 +4,11 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqItemAddReq;
 import com.iwhalecloud.retail.warehouse.entity.ResourceReqItem;
+import com.iwhalecloud.retail.warehouse.mapper.ResourceReqItemMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.warehouse.mapper.ResourceReqItemMapper;
 
+import javax.annotation.Resource;
 import java.util.Calendar;
 import java.util.List;
 

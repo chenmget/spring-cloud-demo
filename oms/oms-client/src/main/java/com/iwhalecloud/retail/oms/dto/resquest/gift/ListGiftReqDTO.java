@@ -1,8 +1,7 @@
 package com.iwhalecloud.retail.oms.dto.resquest.gift;
 
-import lombok.Data;
-
 import com.iwhalecloud.retail.oms.dto.PageVO;
+import lombok.Data;
 
 /**
  * @author hesw

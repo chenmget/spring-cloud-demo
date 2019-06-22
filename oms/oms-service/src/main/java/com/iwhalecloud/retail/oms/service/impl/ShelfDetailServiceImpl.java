@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.oms.dto.ShelfDetailDTO;
 import com.iwhalecloud.retail.oms.dto.ShelfDetailUpdateDTO;
 import com.iwhalecloud.retail.oms.manager.ShelfDetailManager;
 import com.iwhalecloud.retail.oms.service.ShelfDetailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 
 import java.util.HashMap;
 import java.util.List;

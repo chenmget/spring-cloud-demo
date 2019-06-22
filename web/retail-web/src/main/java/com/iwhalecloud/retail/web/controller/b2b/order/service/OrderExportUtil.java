@@ -3,9 +3,7 @@ package com.iwhalecloud.retail.web.controller.b2b.order.service;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OrderExportUtil {
 

@@ -15,7 +15,6 @@ import com.iwhalecloud.retail.promo.dto.resp.*;
 import com.iwhalecloud.retail.promo.entity.AccountBalance;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceDetail;
 import com.iwhalecloud.retail.promo.entity.AccountBalanceLog;
-import com.iwhalecloud.retail.promo.entity.AccountBalanceType;
 import com.iwhalecloud.retail.promo.exception.BusinessException;
 import com.iwhalecloud.retail.promo.manager.*;
 import com.iwhalecloud.retail.promo.rebate.RebateRuleBase;

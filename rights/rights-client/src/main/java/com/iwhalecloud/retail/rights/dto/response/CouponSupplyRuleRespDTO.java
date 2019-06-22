@@ -2,10 +2,9 @@ package com.iwhalecloud.retail.rights.dto.response;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 /**
  * 优惠券领取规则,如领取次数、领取有效期、领取时间段（月循环、周循环）

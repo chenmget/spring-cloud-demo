@@ -8,7 +8,6 @@ import com.iwhalecloud.retail.member.dto.response.BindingQueryResp;
 import com.iwhalecloud.retail.member.dto.response.MemberLoginResp;
 import com.iwhalecloud.retail.member.service.BindingService;
 import com.iwhalecloud.retail.member.service.MemberService;
-//import com.iwhalecloud.retail.oms.consts.OmsConst;
 import com.iwhalecloud.retail.web.consts.WebConst;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.interceptor.MemberContext;
@@ -36,6 +35,8 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.Enumeration;
 import java.util.List;
+
+//import com.iwhalecloud.retail.oms.consts.OmsConst;
 
 /**
  * 微信服务控制器

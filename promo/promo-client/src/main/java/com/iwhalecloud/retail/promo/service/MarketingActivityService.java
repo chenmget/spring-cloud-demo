@@ -3,11 +3,7 @@ package com.iwhalecloud.retail.promo.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
-import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
-import com.iwhalecloud.retail.promo.dto.MarketingActivityReq;
-import com.iwhalecloud.retail.promo.dto.MarketingActivityResp;
-import com.iwhalecloud.retail.promo.dto.PromotionWithMarketingActivityDTO;
+import com.iwhalecloud.retail.promo.dto.*;
 import com.iwhalecloud.retail.promo.dto.req.*;
 import com.iwhalecloud.retail.promo.dto.resp.*;
 

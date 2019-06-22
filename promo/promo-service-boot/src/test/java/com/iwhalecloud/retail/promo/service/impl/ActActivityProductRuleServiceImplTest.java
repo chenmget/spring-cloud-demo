@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.promo.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.promo.PromoServiceApplication;
-import com.iwhalecloud.retail.promo.dto.ActActivityProductRuleDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityRuleDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActReBateProductReq;
 import com.iwhalecloud.retail.promo.dto.req.ActivityProductReq;

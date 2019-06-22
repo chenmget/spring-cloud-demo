@@ -1,26 +1,24 @@
 package com.iwhalecloud.retail.web.controller.cloud;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.oms.OmsCommonConsts;
+import com.iwhalecloud.retail.oms.dto.ShelfTemplatesDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.cloud.ShelfTemplatesReq;
+import com.iwhalecloud.retail.oms.service.ShelfTemplatesService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
+import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.alibaba.dubbo.config.annotation.Reference;
-import com.iwhalecloud.retail.oms.OmsCommonConsts;
-import com.iwhalecloud.retail.oms.dto.ShelfTemplatesDTO;
-import com.iwhalecloud.retail.oms.service.ShelfTemplatesService;
-import com.iwhalecloud.retail.web.controller.BaseController;
 
 /**
  * @Auther: lin.wh

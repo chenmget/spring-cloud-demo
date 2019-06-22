@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.goods2b.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

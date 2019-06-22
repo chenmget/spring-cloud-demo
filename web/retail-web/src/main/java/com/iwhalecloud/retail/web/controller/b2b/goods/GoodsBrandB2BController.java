@@ -17,7 +17,6 @@ import com.iwhalecloud.retail.web.interceptor.UserContext;
 import com.iwhalecloud.retail.web.utils.FastDFSImgStrJoinUtil;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.User;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;

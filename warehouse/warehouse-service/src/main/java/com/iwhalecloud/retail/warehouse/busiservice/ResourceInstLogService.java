@@ -1,7 +1,10 @@
 package com.iwhalecloud.retail.warehouse.busiservice;
 
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstPutInReq;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
 

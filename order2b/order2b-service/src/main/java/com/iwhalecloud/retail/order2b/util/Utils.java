@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.order2b.util;
 
 import com.alibaba.fastjson.JSON;
-import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
-import com.iwhalecloud.retail.order2b.annotation.EnumInterface;
-import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
 import com.iwhalecloud.retail.order2b.annotation.EnumCheckValidate;
+import com.iwhalecloud.retail.order2b.annotation.EnumInterface;
 import com.iwhalecloud.retail.order2b.annotation.GroupCheckValidate;
 import com.iwhalecloud.retail.order2b.annotation.NullCheckValidate;
+import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
+import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 

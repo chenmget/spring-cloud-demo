@@ -1,11 +1,8 @@
 package com.iwhalecloud.retail.member.dto.request;
 
-import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.io.Serializable;
 
 /**
  * @Author: wang.jiaxin

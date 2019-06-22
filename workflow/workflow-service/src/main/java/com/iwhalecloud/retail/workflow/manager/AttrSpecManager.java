@@ -1,10 +1,10 @@
 package com.iwhalecloud.retail.workflow.manager;
 
 import com.iwhalecloud.retail.workflow.entity.AttrSpec;
-import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
 import com.iwhalecloud.retail.workflow.mapper.AttrSpecMapper;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 

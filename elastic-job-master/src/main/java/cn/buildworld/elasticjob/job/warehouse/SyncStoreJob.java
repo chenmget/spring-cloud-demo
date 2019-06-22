@@ -4,7 +4,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.elasticjob.lite.annotation.ElasticSimpleJob;
-import com.iwhalecloud.retail.partner.service.PartnerJobService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

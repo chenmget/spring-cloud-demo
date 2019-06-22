@@ -1,35 +1,20 @@
 package com.iwhalecloud.retail.web.controller.goods;
 
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-
-import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.goods.dto.ResultVO;
-import com.iwhalecloud.retail.goods.dto.req.ProdSpecValuesAddReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdSpecValuesGetReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdSpecificationAddReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdSpecificationDeleteReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdSpecificationGetReq;
-import com.iwhalecloud.retail.goods.dto.req.ProdSpecificationUpdateReq;
+import com.iwhalecloud.retail.goods.dto.req.*;
 import com.iwhalecloud.retail.goods.dto.resp.ProdSpecValuesGetResp;
 import com.iwhalecloud.retail.goods.dto.resp.ProdSpecificationGetResp;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdSpecValuesService;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdSpecificationService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * @author he.sw

@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.promo.dto.resp;
 import com.iwhalecloud.retail.promo.dto.ActActivityProductRuleDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityRuleDTO;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

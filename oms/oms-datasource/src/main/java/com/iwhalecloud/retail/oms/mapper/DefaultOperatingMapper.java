@@ -8,6 +8,7 @@ import com.iwhalecloud.retail.oms.dto.resquest.cloud.DefaultOperatingQueryReq;
 import com.iwhalecloud.retail.oms.entity.DefaultOperating;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+
 import java.util.List;
 
 /**

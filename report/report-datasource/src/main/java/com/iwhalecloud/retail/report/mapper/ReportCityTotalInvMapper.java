@@ -3,8 +3,6 @@ package com.iwhalecloud.retail.report.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.report.dto.request.ReportCityTotalInvReq;
-import com.iwhalecloud.retail.report.dto.request.ReportStInvCityDaoReq;
-import com.iwhalecloud.retail.report.dto.request.RptPartnerOperatingDay;
 import com.iwhalecloud.retail.report.dto.response.ReportCityTotalInvResp;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

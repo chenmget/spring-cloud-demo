@@ -1,19 +1,18 @@
 package com.iwhalecloud.retail.web.controller.cloud;
 
-import java.util.HashMap;
-import java.util.List;
-
-import com.iwhalecloud.retail.dto.ResultVO;
-import io.swagger.annotations.*;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
-
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.oms.dto.ShelfDetailDTO;
 import com.iwhalecloud.retail.oms.dto.ShelfDetailUpdateDTO;
 import com.iwhalecloud.retail.oms.service.ShelfDetailService;
 import com.iwhalecloud.retail.web.controller.BaseController;
+import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.List;
 
 /**
  * @Auther: lin.wh

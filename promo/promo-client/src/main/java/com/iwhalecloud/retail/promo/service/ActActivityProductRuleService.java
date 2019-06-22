@@ -9,8 +9,6 @@ import com.iwhalecloud.retail.promo.dto.req.ReBateActivityListReq;
 import com.iwhalecloud.retail.promo.dto.resp.ActActivityProductRuleServiceResp;
 import com.iwhalecloud.retail.promo.dto.resp.ReBateActivityListResp;
 
-import java.util.List;
-
 public interface ActActivityProductRuleService{
     /**
      * 删除活动规则信息

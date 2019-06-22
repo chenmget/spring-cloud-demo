@@ -7,7 +7,6 @@ import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.helper.FileHelper;
 import com.iwhalecloud.retail.goods2b.mapper.ProdFileMapper;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -15,8 +14,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;

@@ -2,13 +2,10 @@ package com.iwhalecloud.retail.promo.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityProductReq;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
 import org.apache.ibatis.annotations.Mapper;
-
-import java.util.List;
 
 /**
  * @Class: ActivityProductMapper

@@ -12,7 +12,6 @@ import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.*;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
-import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResourceReqDetailService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;

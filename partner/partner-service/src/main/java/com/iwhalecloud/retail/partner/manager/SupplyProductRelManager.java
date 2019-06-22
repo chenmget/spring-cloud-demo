@@ -4,13 +4,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.dto.SupplyProductRelDTO;
 import com.iwhalecloud.retail.partner.dto.resp.SupplyProductQryResp;
 import com.iwhalecloud.retail.partner.entity.SupplyProductRel;
+import com.iwhalecloud.retail.partner.mapper.SupplyProductRelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-
-import com.iwhalecloud.retail.partner.mapper.SupplyProductRelMapper;
-
 import java.util.HashMap;
 import java.util.Map;
 

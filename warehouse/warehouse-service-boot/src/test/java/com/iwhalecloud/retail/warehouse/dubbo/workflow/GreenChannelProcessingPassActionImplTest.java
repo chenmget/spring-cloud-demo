@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.warehouse.dubbo.workflow;
 import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
 import com.iwhalecloud.retail.warehouse.service.GreenChannelProcessingPassActionService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
-import com.iwhalecloud.retail.workflow.config.WfRunnable;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;

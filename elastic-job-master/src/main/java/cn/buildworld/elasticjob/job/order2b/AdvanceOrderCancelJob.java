@@ -5,7 +5,6 @@ import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.elasticjob.lite.annotation.ElasticSimpleJob;
 import com.iwhalecloud.retail.order2b.service.AdvanceOrderOpenService;
-import com.iwhalecloud.retail.pay.service.JobService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 

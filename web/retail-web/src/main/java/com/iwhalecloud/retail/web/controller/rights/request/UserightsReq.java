@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.web.controller.rights.request;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 @Data
 public class UserightsReq implements Serializable{

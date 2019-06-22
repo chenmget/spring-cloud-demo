@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.member.service;
 
-import java.util.List;
-
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.member.dto.request.BindingAddReq;
 import com.iwhalecloud.retail.member.dto.request.BindingDeleteReq;
 import com.iwhalecloud.retail.member.dto.request.BindingQueryReq;
 import com.iwhalecloud.retail.member.dto.request.BindingUpdateReq;
 import com.iwhalecloud.retail.member.dto.response.BindingQueryResp;
+
+import java.util.List;
 
 
 public interface BindingService{

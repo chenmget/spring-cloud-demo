@@ -1,22 +1,19 @@
 package com.iwhalecloud.retail.system.service.impl;
 
-import javax.annotation.Resource;
-
-import com.iwhalecloud.retail.system.common.SystemConst;
-import lombok.extern.slf4j.Slf4j;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.request.RandomLogAddReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogGetReq;
 import com.iwhalecloud.retail.system.dto.request.RandomLogUpdateReq;
 import com.iwhalecloud.retail.system.dto.response.RandomLogGetResp;
 import com.iwhalecloud.retail.system.manager.RandomLogManager;
 import com.iwhalecloud.retail.system.service.RandomLogService;
-import org.springframework.beans.BeanUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 /**

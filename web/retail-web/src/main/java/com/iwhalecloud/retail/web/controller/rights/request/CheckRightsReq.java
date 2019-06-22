@@ -1,12 +1,10 @@
 package com.iwhalecloud.retail.web.controller.rights.request;
 
 import io.swagger.annotations.ApiModelProperty;
-
-import java.io.Serializable;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-
-import lombok.Data;
+import java.io.Serializable;
 
 @Data
 public class CheckRightsReq implements Serializable{

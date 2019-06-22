@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.warehouse.dto.request;
 
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

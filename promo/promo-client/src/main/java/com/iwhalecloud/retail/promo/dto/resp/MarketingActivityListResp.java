@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.promo.dto.resp;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

@@ -5,7 +5,6 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.manager.BrandManager;

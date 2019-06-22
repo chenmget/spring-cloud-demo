@@ -1,21 +1,19 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
 
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-
-import javax.xml.namespace.QName;
+import com.iwhalecloud.retail.warehouse.dto.request.InventoryChangeReq;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import com.iwhalecloud.retail.warehouse.dto.request.InventoryChangeReq;
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 /**
  * 串码补入调用webService

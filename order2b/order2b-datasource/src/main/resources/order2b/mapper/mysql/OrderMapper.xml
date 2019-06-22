@@ -272,6 +272,30 @@
         order by saleNum
     </select>
 
+    <select id="getGoodsSaleNum"
+            resultType="com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO">
+        select b.product_id as productId,sum(b.num) as saleNum from ord_order a, ord_order_items b
+        where a.order_id = b.order_id
+        and a.lan_id = b.lan_id
+        and a.create_time <![CDATA[<=]]> DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
+        AND a.lan_id = #{lanId}
+        group by b.product_id
+        order by saleNum
+    </select>
+
+    <select id="getGoodsSaleNumByProductId"
+            resultType="com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO">
+        select b.product_id as productId,sum(b.num) as saleNum from ord_order a, ord_order_items b
+        where a.order_id = b.order_id
+        and a.lan_id = b.lan_id
+        and b.product_id = #{productId}
+        and a.create_time > #{beginTime}
+        and a.create_time <![CDATA[<=]]> DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
+        AND a.lan_id = #{lanId}
+        group by b.product_id
+        order by saleNum
+    </select>
+
     <select id="findPayAccountByOrderId" resultType="java.lang.String">
         select pma.account_name as account from
         (select su.rel_code from ord_order as oo inner join sys_user as su on oo.create_user_id = su.user_id and oo.order_id = #{orderId}) as t1

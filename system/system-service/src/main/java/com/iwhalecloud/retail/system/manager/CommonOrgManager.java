@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonOrgDTO;
+import com.iwhalecloud.retail.system.dto.SysCommonOrg;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgReq;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgResp;
 import com.iwhalecloud.retail.system.dto.request.CommonOrgListReq;
@@ -98,7 +99,7 @@ public class CommonOrgManager {
         return respPage;
     }
     
-    public List<SysCommonOrgResp> getSysCommonOrg(SysCommonOrgReq req) {
+    public List<SysCommonOrgResp> getSysCommonOrg(SysCommonOrg req) {
     	
     	return commonOrgMapper.getSysCommonOrg(req);
     }

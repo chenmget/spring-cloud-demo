@@ -20,7 +20,9 @@ public interface GoodsSaleNumService {
 
     public ResultVO<Boolean> cleanCacheGoodSaleNum(String cacheKey);
 
-    ResultVO<List<GoodsSaleNumDTO>> getProductSaleOrder();
+    ResultVO<List<GoodsSaleNumDTO>> getProductSaleOrder(String key);
 
     public ResultVO<Boolean> cleanCacheProductSaleNum();
+
+    ResultVO<List<GoodsSaleNumDTO>> queryProductSaleOrderByProductId(String productId);
 }

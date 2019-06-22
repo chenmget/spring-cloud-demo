@@ -531,8 +531,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Override
     public ResultVO<String> submitNbrAudit(ResourceUploadTempListPageReq req) {
-        //获取批次id
-        String mktResUploadBatch=req.getMktResUploadBatch();
         //查询审核成功的串码集合
         req.setResult(ResourceConst.CONSTANT_NO);
         req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());

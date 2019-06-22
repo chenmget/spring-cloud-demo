@@ -39,6 +39,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -154,6 +155,7 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
         if (null == list || list.isEmpty()) {
             return result;
         }
+
         //根据mktResId分组，减少调用服务次数，组装品牌名，产品名，商家名
         Map<String, List<ResourceReqDetailPageDTO>> map = list.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
         //商家id与商家名集合，如果id相同，直接从集合中拿
@@ -174,7 +176,7 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
             ProductResourceResp prodResp = prodList.get(0);
             List<ResourceReqDetailPageDTO> instList =entry.getValue();
             for (ResourceReqDetailPageDTO resp : instList) {
-                //填充审核状态
+                //填充审核状态,日期
                 resp.setStatusCdName(ResourceConst.DetailStatusCd.getNameByCode(resp.getStatusCd()));
                 // 添加产品信息
                 BeanUtils.copyProperties(prodResp, resp);
@@ -200,6 +202,21 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
         List<ResourceReqDetailPageResp> resultList = getResourceReqDetailList(list);
         result.setRecords(resultList);
         return result;
+    }
+
+    private String getDateStr(Date date) {
+        if(date==null){
+            return null;
+        }
+        //填充日期
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
+        try {
+            String StringDate = format.format(date);
+            return StringDate;
+        }catch (Exception e){
+            log.error("时间解析错误",e);
+        }
+        return null;
     }
 
     /**
@@ -264,6 +281,17 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
         for(ResourceReqDetailPageDTO dto: list){
             ResourceReqDetailPageResp resp=new ResourceReqDetailPageResp();
             BeanUtils.copyProperties(dto,resp);
+            resp.setCreateDateStr(getDateStr(resp.getCreateDate()));
+            String statusCd=resp.getStatusCd();
+            //非审核不通过状态，状态说明置空
+            if(!ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode().equals(statusCd)){
+                resp.setRemark(null);
+            }
+            //待审核状态，审核时间置空
+            if(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode().equals(statusCd)){
+                resp.setStatusDate(null);
+            }
+            resp.setStatusDateStr(getDateStr(resp.getStatusDate()));
             resultList.add(resp);
         }
         return resultList;

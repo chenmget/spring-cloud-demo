@@ -11,14 +11,12 @@ import com.iwhalecloud.retail.order2b.dto.model.pay.PayLogDTO;
 import com.iwhalecloud.retail.order2b.dto.model.pay.PayOperationLogDTO;
 import com.iwhalecloud.retail.order2b.dto.response.OrderPayInfoResp;
 import com.iwhalecloud.retail.order2b.dto.response.ToPayResp;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.OffLinePayReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.OrderPayInfoReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.UpdateOrdOrderReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.pay.*;
 import com.iwhalecloud.retail.order2b.manager.PayLogManager;
 import com.iwhalecloud.retail.order2b.manager.PayOperationLogManager;
 import com.iwhalecloud.retail.order2b.model.BestpayConfigModel;
 import com.iwhalecloud.retail.order2b.model.SaveLogModel;
+import com.iwhalecloud.retail.order2b.reference.BestPayManagerReference;
 import com.iwhalecloud.retail.order2b.util.AESUtil;
 import com.iwhalecloud.retail.order2b.util.Base64Utils;
 import com.iwhalecloud.retail.order2b.util.RsaCipher;
@@ -46,78 +44,21 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     @Autowired
     private PayOperationLogManager payOperationLogManager;
 
-
+    @Autowired
+    private BestPayManagerReference bestPayManagerReference;
 
     @Override
     public ToPayResp handlePayData(String orderId, String orderAmount, String orgLoginCode,String operationType) {
         ToPayResp toPayResp = new ToPayResp();
         String payId = IdWorker.getIdStr();
         orderAmount = d2l(orderAmount);
-        try{
-            toPayResp.setOrgLoginCode(orgLoginCode);
-            toPayResp.setPlatCode(bestpayConfig.getPlatCode());
-            toPayResp.setSynNoticeUrl(bestpayConfig.getSynNoticeUrl());
-            toPayResp.setAsynNoticeUrl(bestpayConfig.getAsynNoticeUrl());
-            toPayResp.setPayFormActionUrl(bestpayConfig.getUrl());
-            toPayResp.setOrderId(payId);
-            toPayResp.setOrderAmount(orderAmount);
-            // 1:收银台支付
-            toPayResp.setPayType("1");
-            String aesKey = RandomStringUtils.randomAlphanumeric(16);
-            log.info("BestPayEnterprisePaymentOpenServiceImpl.toPay aesKey is aesKey={}", aesKey);
-            //用随机生成的AES密钥
-            Cipher cipher = AESUtil.initDecryptCipher(aesKey, AESUtil.AES_CBC_PKCS5, Cipher.ENCRYPT_MODE, AESUtil.IV);
-            //对16位加密因子翼支付公钥RSA加密，然后Base64
-            byte[] aesKeyByte = RsaCipher.enDecryptByRsa(aesKey.getBytes("utf-8"), bestpayConfig.getBestpayPublicKey(), Cipher.ENCRYPT_MODE);
-            String aesEncodedKey = Base64Utils.encode(aesKeyByte);
-            toPayResp.setAesKey(aesEncodedKey);
-            byte[] encryptORGLOGINCODE = AESUtil.encrypt(orgLoginCode, cipher);
-            orgLoginCode = Base64.encodeBase64String(encryptORGLOGINCODE);
-            toPayResp.setOrgLoginCode(orgLoginCode);
-            String payAccount = toPayResp.getPayAccount();
-            byte[] encryptPayAccount = AESUtil.encrypt(checkIsNull(payAccount), cipher);
-            payAccount = Base64.encodeBase64String(encryptPayAccount);
-            toPayResp.setPayAccount(payAccount);
-            String cardUserName = toPayResp.getCardUserName();
-            byte[] encryptCardUserName = AESUtil.encrypt(checkIsNull(cardUserName), cipher);
-            cardUserName = Base64.encodeBase64String(encryptCardUserName);
-            toPayResp.setCardUserName(cardUserName);
-            String certNo = toPayResp.getCertNo();
-            byte[] encryptCertNo = AESUtil.encrypt(checkIsNull(certNo), cipher);
-            certNo = Base64.encodeBase64String(encryptCertNo);
-            toPayResp.setCertNo(certNo);
-            String mobile = toPayResp.getMobile();
-            byte[] encryptMOBILE = AESUtil.encrypt(checkIsNull(mobile), cipher);
-            mobile = Base64.encodeBase64String(encryptMOBILE);
-            toPayResp.setMobile(mobile);
-            StringBuilder signData = new StringBuilder();
-            signData.append("ORGLOGINCODE=").append(orgLoginCode)
-                    .append("&PLATCODE=").append(toPayResp.getPlatCode())
-                    .append("&ORDERID=").append(toPayResp.getOrderId())
-                    .append("&ORDERAMOUNT=").append(orderAmount)
-                    .append("&PAYTYPE=").append(toPayResp.getPayType());
-            signData.append("&SYNNOTICEURL=").append(checkIsNull(toPayResp.getSynNoticeUrl()));
-            signData.append("&ASYNNOTICEURL=").append(checkIsNull(toPayResp.getAsynNoticeUrl()));
-            signData.append("&PAYACCOUNT=").append(checkIsNull(payAccount));
-            signData.append("&CARDUSERNAME=").append(checkIsNull(cardUserName));
-            signData.append("&CERTNO=").append(checkIsNull(certNo));
-            signData.append("&CERTTYPE=").append(checkIsNull(toPayResp.getCertType()));
-            signData.append("&MOBILE=").append(checkIsNull(mobile));
-            signData.append("&PERENTFLAG=").append(checkIsNull(toPayResp.getPerentFlag()));
-            signData.append("&CARDTYPE=").append(checkIsNull(toPayResp.getCardType()));
-            signData.append("&BANKCODE=").append(checkIsNull(toPayResp.getBankCode()));
-            signData.append("&COMMENT1=").append(checkIsNull(toPayResp.getComment1()));
-            signData.append("&COMMENT2=").append(checkIsNull(toPayResp.getComment2()));
-            String origonSignStr = signData.toString();
-            log.info("PayLogServiceImpl.handlePayData origonSignStr:{}", origonSignStr);
-            byte[] signByte = RsaCipher.sign(origonSignStr.getBytes("utf-8"), bestpayConfig.getMerchantPrivateKey());
-            String sign = Base64Utils.encode(signByte);
-            log.info("PayLogServiceImpl.handlePayData sign:{}", sign);
-            toPayResp.setSignStr(sign);
-        }catch (Exception ex){
-            log.error("BestPayEnterprisePaymentImpl.toPay", ex);
-        }
-        log.info("BestPayEnterprisePaymentOpenServiceImpl.toPay resp is resp={}", JSON.toJSONString(toPayResp));
+        ToBestPayReq toBestPayReq = new ToBestPayReq();
+        toBestPayReq.setOrderId(payId);
+        toBestPayReq.setOrderAmount(orderAmount);
+        toBestPayReq.setOperationType(operationType);
+        toBestPayReq.setOrgLoginCode(orgLoginCode);
+        toPayResp = bestPayManagerReference.handlePayData(toBestPayReq);
+        log.info("BestPayEnterprisePaymentOpenServiceImpl.toPay bestPayManagerReference.handlePayData req={} resp={}", JSON.toJSONString(toBestPayReq), JSON.toJSONString(toPayResp));
         SaveLogModel saveLogModel = new SaveLogModel();
         saveLogModel.setPayId(payId);
         saveLogModel.setOrderId(orderId);

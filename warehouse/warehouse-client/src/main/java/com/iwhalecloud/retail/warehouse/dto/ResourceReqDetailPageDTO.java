@@ -121,4 +121,6 @@ public class ResourceReqDetailPageDTO implements Serializable {
      */
     @ApiModelProperty(value = "营销资源仓库标识")
     private String mktResStoreId;
+
+
 }

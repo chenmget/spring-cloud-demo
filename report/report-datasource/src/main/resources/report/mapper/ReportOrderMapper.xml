@@ -31,7 +31,7 @@
 				 (b.num*k.DISCOUNT) AS totalCouponMoney,
 				 a.SUPPLIER_NAME AS supplierName,
 				 a.SUPPLIER_CODE AS supplierCode,
-				 a.USER_NAME AS merchantName,
+				 par.MERCHANT_NAME AS merchantName,
 				 par.MERCHANT_CODE AS merchantCode,
 				 par.BUSINESS_ENTITY_NAME AS businessEntityName,
 				 par.LAN_ID AS lanId,
@@ -40,7 +40,7 @@
 				 b.item_id AS itemId
 			FROM 
 				 ord_order a
-				 LEFT JOIN par_merchant par ON par.merchant_code = a.user_id
+				 LEFT JOIN par_merchant par ON par.merchant_id = a.user_id
 				 LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
 				 ,ord_order_items b
 				 LEFT JOIN prod_product c ON b.PRODUCT_ID=c.PRODUCT_ID
@@ -91,7 +91,7 @@
 		    and a.SUPPLIER_CODE = #{req.suplierCode}
 		  </if>
 		  <if test="req.merchantName!=null and req.merchantName!=''">
-		    and a.USER_NAME like CONCAT(CONCAT('%',#{req.merchantName}),'%')
+		    and par.MERCHANT_NAME like CONCAT(CONCAT('%',#{req.merchantName}),'%')
 		  </if>
 		  <if test="req.merchantCode!=null and req.merchantCode!=''">
 		    and par.MERCHANT_CODE = #{req.merchantCode}

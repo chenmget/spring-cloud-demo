@@ -157,10 +157,10 @@
             and detail.CREATE_DATE &lt;= #{req.createEndDate}
         </if>
         <if test = "null != req.statusStartDate and '' != req.statusStartDate">
-            and detail.STATUS_DATE &gt;={req.statusStartDate}
+            and detail.STATUS_DATE &gt;=#{req.statusStartDate}
         </if>
         <if test = "null != req.statusEndDate and '' != req.statusEndDate">
-            and detail.STATUS_DATE &lt;={req.statusEndDate}
+            and detail.STATUS_DATE &lt;=#{req.statusEndDate}
         </if>
         <if test = "null != req.updateStaff and '' != req.updateStaff">
             and detail.UPDATE_STAFF = #{req.updateStaff}

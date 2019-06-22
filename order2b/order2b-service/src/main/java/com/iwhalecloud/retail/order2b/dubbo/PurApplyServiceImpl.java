@@ -76,7 +76,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		List<AddProductReq> addProductList= req.getAddProductReq();
 		//如果采购价大于政企价格 要省公司审核
 //			List<PurApplyItemResp> purApplyItemList =  purApplyManager.comparePrice(req.getApplyId());
-		List<String> prodIds = new ArrayList<String>();
+		//List<String> prodIds = new ArrayList<String>();
 
 //			for (int i=0;i<purApplyItemList.size();i++) {
 //				PurApplyItemResp purApplyItem = purApplyItemList.get(i);
@@ -86,39 +86,32 @@ public class PurApplyServiceImpl implements PurApplyService {
 //					prodIds.add(purApplyItemProductId);
 //				}
 //			}
-		for (int i=0;i<addProductList.size();i++ ) {
+	/*	for (int i=0;i<addProductList.size();i++ ) {
 			AddProductReq addProductReq = addProductList.get(i);
 			String purApplyItemProductId = addProductReq.getProductId();
 		//	String tPurPrice = addProductReq.getPriceInStore();
 			if (purApplyItemProductId!=null) {
 				prodIds.add(purApplyItemProductId);
 			}
-		}
+		}*/
 		//获取产品政企价格列表
-		List<ProductInfoResp> productList =new ArrayList<ProductInfoResp>();
-		if (prodIds!=null && prodIds.size()>0) {
-			productList= productService.getProductInfoByIds(prodIds);
-
-		}
+//		List<ProductInfoResp> productList =new ArrayList<ProductInfoResp>();
+//		if (prodIds!=null && prodIds.size()>0) {
+//			productList= productService.getProductInfoByIds(prodIds);
+//
+//		}
 
 		//获取产品政企价, 判断采购价是否大于政企价格
 
+//
 		int count=0;
 		for (int i=0;i<addProductList.size();i++) {
 			AddProductReq addProductReq = addProductList.get(i);
 			String tPurPrice = addProductReq.getPriceInStore();
-			String productIdItem=addProductReq.getProductId();
-			for (ProductInfoResp productInfoResp:productList) {
-				Double corporationPrice = productInfoResp.getCorporationPrice();
-				String productId = productInfoResp.getProductId();
-				if (productIdItem.equals(productId)) {
-					if (Double.valueOf(tPurPrice)>corporationPrice) {
-						count=count+1;
-						break;
-					}
-
-				}
-
+			String corporationPrice = addProductReq.getCorporationPrice();
+			if ( Double.valueOf(tPurPrice)>Double.valueOf(corporationPrice)) {
+				count=count+1;
+				break;
 			}
 		}
 		return  count;

@@ -4,10 +4,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.dto.response.OffLinePayResp;
 import com.iwhalecloud.retail.order2b.dto.response.OrderPayInfoResp;
 import com.iwhalecloud.retail.order2b.dto.response.ToPayResp;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.OffLinePayReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.OrderPayInfoReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.pay.ToPayReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.pay.*;
 
 public interface BestPayEnterprisePaymentService {
 
@@ -38,5 +35,12 @@ public interface BestPayEnterprisePaymentService {
      * @return
      */
     public ResultVO<OffLinePayResp> offLinePay(OffLinePayReq req);
+
+    /**
+     * 构造去翼支付的参数，这是要调用翼支付的证书、支付平台号、公约
+     * @param req
+     * @return
+     */
+    public ToPayResp handlePayData(ToBestPayReq req);
 
 }

@@ -348,8 +348,8 @@ public class ExcelToNbrUtils {
 				resp.setReqCode(getCellValue(row.getCell(1)));//第2列申请单号
 				resp.setMktResInstNbr(getCellValue(row.getCell(2)));//第3列串码
 				//resp.setStatusCdName(ResourceConst.REQ_DETAIL_STATUS.getCodeByName(getCellValue(row.getCell(8))));//第9列审核结果
-				resp.setStatusCdName(getCellValue(row.getCell(8)));//第9列审核结果
-				resp.setRemark(getCellValue(row.getCell(9)));//第10列状态说明
+				resp.setStatusCdName(getCellValue(row.getCell(9)));//第10列审核结果
+				resp.setRemark(getCellValue(row.getCell(10)));//第11列状态说明
 				data.add(resp);
 			}
 		} catch (Exception e) {

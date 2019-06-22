@@ -41,5 +41,7 @@ public class AddProductReq extends PageVO implements Serializable {
 
 	private List<String> deliverMktResInstNbrList; // 发货串码列表
 
+	private String corporationPrice; //政企价格
+
 
 }

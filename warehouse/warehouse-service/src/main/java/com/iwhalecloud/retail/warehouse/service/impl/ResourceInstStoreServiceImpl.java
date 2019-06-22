@@ -305,11 +305,10 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         latIdList.add("999");
         SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
         String time = sdf.format(new Date());
+        File dir = new File(basePath);
         try{
-            File dir = new File(basePath);
-            //删除文件
-            this.delTempChild(dir);
-            if (!dir.exists()) {
+            log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs basePath:{} exists:{} isDirectory:{}",basePath,dir.exists(),dir.isDirectory());
+            if (!dir.exists() || !dir.isDirectory()) {
                 log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs start.....");
                 dir.mkdirs();
                 log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs end.....");
@@ -317,6 +316,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         }catch (Exception e){
             log.error("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs{}",e.getMessage());
         }
+        //删除文件
+        this.delTempChild(dir);
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {
             List<MktResItmsSyncRec> mktList = new ArrayList<>();

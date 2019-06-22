@@ -39,7 +39,7 @@ public class PreCreateOrderReq extends MRequest implements Serializable {
     private List<CouponInsDTO> couponInsList;
 
     @ApiModelProperty(value = "预售单=1，普通单=0",hidden = true)
-    private String orderCat;
+    private List<String> orderCatList;
 
     @ApiModelProperty("预售订单，活动id")
     private String activityId;

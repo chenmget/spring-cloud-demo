@@ -40,7 +40,7 @@
 				 b.item_id AS itemId
 			FROM 
 				 ord_order a
-				 LEFT JOIN par_merchant par ON par.merchant_code = a.user_id
+				 LEFT JOIN par_merchant par ON par.merchant_id = a.user_id
 				 LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
 				 ,ord_order_items b
 				 LEFT JOIN prod_product c ON b.PRODUCT_ID=c.PRODUCT_ID

@@ -100,4 +100,99 @@ public class GoodSaleOrderServiceImpl implements GoodSaleOrderService {
 
         return list;
     }
+
+    @Override
+    public List<GoodsSaleOrderDTO> getGoodSaleNum() {
+        List<GoodsSaleOrderDTO> list = new ArrayList<>();
+        CommonRegionListReq req = new CommonRegionListReq();
+        List<CommonRegionDTO> commonRegionDTOs = new ArrayList<>();
+        ResultVO<List<CommonRegionDTO>> resultVO = commonRegionService.listCommonRegion(req);
+        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+            commonRegionDTOs = resultVO.getResultData();
+        }
+
+        if(!CollectionUtils.isEmpty(commonRegionDTOs)) {
+            for (CommonRegionDTO commonRegionDTO : commonRegionDTOs) {
+                String lanId = commonRegionDTO.getRegionId();
+                log.info("GoodSaleOrderServiceImpl orderManager getGoodsSaleNum lanId = {}", lanId);
+                List<GoodsSaleOrderDTO> goodsSaleOrderDTOs = orderManager.getGoodsSaleNum(lanId);
+                //循环相同的商品增加订购数。如果不存在list的商品 临时添加到buGoodsSaleOrderDTOs ，再汇总到list
+                List<GoodsSaleOrderDTO> buGoodsSaleOrderDTOs = new ArrayList<>();
+                if(!CollectionUtils.isEmpty(list) && !CollectionUtils.isEmpty(goodsSaleOrderDTOs)){
+                    for(GoodsSaleOrderDTO goodsSaleOrderDTO:goodsSaleOrderDTOs){
+                        boolean flag = true;
+                        for(GoodsSaleOrderDTO allgoodsSaleOrderDTO : list){
+                            if(goodsSaleOrderDTO.getProductId().equals(allgoodsSaleOrderDTO.getProductId())){
+                                allgoodsSaleOrderDTO.setSaleNum(goodsSaleOrderDTO.getSaleNum()+allgoodsSaleOrderDTO.getSaleNum());
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if(flag){
+                            buGoodsSaleOrderDTOs.add(goodsSaleOrderDTO);
+                        }
+                    }
+                    if(!CollectionUtils.isEmpty(buGoodsSaleOrderDTOs)){
+                        list.addAll(buGoodsSaleOrderDTOs);
+                    }
+                }else if(CollectionUtils.isEmpty(list)){
+                    list.addAll(goodsSaleOrderDTOs);
+                }
+            }
+
+        }
+        return list;
+    }
+
+    @Override
+    public List<GoodsSaleOrderDTO> getGoodsSaleNumByProductId(String productId) {
+        Date beginTime = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Calendar c = Calendar.getInstance();
+        c.setTime(new Date());
+        c.add(Calendar.DATE, - 8);
+        c.set(Calendar.HOUR_OF_DAY, 24);
+        c.set(Calendar.MINUTE, 0);
+        c.set(Calendar.SECOND, 0);
+        beginTime = c.getTime();
+        List<GoodsSaleOrderDTO> list = new ArrayList<>();
+        CommonRegionListReq req = new CommonRegionListReq();
+        List<CommonRegionDTO> commonRegionDTOs = new ArrayList<>();
+        ResultVO<List<CommonRegionDTO>> resultVO = commonRegionService.listCommonRegion(req);
+        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+            commonRegionDTOs = resultVO.getResultData();
+        }
+
+        if(!CollectionUtils.isEmpty(commonRegionDTOs)) {
+            for (CommonRegionDTO commonRegionDTO : commonRegionDTOs) {
+                String lanId = commonRegionDTO.getRegionId();
+                log.info("GoodSaleOrderServiceImpl orderManager getGoodsSaleNumByProductId productId = {}, lanId = {}", productId ,lanId);
+                List<GoodsSaleOrderDTO> goodsSaleOrderDTOs = orderManager.getGoodsSaleNumByProductId(productId,beginTime,lanId);
+                //循环相同的商品增加订购数。如果不存在list的商品 临时添加到buGoodsSaleOrderDTOs ，再汇总到list
+                List<GoodsSaleOrderDTO> buGoodsSaleOrderDTOs = new ArrayList<>();
+                if(!CollectionUtils.isEmpty(list) && !CollectionUtils.isEmpty(goodsSaleOrderDTOs)){
+                    for(GoodsSaleOrderDTO goodsSaleOrderDTO:goodsSaleOrderDTOs){
+                        boolean flag = true;
+                        for(GoodsSaleOrderDTO allgoodsSaleOrderDTO : list){
+                            if(goodsSaleOrderDTO.getProductId().equals(allgoodsSaleOrderDTO.getProductId())){
+                                allgoodsSaleOrderDTO.setSaleNum(goodsSaleOrderDTO.getSaleNum()+allgoodsSaleOrderDTO.getSaleNum());
+                                flag = false;
+                                break;
+                            }
+                        }
+                        if(flag){
+                            buGoodsSaleOrderDTOs.add(goodsSaleOrderDTO);
+                        }
+                    }
+                    if(!CollectionUtils.isEmpty(buGoodsSaleOrderDTOs)){
+                        list.addAll(buGoodsSaleOrderDTOs);
+                    }
+                }else if(CollectionUtils.isEmpty(list)){
+                    list.addAll(goodsSaleOrderDTOs);
+                }
+            }
+
+        }
+        return list;
+    }
 }

@@ -181,4 +181,17 @@ public class GoodsDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "支付方式")
 	private String payments;
+
+	/**
+	 * 是否分货
+	 */
+	@ApiModelProperty(value = "是否分货")
+	private Integer isAllot;
+
+
+	/**
+	 * 商品发布对象
+	 */
+	@ApiModelProperty(value = "商品发布对象")
+	private String targetType;
 }

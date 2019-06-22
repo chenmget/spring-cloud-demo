@@ -133,6 +133,43 @@ public class GoodsSaleNumServiceImpl implements GoodsSaleNumService {
         return ResultVO.success(true);
     }
 
+    @Override
+    @Cacheable(value = GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER)
+    public ResultVO<List<GoodsSaleNumDTO>> getProductSaleOrder() {
+        List<GoodsSaleNumDTO> list = new ArrayList<>();
+        List<GoodsSaleOrderDTO> goodsSaleOrderDTOs = goodSaleOrderService.getGoodSaleNum();
+        if(!CollectionUtils.isEmpty(goodsSaleOrderDTOs)){
+            for(GoodsSaleOrderDTO goodsSaleOrderDTO:goodsSaleOrderDTOs){
+                GoodsSaleNumDTO goodsSaleNumDTO = new GoodsSaleNumDTO();
+                BeanUtils.copyProperties(goodsSaleOrderDTO,goodsSaleNumDTO);
+                list.add(goodsSaleNumDTO);
+            }
+        }
+
+        return ResultVO.success(list);
+    }
+
+    @Override
+    @CacheEvict(value = GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER,allEntries = true,beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheProductSaleNum() {
+        log.info("CacheController.cleanCacheGoodSaleNum clean ProductSaleNum cache success!!!");
+        return ResultVO.success(true);
+    }
+
+    @Override
+    public ResultVO<List<GoodsSaleNumDTO>> queryProductSaleOrderByProductId(String productId) {
+        List<GoodsSaleNumDTO> list = new ArrayList<>();
+        List<GoodsSaleOrderDTO> goodsSaleOrderDTOs = goodSaleOrderService.getGoodsSaleNumByProductId(productId);
+        if(!CollectionUtils.isEmpty(goodsSaleOrderDTOs)){
+            for(GoodsSaleOrderDTO goodsSaleOrderDTO:goodsSaleOrderDTOs){
+                GoodsSaleNumDTO goodsSaleNumDTO = new GoodsSaleNumDTO();
+                BeanUtils.copyProperties(goodsSaleOrderDTO,goodsSaleNumDTO);
+                list.add(goodsSaleNumDTO);
+            }
+        }
+        return ResultVO.success(list);
+    }
+
     private void setGoodsImageUrl(List<GoodsSaleNumDTO> goodsDTOList, List<String> productIds) {
         // 查询商品默认图片
         List<ProdFileDTO> prodFileDTOList = prodFileManager.queryProductImage(productIds, FileConst.SubType.THUMBNAILS_SUB);

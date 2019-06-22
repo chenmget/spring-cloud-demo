@@ -45,6 +45,7 @@
             resultType="com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO">
         select
         pg.goods_id,pg.goods_name,pg.mktprice,pg.sn,pg.is_advance_sale,
+        pg.is_allot, pg.target_type,
         pgp.delivery_price,pgp.min_num,pgp.max_num, pgp.spec_name,
         band.name brand_name
         from  prod_goods_product_rel pgp ,prod_goods pg

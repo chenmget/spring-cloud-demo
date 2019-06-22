@@ -207,4 +207,12 @@ public class OrderManager {
         return orderMapper.getGoodsSaleNumByTime(begtime,lanId);
     }
 
+    public List<GoodsSaleOrderDTO> getGoodsSaleNum(String lanId){
+        return orderMapper.getGoodsSaleNum(lanId);
+    }
+
+    public List<GoodsSaleOrderDTO> getGoodsSaleNumByProductId(String productId,Date begtime,String lanId){
+        return orderMapper.getGoodsSaleNumByProductId(productId, begtime,lanId);
+    }
+
 }

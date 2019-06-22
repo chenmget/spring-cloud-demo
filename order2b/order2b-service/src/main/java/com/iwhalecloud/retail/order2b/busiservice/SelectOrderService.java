@@ -39,6 +39,6 @@ public interface SelectOrderService {
     /**
      * 根据用户查询订单状态
      */
-    List<String> getOrderStatusByUser(String userType,String orderType);
+    List<String> getOrderStatusByUser(String userType,List<String> orderTypeList);
 
 }

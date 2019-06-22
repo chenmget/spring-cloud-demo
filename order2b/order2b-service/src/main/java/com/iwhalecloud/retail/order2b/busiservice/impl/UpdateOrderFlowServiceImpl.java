@@ -303,7 +303,7 @@ public class UpdateOrderFlowServiceImpl implements UpdateOrderFlowService {
 //            resp.setResultMsg("审批意见不匹配");
 //            return resp;
 //        }
-        if(OrderManagerConsts.ORDER_CAT_1.equals(request.getOrderCat())){
+        if(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.equals(request.getOrderCat()) || OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.equals(request.getOrderCat())){
             updateAttrModel.setStatus(OrderAllStatus.ORDER_STATUS_13.getCode());
         }else{
             updateAttrModel.setStatus(OrderAllStatus.ORDER_STATUS_2.getCode());

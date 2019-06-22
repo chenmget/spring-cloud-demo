@@ -11,4 +11,7 @@ public interface GoodSaleOrderService {
 
     public List<GoodsSaleOrderDTO> getGoodSaleNumByTime(String cacheKey);
 
+    public List<GoodsSaleOrderDTO> getGoodSaleNum();
+
+    public List<GoodsSaleOrderDTO> getGoodsSaleNumByProductId(String productId);
 }

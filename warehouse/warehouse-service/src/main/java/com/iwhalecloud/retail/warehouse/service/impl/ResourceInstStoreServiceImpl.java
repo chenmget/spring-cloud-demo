@@ -306,12 +306,17 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
         latIdList.add("999");
         SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMdd");
         String time = sdf.format(new Date());
-
-        File dir = new File(basePath);
-        //删除文件
-        this.delTempChild(dir);
-        if (!dir.exists()) {
-            dir.mkdirs();
+        try{
+            File dir = new File(basePath);
+            //删除文件
+            this.delTempChild(dir);
+            if (!dir.exists()) {
+                log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs start.....");
+                dir.mkdirs();
+                log.info("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs end.....");
+            }
+        }catch (Exception e){
+            log.error("ResourceInstStoreServiceImpl.syncMktToITMS mkdirs{}",e.getMessage());
         }
         PrintWriter pw = null;
         for (int i = 0; i < latIdList.size(); i++) {

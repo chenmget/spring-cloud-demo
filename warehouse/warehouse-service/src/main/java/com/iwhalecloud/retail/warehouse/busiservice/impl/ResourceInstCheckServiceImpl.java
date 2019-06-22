@@ -281,6 +281,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             TagRelListReq tagRelReq = new TagRelListReq();
             for (MerchantTagRelDTO dto : merchantTagRelList) {
                 tagRelReq.setRelTagIdList(Lists.newArrayList(dto.getRelTagId()));
+                tagRelReq.setProductId(mktResId);
                 ResultVO<List<TagRelListResp>> tagRelTagVO = tagRelService.listTagRel(tagRelReq);
                 log.info("ResourceInstCheckServiceImpl.greenChannelValid tagRelService.listTagRel req={}, resp={}", JSON.toJSONString(tagRelReq), JSON.toJSONString(tagRelTagVO));
                 // 既有商家权限，又有对应的机型权限，通过

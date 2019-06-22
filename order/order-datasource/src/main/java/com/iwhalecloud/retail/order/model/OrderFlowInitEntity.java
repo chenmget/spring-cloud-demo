@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.order.model;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.iwhalecloud.retail.order.config.WhaleCloudDBKeySequence;
 import lombok.Data;
 
 import java.io.Serializable;

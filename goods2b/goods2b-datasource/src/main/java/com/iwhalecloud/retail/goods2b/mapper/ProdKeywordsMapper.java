@@ -2,12 +2,9 @@ package com.iwhalecloud.retail.goods2b.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.dto.ProdKeywordsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdKeywordsPageQueryReq;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseListReq;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.entity.ProdKeywords;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

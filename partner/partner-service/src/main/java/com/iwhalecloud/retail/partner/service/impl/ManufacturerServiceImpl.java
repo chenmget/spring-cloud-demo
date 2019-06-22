@@ -1,19 +1,19 @@
 package com.iwhalecloud.retail.partner.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.ManufacturerDTO;
-import com.iwhalecloud.retail.partner.dto.req.ManufacturerSaveReq;
-import com.iwhalecloud.retail.partner.dto.req.ManufacturerUpdateReq;
 import com.iwhalecloud.retail.partner.dto.req.ManufacturerGetReq;
 import com.iwhalecloud.retail.partner.dto.req.ManufacturerPageReq;
+import com.iwhalecloud.retail.partner.dto.req.ManufacturerSaveReq;
+import com.iwhalecloud.retail.partner.dto.req.ManufacturerUpdateReq;
 import com.iwhalecloud.retail.partner.entity.Manufacturer;
+import com.iwhalecloud.retail.partner.manager.ManufacturerManager;
+import com.iwhalecloud.retail.partner.service.ManufacturerService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.partner.manager.ManufacturerManager;
-import com.iwhalecloud.retail.partner.service.ManufacturerService;
 
 @Slf4j
 @Service

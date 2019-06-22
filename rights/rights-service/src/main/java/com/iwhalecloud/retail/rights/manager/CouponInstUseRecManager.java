@@ -1,11 +1,10 @@
 package com.iwhalecloud.retail.rights.manager;
 
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
 import com.iwhalecloud.retail.rights.entity.CouponInstUseRec;
 import com.iwhalecloud.retail.rights.mapper.CouponInstUseRecMapper;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
 
 
 @Component

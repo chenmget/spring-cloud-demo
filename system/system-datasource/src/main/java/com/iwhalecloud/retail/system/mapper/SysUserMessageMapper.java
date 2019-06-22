@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.system.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.system.entity.SysUserMessage;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;

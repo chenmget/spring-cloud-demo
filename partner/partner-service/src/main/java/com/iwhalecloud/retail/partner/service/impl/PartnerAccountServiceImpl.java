@@ -1,12 +1,12 @@
 package com.iwhalecloud.retail.partner.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.dto.PartnerAccountDTO;
 import com.iwhalecloud.retail.partner.dto.req.PartnerAccountPageReq;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.partner.manager.PartnerAccountManager;
 import com.iwhalecloud.retail.partner.service.PartnerAccountService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component("partnerAccountService")

@@ -3,8 +3,6 @@ package com.iwhalecloud.retail.promo.rebate;
 import com.iwhalecloud.retail.promo.dto.ActActivityProductRuleDTO;
 import com.iwhalecloud.retail.promo.dto.req.AccountBalanceCalculationOrderItemReq;
 
-import java.util.List;
-
 /**
  * @author 吴良勇
  * @date 2019/3/29 14:38

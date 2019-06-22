@@ -1,18 +1,6 @@
 package com.iwhalecloud.retail.web.controller.goods;
 
 
-import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.goods.common.GoodsConst;
@@ -24,6 +12,12 @@ import com.iwhalecloud.retail.goods.dto.resp.RecommendGoodsInfoQueryResp;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsCatService;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsRelService;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @Slf4j

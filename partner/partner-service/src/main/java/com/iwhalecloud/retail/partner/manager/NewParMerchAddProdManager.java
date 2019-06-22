@@ -1,14 +1,11 @@
 package com.iwhalecloud.retail.partner.manager;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
+import com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq;
+import com.iwhalecloud.retail.partner.mapper.NewParMerchAddProdMapper;
 import org.springframework.stereotype.Component;
 
-import com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq;
-import com.iwhalecloud.retail.partner.dto.resp.ProductIdListResp;
-import com.iwhalecloud.retail.partner.mapper.NewParMerchAddProdMapper;
+import javax.annotation.Resource;
+import java.util.List;
 
 @Component
 public class NewParMerchAddProdManager {

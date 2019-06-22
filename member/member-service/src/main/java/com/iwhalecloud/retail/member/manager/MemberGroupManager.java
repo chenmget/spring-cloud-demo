@@ -4,17 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.member.common.MemberConst;
 import com.iwhalecloud.retail.member.dto.MemberGroupDTO;
-import com.iwhalecloud.retail.member.dto.common.GroupConst;
 import com.iwhalecloud.retail.member.dto.request.MemberGroupQueryGroupReq;
 import com.iwhalecloud.retail.member.dto.request.MemberGroupQueryMemberReq;
 import com.iwhalecloud.retail.member.dto.response.GroupQueryResp;
 import com.iwhalecloud.retail.member.dto.response.MemberGroupQueryResp;
 import com.iwhalecloud.retail.member.entity.MemberGroup;
+import com.iwhalecloud.retail.member.mapper.MemberGroupMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.member.mapper.MemberGroupMapper;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 

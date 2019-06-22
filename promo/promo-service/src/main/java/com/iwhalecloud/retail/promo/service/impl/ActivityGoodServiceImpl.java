@@ -14,7 +14,6 @@ import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityByMerchantResp;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
 import com.iwhalecloud.retail.promo.manager.ActivityGoodManager;
 import com.iwhalecloud.retail.promo.manager.ActivityProductManager;
-import com.iwhalecloud.retail.promo.manager.MarketingActivityManager;
 import com.iwhalecloud.retail.promo.service.ActivityGoodService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;

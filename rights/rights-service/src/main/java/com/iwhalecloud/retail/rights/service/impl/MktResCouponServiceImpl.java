@@ -3,8 +3,6 @@ package com.iwhalecloud.retail.rights.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.rights.common.RightsConst;
-import com.iwhalecloud.retail.rights.consts.RightsStatusConsts;
 import com.iwhalecloud.retail.rights.dto.request.QueryCouponByIdReq;
 import com.iwhalecloud.retail.rights.dto.request.QueryCouponByProductAndActivityIdReq;
 import com.iwhalecloud.retail.rights.dto.request.QueryProductCouponReq;

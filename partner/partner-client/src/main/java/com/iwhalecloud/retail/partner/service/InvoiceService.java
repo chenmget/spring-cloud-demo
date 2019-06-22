@@ -2,7 +2,9 @@ package com.iwhalecloud.retail.partner.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.req.InvoiceAddReq;
+import com.iwhalecloud.retail.partner.dto.req.InvoicePageReq;
+import com.iwhalecloud.retail.partner.dto.req.QueryInvoiceByMerchantIdsReq;
 import com.iwhalecloud.retail.partner.dto.resp.InvoiceAddResp;
 import com.iwhalecloud.retail.partner.dto.resp.InvoicePageResp;
 

@@ -1,18 +1,15 @@
 package com.iwhalecloud.retail.report.manager;
 
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
 import com.iwhalecloud.retail.report.dto.request.MktResInstEventReq;
 import com.iwhalecloud.retail.report.dto.request.RptSupplierOperatingDayReq;
 import com.iwhalecloud.retail.report.dto.response.MktResEventruchu;
 import com.iwhalecloud.retail.report.dto.response.MktResInstResq;
 import com.iwhalecloud.retail.report.dto.response.ParMerchantResp;
 import com.iwhalecloud.retail.report.mapper.RptSupplierOperatingDayMapper;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 @Component
 public class RptSupplierOperatingDayManager {

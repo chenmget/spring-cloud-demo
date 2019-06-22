@@ -3,20 +3,24 @@ package com.iwhalecloud.retail.web.controller.b2b.promo;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.promo.dto.req.*;
-import com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceDetailAllResp;
+import com.iwhalecloud.retail.promo.dto.req.AddAccountReq;
+import com.iwhalecloud.retail.promo.dto.req.QueryAccountForPageReq;
+import com.iwhalecloud.retail.promo.dto.req.QueryTotalAccountReq;
+import com.iwhalecloud.retail.promo.dto.req.UpdateAccountReq;
 import com.iwhalecloud.retail.promo.dto.resp.QueryAccountForPageResp;
 import com.iwhalecloud.retail.promo.dto.resp.QueryTotalAccountResp;
+import com.iwhalecloud.retail.promo.service.AccountService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.web.bind.annotation.*;
-
 import lombok.extern.slf4j.Slf4j;
-import com.iwhalecloud.retail.promo.service.AccountService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController

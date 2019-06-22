@@ -1,14 +1,5 @@
 package com.iwhalecloud.retail.member;
 
-import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
-
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.member.dto.request.BindingAddReq;
 import com.iwhalecloud.retail.member.dto.request.BindingDeleteReq;
@@ -16,6 +7,13 @@ import com.iwhalecloud.retail.member.dto.request.BindingQueryReq;
 import com.iwhalecloud.retail.member.dto.request.BindingUpdateReq;
 import com.iwhalecloud.retail.member.dto.response.BindingQueryResp;
 import com.iwhalecloud.retail.member.service.BindingService;
+import lombok.extern.slf4j.Slf4j;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.List;
 
 
 @RunWith(SpringRunner.class)

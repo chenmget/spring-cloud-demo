@@ -4,20 +4,16 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.UserCollectionDTO;
 import com.iwhalecloud.retail.system.dto.request.UserCollectionCancelReq;
+import com.iwhalecloud.retail.system.service.UserCollectionService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
-import com.iwhalecloud.retail.web.consts.WebConst;
 import com.iwhalecloud.retail.web.controller.system.request.UserCollectionAddReq;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
-import org.springframework.web.bind.annotation.*;
-
 import lombok.extern.slf4j.Slf4j;
-import com.iwhalecloud.retail.system.service.UserCollectionService;
-
-import javax.servlet.http.HttpServletRequest;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController

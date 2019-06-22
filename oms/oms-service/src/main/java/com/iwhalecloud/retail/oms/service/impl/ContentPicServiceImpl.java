@@ -1,15 +1,15 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
 
-import com.iwhalecloud.retail.oms.dto.ContentPicDTO;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
-import lombok.extern.slf4j.Slf4j;
+import com.iwhalecloud.retail.oms.dto.ContentPicDTO;
 import com.iwhalecloud.retail.oms.manager.ContentPicManager;
 import com.iwhalecloud.retail.oms.service.ContentPicService;
-import java.util.List;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import java.util.ArrayList;
-import com.iwhalecloud.retail.oms.entity.ContentPic;
+import java.util.List;
 
 
 @Service

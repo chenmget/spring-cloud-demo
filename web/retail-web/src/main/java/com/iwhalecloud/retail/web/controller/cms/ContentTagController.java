@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.cms;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
@@ -11,8 +12,6 @@ import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import io.swagger.annotations.*;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import com.alibaba.dubbo.config.annotation.Reference;
 
 @RestController
 @CrossOrigin

@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.partner.dto.resp;
 
-import java.io.Serializable;
-
 import lombok.Data;
+
+import java.io.Serializable;
 /**
  * 
  * @author liweisong

@@ -1,13 +1,10 @@
 package com.iwhalecloud.retail.rights.dto.response;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 /**
  * 记录优惠券的使用规则信息

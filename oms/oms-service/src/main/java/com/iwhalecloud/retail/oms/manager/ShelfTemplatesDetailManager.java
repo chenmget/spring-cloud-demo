@@ -1,15 +1,13 @@
 package com.iwhalecloud.retail.oms.manager;
 
 import com.iwhalecloud.retail.oms.consts.OmsConst;
-import com.iwhalecloud.retail.oms.dto.CloudShelfDetailDTO;
 import com.iwhalecloud.retail.oms.dto.ShelfTemplatesDetailDTO;
-import com.iwhalecloud.retail.oms.entity.CloudShelfDetail;
 import com.iwhalecloud.retail.oms.entity.ShelfTemplatesDetail;
+import com.iwhalecloud.retail.oms.mapper.ShelfTemplatesDetailMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.oms.mapper.ShelfTemplatesDetailMapper;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 

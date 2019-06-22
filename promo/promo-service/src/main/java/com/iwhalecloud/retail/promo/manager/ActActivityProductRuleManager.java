@@ -6,19 +6,16 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
-import com.iwhalecloud.retail.promo.dto.ActActivityProductRuleDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityProductReq;
 import com.iwhalecloud.retail.promo.dto.req.ReBateActivityListReq;
 import com.iwhalecloud.retail.promo.dto.resp.ReBateActivityListResp;
 import com.iwhalecloud.retail.promo.entity.ActActivityProductRule;
-import com.iwhalecloud.retail.promo.entity.ActivityProduct;
+import com.iwhalecloud.retail.promo.mapper.ActActivityProductRuleMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.promo.mapper.ActActivityProductRuleMapper;
-import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 

@@ -1,10 +1,8 @@
 package com.iwhalecloud.retail.rights.service.impl;
 
-import com.iwhalecloud.retail.dto.ResultVO;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.rights.common.ResultCodeEnum;
 import com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.SaveCouponDiscountRuleReqDTO;
@@ -12,6 +10,7 @@ import com.iwhalecloud.retail.rights.dto.request.UpdateCouponDiscountRuleReqDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponDiscountRuleRespDTO;
 import com.iwhalecloud.retail.rights.manager.CouponDiscountRuleManager;
 import com.iwhalecloud.retail.rights.service.CouponDiscountRuleService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Service

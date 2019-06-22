@@ -1,19 +1,17 @@
 package com.iwhalecloud.retail.goods.manager;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.goods.dto.req.ProdBrandAddReq;
 import com.iwhalecloud.retail.goods.dto.req.ProdBrandUpdateReq;
 import com.iwhalecloud.retail.goods.dto.resp.ProdBrandGetResp;
 import com.iwhalecloud.retail.goods.entity.ProdBrand;
 import com.iwhalecloud.retail.goods.mapper.ProdBrandMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Component

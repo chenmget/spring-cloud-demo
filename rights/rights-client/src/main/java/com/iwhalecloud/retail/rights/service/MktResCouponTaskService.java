@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.rights.service;
 
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.rights.dto.request.AutoPushCouponReq;
 
 /**

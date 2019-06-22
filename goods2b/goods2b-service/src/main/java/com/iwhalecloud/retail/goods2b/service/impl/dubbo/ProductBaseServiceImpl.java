@@ -14,7 +14,6 @@ import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.entity.ProductBase;
-import com.iwhalecloud.retail.goods2b.entity.Type;
 import com.iwhalecloud.retail.goods2b.manager.BrandManager;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;

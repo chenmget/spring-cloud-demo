@@ -1,9 +1,9 @@
 package com.iwhalecloud.retail.warehouse.dto.request;
 
-import java.io.Serializable;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class ResourceStoreIdResnbr implements Serializable  {

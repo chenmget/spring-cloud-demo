@@ -3,7 +3,6 @@ package com.iwhalecloud.retail.workflow.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.dto.RouteDTO;
-import com.iwhalecloud.retail.workflow.dto.req.RouteNextReq;
 import com.iwhalecloud.retail.workflow.dto.req.RouteReq;
 
 import java.util.List;

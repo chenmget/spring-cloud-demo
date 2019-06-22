@@ -1,13 +1,10 @@
 package com.iwhalecloud.retail.promo.dto.resp;
 
 import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
-import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityScopeDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.util.List;
 
 
 /**

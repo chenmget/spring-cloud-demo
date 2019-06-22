@@ -2,19 +2,19 @@ package com.iwhalecloud.retail.system;
 
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.request.*;
+import com.iwhalecloud.retail.system.dto.request.NoticePagePersonalReq;
+import com.iwhalecloud.retail.system.dto.request.NoticePageReq;
+import com.iwhalecloud.retail.system.dto.request.NoticeSaveReq;
+import com.iwhalecloud.retail.system.dto.request.NoticeSelectUserPageReq;
 import com.iwhalecloud.retail.system.service.NoticeService;
 import com.iwhalecloud.retail.system.service.NoticeUserService;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.util.Lists;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j

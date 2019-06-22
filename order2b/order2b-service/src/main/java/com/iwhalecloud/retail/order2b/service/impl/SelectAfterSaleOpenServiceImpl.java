@@ -12,7 +12,6 @@ import com.iwhalecloud.retail.order2b.dto.model.order.OrderApplyDTO;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderItemDetailDTO;
 import com.iwhalecloud.retail.order2b.dto.response.AfterSaleInfoDetailResp;
-import com.iwhalecloud.retail.order2b.dto.model.order.OrderZFlowDTO;
 import com.iwhalecloud.retail.order2b.dto.response.AfterSaleResp;
 import com.iwhalecloud.retail.order2b.dto.response.OrderApplyExportResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SelectAfterSalesReq;

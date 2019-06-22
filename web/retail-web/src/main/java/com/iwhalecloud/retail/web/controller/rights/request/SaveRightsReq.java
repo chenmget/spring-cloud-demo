@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.web.controller.rights.request;
 
-import java.io.Serializable;
-
 import lombok.Data;
+
+import java.io.Serializable;
 
 @Data
 public class SaveRightsReq implements Serializable{

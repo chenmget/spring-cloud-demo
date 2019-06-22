@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.pay.manager;
 
 import com.iwhalecloud.retail.order.mapper.OrderPayHisMapper;
+import com.iwhalecloud.retail.order.mapper.OrderPayMapper;
 import com.iwhalecloud.retail.pay.entity.OrderPay;
 import com.iwhalecloud.retail.pay.entity.OrderPayHis;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.order.mapper.OrderPayMapper;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 

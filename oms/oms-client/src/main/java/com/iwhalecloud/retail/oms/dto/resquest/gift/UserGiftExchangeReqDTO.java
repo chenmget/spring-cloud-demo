@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.oms.dto.resquest.gift;
 
-import java.io.Serializable;
-
 import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * @author he.sw

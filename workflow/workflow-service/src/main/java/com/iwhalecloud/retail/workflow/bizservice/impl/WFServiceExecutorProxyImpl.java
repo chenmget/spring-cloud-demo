@@ -4,7 +4,6 @@ import com.alibaba.dubbo.config.ReferenceConfig;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.config.DubboConsumer;
-import com.iwhalecloud.retail.workflow.config.WfRunnable;
 import com.iwhalecloud.retail.workflow.extservice.WFServiceExecutor;
 import com.iwhalecloud.retail.workflow.extservice.params.ServiceParamContext;
 import lombok.extern.slf4j.Slf4j;

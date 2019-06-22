@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.oms.consts.OmsConst;
@@ -7,12 +8,11 @@ import com.iwhalecloud.retail.oms.dto.ContentBaseDTO;
 import com.iwhalecloud.retail.oms.dto.ContentChkhisDTO;
 import com.iwhalecloud.retail.oms.entity.ContentChkhis;
 import com.iwhalecloud.retail.oms.manager.ContentBaseManager;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import lombok.extern.slf4j.Slf4j;
 import com.iwhalecloud.retail.oms.manager.ContentChkhisManager;
 import com.iwhalecloud.retail.oms.service.ContentChkhisService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 

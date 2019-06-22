@@ -1,12 +1,11 @@
 package com.iwhalecloud.retail.promo.dto;
 
-import java.util.Date;
-
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.iwhalecloud.retail.dto.PageVO;
-
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.Date;
 
 @Data
 public class MarketingActivityReq extends PageVO  {

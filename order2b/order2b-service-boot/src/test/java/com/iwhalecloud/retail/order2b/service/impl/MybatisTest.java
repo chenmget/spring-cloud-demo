@@ -7,14 +7,13 @@ import com.iwhalecloud.retail.order2b.config.DBTableSequence;
 import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.dto.base.OrderRequest;
 import com.iwhalecloud.retail.order2b.dto.model.order.AdvanceOrderDTO;
-import com.iwhalecloud.retail.order2b.entity.OrderItem;
 import com.iwhalecloud.retail.order2b.entity.ZFlow;
 import com.iwhalecloud.retail.order2b.manager.AdvanceOrderManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.mapper.OrderItemMapper;
 import com.iwhalecloud.retail.order2b.mapper.OrderZFlowMapper;
-import com.iwhalecloud.retail.order2b.model.OrderItemModel;
 import com.iwhalecloud.retail.order2b.mapper.SelectSeqMapper;
+import com.iwhalecloud.retail.order2b.model.OrderItemModel;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 

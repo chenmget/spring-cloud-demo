@@ -6,7 +6,6 @@ import com.iwhalecloud.retail.system.dto.UserCollectionDTO;
 import com.iwhalecloud.retail.system.dto.request.UserCollectionCancelReq;
 import com.iwhalecloud.retail.system.dto.request.UserCollectionJudgeReq;
 import com.iwhalecloud.retail.system.dto.request.UserCollectionListReq;
-import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 

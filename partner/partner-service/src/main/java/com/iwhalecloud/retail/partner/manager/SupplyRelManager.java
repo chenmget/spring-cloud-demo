@@ -4,10 +4,11 @@ import com.iwhalecloud.retail.partner.dto.SupplyRelDTO;
 import com.iwhalecloud.retail.partner.dto.req.SupplyRelAddReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplyRelDeleteReq;
 import com.iwhalecloud.retail.partner.entity.SupplyRel;
+import com.iwhalecloud.retail.partner.mapper.SupplyRelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.Resource;
-import com.iwhalecloud.retail.partner.mapper.SupplyRelMapper;
 
 
 @Component

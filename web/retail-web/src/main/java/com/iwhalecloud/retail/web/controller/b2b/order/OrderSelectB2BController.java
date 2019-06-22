@@ -14,7 +14,6 @@ import com.iwhalecloud.retail.order2b.dto.resquest.order.AdvanceOrderReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SelectNbrReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SelectOrderReq;
 import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
-import com.iwhalecloud.retail.order2b.service.TestTelDBseqService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.response.OrderSelectDetailSwapResp;

@@ -6,19 +6,12 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.oms.dto.TRfidGoodsRelDTO;
 import com.iwhalecloud.retail.oms.service.RfidGoodsRelService;
-
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.rfid.request.RfidGoodsRelAddReq;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 

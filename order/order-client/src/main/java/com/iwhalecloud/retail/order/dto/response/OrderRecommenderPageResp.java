@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.order.dto.response;
 
+import com.iwhalecloud.retail.order.dto.PageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import com.iwhalecloud.retail.order.dto.PageVO;
 
 /**
  * OrderRecommender

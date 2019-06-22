@@ -8,7 +8,6 @@ import com.iwhalecloud.retail.goods2b.dto.req.ComplexInfoQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ComplexInfoReq;
 import com.iwhalecloud.retail.goods2b.entity.ComplexInfo;
 import com.iwhalecloud.retail.goods2b.manager.ComplexInfoManager;
-import com.iwhalecloud.retail.goods2b.mapper.ComplexInfoMapper;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ComplexInfoService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;

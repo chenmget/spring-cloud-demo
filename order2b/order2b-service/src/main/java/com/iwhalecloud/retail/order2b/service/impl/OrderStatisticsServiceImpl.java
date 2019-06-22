@@ -13,7 +13,6 @@ import com.iwhalecloud.retail.order2b.manager.OrderOperatingDayStatisticsManager
 import com.iwhalecloud.retail.order2b.service.OrderStatisticsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;

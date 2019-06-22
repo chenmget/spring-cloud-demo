@@ -7,7 +7,6 @@ import com.iwhalecloud.retail.warehouse.dto.request.markres.SynMarkResStoreReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markres.SynMarkResStoreToFormalReq;
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.SynMarkResStoreResp;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

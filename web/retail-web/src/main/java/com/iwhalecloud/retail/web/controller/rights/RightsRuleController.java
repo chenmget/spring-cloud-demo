@@ -1,28 +1,18 @@
 package com.iwhalecloud.retail.web.controller.rights;
 
+import com.alibaba.dubbo.config.annotation.Reference;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO;
+import com.iwhalecloud.retail.rights.dto.response.*;
+import com.iwhalecloud.retail.rights.service.*;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.alibaba.dubbo.config.annotation.Reference;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO;
-import com.iwhalecloud.retail.rights.dto.response.CouponApplyObjectRespDTO;
-import com.iwhalecloud.retail.rights.dto.response.CouponDiscountRuleRespDTO;
-import com.iwhalecloud.retail.rights.dto.response.CouponEffExpRuleRespDTO;
-import com.iwhalecloud.retail.rights.dto.response.CouponSupplyRuleRespDTO;
-import com.iwhalecloud.retail.rights.dto.response.MktResRegionRespDTO;
-import com.iwhalecloud.retail.rights.service.CouponApplyObjectService;
-import com.iwhalecloud.retail.rights.service.CouponDiscountRuleService;
-import com.iwhalecloud.retail.rights.service.CouponEffExpRuleService;
-import com.iwhalecloud.retail.rights.service.CouponSupplyRuleService;
-import com.iwhalecloud.retail.rights.service.MktResRegionService;
 
 @RestController
 @RequestMapping("/api/rule")

@@ -1,11 +1,6 @@
 package com.iwhalecloud.retail.order.mapper;
 
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order.dto.response.OrderRecommenderPageResp;
@@ -13,6 +8,10 @@ import com.iwhalecloud.retail.order.dto.response.OrderRecommenderRankResp;
 import com.iwhalecloud.retail.order.dto.response.OrderRecommenderResp;
 import com.iwhalecloud.retail.order.dto.resquest.ListOrderRecommenderReq;
 import com.iwhalecloud.retail.order.entity.OrderRecommender;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 /**
  * @Class: OrderRecommenderMapper

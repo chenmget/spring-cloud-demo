@@ -3,7 +3,10 @@ package com.iwhalecloud.retail.partner.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.PermissionApplyDTO;
-import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyAuditReq;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyListReq;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplySaveDTO;
+import com.iwhalecloud.retail.partner.dto.req.PermissionApplyUpdateReq;
 
 import java.util.List;
 

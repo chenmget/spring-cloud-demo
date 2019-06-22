@@ -1,17 +1,13 @@
 package com.iwhalecloud.retail.promo.filter.activity;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.entity.ActivityParticipant;
-import com.iwhalecloud.retail.promo.entity.ActivityScope;
 import com.iwhalecloud.retail.promo.entity.MarketingActivity;
 import com.iwhalecloud.retail.promo.filter.activity.model.ActivityAuthModel;
 import com.iwhalecloud.retail.promo.manager.ActivityParticipantManager;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;

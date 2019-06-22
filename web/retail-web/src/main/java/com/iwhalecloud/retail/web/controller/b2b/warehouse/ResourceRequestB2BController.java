@@ -9,16 +9,12 @@ import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestQueryResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
-import com.iwhalecloud.retail.web.annotation.UserLoginToken;
-import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
-
-import javax.validation.Valid;
 
 /**
  * @Author My

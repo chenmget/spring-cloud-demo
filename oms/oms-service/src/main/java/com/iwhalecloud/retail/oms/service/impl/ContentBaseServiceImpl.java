@@ -5,7 +5,6 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods.dto.ProdTagsDTO;
 import com.iwhalecloud.retail.goods.dto.ResultVO;
-//import com.iwhalecloud.retail.goods.entity.Tags;
 import com.iwhalecloud.retail.goods.dto.resp.ProdGoodsDetailResp;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsService;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdTagsService;
@@ -14,7 +13,7 @@ import com.iwhalecloud.retail.oms.dto.*;
 import com.iwhalecloud.retail.oms.dto.response.content.ContentIdLIstResp;
 import com.iwhalecloud.retail.oms.dto.response.content.ContentIdResp;
 import com.iwhalecloud.retail.oms.dto.resquest.content.*;
-import com.iwhalecloud.retail.oms.entity.*;
+import com.iwhalecloud.retail.oms.entity.ContentChkhis;
 import com.iwhalecloud.retail.oms.manager.*;
 import com.iwhalecloud.retail.oms.service.ContentBaseService;
 import org.springframework.beans.BeanUtils;
@@ -24,7 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.regex.Pattern;
+
+//import com.iwhalecloud.retail.goods.entity.Tags;
 
 @Service
 public class ContentBaseServiceImpl implements ContentBaseService {

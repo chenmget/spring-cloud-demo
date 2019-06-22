@@ -2,14 +2,12 @@ package com.iwhalecloud.retail.warehouse.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
 import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 

@@ -1,18 +1,16 @@
 package com.iwhalecloud.retail.order.dubbo;
 
-import java.util.List;
-
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.order.dto.TestUserDTO;
 import com.iwhalecloud.retail.order.entity.UserCopyTest;
 import com.iwhalecloud.retail.order.manager.TestUserManger;
 import com.iwhalecloud.retail.order.service.TestService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Slf4j
 @Component

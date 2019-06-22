@@ -1,7 +1,6 @@
 package com.iwhalecloud.retail.report.dto.response;
 
 import com.iwhalecloud.retail.dto.PageVO;
-
 import lombok.Data;
 
 @Data

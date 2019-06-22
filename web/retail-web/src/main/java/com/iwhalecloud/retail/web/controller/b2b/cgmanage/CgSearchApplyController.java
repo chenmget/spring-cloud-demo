@@ -1,18 +1,5 @@
 package com.iwhalecloud.retail.web.controller.b2b.cgmanage;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-
-import org.apache.poi.ss.formula.functions.T;
-import org.junit.Test;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -21,26 +8,22 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
-import com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdatePurApplyState;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
-import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
-import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
-
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 
 /**

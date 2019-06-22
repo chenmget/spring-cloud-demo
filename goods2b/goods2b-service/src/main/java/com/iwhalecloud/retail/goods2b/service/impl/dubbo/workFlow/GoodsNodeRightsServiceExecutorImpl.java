@@ -1,11 +1,9 @@
 package com.iwhalecloud.retail.goods2b.service.impl.dubbo.workFlow;
 
 import com.alibaba.dubbo.config.annotation.Service;
-import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.extservice.WFServiceExecutor;
-import com.iwhalecloud.retail.workflow.extservice.params.NodeRightsServiceParamContext;
 import com.iwhalecloud.retail.workflow.extservice.params.ServiceParamContext;
 import lombok.extern.slf4j.Slf4j;
 

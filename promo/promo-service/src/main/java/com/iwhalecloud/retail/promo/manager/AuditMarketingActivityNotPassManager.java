@@ -1,13 +1,10 @@
 package com.iwhalecloud.retail.promo.manager;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.entity.MarketingActivity;
 import com.iwhalecloud.retail.promo.mapper.MarketingActivityMapper;
-import com.iwhalecloud.retail.promo.service.AuditMarketingActivityPassService;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;

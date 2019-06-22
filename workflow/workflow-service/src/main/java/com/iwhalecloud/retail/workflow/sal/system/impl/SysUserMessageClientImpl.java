@@ -2,31 +2,19 @@ package com.iwhalecloud.retail.workflow.sal.system.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.exception.RetailTipException;
-import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.SysUserMessageService;
-import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.dto.TaskDTO;
-import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.dto.req.WorkTaskAddReq;
-import com.iwhalecloud.retail.workflow.entity.Task;
 import com.iwhalecloud.retail.workflow.entity.TaskItem;
 import com.iwhalecloud.retail.workflow.sal.system.SysUserMessageClient;
-import com.iwhalecloud.retail.workflow.sal.system.UserClient;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static com.iwhalecloud.retail.workflow.common.ResultCodeEnum.QUERY_HADNLE_USER_IS_EMPTY;
 
 @Slf4j
 @Service

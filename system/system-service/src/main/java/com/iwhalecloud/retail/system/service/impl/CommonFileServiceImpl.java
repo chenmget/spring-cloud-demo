@@ -1,11 +1,11 @@
 package com.iwhalecloud.retail.system.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.CommonFileDTO;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.system.manager.CommonFileManager;
 import com.iwhalecloud.retail.system.service.CommonFileService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 

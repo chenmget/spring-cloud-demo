@@ -473,8 +473,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         List<QryMktInstInfoByConditionItemSwapResp> qryMktInstInfoList = new ArrayList<>();
         // 组装请求参数,参数为空传空字符串(接口要求)
         QryMktInstInfoByConditionSwapReq qryMktInstInfoByConditionReq = new QryMktInstInfoByConditionSwapReq();
-        qryMktInstInfoByConditionReq.setInstoreBeginTime(req.getCreateTimeStart());
-        qryMktInstInfoByConditionReq.setInstoreEndTime(req.getCreateTimeEnd());
+        qryMktInstInfoByConditionReq.setInstoreBeginTime(req.getInstInDateStart());
+        qryMktInstInfoByConditionReq.setInstoreEndTime(req.getInstOutDateEnd());
         String mktResId = CollectionUtils.isEmpty(req.getMktResIds()) ? null : req.getMktResIds().get(0);
         qryMktInstInfoByConditionReq.setMktResId(mktResId);
         qryMktInstInfoByConditionReq.setMktResName(req.getProductName());

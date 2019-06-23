@@ -230,9 +230,9 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             return;
         }
         List<String> productList = new ArrayList<>();
+        String eventId = null;
         for (ResourceInstDTO resourceInst : resourceInsts) {
             String productId = resourceInst.getMktResId();
-            String eventId = "";
             if (!productList.contains(productId)) {
                 // step2 记录事件(根据产品维度)
                 ResouceEventDTO eventDTO = new ResouceEventDTO();
@@ -281,9 +281,9 @@ public class ResourceInstLogServiceImpl implements ResourceInstLogService {
             return;
         }
         List<String> productList = new ArrayList<>();
+        String eventId = null;
         for (ResourceInstDTO resourceInst : resourceInsts) {
             String productId = resourceInst.getMktResId();
-            String eventId = "";
             if (!productList.contains(productId)) {
                 // step2 记录事件(根据产品维度)
                 ResouceEventDTO eventDTO = new ResouceEventDTO();

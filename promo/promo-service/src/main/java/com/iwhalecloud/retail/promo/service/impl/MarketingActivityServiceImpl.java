@@ -1272,6 +1272,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             List<String> originalActivityParticipantLanIds = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getLanId).collect(Collectors.toList());
             List<String> originalActivityParticipantCitys = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getCity).collect(Collectors.toList());
             List<String> originalActivityParticipantMerchantCodes = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getMerchantCode).collect(Collectors.toList());
+            List<String> originalActivityParticipantFilterValues = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getFilterValue).collect(Collectors.toList());
             for (ActivityParticipantDTO changedActivityParticipantDTO : changedActivityParticipantDTOList) {
                 if (changedActivityParticipantDTO == null || "null".equals(changedActivityParticipantDTO)) {
                     continue;
@@ -1279,10 +1280,14 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 String lanId = changedActivityParticipantDTO.getLanId() == null ? "" : changedActivityParticipantDTO.getLanId();
                 String city = changedActivityParticipantDTO.getCity() == null ? "" : changedActivityParticipantDTO.getCity();
                 String merchantCode = changedActivityParticipantDTO.getMerchantCode() == null ? "" : changedActivityParticipantDTO.getMerchantCode();
+                String filterValue = changedActivityParticipantDTO.getFilterValue() == null ? "" : changedActivityParticipantDTO.getFilterValue();
                 if (originalActivityParticipantLanIds.contains(lanId) || originalActivityParticipantCitys.contains(city)) {
                     continue;
                 }
                 if (originalActivityParticipantMerchantCodes.contains(merchantCode)) {
+                    continue;
+                }
+                if (originalActivityParticipantFilterValues.contains(filterValue)) {
                     continue;
                 }
                 //如果该范围不在原参与对象里，准备进行添加，并写变更详情表

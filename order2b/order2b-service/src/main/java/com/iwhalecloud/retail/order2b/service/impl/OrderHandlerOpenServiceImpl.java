@@ -65,7 +65,7 @@ public class OrderHandlerOpenServiceImpl implements OrderHandlerOpenService {
 
                 taskManagerReference.updateTask(order.getOrderId(), request.getUserId());
                 String message="待付款";
-                if(OrderManagerConsts.ORDER_CAT_1.equals(order.getOrderCat())){
+                if(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.equals(order.getOrderCat()) || OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.equals(order.getOrderCat())){
                     message="待付定金";
                 }
                 taskManagerReference.addTaskByHandlerOne(message,order.getOrderId(), request.getUserId(), order.getCreateUserId());
@@ -73,7 +73,7 @@ public class OrderHandlerOpenServiceImpl implements OrderHandlerOpenService {
                 break;
             case ORDER_HANDLER_QX:  //取消
 
-                if(OrderManagerConsts.ORDER_CAT_1.equals(order.getOrderCat())){
+                if(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.equals(order.getOrderCat()) || OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.equals(order.getOrderCat())){
                     resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
                     resultVO.setResultMsg("预售订单不能取消");
                     return resultVO;

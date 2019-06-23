@@ -302,16 +302,19 @@ public class AdminResourceInstB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="exportNbrDetail")
+    @UserLoginToken
     public void exportNbrDetail(@RequestBody ResourceReqDetailQueryReq req, HttpServletResponse response) {
+        UserDTO userDTO = UserContext.getUser();
+        req.setUpdateStaff(userDTO.getUserId());
         ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listResourceRequestDetailPage(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
-        log.info("ResourceReqDetailB2BController.nbrDetailExport resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
+        log.info("AdminResourceInstB2BController.exportNbrDetail resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
         //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-                OrderExportUtil.getResReqDetail(), "串码");
-        deliveryGoodsResNberExcel.exportExcel("导出待审核串码",workbook,response);
+                OrderExportUtil.getResReqDetail(), "串码明细");
+        deliveryGoodsResNberExcel.exportExcel("导出串码明细",workbook,response);
     }
 
     @ApiOperation(value = "导入审核的串码文件", notes = "支持xlsx、xls格式")

@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.service.impl;
 
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.dto.SourceFromContext;
 import com.iwhalecloud.retail.order2b.TestBase;
@@ -68,7 +69,7 @@ public class SelectOrderServiceTest extends TestBase {
     public void exportAdvance(){
         AdvanceOrderReq req=new AdvanceOrderReq();
         req.setUserExportType("3");
-        req.setOrderCat("0");
+        req.setOrderCatList(Lists.newArrayList("0"));
         req.setUserCode("4301811022885");
         req.setUserId("1077839559879852033");
         req.setSourceFrom("YHJ");

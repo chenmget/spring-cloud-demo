@@ -18,7 +18,6 @@ import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
 import com.iwhalecloud.retail.goods2b.manager.*;
-import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
@@ -50,9 +49,6 @@ public class ProductServiceImpl implements ProductService {
 
     @Reference
     private MerchantService merchantService;
-
-    @Autowired
-    private ProductBaseService productBaseService;
 
     @Autowired
     private TagsManager tagsManager;
@@ -647,6 +643,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
 
+    @Override
     public List<ProductInfoResp> getProductInfoByIds(List<String> productIdList) {
         log.info("ProductServiceImpl.getDuplicate productIdList={}", productIdList);
         return productManager.getProductInfoByIds(productIdList);

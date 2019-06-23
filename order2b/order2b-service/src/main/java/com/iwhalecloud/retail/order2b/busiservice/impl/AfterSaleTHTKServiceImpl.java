@@ -199,7 +199,7 @@ public class AfterSaleTHTKServiceImpl implements AfterSaleTHTKService {
     public CommonResultResp checkActivity(OrderApplyReq req, Order order) {
 
         CommonResultResp resp = new CommonResultResp();
-        if (OrderManagerConsts.ORDER_CAT_1.equals(order.getOrderCat())) {
+        if (OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.equals(order.getOrderCat()) || OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.equals(order.getOrderCat())) {
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             resp.setResultMsg("预售订单不能退货退款");
             return resp;

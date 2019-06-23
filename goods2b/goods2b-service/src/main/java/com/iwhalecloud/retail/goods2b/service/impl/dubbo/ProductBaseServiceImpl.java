@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.goods2b.entity.ProductBase;
 import com.iwhalecloud.retail.goods2b.manager.BrandManager;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
+import com.iwhalecloud.retail.goods2b.manager.TagRelManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.DateUtil;
 import com.iwhalecloud.retail.goods2b.utils.GenerateCodeUtil;
@@ -40,6 +41,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -69,6 +71,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     private BrandManager brandManager;
     @Reference
     private PublicDictService publicDictService;
+    @Autowired
+    private TagRelManager tagRelManager;
 
     @Value("${zop.secret}")
     private String zopSecret;
@@ -750,6 +754,31 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         Page<ProductDTO> page = resultVO.getResultData();
         List<ProductDTO> list = page.getRecords();
         productDetail.setProductAddReqs(list);
+
+        List<String> listTagRelId = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(list)) {
+            for (ProductDTO productDTO : list) {
+                TagRelListReq tagRelListReq = new TagRelListReq();
+                tagRelListReq.setProductId(productDTO.getProductId());
+                List<TagRelListResp> listTagRel = tagRelManager.listTagRel(tagRelListReq);
+                log.info("ProductBaseServiceImpl.getProductDetail tagRelManager.listTagRel req={}, resp={}", JSON.toJSONString(tagRelListReq), JSON.toJSONString(listTagRel));
+                List<String> relIdList = listTagRel.stream().map(TagRelListResp::getTagId).collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(relIdList)) {
+                    listTagRelId.addAll(relIdList);
+                }
+            }
+        }
+        if(CollectionUtils.isEmpty(productDetail.getTagList())){
+            List<String> distinctList = listTagRelId.stream().distinct().collect(Collectors.toList());
+            productDetail.setTagList(distinctList);
+        } else {
+            List<String> tagList = productDetail.getTagList();
+            if (!CollectionUtils.isEmpty(listTagRelId)) {
+                tagList.addAll(listTagRelId);
+                List<String> distinctList = tagList.stream().distinct().collect(Collectors.toList());
+                productDetail.setTagList(distinctList);
+            }
+        }
 
         ProductExtGetReq productExtGetReq = new ProductExtGetReq();
         productExtGetReq.setProductBaseId(req.getProductBaseId());

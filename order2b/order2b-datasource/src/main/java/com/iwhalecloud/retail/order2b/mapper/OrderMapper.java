@@ -81,6 +81,9 @@ public interface OrderMapper extends BaseMapper<Order> {
      */
     List<GoodsSaleOrderDTO> getGoodsSaleNumByTime(@Param("beginTime")Date beginTime,@Param("lanId")String lanId);
 
+    List<GoodsSaleOrderDTO> getGoodsSaleNum(@Param("lanId")String lanId);
+
+    List<GoodsSaleOrderDTO> getGoodsSaleNumByProductId(@Param("productId")String productId,@Param("beginTime")Date beginTime,@Param("lanId")String lanId);
 
     String findPayAccountByOrderId(@Param("orderId") String orderId);
 

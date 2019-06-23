@@ -5,7 +5,6 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductInfoResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
@@ -109,6 +108,12 @@ public class PurApplyServiceImpl implements PurApplyService {
 			AddProductReq addProductReq = addProductList.get(i);
 			String tPurPrice = addProductReq.getPriceInStore();
 			String corporationPrice = addProductReq.getCorporationPrice();
+			if (null == corporationPrice) {
+				corporationPrice = "0";
+			}
+			if (null == tPurPrice) {
+				tPurPrice = "0";
+			}
 			if ( Double.valueOf(tPurPrice)>Double.valueOf(corporationPrice)) {
 				count=count+1;
 				break;

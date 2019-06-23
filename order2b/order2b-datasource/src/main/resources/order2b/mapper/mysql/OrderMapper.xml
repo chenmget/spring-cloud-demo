@@ -101,8 +101,11 @@
             <if test="req.paymentType!=null and req.paymentType!=''">
                 and pay_type = #{req.paymentType}
             </if>
-            <if test="req.orderCat !=null and req.orderCat !=''">
-                and ORDER_CAT =#{req.orderCat}
+            <if test="req.orderCatList !=null and req.orderCatList.size()>0">
+                AND ORDER_CAT IN
+                <foreach collection="req.orderCatList" open="(" close=")" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
             </if>
             <if test="req.sourceFrom !=null and req.sourceFrom !=''">
                 and SOURCE_FROM=#{req.sourceFrom}
@@ -262,6 +265,30 @@
         where a.order_id = b.order_id
         and a.lan_id = b.lan_id
         and a.status in (4,41,5,6,10)
+        and a.create_time > #{beginTime}
+        and a.create_time <![CDATA[<=]]> DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
+        AND a.lan_id = #{lanId}
+        group by b.product_id
+        order by saleNum
+    </select>
+
+    <select id="getGoodsSaleNum"
+            resultType="com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO">
+        select b.product_id as productId,sum(b.num) as saleNum from ord_order a, ord_order_items b
+        where a.order_id = b.order_id
+        and a.lan_id = b.lan_id
+        and a.create_time <![CDATA[<=]]> DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
+        AND a.lan_id = #{lanId}
+        group by b.product_id
+        order by saleNum
+    </select>
+
+    <select id="getGoodsSaleNumByProductId"
+            resultType="com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO">
+        select b.product_id as productId,sum(b.num) as saleNum from ord_order a, ord_order_items b
+        where a.order_id = b.order_id
+        and a.lan_id = b.lan_id
+        and b.product_id = #{productId}
         and a.create_time > #{beginTime}
         and a.create_time <![CDATA[<=]]> DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
         AND a.lan_id = #{lanId}

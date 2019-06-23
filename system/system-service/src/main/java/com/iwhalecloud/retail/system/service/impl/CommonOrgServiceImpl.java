@@ -105,7 +105,7 @@ public class CommonOrgServiceImpl implements CommonOrgService {
      */
     @Override
     public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg(SysCommonOrg req) {
-    	log.info("CommonOrgServiceImpl.getSysCommonOrg() start ******************************** ");
+    	log.info("CommonOrgServiceImpl.getSysCommonOrg() start ******************************** ",JSON.toJSONString(req));
     	List<SysCommonOrgResp>  respList = commonOrgManager.getSysCommonOrg(req);
     	return ResultVO.success(respList);
     }

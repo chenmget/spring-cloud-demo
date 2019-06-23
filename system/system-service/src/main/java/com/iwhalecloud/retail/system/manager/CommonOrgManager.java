@@ -100,7 +100,6 @@ public class CommonOrgManager {
     }
     
     public List<SysCommonOrgResp> getSysCommonOrg(SysCommonOrg req) {
-    	
     	return commonOrgMapper.getSysCommonOrg(req);
     }
     

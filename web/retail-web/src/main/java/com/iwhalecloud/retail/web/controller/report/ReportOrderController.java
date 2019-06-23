@@ -261,7 +261,7 @@ public class ReportOrderController extends BaseController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @GetMapping("/getSysCommonOrg")
+    @PostMapping("/getSysCommonOrg")
 	@UserLoginToken
     public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg(SysCommonOrg req) {
 		log.info("****************ReportOrderController getSysCommonOrg()  ************start param={}");

@@ -49,10 +49,10 @@ public class ValidAndAddRunableTask {
 
     private Map<String, List<Future<Boolean>>> validFutureTaskResult = new Hashtable();
 
-    String reg12 = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){12}$";
-    String reg24 = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){24}$";
-    String reg32 = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){32}$";
-    String reg39 = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){39}$";
+    String reg12 = "([A-Z]|[0-9]|[-]){12}$";
+    String reg24 = "([A-Z]|[0-9]|[-]){24}$";
+    String reg32 = "([A-Z]|[0-9]|[-]){32}$";
+    String reg39 = "([A-Z]|[0-9]|[-]){39}$";
 
     /**
      * 串码校验多线程处理
@@ -427,9 +427,9 @@ public class ValidAndAddRunableTask {
     }
 
     public static void main(String[] args) {
-        String reg = "([A-Z]|[0-9]|[`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】‘；：”“’。，、？-]){24}$";
+        String reg = "([A-Z]|[0-9]|[-]){12}$";
         Pattern pattern39= Pattern.compile(reg);
-        String test = "AbAb11111111111111111111";
+        String test = "203911110190";
         Boolean matchs = pattern39.matcher(test).matches();
         System.out.print(matchs);
     }

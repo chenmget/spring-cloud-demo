@@ -292,7 +292,7 @@ public class AdminResourceInstB2BController {
     @UserLoginToken
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestPage(ResourceReqDetailQueryReq req) {
         UserDTO userDTO = UserContext.getUser();
-        req.setUpdateStaff(userDTO.getUserId());
+        req.setUserId(userDTO.getUserId());
         return resourceReqDetailService.listResourceRequestDetailPage(req);
     }
 

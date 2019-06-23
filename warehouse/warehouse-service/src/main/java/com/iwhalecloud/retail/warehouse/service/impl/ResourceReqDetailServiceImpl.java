@@ -121,24 +121,40 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
 
     @Override
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestDetailPage(ResourceReqDetailQueryReq req) {
-        //判断审核状态不允许为空
-        if(StringUtils.isEmpty(req.getStatusCd())){
-            return ResultVO.errorEnum(ResultCodeEnum.LACK_OF_PARAM);
-        }
         //根据搜索条件组装参数
         packageResourceReqDetailQueryReq(req);
         Page<ResourceReqDetailPageDTO> respPage=new Page();
-        if(!ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode().equals(req.getStatusCd())){
-            //查询状态为审核通过或审核不通过，查询是该登录人审核过的明细
+        if(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode().equals(req.getStatusCd())||ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode().equals(req.getStatusCd())){
+            //查询状态为审核通过或审核不通过，查询用户审核过的明细
+            req.setUpdateStaff(req.getUserId());
             respPage = resourceReqDetailManager.listResourceRequestPage(req);
-        }else{
+
+        }else if(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode().equals(req.getStatusCd())){
             //查询状态为待审核
             //如果审核时间查询条件不为空，直接返回空数据
             if(StringUtils.isNotEmpty(req.getStatusEndDate())||StringUtils.isNotEmpty(req.getStatusStartDate())){
                 return ResultVO.success(new Page());
             }
+            //获取用户当前待处理的流程表单id，即串码申请单id
+            List<String> formIdList=getUserHandleFormId(req.getUserId());
+            if(CollectionUtils.isEmpty(formIdList)){
+                return ResultVO.success(new Page());
+            }
+            req.setMktResReqIdList(formIdList);
             //查询当前处理人待审核的串码明细
-            respPage=listRequestDetailByUserId(req);
+            respPage=resourceReqDetailManager.listResourceRequestPage(req);
+        }else{
+            //查询状态为全部
+            //获取用户当前待处理的流程表单id，即串码申请单id
+            List<String> formIdList=getUserHandleFormId(req.getUserId());
+            //获取用户处理过的申请单id
+            req.setUpdateStaff(req.getUserId());
+            List<ResourceReqDetailPageDTO> resourceReqDetailList=resourceReqDetailManager.listDistinctResourceRequestByUser(req);
+            List<String> reqId=resourceReqDetailList.stream().map(ResourceReqDetailPageDTO ::getMktResReqId).collect(Collectors.toList());
+            formIdList.addAll(reqId);
+            req.setMktResReqIdList(formIdList);
+            req.setUpdateStaff(null);
+            respPage=resourceReqDetailManager.listResourceRequestPage(req);
         }
         Page<ResourceReqDetailPageResp> result=fillResourceRequestDetailPage(respPage);
         return ResultVO.success(result);
@@ -209,12 +225,13 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
         return result;
     }
 
+    //时间戳转时间字符串
     private String getDateStr(Date date) {
         if(date==null){
             return null;
         }
         //填充日期
-        SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
         try {
             String StringDate = format.format(date);
             return StringDate;
@@ -225,18 +242,17 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
     }
 
     /**
-     * 查询待审核的串码明细
-     * @param req
+     * 获取用户当前待处理的流程表单id
+     * @param
      * @return
      */
-    private Page<ResourceReqDetailPageDTO> listRequestDetailByUserId(ResourceReqDetailQueryReq req) {
-        log.info("ResourceReqDetailServiceImpl.listRequestDetailByUserId,req={}",JSON.toJSONString(req));
-        req.setUpdateStaff(null);
+    private List<String> getUserHandleFormId(String userId) {
+        log.info("ResourceReqDetailServiceImpl.listRequestDetailByUserId,userId={}",userId);
         //申请单id集合
         List<String> formIdList=new ArrayList<>();
         //查询串码审核工作流的待办流程，找出对应申请单id
         TaskPageReq taskPageReq = new TaskPageReq();
-        taskPageReq.setHandlerUserId(req.getUpdateStaff());
+        taskPageReq.setHandlerUserId(userId);
         taskPageReq.setPageSize(100);  //最多查询100条记录
         StringBuffer taskSubType = new StringBuffer();
         taskSubType.append(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3010.getTaskSubType()+",")
@@ -245,7 +261,7 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
         ResultVO<Page<TaskPageResp>> pageResultVO = taskService.queryTaskPage(taskPageReq);
         log.info("ResourceReqDetailServiceImpl.listRequestDetailByUserId.queryTaskPage req={} resp={}",JSON.toJSONString(taskPageReq),JSON.toJSONString(pageResultVO));
         if(!pageResultVO.isSuccess()){
-            return new Page();
+            return formIdList;
         }
         if(pageResultVO.getResultData()!=null){
             Page<TaskPageResp> taskPageResp=pageResultVO.getResultData();
@@ -268,16 +284,8 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
                     }
                 }
             }
-            //存在待办的申请单，查询明细
-            if(formIdList.size()>0){
-                req.setMktResReqIdList(formIdList);
-                return resourceReqDetailManager.listResourceRequestPage(req);
-            }
-
-        }else{
-            return new Page();
         }
-        return new Page();
+        return formIdList;
     }
 
 

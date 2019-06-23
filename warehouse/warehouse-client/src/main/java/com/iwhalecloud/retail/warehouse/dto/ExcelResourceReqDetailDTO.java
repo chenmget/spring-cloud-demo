@@ -29,11 +29,11 @@ public class ExcelResourceReqDetailDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "状态说明")
 	private String remark;
 
-	@ApiModelProperty(value = "申请单号")
-	private String reqCode;
+//	@ApiModelProperty(value = "申请单号")
+//	private String reqCode;
 
-	@ApiModelProperty(value = "记录营销资源申请单明细标识")
-	private String mktResReqDetailId;
+//	@ApiModelProperty(value = "记录营销资源申请单明细标识")
+//	private String mktResReqDetailId;
 
 
 }

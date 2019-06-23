@@ -10,7 +10,7 @@ import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
-import com.iwhalecloud.retail.report.service.IReportDataInfoService;
+import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
@@ -20,6 +20,7 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -41,7 +42,7 @@ public class CgSearchApplyController extends BaseController {
     private PurApplyService purApplyService;
     
     @Reference
-    private IReportDataInfoService iReportDataInfoService;
+    private MerchantService merchantService;
     
 	@ApiOperation(value = "查询采购申请单和采购单报表", notes = "查询采购申请单和采购单")
     @ApiResponses({
@@ -95,7 +96,12 @@ public class CgSearchApplyController extends BaseController {
 		Date date = new Date();
 		String applyCode = date.getTime() + "";
 		String relCode = user.getRelCode();//申请人工号    写表的     relCode对应merchant_id
-		String applyMerchantName = user.getUserName();//申请人名称  展示的
+		ResultVO<MerchantDTO>  merchantDTO=  merchantService.getMerchantById(relCode);
+		if(merchantDTO.getResultData() == null) {
+			return ResultVO.error("该申请人没有商家信息");
+		}
+		String applyMerchantName = merchantDTO.getResultData().getMerchantName();
+//		String applyMerchantName = user.getUserName();//申请人名称  展示的
 		String lanId = user.getLanId();//申请地市  写表的
 		String applyAdress = purApplyService.hqDiShiBuMen(lanId); //申请地市   展示的
 		String regionId = user.getRegionId();//申请部门  //写表的

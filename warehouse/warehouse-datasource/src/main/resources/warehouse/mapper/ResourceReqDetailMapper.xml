@@ -108,6 +108,7 @@
             #{item}
         </foreach>
     </update>
+
     <select id="listResourceRequestPage" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO">
         select rest.REQ_CODE,detail.MKT_RES_INST_NBR,rest.MKT_RES_REQ_ID,detail.CREATE_DATE,item.MKT_RES_ID,detail.status_cd,detail.STATUS_DATE,
@@ -167,4 +168,16 @@
         </if>
         order by detail.CREATE_DATE DESC
     </select>
+
+    <select id="listDistinctResourceRequestByUser" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO">
+        select distinct (rest.MKT_RES_REQ_ID) MKT_RES_REQ_ID,detail.CREATE_DATE
+        from MKT_RES_REQUEST rest,MKT_RES_REQ_ITEM item,MKT_RES_REQ_DETAIL detail
+        where  rest.MKT_RES_REQ_ID = item.MKT_RES_REQ_ID and  item.MKT_RES_REQ_ITEM_ID = detail.MKT_RES_REQ_ITEM_ID
+        <if test = "null != req.updateStaff and '' != req.updateStaff">
+            and detail.UPDATE_STAFF = #{req.updateStaff}
+        </if>
+        order by detail.CREATE_DATE DESC
+    </select>
+
 </mapper>

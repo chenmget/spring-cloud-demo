@@ -735,6 +735,7 @@ public class GoodsServiceImpl implements GoodsService {
             Integer userFounder = req.getUserFounder();
             // 非零售商用户不进行商品过滤
             if (userFounder == null || userFounder != SystemConst.USER_FOUNDER_3) {
+                log.info("GoodsServiceImpl.filterGoods() 非零售商用户 查询商品分页 跳过 商品过滤 userFounder={}", userFounder);
                 continue;
             }
             // 是否省包商品标识

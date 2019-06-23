@@ -727,146 +727,127 @@ public class RunableTask {
                 Integer maxNum = perNum * (i + 1) > length ? length : perNum * (i + 1);
                 List<ExcelResourceReqDetailDTO> subList = data.subList(perNum * i, maxNum);
                 CopyOnWriteArrayList<ExcelResourceReqDetailDTO> newList = new CopyOnWriteArrayList(subList);
-                //按照申请单进行分组，根据申请单号和串码作为查询条件
-                Map<String, List<ExcelResourceReqDetailDTO>> map = newList.stream().collect(Collectors.groupingBy(t -> t.getReqCode()));
-                for (Map.Entry<String,List<ExcelResourceReqDetailDTO>> entry:map.entrySet()){
-                    Callable<Boolean> callable = new Callable<Boolean>() {
-                        @Override
-                        public Boolean call() throws Exception {
-                            String reqCode=entry.getKey();//申请单号
-                            List<ExcelResourceReqDetailDTO> details=entry.getValue();
-                            //存入临时表的数据
-                            List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
-                            //需要审核的串码集合
-                            List<String> nbrList = details.stream().map(ExcelResourceReqDetailDTO :: getMktResInstNbr).collect(Collectors.toList());
-                            //根据串码查询申请明细中状态为待审核的数据，存在说明该串码合法
-                            ResourceReqDetailQueryReq  legalQuery=new ResourceReqDetailQueryReq();
-                            legalQuery.setMktResInstNbrs(nbrList);
-                            legalQuery.setPageNo(1);
-                            //写死大一点，串码可能重复，查询出来后根据申请单明细id进行匹配
-                            legalQuery.setPageSize(10000);
-                            legalQuery.setReqCode(reqCode);
-                            legalQuery.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
-                            Page<ResourceReqDetailPageDTO> legalRespPage = resourceReqDetailManager.listResourceRequestPage(legalQuery);
-                            //合法的串码
-                            List<ResourceReqDetailPageDTO> legalDetails=legalRespPage.getRecords();
-                            //记录合格的串码
-                            if (CollectionUtils.isNotEmpty(legalRespPage.getRecords())) {
-                                List<String> legalNbrList=legalDetails.stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
-                                for (ExcelResourceReqDetailDTO dto : details) {
-                                    //确认是否能在合法的串码中找到对应的
-                                    Optional<ResourceReqDetailPageDTO> optional=legalDetails.stream()
-                                            .filter(t->t.getMktResReqDetailId().equals(dto.getMktResReqDetailId()))
-                                            .filter(t->t.getMktResInstNbr().equals(dto.getMktResInstNbr())).findFirst();
-                                    //临时表实例
-                                    ResouceUploadTemp inst = new ResouceUploadTemp();
-                                    inst.setMktResUploadBatch(batchId);
-                                    inst.setMktResInstNbr(dto.getMktResInstNbr());
-                                    if (!optional.isPresent()){
-                                        //excel中数据再数据库中找不到
+                Callable<Boolean> callable = new Callable<Boolean>() {
+                    @Override
+                    public Boolean call() throws Exception {
+                        //存入临时表的数据
+                        List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
+                        //需要审核的串码集合
+                        List<String> nbrList = newList.stream().map(ExcelResourceReqDetailDTO :: getMktResInstNbr).collect(Collectors.toList());
+                        //根据串码查询申请明细中状态为待审核的数据，存在说明该串码合法
+                        ResourceReqDetailQueryReq  legalQuery=new ResourceReqDetailQueryReq();
+                        legalQuery.setMktResInstNbrs(nbrList);
+                        legalQuery.setPageNo(1);
+                        //写死大一点，串码可能重复，查询出来后根据申请单明细id进行匹配
+                        legalQuery.setPageSize(10000);
+                        legalQuery.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
+                        Page<ResourceReqDetailPageDTO> legalRespPage = resourceReqDetailManager.listResourceRequestPage(legalQuery);
+                        //合法的串码
+                        List<ResourceReqDetailPageDTO> legalDetails=legalRespPage.getRecords();
+                        //记录合格的串码
+                        if (CollectionUtils.isNotEmpty(legalRespPage.getRecords())) {
+                            List<String> legalNbrList=legalDetails.stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
+                            for (ExcelResourceReqDetailDTO dto : newList) {
+                                //确认是否能在合法的串码中找到对应的
+                                Optional<ResourceReqDetailPageDTO> optional=legalDetails.stream()
+                                        .filter(t->t.getMktResInstNbr().equals(dto.getMktResInstNbr())).findFirst();
+                                //临时表实例
+                                ResouceUploadTemp inst = new ResouceUploadTemp();
+                                inst.setMktResUploadBatch(batchId);
+                                inst.setMktResInstNbr(dto.getMktResInstNbr());
+                                //审核结果转成code
+                                String statusCd=ResourceConst.DetailStatusCd.getCodeByName(dto.getStatusCdName());
+                                if (!optional.isPresent()){
+                                    //excel中数据再数据库中找不到
+                                    inst.setResult(ResourceConst.CONSTANT_YES);
+                                    inst.setResultDesc("未找到该串码对应的申请明细");
+                                }else{
+                                    ResourceReqDetailPageDTO resp=optional.get();
+                                    //判断excel中的审核结果是否合法
+                                    if (!ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode().equals(statusCd)&&!ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode().equals(statusCd)){
+                                        //审核结果有异常
                                         inst.setResult(ResourceConst.CONSTANT_YES);
-                                        inst.setResultDesc("未找到该串码对应的申请明细");
+                                        inst.setResultDesc("审核结果不符合规范，请输入审核通过或审核不通过");
+                                    }else if(nbrMap.get(resp.getMktResInstNbr())!=null){
+                                        //提交的串码重复
+                                        inst.setResult(ResourceConst.CONSTANT_YES);
+                                        inst.setResultDesc("excel中串码重复");
                                     }else{
-                                        ResourceReqDetailPageDTO resp=optional.get();
-                                        //判断excel中的审核结果是否合法
-                                        String statusCd=ResourceConst.DetailStatusCd.getCodeByName(dto.getStatusCdName());
-                                        if (!ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode().equals(statusCd)&&!ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode().equals(statusCd)){
-                                            //审核结果有异常
-                                            inst.setResult(ResourceConst.CONSTANT_YES);
-                                            inst.setResultDesc("审核结果不符合规范，请输入审核通过或审核不通过");
-                                        }else if(nbrMap.get(resp.getMktResInstNbr())!=null){
-                                            //提交的串码重复
-                                            inst.setResult(ResourceConst.CONSTANT_YES);
-                                            inst.setResultDesc("excel中串码重复");
-                                        }else{
-                                            //审核结果正常
-                                            nbrMap.put(resp.getMktResInstNbr(),"1");
-                                            inst.setResult(ResourceConst.CONSTANT_NO);
-                                            inst.setStatusCd(statusCd);
-                                        }
+                                        //审核结果正常
+                                        nbrMap.put(resp.getMktResInstNbr(),"1");
+                                        inst.setResult(ResourceConst.CONSTANT_NO);
+                                        inst.setStatusCd(statusCd);
+                                        inst.setMktResReqDetailId(resp.getMktResReqDetailId());
                                     }
-                                    inst.setMktResReqDetailId(dto.getMktResReqDetailId());
-                                    inst.setStatusCd(ResourceConst.DetailStatusCd.getCodeByName(dto.getStatusCdName()));
-                                    inst.setRemark(dto.getRemark());
-                                    //TODO 暂定
-//                                    if (null != resp.getCtCodeMap()) {
-//                                        inst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
-//                                    }
-//                                    if (null != req.getSnCodeMap()) {
-//                                        inst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
-//                                    }
-//                                    if (null != req.getMacCodeMap()) {
-//                                        inst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
-//                                    }
-                                    inst.setUploadDate(now);
-                                    inst.setCreateDate(now);
-                                    inst.setCreateStaff(createStaff);
-                                    instList.add(inst);
                                 }
-                                //过滤合法的串码，剩下的即是不合格的串码
-                                nbrList.removeAll(legalNbrList);
+                                inst.setStatusCd(statusCd);
+                                inst.setRemark(dto.getRemark());
+                                inst.setUploadDate(now);
+                                inst.setCreateDate(now);
+                                inst.setCreateStaff(createStaff);
+                                instList.add(inst);
                             }
-                            //存在非合法的串码
-                            if (CollectionUtils.isNotEmpty(nbrList)) {
-                                //判断是否重复审核的串码
-                                ResourceReqDetailQueryReq  repatQuery=new ResourceReqDetailQueryReq();
-                                repatQuery.setMktResInstNbrs(nbrList);
-                                repatQuery.setPageNo(1);
-                                repatQuery.setPageSize(10000);
-                                repatQuery.setReqCode(reqCode);
-                                Page<ResourceReqDetailPageDTO> repeatRespPage = resourceReqDetailManager.listResourceRequestPage(repatQuery);
-                                List<String> repeatNbrList=repeatRespPage.getRecords().stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
-                                for (String mktResInstNbr : repeatNbrList) {
-                                    ResouceUploadTemp inst = new ResouceUploadTemp();
-                                    inst.setMktResUploadBatch(batchId);
-                                    inst.setMktResInstNbr(mktResInstNbr);
-                                    inst.setResult(ResourceConst.CONSTANT_YES);
-                                    inst.setUploadDate(now);
-                                    inst.setCreateDate(now);
-                                    inst.setResultDesc("该串码已被审批过，不能重复审批，请重新发起申请");
-                                    inst.setCreateStaff(createStaff);
-                                    Optional<ExcelResourceReqDetailDTO> optional=details.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
-                                    if (!optional.isPresent()){
-                                        continue;
-                                    }
-                                    ExcelResourceReqDetailDTO dto=optional.get();
-                                    inst.setMktResReqDetailId(dto.getMktResReqDetailId());
-                                    inst.setStatusCd(ResourceConst.DetailStatusCd.getCodeByName(dto.getStatusCdName()));
-                                    inst.setRemark(dto.getRemark());
-                                    instList.add(inst);
-                                }
-                                //排除已审批过的串码，剩下的即不存在的串码
-                                nbrList.removeAll(repeatNbrList);
-                            }
-                            //记录不存在的串码
-                            if (CollectionUtils.isNotEmpty(nbrList)) {
-                                for (String mktResInstNbr : nbrList) {
-                                    ResouceUploadTemp inst = new ResouceUploadTemp();
-                                    Optional<ExcelResourceReqDetailDTO> optional=details.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
-                                    if (!optional.isPresent()){
-                                        continue;
-                                    }
-                                    ExcelResourceReqDetailDTO dto=optional.get();
-                                    inst.setStatusCd(ResourceConst.DetailStatusCd.getCodeByName(dto.getStatusCdName()));
-                                    inst.setRemark(dto.getRemark());
-                                    inst.setMktResUploadBatch(batchId);
-                                    inst.setMktResInstNbr(mktResInstNbr);
-                                    inst.setResult(ResourceConst.CONSTANT_YES);
-                                    inst.setUploadDate(now);
-                                    inst.setCreateDate(now);
-                                    inst.setResultDesc("未找到该串码相关的申请记录");
-                                    inst.setCreateStaff(createStaff);
-                                    instList.add(inst);
-                                }
-                            }
-                            Boolean addResult = resourceUploadTempManager.saveBatch(instList);
-                            log.info("RunableTask.exceutornbrValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
-                            return addResult;
+                            //过滤合法的串码，剩下的即是不合格的串码
+                            nbrList.removeAll(legalNbrList);
                         }
-                    };
-                    Future<Boolean> validFutureTask = executorService.submit(callable);
-                    validNbrFutureTaskResult.add(validFutureTask);
-                }
+                        //存在非合法的串码
+                        if (CollectionUtils.isNotEmpty(nbrList)) {
+                            //判断是否重复审核的串码
+                            ResourceReqDetailQueryReq  repatQuery=new ResourceReqDetailQueryReq();
+                            repatQuery.setMktResInstNbrs(nbrList);
+                            repatQuery.setPageNo(1);
+                            repatQuery.setPageSize(10000);
+                            Page<ResourceReqDetailPageDTO> repeatRespPage = resourceReqDetailManager.listResourceRequestPage(repatQuery);
+                            List<String> repeatNbrList=repeatRespPage.getRecords().stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
+                            for (String mktResInstNbr : repeatNbrList) {
+                                ResouceUploadTemp inst = new ResouceUploadTemp();
+                                inst.setMktResUploadBatch(batchId);
+                                inst.setMktResInstNbr(mktResInstNbr);
+                                inst.setResult(ResourceConst.CONSTANT_YES);
+                                inst.setUploadDate(now);
+                                inst.setCreateDate(now);
+                                inst.setResultDesc("该串码已被审批过，不能重复审批，请重新发起申请");
+                                inst.setCreateStaff(createStaff);
+                                Optional<ExcelResourceReqDetailDTO> optional=newList.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
+                                if (!optional.isPresent()){
+                                    continue;
+                                }
+                                ExcelResourceReqDetailDTO dto=optional.get();
+                                inst.setStatusCd(ResourceConst.DetailStatusCd.getCodeByName(dto.getStatusCdName()));
+                                inst.setRemark(dto.getRemark());
+                                instList.add(inst);
+                            }
+                            //排除已审批过的串码，剩下的即不存在的串码
+                            nbrList.removeAll(repeatNbrList);
+                        }
+                        //记录不存在的串码
+                        if (CollectionUtils.isNotEmpty(nbrList)) {
+                            for (String mktResInstNbr : nbrList) {
+                                ResouceUploadTemp inst = new ResouceUploadTemp();
+                                Optional<ExcelResourceReqDetailDTO> optional=newList.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
+                                if (!optional.isPresent()){
+                                    continue;
+                                }
+                                ExcelResourceReqDetailDTO dto=optional.get();
+                                inst.setStatusCd(ResourceConst.DetailStatusCd.getCodeByName(dto.getStatusCdName()));
+                                inst.setRemark(dto.getRemark());
+                                inst.setMktResUploadBatch(batchId);
+                                inst.setMktResInstNbr(mktResInstNbr);
+                                inst.setResult(ResourceConst.CONSTANT_YES);
+                                inst.setUploadDate(now);
+                                inst.setCreateDate(now);
+                                inst.setResultDesc("未找到该串码相关的申请记录");
+                                inst.setCreateStaff(createStaff);
+                                instList.add(inst);
+                            }
+                        }
+                        Boolean addResult = resourceUploadTempManager.saveBatch(instList);
+                        log.info("RunableTask.exceutornbrValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
+                        return addResult;
+                    }
+                };
+                Future<Boolean> validFutureTask = executorService.submit(callable);
+                validNbrFutureTaskResult.add(validFutureTask);
             }
             executorService.shutdown();
             return batchId;

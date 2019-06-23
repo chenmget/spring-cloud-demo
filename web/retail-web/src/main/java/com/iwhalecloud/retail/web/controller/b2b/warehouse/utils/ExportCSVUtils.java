@@ -79,7 +79,7 @@ public class ExportCSVUtils {
 		final String RESULT = "result";
 		final String NBR = "mktResInstNbr";
 		final String SN = "sn";
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-mm-dd  HH:mm:ss");
+		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
 		String finalValue = (value == null || "null".equals(value))? "" : value;
 		if (MKT_RES_INST_TYPE.equals(filedName)) {
 			finalValue = ResourceConst.MKTResInstType.getMKTResInstTypeName(value);

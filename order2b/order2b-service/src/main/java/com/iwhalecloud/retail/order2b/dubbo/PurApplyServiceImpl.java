@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
+import com.iwhalecloud.retail.order2b.manager.PurApplyDeliveryManager;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -32,7 +33,10 @@ import java.util.*;
 public class PurApplyServiceImpl implements PurApplyService {
 
 	@Autowired
-    private PurApplyManager purApplyManager;
+   private PurApplyManager purApplyManager;
+    @Autowired
+    private PurApplyDeliveryManager purApplyDeliveryManager;
+
 	@Reference
     private TaskService taskService;
 
@@ -126,6 +130,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Transactional
 	public ResultVO tcProcureApply(ProcureApplyReq req) {
 		log.info("tcProcureApply****************************************ProcureApplyReq = "+JSON.toJSONString(req));
+        PurApplyReq  pReq = new  PurApplyReq();
+        pReq.setApplyId(req.getApplyId());
 		String isSave = req.getIsSave();
 		// 编辑的时候不做插入操作
 //		if(!isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
@@ -145,11 +151,14 @@ public class PurApplyServiceImpl implements PurApplyService {
 //			}
 			if (count>0) {
 				map.put("CGJ",PurApplyConsts.PUR_APPLY_ADMIN_VALUE);// 0
-				req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
+//				req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);//
+                pReq.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
 				//更新省公司待审核状态
-				purApplyManager.updatePurApplyStatusCd(req);
+            //    purApplyDeliveryManager.updatePurApplyStatus(pReq);
 			}else {
-				map.put("CGJ",PurApplyConsts.PUR_APPLY_VALUE); // 1
+                pReq.setStatusCd(PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
+
+                map.put("CGJ",PurApplyConsts.PUR_APPLY_VALUE); // 1
 				List<AddProductReq> productList =  req.getAddProductReq();
 				for (AddProductReq addProductReq:productList) {
 //					String parentTypeId = addProductReq.getParentTypeId();
@@ -159,13 +168,16 @@ public class PurApplyServiceImpl implements PurApplyService {
 						if (PurApplyConsts.PUR_APPLY_SOCIAL_TYPE.equals(purchaseType)) {
 							map.put("CGJ",PurApplyConsts.PUR_APPLY_ADMIN_VALUE);// 0
 							//更新省公司待审核状态
-							req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
-							purApplyManager.updatePurApplyStatusCd(req);
+//							req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
+//							purApplyManager.updatePurApplyStatusCd(req);
+                            pReq.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
+                            //更新省公司待审核状态
 							break;
 						}
 //					}
 				}
 			}
+            purApplyDeliveryManager.updatePurApplyStatus(pReq);
 
 //		String isSave = req.getIsSave();
 			//提交时发起流程审核
@@ -237,11 +249,14 @@ public class PurApplyServiceImpl implements PurApplyService {
 			nextRouteAndReceiveTaskReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
 			Map map=new HashMap();
 			if (count>0) {
-				req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
+//				req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
+				pReq.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
 				map.put("CGJ",PurApplyConsts.PUR_APPLY_ADMIN_VALUE);//
 			} else {
-				req.setStatusCd(PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
-				map.put("CGJ",PurApplyConsts.PUR_APPLY_VALUE);
+//				req.setStatusCd(PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
+                pReq.setStatusCd(PurApplyConsts.SGS_PUR_APPLY_STATUS_PASS);
+
+                map.put("CGJ",PurApplyConsts.PUR_APPLY_VALUE);
 				List<AddProductReq> productList =  req.getAddProductReq();
 				for (AddProductReq addProductReq:productList) {
 //					String parentTypeId = addProductReq.getParentTypeId();
@@ -251,14 +266,21 @@ public class PurApplyServiceImpl implements PurApplyService {
 						if (PurApplyConsts.PUR_APPLY_SOCIAL_TYPE.equals(purchaseType)) {
 							map.put("CGJ",PurApplyConsts.PUR_APPLY_ADMIN_VALUE);//
 							//更新省公司待审核状态
-							req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
+							//req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
 //							purApplyManager.updatePurApplyStatusCd(req);
+
+
+
+                            pReq.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
+                            //更新省公司待审核状态
+                          //  purApplyDeliveryManager.updatePurApplyStatus(pReq);
 							break;
 						}
 //					}
 				}
 			}
-			purApplyManager.updatePurApplyStatusCd(req);
+//			purApplyManager.updatePurApplyStatusCd(req);
+            purApplyDeliveryManager.updatePurApplyStatus(pReq);
 			nextRouteAndReceiveTaskReq.setParamsValue(JSON.toJSONString(map));
 			nextRouteAndReceiveTaskReq.setHandlerUserId(req.getHandleUserId());
 			nextRouteAndReceiveTaskReq.setHandlerUserName(req.getHandleUserName());

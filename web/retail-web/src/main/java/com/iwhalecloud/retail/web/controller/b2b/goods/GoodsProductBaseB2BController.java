@@ -376,4 +376,16 @@ public class GoodsProductBaseB2BController {
         return prodProductBaseService.getSeq(num);
 
     }
+
+    @ApiOperation(value = "查询指定产品id是否有销售记录", notes = "查询指定产品id是否有销售记录")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/isSaleByProductId")
+    ResultVO<Boolean> isSaleByProductId(@RequestParam(value = "productId") String productId) {
+        log.info("GoodsController isSaleByProductId productId={}", productId);
+        return ResultVO.success(prodProductBaseService.isSaleByProductId(productId));
+
+    }
 }

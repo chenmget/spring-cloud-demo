@@ -334,7 +334,7 @@ public class ProductServiceImpl implements ProductService {
         		if("1".equals(isFixedLine)) {
         			resp.setCorporationPrice(Integer.parseInt(supplyFeeLower)/100);
         		}else {
-        			resp.setCorporationPrice(cost);
+        			resp.setCorporationPrice(cost/100);
         		}
         	} else {
         		resp.setCorporationPrice(corporationPrice/100);

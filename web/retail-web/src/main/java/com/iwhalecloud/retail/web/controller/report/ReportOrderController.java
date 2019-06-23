@@ -16,8 +16,7 @@ import com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
 import com.iwhalecloud.retail.report.service.ReportOrderService;
 import com.iwhalecloud.retail.system.common.SystemConst;
-import com.iwhalecloud.retail.system.dto.SysCommonOrg;
-import com.iwhalecloud.retail.system.dto.SysCommonOrgReq;
+import com.iwhalecloud.retail.system.dto.SysCommonOrgRequest;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgResp;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -263,7 +262,7 @@ public class ReportOrderController extends BaseController {
     })
     @PostMapping("/getSysCommonOrg")
 	@UserLoginToken
-    public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg(SysCommonOrg req) {
+    public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg(@RequestBody SysCommonOrgRequest req) {
 		log.info("****************ReportOrderController getSysCommonOrg()  ************start param={}",JSON.toJSONString(req));
 		int userType = UserContext.getUser().getUserFounder();
 		//超级管理员，省管理员，省包商取前端传过来的地市集合

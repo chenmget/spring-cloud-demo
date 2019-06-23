@@ -10,7 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.system.dto.SysCommonOrg;
+import com.iwhalecloud.retail.system.dto.SysCommonOrgRequest;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgResp;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
 
@@ -26,7 +26,7 @@ public class LwsTest {
 	
 	@Test
 	public void test() {
-		SysCommonOrg req = new SysCommonOrg();
+		SysCommonOrgRequest req = new SysCommonOrgRequest();
 		List<String> list = new ArrayList<String>();
 		list.add("731");
 		req.setLanIdList(list);

@@ -250,4 +250,7 @@ public class ProductDTO extends PageVO {
 
 	@ApiModelProperty(value = "产品名称")
 	private String productName;
+
+	@ApiModelProperty(value = "是否有销售记录")
+	private Boolean isSale;
 }

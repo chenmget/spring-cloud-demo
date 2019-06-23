@@ -34,9 +34,4 @@ public class BestPayEnterprisePaymentServiceImpl implements BestPayEnterprisePay
     public ResultVO<OffLinePayResp> offLinePay(OffLinePayReq req) {
         return bestPayEnterprisePaymentService.offLinePay(req);
     }
-
-    @Override
-    public ToPayResp handlePayData(ToBestPayReq req) {
-        return bestPayEnterprisePaymentService.handlePayData(req);
-    }
 }

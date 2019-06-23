@@ -36,11 +36,4 @@ public interface BestPayEnterprisePaymentService {
      */
     public ResultVO<OffLinePayResp> offLinePay(OffLinePayReq req);
 
-    /**
-     * 构造去翼支付的参数，这是要调用翼支付的证书、支付平台号、公约
-     * @param req
-     * @return
-     */
-    public ToPayResp handlePayData(ToBestPayReq req);
-
 }

@@ -861,9 +861,18 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     }
                 }
             }
-
         }
         ResultVO<List<GoodsSaleNumDTO>> resultVO1 = goodsSaleNumService.queryProductSaleOrderByProductId(productId);
+        if(resultVO1.isSuccess() && null!=resultVO1.getResultData()){
+            List<GoodsSaleNumDTO> goodsSaleNumDTOs = resultVO1.getResultData();
+            if(!CollectionUtils.isEmpty(goodsSaleNumDTOs)){
+                for(GoodsSaleNumDTO goodsSaleNumDTO: goodsSaleNumDTOs){
+                    if(productId.equals(goodsSaleNumDTO.getProductId())) {
+                        return false;
+                    }
+                }
+            }
+        }
         return flag;
     }
 

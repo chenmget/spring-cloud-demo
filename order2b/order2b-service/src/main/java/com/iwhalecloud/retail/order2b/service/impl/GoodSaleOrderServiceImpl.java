@@ -150,7 +150,7 @@ public class GoodSaleOrderServiceImpl implements GoodSaleOrderService {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Calendar c = Calendar.getInstance();
         c.setTime(new Date());
-        c.add(Calendar.DATE, - 8);
+        c.add(Calendar.DATE, - 2);
         c.set(Calendar.HOUR_OF_DAY, 24);
         c.set(Calendar.MINUTE, 0);
         c.set(Calendar.SECOND, 0);

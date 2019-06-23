@@ -110,6 +110,9 @@
             <if test="req.sourceFrom !=null and req.sourceFrom !=''">
                 and SOURCE_FROM=#{req.sourceFrom}
             </if>
+            <if test="req.orderType !=null and req.orderType !=''">
+                and ORDER_TYPE=#{req.orderType}
+            </if>
 
         </where>
     </sql>

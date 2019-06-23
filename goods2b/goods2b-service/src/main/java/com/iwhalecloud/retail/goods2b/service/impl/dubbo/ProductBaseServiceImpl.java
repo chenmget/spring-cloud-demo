@@ -662,6 +662,14 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                         }
                     }
                     //流程1
+                    if(!newUpdateReq.getIsDeleted().equals(oldUpdateReq.getIsDeleted())){
+                        if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
+                            updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }else{
+                            updateProductFlow = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }
+                    }
+                    //流程1
                     if(newUpdateReq.getCost() - oldUpdateReq.getCost() !=0 ||
                             newUpdateReq.getLocalSupplyFeeLower() - oldUpdateReq.getLocalSupplyFeeLower() != 0 ||
                             newUpdateReq.getLocalSupplyFeeUpper() - oldUpdateReq.getLocalSupplyFeeUpper() != 0 ||

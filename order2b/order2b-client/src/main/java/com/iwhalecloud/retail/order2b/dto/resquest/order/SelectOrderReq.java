@@ -54,7 +54,10 @@ public class SelectOrderReq extends SRequest implements Serializable {
     @ApiModelProperty("类型：1：采购，2销售，3管理")
     private String userExportType;
 
-    @ApiModelProperty("默认0:普通订单，1预收订单")
+    @ApiModelProperty(value = "订单类型", hidden = true)
+    private String orderCat;
+
+    @ApiModelProperty(value = "订单类型集合", hidden = true)
     private List<String> orderCatList;
 
     @ApiModelProperty("编码")

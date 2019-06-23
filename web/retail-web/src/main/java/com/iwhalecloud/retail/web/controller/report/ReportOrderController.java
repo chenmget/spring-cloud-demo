@@ -266,8 +266,11 @@ public class ReportOrderController extends BaseController {
 		log.info("****************ReportOrderController getSysCommonOrg()  ************start param={}",JSON.toJSONString(req));
 		int userType = UserContext.getUser().getUserFounder();
 		//超级管理员，省管理员，省包商取前端传过来的地市集合
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2 || userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_8) {//超级管理员  省管理员  省供应商
-		} else if (userType == SystemConst.USER_FOUNDER_9 || userType == SystemConst.USER_FOUNDER_5 || userType == SystemConst.USER_FOUNDER_3) {//地市管理员   地市供应商 零售商
+		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2 || userType == SystemConst.USER_FOUNDER_4) {//超级管理员  省管理员  省供应商
+			if(req == null) {
+				return ResultVO.success();
+			}
+		} else if (userType == SystemConst.USER_FOUNDER_9 || userType == SystemConst.USER_FOUNDER_5 || userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//地市管理员   地市供应商 零售商
 			List<String> lanIdList = new ArrayList<String>();
 			lanIdList.add( UserContext.getUser().getLanId());
 			req.setLanIdList(lanIdList);

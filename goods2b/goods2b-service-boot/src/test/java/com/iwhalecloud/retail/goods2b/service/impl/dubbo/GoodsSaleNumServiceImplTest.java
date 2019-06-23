@@ -25,12 +25,14 @@ public class GoodsSaleNumServiceImplTest {
     @Test
     public void test(){
 
-        goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_30);
-        goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_7);
-
-        ResultVO<List<GoodsSaleNumDTO>> resultVO = goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_30);
-        ResultVO<List<GoodsSaleNumDTO>> resultVO1 = goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_7);
-
-        System.out.println(resultVO.getResultData());
+        goodsSaleNumService.cleanCacheProductSaleNum();
+        goodsSaleNumService.getProductSaleOrder(GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER_WHOLE);
+//        goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_30);
+//        goodsSaleNumService.cleanCacheGoodSaleNum(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_7);
+//
+//        ResultVO<List<GoodsSaleNumDTO>> resultVO = goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_30);
+//        ResultVO<List<GoodsSaleNumDTO>> resultVO1 = goodsSaleNumService.getGoodsSaleOrder(GoodsConst.CACHE_KEY_GOODS_SALE_ORDER_7);
+//
+//        System.out.println(resultVO.getResultData());
     }
 }

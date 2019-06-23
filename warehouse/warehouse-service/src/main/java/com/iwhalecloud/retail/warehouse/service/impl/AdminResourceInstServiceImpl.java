@@ -219,11 +219,12 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
                 Optional<ResourceReqDetailPageDTO> option =detailList.stream()
                         .filter(t->t.getMktResInstNbr().equals(temp.getMktResInstNbr()))
                         .filter(t->t.getMktResReqDetailId().equals(temp.getMktResReqDetailId())).findFirst();
+                BeanUtils.copyProperties(temp, resp);
+//                resp.setResultDesc(temp.getResultDesc());
+//                resp.setRemark(temp.getRemark());
                 if(option.isPresent()){
                     ResourceReqDetailPageDTO dto=option.get();
                     BeanUtils.copyProperties(dto, resp);
-                    resp.setResultDesc(temp.getResultDesc());
-                    resp.setRemark(temp.getRemark());
                     //获取产品信息
                     ProductResourceInstGetReq productQueryReq = new ProductResourceInstGetReq();
                     productQueryReq.setProductId(dto.getMktResId());
@@ -237,11 +238,10 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
                     resp.setStatusCdName(ResourceConst.DetailStatusCd.getNameByCode(temp.getStatusCd()));
                     // 添加产品信息
                     BeanUtils.copyProperties(prodResp, resp);
-                    resultList.add(resp);
                     //删除该信息，否则串码重复情况下，取到的详情永远是第一个
                     //detailList.remove(dto);
                 }
-
+                resultList.add(resp);
             }
 
             respPage.setRecords(resultList);
@@ -261,7 +261,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         if(CollectionUtils.isEmpty(mktResReqDetailIds)){
             return ResultVO.error("请选择要审核的内容");
         }
-        //根据mktResReqDetailIds获取到待审核的申请详情等
+        //根据mktResReqDetailIds获取到待审核的申请详情
         Date now = new Date();
         ResourceReqDetailQueryReq resourceReqDetailQueryReq=new ResourceReqDetailQueryReq();
         resourceReqDetailQueryReq.setMktResReqDetailIds(mktResReqDetailIds);
@@ -270,19 +270,17 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         resourceReqDetailQueryReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());//状态为待审核
         Page<ResourceReqDetailPageDTO> respPage = resourceReqDetailManager.listResourceRequestPage(resourceReqDetailQueryReq);
         List<ResourceReqDetailPageDTO> resDetailList=respPage.getRecords();
-
-        //符合修改状态的申请单
-        List<String> reqIds = resDetailList.stream().map(ResourceReqDetailPageDTO::getMktResReqId).collect(Collectors.toList());
-        List<String> detailIds = resDetailList.stream().map(ResourceReqDetailPageDTO::getMktResReqDetailId).collect(Collectors.toList());
-        if(CollectionUtils.isEmpty(detailIds)){
+        if(CollectionUtils.isEmpty(resDetailList)){
             return ResultVO.error("没有待审批的内容");
         }
+        List<String> reqIds = resDetailList.stream().map(ResourceReqDetailPageDTO::getMktResReqId).collect(Collectors.toList());
 
         //修改申请单需要带上申请时间，所以根据申请时间进行分组
         Map<Date, List<ResourceReqDetailPageDTO>> map = resDetailList.stream().collect(Collectors.groupingBy(t -> t.getCreateDate()));
         for (Map.Entry<Date,List<ResourceReqDetailPageDTO>> entry:map.entrySet()){
             ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
-            detailUpdateReq.setMktResReqDetailIdList(entry.getValue().stream().map(ResourceReqDetailPageDTO::getMktResReqDetailId).collect(Collectors.toList()));
+            List<String> detailIds = entry.getValue().stream().map(ResourceReqDetailPageDTO::getMktResReqDetailId).collect(Collectors.toList());
+            detailUpdateReq.setMktResReqDetailIdList(detailIds);
             detailUpdateReq.setUpdateStaff(req.getUpdateStaff());
             detailUpdateReq.setUpdateDate(now);
             detailUpdateReq.setStatusDate(now);
@@ -296,7 +294,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             //审核通过
             if (req.getCheckStatusCd().equals(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode())) {
                 //执行串码审核通过流程
-                auditPassResDetail(resDetailList,reqIds);
+                runableTask.auditPassResDetail(resDetailList);
                 detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
                 resourceReqDetailManager.updateDetailByIds(detailUpdateReq);
             }
@@ -415,9 +413,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
      * 处理审核通过明细
      * @param
      */
-    @Transactional(rollbackFor = Exception.class)
-    public ResultVO<Object> auditPassResDetail(List<ResourceReqDetailPageDTO> resDetailList, List<String> reqIds) {
-        log.info("AdminResourceInstServiceImpl.auditPassResDetail.auditPassResDetail resDetailList={} reqIds={}", JSON.toJSONString(resDetailList), reqIds);
+   /* @Transactional(rollbackFor = Exception.class)
+    public ResultVO<Object> auditPassResDetail(List<ResourceReqDetailPageDTO> resDetailList) {
+        log.info("AdminResourceInstServiceImpl.auditPassResDetail.auditPassResDetail resDetailList={}", JSON.toJSONString(resDetailList));
         //根据申请单id进行分组,同一个申请单下，产品商家等信息一致，减少请求服务次数
         Map<String, List<ResourceReqDetailPageDTO>> map = resDetailList.stream().collect(Collectors.groupingBy(t -> t.getMktResReqId()));
         for (Map.Entry<String, List<ResourceReqDetailPageDTO>> entry :map.entrySet()){
@@ -504,9 +502,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
         //runableTask.exceutorAddNbrTrack(addReq);
         return ResultVO.success();
-    }
+    }*/
 
-    private Map<String, List<String>> getMktResIdAndNbrMap(List<ResourceReqDetailPageDTO> instList){
+    /*private Map<String, List<String>> getMktResIdAndNbrMap(List<ResourceReqDetailPageDTO> instList){
         Map<String, List<String>> mktResIdAndNbrMap = new HashMap<>();
         List<ResourceReqDetailPageDTO> detailList = instList;
         for (ResourceReqDetailPageDTO resp : detailList){
@@ -520,7 +518,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             }
         }
         return mktResIdAndNbrMap;
-    }
+    }*/
 
     @Override
     public ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String createStaff) {

@@ -5,7 +5,12 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
@@ -23,6 +28,7 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceRequestManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceReqDetailMapper;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
+import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.warehouse.util.ExcutorServiceUtils;
@@ -92,6 +98,8 @@ public class RunableTask {
 
     private List<Future<Boolean>> validNbrFutureTaskResult;
 
+    private List<Future<Boolean>> auditPassNbrFutureTaskResult;
+
     @Autowired
     private ResourceReqDetailManager resourceReqDetailManager;
 
@@ -102,6 +110,15 @@ public class RunableTask {
 
     @Reference
     private AdminResourceInstService adminResourceInstService;
+
+    @Reference
+    private ProductService productService;
+
+    @Reference
+    private ResouceStoreService resouceStoreService;
+
+    @Autowired
+    private ResourceBatchRecService resourceBatchRecService;
 
 
     /**
@@ -861,4 +878,133 @@ public class RunableTask {
         }
         return null;
     }
+
+    /**
+     * 串码审核通过
+     * @param
+     */
+    public String auditPassResDetail(List<ResourceReqDetailPageDTO> data) {
+        try {
+            //初始化线程池
+            ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
+            int length=data.size();
+            Integer excutorNum = length%perNum == 0 ? length/perNum : (length/perNum + 1);
+            auditPassNbrFutureTaskResult = new ArrayList<>(excutorNum);
+            //分页处理
+            for (Integer i = 0; i < excutorNum; i++) {
+                Integer maxNum = perNum * (i + 1) > length ? length : perNum * (i + 1);
+                List<ResourceReqDetailPageDTO> subList = data.subList(perNum * i, maxNum);
+                CopyOnWriteArrayList<ResourceReqDetailPageDTO> newList = new CopyOnWriteArrayList(subList);
+                //按照申请单进行分组，根据申请单号和串码作为查询条件
+                Map<String, List<ResourceReqDetailPageDTO>> map = newList.stream().collect(Collectors.groupingBy(t -> t.getMktResReqId()));
+                for (Map.Entry<String,List<ResourceReqDetailPageDTO>> entry:map.entrySet()){
+                    Callable<Boolean> callable = new Callable<Boolean>() {
+                        @Override
+                        public Boolean call() throws Exception {
+                            String mktResReqId=entry.getKey();
+                            List<ResourceReqDetailPageDTO> detailList=entry.getValue();
+                            List<String> mktResInstNbrs=detailList.stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
+                            log.info("AdminResourceInstServiceImpl.auditPassResDetail mktResInstNbrs={}", JSON.toJSONString(mktResInstNbrs));
+                            Map<String, String> ctCodeMap = new HashMap<>();
+                            Map<String, String> snCodeMap = new HashMap<>();
+                            Map<String, String> macCodeMap = new HashMap<>();
+                            detailList.forEach(item->{
+                                if(StringUtils.isNotBlank(item.getCtCode())){
+                                    ctCodeMap.put(item.getMktResInstNbr(), item.getCtCode());
+                                }
+                                if(StringUtils.isNotBlank(item.getSnCode())){
+                                    snCodeMap.put(item.getMktResInstNbr(), item.getSnCode());
+                                }
+                                if(StringUtils.isNotBlank(item.getMacCode())){
+                                    macCodeMap.put(item.getMktResInstNbr(), item.getMacCode());
+                                }
+
+                            });
+                            //获取相关产品信息
+                            ResourceReqDetailPageDTO detailDTO = detailList.get(0);
+                            ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                            productGetByIdReq.setProductId(detailDTO.getMktResId());
+                            ResultVO<ProductResp> producttVO = productService.getProduct(productGetByIdReq);
+                            log.info("RunableTask.auditPassResDetail.getProduct mktResId={} resp={}", mktResReqId, JSON.toJSONString(producttVO));
+                            String typeId = "";
+                            if (producttVO.isSuccess() && null != producttVO.getResultData()) {
+                                typeId = producttVO.getResultData().getTypeId();
+                            }
+                            // step2 根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
+                            ResourceInstAddReq addReq = new ResourceInstAddReq();
+                            addReq.setMktResInstNbrs(mktResInstNbrs);
+                            addReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+                            addReq.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
+                            addReq.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
+                            addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+                            addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+                            addReq.setMktResInstType(detailDTO.getMktResInstType());
+                            addReq.setDestStoreId(detailDTO.getDestStoreId());
+                            addReq.setMktResId(detailDTO.getMktResId());
+                            addReq.setCtCodeMap(ctCodeMap);
+                            addReq.setSnCodeMap(snCodeMap);
+                            addReq.setMacCodeMap(macCodeMap);
+                            addReq.setCreateStaff(detailDTO.getCreateStaff());
+                            addReq.setTypeId(typeId);
+                            ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
+                            String merchantId = null;
+                            if(null != resultVO && null != resultVO.getResultData()){
+                                MerchantDTO merchantDTO = resultVO.getResultData();
+                                merchantId = merchantDTO.getMerchantId();
+                                addReq.setLanId(merchantDTO.getLanId());
+                                addReq.setRegionId(merchantDTO.getCity());
+                                addReq.setMerchantId(merchantId);
+                                log.info("RunableTask.auditPassResDetail runableTask.exceutorAddNbr addReq={}", addReq);
+                                exceutorAddNbr(addReq);
+                            }else{
+                                log.warn("RunableTask.auditPassResDetail resouceStoreService.getMerchantByStore resultVO is null");
+
+                            }
+                            // step3 增加事件和批次
+                            Map<String, List<String>> mktResIdAndNbrMap = getMktResIdAndNbrMap(detailList);
+                            BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
+                            batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
+                            batchAndEventAddReq.setLanId(detailDTO.getLanId());
+                            batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
+                            batchAndEventAddReq.setRegionId(detailDTO.getRegionId());
+                            batchAndEventAddReq.setDestStoreId(detailDTO.getMktResStoreId());
+                            batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
+                            batchAndEventAddReq.setMerchantId(merchantId);
+                            batchAndEventAddReq.setCreateStaff(merchantId);
+                            resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
+                            log.info("AdminResourceInstServiceImpl.auditPassResDetail resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
+                            exceutorAddNbrTrack(addReq);
+                            return true;
+                        }
+                    };
+                    Future<Boolean> validFutureTask = executorService.submit(callable);
+                    auditPassNbrFutureTaskResult.add(validFutureTask);
+                }
+            }
+            executorService.shutdown();
+        }catch (Throwable e) {
+            if (e instanceof ExecutionException) {
+                e = e.getCause();
+            }
+            log.info("error happen", e);
+        }
+        return null;
+    }
+
+    private Map<String, List<String>> getMktResIdAndNbrMap(List<ResourceReqDetailPageDTO> instList){
+        Map<String, List<String>> mktResIdAndNbrMap = new HashMap<>();
+        List<ResourceReqDetailPageDTO> detailList = instList;
+        for (ResourceReqDetailPageDTO resp : detailList){
+            if(mktResIdAndNbrMap.containsKey(resp.getMktResId())){
+                List<String> mktResIdList = mktResIdAndNbrMap.get(resp.getMktResId());
+                mktResIdList.add(resp.getMktResInstNbr());
+            }else{
+                List<String> mktResIdList = new ArrayList<>();
+                mktResIdList.add(resp.getMktResInstNbr());
+                mktResIdAndNbrMap.put(resp.getMktResId(), mktResIdList);
+            }
+        }
+        return mktResIdAndNbrMap;
+    }
+
 }

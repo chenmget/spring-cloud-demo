@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.warehouse.service.impl;
 
 import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
@@ -44,6 +45,7 @@ public class ResouceInstTrackDetailServiceImpl implements ResouceInstTrackDetail
                 MerchantGetReq merchantGetReq = new MerchantGetReq();
                 merchantGetReq.setMerchantId(sourceMerchantId);
                 ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchant(merchantGetReq);
+                log.info("ResouceInstTrackDetailServiceImpl.getResourceInstTrackDetailByNbr merchantService.getMerchant sourceMerchantId={}, merchantResultVO={}", sourceMerchantId, JSON.toJSONString(merchantGetReq));
                 String sourceMerchantName = (merchantResultVO.isSuccess() && merchantResultVO.getResultData() != null) ? merchantResultVO.getResultData().getMerchantName() : "";
                 resp.setSourceMerchantName(sourceMerchantName);
             }
@@ -51,6 +53,7 @@ public class ResouceInstTrackDetailServiceImpl implements ResouceInstTrackDetail
                 MerchantGetReq merchantGetReq = new MerchantGetReq();
                 merchantGetReq.setMerchantId(targetMerchantId);
                 ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchant(merchantGetReq);
+                log.info("ResouceInstTrackDetailServiceImpl.getResourceInstTrackDetailByNbr merchantService.getMerchant targetMerchantId={}, merchantResultVO={}", targetMerchantId, JSON.toJSONString(merchantResultVO));
                 String targetMerchantName = (merchantResultVO.isSuccess() && merchantResultVO.getResultData() != null) ? merchantResultVO.getResultData().getMerchantName() : "";
                 resp.setTargetMerchantName(targetMerchantName);
             }
@@ -59,11 +62,13 @@ public class ResouceInstTrackDetailServiceImpl implements ResouceInstTrackDetail
             String targetLanId = resp.getTargetLanId();
             if (StringUtils.isNotBlank(sourceLanId)) {
                 ResultVO<CommonRegionDTO> commonRegionResultVO = commonRegionService.getCommonRegionById(sourceLanId);
+                log.info("ResouceInstTrackDetailServiceImpl.getResourceInstTrackDetailByNbr commonRegionService.getCommonRegionById sourceLanId={}, merchantResultVO={}", sourceLanId, JSON.toJSONString(commonRegionResultVO));
                 String sourceRegionName = (commonRegionResultVO.isSuccess() && commonRegionResultVO.getResultData() != null) ? commonRegionResultVO.getResultData().getRegionName() : "";
                 resp.setSourceLanName(sourceRegionName);
             }
             if (StringUtils.isNotBlank(targetLanId)) {
-                ResultVO<CommonRegionDTO> commonRegionResultVO = commonRegionService.getCommonRegionById(sourceLanId);
+                ResultVO<CommonRegionDTO> commonRegionResultVO = commonRegionService.getCommonRegionById(targetLanId);
+                log.info("ResouceInstTrackDetailServiceImpl.getResourceInstTrackDetailByNbr commonRegionService.getCommonRegionById targetLanId={}, merchantResultVO={}", targetLanId, JSON.toJSONString(commonRegionResultVO));
                 String targetRegionName = (commonRegionResultVO.isSuccess() && commonRegionResultVO.getResultData() != null) ? commonRegionResultVO.getResultData().getRegionName() : "";
                 resp.setTargetLanName(targetRegionName);
             }

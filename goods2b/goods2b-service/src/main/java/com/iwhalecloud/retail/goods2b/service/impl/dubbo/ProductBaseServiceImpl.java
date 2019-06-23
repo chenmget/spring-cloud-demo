@@ -8,7 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
+import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
+import com.iwhalecloud.retail.goods2b.dto.GoodsSaleNumDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
@@ -17,6 +19,7 @@ import com.iwhalecloud.retail.goods2b.entity.ProductBase;
 import com.iwhalecloud.retail.goods2b.manager.BrandManager;
 import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
+import com.iwhalecloud.retail.goods2b.manager.TagRelManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.DateUtil;
 import com.iwhalecloud.retail.goods2b.utils.GenerateCodeUtil;
@@ -40,6 +43,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -69,6 +73,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     private BrandManager brandManager;
     @Reference
     private PublicDictService publicDictService;
+    @Autowired
+    private TagRelManager tagRelManager;
+
+    @Autowired
+    private GoodsSaleNumService goodsSaleNumService;
 
     @Value("${zop.secret}")
     private String zopSecret;
@@ -751,6 +760,28 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         List<ProductDTO> list = page.getRecords();
         productDetail.setProductAddReqs(list);
 
+        List<String> listTagRelId = new ArrayList<>();
+        if (!CollectionUtils.isEmpty(list)) {
+            for (ProductDTO productDTO : list) {
+                TagRelListReq tagRelListReq = new TagRelListReq();
+                tagRelListReq.setProductId(productDTO.getProductId());
+                List<TagRelListResp> listTagRel = tagRelManager.listTagRel(tagRelListReq);
+                log.info("ProductBaseServiceImpl.getProductDetail tagRelManager.listTagRel req={}, resp={}", JSON.toJSONString(tagRelListReq), JSON.toJSONString(listTagRel));
+                List<String> relIdList = listTagRel.stream().map(TagRelListResp::getTagId).collect(Collectors.toList());
+                if (!CollectionUtils.isEmpty(relIdList)) {
+                    listTagRelId.addAll(relIdList);
+                }
+            }
+        }
+        if(CollectionUtils.isEmpty(productDetail.getTagList())){
+            productDetail.setTagList(listTagRelId);
+        } else {
+            List<String> tagList = productDetail.getTagList();
+            if (!CollectionUtils.isEmpty(listTagRelId)) {
+                tagList.addAll(listTagRelId);
+            }
+        }
+
         ProductExtGetReq productExtGetReq = new ProductExtGetReq();
         productExtGetReq.setProductBaseId(req.getProductBaseId());
         ResultVO<ProductExtGetResp> productExtVO = productExtService.getProductExt(productExtGetReq);
@@ -815,6 +846,34 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             list.add(productBaseManager.getSeq());
         }
         return ResultVO.success(list);
+    }
+
+    @Override
+    public Boolean isSaleByProductId(String productId) {
+        boolean flag = true;
+        ResultVO<List<GoodsSaleNumDTO>> resultVO = goodsSaleNumService.getProductSaleOrder(GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER_WHOLE);
+        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+            List<GoodsSaleNumDTO> goodsSaleNumDTOs = resultVO.getResultData();
+            if(!CollectionUtils.isEmpty(goodsSaleNumDTOs)){
+                for(GoodsSaleNumDTO goodsSaleNumDTO: goodsSaleNumDTOs){
+                    if(productId.equals(goodsSaleNumDTO.getProductId())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        ResultVO<List<GoodsSaleNumDTO>> resultVO1 = goodsSaleNumService.queryProductSaleOrderByProductId(productId);
+        if(resultVO1.isSuccess() && null!=resultVO1.getResultData()){
+            List<GoodsSaleNumDTO> goodsSaleNumDTOs = resultVO1.getResultData();
+            if(!CollectionUtils.isEmpty(goodsSaleNumDTOs)){
+                for(GoodsSaleNumDTO goodsSaleNumDTO: goodsSaleNumDTOs){
+                    if(productId.equals(goodsSaleNumDTO.getProductId())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return flag;
     }
 
     public String zopService(String method, String zopUrl, Object request, String zopSecret) {

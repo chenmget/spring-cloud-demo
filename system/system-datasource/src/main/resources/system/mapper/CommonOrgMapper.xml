@@ -25,21 +25,20 @@
     ,t.PATH_CODE
 </sql>
 
-	<select id="getSysCommonOrg" resultType="com.iwhalecloud.retail.system.dto.SysCommonOrgResp">
+	<select id="getSysCommonOrg" resultType="com.iwhalecloud.retail.system.dto.SysCommonOrgResp"
+		parameterType="com.iwhalecloud.retail.system.dto.SysCommonOrgRequest">
 		   SELECT 
 		   <include refid="allFields" />
 		   from 
 		   	sys_common_org t 
 		   where 1=1
-		   <if test="req.orgId==null or req.orgId ==''">
 		   	and t.org_level='3' 
-		   </if> 
-		   <if test="req.lanIdName!=null and req.lanIdName !=''">
-		     and t.lan_id=#{req.lanIdName}
-		  </if>	
-		  <if test="req.orgId !=null and req.orgId !=''">
-		   	and t.org_id=#{req.orgId} 
-		   </if>
+		  <if test="req.lanIdList !=null and req.lanIdList.size()>0">
+                and t.LAN_ID in
+                <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+          </if>
 	 </select>
 
 

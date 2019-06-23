@@ -751,7 +751,8 @@ public class GoodsB2BController extends GoodsBaseController {
     ResultVO<List<GoodsSaleNumDTO>> queryProductSaleOrder() {
         log.info("GoodsController queryProductSaleOrder ");
         List<GoodsSaleNumDTO> list = new ArrayList<>();
-        ResultVO<List<GoodsSaleNumDTO>> listResultVO = goodsSaleNumService.getProductSaleOrder();
+        String key = GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER_WHOLE;
+        ResultVO<List<GoodsSaleNumDTO>> listResultVO = goodsSaleNumService.getProductSaleOrder(key);
         if (listResultVO.isSuccess()) {
             list = listResultVO.getResultData();
         }

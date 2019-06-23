@@ -35,7 +35,7 @@ public class ProductSaleOrderJob implements SimpleJob {
             //先清缓存再写入
             ResultVO<Boolean> resultVO = goodsSaleNumService.cleanCacheProductSaleNum();
             if(resultVO.isSuccess() && resultVO.getResultData()){
-                goodsSaleNumService.getProductSaleOrder();
+                goodsSaleNumService.getProductSaleOrder(GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER_WHOLE);
             }
 
         }catch (Exception ex) {

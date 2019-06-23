@@ -325,14 +325,14 @@ public class MerchantResourceInstB2BController {
     @UserLoginToken
     public void exportNbrDetail(@RequestBody ResourceReqDetailQueryReq req, HttpServletResponse response) {
         req.setMerchantId(Lists.newArrayList(UserContext.getMerchantId()));
-        ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listResourceRequestDetailPage(req);
+        ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listMerchantResourceRequestDetailPage(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
-        log.info("ResourceReqDetailB2BController.nbrDetailExport resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
+        log.info("ResourceReqDetailB2BController.exportNbrDetail resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
         //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-                OrderExportUtil.getResReqDetail(), "串码");
-        deliveryGoodsResNberExcel.exportExcel("导出待审核串码",workbook,response);
+                OrderExportUtil.getResReqDetail(), "串码明细");
+        deliveryGoodsResNberExcel.exportExcel("导出串码明细",workbook,response);
     }
 }

@@ -134,8 +134,8 @@ public class GoodsSaleNumServiceImpl implements GoodsSaleNumService {
     }
 
     @Override
-    @Cacheable(value = GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER)
-    public ResultVO<List<GoodsSaleNumDTO>> getProductSaleOrder() {
+    @Cacheable(value = GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER, key = "#cacheKey")
+    public ResultVO<List<GoodsSaleNumDTO>> getProductSaleOrder(String cacheKey) {
         List<GoodsSaleNumDTO> list = new ArrayList<>();
         List<GoodsSaleOrderDTO> goodsSaleOrderDTOs = goodSaleOrderService.getGoodSaleNum();
         if(!CollectionUtils.isEmpty(goodsSaleOrderDTOs)){

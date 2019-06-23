@@ -82,4 +82,6 @@ public interface ProductBaseService {
     ResultVO<Boolean> updateAvgApplyPrice(ProductBaseUpdateReq req);
 
     public ResultVO<List<String>> getSeq(int i);
+
+    public Boolean isSaleByProductId(String productId);
 }

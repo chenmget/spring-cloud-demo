@@ -8,7 +8,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
+import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
+import com.iwhalecloud.retail.goods2b.dto.GoodsSaleNumDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
@@ -73,6 +75,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     private PublicDictService publicDictService;
     @Autowired
     private TagRelManager tagRelManager;
+
+    @Autowired
+    private GoodsSaleNumService goodsSaleNumService;
 
     @Value("${zop.secret}")
     private String zopSecret;
@@ -657,6 +662,14 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                         }
                     }
                     //流程1
+                    if(!newUpdateReq.getIsDeleted().equals(oldUpdateReq.getIsDeleted())){
+                        if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
+                            updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }else{
+                            updateProductFlow = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }
+                    }
+                    //流程1
                     if(newUpdateReq.getCost() - oldUpdateReq.getCost() !=0 ||
                             newUpdateReq.getLocalSupplyFeeLower() - oldUpdateReq.getLocalSupplyFeeLower() != 0 ||
                             newUpdateReq.getLocalSupplyFeeUpper() - oldUpdateReq.getLocalSupplyFeeUpper() != 0 ||
@@ -769,14 +782,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }
         }
         if(CollectionUtils.isEmpty(productDetail.getTagList())){
-            List<String> distinctList = listTagRelId.stream().distinct().collect(Collectors.toList());
-            productDetail.setTagList(distinctList);
+            productDetail.setTagList(listTagRelId);
         } else {
             List<String> tagList = productDetail.getTagList();
             if (!CollectionUtils.isEmpty(listTagRelId)) {
                 tagList.addAll(listTagRelId);
-                List<String> distinctList = tagList.stream().distinct().collect(Collectors.toList());
-                productDetail.setTagList(distinctList);
             }
         }
 
@@ -844,6 +854,34 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             list.add(productBaseManager.getSeq());
         }
         return ResultVO.success(list);
+    }
+
+    @Override
+    public Boolean isSaleByProductId(String productId) {
+        boolean flag = true;
+        ResultVO<List<GoodsSaleNumDTO>> resultVO = goodsSaleNumService.getProductSaleOrder(GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER_WHOLE);
+        if(resultVO.isSuccess() && null!=resultVO.getResultData()){
+            List<GoodsSaleNumDTO> goodsSaleNumDTOs = resultVO.getResultData();
+            if(!CollectionUtils.isEmpty(goodsSaleNumDTOs)){
+                for(GoodsSaleNumDTO goodsSaleNumDTO: goodsSaleNumDTOs){
+                    if(productId.equals(goodsSaleNumDTO.getProductId())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        ResultVO<List<GoodsSaleNumDTO>> resultVO1 = goodsSaleNumService.queryProductSaleOrderByProductId(productId);
+        if(resultVO1.isSuccess() && null!=resultVO1.getResultData()){
+            List<GoodsSaleNumDTO> goodsSaleNumDTOs = resultVO1.getResultData();
+            if(!CollectionUtils.isEmpty(goodsSaleNumDTOs)){
+                for(GoodsSaleNumDTO goodsSaleNumDTO: goodsSaleNumDTOs){
+                    if(productId.equals(goodsSaleNumDTO.getProductId())) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return flag;
     }
 
     public String zopService(String method, String zopUrl, Object request, String zopSecret) {

@@ -242,9 +242,4 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
         return ResultVO.success();
     }
 
-    @Override
-    public ToPayResp handlePayData(ToBestPayReq req) {
-        return bestPayManagerReference.handlePayData(req);
-    }
-
 }

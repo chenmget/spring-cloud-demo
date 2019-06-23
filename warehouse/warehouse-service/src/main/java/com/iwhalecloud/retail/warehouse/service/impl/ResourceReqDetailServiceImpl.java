@@ -132,7 +132,12 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
             //查询状态为审核通过或审核不通过，查询是该登录人审核过的明细
             respPage = resourceReqDetailManager.listResourceRequestPage(req);
         }else{
-            //查询状态为待审核，查询当前处理人待审核的串码明细
+            //查询状态为待审核
+            //如果审核时间查询条件不为空，直接返回空数据
+            if(StringUtils.isNotEmpty(req.getStatusEndDate())||StringUtils.isNotEmpty(req.getStatusStartDate())){
+                return ResultVO.success(new Page());
+            }
+            //查询当前处理人待审核的串码明细
             respPage=listRequestDetailByUserId(req);
         }
         Page<ResourceReqDetailPageResp> result=fillResourceRequestDetailPage(respPage);

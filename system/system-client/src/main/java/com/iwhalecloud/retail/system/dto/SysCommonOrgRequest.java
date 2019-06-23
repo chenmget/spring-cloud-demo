@@ -7,7 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class SysCommonOrg implements Serializable {
+public class SysCommonOrgRequest implements Serializable {
 	/**
 	 * 
 	 */

@@ -16,8 +16,7 @@ import com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
 import com.iwhalecloud.retail.report.service.ReportOrderService;
 import com.iwhalecloud.retail.system.common.SystemConst;
-import com.iwhalecloud.retail.system.dto.SysCommonOrg;
-import com.iwhalecloud.retail.system.dto.SysCommonOrgReq;
+import com.iwhalecloud.retail.system.dto.SysCommonOrgRequest;
 import com.iwhalecloud.retail.system.dto.SysCommonOrgResp;
 import com.iwhalecloud.retail.system.service.CommonOrgService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -261,13 +260,13 @@ public class ReportOrderController extends BaseController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @GetMapping("/getSysCommonOrg")
+    @PostMapping("/getSysCommonOrg")
 	@UserLoginToken
-    public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg(SysCommonOrg req) {
-		log.info("****************ReportOrderController getSysCommonOrg()  ************start param={}");
+    public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg(@RequestBody SysCommonOrgRequest req) {
+		log.info("****************ReportOrderController getSysCommonOrg()  ************start param={}",JSON.toJSONString(req));
 		int userType = UserContext.getUser().getUserFounder();
 		//超级管理员，省管理员，省包商取前端传过来的地市集合
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2 || userType == SystemConst.USER_FOUNDER_4) {//超级管理员  省管理员  省供应商
+		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2 || userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_8) {//超级管理员  省管理员  省供应商
 		} else if (userType == SystemConst.USER_FOUNDER_9 || userType == SystemConst.USER_FOUNDER_5 || userType == SystemConst.USER_FOUNDER_3) {//地市管理员   地市供应商 零售商
 			List<String> lanIdList = new ArrayList<String>();
 			lanIdList.add( UserContext.getUser().getLanId());

@@ -188,7 +188,8 @@ public class PromoConst {
      */
     public enum ActivityParticipantType {
         ACTIVITY_PARTICIPANT_TYPE_10("10", "地区"),
-        ACTIVITY_PARTICIPANT_TYPE_20("20", "商家");
+        ACTIVITY_PARTICIPANT_TYPE_20("20", "商家"),
+        ACTIVITY_PARTICIPANT_TYPE_30("30", "按条件筛选");
 
         private java.lang.String code;
         private java.lang.String name;

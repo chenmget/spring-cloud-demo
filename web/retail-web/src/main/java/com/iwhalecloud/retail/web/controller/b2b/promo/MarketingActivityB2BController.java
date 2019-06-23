@@ -28,6 +28,7 @@ import com.iwhalecloud.retail.web.utils.FastDFSImgStrJoinUtil;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -156,6 +157,7 @@ public class MarketingActivityB2BController {
                     activityParticipantList.get(i).setMerchantId(activityParticipantList.get(i).getShopCode());
                 }
             }
+
         }
         if (!StringUtils.isEmpty(marketingActivityDetailResp.getPageImgUrl())) {
             String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getPageImgUrl(), dfsShowIp, true);
@@ -267,11 +269,16 @@ public class MarketingActivityB2BController {
                 if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(req.getActivityParticipantType())) {
                     participantDTO.setShopName(participantDTO.getMerchantName());
                     participantDTO.setShopCode(participantDTO.getMerchantCode());
-                } else {
+                } else if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(req.getActivityParticipantType())){
                     if (participantDTO.getRegionId().length() > 3) {
                         participantDTO.setCity(participantDTO.getRegionId());
                     } else {
                         participantDTO.setLanId(participantDTO.getRegionId());
+                    }
+                }else{
+                    String filterValue = participantDTO.getFilterValue();
+                    if(StringUtils.isNotEmpty(filterValue)){
+                        participantDTO.setFilterValue(StringEscapeUtils.unescapeHtml(filterValue));
                     }
                 }
             }

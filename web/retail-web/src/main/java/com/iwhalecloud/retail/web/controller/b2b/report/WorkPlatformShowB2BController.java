@@ -82,7 +82,7 @@ public class WorkPlatformShowB2BController {
         dto.setAppliedItemCount(getAppliedItemCount(userId));
         dto.setNotReadNoticeCount(noticeUserService.getNotReadNoticeCount(userId).getResultData());
         dto.setSysAlarmCount(getSysUserMessage(userId, "2"));
-        
+        dto.setHandledItemCount(getHandledItemCount(userId));
         return ResultVO.success(dto);
     }
 
@@ -240,7 +240,24 @@ public class WorkPlatformShowB2BController {
         if (resultVO.isSuccess()) {
             return resultVO.getResultData();
         }
-        log.error("call taskService.queryTaskCnt failed,req={},resultVO={}", JSON.toJSONString(req),JSON.toJSONString(resultVO));
+        log.error("call taskService.queryHandleTaskCnt failed,req={},resultVO={}", JSON.toJSONString(req),JSON.toJSONString(resultVO));
+
+        return 0L;
+    }
+
+    /**
+     * 获取我的经办总数
+     * @param userId 用户ID
+     * @return
+     */
+    private Long getHandledItemCount(String userId) {
+        HandleTaskPageReq req = new HandleTaskPageReq();
+        req.setHandlerUserId(userId);                                    //我创建的
+        ResultVO<Long> resultVO = taskService.queryHandleTaskCnt(req);
+        if (resultVO.isSuccess()) {
+            return resultVO.getResultData();
+        }
+        log.error("call taskService.queryHandleTaskCnt failed,req={},resultVO={}", JSON.toJSONString(req), JSON.toJSONString(resultVO));
 
         return 0L;
     }

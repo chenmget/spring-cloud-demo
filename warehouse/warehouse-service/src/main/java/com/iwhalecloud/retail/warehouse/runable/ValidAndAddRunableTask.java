@@ -18,7 +18,6 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.util.ExcutorServiceUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -171,18 +170,23 @@ public class ValidAndAddRunableTask {
         @Override
         public Boolean call() throws Exception {
             Date now = new Date();
+            List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>();
+            List<ResouceUploadTemp> snUploadTemp = this.validSnCode();
+            log.info("ValidAndAddRunableTask.exceutorValid  newList={}, snUploadTemp={}", JSON.toJSONString(newList), JSON.toJSONString(snUploadTemp));
+            instList.addAll(snUploadTemp);
+            List<ResouceUploadTemp> macUploadTemp = this.validMacCode();
+            log.info("ValidAndAddRunableTask.exceutorValid  newList={}, macUploadTemp={}", JSON.toJSONString(newList), JSON.toJSONString(macUploadTemp));
+            instList.addAll(macUploadTemp);
+            List<ResouceUploadTemp> ctUploadTemp = this.validCtCode();
+            instList.addAll(ctUploadTemp);
+            log.info("ValidAndAddRunableTask.exceutorValid  newList={}, ctUploadTemp={}", JSON.toJSONString(newList), JSON.toJSONString(ctUploadTemp));
+
             ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
-            BeanUtils.copyProperties(getReq, trackGetReq);
-            trackGetReq.setSnCodeList(null);
-            trackGetReq.setMacCodeList(null);
-            trackGetReq.setCtCodeList(null);
+            trackGetReq.setMktResInstNbrList(newList);
+            trackGetReq.setTypeId(req.getTypeId());
             ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
             log.info("ValidAndAddRunableTask.exceutorValid resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(instsTrackvO));
             List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
-            List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>();
-            instList.addAll(this.validSnCode());
-            instList.addAll(this.validMacCode());
-            instList.addAll(this.validCtCode());
             if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                 List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                 // 删除的串码可再次导入
@@ -331,7 +335,7 @@ public class ValidAndAddRunableTask {
             if (!needValid) {
                 return instList;
             }
-            if (CollectionUtils.isNotEmpty(getReq.getSnCodeList())) {
+            if (CollectionUtils.isEmpty(getReq.getSnCodeList())) {
                 return instList;
             }
 

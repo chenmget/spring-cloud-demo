@@ -222,17 +222,17 @@ public class ProductBaseManager {
      */
     public ProductDetailResp getProductDetail(String productBaseId){
         ProductDetailResp productDetailResp = productBaseMapper.getProductDetail(productBaseId);
-        List<TagRelDTO> tagRelDTOs = tagRelManager.listTagByProductBaseId(productBaseId);
-        List<String> tagList = new ArrayList<>();
-        if(!CollectionUtils.isEmpty(tagRelDTOs)){
-            for(TagRelDTO tagRelDTO:tagRelDTOs){
-                tagList.add(tagRelDTO.getTagId());
-            }
-        }
-        //增加判空
-        if(!CollectionUtils.isEmpty(tagList) && null!=productDetailResp){
-            productDetailResp.setTagList(tagList);
-        }
+//        List<TagRelDTO> tagRelDTOs = tagRelManager.listTagByProductBaseId(productBaseId);
+//        List<String> tagList = new ArrayList<>();
+//        if(!CollectionUtils.isEmpty(tagRelDTOs)){
+//            for(TagRelDTO tagRelDTO:tagRelDTOs){
+//                tagList.add(tagRelDTO.getTagId());
+//            }
+//        }
+//        //增加判空
+//        if(!CollectionUtils.isEmpty(tagList) && null!=productDetailResp){
+//            productDetailResp.setTagList(tagList);
+//        }
         return productDetailResp;
     }
 

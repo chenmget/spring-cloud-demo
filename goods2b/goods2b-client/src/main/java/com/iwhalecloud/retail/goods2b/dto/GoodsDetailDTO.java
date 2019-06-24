@@ -104,9 +104,4 @@ public class GoodsDetailDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "商品发布对象")
 	private String targetType;
 
-	/**
-	 * 前置补贴标识(1=前置补贴，0否)
-	 */
-	private String isSubsidy;
-
 }

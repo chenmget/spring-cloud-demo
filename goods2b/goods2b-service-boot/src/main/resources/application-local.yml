@@ -119,7 +119,3 @@ type:
   fusionTerminal: 230000
   setTopBox: 210000
   opticalModem: 220000
-
-goodsRule:
-    goodsMktPrice: 159900D
-    avgSupllyPrice: 0.03

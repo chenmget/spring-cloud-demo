@@ -34,7 +34,11 @@ public class ResourceInstCheckResp implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "产品采购类型")
 	private String purchaseType;
-
+	/**
+	 * 串码状态
+	 */
+	@ApiModelProperty(value = "产品采购类型")
+	private String statusCd;
 
 
 }

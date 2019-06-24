@@ -80,7 +80,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         mktResInstNbr = req.getMktResInstNbr(); //串码列表
         int total = mktResInstNbr.size();//串码总数
         if (mktResInstNbr==null || mktResInstNbr.size()<=0) {
-            return ResultVO.error("没有收到串码记录");
+            return ResultVO.error("串码不能为空！");
         }
         //select * from mkt_res_store where store_type = '1100' and lan_id = '731';
         PurApply purApply = purApplyManager.getPurApplyByAppId(req.getApplyId());
@@ -131,6 +131,31 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             if (resourceInstCheckResp==null) {
                 return ResultVO.error("该仓库查不到该串码"+mktResInstNbr);
             } else {
+
+                // 判断串码是否有效
+                String statusCd = resourceInstCheckResp.getStatusCd();
+                if (!"1202".equals(statusCd)) {
+                    if (statusCd.equals("1301")) {
+                        return ResultVO.error("该串码"+mktResInstNbr+",待审核");
+                    } else if (statusCd.equals("1210")) {
+                        return ResultVO.error("该串码"+mktResInstNbr+",调拨中");
+                    } else if (statusCd.equals("1211")) {
+                        return ResultVO.error("该串码"+mktResInstNbr+",调拨中");
+                    } else if (statusCd.equals("1305")) {
+                        return ResultVO.error("该串码"+mktResInstNbr+",退库中");
+                    } else if (statusCd.equals("1306")) {
+                        return ResultVO.error("该串码"+mktResInstNbr+",换货中");
+                    } else if (statusCd.equals("1205")) {
+                        return ResultVO.error("该串码"+mktResInstNbr+",退换货已冻结");
+                    } else if (statusCd.equals("1203")) {
+                        return ResultVO.error("该串码"+mktResInstNbr+",已销售");
+                    } else if (statusCd.equals("1110")) {
+                        return ResultVO.error("该串码"+mktResInstNbr+",已作废");
+                    }else {
+                        return ResultVO.error("该串码"+mktResInstNbr+",不可用");
+                    }
+                }
+
                 String purchaseType = resourceInstCheckResp.getPurchaseType();// 产品采购类型
                 if (purchaseType==null) {
                     purchaseType="0";

@@ -165,6 +165,7 @@ public class CgSearchApplyController extends BaseController {
 		req.setApplyMerchantCode(applyMerchantCode);
 		String userId = UserContext.getUserId();
 		String userName = UserContext.getUser().getLoginName();
+		req.setApplyName(userName);
 		req.setHandleUserId(userId);
 		req.setHandleUserName(userName);
 		int isHaveSave = purApplyService.isHaveSave(applyId);

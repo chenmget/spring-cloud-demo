@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.promo.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.promo.common.PromoConst;
+import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
 import com.iwhalecloud.retail.promo.entity.*;
 import com.iwhalecloud.retail.promo.mapper.ActivityChangeMapper;
 import org.springframework.stereotype.Component;
@@ -182,10 +183,14 @@ public class ActivityChangeManager{
             }
             //活动对象信息（买家范围）
             if(ActivityParticipant.TNAME.equals(detail.getTableName())){
-                ActivityParticipant activityParticipant = new ActivityParticipant();
-                activityParticipant.setId(detail.getKeyValue());
-                activityParticipant.setStatus(PromoConst.Status.Audited.getCode());
-                activityParticipantList.add(activityParticipant);
+                if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode().equals(marketingActivity.getActivityParticipantType())){
+                    activityParticipantManager.deleteActivityParticipantBatch(marketingActivity.getId());
+                }else {
+                    ActivityParticipant activityParticipant = new ActivityParticipant();
+                    activityParticipant.setId(detail.getKeyValue());
+                    activityParticipant.setStatus(PromoConst.Status.Audited.getCode());
+                    activityParticipantList.add(activityParticipant);
+                }
                 continue;
             }
         }

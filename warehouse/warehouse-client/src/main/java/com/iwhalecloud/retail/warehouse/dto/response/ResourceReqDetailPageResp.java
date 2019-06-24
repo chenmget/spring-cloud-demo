@@ -89,4 +89,7 @@ public class ResourceReqDetailPageResp implements Serializable {
     @ApiModelProperty(value = "记录状态变更的时间。")
     private String statusDateStr;
 
+    @ApiModelProperty(value = "产品名称")
+    private String productName;
+
 }

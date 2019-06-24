@@ -925,12 +925,12 @@ public class RunableTask {
                             //获取相关产品信息
                             ResourceReqDetailPageDTO detailDTO = detailList.get(0);
                             ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
-                            productGetByIdReq.setProductId(mktResReqId);
-                            ResultVO<ProductResp> producttVO = productService.getProduct(productGetByIdReq);
-                            log.info("RunableTask.auditPassResDetail.getProduct mktResId={} resp={}", mktResReqId, JSON.toJSONString(producttVO));
+                            productGetByIdReq.setProductId(detailDTO.getMktResId());
+                            ResultVO<ProductResp> productVO = productService.getProduct(productGetByIdReq);
+                            log.info("RunableTask.auditPassResDetail.getProduct mktResId={} resp={}", mktResReqId, JSON.toJSONString(productVO));
                             String typeId = "";
-                            if (producttVO.isSuccess() && null != producttVO.getResultData()) {
-                                typeId = producttVO.getResultData().getTypeId();
+                            if (productVO.isSuccess() && null != productVO.getResultData()) {
+                                typeId = productVO.getResultData().getTypeId();
                             }
                             // step2 根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
                             ResourceInstAddReq addReq = new ResourceInstAddReq();

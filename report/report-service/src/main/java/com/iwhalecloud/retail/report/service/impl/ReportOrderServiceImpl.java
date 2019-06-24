@@ -69,7 +69,7 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 			}
 			
 			dto.setCouponMoney(dto.getCouponMoney()/100);
-			dto.setTotalCouponMoney(dto.getTotalCouponMoney());
+			dto.setTotalCouponMoney(dto.getTotalCouponMoney()/100);
 	    	// TODO 通过orderId查出串码
 	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(orderId);
 	    	

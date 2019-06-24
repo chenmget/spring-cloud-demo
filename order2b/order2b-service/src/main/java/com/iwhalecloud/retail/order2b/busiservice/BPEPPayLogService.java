@@ -61,13 +61,6 @@ public interface BPEPPayLogService {
     public ResultVO openToBookingPay(OffLinePayReq req);
 
     /**
-     * 校验通知支付结果
-     * @param req
-     * @return
-     */
-    public boolean checkNotifyData(AsynNotifyReq req);
-
-    /**
      * 同支付业务id查支付
      * @param orderId
      * @return

@@ -99,7 +99,7 @@ pay:
   iv: 1234567892546398
   platCode: "0020000000050033"
   platformCode: "0020000000050033"
-  type: pay_auth
+  type: bestpay
   ipStr: 127.0.0.1
 
 #订单数据推送FTP文件路径

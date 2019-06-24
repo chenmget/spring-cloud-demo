@@ -290,7 +290,7 @@ public class CreateOrderServiceImpl implements CreateOrderService {
     @Override
     @Transactional
     public CommonResultResp builderOrder(CreateOrderRequest request, List<BuilderOrderModel> list) {
-
+        log.info("CreateOrderServiceImpl.builderOrder request={},list={}", JSON.toJSONString(request), JSON.toJSONString(list));
         CommonResultResp resp = new CommonResultResp();
 
         for (BuilderOrderModel builderOrderModel : list) {
@@ -333,6 +333,7 @@ public class CreateOrderServiceImpl implements CreateOrderService {
             }
 
             orderManager.saveOrder(builderOrderModel.getOrder());
+            log.info("CreateOrderServiceImpl.builderOrder orderManager.saveOrder order={}", JSON.toJSONString(builderOrderModel.getOrder()));
             orderManager.saveOrderItem(builderOrderModel.getOrderItem());
             if (!CollectionUtils.isEmpty(builderOrderModel.getPromotionList())) {
                 promotionManager.insertPromotionList(builderOrderModel.getPromotionList());

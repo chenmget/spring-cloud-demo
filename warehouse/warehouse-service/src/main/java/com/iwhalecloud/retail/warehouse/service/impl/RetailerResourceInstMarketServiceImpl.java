@@ -696,7 +696,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO pickResourceInst(ResourceInstPickupReq req) {
-        List<String> bfhNbrList = new ArrayList<String>();
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 先检查零售商所属十四个地市中的一个是否存在
         String lanId = req.getLanId();
@@ -793,7 +792,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
         log.info("RetailerResourceInstMarketServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
-        return ResultVO.success(bfhNbrList);
+        return ResultVO.success(resourceInstAddResp);
     }
 
     private List<ResourceInstListPageResp> translateNbrInst(List<QryMktInstInfoByConditionItemSwapResp> qryMktInstInfoList){

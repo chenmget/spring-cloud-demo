@@ -1350,7 +1350,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         List<ActivityParticipantDTO> newParticipantDTOList = new ArrayList<>();
         String participantType = changedActivity.getActivityParticipantType();
         // 8.1如果是"按条件过滤"的参与对象变更，用如下逻辑判断变更项
-        if (!CollectionUtils.isEmpty(changedParticipantDTOList) && changedParticipantDTOList.size() == originalParticipantDTOList.size()&&PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(participantType)) {
+        if (!CollectionUtils.isEmpty(changedParticipantDTOList) && changedParticipantDTOList.size() == originalParticipantDTOList.size()&&PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode().equals(participantType)) {
             ActivityParticipantDTO changedParticipantDTO = changedParticipantDTOList.get(0);
             String originalParticipantFilterValue = originalParticipantDTOList.get(0).getFilterValue();
             String changeParticipantFilterValue = changedParticipantDTO.getFilterValue();

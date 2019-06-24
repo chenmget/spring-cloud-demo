@@ -201,7 +201,7 @@
 		a.content AS content,
 		a.apply_merchant_code  AS applyMerchantCode,
 		a.apply_merchant_id AS applyMerchantId,
-		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_CODE=a.apply_merchant_code) AS applyMerchantName,
+        (SELECT b.user_name FROM sys_user b WHERE b.user_id=a.CREATE_STAFF) AS applyMerchantName,
 		a.LAN_ID as lanId,
 		(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 		a.region_id as regionId,

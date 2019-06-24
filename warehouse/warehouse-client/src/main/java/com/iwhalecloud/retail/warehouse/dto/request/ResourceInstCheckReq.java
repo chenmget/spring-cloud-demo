@@ -53,7 +53,6 @@ public class ResourceInstCheckReq implements Serializable {
 	private List<String> mktResInstNbrs;
 
 	@ApiModelProperty(value = "记录营销资源申请单明细标识")
-	@NotNull
 	private List<String> mktResReqDetailIds;
 
 	@ApiModelProperty(value = "审核说明")

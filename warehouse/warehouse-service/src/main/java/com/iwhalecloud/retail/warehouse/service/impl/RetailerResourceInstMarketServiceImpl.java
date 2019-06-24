@@ -473,8 +473,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         List<QryMktInstInfoByConditionItemSwapResp> qryMktInstInfoList = new ArrayList<>();
         // 组装请求参数,参数为空传空字符串(接口要求)
         QryMktInstInfoByConditionSwapReq qryMktInstInfoByConditionReq = new QryMktInstInfoByConditionSwapReq();
-        qryMktInstInfoByConditionReq.setInstoreBeginTime(req.getCreateTimeStart());
-        qryMktInstInfoByConditionReq.setInstoreEndTime(req.getCreateTimeEnd());
+        qryMktInstInfoByConditionReq.setInstoreBeginTime(req.getInstInDateStart());
+        qryMktInstInfoByConditionReq.setInstoreEndTime(req.getInstOutDateEnd());
         String mktResId = CollectionUtils.isEmpty(req.getMktResIds()) ? null : req.getMktResIds().get(0);
         qryMktInstInfoByConditionReq.setMktResId(mktResId);
         qryMktInstInfoByConditionReq.setMktResName(req.getProductName());
@@ -702,6 +702,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         String mktResStoreId = req.getMktResStoreId();//仓库ID
         List<String> bfhNbrList = new ArrayList<String>();
         List<String> fhNbrList = new ArrayList<String>();
+        log.info("**********************RetailerResourceInstMarketServiceImpl.pickResourceInst resourceInstService.selectMktResInstType   start  判断串码是政企串码还是集采串码？ -----------------------------");
         if("1".equals(isGovOrJC)) {//政企为1，集采为2
         	for(int i=0;i<mktResInstNbrsList.size();i++) {
         		String mktResInstNbr = mktResInstNbrsList.get(i);
@@ -715,6 +716,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         			bfhNbrList.add(mktResInstNbr);
         		}
         	}
+        	if(fhNbrList == null || fhNbrList.size()<1) {
+            	return ResultVO.error("这些串码都是非政企的");
+            }
         }else if("2".equals(isGovOrJC)){//政企为1，集采为2
         	for(int i=0;i<mktResInstNbrsList.size();i++) {
         		String mktResInstNbr = mktResInstNbrsList.get(i);
@@ -728,9 +732,13 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         			bfhNbrList.add(mktResInstNbr);
         		}
         	}
+        	if(fhNbrList == null || fhNbrList.size()<1) {
+            	return ResultVO.error("这些串码都是非集采的");
+            }
         }
         req.setMktResInstNbrs(fhNbrList);
-    	
+        log.info("**********************RetailerResourceInstMarketServiceImpl.pickResourceInst resourceInstService.selectMktResInstType   end  判断串码是政企串码还是集采串码？ -----------------------------");
+
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 先检查零售商所属十四个地市中的一个是否存在
 
@@ -751,6 +759,14 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         resourceInstListReq.setMktResInstNbrs(req.getMktResInstNbrs());
         resourceInstListReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         ResultVO<List<ResourceInstListResp>> merchantNbrInstVO = resourceInstService.listResourceInst(resourceInstListReq);
+        
+        
+        
+        
+        
+        
+        
+        
         if (!merchantNbrInstVO.isSuccess() || CollectionUtils.isEmpty(merchantNbrInstVO.getResultData())) {
             resourceInstAddResp.setPutInFailNbrs(req.getMktResInstNbrs());
             return ResultVO.success("源仓库中不存在", resourceInstAddResp);

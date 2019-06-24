@@ -65,6 +65,13 @@ public interface ResourceReqDetailMapper extends BaseMapper<ResourceReqDetail>{
     Page<ResourceReqDetailPageDTO> listResourceRequestPage(Page<ResourceReqDetailPageDTO> page, @Param("req")ResourceReqDetailQueryReq req);
 
     /**
+     * 申请单详情分页（条件查询）
+     * @param req
+     * @return
+     */
+    List<ResourceReqDetailPageDTO> listDistinctResourceRequestByUser(@Param("req")ResourceReqDetailQueryReq req);
+
+    /**
      * 根据申请单项主键修改申请单详情状态
      * @param req
      * @return

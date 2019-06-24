@@ -324,7 +324,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         updateReq.setStatusCd(ResourceConst.STATUSCD.ALLOCATIONING.getCode());
         updateReq.setUpdateStaff(createStaff);
         updateReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
-        updateReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
+        updateReq.setEventStatusCd(ResourceConst.EVENTSTATE.PROCESSING.getCode());
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(resultVOInsertResReq.getResultData());
         updateReq.setMktResStoreId(req.getDestStoreId());

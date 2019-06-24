@@ -654,7 +654,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             for(ProductUpdateReq oldUpdateReq:OldProductUpdateReqs){
                 if(newUpdateReq.getProductId().equals(oldUpdateReq.getProductId())){
                     //流程1
-                    if(!newUpdateReq.getSn().equals(oldUpdateReq.getSn())){
+                    if(!newUpdateReq.getSn().equals(oldUpdateReq.getSn()) ||
+                            !newUpdateReq.getIsDeleted().equals(oldUpdateReq.getIsDeleted())){
                         if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                             updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
                         }else{
@@ -662,7 +663,32 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                         }
                     }
                     //流程1
-                    if(!newUpdateReq.getIsDeleted().equals(oldUpdateReq.getIsDeleted())){
+                    if((StringUtils.isNotEmpty(newUpdateReq.getAttrValue1()) && StringUtils.isEmpty(oldUpdateReq.getAttrValue1())) ||
+                            (StringUtils.isNotEmpty(oldUpdateReq.getAttrValue1()) && StringUtils.isEmpty(newUpdateReq.getAttrValue1())) ||
+                            (StringUtils.isNotEmpty(newUpdateReq.getAttrValue1()) && StringUtils.isNotEmpty(oldUpdateReq.getAttrValue1())) &&
+                                    !newUpdateReq.getAttrValue1().equals(oldUpdateReq.getAttrValue1())){
+                        if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
+                            updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }else{
+                            updateProductFlow = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }
+                    }
+                    //流程1
+                    if((StringUtils.isNotEmpty(newUpdateReq.getAttrValue2()) && StringUtils.isEmpty(oldUpdateReq.getAttrValue2())) ||
+                            (StringUtils.isNotEmpty(oldUpdateReq.getAttrValue2()) && StringUtils.isEmpty(newUpdateReq.getAttrValue2())) ||
+                            (StringUtils.isNotEmpty(newUpdateReq.getAttrValue2()) && StringUtils.isNotEmpty(oldUpdateReq.getAttrValue2())) &&
+                                    !newUpdateReq.getAttrValue2().equals(oldUpdateReq.getAttrValue2())){
+                        if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
+                            updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }else{
+                            updateProductFlow = ProductConst.BRANDEDIT_PRODUCT_FLOW_PROCESS_ID;
+                        }
+                    }
+                    //流程1
+                    if((StringUtils.isNotEmpty(newUpdateReq.getAttrValue3()) && StringUtils.isEmpty(oldUpdateReq.getAttrValue3())) ||
+                            (StringUtils.isNotEmpty(oldUpdateReq.getAttrValue3()) && StringUtils.isEmpty(newUpdateReq.getAttrValue3())) ||
+                            (StringUtils.isNotEmpty(newUpdateReq.getAttrValue3()) && StringUtils.isNotEmpty(oldUpdateReq.getAttrValue3())) &&
+                                    !newUpdateReq.getAttrValue3().equals(oldUpdateReq.getAttrValue3())){
                         if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                             updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
                         }else{
@@ -767,6 +793,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         Page<ProductDTO> page = resultVO.getResultData();
         List<ProductDTO> list = page.getRecords();
         productDetail.setProductAddReqs(list);
+        if (!CollectionUtils.isEmpty(list)) {
+            for(ProductDTO productDTO : list){
+                productDTO.setIsSale(this.isSaleByProductId(productDTO.getProductId()));
+            }
+        }
 
         List<String> listTagRelId = new ArrayList<>();
         if (!CollectionUtils.isEmpty(list)) {
@@ -858,14 +889,14 @@ public class ProductBaseServiceImpl implements ProductBaseService {
 
     @Override
     public Boolean isSaleByProductId(String productId) {
-        boolean flag = true;
+        boolean flag = false;
         ResultVO<List<GoodsSaleNumDTO>> resultVO = goodsSaleNumService.getProductSaleOrder(GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER_WHOLE);
         if(resultVO.isSuccess() && null!=resultVO.getResultData()){
             List<GoodsSaleNumDTO> goodsSaleNumDTOs = resultVO.getResultData();
             if(!CollectionUtils.isEmpty(goodsSaleNumDTOs)){
                 for(GoodsSaleNumDTO goodsSaleNumDTO: goodsSaleNumDTOs){
                     if(productId.equals(goodsSaleNumDTO.getProductId())) {
-                        return false;
+                        return true;
                     }
                 }
             }
@@ -876,7 +907,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             if(!CollectionUtils.isEmpty(goodsSaleNumDTOs)){
                 for(GoodsSaleNumDTO goodsSaleNumDTO: goodsSaleNumDTOs){
                     if(productId.equals(goodsSaleNumDTO.getProductId())) {
-                        return false;
+                        return true;
                     }
                 }
             }

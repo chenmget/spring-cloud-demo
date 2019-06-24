@@ -18,8 +18,6 @@ public class MerchantColumn {
      */
     public static List<ExcelTitleName> merchantColumn() {
         List<ExcelTitleName> orderMap = new ArrayList<>();
-        orderMap.add(new ExcelTitleName("lanName", "本地网"));
-        orderMap.add(new ExcelTitleName("cityName", "市县"));
         orderMap.add(new ExcelTitleName("loginName", "系统账号"));
         orderMap.add(new ExcelTitleName("merchantId", "商家ID"));
         orderMap.add(new ExcelTitleName("merchantCode", "商家编码"));
@@ -34,6 +32,8 @@ public class MerchantColumn {
         orderMap.add(new ExcelTitleName("customerCode", "客户编码"));
         orderMap.add(new ExcelTitleName("lanId", "地市"));
         orderMap.add(new ExcelTitleName("city", "市县"));
+        orderMap.add(new ExcelTitleName("lanName", "本地网"));
+        orderMap.add(new ExcelTitleName("cityName", "市县"));
         orderMap.add(new ExcelTitleName("subBureau", "分局/县部门"));
         orderMap.add(new ExcelTitleName("marketCenter", "营销中心/支局"));
         orderMap.add(new ExcelTitleName("shopCode", "销售点编码"));

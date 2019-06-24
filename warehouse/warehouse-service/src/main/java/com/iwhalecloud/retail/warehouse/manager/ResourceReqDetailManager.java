@@ -114,4 +114,13 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
         updateWrapper.eq(ResourceReqDetail.FieldNames.createDate.getTableFieldName(), req.getCreateDate());
         return resourceReqDetailMapper.update(detail,updateWrapper)>0;
     }
+
+    /**
+     * 获取用户处理的串码申请
+     * @param req
+     * @return
+     */
+    public List<ResourceReqDetailPageDTO> listDistinctResourceRequestByUser(ResourceReqDetailQueryReq req) {
+        return resourceReqDetailMapper.listDistinctResourceRequestByUser(req);
+    }
 }

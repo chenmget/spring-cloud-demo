@@ -45,5 +45,10 @@ public class ResourceRequestDetailOpenServiceImpl implements ResourceReqDetailSe
         return resourceReqDetailService.listMerchantResourceRequestDetailPage(req);
     }
 
+    @Override
+    public List<String> getUserHandleFormId(String userId) {
+        return resourceReqDetailService.getUserHandleFormId(userId);
+    }
+
 
 }

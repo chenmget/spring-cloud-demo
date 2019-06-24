@@ -208,6 +208,8 @@ public class ResourceReqDetail implements Serializable {
 		/**SN码. */
 		snCode("snCode","sn_code"),
 
+		mktResInstNbr("mktResInstNbr","MKT_RES_INST_NBR"),
+
 		/** 网络终端（包含光猫、机顶盒、融合终端）记录MAC码. */
 		macCode("macCode","mac_code");
 

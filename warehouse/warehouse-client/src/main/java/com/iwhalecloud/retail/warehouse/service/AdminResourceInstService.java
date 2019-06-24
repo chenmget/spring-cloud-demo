@@ -59,7 +59,7 @@ public interface AdminResourceInstService {
      * @param
      * @return
      */
-    ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String createStaff);
+    ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String userId);
 
     /**
      * 提交导入的串码审核

@@ -190,7 +190,7 @@ public class ValidAndAddRunableTask {
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
                     if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
-                        inst.setResultDesc("库中已存在");
+                        inst.setResultDesc("串码库中已存在");
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{
                         inst.setResult(ResourceConst.CONSTANT_NO);
@@ -209,7 +209,7 @@ public class ValidAndAddRunableTask {
                     inst.setResult(ResourceConst.CONSTANT_YES);
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
-                    inst.setResultDesc("申请单中已存在");
+                    inst.setResultDesc("串码申请单中已存在");
                     inst.setCreateStaff(req.getCreateStaff());
                     instList.add(inst);
                 }
@@ -219,9 +219,10 @@ public class ValidAndAddRunableTask {
                 for (String mktResInstNbr : newList) {
                     ResouceUploadTemp inst = new ResouceUploadTemp();
                     inst.setResult(ResourceConst.CONSTANT_NO);
-                    if (!checkPatten(mktResInstNbr)) {
-                        inst.setResult(ResourceConst.CONSTANT_YES);
-                        inst.setResultDesc("串码格式不正确");
+                    ResouceUploadTemp checkInst = checkPatten(mktResInstNbr);
+                    if (null != checkInst) {
+                        instList.add(checkInst);
+                        continue;
                     }
                     inst.setMktResUploadBatch(batchId);
                     inst.setMktResInstNbr(mktResInstNbr);
@@ -250,34 +251,59 @@ public class ValidAndAddRunableTask {
          * 校验SN、CT、MAC码的格式
          * @return
          */
-        private Boolean checkPatten(String mktResInstNbr){
+        private ResouceUploadTemp checkPatten(String mktResInstNbr){
+            Date now = new Date();
+            ResouceUploadTemp inst = new ResouceUploadTemp();
+            inst.setResult(ResourceConst.CONSTANT_NO);
+            inst.setMktResUploadBatch(batchId);
+            inst.setMktResInstNbr(mktResInstNbr);
+            if (null != req.getCtCodeMap()) {
+                inst.setCtCode(req.getCtCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getSnCodeMap()) {
+                inst.setSnCode(req.getSnCodeMap().get(mktResInstNbr));
+            }
+            if (null != req.getMacCodeMap()) {
+                inst.setMacCode(req.getMacCodeMap().get(mktResInstNbr));
+            }
+            inst.setUploadDate(now);
+            inst.setCreateDate(now);
+            inst.setCreateStaff(req.getCreateStaff());
+
             if (TypeConst.TYPE_DETAIL.ROUTER.getCode().equals(req.getDetailCode()) || TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode().equals(req.getDetailCode())) {
                 Pattern pattern12= Pattern.compile(reg12);
                 Boolean matchs = pattern12.matcher(mktResInstNbr).matches();
                 if (!matchs) {
-                    return false;
+                    inst.setResult(ResourceConst.CONSTANT_YES);
+                    inst.setResultDesc("路由器及泛智能终端的终端串码只能包含大写字母、数字和-，且必须为12位");
                 }
             }else if (TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getCode().equals(req.getDetailCode())) {
                 Pattern pattern24= Pattern.compile(reg24);
                 Boolean matchs = pattern24.matcher(mktResInstNbr).matches();
                 if (!matchs) {
-                    return false;
+                    inst.setResult(ResourceConst.CONSTANT_YES);
+                    inst.setResultDesc("光猫的终端串码只能包含大写字母、数字和-，且必须为24位");
                 }
             }else if (TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
                 Pattern pattern39= Pattern.compile(reg39);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches() || pattern39.matcher(mktResInstNbr).matches();
                 if (!matchs) {
-                    return false;
+                    inst.setResult(ResourceConst.CONSTANT_YES);
+                    inst.setResultDesc("机顶盒的终端串码只能包含大写字母、数字和-，且必须为32位或39位");
                 }
             }else if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches();
                 if (!matchs) {
-                    return false;
+                    inst.setResult(ResourceConst.CONSTANT_YES);
+                    inst.setResultDesc("融合终端的终端串码只能包含大写字母、数字和-，且必须为32位");
                 }
             }
-            return true;
+            if (ResourceConst.CONSTANT_YES.equals(inst.getResult())) {
+                return inst;
+            }
+            return null;
         }
 
         /**
@@ -296,6 +322,10 @@ public class ValidAndAddRunableTask {
                 return instList;
             }
 
+            List<String> mktResInstNbrList = getReq.getMktResInstNbrList();
+            List<String> mktResInstMacList = getReq.getMacCodeList();
+            List<String> mktResInstSnList = getReq.getSnCodeList();
+            List<String> mktResInstCTList = getReq.getCtCodeList();
             ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
             trackGetReq.setSnCodeList(getReq.getSnCodeList());
             ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
@@ -304,7 +334,6 @@ public class ValidAndAddRunableTask {
                 List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                 // 删除的串码可再次导入
                 String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
-                List<String> mktResInstNbrList = instTrackDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
                 Date now = new Date();
                 for (ResouceInstTrackDTO dto : instTrackDTOList) {
                     ResouceUploadTemp inst = new ResouceUploadTemp();
@@ -317,14 +346,15 @@ public class ValidAndAddRunableTask {
                     }else{
                         inst.setResult(ResourceConst.CONSTANT_NO);
                     }
-                    inst.setCtCode(dto.getCtCode());
                     inst.setSnCode(dto.getSnCode());
-                    inst.setMacCode(dto.getMacCode());
-                    inst.setMktResInstNbr(dto.getMktResInstNbr());
+                    Integer index = mktResInstSnList.indexOf(dto.getSnCode());
+                    inst.setCtCode(mktResInstCTList.get(index));
+                    inst.setMacCode(mktResInstMacList.get(index));
+                    inst.setMktResInstNbr(mktResInstNbrList.get(index));
                     inst.setCreateStaff(req.getCreateStaff());
                     instList.add(inst);
+                    newList.remove(mktResInstNbrList.get(index));
                 }
-                newList.removeAll(mktResInstNbrList);
             }
             return instList;
         }
@@ -345,6 +375,10 @@ public class ValidAndAddRunableTask {
                 return instList;
             }
 
+            List<String> mktResInstNbrList = getReq.getMktResInstNbrList();
+            List<String> mktResInstMacList = getReq.getMacCodeList();
+            List<String> mktResInstSnList = getReq.getSnCodeList();
+            List<String> mktResInstCTList = getReq.getCtCodeList();
             ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
             trackGetReq.setMacCodeList(getReq.getMacCodeList());
             ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
@@ -353,7 +387,6 @@ public class ValidAndAddRunableTask {
                 List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                 // 删除的串码可再次导入
                 String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
-                List<String> mktResInstNbrList = instTrackDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
                 Date now = new Date();
                 for (ResouceInstTrackDTO dto : instTrackDTOList) {
                     ResouceUploadTemp inst = new ResouceUploadTemp();
@@ -366,14 +399,15 @@ public class ValidAndAddRunableTask {
                     }else{
                         inst.setResult(ResourceConst.CONSTANT_NO);
                     }
-                    inst.setCtCode(dto.getCtCode());
-                    inst.setSnCode(dto.getSnCode());
                     inst.setMacCode(dto.getMacCode());
-                    inst.setMktResInstNbr(dto.getMktResInstNbr());
+                    Integer index = mktResInstMacList.indexOf(dto.getMacCode());
+                    inst.setSnCode(mktResInstSnList.get(index));
+                    inst.setCtCode(mktResInstCTList.get(index));
+                    inst.setMktResInstNbr(mktResInstNbrList.get(index));
                     inst.setCreateStaff(req.getCreateStaff());
                     instList.add(inst);
+                    newList.remove(mktResInstNbrList.get(index));
                 }
-                newList.removeAll(mktResInstNbrList);
             }
             return instList;
         }
@@ -392,15 +426,20 @@ public class ValidAndAddRunableTask {
                 return instList;
             }
 
+            List<String> mktResInstNbrList = getReq.getMktResInstNbrList();
+            List<String> mktResInstMacList = getReq.getMacCodeList();
+            List<String> mktResInstSnList = getReq.getSnCodeList();
+            List<String> mktResInstCTList = getReq.getCtCodeList();
             ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
-            trackGetReq.setCtCodeList(getReq.getCtCodeList());
+            List<String> notNullCtCodeList = getReq.getCtCodeList().stream().filter(t -> StringUtils.isNotBlank(t)).collect(Collectors.toList());
+            CopyOnWriteArrayList<String> ctCodeList = new CopyOnWriteArrayList<String>(notNullCtCodeList);
+            trackGetReq.setCtCodeList(ctCodeList);
             ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
             log.info("ValidAndAddRunableTask.validCtCode resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(instsTrackvO));
             if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                 List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                 // 删除的串码可再次导入
                 String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
-                List<String> mktResInstNbrList = instTrackDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
                 Date now = new Date();
                 for (ResouceInstTrackDTO dto : instTrackDTOList) {
                     ResouceUploadTemp inst = new ResouceUploadTemp();
@@ -408,19 +447,20 @@ public class ValidAndAddRunableTask {
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
                     if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
-                        inst.setResultDesc("CT码库中已存在");
+                        inst.setResultDesc("CTEI码库中已存在");
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{
                         inst.setResult(ResourceConst.CONSTANT_NO);
                     }
                     inst.setCtCode(dto.getCtCode());
-                    inst.setSnCode(dto.getSnCode());
-                    inst.setMacCode(dto.getMacCode());
-                    inst.setMktResInstNbr(dto.getMktResInstNbr());
+                    Integer index = mktResInstCTList.indexOf(dto.getCtCode());
+                    inst.setSnCode(mktResInstSnList.get(index));
+                    inst.setMacCode(mktResInstMacList.get(index));
+                    inst.setMktResInstNbr(mktResInstNbrList.get(index));
                     inst.setCreateStaff(req.getCreateStaff());
                     instList.add(inst);
+                    newList.remove(mktResInstNbrList.get(index));
                 }
-                newList.removeAll(mktResInstNbrList);
             }
             return instList;
         }

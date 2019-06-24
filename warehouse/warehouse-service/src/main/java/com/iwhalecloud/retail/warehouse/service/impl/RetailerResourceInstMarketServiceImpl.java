@@ -696,52 +696,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO pickResourceInst(ResourceInstPickupReq req) {
-    	
-    	String isGovOrJC = req.getIsGovOrJC();
-        List<String> mktResInstNbrsList = req.getMktResInstNbrs();
-        String mktResStoreId = req.getMktResStoreId();//仓库ID
         List<String> bfhNbrList = new ArrayList<String>();
-        List<String> fhNbrList = new ArrayList<String>();
-        log.info("**********************RetailerResourceInstMarketServiceImpl.pickResourceInst resourceInstService.selectMktResInstType   start  判断串码是政企串码还是集采串码？ -----------------------------");
-        if("1".equals(isGovOrJC)) {//政企为1，集采为2
-        	for(int i=0;i<mktResInstNbrsList.size();i++) {
-        		String mktResInstNbr = mktResInstNbrsList.get(i);
-        		ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
-        		resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbr);
-        		resourceStoreIdResnbr.setMktResStoreId(mktResStoreId);
-        		String mktResInstType = resourceInstService.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
-        		if("4".equals(mktResInstType)) {
-        			fhNbrList.add(mktResInstNbr);
-        		}else {
-        			bfhNbrList.add(mktResInstNbr);
-        		}
-        	}
-        	if(fhNbrList == null || fhNbrList.size()<1) {
-            	return ResultVO.error("这些串码都是非政企的");
-            }
-        }else if("2".equals(isGovOrJC)){//政企为1，集采为2
-        	for(int i=0;i<mktResInstNbrsList.size();i++) {
-        		String mktResInstNbr = mktResInstNbrsList.get(i);
-        		ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
-        		resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbr);
-        		resourceStoreIdResnbr.setMktResStoreId(mktResStoreId);
-        		String mktResInstType = resourceInstService.selectMktResInstType(resourceStoreIdResnbr);//串码类型01 交易 03 集采 03 备机 04 省内代收（政企） 05 测试机
-        		if("3".equals(mktResInstType)) {
-        			fhNbrList.add(mktResInstNbr);
-        		}else {
-        			bfhNbrList.add(mktResInstNbr);
-        		}
-        	}
-        	if(fhNbrList == null || fhNbrList.size()<1) {
-            	return ResultVO.error("这些串码都是非集采的");
-            }
-        }
-        req.setMktResInstNbrs(fhNbrList);
-        log.info("**********************RetailerResourceInstMarketServiceImpl.pickResourceInst resourceInstService.selectMktResInstType   end  判断串码是政企串码还是集采串码？ -----------------------------");
-
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         // 先检查零售商所属十四个地市中的一个是否存在
-
         String lanId = req.getLanId();
         StorePageReq storeGetStoreIdReq = new StorePageReq();
         storeGetStoreIdReq.setStoreGrade(ResourceConst.STORE_GRADE.CITY.getCode());
@@ -749,7 +706,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         storeGetStoreIdReq.setStoreType(ResourceConst.STORE_TYPE.CITY.getCode());
         storeGetStoreIdReq.setLanIdList(Lists.newArrayList(lanId));
         Page<ResouceStoreDTO> storeDTOPage = resouceStoreManager.pageStore(storeGetStoreIdReq);
-        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resouceStoreManager.pageStore merchantStoreId={}", JSON.toJSONString(storeGetStoreIdReq), JSON.toJSONString(storeDTOPage.getRecords()));
+        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resouceStoreManager.pageStore merchantStoreId={}, resp={}", JSON.toJSONString(storeGetStoreIdReq), JSON.toJSONString(storeDTOPage.getRecords()));
         if (null == storeDTOPage || CollectionUtils.isEmpty(storeDTOPage.getRecords())) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
@@ -759,18 +716,27 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         resourceInstListReq.setMktResInstNbrs(req.getMktResInstNbrs());
         resourceInstListReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         ResultVO<List<ResourceInstListResp>> merchantNbrInstVO = resourceInstService.listResourceInst(resourceInstListReq);
-        
-        
-        
-        
-        
-        
-        
-        
+        log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resourceInstService.listResourceInst resourceInstListReq={}, resp={}", JSON.toJSONString(resourceInstListReq), JSON.toJSONString(merchantNbrInstVO));
         if (!merchantNbrInstVO.isSuccess() || CollectionUtils.isEmpty(merchantNbrInstVO.getResultData())) {
             resourceInstAddResp.setPutInFailNbrs(req.getMktResInstNbrs());
             return ResultVO.success("源仓库中不存在", resourceInstAddResp);
         }
+        List<ResourceInstListResp> matchNbrInstList = new ArrayList<ResourceInstListResp>();
+        List<String> notMatchNbrList = new ArrayList<String>();
+        //政企为1，集采为2
+        String isGovOrJC = req.getIsGovOrJC();
+        for (ResourceInstListResp resp : merchantNbrInstVO.getResultData()) {
+            String mktResInstType = resp.getMktResInstType();
+            //政企只能领取省内代收的串码类型，集采只能领取备机的串码类型
+            Boolean match = (ResourceConst.IS_GOVORJC.IS_GOVORJC_1.equals(isGovOrJC) && ResourceConst.MKTResInstType.COLLECTION_BY_PROVINCE.getCode().equals(mktResInstType)) ||
+                            (ResourceConst.IS_GOVORJC.IS_GOVORJC_2.equals(isGovOrJC) && ResourceConst.MKTResInstType.STANDBYMACHINE.getCode().equals(mktResInstType));
+            if (match) {
+                matchNbrInstList.add(resp);
+            } else {
+                notMatchNbrList.add(resp.getMktResInstNbr());
+            }
+        }
+        resourceInstAddResp.setPutInFailNbrs(notMatchNbrList);
         StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
         storePageReq.setStoreSubType(ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
         storePageReq.setMerchantId(req.getMerchantId());
@@ -780,10 +746,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             return ResultVO.error(constant.getNoStoreMsg());
         }
 
-        List<ResourceInstListResp> merchantNbrInst = merchantNbrInstVO.getResultData();
-        Map<String, List<ResourceInstListResp>> map = merchantNbrInst.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
+        Map<String, List<ResourceInstListResp>> map = matchNbrInstList.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
         List<String> mktResInstNbrList = Lists.newArrayList();
-        Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(merchantNbrInst, CLASS_TYPE_2);
+        Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(matchNbrInstList, CLASS_TYPE_2);
         for (Map.Entry<String, List<String>> entry : mktResIdAndNbrMap.entrySet()) {
             ProductGetByIdReq productReq = new ProductGetByIdReq();
             productReq.setProductId(entry.getKey());

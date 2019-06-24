@@ -171,12 +171,19 @@ public class ValidAndAddRunableTask {
         public Boolean call() throws Exception {
             Date now = new Date();
             List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>();
-            instList.addAll(this.validSnCode());
-            instList.addAll(this.validMacCode());
-            instList.addAll(this.validCtCode());
+            List<ResouceUploadTemp> snUploadTemp = this.validSnCode();
+            log.info("ValidAndAddRunableTask.exceutorValid  newList={}, snUploadTemp={}", JSON.toJSONString(newList), JSON.toJSONString(snUploadTemp));
+            instList.addAll(snUploadTemp);
+            List<ResouceUploadTemp> macUploadTemp = this.validMacCode();
+            log.info("ValidAndAddRunableTask.exceutorValid  newList={}, macUploadTemp={}", JSON.toJSONString(newList), JSON.toJSONString(macUploadTemp));
+            instList.addAll(macUploadTemp);
+            List<ResouceUploadTemp> ctUploadTemp = this.validCtCode();
+            instList.addAll(ctUploadTemp);
+            log.info("ValidAndAddRunableTask.exceutorValid  newList={}, ctUploadTemp={}", JSON.toJSONString(newList), JSON.toJSONString(ctUploadTemp));
 
             ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
             trackGetReq.setMktResInstNbrList(newList);
+            trackGetReq.setTypeId(req.getTypeId());
             ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
             log.info("ValidAndAddRunableTask.exceutorValid resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(instsTrackvO));
             List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);

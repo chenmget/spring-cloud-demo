@@ -62,7 +62,7 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 			
 			if("1".equals(paymentType)){
 				dto.setPaymentType("线上支付");
-			}else if ("2".equals(paymentType)) {
+			}else if ("3".equals(paymentType)) {
 				dto.setPaymentType("线下支付");
 			}else {
 				dto.setPaymentType("其他");

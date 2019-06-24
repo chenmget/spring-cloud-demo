@@ -1362,7 +1362,9 @@ public class GoodsServiceImpl implements GoodsService {
             resp.setSupplierName(merchantDTO.getMerchantName());
             resp.setMerchantType(merchantDTO.getMerchantType());
             // 查询商品归属商家所在地市
-            resp.setCityName(merchantDTO.getCityName());
+//            resp.setCityName(merchantDTO.getCityName());
+            // zhongwenlong 2019.06.24 改为本地网的名称
+            resp.setCityName(merchantDTO.getLanName());
         }
         //查询类别名称
         Cat cat = catManager.queryProdCat(goods.getGoodsCatId());

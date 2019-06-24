@@ -317,6 +317,8 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
      * @param req
      */
     private void packageResourceReqDetailQueryReq(ResourceReqDetailQueryReq req) {
+        //申请单类型为串码入库
+        req.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
         //如果商家名不为空，取回商家id
         if(req.getMerchantName()!=null){
             MerchantListReq merchantGetReq=new MerchantListReq();

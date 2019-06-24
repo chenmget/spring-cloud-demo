@@ -211,6 +211,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             queryReq.setPageNo(req.getPageNo());
             queryReq.setPageSize(req.getPageSize());
             queryReq.setMktResReqDetailIds(detailIds);
+            queryReq.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
             Page<ResourceReqDetailPageDTO> detailPage = resourceReqDetailManager.listResourceRequestPage(queryReq);
             Page<ResourceReqDetailPageResp> respPage = new Page<ResourceReqDetailPageResp>();
             BeanUtils.copyProperties(page, respPage);
@@ -270,6 +271,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         resourceReqDetailQueryReq.setPageNo(1);
         resourceReqDetailQueryReq.setPageSize(mktResInstNbrs.size());
         resourceReqDetailQueryReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());//状态为待审核
+        resourceReqDetailQueryReq.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
         Page<ResourceReqDetailPageDTO> respPage = resourceReqDetailManager.listResourceRequestPage(resourceReqDetailQueryReq);
         List<ResourceReqDetailPageDTO> resDetailList=respPage.getRecords();
         if(CollectionUtils.isEmpty(resDetailList)){

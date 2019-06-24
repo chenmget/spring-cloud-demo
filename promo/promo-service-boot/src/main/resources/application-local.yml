@@ -11,7 +11,7 @@ spring.dubbo:
       address: zookeeper://localhost:2181
     protocol:
       name: dubbo
-      port: 20886
+      port: 20386
     scan: com.iwhalecloud.retail
   
 logging.level.com.iwhalecloud.retail.promo.mapper: debug

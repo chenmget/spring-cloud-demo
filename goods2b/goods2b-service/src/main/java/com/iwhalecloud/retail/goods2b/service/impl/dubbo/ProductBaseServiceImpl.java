@@ -450,12 +450,15 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             String isDeleted = productUpdateReq.getIsDeleted();
             String state = productUpdateReq.getStatus();
             newState = state;
-            String sn = productUpdateReq.getSn();
-            String purchaseString = sn.substring(sn.length() - 3);
-            if ("100".equals(purchaseString)){
-                productUpdateReq.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
-            }else if("300".equals(purchaseString)){
-                productUpdateReq.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
+            if(StringUtils.isEmpty(req.getIsFixedLine()) || (StringUtils.isNotEmpty(req.getIsFixedLine()) &&
+                    !"1".equals(req.getIsFixedLine()))){
+                String sn = productUpdateReq.getSn();
+                String purchaseString = sn.substring(sn.length() - 3);
+                if ("100".equals(purchaseString)){
+                    productUpdateReq.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
+                }else if("300".equals(purchaseString)){
+                    productUpdateReq.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
+                }
             }
             if (ProductConst.IsDelete.YES.getCode().equals(isDeleted) && StringUtils.isNotBlank(productId)) {
                 PrdoProductDeleteReq prdoProductDeleteReq = new PrdoProductDeleteReq();

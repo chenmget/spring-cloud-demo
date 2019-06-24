@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
 import com.iwhalecloud.retail.promo.entity.*;
 import com.iwhalecloud.retail.promo.mapper.ActivityChangeMapper;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.Date;
@@ -184,13 +185,18 @@ public class ActivityChangeManager{
             //活动对象信息（买家范围）
             if(ActivityParticipant.TNAME.equals(detail.getTableName())){
                 if(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode().equals(marketingActivity.getActivityParticipantType())){
-                    activityParticipantManager.deleteActivityParticipantBatch(marketingActivity.getId());
-                }else {
-                    ActivityParticipant activityParticipant = new ActivityParticipant();
-                    activityParticipant.setId(detail.getKeyValue());
-                    activityParticipant.setStatus(PromoConst.Status.Audited.getCode());
-                    activityParticipantList.add(activityParticipant);
+                    List<ActivityParticipantDTO> activityParticipantDTOS = activityParticipantManager.queryActivityParticipantByMktIdAndStatus(marketingActivity.getId(), PromoConst.Status.Audited.getCode());
+                    for (ActivityParticipantDTO activityParticipantDTO : activityParticipantDTOS) {
+                        ActivityParticipant activityParticipant = new ActivityParticipant();
+                        activityParticipant.setId(activityParticipantDTO.getId());
+                        activityParticipant.setStatus(PromoConst.IsDelete.IS_DELETE_CD_1.getCode());
+                        activityParticipantList.add(activityParticipant);
+                    }
                 }
+                ActivityParticipant activityParticipant = new ActivityParticipant();
+                activityParticipant.setId(detail.getKeyValue());
+                activityParticipant.setStatus(PromoConst.Status.Audited.getCode());
+                activityParticipantList.add(activityParticipant);
                 continue;
             }
         }

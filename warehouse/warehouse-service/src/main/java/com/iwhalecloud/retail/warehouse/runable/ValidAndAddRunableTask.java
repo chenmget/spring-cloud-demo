@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.goods2b.common.TypeConst;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackGetReq;
@@ -54,6 +55,9 @@ public class ValidAndAddRunableTask {
     String reg32 = "([A-Z]|[0-9]|[-]){32}$";
     String reg39 = "([A-Z]|[0-9]|[-]){39}$";
 
+    @Autowired
+    private Constant constant;
+
     /**
      * 串码校验多线程处理
      * @param req
@@ -90,7 +94,7 @@ public class ValidAndAddRunableTask {
                     CopyOnWriteArrayList<String> subMacCodeList = new CopyOnWriteArrayList(macCodeList.subList(perNum * i, macCodeMaxNum));
                     getReq.setMacCodeList(subMacCodeList);
                 }
-                log.info("ValidAndAddRunableTask.exceutorValid newList={}, batchId={}", JSON.toJSONString(newList), batchId);
+                log.info("ValidAndAddRunableTask.exceutorValid, getReq={},newList={}, batchId={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), batchId);
                 Callable<Boolean> callable = new ValidNbr(req, getReq, newList, batchId);
                 tasks.put(callable);
             }
@@ -99,7 +103,7 @@ public class ValidAndAddRunableTask {
             executorService.shutdown();
             return batchId;
         } catch (Exception e) {
-            log.error("串码查询异常", e);
+            log.error("exceutorValid error", e);
         }
         return batchId;
     }
@@ -190,10 +194,19 @@ public class ValidAndAddRunableTask {
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
                     if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
-                        inst.setResultDesc("串码库中已存在");
+                        inst.setResultDesc(constant.getZopNbrExists());
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{
                         inst.setResult(ResourceConst.CONSTANT_NO);
+                        if (null != req.getCtCodeMap()) {
+                            inst.setCtCode(req.getCtCodeMap().get(dto.getMktResInstNbr()));
+                        }
+                        if (null != req.getSnCodeMap()) {
+                            inst.setSnCode(req.getSnCodeMap().get(dto.getMktResInstNbr()));
+                        }
+                        if (null != req.getMacCodeMap()) {
+                            inst.setMacCode(req.getMacCodeMap().get(dto.getMktResInstNbr()));
+                        }
                     }
                     inst.setMktResInstNbr(dto.getMktResInstNbr());
                     inst.setCreateStaff(req.getCreateStaff());
@@ -209,7 +222,7 @@ public class ValidAndAddRunableTask {
                     inst.setResult(ResourceConst.CONSTANT_YES);
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
-                    inst.setResultDesc("串码申请单中已存在");
+                    inst.setResultDesc(constant.getReqDetailNbrExists());
                     inst.setCreateStaff(req.getCreateStaff());
                     instList.add(inst);
                 }
@@ -275,14 +288,14 @@ public class ValidAndAddRunableTask {
                 Boolean matchs = pattern12.matcher(mktResInstNbr).matches();
                 if (!matchs) {
                     inst.setResult(ResourceConst.CONSTANT_YES);
-                    inst.setResultDesc("路由器及泛智能终端的终端串码只能包含大写字母、数字和-，且必须为12位");
+                    inst.setResultDesc(constant.getVaileNbr12());
                 }
             }else if (TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getCode().equals(req.getDetailCode())) {
                 Pattern pattern24= Pattern.compile(reg24);
                 Boolean matchs = pattern24.matcher(mktResInstNbr).matches();
                 if (!matchs) {
                     inst.setResult(ResourceConst.CONSTANT_YES);
-                    inst.setResultDesc("光猫的终端串码只能包含大写字母、数字和-，且必须为24位");
+                    inst.setResultDesc(constant.getVaileNbr24());
                 }
             }else if (TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
@@ -290,14 +303,14 @@ public class ValidAndAddRunableTask {
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches() || pattern39.matcher(mktResInstNbr).matches();
                 if (!matchs) {
                     inst.setResult(ResourceConst.CONSTANT_YES);
-                    inst.setResultDesc("机顶盒的终端串码只能包含大写字母、数字和-，且必须为32位或39位");
+                    inst.setResultDesc(constant.getVaileNbr32Or39());
                 }
             }else if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches();
                 if (!matchs) {
                     inst.setResult(ResourceConst.CONSTANT_YES);
-                    inst.setResultDesc("融合终端的终端串码只能包含大写字母、数字和-，且必须为32位");
+                    inst.setResultDesc(constant.getVaileNbr32());
                 }
             }
             if (ResourceConst.CONSTANT_YES.equals(inst.getResult())) {
@@ -313,7 +326,7 @@ public class ValidAndAddRunableTask {
         private List<ResouceUploadTemp> validSnCode(){
             List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>();
             Boolean needValid = TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(req.getDetailCode()) || TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode()) ||
-                    TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getCode().equals(req.getDetailCode()) || TypeConst.TYPE_DETAIL.ROUTER.getCode().equals(req.getDetailCode()) &&
+                    TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getCode().equals(req.getDetailCode()) || TypeConst.TYPE_DETAIL.ROUTER.getCode().equals(req.getDetailCode()) ||
                     TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode().equals(req.getDetailCode());
             if (!needValid) {
                 return instList;
@@ -341,7 +354,7 @@ public class ValidAndAddRunableTask {
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
                     if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
-                        inst.setResultDesc("SN码库中已存在");
+                        inst.setResultDesc(constant.getSnExists());
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{
                         inst.setResult(ResourceConst.CONSTANT_NO);
@@ -394,7 +407,7 @@ public class ValidAndAddRunableTask {
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
                     if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
-                        inst.setResultDesc("MAC码库中已存在");
+                        inst.setResultDesc(constant.getMacExists());
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{
                         inst.setResult(ResourceConst.CONSTANT_NO);
@@ -447,7 +460,7 @@ public class ValidAndAddRunableTask {
                     inst.setUploadDate(now);
                     inst.setCreateDate(now);
                     if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
-                        inst.setResultDesc("CTEI码库中已存在");
+                        inst.setResultDesc(constant.getCtExists());
                         inst.setResult(ResourceConst.CONSTANT_YES);
                     }else{
                         inst.setResult(ResourceConst.CONSTANT_NO);

@@ -5,7 +5,7 @@
     <select id="ListReportOrder" parameterType="com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportOrderResp">
             SELECT 
-				 b.product_name AS productName,
+				 d.product_name AS productName,
 				 d.UNIT_TYPE AS unitType,
 				 e.type_name AS typeName,
 				 b.brand_name AS brandName,

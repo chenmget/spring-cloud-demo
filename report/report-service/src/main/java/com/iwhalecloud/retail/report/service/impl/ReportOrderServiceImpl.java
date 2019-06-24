@@ -35,6 +35,12 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	String pay_time = dto.getPayTime();
 	    	String receive_time = dto.getReceiveTime();
 	    	String paymentType = dto.getPaymentType();
+	    	String sourceFrom = dto.getSourceFrom();
+	    	if("YHJ".equals(sourceFrom)) {
+	    		dto.setSourceFrom("PC");
+	    	} else {
+	    		dto.setSourceFrom("其他");
+	    	}
 	    	dto.setPrice(dto.getPrice()/100);
 	    	dto.setTotalMoney(dto.getTotalMoney()/100);
 	    	if(create_time != null && create_time != "" ){

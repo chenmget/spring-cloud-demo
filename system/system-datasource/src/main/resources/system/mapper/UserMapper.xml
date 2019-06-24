@@ -27,6 +27,7 @@
     ,t.UPDATE_DATE
     ,t.SYS_POST_ID
     ,t.SYS_POST_NAME
+    ,CHANGE_PWD_COUNT
 </sql>
 
     <select id="getUserDetail" parameterType="String"
@@ -127,5 +128,10 @@
             </if>
         </where>
         order by a.CREATE_DATE desc
+    </select>
+    
+    <select id="getRegionNameByRegionId" parameterType="java.lang.String"
+          resultType="java.lang.String">
+    	select region_name from sys_common_region where region_id = #{regionId}
     </select>
 </mapper>

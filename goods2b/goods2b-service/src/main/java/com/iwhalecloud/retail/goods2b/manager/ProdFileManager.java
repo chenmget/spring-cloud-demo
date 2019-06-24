@@ -14,8 +14,6 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -32,7 +30,6 @@ public class ProdFileManager {
 
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
-
 
     /**
      * 添加商品图片
@@ -84,15 +81,56 @@ public class ProdFileManager {
      * @param goodsId 商品ID
      * @return 附件集合
      */
-    @Cacheable(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId")
+//    @Cacheable(value = GoodsConst.CACHE_NAME_PROD_FILE, key = "#goodsId")
+//    public List<ProdFileDTO> queryGoodsImage(String goodsId) {
+//        QueryWrapper wrapper = new QueryWrapper<>();
+//        wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.GOODS_TARGET.getType());
+//        wrapper.eq(ProdFile.FieldNames.targetId.getTableFieldName(),goodsId);
+//        wrapper.ne(ProdFile.FieldNames.subType.getTableFieldName(), "8");
+//        wrapper.ne(ProdFile.FieldNames.subType.getTableFieldName(),"10");
+//        return this.queryProdFiles(wrapper);
+//    }
+
     public List<ProdFileDTO> queryGoodsImage(String goodsId) {
-        QueryWrapper wrapper = new QueryWrapper<>();
-        wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.GOODS_TARGET.getType());
-        wrapper.eq(ProdFile.FieldNames.targetId.getTableFieldName(),goodsId);
+    	
+    	List<ProdFileDTO> dtos = new ArrayList<ProdFileDTO>();
+        List<ProdFileDTO> prodFiles = prodFileMapper.queryGoodsImage(goodsId);
+        if (prodFiles != null) {
+            for (ProdFileDTO prodFile : prodFiles) {
+                ProdFileDTO dto = new ProdFileDTO();
+                BeanUtils.copyProperties(prodFile,dto);
+                dto.setFileUrl(attacheUrlPrefix(dto.getFileUrl()));
+                dto.setThreeDimensionsUrl(attacheUrlPrefix(dto.getThreeDimensionsUrl()));
+                dto.setThumbnailUrl(attacheUrlPrefix(dto.getThumbnailUrl()));
 
-        return this.queryProdFiles(wrapper);
+                dtos.add(dto);
+            }
+        }
+        return dtos;
     }
-
+  
+    public List<ProdFileDTO> queryGoodsImageHDdetail(String goodsId) {
+    	List<ProdFileDTO> listProds = new ArrayList<ProdFileDTO>();
+    	List<ProdFileDTO> listProd =  prodFileMapper.queryGoodsImageHDdetail(goodsId);
+    	if (listProd != null) {
+            for (ProdFileDTO prodFileDTO : listProd) {
+                ProdFileDTO dto = new ProdFileDTO();
+                BeanUtils.copyProperties(prodFileDTO,dto);
+                if(dto.getFileUrl() != null) {
+                	dto.setFileUrl(fullImageUrl(dto.getFileUrl(), dfsShowIp, true));//lwslws
+                }
+                if(dto.getThreeDimensionsUrl() != null) {
+                	dto.setThreeDimensionsUrl(fullImageUrl(dto.getThreeDimensionsUrl(), dfsShowIp, true));
+                }
+                if(dto.getThumbnailUrl() != null) {
+                	dto.setThumbnailUrl(fullImageUrl(dto.getThumbnailUrl(), dfsShowIp, true));
+                }
+                listProds.add(dto);
+            }
+        }
+    	
+    	return listProds;
+    }
 
     /**
      * 通过商品ID和子类型获取附件集合
@@ -132,7 +170,72 @@ public class ProdFileManager {
         return this.queryProdFiles(wrapper);
     }
 
+    /**
+     * 通过产品ID集合和子类型获取附件集合
+     * @param productIds 商品ID集合
+     * @param subType 子类型
+     * @link TargetType
+     * @return 附件集合
+     */
+    public List<ProdFileDTO> queryProductImage(List<String> productIds,FileConst.SubType subType) {
+        if (productIds==null || productIds.size()<=0) {
+            log.warn("ProdFileManager.queryGoodsImage productIds is null");
+            return null;
+        }
+        QueryWrapper wrapper = new QueryWrapper<>();
+        wrapper.eq(ProdFile.FieldNames.targetType.getTableFieldName(), FileConst.TargetType.PRODUCT_TARGET.getType());
+        wrapper.in(ProdFile.FieldNames.targetId.getTableFieldName(), productIds);
+        wrapper.eq(ProdFile.FieldNames.subType.getTableFieldName(),subType.getType());
 
+        return this.queryProdFiles(wrapper);
+    }
+
+    public ProdFileDTO queryGoodsImageHD(String goodsId){
+    	ProdFileDTO prodFileDTO = prodFileMapper.queryGoodsImageHD(goodsId);
+    	if(prodFileDTO != null) {
+    		if(prodFileDTO.getFileUrl() != null) {
+    			String startUrl = fullImageUrl(prodFileDTO.getFileUrl(), dfsShowIp, true);//lwslws
+        		prodFileDTO.setFileUrl(startUrl);
+    		}
+    	}
+    	return prodFileDTO;
+    }
+    
+    
+    /**
+     * 拼接完整的地址
+     * @param imagePath
+     * @param showUrl
+     * @param flag 为true时，拼接完整地址，为false时，是截取地址
+     * @return
+     */
+    public static String fullImageUrl(String imagePath, String showUrl, boolean flag) {
+        String aftPath = "";
+        if (flag) {
+            String[] pathArr = imagePath.split(",");
+            for (String befPath : pathArr) {
+                if (org.springframework.util.StringUtils.isEmpty(aftPath)) {
+                    if (!befPath.startsWith("http")) {
+                        aftPath += showUrl + befPath;
+                    } else {
+                        aftPath += befPath;
+                    }
+                } else {
+                    if (!befPath.startsWith("http")) {
+                        aftPath += "," + showUrl + befPath;
+                    } else {
+                        aftPath += "," + befPath;
+                    }
+                }
+            }
+        } else {
+            if (!org.springframework.util.StringUtils.isEmpty(imagePath)) {
+                aftPath = imagePath.replaceAll(showUrl, "");
+            }
+        }
+        return aftPath;
+    }
+    
     /**
      * 根据商品ID删除图片
      * @param goodsId 商品ID

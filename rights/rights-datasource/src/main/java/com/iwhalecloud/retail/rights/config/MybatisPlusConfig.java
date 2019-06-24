@@ -1,6 +1,8 @@
 package com.iwhalecloud.retail.rights.config;
 
 import com.baomidou.mybatisplus.core.incrementer.IKeyGenerator;
+import com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator;
+import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.iwhalecloud.retail.rights.incrementer.MysqlKeyGenerator;
 import com.iwhalecloud.retail.rights.incrementer.TelDbKeyGenerator;
 import com.iwhalecloud.retail.rights.interceptor.SourceFromInterceptor;
@@ -8,9 +10,6 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.baomidou.mybatisplus.extension.incrementer.OracleKeyGenerator;
-import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 
 @Configuration
 @MapperScan("com.iwhalecloud.retail.rights.mapper.*")

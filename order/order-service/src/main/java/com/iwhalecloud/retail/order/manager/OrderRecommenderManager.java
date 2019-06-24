@@ -1,11 +1,5 @@
 package com.iwhalecloud.retail.order.manager;
 
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.stereotype.Component;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order.dto.response.OrderRecommenderPageResp;
 import com.iwhalecloud.retail.order.dto.response.OrderRecommenderRankResp;
@@ -13,6 +7,10 @@ import com.iwhalecloud.retail.order.dto.response.OrderRecommenderResp;
 import com.iwhalecloud.retail.order.dto.resquest.ListOrderRecommenderReq;
 import com.iwhalecloud.retail.order.entity.OrderRecommender;
 import com.iwhalecloud.retail.order.mapper.OrderRecommenderMapper;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.List;
 
 
 @Component

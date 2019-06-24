@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.partner.dto;
 
-import com.iwhalecloud.retail.partner.common.DesensitizedUtils;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

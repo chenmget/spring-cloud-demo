@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.report.mapper.SupplierOperatingDayMapper">
+
+<sql id="allFields">
+    t.ITEM_ID 
+    ,t.ITEM_DATE 
+    ,t.SUPPLIER_ID 
+    ,t.SUPPLIER_CODE 
+    ,t.SUPPLIER_NAME 
+    ,t.CITY_ID 
+    ,t.COUNTY_ID 
+    ,t.GOODS_ID 
+    ,t.PRODUCT_BASE_ID 
+    ,t.PRODUCT_BASE_NAME 
+    ,t.PRODUCT_ID 
+    ,t.PRODUCT_NAME 
+    ,t.BRAND_ID 
+    ,t.BRAND_NAME 
+    ,t.PRICE_LEVEL 
+    ,t.SELL_NUM 
+    ,t.SELL_AMOUNT 
+    ,t.PURCHASE_AMOUNT 
+    ,t.PURCHASE_NUM 
+    ,t.MANUAL_NUM 
+    ,t.TRANS_IN_NUM 
+    ,t.TRANS_OUT_NUM 
+    ,t.RETURN_NUM 
+    ,t.STOCK_NUM 
+    ,t.STOCK_AMOUNT 
+    ,t.CREATE_DATE 
+    ,t.TYPE_ID 
+</sql>
+
+    <!--地包进销存 数据 汇总 分页查询（按地包商的维度）-->
+    <!--逻辑：先对rpt_supplier_operating_day表按supplier_id字段分组  再左连接 rpt_supplier_operating_day表过滤条件并也按supplier_id分组
+    要保证 表里面所有的地包商都有数据  即使过滤条件后 左连接的是 空记录 （全部设置为0）-->
+    <select id="pageSummarySaleBySupplier" parameterType="com.iwhalecloud.retail.report.dto.request.SummarySaleBySupplierPageReq"
+            resultType="com.iwhalecloud.retail.report.dto.response.SummarySaleBySupplierPageResp">
+
+        select a.supplier_id, a.supplier_code, a.supplier_name,
+            IFNULL(b.SELL_NUM, 0) SELL_NUM,
+            IFNULL(b.SELL_AMOUNT, 0) SELL_AMOUNT,
+            IFNULL(b.PURCHASE_AMOUNT, 0) PURCHASE_AMOUNT,
+            IFNULL(b.PURCHASE_NUM, 0) PURCHASE_NUM,
+            IFNULL(b.MANUAL_NUM, 0) MANUAL_NUM,
+            IFNULL(b.TRANS_IN_NUM, 0) TRANS_IN_NUM,
+            IFNULL(b.TRANS_OUT_NUM, 0) TRANS_OUT_NUM,
+            IFNULL(b.RETURN_NUM, 0) RETURN_NUM,
+            IFNULL(b.STOCK_NUM, 0) STOCK_NUM,
+            IFNULL(b.STOCK_AMOUNT, 0) STOCK_AMOUNT,
+            IFNULL(b.TOTAL_IN_NUM, 0) TOTAL_IN_NUM,
+            IFNULL(b.TOTAL_OUT_NUM, 0) TOTAL_OUT_NUM,
+            IFNULL(b.AVERAGE_DAILY_SALES, 0) AVERAGE_DAILY_SALES
+        from (
+            select supplier_id, supplier_code, supplier_name
+            from rpt_supplier_operating_day t
+            where 1=1
+                <if test="req.supplierName != null and req.supplierName != ''">
+                    and lower(t.SUPPLIER_NAME) like lower(CONCAT(CONCAT('%', #{req.supplierName }), '%'))
+                </if>
+                <if test="req.supplierCode != null and req.supplierCode != ''">
+                    and lower(t.SUPPLIER_CODE) like lower(CONCAT(CONCAT('%', #{req.supplierCode }), '%'))
+                </if>
+                <if test="req.supplierId != null and req.supplierId != ''">
+                    and t.SUPPLIER_ID =  #{req.supplierId}
+                </if>
+                <if test="req.lanId != null and req.lanId != ''">
+                    and t.CITY_ID =  #{req.lanId}
+                </if>
+                <if test="req.regionID != null and req.regionID != ''">
+                    and t.COUNTY_ID =  #{req.regionID}
+                </if>
+            group by t.supplier_id
+        ) a
+        left join (
+            select  supplier_id,
+                sum(SELL_NUM) SELL_NUM,
+                sum(SELL_AMOUNT) SELL_AMOUNT,
+                sum(PURCHASE_AMOUNT) PURCHASE_AMOUNT,
+                sum(PURCHASE_NUM) PURCHASE_NUM,
+                sum(MANUAL_NUM) MANUAL_NUM,
+                sum(TRANS_IN_NUM) TRANS_IN_NUM,
+                sum(TRANS_OUT_NUM) TRANS_OUT_NUM,
+                sum(RETURN_NUM) RETURN_NUM,
+                sum(STOCK_NUM) STOCK_NUM,
+                sum(STOCK_AMOUNT) STOCK_AMOUNT,
+                (sum(TRANS_IN_NUM)+sum(MANUAL_NUM)+sum(PURCHASE_NUM)) TOTAL_IN_NUM ,
+                (sum(TRANS_OUT_NUM)+sum(RETURN_NUM)+sum(SELL_NUM)) TOTAL_OUT_NUM,
+                -- 7天平均日销量
+                IFNULL(
+                    (select ROUND(sum(b.SELL_NUM)/7, 0) a from rpt_supplier_operating_day b
+                    where b.CREATE_DATE >=DATE_SUB(CURDATE(), INTERVAL 7 DAY) GROUP BY b.SUPPLIER_ID
+                ), 0) AVERAGE_DAILY_SALES
+            from rpt_supplier_operating_day t
+            where
+                1=1
+                <if test="req.productBaseId != null and req.productBaseId != ''">
+                    and t.PRODUCT_BASE_ID =  #{req.productBaseId}
+                </if>
+                <if test="req.productId != null and req.productId != ''">
+                    and t.PRODUCT_ID =  #{req.productId}
+                </if>
+                <if test="req.brandId != null and req.brandId != ''">
+                    and t.BRAND_ID =  #{req.brandId}
+                </if>
+                <if test="req.startDate != null and req.startDate != ''">
+                    and t.item_date &gt;= #{req.startDate}
+                </if>
+                <if test="req.endDate != null and req.endDate != ''">
+                    and t.item_date &lt;= #{req.endDate}
+                </if>
+            group by t.SUPPLIER_ID
+        ) b on a.supplier_id = b.supplier_id
+    </select>
+
+
+    <!-- 这个sql （只是用来参考的） 是没有用到的  可以删除-->
+    <sql id="reportDeSale_prefix" >
+        select * from (
+            select * from (
+                select d.*,d.sumStockDay/d.daySale sevenDayLv ,
+                CASE WHEN (d.sumStockDay/d.daySale)&gt;= 10 THEN 1
+                WHEN (d.sumStockDay/d.daySale) &gt;= 5 &amp;&amp; (d.sumStockDay/d.daySale)&lt;10 THEN 2
+                ELSE 3 END AS redStatus
+                from (
+                    select a.*,
+                        (select ROUND(sum(b.SELL_NUM)/7 ,2) from
+                        rpt_supplier_operating_day b
+                        where a.supplierName=b.supplier_name
+                        and a.supplierCode=b.SUPPLIER_CODE
+                        and a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID
+                        and a.BRAND_ID=b.BRAND_ID
+                        and a.priceLevel=b.PRICE_LEVEL
+                        and b.CREATE_DATE&gt;=DATE_SUB(CURDATE(), INTERVAL 7 DAY) )
+                    daySale,
+                        (select sum(b.STOCK_NUM)
+                        from rpt_supplier_operating_day b
+                        where a.supplierName=b.supplier_name
+                        and a.supplierCode=b.SUPPLIER_CODE
+                        and a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID
+                        and a.BRAND_ID=b.BRAND_ID
+                        and a.priceLevel=b.PRICE_LEVEL and
+                        to_days(b.CREATE_DATE) = to_days(now()) )
+                    sumStockDay,
+                        (select sum(b.STOCK_AMOUNT) from rpt_supplier_operating_day b
+                        where a.supplierName=b.supplier_name
+                        and a.supplierCode=b.SUPPLIER_CODE
+                        and a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID
+                        and a.BRAND_ID=b.BRAND_ID
+                        and a.priceLevel=b.PRICE_LEVEL
+                        and to_days(b.CREATE_DATE) = to_days(now()) )
+                    sumStockAmoutDay
+                    from (
+                        select PRODUCT_BASE_ID,BRAND_ID, COUNTY_ID,city_id,
+                            supplier_name supplierName ,SUPPLIER_CODE supplierCode,
+                            PRODUCT_BASE_NAME productName,
+                            BRAND_NAME brandName,PRICE_LEVEL priceLevel,
+                            (sum(TRANS_IN_NUM)+sum(MANUAL_NUM)+sum(PURCHASE_NUM)) totalInnum ,
+                            (sum(TRANS_OUT_NUM)+sum(RETURN_NUM)+sum(SELL_NUM)) totalOutNum,
+                            sum(PURCHASE_NUM) sumPurchase,
+                            sum(PURCHASE_AMOUNT) amoutPurcchase,sum(MANUAL_NUM) sumMANUAL,
+                            sum(TRANS_IN_NUM) sumTransIn,sum(SELL_NUM) sumSellNum,
+                            sum(SELL_AMOUNT) sumSellAmout,sum(TRANS_OUT_NUM)
+                            sumTransOut,sum(RETURN_NUM) sumReturn,type_id typeId
+                        from rpt_supplier_operating_day
+                        where 1=1
+                            <if test="req.createTimeStart!=null and req.createTimeStart!=''">
+                                and item_date &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+                            </if>
+                            <if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
+                                and item_date &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+                            </if>
+                            <if test="req.outTimeStart!=null and req.outTimeStart!=''">
+                                and item_date &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+                            </if>
+                            <if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
+                                and item_date &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+                            </if>
+                            <if test="req.typeId!=null and req.typeId!=''">
+                                and type_id = #{req.typeId}
+                            </if>
+                            group by supplier_name,
+                            SUPPLIER_CODE,PRODUCT_BASE_ID ,BRAND_ID,PRICE_LEVEL
+                    ) a
+                ) d where 1=1
+                <if test="req.brand!=null and req.brand!=''">
+                    and d.brand_id = #{req.brand}
+                </if>
+                <if test="req.productType!=null and req.productType!=''">
+                    and d.product_base_id = #{req.productType}
+                </if>
+                <if test="req.merchantName!=null and req.merchantName!=''">
+                    and d.suppliername like CONCAT(CONCAT('%',#{req.merchantName}),'%')
+                </if>
+                <if test="req.merchantCode!=null and req.merchantCode!=''">
+                    and d.suppliercode  like CONCAT(CONCAT('%',#{req.merchantCode}),'%')
+                </if>
+
+                <if test="req.gear!=null and req.gear!=''">
+                    and d.pricelevel=#{req.gear}
+                </if>
+                <if test="req.lanId!=null and req.lanId!=''">
+                    and d.city_id  =#{req.lanId}
+                </if>
+                <if test="req.city!=null and req.city!=''">
+                    and d.COUNTY_ID=#{req.city}
+                </if>
+            ) x where 1=1
+            <if test="req.warningStatus!=null and req.warningStatus!=''">
+                and	redStatus=#{req.warningStatus}
+            </if>
+            limit 60000
+        ) z
+    </sql>
+
+
+</mapper>

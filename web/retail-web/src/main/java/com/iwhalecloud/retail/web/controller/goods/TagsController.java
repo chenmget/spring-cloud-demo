@@ -1,10 +1,11 @@
 package com.iwhalecloud.retail.web.controller.goods;
 
-import com.alibaba.dubbo.config.annotation.Reference;
-import com.iwhalecloud.retail.goods.dto.ResultVO;
-//import com.iwhalecloud.retail.goods.service.dubbo.TagsOpenService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+//import com.iwhalecloud.retail.goods.service.dubbo.TagsOpenService;
 
 /**
  * @author mzl

@@ -7,11 +7,11 @@ import com.iwhalecloud.retail.member.dto.GroupMerchantDTO;
 import com.iwhalecloud.retail.member.dto.request.GroupMerchantQueryReq;
 import com.iwhalecloud.retail.member.dto.response.GroupMerchantQueryResp;
 import com.iwhalecloud.retail.member.entity.GroupMerchant;
+import com.iwhalecloud.retail.member.mapper.GroupMerchantMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
-import com.iwhalecloud.retail.member.mapper.GroupMerchantMapper;
 
+import javax.annotation.Resource;
 import java.util.Date;
 
 

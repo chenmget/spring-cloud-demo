@@ -42,4 +42,6 @@ public class BssOrgRequestModel {
     private String statusCd;
 
     private Long orgLevel;
+
+    private String pathCode;
 }

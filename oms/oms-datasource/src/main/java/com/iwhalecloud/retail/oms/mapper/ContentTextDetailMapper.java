@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.oms.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.iwhalecloud.retail.oms.dto.ContentTextDetailDTO;
 import com.iwhalecloud.retail.oms.entity.ContentTextDetail;
 import org.apache.ibatis.annotations.Mapper;

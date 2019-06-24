@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper">
 
-<sql id="allFields">
+    <sql id="allFields">
     t.MKT_RES_INST_ID 
     ,t.MKT_RES_INST_NBR 
     ,t.CT_CODE 
@@ -36,10 +36,11 @@
     ,t.CRM_STATUS 
     ,t.SELF_REG_STATUS
     ,t.STORAGE_TYPE
+    ,t.TYPE_ID
 </sql>
 
-    <select id="getResourceInstList" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListReq"
-            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp">
+    <select id="getResourceInstList" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp">
         select <include refid="allFields" />
         from mkt_res_inst t
         where 1 = 1
@@ -89,9 +90,6 @@
                 #{item}
             </foreach>
         </if>
-        <if test="null!=req.merchantId and ''!=req.merchantId">
-            and t.merchant_id = #{req.merchantId}
-        </if>
         <if test="null!=req.storageType and ''!=req.storageType">
             and t.storage_type = #{req.storageType}
         </if>
@@ -105,11 +103,38 @@
         <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
             #{item}
         </foreach>
+        <if test="null!=req.typeId and ''!=req.typeId">
+            and t.type_id = #{req.typeId}
+        </if>
         order by create_date desc
     </select>
 
     <update id="updateResourceInst"  parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq">
         update mkt_res_inst t set t.status_cd = #{statusCd},t.status_date = #{statusDate},t.update_date = #{updateDate}
+        <if test="null!=merchantName and '' !=merchantName">
+            ,t.merchant_name = #{merchantName}
+        </if>
+        <if test="null!=merchantCode and '' !=merchantCode">
+            ,t.merchant_code = #{merchantCode}
+        </if>
+        <if test="null!=supplierName and '' !=supplierName">
+            ,t.supplier_name = #{supplierName}
+        </if>
+        <if test="null!=supplierCode and '' !=supplierCode">
+            ,t.supplier_code = #{supplierCode}
+        </if>
+        <if test="null!=lanId and '' !=lanId">
+            ,t.lan_id = #{lanId}
+        </if>
+        <if test="null!=regionId and '' !=regionId">
+            ,t.region_id = #{regionId}
+        </if>
+        <if test="null!=orderId and '' !=orderId">
+            ,t.order_id = #{orderId}
+        </if>
+        <if test="null!=createTime">
+            ,t.create_time = #{createTime}
+        </if>
         where t.MKT_RES_STORE_ID = #{mktResStoreId}
         and mkt_res_inst_nbr in
         <if test="null!=mktResInstNbrs and mktResInstNbrs.size>0">
@@ -120,18 +145,21 @@
         <if test="null!=typeId and '' !=typeId">
             and t.type_id = #{typeId}
         </if>
+        <if test="null!=mktResId and ''!=mktResId">
+            and t.mkt_res_id = #{mktResId}
+        </if>
     </update>
 
     <update id="updateResourceInstByIds" parameterType="com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq">
         update MKT_RES_INST t
         set t.STATUS_CD = #{statusCd},t.UPDATE_DATE = #{updateDate},t.STATUS_DATE = #{statusDate},t.UPDATE_STAFF = #{updateStaff}
         where MKT_RES_INST_ID in
-            <if test="null!=mktResInstIds and mktResInstIds.size>0">
-                <foreach collection="mktResInstIds" index="index" item="item" open="(" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
-            and MKT_RES_STORE_ID = #{mktResStoreId}
+        <if test="null!=mktResInstIdList and mktResInstIdList.size>0">
+            <foreach collection="mktResInstIdList" index="index" item="item" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        and MKT_RES_STORE_ID = #{mktResStoreId}
     </update>
 
     <sql id="commonFields">
@@ -162,9 +190,6 @@
         <if test="null!=statusCd and ''!=statusCd">
             and t.status_cd = #{statusCd}
         </if>
-        <if test="null!=merchantId and ''!=merchantId">
-            and t.merchant_id = #{merchantId}
-        </if>
         <if test="null!=merchantTypes and merchantTypes.size>0">
             and t.merchant_type in
             <foreach item="item" index="index" open="(" separator="," close=")" collection="merchantTypes">
@@ -188,9 +213,6 @@
         <if test="null!=statusCd and ''!=statusCd">
             and t.status_cd = #{statusCd}
         </if>
-        <if test="null!=merchantId and ''!=merchantId">
-            and t.merchant_id = #{merchantId}
-        </if>
         <if test="null!=mktResId and ''!=mktResId">
             and t.mkt_res_id = #{mktResId}
         </if>
@@ -204,18 +226,18 @@
             </foreach>
         </if>
         and t.mkt_res_store_id = #{mktResStoreId}
+        order by create_date desc
     </select>
 
-    <select id="selectByIds" parameterType="java.util.List"
+    <select id="selectByIds" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetByIdListAndStoreIdReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO">
         select <include refid="allFields" />
         from mkt_res_inst t
         where t.mkt_res_inst_id in
-        <if test="null!=idList and idList.size>0">
-            <foreach item="item" index="index" open="(" separator="," close=")" collection="idList">
-                #{item}
-            </foreach>
-        </if>
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstIdList">
+            #{item}
+        </foreach>
+        and t.mkt_res_store_id = #{mktResStoreId}
     </select>
 
     <select id="listInstsByNbr" parameterType="java.util.List"
@@ -228,7 +250,7 @@
 
     <!-- 调拨页面批量查询-->
     <select id="getBatch" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstBatchReq"
-            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp">
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp">
         select <include refid="allFields" />
         from mkt_res_inst t
         where t.mkt_res_inst_nbr in
@@ -246,9 +268,7 @@
                 #{item}
             </foreach>
         </if>
-        <if test="null!=mktResStoreId and ''!=mktResStoreId">
-            and t.mkt_res_store_id = #{mktResStoreId}
-        </if>
+        and t.mkt_res_store_id = #{mktResStoreId}
 
     </select>
 
@@ -268,4 +288,176 @@
     <select id="getPrimaryKey" resultType="java.lang.String">
         select seq_retail_all_tables.nextval
     </select>
+
+
+    <select id="listResourceInst" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp">
+        select <include refid="allFields" />
+        from mkt_res_inst t
+        where 1 = 1
+        <if test="null!=req.mktResInstType and ''!=req.mktResInstType">
+            and t.mkt_res_inst_type = #{req.mktResInstType}
+        </if>
+        <if test="null!=req.sourceType and ''!=req.sourceType">
+            and t.source_type = #{req.sourceType}
+        </if>
+        <if test="null!=req.statusCd and ''!=req.statusCd">
+            and t.status_cd = #{req.statusCd}
+        </if>
+        <if test="null!=req.storageType and ''!=req.storageType">
+            and t.storage_type = #{req.storageType}
+        </if>
+        <if test="null!=req.mktResInstNbrs and req.mktResInstNbrs.size>0">
+            and t.mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResInstNbrs">
+                #{item}
+            </foreach>
+        </if>
+        and t.mkt_res_store_id = #{req.mktResStoreId}
+        order by create_date desc
+    </select>
+
+    <select id="findAllLanID" resultType="java.lang.String">
+        select LAN_ID from sys_lan where lan_id != '10000000'
+    </select>
+
+    <select id="findMKTInfoByLadId" resultType="java.lang.String">
+        select concat(mrced.MKT_RES_INST_NBR, ',', ppb.PRODUCT_NAME, ppb.UNIT_TYPE, ',', '2', ',', mrced.lan_id) as itms_str
+        from mkt_res_event mre
+        inner join mkt_res_chng_evt_detail mrced on mre.MKT_RES_EVENT_ID = mrced.MKT_RES_EVENT_ID and mre.STATUS_CD = #{scd} and mrced.lan_id = #{lanId} and mre.CREATE_DATE &lt; #{endDate}
+        <if test="startDate != '' and startDate != null">
+            and mre.CREATE_DATE &gt;= #{startDate}
+        </if>
+        inner join prod_product pp on pp.product_id = mre.MKT_RES_ID
+        inner join prod_product_base ppb on ppb.PRODUCT_BASE_ID = pp.PRODUCT_BASE_ID
+        inner join prod_type pt on pt.type_id = ppb.type_id and pt.type_id = #{brand}
+    </select>
+
+    <select id="findCfValueByCfId" resultType="java.lang.String">
+        select CF_VALUE from SYS_CONFIG_INFO where CF_ID = #{cofStr}
+    </select>
+
+    <update id="updateCfValueByCfId">
+        update sys_config_info set CF_VALUE = #{dateStr} where CF_ID = #{cofStr}
+    </update>
+
+    <insert id="initConfig">
+        insert into SYS_CONFIG_INFO values('ITMS_PUSH_MKT_NB','推送到ITMS数据的开始统计时间',#{endDate},'job');
+    </insert>
+
+    <select id="validResourceInst" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsGetReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO">
+        select <include refid="allFields" />
+        from mkt_res_inst t
+        where 1 = 1
+        <if test="null!=mktResInstNbrs and mktResInstNbrs.size>0">
+            and t.mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstNbrs">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=statusCd and ''!=statusCd">
+            and t.status_cd = #{statusCd}
+        </if>
+        <if test="null!=mktResId and ''!=mktResId">
+            and t.mkt_res_id = #{mktResId}
+        </if>
+        <if test="null!=typeId and ''!=typeId">
+            and t.type_id = #{typeId}
+        </if>
+        <if test="null!=merchantTypes and merchantTypes.size>0">
+            and t.merchant_type in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="merchantTypes">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=mktResStoreId and ''!=mktResStoreId">
+            and t.mkt_res_store_id = #{mktResStoreId}
+        </if>
+    </select>
+
+    <select id="getResourceInstListManual" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp">
+        select <include refid="allFields" />
+        from mkt_res_inst t
+        where 1 = 1
+        <if test="null!=req.createTimeStart and ''!=req.createTimeStart">
+            and t.create_time &gt;= #{req.createTimeStart}
+        </if>
+        <if test="null!=req.createTimeEnd and ''!=req.createTimeEnd">
+            and t.create_time &lt;= #{req.createTimeEnd}
+        </if>
+        <if test="null!=req.instInDateStart and ''!=req.instInDateStart">
+            and t.create_date &gt;= #{req.instInDateStart}
+        </if>
+        <if test="null!=req.instInDateEnd and ''!=req.instInDateEnd">
+            and t.create_date &lt;= #{req.instInDateEnd}
+        </if>
+        <if test="null!=req.instOutDateStart and ''!=req.instOutDateStart">
+            and t.update_date &gt;= #{req.instOutDateStart}
+        </if>
+        <if test="null!=req.instOutDateEnd and ''!=req.instOutDateEnd">
+            and t.update_date &lt;= #{req.instOutDateEnd}
+        </if>
+
+        <if test="null!=req.crmStatus and ''!=req.crmStatus">
+            and t.crm_status = #{req.crmStatus}
+        </if>
+        <if test="null!=req.selfRegStatus and ''!=req.selfRegStatus">
+            and t.self_reg_status = #{req.selfRegStatus}
+        </if>
+        <if test="null!=req.mktResInstType and ''!=req.mktResInstType">
+            and t.mkt_res_inst_type = #{req.mktResInstType}
+        </if>
+        <if test="null!=req.sourceType and ''!=req.sourceType">
+            and t.source_type = #{req.sourceType}
+        </if>
+        <if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">
+            and t.mkt_res_inst_nbr = #{req.mktResInstNbr}
+        </if>
+        <if test="null!=req.orderId and ''!=req.orderId">
+            and t.order_id = #{req.orderId}
+        </if>
+        <if test="null!=req.statusCd and ''!=req.statusCd">
+            and t.status_cd = #{req.statusCd}
+        </if>
+        <if test="null!=req.mktResIds and req.mktResIds.size>0">
+            and t.mkt_res_id in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResIds">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=req.storageType and ''!=req.storageType">
+            and t.storage_type = #{req.storageType}
+        </if>
+        <if test="null!=req.mktResInstNbrs and req.mktResInstNbrs.size>0">
+            and t.mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResInstNbrs">
+                #{item}
+            </foreach>
+        </if>
+        and t.mkt_res_store_id in
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
+            #{item}
+        </foreach>
+        <if test="null!=req.typeId and ''!=req.typeId">
+            and t.type_id = #{req.typeId}
+        </if>
+        order by create_date desc
+        LIMIT #{req.pageStartNo}, #{req.pageSize}
+    </select>
+    
+    <select id="selectMktResInstType" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceStoreIdResnbr"
+            resultType="java.lang.String">
+    	SELECT MKT_RES_INST_TYPE FROM MKT_RES_INST WHERE MKT_RES_INST_NBR=#{req.mktResInstNbr} AND MKT_RES_STORE_ID=#{req.mktResStoreId}
+    </select>
+
+    <select id="getMktResInstNbrForCheck" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceStoreIdResnbr"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp">
+        SELECT m.MKT_RES_INST_NBR as mktResInstNbr,m.MKT_RES_ID as mktResId ,p.PURCHASE_TYPE as purchaseType,m.STATUS_CD as statusCd from mkt_res_inst m
+        LEFT JOIN PROD_PRODUCT p ON p.product_id=m.MKT_RES_ID
+        WHERE m.MKT_RES_INST_NBR=#{req.mktResInstNbr}  AND m.MKT_RES_STORE_ID=#{req.mktResStoreId}
+        ORDER BY m.create_date DESC LIMIT 1
+    </select>
+
 </mapper>

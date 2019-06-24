@@ -98,7 +98,19 @@ public class ProductBase implements Serializable {
   	 */
 	@ApiModelProperty(value = "是否需要CT码")
   	private String isCtCode;
-  	
+	
+  	/**
+  	 * 是否需要抽检
+  	 */
+	@ApiModelProperty(value = "是否需要抽检")
+  	private String isInspection;
+
+	/**
+	 * 是否需要抽检
+	 */
+	@ApiModelProperty(value = "是否固网产品")
+	private String isFixedLine;
+
   	/**
   	 * 产品编码
   	 */
@@ -117,11 +129,11 @@ public class ProductBase implements Serializable {
 	@ApiModelProperty(value = "换货对象")
 	private String exchangeObject;
 
-	/**
-	 * 采购类型
-	 */
-	@ApiModelProperty(value = "采购类型")
-	private String purchaseType;
+//	/**
+//	 * 采购类型
+//	 */
+//	@ApiModelProperty(value = "采购类型")
+//	private String purchaseType;
   	
   	/**
   	 * 参数1
@@ -285,6 +297,18 @@ public class ProductBase implements Serializable {
 	@ApiModelProperty(value = "平均供货价")
 	private Double avgSupplyPrice;
 
+	/**
+	 * 价格档位
+	 */
+	@ApiModelProperty(value = "价格档位")
+	private String priceLevel;
+
+	/**
+	 * 卖点
+	 */
+	@ApiModelProperty(value = "卖点")
+	private String sallingPoint;
+
   	//属性 end
 	
     /** 字段名称枚举. */
@@ -321,6 +345,12 @@ public class ProductBase implements Serializable {
 		
 		/** 是否需要CT码. */
 		isCtCode("isCtCode","IS_CT_CODE"),
+
+		/** 是否需要抽检. */
+		isInspection("isInspection","IS_INSPECTION"),
+
+		/** 是否固网产品. */
+		isFixedLine("isFixedLine","IS_FIXED_LINE"),
 		
 		/** 产品编码. */
 		productCode("productCode","PRODUCT_CODE"),
@@ -411,6 +441,12 @@ public class ProductBase implements Serializable {
 		
 		/** updateDate. */
 		updateDate("updateDate","update_date"),
+
+		/** priceLevel. */
+		priceLevel("priceLevel","price_level"),
+
+		/** 卖点 */
+		sallingPoint("sallingPoint","salling_point"),
 
 		/**平均供货价*/
 		avgSupplyPrice("avgSupplyPrice","AVG_SUPPLY_PRICE");

@@ -6,15 +6,12 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityAddReq;
-import com.iwhalecloud.retail.promo.entity.MarketingActivity;
 import com.iwhalecloud.retail.promo.manager.AuditMarketingActivityPassManager;
 import com.iwhalecloud.retail.promo.service.AuditMarketingActivityPassService;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.annotation.Resource;
 
 /**
  * @author lhr 2019-02-22 17:50:30
@@ -38,6 +35,18 @@ public class AuditMarketingActivityPassServiceImpl implements AuditMarketingActi
         MarketingActivityAddReq marketingActivity = new MarketingActivityAddReq();
         marketingActivity.setId(id);
         marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_20.getCode());
-        return activityPassManager.updateMarketActPassById(id);
+        ResultVO resultVO = activityPassManager.updateMarketActPassById(id);
+        //更新成功 调用前置补贴活动审核后推送活动
+        if (resultVO.isSuccess()){
+            try{
+                ResultVO autoPushResult = marketingActivityService.autoPushActivityCoupon(id);
+                if (autoPushResult.isSuccess()){
+                    return  ResultVO.success("前置补贴活动审核后推送活动成功");
+                }
+            }catch (Exception ex){
+                log.error("AuditMarketingActivityPassServiceImpl.run MarketingActivityService.autoPushActivityCoupon throw exception ex={}", ex);
+            }
+        }
+        return ResultVO.error();
     }
 }

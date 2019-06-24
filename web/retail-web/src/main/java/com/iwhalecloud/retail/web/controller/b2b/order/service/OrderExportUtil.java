@@ -3,9 +3,7 @@ package com.iwhalecloud.retail.web.controller.b2b.order.service;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class OrderExportUtil {
 
@@ -14,13 +12,14 @@ public class OrderExportUtil {
         orderMap.add(new ExcelTitleName("orderId", "订单号"));
         orderMap.add(new ExcelTitleName("orderTypeName", "订单类型"));
         orderMap.add(new ExcelTitleName("createTime", "下单时间"));
-        orderMap.add(new ExcelTitleName("userName", "买家名称"));
+//        orderMap.add(new ExcelTitleName("userName", "买家名称"));
+        orderMap.add(new ExcelTitleName("buyerName", "买家名称"));
         orderMap.add(new ExcelTitleName("statusName", "订单状态"));
         orderMap.add(new ExcelTitleName("supplierName", "供应商名称"));
         orderMap.add(new ExcelTitleName("paymentName", "付款类型"));
         orderMap.add(new ExcelTitleName("payStatusName", "付款状态"));
         orderMap.add(new ExcelTitleName("payTime", "付款时间"));
-        orderMap.add(new ExcelTitleName("payName", "付款方式"));
+//        orderMap.add(new ExcelTitleName("payName", "付款方式"));
         orderMap.add(new ExcelTitleName("shipTypeName", "物流方式"));
 //        orderMap.add(new ExcelTitleName("goodsAmount", "商品总价"));
 //        orderMap.add(new ExcelTitleName("shipAmount", "物流费用"));
@@ -117,7 +116,34 @@ public class OrderExportUtil {
         return orderMap;
     }
 
+    public static List<ExcelTitleName> getResReqDetail() {
+        List<ExcelTitleName> orderMap = new ArrayList<>();
+        orderMap.add(new ExcelTitleName("mktResReqDetailId", "申请id"));
+        orderMap.add(new ExcelTitleName("reqCode", "申请单号"));
+        orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
+        orderMap.add(new ExcelTitleName("typeName", "产品类型"));
+        orderMap.add(new ExcelTitleName("brandName", "品牌"));
+        orderMap.add(new ExcelTitleName("unitName", "产品名称"));
+        orderMap.add(new ExcelTitleName("unitType", "产品型号"));
+        orderMap.add(new ExcelTitleName("merchantName", "厂商名称"));
+        orderMap.add(new ExcelTitleName("createDateStr", "申请时间"));
+        orderMap.add(new ExcelTitleName("statusCdName", "状态"));
+        orderMap.add(new ExcelTitleName("remark", "状态说明"));
+        orderMap.add(new ExcelTitleName("statusDateStr", "审核时间"));
+        return orderMap;
+    }
 
-
-
+    public static List<ExcelTitleName> getResourceUploadTemp() {
+        List<ExcelTitleName> orderMap = new ArrayList<>();
+        orderMap.add(new ExcelTitleName("mktResReqDetailId", "申请id"));
+        orderMap.add(new ExcelTitleName("reqCode", "申请单号"));
+        orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
+        orderMap.add(new ExcelTitleName("typeName", "产品类型"));
+        orderMap.add(new ExcelTitleName("brandName", "品牌"));
+        orderMap.add(new ExcelTitleName("unitName", "产品名称"));
+        orderMap.add(new ExcelTitleName("statusCdName", "审核结果"));
+        orderMap.add(new ExcelTitleName("remark", "审核说明"));
+        orderMap.add(new ExcelTitleName("resultDesc", "说明"));
+        return orderMap;
+    }
 }

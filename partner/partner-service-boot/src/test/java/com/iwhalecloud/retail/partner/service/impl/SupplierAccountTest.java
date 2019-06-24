@@ -2,14 +2,11 @@ package com.iwhalecloud.retail.partner.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.PartnerServiceApplication;
-import com.iwhalecloud.retail.partner.dto.PartnerAccountDTO;
 import com.iwhalecloud.retail.partner.dto.SupplierAccountDTO;
-import com.iwhalecloud.retail.partner.dto.req.PartnerAccountPageReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplierAccountAddReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplierAccountQueryReq;
 import com.iwhalecloud.retail.partner.dto.req.SupplierAccountUpdateReq;
 import com.iwhalecloud.retail.partner.dto.resp.SupplierAccountAddResp;
-import com.iwhalecloud.retail.partner.service.PartnerAccountService;
 import com.iwhalecloud.retail.partner.service.SupplierAccountService;
 import org.junit.Test;
 import org.junit.runner.RunWith;

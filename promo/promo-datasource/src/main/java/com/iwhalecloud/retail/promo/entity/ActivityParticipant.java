@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.promo.entity;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import lombok.Data;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * ActivityParticipant
@@ -82,6 +82,19 @@ public class ActivityParticipant implements Serializable {
 	@ApiModelProperty(value = "销售点名称")
   	private java.lang.String shopName;
 
+	/**
+	 * 筛选类型
+	 */
+	@ApiModelProperty(value = "筛选类型")
+	private java.lang.String filterType;
+
+	/**
+	 * 筛选条件json值
+	 */
+	@ApiModelProperty(value = "筛选条件json值")
+	private java.lang.String filterValue;
+
+
 	@ApiModelProperty(value = "创建人。")
 	private java.lang.String creator;
 
@@ -106,6 +119,12 @@ public class ActivityParticipant implements Serializable {
 	 */
 	@ApiModelProperty(value = "是否删除：0未删、1删除。")
 	private String isDeleted;
+
+	/**
+	 * 状态,0：待审核,1：有效,-1：审核不通过
+	 */
+	@ApiModelProperty(value = "状态,0：待审核,1：有效,-1：审核不通过")
+	private java.lang.String status;
   	
   	//属性 end
 	
@@ -138,8 +157,17 @@ public class ActivityParticipant implements Serializable {
 		/** 销售点名称. */
 		shopName("shopName","SHOP_NAME"),
 
+		/** 筛选类型. */
+		filterType("filterType","filter_type"),
+
+		/** 筛选条件json值 */
+		filterValue("filterValue","filter_value"),
+
 		/** 是否删除：0未删、1删除。. */
 		isDeleted("isDeleted","IS_DELETED"),
+
+		/** 状态,0：待审核,1：有效,-1：审核不通过. */
+		status("status","STATUS"),
 		
 		/** 记录首次创建的员工标识。. */
 		creator("creator","CREATOR"),

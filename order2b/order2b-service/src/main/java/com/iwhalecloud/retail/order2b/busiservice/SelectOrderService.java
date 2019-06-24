@@ -1,7 +1,6 @@
 package com.iwhalecloud.retail.order2b.busiservice;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.iwhalecloud.retail.order2b.dto.resquest.order.AdvanceOrderReq;
 import com.iwhalecloud.retail.order2b.entity.OrderItem;
 import com.iwhalecloud.retail.order2b.model.*;
 
@@ -40,6 +39,6 @@ public interface SelectOrderService {
     /**
      * 根据用户查询订单状态
      */
-    List<String> getOrderStatusByUser(String userType,String orderType);
+    List<String> getOrderStatusByUser(String userType,List<String> orderTypeList);
 
 }

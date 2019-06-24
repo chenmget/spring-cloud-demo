@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.workflow.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
-import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.workflow.dto.TaskItemDTO;
 import com.iwhalecloud.retail.workflow.dto.req.TaskItemListReq;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 
@@ -51,5 +49,16 @@ public class TaskItemServiceImpl implements TaskItemService {
         }
         log.info("TaskItemServiceImpl.queryTaskItem taskItemList={}", JSON.toJSONString(taskItemList));
         return ResultVO.success(taskItemDTOs);
+    }
+
+    @Override
+    public ResultVO<TaskItemDTO> queryTaskItemByTaskId(String taskId) {
+        TaskItemDTO taskItemDTO = new TaskItemDTO();
+        TaskItem taskItem = taskItemManager.queryWaitHandlerTaskItem(taskId);
+        if(taskItem != null) {
+            BeanUtils.copyProperties(taskItem, taskItemDTO);
+            return ResultVO.success(taskItemDTO);
+        }
+        return ResultVO.error();
     }
 }

@@ -53,7 +53,7 @@ public class OrderZFlowManager {
         /**
          * 预售订单
          */
-        if (OrderManagerConsts.ORDER_CAT_1.equals(req.getOrderType())) {
+        if (OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.equals(req.getOrderType()) || OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.equals(req.getOrderType())) {
             req.setPayType(model.getAdvancePayType());
         } else {
             req.setPayType("0");

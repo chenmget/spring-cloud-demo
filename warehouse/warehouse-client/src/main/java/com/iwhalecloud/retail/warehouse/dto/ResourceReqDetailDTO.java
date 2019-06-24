@@ -131,5 +131,27 @@ public class ResourceReqDetailDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "记录出入库类型,LOVB=RES-C-0012")
   	private java.lang.String chngType;
+	/**
+  	 * ct码
+  	 */
+	@ApiModelProperty(value = "ctCode")
+  	private java.lang.String ctCode;
+	/**
+  	 * 串码类型
+  	 */
+	@ApiModelProperty(value = "mktResInstType")
+  	private java.lang.String mktResInstType;
+
+	/**
+	 * SN码
+	 */
+	@ApiModelProperty(value = "SN码")
+	private java.lang.String snCode;
+
+	/**
+	 * 网络终端（包含光猫、机顶盒、融合终端）记录MAC码
+	 */
+	@ApiModelProperty(value = "macCode")
+	private java.lang.String macCode;
 
 }

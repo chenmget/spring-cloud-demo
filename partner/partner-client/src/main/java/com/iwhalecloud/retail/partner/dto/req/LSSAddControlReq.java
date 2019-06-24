@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.partner.dto.req;
 
+import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
-
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
 
 @Data
 public class LSSAddControlReq implements Serializable {

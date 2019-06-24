@@ -9,7 +9,6 @@ import com.iwhalecloud.retail.goods.dto.resp.QryGoodsByProductIdResp;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsService;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsSpecService;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdProductService;
-import com.iwhalecloud.retail.order.common.ResultCodeEnum;
 import com.iwhalecloud.retail.order.consts.CartStatus;
 import com.iwhalecloud.retail.order.consts.OmsCommonConsts;
 import com.iwhalecloud.retail.order.consts.ResultCode;

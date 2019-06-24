@@ -1,11 +1,8 @@
 package com.iwhalecloud.retail.system;
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.system.dto.RoleDTO;
 import com.iwhalecloud.retail.system.dto.request.RolePageReq;
 import com.iwhalecloud.retail.system.service.RoleService;
-import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

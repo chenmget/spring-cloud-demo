@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.member.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.iwhalecloud.retail.member.dto.MemberDTO;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.member.dto.MemberDTO;
 import com.iwhalecloud.retail.member.dto.request.*;
 import com.iwhalecloud.retail.member.dto.response.MemberIsExistsResp;
 import com.iwhalecloud.retail.member.dto.response.MemberLoginResp;
@@ -59,5 +59,4 @@ public interface MemberService{
 	 * @return
 	 */
 	int checkPayAccount(String merchantId);
-
 }

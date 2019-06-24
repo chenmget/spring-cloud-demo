@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Created by fadeaway on 2018/12/24.
@@ -84,6 +85,18 @@ public class ProductBaseGetResp implements Serializable {
      */
     @ApiModelProperty(value = "是否需要CT码")
     private String isCtCode;
+
+    /**
+     * 是否需要抽检
+     */
+    @ApiModelProperty(value = "是否需要抽检")
+    private String IsInspection;
+
+    /**
+     * 是否固网产品
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String isFixedLine;
 
     /**
      * 产品编码
@@ -302,4 +315,46 @@ public class ProductBaseGetResp implements Serializable {
      */
     @ApiModelProperty(value = "平均供货价")
     private Double avgSupplyPrice;
+
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
+
+    @ApiModelProperty(value = "颜色")
+    private String color;
+
+    @ApiModelProperty(value = "内存")
+    private String memory;
+
+    @ApiModelProperty(value = "25位产品编码")
+    private String sn;
+
+    @ApiModelProperty(value = "销售价")
+    private String cost;
+
+    @ApiModelProperty(value = "状态")
+    private String status;
+
+    @ApiModelProperty(value = "attrValue1")
+    private String attrValue1;
+
+    @ApiModelProperty(value = "attrValue2")
+    private String attrValue2;
+
+    @ApiModelProperty(value = "attrValue3")
+    private String attrValue3;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
+    /**
+     * 卖点
+     */
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 }

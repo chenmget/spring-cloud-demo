@@ -108,6 +108,12 @@ public class GoodsDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "卖点")
   	private String sellingPoint;
+
+	/**
+	 * 卖点
+	 */
+	@ApiModelProperty(value = "卖点")
+	private String sallingPoint;
 	
 	/**
   	 * 生效日期
@@ -169,4 +175,23 @@ public class GoodsDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "商家类型")
 	private String merchantType;
+
+	/**
+	 * 支付方式
+	 */
+	@ApiModelProperty(value = "支付方式")
+	private String payments;
+
+	/**
+	 * 是否分货
+	 */
+	@ApiModelProperty(value = "是否分货")
+	private Integer isAllot;
+
+
+	/**
+	 * 商品发布对象
+	 */
+	@ApiModelProperty(value = "商品发布对象")
+	private String targetType;
 }

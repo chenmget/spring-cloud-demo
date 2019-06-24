@@ -131,6 +131,14 @@ public class ResourceRequestAddReq implements Serializable {
      */
     @ApiModelProperty(value = "商家ID")
     private String merchantId;
+    /**
+     * 串码类型
+     */
+    @ApiModelProperty(value = "串码类型")
+    private String mktResInstType;
+
+    @ApiModelProperty(value = "申请单详情状态")
+    private String detailStatusCd;
 
     @Data
     public static class ResourceRequestInst implements Serializable{
@@ -150,6 +158,26 @@ public class ResourceRequestAddReq implements Serializable {
          */
         @ApiModelProperty(value = "营销资源标识，记录product_id")
         private String mktResId;
+        /**
+         * 抽检标识
+         */
+        @ApiModelProperty(value = "抽检标识")
+        private String isInspection;
+        /**
+         * CT码
+         */
+        @ApiModelProperty(value = "CT码")
+        private String ctCode;
+        /**
+         * SN码
+         */
+        @ApiModelProperty(value = "SN码")
+        private java.lang.String snCode;
+        /**
+         * 网络终端（包含光猫、机顶盒、融合终端）记录MAC码
+         */
+        @ApiModelProperty(value = "macCode")
+        private java.lang.String macCode;
 
     }
 }

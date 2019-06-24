@@ -5,7 +5,6 @@ import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.elasticjob.lite.annotation.ElasticSimpleJob;
 import com.iwhalecloud.retail.report.service.DataForSuDay;
-
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 //每天凌晨两点执行定时任务0 0 2 * * ?	每天上午的10点15分执行  0 15 10 ? * *

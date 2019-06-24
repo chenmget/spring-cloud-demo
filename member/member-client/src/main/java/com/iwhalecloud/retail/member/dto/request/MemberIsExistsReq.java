@@ -1,12 +1,10 @@
 package com.iwhalecloud.retail.member.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
-
-import java.io.Serializable;
-
+import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-import lombok.Data;
+import java.io.Serializable;
 
 @Data
 public class MemberIsExistsReq implements Serializable{

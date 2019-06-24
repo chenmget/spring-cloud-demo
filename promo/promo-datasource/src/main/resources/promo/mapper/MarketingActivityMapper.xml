@@ -39,6 +39,7 @@
     ,t.TAIL_PAY_START_TIME
     ,t.TAIL_PAY_END_TIME
     ,t.IS_DELETED
+    ,is_modifying
 </sql>
 
     <sql id="listMarketingActivityFieIds">
@@ -70,6 +71,7 @@
         ,t.PRE_END_TIME
         ,t.TAIL_PAY_START_TIME
         ,t.TAIL_PAY_END_TIME
+        ,is_modifying
     </sql>
     <!--com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp-->
     <select id="listMarketingActivity" resultType="com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp" parameterType="com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq">
@@ -101,6 +103,18 @@
         <if test="req.endTimeE != null and req.endTimeE != '' ">
             and lower(t.END_TIME) &lt;= #{req.endTimeE}
         </if>
+        <if test="req.deliverStartTimeS != null and req.deliverStartTimeS != '' ">
+            and lower(t.DELIVER_START_TIME) &gt;= #{req.deliverStartTimeS}
+        </if>
+        <if test="req.deliverStartE != null and req.deliverStartE != '' ">
+            and lower(t.DELIVER_START_TIME) &lt;= #{req.deliverStartE}
+        </if>
+        <if test="req.deliverEndTimeS != null and req.deliverEndTimeS != '' ">
+            and lower(t.DELIVER_END_TIME) &gt;= #{req.deliverEndTimeS}
+        </if>
+        <if test="req.deliverEndTimeE != null and req.deliverEndTimeE != '' ">
+            and lower(t.DELIVER_END_TIME) &lt;= #{req.deliverEndTimeE}
+        </if>
         <if test="req.activityInitiator != null and req.activityInitiator != '' ">
             and lower(t.INITIATOR) = #{req.activityInitiator}
         </if>
@@ -109,6 +123,16 @@
         </if>
 
         order by t.GMT_CREATE DESC
+    </select>
+
+	<select id="getMarketingCampaign" parameterType="com.iwhalecloud.retail.promo.dto.MarketingActivityReq" resultType="com.iwhalecloud.retail.promo.dto.MarketingActivityResp">
+        select
+        <include refid="listMarketingActivityFieIds"></include>
+        from act_marketing_activity t where 1=1
+        and t.IS_DELETED = '0'
+        <if test="req.name != null and req.name != '' ">
+            AND t.NAME like CONCAT(CONCAT('%', #{req.name}), '%')
+        </if>
     </select>
 
 
@@ -151,4 +175,48 @@
            and  ama.activity_type = #{activityType}
         </if>
     </select>
+    
+    <select id="queryMarketingActivityTime" parameterType="java.lang.String"
+        resultType="com.iwhalecloud.retail.promo.entity.MarketingActivity">
+        SELECT ama.id AS id,
+		ama.code AS CODE,
+		ama.name AS NAME,
+		ama.brief AS brief,
+		ama.description AS description,
+		ama.start_Time AS startTime,
+		ama.end_Time AS endTime,
+		ama.activity_Type AS activityType,
+		ama.activity_Type_Name AS activityTypeName,
+		ama.promotion_Type_Code AS promotionTypeCode,
+		ama.status AS STATUS,
+		ama.related_Task_Id AS related_Task_Id,
+		ama.initiator AS initiator,
+		ama.sequence AS sequence,
+		ama.activity_Url AS activityUrl,
+		ama.page_Img_Url AS pageImgUrl,
+		ama.top_Img_Url AS topImgUrl,
+		ama.is_Recommend AS isRecommend,
+		ama.creator AS creator,
+		ama.gmt_Create AS gmtCreate,
+		ama.modifier AS MODIFIER,
+		ama.gmt_Modified AS gmtModified,
+		ama.is_Deleted AS isDeleted,
+		ama.activity_Scope_Type AS activityScopeType,
+		ama.activity_Participant_Type AS activityParticipantType,
+		ama.pay_Type AS payType,
+		ama.pre_Start_Time AS preStartTime,
+		ama.pre_End_Time AS preEndTime,
+		ama.tail_Pay_Start_Time AS tailPayStartTime,
+		ama.tail_Pay_End_Time AS tailPayEndTime,
+		ama.advance_Pay_Amount AS advancePayAmount,
+		ama.participate_Num AS participateNum,
+		ama.deliver_Start_Time AS deliverStartTime,
+		ama.deliver_End_Time AS deliverEndTime
+	 FROM 
+	 	act_marketing_activity ama 
+	 WHERE 
+	 	1=1 and ama.is_deleted = '0' AND ama.id=#{marketingActivityId}
+        
+    </select>
+    
 </mapper>

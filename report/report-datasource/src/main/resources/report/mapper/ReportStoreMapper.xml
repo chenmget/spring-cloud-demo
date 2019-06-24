@@ -1,86 +1,85 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.report.mapper.ReportStoreMapper">
+
     <select id="ListReportStSale" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStSaleDaoReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportStSaleDaoResp">
-       select * from (
-       SELECT j.* FROM (
-            SELECT h.* FROM (
-  SELECT g.*,g.stockNum/g.AverageDailySales StockTurnover FROM (
-	SELECT 
-	a.PARTNER_NAME partnerName,
-	a.PARTNER_CODE partnerCode,
-	a.BUSINESS_ENTITY_NAME businessEntityName,
-	a.CITY_ID cityId,
-	(SELECT region_name FROM sys_common_region WHERE region_id =a.COUNTY_ID)  countryId,
-	a.PRODUCT_BASE_NAME productBaseName,
-	a.BRAND_NAME brandName,
-	a.PRICE_LEVEL priceLevel,
-	SUM(a.TOTAL_IN_NUM) TheTotalInventory,
-	SUM(a.TOTAL_OUT_NUM) TheTotalOutbound,
-	SUM(a.PURCHASE_NUM) purchaseNum,
-	SUM(a.MANUAL_NUM) manualNum,
-	SUM(a.TRANS_IN_NUM) transInNum,
-	SUM(a.PURCHASE_AMOUNT) purchaseAmount,
-	SUM(a.SELL_NUM) TotalSalesNum,
-	SUM(a.SELL_AMOUNT) sellAmount,
-	SUM(a.UNCONTRACT_NUM) ManualSalesNum,
-	SUM(a.CONTRACT_NUM) CRMContractNum,
-	SUM(a.REGISTER_NUM) registerNum,
-	SUM(a.TRANS_OUT_NUM) transOutNum, 
-	SUM(a.RETURN_NUM) returnNum, 
-	a.type_id typeId,
-	a.date,
-	a.stock_warning redStatus,
-	(SELECT (SUM(b.CONTRACT_NUM)+SUM(b.REGISTER_NUM))/7 FROM RPT_PARTNER_OPERATING_DAY b WHERE DATE_SUB(CURDATE(), INTERVAL 7 DAY) &lt;= DATE(b.DATE) AND a.partner_id=b.partner_id GROUP BY b.partner_id) AverageDailySales,
-	(SELECT SUM(c.STOCK_NUM) FROM RPT_PARTNER_OPERATING_DAY c WHERE c.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY) AND a.partner_id=c.partner_id GROUP BY c.partner_id) stockNum,
-	(SELECT SUM(d.STOCK_AMOUNT) FROM RPT_PARTNER_OPERATING_DAY d WHERE d.date=DATE_SUB(CURDATE(),INTERVAL 1 DAY) AND a.partner_id=d.partner_id GROUP BY d.partner_id) stockAmount
-	FROM rpt_partner_operating_day a
+       SELECT 
+			 a.PARTNER_NAME AS partnerName,	
+			 a.PARTNER_CODE AS partnerCode,	
+			 a.BUSINESS_ENTITY_NAME AS businessEntityName,
+			 a.CITY_ID AS cityId,		
+			 so.org_name AS orgName,
+			 a.PRODUCT_NAME AS productName,
+			 a.PRODUCT_BASE_NAME AS productBaseName,	
+			 p.TYPE_NAME AS productType,
+			 a.BRAND_NAME AS brandName,		
+			 a.PRICE_LEVEL AS priceLevel,	
+			 SUM(a.TOTAL_IN_NUM) AS totalInNum,	
+			 SUM(a.TOTAL_OUT_NUM) AS totalOutNum,	
+			 a.STOCK_NUM AS stockNum,
+			 SUM(a.PURCHASE_NUM) AS purchaseNum,	
+			 SUM(a.MANUAL_NUM) AS manualNum,	
+			 SUM(a.TRANS_IN_NUM) AS transInNum,	
+			 SUM(a.PURCHASE_AMOUNT) AS purchaseAmount,	
+			 SUM(a.SELL_NUM) AS sellNum,
+			 SUM(a.SELL_AMOUNT) AS sellAmount,		
+			 SUM(a.UNCONTRACT_NUM) AS uncontractNum,	
+			 SUM(a.CONTRACT_NUM) AS contractNum,	
+			 SUM(a.REGISTER_NUM) AS registerNum,
+			 a.WEEK_AVG_SELL_NUM AS weekAvgSellNum,	
+			 a.STOCK_AMOUNT AS stockAmount,	
+			 a.TURNOVER_RATE as turnoverRate,	
+			 a.stock_warning AS stockWarning,
+			 a.partner_code,
+			 a.product_base_id
+			FROM RPT_PARTNER_OPERATING_DAY a
+			LEFT JOIN par_merchant par ON par.merchant_code = a.PARTNER_CODE
+			LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
+			LEFT JOIN PROD_TYPE p ON a.TYPE_ID = p.TYPE_ID
 	where 1=1
-    <if test="req.lanId!=null and req.lanId!=''">
-		and a.CITY_ID =#{req.lanId}
+	<if test="req.dateStart!=null and req.dateStart!=''">
+		and str_to_date(a.DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.dateStart}, '%Y-%m-%d')
 	</if>
-	<if test="req.city!=null and req.city!=''">
-		and a.COUNTY_ID =#{req.city}
+	<if test="req.dateStart!=null and req.dateStart!=''">
+			and str_to_date(a.DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.dateEnd}, '%Y-%m-%d')
 	</if>
-	<if test="req.retailerName!=null and req.retailerName!=''">
-		and a.PARTNER_NAME like CONCAT(CONCAT('%',#{req.retailerName}),'%')
+	<if test="req.lanIdList !=null and req.lanIdList.size()>0">
+          and a.CITY_ID in
+          <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+              #{item}
+          </foreach>
+    </if>
+    <if test="req.orgName!=null and req.orgName.size()>0">
+	  	and 
+	  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
+	  		INSTR( so.path_code, #{item}) 
+	  	</foreach>
+	</if> 
+	<if test="req.stockWarning!=null and req.stockWarning!=''">  
+		and a.stock_warning=#{req.stockWarning}
 	</if>
-	<if test="req.retailerCode!=null and req.retailerCode!=''">
-		and a.PARTNER_CODE  like CONCAT(CONCAT('%',#{req.retailerCode}),'%')
+	<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">  
+		and a.TYPE_ID=#{req.productType}
 	</if>
-	<if test="req.brand!=null and req.brand!=''">
-		and a.brand_id=#{req.brand}
+	<if test="req.brandName!=null and req.brandName!=''">
+		and a.brand_id=#{req.brandName}
 	</if>
-	<if test="req.typeId!=null and req.typeId!=''">  
-		and a.TYPE_ID=#{req.typeId}
+	<if test="req.productName!=null and req.productName!=''">
+		and a.PRODUCT_NAME like CONCAT(CONCAT('%',#{req.productName}),'%')
 	</if>
-	<if test="req.warningStatus!=null and req.warningStatus!='' ">
-    	and a.redStatus=#{req.warningStatus}
-   	</if>
-	<if test="req.productType!=null and req.productType!=''">
-		and a.PRODUCT_BASE_ID=#{req.productType}
+	<if test="req.productBaseName!=null and req.productBaseName!=''">
+		and a.PRODUCT_BASE_ID=#{req.productBaseName}
+	</if>
+	<if test="req.partnerName!=null and req.partnerName!=''">
+		and a.PARTNER_NAME like CONCAT(CONCAT('%',#{req.partnerName}),'%')
+	</if>
+	<if test="req.partnerCode!=null and req.partnerCode!=''">
+		and a.PARTNER_CODE = #{req.partnerCode}
 	</if>
 	<if test="req.businessEntityName!=null and req.businessEntityName!=''">
 		and a.BUSINESS_ENTITY_NAME like CONCAT(CONCAT('%',#{req.businessEntityName}),'%')
 	</if>
-	<if test="req.createTimeStart!=null and req.createTimeStart!=''">
-		and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
-	</if>
-	<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
-			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
-	</if>
-	<if test="req.outTimeStart!=null and req.outTimeStart!=''">
-		and a.DATE &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
-	</if>
-	<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
-			and a.DATE &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
-	</if>
-
-      GROUP BY a.partner_id
-	) g
-		)h
-			)j
-   limit 60000) z
+	GROUP BY a.partner_code,a.product_base_id
   </select>
 </mapper>

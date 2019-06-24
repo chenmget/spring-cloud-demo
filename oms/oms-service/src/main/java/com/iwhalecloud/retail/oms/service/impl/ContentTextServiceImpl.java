@@ -1,12 +1,11 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
-import com.iwhalecloud.retail.oms.dto.ContentTextDTO;
-import com.iwhalecloud.retail.oms.entity.ContentText;
-import org.springframework.beans.factory.annotation.Autowired;
 import com.alibaba.dubbo.config.annotation.Service;
-import lombok.extern.slf4j.Slf4j;
+import com.iwhalecloud.retail.oms.dto.ContentTextDTO;
 import com.iwhalecloud.retail.oms.manager.ContentTextManager;
 import com.iwhalecloud.retail.oms.service.ContentTextService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;

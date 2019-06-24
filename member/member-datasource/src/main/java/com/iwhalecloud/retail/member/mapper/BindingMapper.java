@@ -1,13 +1,11 @@
 package com.iwhalecloud.retail.member.mapper;
 
 
-import java.util.List;
-
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.iwhalecloud.retail.member.entity.Binding;
 import org.apache.ibatis.annotations.Mapper;
 
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.iwhalecloud.retail.member.dto.response.BindingQueryResp;
-import com.iwhalecloud.retail.member.entity.Binding;
+import java.util.List;
 
 /**
  * @Class: smsSendMapper

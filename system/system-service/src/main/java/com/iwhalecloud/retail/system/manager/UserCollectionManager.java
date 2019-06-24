@@ -5,11 +5,11 @@ import com.iwhalecloud.retail.system.dto.request.UserCollectionCancelReq;
 import com.iwhalecloud.retail.system.dto.request.UserCollectionJudgeReq;
 import com.iwhalecloud.retail.system.dto.request.UserCollectionListReq;
 import com.iwhalecloud.retail.system.entity.UserCollection;
-import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
 import com.iwhalecloud.retail.system.mapper.UserCollectionMapper;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
 

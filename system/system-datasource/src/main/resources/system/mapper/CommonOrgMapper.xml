@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.system.mapper.CommonOrgMapper">
+
+<sql id="allFields">
+    t.ORG_ID 
+    ,t.PARENT_ORG_ID
+    ,t.PARENT_ORG_NAME
+    ,t.ORG_CODE 
+    ,t.ORG_NAME 
+    ,t.LAN_ID 
+    ,t.LAN 
+    ,t.REGION_ID 
+    ,t.REGION 
+    ,t.ORG_LEVEL 
+    ,t.STATUS_DATE 
+    ,t.STATUS_CD 
+    ,t.REMARK 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE
+    ,t.PATH_CODE
+</sql>
+
+	<select id="getSysCommonOrg" resultType="com.iwhalecloud.retail.system.dto.SysCommonOrgResp"
+		parameterType="com.iwhalecloud.retail.system.dto.SysCommonOrgRequest">
+		   SELECT 
+		   <include refid="allFields" />
+		   from 
+		   	sys_common_org t 
+		   where 1=1
+		   	and t.org_level='3' 
+		  <if test="req.lanIdList !=null and req.lanIdList.size()>0">
+                and t.LAN_ID in
+                <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+                    #{item}
+                </foreach>
+          </if>
+	 </select>
+
+
+
+</mapper>

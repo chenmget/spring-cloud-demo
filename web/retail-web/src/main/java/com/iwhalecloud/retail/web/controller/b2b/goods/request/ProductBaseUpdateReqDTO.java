@@ -1,6 +1,8 @@
 package com.iwhalecloud.retail.web.controller.b2b.goods.request;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.iwhalecloud.retail.goods2b.dto.req.OldProductBaseUpdateReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductAddReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductExtUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductUpdateReq;
 import io.swagger.annotations.ApiModelProperty;
@@ -185,6 +187,9 @@ public class ProductBaseUpdateReqDTO implements Serializable {
     @ApiModelProperty(value = "拓展参数")
     private ProductExtUpdateReq productExtUpdateReq;
 
+    @ApiModelProperty(value = "oldProductBaseUpdateReqs")
+    private OldProductBaseUpdateReq oldProductBaseUpdateReq;
+
     /**
      * 产品信息
      */
@@ -207,7 +212,50 @@ public class ProductBaseUpdateReqDTO implements Serializable {
     @ApiModelProperty(value = "类型Id")
     private String typeId;
 
+    /**
+     * 是否推送ITMS
+     */
+    @ApiModelProperty(value = "是否推送ITMS")
+    private String isItms;
+
+    /**
+     * 是否需要CT码
+     */
+    @ApiModelProperty(value = "是否需要CT码")
+    private String isCtCode;
+
+    /**
+     * 是否需要抽检
+     */
+    @ApiModelProperty(value = "是否需要抽检")
+    private String IsInspection;
+
+    /**
+     * 是否固网产品
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String isFixedLine;
 
 
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
+    /**
+     * 产品列表
+     */
+    @ApiModelProperty(value = "产品列表")
+    private List<ProductAddReq> productAddReqs;
+
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 
 }

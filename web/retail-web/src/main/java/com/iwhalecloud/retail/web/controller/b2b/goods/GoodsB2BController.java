@@ -10,25 +10,16 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsResultCodeEnum;
-import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsActRelDTO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsDTO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.*;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 import com.iwhalecloud.retail.goods2b.service.AttrSpecService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.CatService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsService;
-import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantAccountDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantAccountListReq;
-import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
-import com.iwhalecloud.retail.partner.dto.req.MerchantRulesListReq;
 import com.iwhalecloud.retail.partner.service.MerchantAccountService;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -37,7 +28,9 @@ import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityProductListReq;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -46,15 +39,13 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -99,12 +90,18 @@ public class GoodsB2BController extends GoodsBaseController {
     @Reference
     private GoodsProductRelService goodsProductRelService;
 
+    @Reference
+    private GoodsSaleNumService goodsSaleNumService;
+
+    @Reference
+    private OrganizationService organizationService;
+
     @ApiOperation(value = "添加商品", notes = "添加商品")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/addGoods")
+    @PostMapping(value = "/addGoods")
     @UserLoginToken
     public ResultVO<GoodsAddResp> addGoods(@RequestBody GoodsAddReq req) throws Exception {
         log.info("GoodsB2BController addGoods req={} ", JSON.toJSON(req));
@@ -118,12 +115,15 @@ public class GoodsB2BController extends GoodsBaseController {
         req.setLanId(lanId);
         req.setRegionId(regionId);
 
-        //如果是预售商品，强制变更是否分货为否
         if (GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(req.getIsAdvanceSale())) {
-            req.setIsAllot(GoodsConst.IsAllotEnum.IS_NOT_ALLOT.getCode());
+            if (org.apache.commons.collections.CollectionUtils.isNotEmpty(req.getEntityList())) {
+                req.setIsAllot(GoodsConst.IsAllotEnum.IS_ALLOT.getCode());
+            } else {
+                req.setIsAllot(GoodsConst.IsAllotEnum.IS_NOT_ALLOT.getCode());
+            }
             List<GoodsProductRelDTO> goodsProductRelDTOs = req.getGoodsProductRelList();
             //商品产品关联关系上增加预付款金额
-            ResultVO attacheAdvancePayAmountResultVO = attacheAdvancePayAmount(goodsProductRelDTOs,req.getGoodsActs());
+            ResultVO attacheAdvancePayAmountResultVO = attacheAdvancePayAmount(goodsProductRelDTOs, req.getGoodsActs());
             if (!attacheAdvancePayAmountResultVO.isSuccess()) {
                 return attacheAdvancePayAmountResultVO;
             }
@@ -154,24 +154,20 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @ApiOperation(value = "添加商品--中台", notes = "添加商品--中台")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/addGoodsByZT")
+    @PostMapping(value = "/addGoodsByZT")
     @UserLoginToken
     public ResultVO<GoodsAddResp> addGoodsByZT(@RequestBody GoodsAddByZTReq req) throws GoodsRulesException {
         log.info("GoodsB2BController addGoods req={} ", JSON.toJSON(req));
         String goodsId = req.getGoodsId();
 
-        //如果是预售商品，强制变更是否分货为否
-        if (GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(req.getIsAdvanceSale())) {
-            req.setIsAllot(GoodsConst.IsAllotEnum.IS_NOT_ALLOT.getCode());
-            List<GoodsProductRelDTO> goodsProductRelDTOs = req.getGoodsProductRelList();
-            //商品产品关联关系上增加预付款金额
-            ResultVO attacheAdvancePayAmountResultVO = attacheAdvancePayAmount(goodsProductRelDTOs,req.getGoodsActs());
-            if (!attacheAdvancePayAmountResultVO.isSuccess()) {
-                return attacheAdvancePayAmountResultVO;
-            }
+        List<GoodsProductRelDTO> goodsProductRelDTOs = req.getGoodsProductRelList();
+        //商品产品关联关系上增加预付款金额
+        ResultVO attacheAdvancePayAmountResultVO = attacheAdvancePayAmount(goodsProductRelDTOs, req.getGoodsActs());
+        if (!attacheAdvancePayAmountResultVO.isSuccess()) {
+            return attacheAdvancePayAmountResultVO;
         }
 
         if (StringUtils.isEmpty(goodsId)) {
@@ -180,7 +176,7 @@ public class GoodsB2BController extends GoodsBaseController {
             GoodsEditReq editReq = new GoodsEditReq();
             BeanUtils.copyProperties(req, editReq);
             ResultVO<GoodsOperateResp> respResultVO = goodsService.editGoods(editReq);
-            if(respResultVO.isSuccess() && respResultVO.getResultData() != null && respResultVO.getResultData().getResult()) {
+            if (respResultVO.isSuccess() && respResultVO.getResultData() != null && respResultVO.getResultData().getResult()) {
                 GoodsAddResp resp = new GoodsAddResp();
                 resp.setGoodsId(goodsId);
                 return ResultVO.success(resp);
@@ -195,12 +191,13 @@ public class GoodsB2BController extends GoodsBaseController {
 
     /**
      * 商品与产品的关联关系增加预付款金额
+     *
      * @param goodsProductRelDTOs
      * @param goodsActs
      */
     private ResultVO attacheAdvancePayAmount(List<GoodsProductRelDTO> goodsProductRelDTOs, List<GoodsActRelDTO> goodsActs) {
 
-        ResultVO<String> advanceResultVO =  getAdvanceAct(goodsActs);
+        ResultVO<String> advanceResultVO = getAdvanceAct(goodsActs);
         if (!advanceResultVO.isSuccess()) {
             return advanceResultVO;
         }
@@ -214,23 +211,23 @@ public class GoodsB2BController extends GoodsBaseController {
             req.setMarketingActivityIds(actIds);
             req.setProductId(goodsProductRelDTO.getProductId());
 
-            log.info("GoodsB2bController.attacheAdvancePayAmount-->req={}",JSON.toJSONString(req));
+            log.info("GoodsB2bController.attacheAdvancePayAmount-->req={}", JSON.toJSONString(req));
             ResultVO<List<ActivityProductDTO>> resultVO = activityProductService.queryActivityProducts(req);
             if (!resultVO.isSuccess()) {
-                log.error("GoodsB2bController.attacheAdvancePayAmount-->queryActivityProducts error,resultVO={}",JSON.toJSONString(resultVO));
+                log.error("GoodsB2bController.attacheAdvancePayAmount-->queryActivityProducts error,resultVO={}", JSON.toJSONString(resultVO));
                 return ResultVO.error(resultVO.getResultMsg());
             }
 
             //如果活动与产品配置的关联关系条数不为1，则直接返回错误
             if (CollectionUtils.isEmpty(resultVO.getResultData()) || resultVO.getResultData().size() != 1) {
-                log.error("GoodsB2bController.attacheAdvancePayAmount-->queryActivityProducts error,!!ActivityProducts config error!!resultVO={}",JSON.toJSONString(resultVO));
-                return ResultVO.error("预售活动配置异常,productId={}",goodsProductRelDTO.getProductId());
+                log.error("GoodsB2bController.attacheAdvancePayAmount-->queryActivityProducts error,!!ActivityProducts config error!!resultVO={}", JSON.toJSONString(resultVO));
+                return ResultVO.error("预售活动配置异常,productId={}", goodsProductRelDTO.getProductId());
             }
 
             final Long prePrice = resultVO.getResultData().get(0).getPrePrice();
-            if (prePrice==null) {
-                log.error("GoodsB2bController.attacheAdvancePayAmount-->queryActivityProducts error,!! config error prePrice is null!!resultVO={}",JSON.toJSONString(resultVO));
-                return ResultVO.error("预售活动配置异常，获取预存款为空,productId={}",goodsProductRelDTO.getProductId());
+            if (prePrice == null) {
+                log.error("GoodsB2bController.attacheAdvancePayAmount-->queryActivityProducts error,!! config error prePrice is null!!resultVO={}", JSON.toJSONString(resultVO));
+                return ResultVO.error("预售活动配置异常，获取预存款为空,productId={}", goodsProductRelDTO.getProductId());
             }
             goodsProductRelDTO.setAdvancePayAmount(prePrice);
         }
@@ -239,23 +236,24 @@ public class GoodsB2BController extends GoodsBaseController {
 
     /**
      * 获取预售活动ID
+     *
      * @param goodsActs
      * @return
      */
     private ResultVO<String> getAdvanceAct(List<GoodsActRelDTO> goodsActs) {
         //如果活动信息不为1（预售商品只能参与一个活动）
         if (CollectionUtils.isEmpty(goodsActs)) {
-            log.error("GoodsB2bController.getAdvanceAct-->advance goods allow config only one activity,goodsActs={}",JSON.toJSONString(goodsActs));
+            log.error("GoodsB2bController.getAdvanceAct-->advance goods allow config only one activity,goodsActs={}", JSON.toJSONString(goodsActs));
             return ResultVO.error("预售商品必须配置一个预售活动");
         }
 
         //过滤出预售的活动
         List<GoodsActRelDTO> advanceActs = goodsActs.stream()
-                        .filter((GoodsActRelDTO goodsActRelDTO) -> PromoConst.ACTIVITYTYPE.BOOKING.getCode().equals(goodsActRelDTO.getActType()))
-                        .collect(Collectors.toList());
+                .filter((GoodsActRelDTO goodsActRelDTO) -> PromoConst.ACTIVITYTYPE.BOOKING.getCode().equals(goodsActRelDTO.getActType()))
+                .collect(Collectors.toList());
 
         if (CollectionUtils.isEmpty(advanceActs) || goodsActs.size() != 1) {
-            log.error("GoodsB2bController.getAdvanceAct-->advance goods allow config only one activity,advanceActs={}",JSON.toJSONString(advanceActs));
+            log.error("GoodsB2bController.getAdvanceAct-->advance goods allow config only one activity,advanceActs={}", JSON.toJSONString(advanceActs));
             return ResultVO.error("预售商品有且需要配置一个预售活动");
         }
 
@@ -264,10 +262,10 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @ApiOperation(value = "编辑商品", notes = "编辑商品")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/editGoods")
+    @PostMapping(value = "/editGoods")
     @UserLoginToken
     public ResultVO<GoodsOperateResp> editGoods(@RequestBody GoodsEditReq req) throws Exception {
         log.info("GoodsB2BController editGoods req={} ", JSON.toJSON(req));
@@ -283,10 +281,14 @@ public class GoodsB2BController extends GoodsBaseController {
 
         //如果是预售商品，强制变更是否分货为否
         if (GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(req.getIsAdvanceSale())) {
-            req.setIsAllot(GoodsConst.IsAllotEnum.IS_NOT_ALLOT.getCode());
+            if (org.apache.commons.collections.CollectionUtils.isNotEmpty(req.getEntityList())) {
+                req.setIsAllot(GoodsConst.IsAllotEnum.IS_ALLOT.getCode());
+            } else {
+                req.setIsAllot(GoodsConst.IsAllotEnum.IS_NOT_ALLOT.getCode());
+            }
             List<GoodsProductRelDTO> goodsProductRelDTOs = req.getGoodsProductRelList();
             //商品产品关联关系上增加预付款金额
-            ResultVO attacheAdvancePayAmountResultVO = attacheAdvancePayAmount(goodsProductRelDTOs,req.getGoodsActs());
+            ResultVO attacheAdvancePayAmountResultVO = attacheAdvancePayAmount(goodsProductRelDTOs, req.getGoodsActs());
             if (!attacheAdvancePayAmountResultVO.isSuccess()) {
                 return attacheAdvancePayAmountResultVO;
             }
@@ -304,43 +306,43 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @ApiOperation(value = "编辑商品-中台", notes = "编辑商品-中台")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/editGoodsByZT")
-    public ResultVO<GoodsOperateResp> editGoodsByZT(@RequestBody GoodsEditByZTReq req){
+    @PostMapping(value = "/editGoodsByZT")
+    public ResultVO<GoodsOperateResp> editGoodsByZT(@RequestBody GoodsEditByZTReq req) {
         log.info("GoodsB2BController editGoods req={} ", JSON.toJSON(req));
         return goodsService.editGoodsByZT(req);
     }
 
     /**
      * 商品分页查询
-     *
+     * <p>
      * 增加一个商品展示规则（零售商），优先地包
-     1. ，地包排序在省包前。如果地包价格高于省包平均供货价的3%，则不展示地包商品；
-     2. 1599及以下机型优先地包供货，如果地包无库存，则展示省包商品
-     3. 有前置补贴的机型优先地包供货，即使地包无库存，也不展示省包
-
+     * 1. ，地包排序在省包前。如果地包价格高于省包平均供货价的3%，则不展示地包商品；
+     * 2. 1599及以下机型优先地包供货，如果地包无库存，则展示省包商品
+     * 3. 有前置补贴的机型优先地包供货，即使地包无库存，也不展示省包
+     * <p>
      * 地包商只展示省包商品，省包商不展示商品
      */
     @ApiOperation(value = "根据条件进行商品分页查询（PC交易端）", notes = "条件分页查询")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @GetMapping(value="/queryGoodsForPage")
+    @GetMapping(value = "/queryGoodsForPage")
     public ResultVO<Page<GoodsForPageQueryResp>> queryGoodsForPage(
-        @RequestParam(value = "pageNo") Integer pageNo,
-        @RequestParam(value = "pageSize") Integer pageSize,
-        @RequestParam(value = "ids", required = false) List<String> ids,
-        @RequestParam(value = "catIdList", required = false) List<String> catIdList,
-        @RequestParam(value = "brandIdList", required = false) List<String> brandIdList,
-        @RequestParam(value = "searchKey", required = false) String searchKey,
-        @RequestParam(value = "startPrice", required = false) Long startPrice,
-        @RequestParam(value = "endPrice", required = false) Long endPrice,
-        @RequestParam(value = "attrSpecValues", required = false) String attrSpecValues,
-        @RequestParam(value = "isHaveStock", required = false) Integer isHaveStock,
-        @RequestParam(value = "sortType", required = false) Integer sortType)  throws UserNoMerchantException{
+            @RequestParam(value = "pageNo") Integer pageNo,
+            @RequestParam(value = "pageSize") Integer pageSize,
+            @RequestParam(value = "ids", required = false) List<String> ids,
+            @RequestParam(value = "catIdList", required = false) List<String> catIdList,
+            @RequestParam(value = "brandIdList", required = false) List<String> brandIdList,
+            @RequestParam(value = "searchKey", required = false) String searchKey,
+            @RequestParam(value = "startPrice", required = false) Long startPrice,
+            @RequestParam(value = "endPrice", required = false) Long endPrice,
+            @RequestParam(value = "attrSpecValues", required = false) String attrSpecValues,
+            @RequestParam(value = "isHaveStock", required = false) Integer isHaveStock,
+            @RequestParam(value = "sortType", required = false) Integer sortType) throws UserNoMerchantException {
         GoodsForPageQueryReq req = new GoodsForPageQueryReq();
         // 组装req参数
         setReqParam(pageNo, pageSize, ids, catIdList, brandIdList, searchKey, startPrice, endPrice, isHaveStock, req, catService);
@@ -358,23 +360,31 @@ public class GoodsB2BController extends GoodsBaseController {
             req.setRegionId(regionId);
             String merchantId = UserContext.getMerchantId();
             req.setTargetId(merchantId);
-            log.info("GoodsB2BController.queryGoodsForPage lanId={},regionId={},merchantId={}",lanId,regionId,merchantId);
+            log.info("GoodsB2BController.queryGoodsForPage lanId={},regionId={},merchantId={}", lanId, regionId, merchantId);
             // 如果用户是零售商，先查地包商品，没有地包商品才能查省包商品
             userFounder = UserContext.getUser().getUserFounder();
             if (null == userFounder) {
                 throw new UserNoMerchantException(ResultCodeEnum.ERROR.getCode(), "用户没有商家类型，请确认");
-            }else if (userFounder == SystemConst.USER_FOUNDER_3) {
+            } else if (userFounder == SystemConst.USER_FOUNDER_3) {
                 req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC_MERCHANT_TYPE_ASC.getValue());
+
+                // 设置零售商的组织路径编码 zhong.wenlong 2019.06.13
+                req.setOrgPathCode(getOrgPathCode(merchantId));
+
             } else if (userFounder == SystemConst.USER_FOUNDER_5) {
                 String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType();
                 // 商家类型为省包供应商
                 // 如果用户是地包供应商，只能查到省包商品
                 req.setMerchantType(merchantType);
+
+                // 设置地包商的组织路径编码 zhong.wenlong 2019.06.13
+                req.setOrgPathCode(getOrgPathCode(merchantId));
+
             } else {
                 // 省包供应商查询不到任何商品
                 req.setSourceFrom("-1");
             }
-        }  else {
+        } else {
             req.setSortType(GoodsConst.SortTypeEnum.MKTPRICE_ASC.getValue());
         }
         if (!StringUtils.isEmpty(attrSpecValues)) {
@@ -406,39 +416,62 @@ public class GoodsB2BController extends GoodsBaseController {
         return pageResultVO;
     }
 
-    private void setRegionIdAndTargetId(GoodsForPageQueryReq req) {
-        // 根据商家所属地市，过滤商品发布区域
-        String merchantId = UserContext.getMerchantId();
-        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
-        log.info("GoodsB2BController.queryGoodsForPage merchantId={},merchantDTOResultVO={}", merchantId,
-            JSON.toJSONString(merchantDTOResultVO));
-        if (merchantDTOResultVO.isSuccess() && merchantDTOResultVO.getResultData() != null) {
-            MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
-            req.setRegionId(merchantDTO.getCity());
+    /**
+     * zhong.wenlong
+     * 获取零售商的 组织路径 OrgPathCode
+     *
+     * @param merchantId
+     */
+    private String getOrgPathCode(String merchantId) {
+        // 根据商家所属组织，过滤商品发布区域
+        String orgPathCode = null;
+        MerchantDTO merchantDTO = merchantService.getMerchantById(merchantId).getResultData();
+        log.info("GoodsB2BController.getOrgPathCode() merchantService.getMerchantById() input: merchantId={}, output: merchantDTO ={}", merchantId, JSON.toJSONString(merchantDTO));
+        if (Objects.nonNull(merchantDTO)) {
+            // 判断 组织ID 是否为空
+            if (StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
+                OrganizationDTO organizationDTO = organizationService.getOrganization(merchantDTO.getParCrmOrgId()).getResultData();
+                log.info("GoodsB2BController.getOrgPathCode() organizationService.getOrganization() input: orgId={}, output: CommonOrgDTO ={}", merchantDTO.getParCrmOrgId(), JSON.toJSONString(organizationDTO));
+                if (Objects.nonNull(organizationDTO) && StringUtils.isNotEmpty(organizationDTO.getPathCode())) {
+                    orgPathCode = organizationDTO.getPathCode();
+                }
+            }
         }
-        // 根据商家id过滤发布对象类型
-        req.setTargetId(merchantId);
+        return orgPathCode;
     }
 
-    private ResultVO<Page<GoodsForPageQueryResp>> getPageResultVO(GoodsForPageQueryReq req) {
-        // 查询省包商品
-        ResultVO<Page<GoodsForPageQueryResp>> pageResultVO;
-        MerchantListReq merchantList = new MerchantListReq();
-        // 类型为省包供应商
-        merchantList.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
-        log.info("GoodsB2BController.getPageResultVO merchantListReq={}", JSON.toJSONString(merchantList));
-        ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(merchantList);
-        if (resultVO.isSuccess() && !CollectionUtils.isEmpty(resultVO.getResultData())) {
-            List<MerchantDTO> merchantDTOList = resultVO.getResultData();
-            List<String> supplierIdList = merchantDTOList.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
-            req.setSupplierIdList(supplierIdList);
-        }
-        log.info("GoodsB2BController.getPageResultVO req={}", JSON.toJSONString(req));
-        pageResultVO = goodsService.queryGoodsForPage(req);
-        return pageResultVO;
-    }
+//    private void setRegionIdAndTargetId(GoodsForPageQueryReq req) {
+//        // 根据商家所属地市，过滤商品发布区域
+//        String merchantId = UserContext.getMerchantId();
+//        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
+//        log.info("GoodsB2BController.queryGoodsForPage merchantId={},merchantDTOResultVO={}", merchantId,
+//                JSON.toJSONString(merchantDTOResultVO));
+//        if (merchantDTOResultVO.isSuccess() && merchantDTOResultVO.getResultData() != null) {
+//            MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
+//            req.setRegionId(merchantDTO.getCity());
+//        }
+//        // 根据商家id过滤发布对象类型
+//        req.setTargetId(merchantId);
+//    }
+//    private ResultVO<Page<GoodsForPageQueryResp>> getPageResultVO(GoodsForPageQueryReq req) {
+//        // 查询省包商品
+//        ResultVO<Page<GoodsForPageQueryResp>> pageResultVO;
+//        MerchantListReq merchantList = new MerchantListReq();
+//        // 类型为省包供应商
+//        merchantList.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+//        log.info("GoodsB2BController.getPageResultVO merchantListReq={}", JSON.toJSONString(merchantList));
+//        ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(merchantList);
+//        if (resultVO.isSuccess() && !CollectionUtils.isEmpty(resultVO.getResultData())) {
+//            List<MerchantDTO> merchantDTOList = resultVO.getResultData();
+//            List<String> supplierIdList = merchantDTOList.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
+//            req.setSupplierIdList(supplierIdList);
+//        }
+//        log.info("GoodsB2BController.getPageResultVO req={}", JSON.toJSONString(req));
+//        pageResultVO = goodsService.queryGoodsForPage(req);
+//        return pageResultVO;
+//    }
 
-    private void setTarGetCodeList(GoodsForPageQueryReq req)  throws UserNoMerchantException {
+    private void setTarGetCodeList(GoodsForPageQueryReq req) throws UserNoMerchantException {
         req.setIsLogin(true);
         req.setUserId(UserContext.getUser().getUserId());
         List<String> targetCodeList = Lists.newArrayList();
@@ -450,33 +483,15 @@ public class GoodsB2BController extends GoodsBaseController {
         log.info("GoodsB2BController.setTarGetCodeList userFounder={},targetCodeList={}", userFounder, JSON.toJSONString(targetCodeList));
     }
 
-    private List<String> listMerchantRules(String targetType) {
-        MerchantRulesListReq merchantRulesListReq = new MerchantRulesListReq();
-        String merchantId = UserContext.getMerchantId();
-        merchantRulesListReq.setMerchantId(merchantId);
-        merchantRulesListReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
-        merchantRulesListReq.setTargetType(targetType);
-        // 查询规格类型为经营权限，对象类型为机型的商家规则
-        log.info("GoodsB2BController.listMerchantRules merchantRulesListReq={}", JSON.toJSONString(merchantRulesListReq));
-        ResultVO<List<MerchantRulesDTO>> resultVO = merchantRulesService.listMerchantRules(merchantRulesListReq);
-        log.info("GoodsB2BController.listMerchantRules resultVO={}", JSON.toJSONString(resultVO));
-        List<String> targetIdList = null;
-        if (resultVO.isSuccess() && !CollectionUtils.isEmpty(resultVO.getResultData())) {
-            List<MerchantRulesDTO> merchantRulesDTOList = resultVO.getResultData();
-            targetIdList = merchantRulesDTOList.stream().map(MerchantRulesDTO::getTargetId).collect(Collectors.toList());
-            log.info("GoodsB2BController.listMerchantRules targetIdList={}", JSON.toJSONString(targetIdList)); }
-        return targetIdList;
-    }
-
     @ApiOperation(value = "查询商品详情", notes = "查询商品详情")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value="/queryGoodsDetail",method = RequestMethod.GET)
-    public ResultVO<GoodsDetailResp> queryGoodsDetail(@RequestParam String goodsId){
-        log.info("GoodsB2BController queryGoodsDetail req={} ",goodsId);
-        if(StringUtils.isEmpty(goodsId)){
+    @RequestMapping(value = "/queryGoodsDetail", method = RequestMethod.GET)
+    public ResultVO<GoodsDetailResp> queryGoodsDetail(@RequestParam String goodsId) {
+        log.info("GoodsB2BController queryGoodsDetail req={} ", goodsId);
+        if (StringUtils.isEmpty(goodsId)) {
             return ResultVO.error("goodsId is must not be null");
         }
         Boolean isLogin = UserContext.isUserLogin();
@@ -487,13 +502,33 @@ public class GoodsB2BController extends GoodsBaseController {
         return goodsService.queryGoodsDetail(req);
     }
 
+    @ApiOperation(value = "查询指定产品ID的商品详情", notes = "查询指定产品ID的商品详情")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/queryGoodsDetailByProductId", method = RequestMethod.GET)
+    public ResultVO<GoodsDetailResp> queryGoodsDetailByProductId(@RequestParam String goodsId, @RequestParam String productId) {
+        log.info("GoodsB2BController queryGoodsDetail req goodsId={},productId={} ", goodsId, productId);
+        if (StringUtils.isEmpty(goodsId) || StringUtils.isEmpty(productId)) {
+            return ResultVO.error("goodsId or ProductId is must not be null");
+        }
+        Boolean isLogin = UserContext.isUserLogin();
+        GoodsQueryReq req = new GoodsQueryReq();
+        req.setGoodsId(goodsId);
+        req.setIsLogin(isLogin);
+        req.setUserId(UserContext.getUserId());
+        req.setProductId(productId);
+        return goodsService.queryGoodsDetail(req);
+    }
+
     @ApiOperation(value = "删除商品", notes = "删除商品")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/deleteGoods")
-    public ResultVO<GoodsOperateResp> deleteGoods(@RequestBody GoodsDeleteReq req){
+    @PostMapping(value = "/deleteGoods")
+    public ResultVO<GoodsOperateResp> deleteGoods(@RequestBody GoodsDeleteReq req) {
         log.info("GoodsB2BController deleteGoods req={} ", JSON.toJSON(req));
         String goodsId = req.getGoodsId();
         GoodsIdListReq goodsIdListReq = new GoodsIdListReq();
@@ -523,12 +558,12 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @ApiOperation(value = "商品上下架", notes = "商品上下架")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @UserLoginToken
-    @PostMapping(value="/updateMarketEnable")
-    public ResultVO<GoodsOperateResp> updateMarketEnable(@RequestBody UpdateMarketEnableReq req){
+    @PostMapping(value = "/updateMarketEnable")
+    public ResultVO<GoodsOperateResp> updateMarketEnable(@RequestBody UpdateMarketEnableReq req) {
         log.info("GoodsB2BController updateMarketEnable req={}", JSON.toJSONString(req));
         boolean flag = GoodsConst.MARKET_ENABLE.equals(req.getMarketEnable());
         if (flag) {
@@ -592,12 +627,12 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @ApiOperation(value = "修改商品审核状态", notes = "修改商品审核状态")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/updateAuditState")
+    @PostMapping(value = "/updateAuditState")
     @UserLoginToken
-    public ResultVO<GoodsOperateResp> updateAuditState(@RequestBody UpdateAuditStateReq req){
+    public ResultVO<GoodsOperateResp> updateAuditState(@RequestBody UpdateAuditStateReq req) {
         log.info("GoodsB2BController updateAuditState req={}", req);
         GoodsAuditStateReq req1 = new GoodsAuditStateReq();
         req1.setGoodsId(req.getGoodsId());
@@ -607,12 +642,12 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @ApiOperation(value = "根据条件进行商品分页查询（管理端）", notes = "条件分页查询")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/queryPageByConditionAdmin")
+    @PostMapping(value = "/queryPageByConditionAdmin")
     @UserLoginToken
-    public ResultVO<Page<GoodsPageResp>> queryPageByConditionAdmin(@RequestBody GoodsPageReq req){
+    public ResultVO<Page<GoodsPageResp>> queryPageByConditionAdmin(@RequestBody GoodsPageReq req) {
         log.info("GoodsController queryPageByConditionAdmin req={}", req);
         Boolean isAdminType = UserContext.isAdminType();
         if (!isAdminType) {
@@ -620,7 +655,7 @@ public class GoodsB2BController extends GoodsBaseController {
             List<String> supplierIds = req.getSupplierIds();
             if (null == supplierIds) {
                 supplierIds = Lists.newArrayList(merchantId);
-            }else{
+            } else {
                 supplierIds.add(merchantId);
             }
             req.setSupplierIds(supplierIds);
@@ -631,20 +666,20 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @ApiOperation(value = "查询商品分类条件", notes = "查询商品分类条件")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value = "/queryGoodsFilters")
-    public ResultVO<List<GoodsFilterResp>> queryGoodsFilters(@RequestParam( value = "typeId")String typeId) {
+    public ResultVO<List<GoodsFilterResp>> queryGoodsFilters(@RequestParam(value = "typeId") String typeId) {
         List<GoodsFilterResp> goodsFilterRespList = Lists.newArrayList();
-        ResultVO<List<AttrSpecDTO>>  resultVO = attrSpecService.queryAttrSpecList(typeId);
+        ResultVO<List<AttrSpecDTO>> resultVO = attrSpecService.queryAttrSpecList(typeId);
         List<AttrSpecDTO> attrSpecDTOList = resultVO.getResultData();
         if (!resultVO.isSuccess() || CollectionUtils.isEmpty(attrSpecDTOList)) {
             return ResultVO.success(goodsFilterRespList);
         }
         // 根据属性ID进行分组
-        Map<String,List<AttrSpecDTO>> attrSpecMap = attrSpecDTOList.stream().collect(Collectors.groupingBy(AttrSpecDTO :: getAttrId));
-        for (Map.Entry<String,List<AttrSpecDTO>> entry : attrSpecMap.entrySet()) {
+        Map<String, List<AttrSpecDTO>> attrSpecMap = attrSpecDTOList.stream().collect(Collectors.groupingBy(AttrSpecDTO::getAttrId));
+        for (Map.Entry<String, List<AttrSpecDTO>> entry : attrSpecMap.entrySet()) {
             String attrId = entry.getKey();
             List<AttrSpecDTO> attrSpecDTOS = entry.getValue();
             if (!"1".equals(attrSpecDTOS.get(0).getIsFilter())) {
@@ -673,20 +708,87 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @ApiOperation(value = "根据商品id查询供应商信息", notes = "根据商品id查询供应商信息")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value = "/queryMerchantByGoodsId")
-    ResultVO<com.iwhalecloud.retail.goods2b.dto.MerchantDTO> queryMerchantByGoodsId(@RequestParam( value = "goodsId")String goodsId){
+    ResultVO<com.iwhalecloud.retail.goods2b.dto.MerchantDTO> queryMerchantByGoodsId(@RequestParam(value = "goodsId") String goodsId) {
         log.info("GoodsController queryMerchantByGoodsId goodsId={}", goodsId);
         GoodsSupplierIDGetReq goodsSupplierIDGetReq = new GoodsSupplierIDGetReq();
         goodsSupplierIDGetReq.setGoodsId(goodsId);
         com.iwhalecloud.retail.goods2b.dto.MerchantDTO merchantDTO = new com.iwhalecloud.retail.goods2b.dto.MerchantDTO();
         ResultVO<com.iwhalecloud.retail.goods2b.dto.MerchantDTO> merchantDTOResultVO = goodsService.querySupplierIdByGoodsId(goodsSupplierIDGetReq);
-        if(merchantDTOResultVO.isSuccess()){
+        if (merchantDTOResultVO.isSuccess()) {
             merchantDTO = merchantDTOResultVO.getResultData();
         }
         return ResultVO.success(merchantDTO);
+
+    }
+
+    @ApiOperation(value = "根据Key查询商品排行榜", notes = "根据Key查询商品排行榜")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/queryGoodsSaleOrder")
+    ResultVO<List<GoodsSaleNumDTO>> queryGoodsSaleOrder(@RequestParam(value = "cacheKey") String cacheKey) {
+        log.info("GoodsController queryGoodsSaleOrder goodsId={}", cacheKey);
+        List<GoodsSaleNumDTO> list = new ArrayList<>();
+        ResultVO<List<GoodsSaleNumDTO>> listResultVO = goodsSaleNumService.getGoodsSaleOrder(cacheKey);
+        if (listResultVO.isSuccess()) {
+            list = listResultVO.getResultData();
+        }
+        return ResultVO.success(list);
+
+    }
+
+    @ApiOperation(value = "查询产品销售数据量", notes = "查询产品销售数据量")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/queryProductSaleOrder")
+    ResultVO<List<GoodsSaleNumDTO>> queryProductSaleOrder() {
+        log.info("GoodsController queryProductSaleOrder ");
+        List<GoodsSaleNumDTO> list = new ArrayList<>();
+        String key = GoodsConst.CACHE_NAME_PRODUCT_SALE_ORDER_WHOLE;
+        ResultVO<List<GoodsSaleNumDTO>> listResultVO = goodsSaleNumService.getProductSaleOrder(key);
+        if (listResultVO.isSuccess()) {
+            list = listResultVO.getResultData();
+        }
+        return ResultVO.success(list);
+    }
+
+    @ApiOperation(value = "查询指定产品ID当天销售数据量", notes = "查询指定产品ID当天销售数据量")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/queryProductSaleOrderByProductId")
+    ResultVO<List<GoodsSaleNumDTO>> queryProductSaleOrderByProductId(@RequestParam(value = "productId") String productId) {
+        log.info("GoodsController queryProductSaleOrderByProductId productId = {}", productId);
+        List<GoodsSaleNumDTO> list = new ArrayList<>();
+        ResultVO<List<GoodsSaleNumDTO>> listResultVO = goodsSaleNumService.queryProductSaleOrderByProductId(productId);
+        if (listResultVO.isSuccess()) {
+            list = listResultVO.getResultData();
+        }
+        return ResultVO.success(list);
+    }
+
+    @ApiOperation(value = "根据商品ID和产品id省包推荐商品", notes = "根据商品ID和产品id省包推荐商品")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/querySupplierGoods")
+    ResultVO<List<SupplierGoodsDTO>> querySupplierGoods(@RequestParam(value = "goodsId") String goodsId, @RequestParam(value = "productId") String productId) {
+        log.info("GoodsController querySupplierGoods goodsId={},productId={}", goodsId, productId);
+        List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
+        List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsService.querySupplierGoods(goodsId, productId);
+        if (!CollectionUtils.isEmpty(supplierGoodsDTOs1)) {
+            supplierGoodsDTOs = supplierGoodsDTOs1;
+        }
+        return ResultVO.success(supplierGoodsDTOs);
 
     }
 }

@@ -12,7 +12,9 @@ import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ProductQuantityItem;
 import com.iwhalecloud.retail.warehouse.dto.request.UpdateStockReq;
+import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInstStore;
+import com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceStoreMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstStoreMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,9 @@ public class ResourceInstStoreManager{
 
     @Resource
     private ResouceStoreMapper resouceStoreMapper;
+
+    @Resource
+    private MktResItmsSyncRecMapper mktResItmsSyncRecMapper;
 
     @Reference
     private GoodsProductRelService goodsProductRelService;
@@ -76,10 +81,6 @@ public class ResourceInstStoreManager{
 
     public Integer getQuantityByMerchantId(String merchantId, List<String> statusList){
         ResouceStoreDTO resouceStoreDTO = resouceStoreMapper.getStore(merchantId, ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
-        log.info("ResourceInstStoreManager.getQuantityByMerchantId resouceStoreMapper.getStore merchantId={},resp={}", merchantId, JSON.toJSONString(resouceStoreDTO));
-        if (null == resouceStoreDTO) {
-            return 0;
-        }
         List<String> list = resourceInstStoreMapper.getQuantityByMerchantId(resouceStoreDTO.getMktResStoreId(), merchantId, statusList);
         Integer number = CollectionUtils.isEmpty(list) ? 0 : list.size();
         return number;
@@ -96,7 +97,7 @@ public class ResourceInstStoreManager{
      * @param resourceInstStoreDTO
      * @return
      */
-    public int updateResourceInstStore(ResourceInstStoreDTO resourceInstStoreDTO){
+    public synchronized int updateResourceInstStore(ResourceInstStoreDTO resourceInstStoreDTO){
         log.info("ResourceInstStoreManager.updateResourceInstStore req={}", JSON.toJSONString(resourceInstStoreDTO));
         //Step1:当前商户、当前商品、当前仓库的串码实例是否存在
         //step2:存在，修改库存数量
@@ -109,7 +110,7 @@ public class ResourceInstStoreManager{
         queryWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStoreDTO.getMktResStoreId());
         queryWrapper.eq(ResourceInstStore.FieldNames.mktResId.getTableFieldName(), resourceInstStoreDTO.getMktResId());
         ResourceInstStore resourceInstStore = resourceInstStoreMapper.selectOne(queryWrapper);
-        log.info("ResourceInstStoreManager.updateResourceInstStore selectOne req={}, resp={}", JSON.toJSONString(resourceInstStoreDTO),JSON.toJSONString(resourceInstStore));
+        log.info("ResourceInstStoreManager.updateResourceInstStore selectOne req={}, resp={}", JSON.toJSONString(resourceInstStore),JSON.toJSONString(resourceInstStore));
         if(null != resourceInstStore) {
             Long quantity = 0L;
             Long onwayQuantity = 0L;
@@ -141,15 +142,15 @@ public class ResourceInstStoreManager{
                 onwayQuantity = exixtsOnwayQuantity - changeOnwayQuantity;
             }
 
-            // 无库存时通知商品中心,小于1的话最后一个库存更新不了
-            if (quantity.longValue() < 0) {
+            // 无库存时通知商品中心
+            if (quantity < 0) {
                 try {
                     GoodsProductRelEditReq goodsProductRelEditReq = new GoodsProductRelEditReq();
                     goodsProductRelEditReq.setMerchantId(resourceInstStoreDTO.getMerchantId());
                     goodsProductRelEditReq.setProductId(resourceInstStoreDTO.getMktResId());
                     goodsProductRelEditReq.setIsHaveStock(false);
                     ResultVO<Boolean> resultVO = goodsProductRelService.updateIsHaveStock(goodsProductRelEditReq);
-                    log.info("ResourceInstStoreManager goodsProductRelService.updateIsHaveStock req={}", JSON.toJSONString(goodsProductRelEditReq), JSON.toJSONString(resultVO));
+                    log.info("ResourceInstStoreManager.updateResourceInstStore goodsProductRelService.updateIsHaveStock req={}, resp={}", JSON.toJSONString(goodsProductRelEditReq),JSON.toJSONString(resultVO));
                 } catch (Exception ex) {
                     log.error("通知商品中心异常", ex);
                 }
@@ -163,11 +164,7 @@ public class ResourceInstStoreManager{
             UpdateWrapper<ResourceInstStore> updateWrapper = new UpdateWrapper<>();
             updateWrapper.eq(ResourceInstStore.FieldNames.mktResInstStoreId.getTableFieldName(), resourceInstStore.getMktResInstStoreId());
             updateWrapper.eq(ResourceInstStore.FieldNames.mktResStoreId.getTableFieldName(), resourceInstStore.getMktResStoreId());
-            updateWrapper.eq(ResourceInstStore.FieldNames.merchantId.getTableFieldName(), resourceInstStore.getMerchantId());
-            updateWrapper.eq(ResourceInstStore.FieldNames.mktResId.getTableFieldName(), resourceInstStore.getMktResId());
-            Integer sucessNum = resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
-            log.info("ResourceInstStoreManager.update req={}，resp={}", JSON.toJSONString(updateWrapper), sucessNum);
-            return sucessNum;
+            return resourceInstStoreMapper.update(updateResourceInstStore, updateWrapper);
         }else{
             Date now = new Date();
             ResourceInstStore addResourceInstStore = new ResourceInstStore();
@@ -193,4 +190,9 @@ public class ResourceInstStoreManager{
         }
         return i;
     }
+
+    public void batchAddMKTInfo(List<MktResItmsSyncRec> mktResItmsSyncRecRep){
+        mktResItmsSyncRecMapper.batchAddMKTInfo(mktResItmsSyncRecRep);
+    }
+
 }

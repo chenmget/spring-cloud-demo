@@ -6,10 +6,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
-import com.iwhalecloud.retail.partner.dto.resp.FactoryMerchantDTO;
-import com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp;
-import com.iwhalecloud.retail.partner.dto.resp.RetailMerchantDTO;
-import com.iwhalecloud.retail.partner.dto.resp.SupplyMerchantDTO;
+import com.iwhalecloud.retail.partner.dto.resp.*;
 
 import java.util.List;
 
@@ -112,5 +109,26 @@ public interface MerchantService{
      * @param req
      * @return
      */
-    ResultVO<List<MerchantDTO>> listMerchantByLanCity(MerchantListReq req);
+    ResultVO<List<String>> listMerchantByLanCity(MerchantListLanCityReq req);
+
+    /**
+     * 根据商家id 获取一个 商家 概要信息     *
+     * @param merchantId
+     * @return
+     */
+    MerchantDTO getMerchantInfoById(String merchantId);
+
+    /**
+     * 商家信息列表（只取部分必要字段）
+     * @param req
+     * @return
+     */
+    ResultVO<List<MerchantLigthResp>> listMerchantForOrder(MerchantLigthReq req);
+
+    /**
+     * 商家信息列表（只取部分必要字段）
+     * @param req
+     * @return
+     */
+    ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req);
 }

@@ -1,15 +1,14 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.oms.dto.SelectTagListDTO;
 import com.iwhalecloud.retail.oms.dto.TagDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.TagPageReq;
-import com.iwhalecloud.retail.oms.entity.TTag;
 import com.iwhalecloud.retail.oms.manager.TagManager;
 import com.iwhalecloud.retail.oms.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 
 import java.util.List;
 

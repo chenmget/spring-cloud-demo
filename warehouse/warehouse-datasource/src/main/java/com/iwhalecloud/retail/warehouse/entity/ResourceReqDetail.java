@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.warehouse.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -125,9 +124,33 @@ public class ResourceReqDetail implements Serializable {
   	 */
 	@ApiModelProperty(value = "备注")
   	private java.lang.String remark;
-  	
-  	
-  	//属性 end
+
+	/**
+	 * 抽检标识
+	 */
+	@ApiModelProperty(value = "抽检标识")
+	private String isInspection;
+
+	/**
+	 * CT码
+	 */
+	@ApiModelProperty(value = "CT码")
+	private String ctCode;
+
+	/**
+	 * SN码
+	 */
+	@ApiModelProperty(value = "SN码")
+	private java.lang.String snCode;
+
+	/**
+	 * 网络终端（包含光猫、机顶盒、融合终端）记录MAC码
+	 */
+	@ApiModelProperty(value = "macCode")
+	private java.lang.String macCode;
+
+
+	//属性 end
 	
     /** 字段名称枚举. */
     public enum FieldNames {
@@ -173,8 +196,22 @@ public class ResourceReqDetail implements Serializable {
 		/** 记录出入库类型,LOVB=RES-C-0012. */
 		chngType("chngType","CHNG_TYPE"),
 		
+		/** 抽检标识. */
+		isInspection("isInspection","IS_INSPECTION"),
+
+		/** CT码. */
+		ctCode("ctCode","CT_CODE"),
+
 		/** 备注. */
-		remark("remark","REMARK");
+		remark("remark","REMARK"),
+
+		/**SN码. */
+		snCode("snCode","sn_code"),
+
+		mktResInstNbr("mktResInstNbr","MKT_RES_INST_NBR"),
+
+		/** 网络终端（包含光猫、机顶盒、融合终端）记录MAC码. */
+		macCode("macCode","mac_code");
 
 		private String fieldName;
 		private String tableFieldName;

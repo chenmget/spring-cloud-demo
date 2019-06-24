@@ -30,9 +30,11 @@ import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.partner.service.SupplierService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
+import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityQueryByGoodsReq;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingReliefActivityQueryResp;
+import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
@@ -67,7 +69,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Component("goodsService")
-@Service(parameters = {"queryGoodsForPage.timeout", "300000","queryPageByConditionAdmin.timeout", "200000"})
+@Service(parameters = {"queryGoodsForPage.timeout", "300000", "queryPageByConditionAdmin.timeout", "200000"})
 public class GoodsServiceImpl implements GoodsService {
 
     @Value("${goodsRule.goodsMktPrice}")
@@ -151,11 +153,17 @@ public class GoodsServiceImpl implements GoodsService {
     @Reference
     private MarketingActivityService marketingActivityService;
 
+    @Reference
+    private ActivityProductService activityProductService;
+
     @Autowired
     private GoodsRulesService goodsRulesService;
 
     @Reference
     private UserService userService;
+
+    @Autowired
+    private TypeManager typeManager;
 
     /**
      * 首字母转小写
@@ -171,9 +179,23 @@ public class GoodsServiceImpl implements GoodsService {
         }
     }
 
+    /**
+     * 添加商品发布地市关联记录
+     *
+     * @param goodsId
+     * @param regionReq
+     */
+    private void saveGoodsRegionRel(String goodsId, RegionReq regionReq) {
+        // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+        GoodsRegionRel goodsRegionRel = new GoodsRegionRel();
+        BeanUtils.copyProperties(regionReq, goodsRegionRel);
+        goodsRegionRel.setGoodsId(goodsId);
+        goodsRegionRelManager.saveGoodsRegionRel(goodsRegionRel);
+    }
+
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public ResultVO<GoodsAddResp> addGoods(GoodsAddReq req) throws GoodsRulesException{
+    public ResultVO<GoodsAddResp> addGoods(GoodsAddReq req) throws GoodsRulesException {
         log.info("GoodsServiceImpl.addGoods req={}", JSON.toJSONString(req));
         Goods goods = new Goods();
         BeanUtils.copyProperties(req, goods);
@@ -190,15 +212,16 @@ public class GoodsServiceImpl implements GoodsService {
         goodsManager.addGoods(goods);
 
         //添加分货规则
-        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot())) {
+        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot()) &&
+                CollectionUtils.isNotEmpty(req.getEntityList())) {
             ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
             prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
             ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());
-            log.info("GoodsServiceImpl.addGoods   checkResult={}",checkResult);
+            log.info("GoodsServiceImpl.addGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
                 try {
                     goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
-                }catch (Exception e){
+                } catch (Exception e) {
                     log.info("添加分货规则失败");
                 }
             } else {
@@ -206,9 +229,8 @@ public class GoodsServiceImpl implements GoodsService {
                 errors.add(checkResult.getResultMsg());
                 throw new GoodsRulesException(errors);
             }
+            log.info("添加分货规则成功");
         }
-        log.info("添加分货规则成功");
-
 
         String goodsId = goods.getGoodsId();
         String targetType = req.getTargetType();
@@ -217,7 +239,9 @@ public class GoodsServiceImpl implements GoodsService {
             if (CollectionUtils.isNotEmpty(regionList)) {
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -246,13 +270,13 @@ public class GoodsServiceImpl implements GoodsService {
         List<FileAddReq> fileAddReqList = req.getFileAddReqList();
         addImageFile(goodsId, fileAddReqList);
         // 添加零售商标签
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setGoodsId(goodsId);
-            relBatchAddReq.setTagList(tagList);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setGoodsId(goodsId);
+//            relBatchAddReq.setTagList(tagList);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
         log.info("添加图片、标签成功");
 
         //如果有配置活动信息
@@ -276,10 +300,10 @@ public class GoodsServiceImpl implements GoodsService {
             processStartDTO.setApplyUserName(req.getUserName());
             ResultVO<CommonRegionDTO> resultVOLan = ResultVO.error();
             ResultVO<CommonRegionDTO> resultVORegion = ResultVO.error();
-            if(req.getLanId() != null) {
+            if (req.getLanId() != null) {
                 resultVOLan = commonRegionService.getCommonRegionById(req.getLanId());
             }
-            if(req.getRegionId() != null) {
+            if (req.getRegionId() != null) {
                 resultVORegion = commonRegionService.getCommonRegionById(req.getRegionId());
             }
             String lanName = "";
@@ -320,7 +344,9 @@ public class GoodsServiceImpl implements GoodsService {
             if (CollectionUtils.isNotEmpty(regionList)) {
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -347,13 +373,13 @@ public class GoodsServiceImpl implements GoodsService {
         List<FileAddReq> fileAddReqList = req.getFileAddReqList();
         addImageFile(goodsId, fileAddReqList);
         // 添加零售商标签
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setGoodsId(goodsId);
-            relBatchAddReq.setTagList(tagList);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setGoodsId(goodsId);
+//            relBatchAddReq.setTagList(tagList);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
 
         //如果有配置活动信息
         if (!CollectionUtils.isEmpty(req.getGoodsActs())) {
@@ -389,15 +415,16 @@ public class GoodsServiceImpl implements GoodsService {
         String targetType = req.getTargetType();
 
         //添加分货规则
-        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot())) {
+        if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot()) &&
+                CollectionUtils.isNotEmpty(req.getEntityList())) {
             ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
             prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
             ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());
-            log.info("GoodsServiceImpl.editGoods   checkResult={}",checkResult);
+            log.info("GoodsServiceImpl.editGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
                 try {
                     goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
-                }catch (Exception e){
+                } catch (Exception e) {
                     log.info("添加分货规则失败");
                 }
             } else {
@@ -417,7 +444,9 @@ public class GoodsServiceImpl implements GoodsService {
                 goodsTargetManager.deleteGoodsTargerRel(goodsId);
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -451,16 +480,16 @@ public class GoodsServiceImpl implements GoodsService {
         List<FileAddReq> fileAddReqList = req.getFileAddReqList();
         addImageFile(goodsId, fileAddReqList);
         // 添加零售商标签前先删除再新增
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
-            relDeleteByGoodsIdReq.setGoodsId(goodsId);
-            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setTagList(tagList);
-            relBatchAddReq.setGoodsId(goodsId);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+//            relDeleteByGoodsIdReq.setGoodsId(goodsId);
+//            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setTagList(tagList);
+//            relBatchAddReq.setGoodsId(goodsId);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
         log.info("添加商品图片成功");
 
         //如果有配置活动信息
@@ -491,10 +520,10 @@ public class GoodsServiceImpl implements GoodsService {
                 processStartDTO.setApplyUserName(req.getUserName());
                 ResultVO<CommonRegionDTO> resultVOLan = ResultVO.error();
                 ResultVO<CommonRegionDTO> resultVORegion = ResultVO.error();
-                if(req.getLanId() != null) {
+                if (req.getLanId() != null) {
                     resultVOLan = commonRegionService.getCommonRegionById(req.getLanId());
                 }
-                if(req.getRegionId() != null) {
+                if (req.getRegionId() != null) {
                     resultVORegion = commonRegionService.getCommonRegionById(req.getRegionId());
                 }
                 String lanName = "";
@@ -555,7 +584,9 @@ public class GoodsServiceImpl implements GoodsService {
                 goodsRegionRelManager.delGoodsRegionRelByGoodsId(goodsId);
                 for (RegionReq regionReq : regionList) {
                     // 添加商品发布地市关联记录
-                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+//                    goodsRegionRelManager.addGoodsRegionRel(goodsId, regionReq.getRegionId(), regionReq.getRegionName(), regionReq.getLanId());
+                    // 添加商品发布地市关联记录(增加 org_id、org_name两个字段后）
+                    saveGoodsRegionRel(goodsId, regionReq);
                 }
             }
         } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
@@ -588,16 +619,16 @@ public class GoodsServiceImpl implements GoodsService {
         }
 
         // 添加零售商标签前先删除再新增
-        List<String> tagList = req.getTagList();
-        if (CollectionUtils.isNotEmpty(tagList)) {
-            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
-            relDeleteByGoodsIdReq.setGoodsId(goodsId);
-            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
-            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
-            relBatchAddReq.setTagList(tagList);
-            relBatchAddReq.setGoodsId(goodsId);
-            tagRelService.batchAddTagRel(relBatchAddReq);
-        }
+//        List<String> tagList = req.getTagList();
+//        if (CollectionUtils.isNotEmpty(tagList)) {
+//            TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
+//            relDeleteByGoodsIdReq.setGoodsId(goodsId);
+//            tagRelService.deleteTagRelByGoodsId(relDeleteByGoodsIdReq);
+//            TagRelBatchAddReq relBatchAddReq = new TagRelBatchAddReq();
+//            relBatchAddReq.setTagList(tagList);
+//            relBatchAddReq.setGoodsId(goodsId);
+//            tagRelService.batchAddTagRel(relBatchAddReq);
+//        }
 
         //如果有配置活动信息
         if (!CollectionUtils.isEmpty(req.getGoodsActs())) {
@@ -648,14 +679,14 @@ public class GoodsServiceImpl implements GoodsService {
     public ResultVO<Page<GoodsForPageQueryResp>> queryGoodsForPage(GoodsForPageQueryReq req) {
         log.info("GoodsServiceImpl.queryGoodsForPage req={}", JSON.toJSONString(req));
         List<AttrSpecValueReq> attrSpecValueReqList = req.getAttrSpecValueList();
-        // 获取并设置属性字段名称
+        // 获取并设置属性字段名称F
         getFiledName(attrSpecValueReqList);
         Page<GoodsForPageQueryResp> goodsForPageQueryRespPage = goodsManager.queryGoodsForPage(req);
         // 按照零售商商品展示规则过滤
         long start = System.currentTimeMillis();
         filterGoods(req, goodsForPageQueryRespPage);
         long end = System.currentTimeMillis();
-        log.info("filterGoods costTime={}:",end-start);
+        log.info("filterGoods costTime={}:", end - start);
         List<GoodsForPageQueryResp> goodsDTOList = goodsForPageQueryRespPage.getRecords();
         if (CollectionUtils.isEmpty(goodsDTOList)) {
             Page<GoodsForPageQueryResp> page = new Page<>();
@@ -687,23 +718,24 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     /**
-     1、零售价1599或以下，只展示地包商品，不展示省包商品。
-     2、零售价1599以上的地包商品在哪些条件下不展示： 地包商品供货价大于省包平均供货价的3%
-     3、零售价1599以上的省包商品在哪些条件下展示：
-     1）所有地包商品供货价大于省包平均供货价的3%；
-     2）所有供货价小于省包平均供货价3%的地包商品都没有上架量，且这些地包商品都没有配置前置补贴活动；
-     省包商品满足条件1）或条件2）时展示。
-    */
+     * 1、零售价1599或以下，只展示地包商品，不展示省包商品。
+     * 2、零售价1599以上的地包商品在哪些条件下不展示： 地包商品供货价大于省包平均供货价的3%
+     * 3、零售价1599以上的省包商品在哪些条件下展示：
+     * 1）所有地包商品供货价大于省包平均供货价的3%；
+     * 2）所有供货价小于省包平均供货价3%的地包商品都没有上架量，且这些地包商品都没有配置前置补贴活动；
+     * 省包商品满足条件1）或条件2）时展示。
+     */
     private void filterGoods(GoodsForPageQueryReq req, Page<GoodsForPageQueryResp> goodsForPageQueryRespPage) {
         List<GoodsForPageQueryResp> goodsForPageQueryRespList = goodsForPageQueryRespPage.getRecords();
         // 按零售商商品展示规则过滤
         Iterator<GoodsForPageQueryResp> it = goodsForPageQueryRespList.iterator();
-        while(it.hasNext()) {
+        while (it.hasNext()) {
             GoodsForPageQueryResp item = it.next();
             String goodsId = item.getGoodsId();
             Integer userFounder = req.getUserFounder();
             // 非零售商用户不进行商品过滤
             if (userFounder == null || userFounder != SystemConst.USER_FOUNDER_3) {
+                log.info("GoodsServiceImpl.filterGoods() 非零售商用户 查询商品分页 跳过 商品过滤 userFounder={}", userFounder);
                 continue;
             }
             // 是否省包商品标识
@@ -717,10 +749,10 @@ public class GoodsServiceImpl implements GoodsService {
                     ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
                     // 获取平均供货价
                     Double avgSupplyPrice = productBaseGetResp.getAvgSupplyPrice();
-                    log.info("GoodsServiceImpl.filterGoods goodsId={} avgSupplyPrice={}",goodsId, avgSupplyPrice);
+                    log.info("GoodsServiceImpl.filterGoods goodsId={} avgSupplyPrice={}", goodsId, avgSupplyPrice);
                     // 如果地包供货价高于省包平均供货价的3%，则不展示该地包商品
                     if (isAbove3Per(deliveryPrice, avgSupplyPrice)) {
-                        log.info("GoodsServiceImpl.filterGoods filter avgSupplyPrice goodsId={}",goodsId);
+                        log.info("GoodsServiceImpl.filterGoods filter avgSupplyPrice goodsId={}", goodsId);
                         it.remove();
                     }
                 }
@@ -749,8 +781,8 @@ public class GoodsServiceImpl implements GoodsService {
         Double avgSupplyPrice = productBaseGetResp.getAvgSupplyPrice();
         // 通过goodsId进行分组
         Map<String, List<SupplierGroundGoodsDTO>> map = supplierGroundGoodsDTOList.stream().collect(Collectors.groupingBy(
-        SupplierGroundGoodsDTO::getGoodsId));
-        for (Map.Entry<String, List<SupplierGroundGoodsDTO>> entry : map.entrySet()){
+                SupplierGroundGoodsDTO::getGoodsId));
+        for (Map.Entry<String, List<SupplierGroundGoodsDTO>> entry : map.entrySet()) {
             // 获取goodsId
             String goodsIdKey = entry.getKey();
             List<SupplierGroundGoodsDTO> supplierGroundGoodsDTOS = entry.getValue();
@@ -776,7 +808,7 @@ public class GoodsServiceImpl implements GoodsService {
                 }
                 // 供货价小于省包平均供货价3%的地包商品上架数量大于0则不展示省包商品
                 if (isSupplyNumAboveZero) {
-                    log.info("GoodsServiceImpl.filterGoods filter isSupplyNumAboveZero filterGoodsId={},becauseGoodsId={}",goodsId, goodsIdKey);
+                    log.info("GoodsServiceImpl.filterGoods filter isSupplyNumAboveZero filterGoodsId={},becauseGoodsId={}", goodsId, goodsIdKey);
                     it.remove();
                     return;
                 }
@@ -784,9 +816,9 @@ public class GoodsServiceImpl implements GoodsService {
                 // 供货价小于省包平均供货价3%的地包商品配置了前置补贴活动则不展示省包
                 boolean isPresubsidyGoodsFlag = filterPresubsidyGoods(productIdList);
                 if (isPresubsidyGoodsFlag) {
-                    log.info("GoodsServiceImpl.filterGoods filter activity goodsId={}",item.getGoodsId());
+                    log.info("GoodsServiceImpl.filterGoods filter activity goodsId={}", item.getGoodsId());
                     it.remove();
-                    return ;
+                    return;
                 }
             }
         }
@@ -794,7 +826,7 @@ public class GoodsServiceImpl implements GoodsService {
 
     private boolean isAbove3Per(Double deliveryPrice, Double avgSupplyPrice) {
         return avgSupplyPrice != null && deliveryPrice > avgSupplyPrice && (deliveryPrice - avgSupplyPrice) / avgSupplyPrice >
-            AVG_SUPPLY_PRICE;
+                AVG_SUPPLY_PRICE;
     }
 
     private boolean filterPresubsidyGoods(List<String> productIdList) {
@@ -802,9 +834,9 @@ public class GoodsServiceImpl implements GoodsService {
         if (!CollectionUtils.isEmpty(productIdList)) {
             for (String productId : productIdList) {
                 String code = PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode();
-                log.info("GoodsServiceImpl.filterPresubsidyGoods productId={}",productId);
+                log.info("GoodsServiceImpl.filterPresubsidyGoods productId={}", productId);
                 ResultVO<List<MarketingActivityDTO>> resultVO = marketingActivityService.queryActivityByProductId(productId, code);
-                log.info("GoodsServiceImpl.filterPresubsidyGoods resultVO={}",JSON.toJSONString(resultVO.getResultData()));
+                log.info("GoodsServiceImpl.filterPresubsidyGoods resultVO={}", JSON.toJSONString(resultVO.getResultData()));
                 if (resultVO.isSuccess() && resultVO.getResultData().size() > 0) {
                     isPresubsidyGoodsFlag = true;
                     break;
@@ -825,7 +857,7 @@ public class GoodsServiceImpl implements GoodsService {
         String merchantCode = "";
         log.info("GoodsServiceImpl.queryGoodsForPage getUserByUserId req={}", req.getUserId());
         UserDTO userDTO = userService.getUserByUserId(req.getUserId());
-        if(null != userDTO){
+        if (null != userDTO) {
             merchantCode = userDTO.getRelCode();
 //            MerchantGetReq merchantGetReq = new MerchantGetReq();
 //            merchantGetReq.setMerchantId(userDTO.getRelCode());
@@ -856,10 +888,15 @@ public class GoodsServiceImpl implements GoodsService {
             // 设置前置补贴价格
             goods.setDeliveryPrice(goods.getDeliveryPrice());
             goods.setIsPresubsidy(false);
-            this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
+            if (null != goods.getIsSubsidy()) {
+                int isSubsidy = goods.getIsSubsidy();
+                if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode() == isSubsidy) {
+                    this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
+                }
+            }
         }
         long endTime = System.currentTimeMillis();
-        log.info("setPresubsidyPrice costTime={}:",endTime-startTime);
+        log.info("setPresubsidyPrice costTime={}:", endTime - startTime);
     }
 
     private void setGoodsImageUrl(List<GoodsForPageQueryResp> goodsDTOList, List<String> goodsIdList) {
@@ -871,8 +908,14 @@ public class GoodsServiceImpl implements GoodsService {
                 // 设置缩略图
                 for (ProdFileDTO prodFileDTO : prodFileDTOList) {
                     if (goods.getGoodsId().equals(prodFileDTO.getTargetId())) {
-                        goods.setImageUrl(prodFileDTO.getFileUrl());
-                        break;
+                        ProdFileDTO prodFileDTOHD = prodFileManager.queryGoodsImageHD(goods.getGoodsId());//查看这个商品有没有活动图片
+                        if (prodFileDTOHD != null) {
+                            goods.setImageUrl(prodFileDTOHD.getFileUrl());
+                            break;
+                        } else {
+                            goods.setImageUrl(prodFileDTO.getFileUrl());
+                            break;
+                        }
                     }
                 }
             }
@@ -890,7 +933,7 @@ public class GoodsServiceImpl implements GoodsService {
             long startTime = System.currentTimeMillis();
             ResultVO<List<MarketingReliefActivityQueryResp>> resultVO1 = marketingActivityService.listGoodsMarketingReliefActivitys(marketingActivityQueryByGoodsReq);
             long endTime = System.currentTimeMillis();
-            log.info("setPresubsidyPrice costTime={}:",endTime-startTime);
+            log.info("setPresubsidyPrice costTime={}:", endTime - startTime);
             if (resultVO1.isSuccess() && CollectionUtils.isNotEmpty(resultVO1.getResultData())) {
                 goods.setIsPresubsidy(true);
                 List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryResps = resultVO1.getResultData();
@@ -995,12 +1038,12 @@ public class GoodsServiceImpl implements GoodsService {
                 GetProductQuantityByMerchantResp merchantResp = booleanResultVO.getResultData();
                 if (!booleanResultVO.isSuccess() || merchantResp == null || !merchantResp.getInStock()) {
 //                    return ResultVO.error(GoodsResultCodeEnum.NOT_HAS_STOCK);
-                }else{
+                } else {
                     GetProductQuantityByMerchantResp resultData = booleanResultVO.getResultData();
                     List<ProductQuantityItem> productQuantityItemList = resultData.getItemList();
                     if (productQuantityItemList == null && CollectionUtils.isEmpty(productQuantityItemList)) {
 //                    return ResultVO.error(GoodsResultCodeEnum.NOT_HAS_STOCK);
-                    }else{
+                    } else {
                         // 更新该商品有库存字段
                         for (ProductQuantityItem item : productQuantityItemList) {
                             goodsProductRelManager.updateIsHaveStock(goods.getGoodsId(), item.getProductId(), item.getIsEnough());
@@ -1043,17 +1086,23 @@ public class GoodsServiceImpl implements GoodsService {
     @Override
     public ResultVO<Page<GoodsPageResp>> queryPageByConditionAdmin(GoodsPageReq req) {
         log.info("GoodsServiceImpl.queryPageByConditionAdmin req={}", req);
-        if(StringUtils.isNotEmpty(req.getSupplierName())){
+        // 筛选供应商
+        if (StringUtils.isNotEmpty(req.getSupplierName()) || StringUtils.isNotEmpty(req.getSupplierLanId())) {
             MerchantListReq merchantListReq = new MerchantListReq();
             merchantListReq.setMerchantName(req.getSupplierName());
+            merchantListReq.setLanId(req.getSupplierLanId());
             ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchant(merchantListReq);
-            if(listResultVO.isSuccess() && null!=listResultVO.getResultData()){
-                if(listResultVO.getResultData().size()>0){
-                    String supplierId = listResultVO.getResultData().get(0).getMerchantId();
-                    if(StringUtils.isNotEmpty(supplierId)){
-                        req.setSupplierId(supplierId);
-                    }
-                }else{
+            if (listResultVO.isSuccess() && null != listResultVO.getResultData()) {
+                if (listResultVO.getResultData().size() > 0) {
+                    List<String> supplierMerchantIds = listResultVO.getResultData().stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
+                    req.setSupplierIds(supplierMerchantIds);
+                    log.info("GoodsServiceImpl.queryPageByConditionAdmin 调用 merchantService.listMerchant() 查要过滤的供应商的结果 req={}， idList:",
+                            JSON.toJSONString(req), JSON.toJSONString(supplierMerchantIds));
+//                    String supplierId = listResultVO.getResultData().get(0).getMerchantId();
+//                    if (StringUtils.isNotEmpty(supplierId)) {
+//                        req.setSupplierId(supplierId);
+//                    }
+                } else {
                     Page<GoodsPageResp> pageRespPage = new Page<GoodsPageResp>();
                     return ResultVO.success(pageRespPage);
                 }
@@ -1064,12 +1113,16 @@ public class GoodsServiceImpl implements GoodsService {
         for (GoodsPageResp resp : respList) {
             GoodsProductRel goodsProductRel = goodsProductRelManager.queryGoodsProductRel(resp.getGoodsId());
             log.info("GoodsServiceImpl.queryPageByConditionAdmin queryGoodsProductRel rsp={},goodsProductRel={}", resp.getGoodsId(), goodsProductRel);
-            if(null!=goodsProductRel){
-                ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
+            if (null != goodsProductRel) {
+//                ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
                 ProductDetailResp productDetail = productBaseManager.getProductDetail(goodsProductRel.getProductBaseId());
-                if(null!=productDetail){
+                if (null != productDetail) {
                     resp.setTypeId(productDetail.getTypeId());
                     resp.setTypeName(productDetail.getTypeName());
+                    List<AttrSpecDTO> attrSpecDTOS = attrSpecManager.queryAttrSpecList(productDetail.getTypeId());
+                    if (CollectionUtils.isNotEmpty(attrSpecDTOS)) {
+                        resp.setAttrSpecDTOs(attrSpecDTOS);
+                    }
                 }
             }
             // 添加营销活动名称
@@ -1079,23 +1132,23 @@ public class GoodsServiceImpl implements GoodsService {
             Double lowestPrice = goodsProductRelManager.getLowestPriceByGoodsId(resp.getGoodsId());
             resp.setGoodsLowestPrice(lowestPrice);
             String targetType = resp.getTargetType();
-            if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_REGION.equals(targetType)){
+            if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_REGION.equals(targetType)) {
                 List<GoodsRegionRel> goodsRegionRels = goodsRegionRelManager.queryGoodsRegionRel(resp.getGoodsId());
-                if(CollectionUtils.isNotEmpty(goodsRegionRels)){
+                if (CollectionUtils.isNotEmpty(goodsRegionRels)) {
                     List<GoodsRegionRelDTO> goodsRegionRelDTOs = new ArrayList<>();
-                    for(GoodsRegionRel goodsRegionRel:goodsRegionRels){
+                    for (GoodsRegionRel goodsRegionRel : goodsRegionRels) {
                         GoodsRegionRelDTO goodsRegionRelDTO = new GoodsRegionRelDTO();
                         BeanUtils.copyProperties(goodsRegionRel, goodsRegionRelDTO);
                         goodsRegionRelDTOs.add(goodsRegionRelDTO);
                     }
                     resp.setGoodsRegionRels(goodsRegionRelDTOs);
                 }
-            }else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)){
+            } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
                 List<GoodsTargetRel> goodsTargetRels = goodsTargetManager.queryGoodsTargerRel(resp.getGoodsId());
-                if(CollectionUtils.isNotEmpty(goodsTargetRels)){
+                if (CollectionUtils.isNotEmpty(goodsTargetRels)) {
                     List<String> merchantList = new ArrayList<>();
-                    for(GoodsTargetRel goodsTargetRel:goodsTargetRels){
-                        if(StringUtils.isEmpty(goodsTargetRel.getTargetId())){
+                    for (GoodsTargetRel goodsTargetRel : goodsTargetRels) {
+                        if (StringUtils.isEmpty(goodsTargetRel.getTargetId())) {
                             merchantList.add(goodsTargetRel.getTargetId());
                         }
                     }
@@ -1105,8 +1158,8 @@ public class GoodsServiceImpl implements GoodsService {
                     List<String> goodsTargetRelLists = new ArrayList<>();
                     if (resultVO.isSuccess() && null != resultVO.getResultData()) {
                         List<MerchantDTO> merchantDTOs = resultVO.getResultData();
-                        if(CollectionUtils.isNotEmpty(merchantDTOs)){
-                            for(MerchantDTO merchantDTO:merchantDTOs){
+                        if (CollectionUtils.isNotEmpty(merchantDTOs)) {
+                            for (MerchantDTO merchantDTO : merchantDTOs) {
                                 goodsTargetRelLists.add(merchantDTO.getMerchantName());
                             }
                         }
@@ -1115,7 +1168,7 @@ public class GoodsServiceImpl implements GoodsService {
                 }
             }
 
-            // 补充供应商名称及等级
+            // 补充供应商名称 、供应商地市名称 及等级
             resp.setImagesUrl(getDefaultPicUrl(resp.getGoodsId()));
             try {
                 ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(resp.getSupplierId());
@@ -1123,6 +1176,8 @@ public class GoodsServiceImpl implements GoodsService {
                     MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
                     resp.setSupplierName(merchantDTO.getMerchantName());
                     resp.setSupplierType(merchantDTO.getMerchantType());
+                    resp.setSupplierId(merchantDTO.getLanId());
+                    resp.setSupplierLanName(getCommonRegionName(merchantDTO.getLanId()));
                 }
             } catch (Exception ex) {
                 log.error("GoodsServiceImpl.queryPageByConditionAdmin getMerchantById throw exception ex={}", ex);
@@ -1130,6 +1185,22 @@ public class GoodsServiceImpl implements GoodsService {
             }
         }
         return ResultVOUtils.genQueryResultVO(respPage);
+    }
+
+    /**
+     * 根据ID 获取区域信息
+     * @param regionId
+     * @return
+     */
+    private String getCommonRegionName(String regionId) {
+        if (StringUtils.isEmpty(regionId)) {
+            return null;
+        }
+        CommonRegionDTO commonRegionDTO = commonRegionService.getCommonRegionById(regionId).getResultData();
+        if (Objects.nonNull(commonRegionDTO)) {
+            return commonRegionDTO.getRegionName();
+        }
+        return null;
     }
 
     /**
@@ -1217,6 +1288,19 @@ public class GoodsServiceImpl implements GoodsService {
         if (CollectionUtils.isEmpty(list)) {
             return ResultVO.successMessage("查询产商品列表为空");
         }
+        //查询指定productId
+        String productId = req.getProductId();
+        if (StringUtils.isNotEmpty(productId)) {
+            List<GoodsProductRel> list2 = new ArrayList<>();
+            for (GoodsProductRel goodsProductRel : list) {
+                if (productId.equals(goodsProductRel.getProductId())) {
+                    list2.add(goodsProductRel);
+                }
+            }
+            if (CollectionUtils.isNotEmpty(list2)) {
+                list = list2;
+            }
+        }
         // 查询产商品关联信息
         List<GoodsProductRelDTO> goodsProductRelDTOList = Lists.newArrayList();
         for (GoodsProductRel goodsProductRel : list) {
@@ -1237,9 +1321,11 @@ public class GoodsServiceImpl implements GoodsService {
             for (GoodsRegionRel regionRel : goodsRegionRels) {
                 regionNames.add(regionRel.getRegionName());
                 RegionReq regionReq = new RegionReq();
-                regionReq.setRegionId(regionRel.getRegionId());
-                regionReq.setRegionName(regionRel.getRegionName());
-                regionReq.setLanId(regionRel.getLanId());
+//                regionReq.setRegionId(regionRel.getRegionId());
+//                regionReq.setRegionName(regionRel.getRegionName());
+//                regionReq.setLanId(regionRel.getLanId());
+                // zhongwenlong 2019.06.13
+                BeanUtils.copyProperties(regionRel, regionReq);
                 regionList.add(regionReq);
             }
             resp.setRegionList(regionList);
@@ -1276,7 +1362,9 @@ public class GoodsServiceImpl implements GoodsService {
             resp.setSupplierName(merchantDTO.getMerchantName());
             resp.setMerchantType(merchantDTO.getMerchantType());
             // 查询商品归属商家所在地市
-            resp.setCityName(merchantDTO.getCityName());
+//            resp.setCityName(merchantDTO.getCityName());
+            // zhongwenlong 2019.06.24 改为本地网的名称
+            resp.setCityName(merchantDTO.getLanName());
         }
         //查询类别名称
         Cat cat = catManager.queryProdCat(goods.getGoodsCatId());
@@ -1287,21 +1375,42 @@ public class GoodsServiceImpl implements GoodsService {
         //查询营销活动的列表
         List<GoodActRelResp> relResps = getGoodActRelResps(goodsId);
         resp.setGoodActRelResps(relResps);
+
+        //查询活动的图片
+        List<ProdFileDTO> prodFileDTOListHD = prodFileManager.queryGoodsImageHDdetail(goodsId);//查出是活的的图片
+        if (prodFileDTOListHD == null) {
+            prodFileDTOListHD = new ArrayList<ProdFileDTO>();
+        }
         // 查询商品图片和视频
-        List<ProdFileDTO> prodFileDTOList = prodFileManager.queryGoodsImage(goodsId);
-        if (CollectionUtils.isNotEmpty(prodFileDTOList)) {
-            resp.setProdFiles(prodFileDTOList);
+        List<ProdFileDTO> prodFileDTOList = prodFileManager.queryGoodsImage(goodsId);//查询不是活动的图片
+
+        for (int i = 0; i < prodFileDTOList.size(); i++) {//为了活动图片展示在普通的图片前面
+            prodFileDTOListHD.add(prodFileDTOList.get(i));
+        }
+
+        if (CollectionUtils.isNotEmpty(prodFileDTOListHD)) {
+            resp.setProdFiles(prodFileDTOListHD);
         }
         // 查询产品基本信息
         String productBaseId = goodsProductRel.getProductBaseId();
         ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
         //查询产品列表
-        List<ProductResp> productResps = productResps(list, req.getIsLogin());
+//        List<ProductResp> productResps = getProductResps(list, req.getIsLogin());
+        List<ProductResp> productResps = getProductResps(list, req, goods);
+
         if (productBaseGetResp != null && !CollectionUtils.isEmpty(productResps)) {
+            resp.setSallingPoint(productBaseGetResp.getSallingPoint());
             for (ProductResp productResp : productResps) {
                 productResp.setUnitType(productBaseGetResp.getUnitType());
                 productResp.setPurchaseType(productBaseGetResp.getPurchaseType());
                 productResp.setBrandId(productResp.getBrandId());
+                productResp.setBrandName(resp.getBrandName());
+                if (StringUtils.isNotEmpty(productResp.getTypeId())) {
+                    Type type = typeManager.selectById(productResp.getTypeId());
+                    if (null != type) {
+                        productResp.setTypeName(type.getTypeName());
+                    }
+                }
             }
         }
         //查询产品属性列表
@@ -1334,6 +1443,7 @@ public class GoodsServiceImpl implements GoodsService {
                             goodsParamResp.setParamName(attrSpecDto.getAttrName());
                             goodsParamResp.setParamValue(paramValue);
                             goodsParamResp.setAttrGroupId(attrSpecDto.getAttrGroupId());
+                            goodsParamResp.setIsDisplay(attrSpecDto.getIsDisplay());
                             goodsParamRespList.add(goodsParamResp);
                         }
                     }
@@ -1343,6 +1453,7 @@ public class GoodsServiceImpl implements GoodsService {
                     GoodsAttrResp goodsAttrResp = new GoodsAttrResp();
                     goodsAttrResp.setAttrName(attrSpecDto.getAttrName());
                     goodsAttrResp.setAttrValue(attrValue);
+                    goodsAttrResp.setIsDisplay(attrSpecDto.getIsDisplay());
                     goodsAttrRespList.add(goodsAttrResp);
                 }
             }
@@ -1452,12 +1563,32 @@ public class GoodsServiceImpl implements GoodsService {
 
     /**
      * 查询产品列表
+     * 增加逻辑： 判断商品是不是参加啦前置补贴活动，是：要查出产品是否符合活动，符合要查出强制的统一供货价
      *
      * @param list
      * @return
      */
-    private List<ProductResp> productResps(List<GoodsProductRel> list, boolean isLogin) {
+    private List<ProductResp> getProductResps(List<GoodsProductRel> list, GoodsQueryReq req, Goods goods) {
+//        private List<ProductResp> getProductResps(List<GoodsProductRel> list, boolean isLogin) {
         List<ProductResp> productResps = Lists.newLinkedList();
+
+        // 判断商品是否是 参加前置补贴
+        MarketingActivityQueryByGoodsReq activityQueryByGoodsReq = new MarketingActivityQueryByGoodsReq();
+        if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode().equals(goods.getIsSubsidy())) {
+            // 构造请求判断 当前用户是否参加
+
+            // 前置补贴活动类型
+            activityQueryByGoodsReq.setActivityType(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
+            activityQueryByGoodsReq.setSupplierCode(goods.getSupplierId());
+            // 买家的商家ID
+            UserDTO userDTO = userService.getUserByUserId(req.getUserId());
+            if (Objects.nonNull(userDTO) && !StringUtils.isEmpty(userDTO.getRelCode())) {
+                activityQueryByGoodsReq.setMerchantCode(userDTO.getRelCode());
+            } else {
+                log.info("GoodsServiceImpl.getProductResps() 根据userid 获取merchantid失败");
+            }
+        }
+
         for (GoodsProductRel goodsProductRel : list) {
             ProductResp dto = productManager.getProduct(goodsProductRel.getProductId());
             if (dto == null) {
@@ -1471,12 +1602,29 @@ public class GoodsServiceImpl implements GoodsService {
             }
             resp.setMaxNum(goodsProductRel.getMaxNum());
             resp.setMinNum(goodsProductRel.getMinNum());
-            if (isLogin) {
-                resp.setDeliveryPrice(goodsProductRel.getDeliveryPrice());
-            }
             resp.setSupplyNum(goodsProductRel.getSupplyNum());
             resp.setSpecName(goodsProductRel.getSpecName());
             resp.setAdvancePayAmount(goodsProductRel.getAdvancePayAmount());
+            resp.setInitialPrice(goodsProductRel.getInitialPrice());
+            if (req.getIsLogin()) {
+                resp.setDeliveryPrice(goodsProductRel.getDeliveryPrice());
+            }
+
+            // 判断商品是否是 参加前置补贴
+            if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode().equals(goods.getIsSubsidy())) {
+                // 构造请求判断 当前用户是否参加 前置补贴活动
+                activityQueryByGoodsReq.setProductId(goodsProductRel.getProductId());
+                ResultVO<ActivityProductDTO> resultVO = marketingActivityService.getActivityProduct(activityQueryByGoodsReq);
+                if (resultVO.isSuccess() && Objects.nonNull(resultVO.getResultData())) {
+                    ActivityProductDTO activityProductDTO = resultVO.getResultData();
+                    // 设置需要的值
+                    // 前置补贴活动的统一货价(转换为Double)
+                    resp.setDeliveryPrice(activityProductDTO.getPrice() * 1D);
+                } else {
+                    log.info("GoodsServiceImpl.getProductResps() 调用服务 marketingActivityService.getActivityProduct 返回结果为空");
+                }
+            }
+
             productResps.add(resp);
         }
         return productResps;
@@ -1537,6 +1685,16 @@ public class GoodsServiceImpl implements GoodsService {
             for (Goods goods : goodsList) {
                 GoodsDTO goodsDTO = new GoodsDTO();
                 BeanUtils.copyProperties(goods, goodsDTO);
+                List<GoodsProductRel> list = goodsProductRelManager.listGoodsProductRel(goodsDTO.getGoodsId());
+                if(CollectionUtils.isNotEmpty(list)){
+                    GoodsProductRel goodsProductRel = list.get(0);
+                    String productBaseId = goodsProductRel.getProductBaseId();
+                    ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
+                    if(null!=productBaseGetResp){
+                        goodsDTO.setSallingPoint(productBaseGetResp.getSallingPoint());
+                    }
+                }
+
                 goodsDTOList.add(goodsDTO);
             }
         }
@@ -1618,4 +1776,46 @@ public class GoodsServiceImpl implements GoodsService {
         return ResultVO.success(updateFlag);
     }
 
+    @Override
+    public List<SupplierGoodsDTO> querySupplierGoods(String goodsId, String productId) {
+        log.info("GoodsServiceImpl.querySupplierGoods req goodsId={},goodsId={}", goodsId, productId);
+        List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
+        Goods goods = goodsManager.queryGoods(goodsId);
+        if (null == goods) {
+            return supplierGoodsDTOs;
+        } else {
+            Double mktprice = goods.getMktprice();
+            Integer isSubsidy = 0;
+            if (null != goods.getIsSubsidy()) {
+                isSubsidy = goods.getIsSubsidy();
+            }
+            if (1 == isSubsidy || mktprice <= 1599) {
+                return supplierGoodsDTOs;
+            }
+            if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(goods.getMerchantType())) {
+                return supplierGoodsDTOs;
+            }
+        }
+
+        //先根据商家类型查询地包商是否有货
+        List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsManager.listSupplierGoodsByType(productId, "2");
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 地包商 supplierGoodsDTOs={}", supplierGoodsDTOs1);
+        if (CollectionUtils.isNotEmpty(supplierGoodsDTOs1)) {
+            return supplierGoodsDTOs;
+        }
+        //先根据商家类型查询省包商是否有货
+        List<SupplierGoodsDTO> supplierGoodsDTOs2 = goodsManager.listSupplierGoodsByType(productId, "3");
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 省包商 supplierGoodsDTOs={}", supplierGoodsDTOs2);
+        if (CollectionUtils.isNotEmpty(supplierGoodsDTOs2)) {
+            for (SupplierGoodsDTO supplierGoodsDTO : supplierGoodsDTOs2) {
+                List<ProdFileDTO> prodFileDTOs = fileManager.getFile(supplierGoodsDTO.getGoodsId(), FileConst.TargetType.GOODS_TARGET.getType(), FileConst.SubType.THUMBNAILS_SUB.getType());
+                if (CollectionUtils.isNotEmpty(prodFileDTOs)) {
+                    supplierGoodsDTO.setImageUrl(prodFileDTOs.get(0).getFileUrl());
+                }
+            }
+            supplierGoodsDTOs = supplierGoodsDTOs2;
+        }
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType  resp={}", supplierGoodsDTOs);
+        return supplierGoodsDTOs;
+    }
 }

@@ -1,9 +1,8 @@
 package com.iwhalecloud.retail.web.config;
 
+import com.alibaba.dubbo.config.ConsumerConfig;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import com.alibaba.dubbo.config.ConsumerConfig;
 
 @Configuration
 public class DubboConfiguration {
@@ -18,8 +17,9 @@ public class DubboConfiguration {
 	   ConsumerConfig consumerConfig = new ConsumerConfig();
 	   consumerConfig.setCheck(false);
 	   consumerConfig.setTimeout(15000);
-	   consumerConfig.setRetries(0); 	//不重发请求
-	   consumerConfig.setFilter("sourceFromfilter");
+		//不重发请求
+	   consumerConfig.setRetries(0);
+	   consumerConfig.setFilter("sourceFromFilter,localeFilter");
 	   return consumerConfig;
 	}
 }

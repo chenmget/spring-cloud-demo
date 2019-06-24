@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
+import com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.SupplierGroundGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq;
@@ -121,5 +122,9 @@ public class GoodsManager{
             goods.setIsSubsidy(req.getIsSubsidy());
         }
         return goodsMapper.update(goods, updateWrapper);
+    }
+
+    public List<SupplierGoodsDTO> listSupplierGoodsByType(String productId,String merchantType){
+        return goodsMapper.listSupplierGoodsByType(productId,merchantType);
     }
 }

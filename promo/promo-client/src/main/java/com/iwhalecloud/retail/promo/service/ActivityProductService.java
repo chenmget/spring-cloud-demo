@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author xuqinyuan
  */
-public interface ActivityProductService{
+public interface ActivityProductService {
 
     /**
      * 添加参与活动产品
@@ -24,6 +24,7 @@ public interface ActivityProductService{
 
     /**
      * 编辑参与活动产品
+     *
      * @param req
      * @return
      */
@@ -31,6 +32,7 @@ public interface ActivityProductService{
 
     /**
      * 删除前置补贴配置产品
+     *
      * @param marketingActivityId
      * @return
      */
@@ -38,13 +40,23 @@ public interface ActivityProductService{
 
     /**
      * 根据活动id查询前置补贴或预售的产品配置信息
+     *
      * @param marketingActivityId
      * @return
      */
     ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProduct(String marketingActivityId);
 
     /**
+     * 根据活动id查询前置补贴或预售的产品配置信息
+     *
+     * @param marketingActivityId
+     * @return
+     */
+    ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProductInfo(String marketingActivityId);
+
+    /**
      * 添加前置补贴活动的产品
+     *
      * @param activityProductReq
      * @return
      */
@@ -52,6 +64,7 @@ public interface ActivityProductService{
 
     /**
      * 添加预售活动产品
+     *
      * @param addPreSaleProductReqDTO
      * @return
      */
@@ -59,21 +72,32 @@ public interface ActivityProductService{
 
     /**
      * 查询预售活动的产品
+     *
      * @param queryMarketingActivityReq
      * @return
      */
     ResultVO<List<PreSubsidyProductRespDTO>> queryPreSaleProduct(QueryMarketingActivityReq queryMarketingActivityReq);
 
     /**
+     * 查询预售活动的产品
+     *
+     * @param queryMarketingActivityReq
+     * @return
+     */
+    ResultVO<List<PreSubsidyProductRespDTO>> queryPreSaleProductInfo(QueryMarketingActivityReq queryMarketingActivityReq);
+
+    /**
      * 校验减免金额是否小于销售价
+     *
      * @param productId
      * @param discountAmount
      * @return
      */
-    ResultVO checkProductDiscountAmount(String productId,Long discountAmount);
+    ResultVO checkProductDiscountAmount(String productId, Long discountAmount);
 
     /**
      * 查询活动产品信息
+     *
      * @param req
      * @return
      */
@@ -81,6 +105,7 @@ public interface ActivityProductService{
 
     /**
      * 根据活动ID、产品ID，校验产品购买量是否达到购买上限服务
+     *
      * @param req
      * @return
      */

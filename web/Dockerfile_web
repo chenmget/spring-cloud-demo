@@ -11,18 +11,18 @@ RUN mkdir /opt/ZSMART_HOME  \
 #    && echo 'APP=("webapp")\nwebapp=("nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log&"\n"webapp")' > /root/docker-app.def   \
     && echo 'APP=( "webapp" )'>> /root/docker-app.def  \
     && echo 'webapp=(' >> /root/docker-app.def \
-    && echo '"nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log&"' >> /root/docker-app.def    \ 
+    && echo '"nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log&"' >> /root/docker-app.def    \
     && echo '"webapp"' >> /root/docker-app.def  \
     && echo ")" >> /root/docker-app.def \
     && chmod +x /root/docker-app.def    \
 	&& echo "CLASSPATH=$CLASSPATH:/opt/ZSMART_HOME:/opt/ZSMART_HOME/config" > /opt/ZSMART_HOME/setenv.sh  \
     && echo "nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log& " > /opt/ZSMART_HOME/start.sh \
-    && chmod +x /opt/ZSMART_HOME/* 
+    && chmod +x /opt/ZSMART_HOME/*
 
 COPY web/retail-web-boot/target/retail-web.jar /opt/ZSMART_HOME/webapps/retail-web.jar
 
-# RUN nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log& 
-    
+# RUN nohup java -jar -Dspring.profiles.active=web /opt/ZSMART_HOME/webapps/retail-web.jar --spring.config.location=/opt/ZSMART_HOME/config/ > /opt/ZSMART_HOME/logs/web.log&
+
 EXPOSE 8080
 
 VOLUME [ "/opt/ZSMART_HOME/logs" ]

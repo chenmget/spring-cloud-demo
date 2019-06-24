@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.ActivityChangeMapper">
+
+    <sql id="allFields">
+        t.CHANGE_ID
+        ,t.VER_NUM
+        ,t.MARKETING_ACTIVITY_ID
+        ,t.AUDIT_STATE
+        ,t.CREATE_DATE
+        ,t.CREATE_STAFF
+    </sql>
+
+    <select id="getPrimaryKey" resultType="java.lang.String">
+        select seq_retail_all_tables.nextval
+    </select>
+
+    <select id="queryLatestActivityChangeByActivityId" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.promo.entity.ActivityChange">
+        select
+        <include refid="allFields"></include>
+        from `act_activity_change` t
+        where t.audit_state in('2','3')
+        and t.marketing_activity_id =#{id}
+        order by t.ver_num desc limit 1
+    </select>
+
+</mapper>

@@ -14,10 +14,7 @@ import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
-import com.iwhalecloud.retail.partner.dto.resp.FactoryMerchantDTO;
-import com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp;
-import com.iwhalecloud.retail.partner.dto.resp.RetailMerchantDTO;
-import com.iwhalecloud.retail.partner.dto.resp.SupplyMerchantDTO;
+import com.iwhalecloud.retail.partner.dto.resp.*;
 import com.iwhalecloud.retail.partner.entity.BusinessEntity;
 import com.iwhalecloud.retail.partner.entity.Invoice;
 import com.iwhalecloud.retail.partner.entity.Merchant;
@@ -49,9 +46,10 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
-@Service
+@Service(timeout = 20000)
 @Component("merchantService")
 public class MerchantServiceImpl implements MerchantService {
 
@@ -378,12 +376,6 @@ public class MerchantServiceImpl implements MerchantService {
                 dto.setCityName(regionNamesMap.get(dto.getCity()));
             }
 
-//            // 取本地网名称  市县名称
-//            for (MerchantDTO merchantDTO : list) {
-//                // 取本地网名称  市县名称
-//                merchantDTO.setLanName(getRegionNameByRegionId(merchantDTO.getLanId()));
-//                merchantDTO.setCityName(getRegionNameByRegionId(merchantDTO.getCity()));
-//            }
         }
         log.info("MerchantServiceImpl.listMerchant(), output: list={} ", list);
         return ResultVO.success(list);
@@ -420,13 +412,6 @@ public class MerchantServiceImpl implements MerchantService {
                 merchantDTO.setCityName(regionNamesMap.get(merchantDTO.getCity()));
             }
         }
-
-//        // 取本地网名称  市县名称
-//        for (MerchantPageResp merchantDTO : page.getRecords()) {
-//            // 取本地网名称  市县名称
-//            merchantDTO.setLanName(getRegionNameByRegionId(merchantDTO.getLanId()));
-//            merchantDTO.setCityName(getRegionNameByRegionId(merchantDTO.getCity()));
-//        }
         log.info("MerchantServiceImpl.pageMerchant() output: list<MerchantPageResp>={} ", JSON.toJSONString(page.getRecords()));
         return ResultVO.success(page);
     }
@@ -870,15 +855,43 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public ResultVO<List<MerchantDTO>> listMerchantByLanCity(MerchantListReq req) {
-        List<MerchantDTO> merchantDTOS = Lists.newArrayList();
+    public ResultVO<List<String>> listMerchantByLanCity(MerchantListLanCityReq req) {
+        log.info("MerchantServiceImpl.listMerchantByLanCity MerchantListReq={}",JSON.toJSON(req));
         List<Merchant> merchants = merchantManager.listMerchantByLanCity(req);
-        for (Merchant merchant : merchants) {
-            MerchantDTO merchantDTO = new MerchantDTO();
-            BeanUtils.copyProperties(merchant, merchantDTO);
-            merchantDTOS.add(merchantDTO);
-        }
-        return ResultVO.success(merchantDTOS);
+        log.info("MerchantServiceImpl.listMerchantByLanCity merchantManager.listMerchantByLanCity merchants={}",JSON.toJSON(merchants));
+        List<String> merchantIds = merchants.stream().distinct().map(Merchant::getMerchantId).collect(Collectors.toList());
+        return ResultVO.success(merchantIds);
     }
 
+    /**
+     * 根据商家id 获取一个 商家 概要信息（字段不够用的话 用getMerchantDetail（）取）
+     *
+     * @param merchantId
+     * @return
+     */
+    @Override
+    public MerchantDTO getMerchantInfoById(String merchantId) {
+        log.info("MerchantServiceImpl.getMerchantById(), input: merchantId={} ", merchantId);
+        MerchantGetReq req = new MerchantGetReq();
+        req.setMerchantId(merchantId);
+        Merchant merchant = merchantManager.getMerchant(req);
+        MerchantDTO merchantDTO = new MerchantDTO();
+        if (merchant == null) {
+            merchantDTO = null;
+        } else {
+            BeanUtils.copyProperties(merchant, merchantDTO);
+        }
+        log.info("MerchantServiceImpl.getMerchantById(), output: merchantDTO={} ", JSON.toJSONString(merchantDTO));
+        return merchantDTO;
+    }
+
+    @Override
+    public ResultVO<List<MerchantLigthResp>> listMerchantForOrder(MerchantLigthReq req){
+        return ResultVO.success(merchantManager.listMerchantForOrder(req));
+    }
+
+    @Override
+    public ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req){
+        return ResultVO.success(merchantManager.getMerchantForOrder(req));
+    }
 }

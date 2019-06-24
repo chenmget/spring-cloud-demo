@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.order2b.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
 import com.iwhalecloud.retail.order2b.config.Order2bContext;
@@ -66,7 +67,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         List<String> statusList = new ArrayList<>();
         if (StringUtils.isEmpty(req.getStatus())) {
             statusList.addAll(
-                    selectOrderService.getOrderStatusByUser(OrderManagerConsts.USER_EXPORT_TYPE_1,""));
+                    selectOrderService.getOrderStatusByUser(OrderManagerConsts.USER_EXPORT_TYPE_1,null));
         } else {
             String[] statusArr = req.getStatus().split(",");
             statusList = Arrays.asList(statusArr);
@@ -75,10 +76,9 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         req.setCreateUserId(req.getUserId());
         if (!StringUtils.isEmpty(req.getSupplierName())) {
             req.setSupplierName("%" + req.getSupplierName() + "%");
-//            List<String> supperiD=memberInfoReference.selectSuperBySupper(req.getSupplierName());
-//            if(!CollectionUtils.isEmpty(supperiD)){
-//                req.setSupperIds(supperiD);
-//            }
+        }
+        if (!StringUtils.isEmpty(req.getUserName())) {
+            req.setUserName("%" + req.getUserName() + "%");
         }
         req.setIsDelete("0");
         IPage list = selectOrderService.selectOrderListByOrder(req);
@@ -100,30 +100,29 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         //供应商名称查询
         if (!StringUtils.isEmpty(req.getSupplierName())) {
             req.setSupplierName("%" + req.getSupplierName() + "%");
-//            List<String> supperiD=memberInfoReference.selectSuperBySupper(req.getSupplierName());
-//            if(!CollectionUtils.isEmpty(supperiD)){
-//                req.setSupperIds(supperiD);
-//            }
         }
-
         //零售商查询
         if (!StringUtils.isEmpty(req.getUserName())) {
             req.setUserName("%" + req.getUserName() + "%");
-//            List<String> userIds=memberInfoReference.selectSuperBySupper(req.getSupplierName());
-//            if(!CollectionUtils.isEmpty(userIds)){
-//                req.setUserIds(userIds);
-//            }
         }
 
         //订单状态
         List<String> statusList = new ArrayList<>();
         if (StringUtils.isEmpty(req.getStatus())) {
             statusList.addAll(
-                    selectOrderService.getOrderStatusByUser(OrderManagerConsts.USER_EXPORT_TYPE_3,""));
+                    selectOrderService.getOrderStatusByUser(OrderManagerConsts.USER_EXPORT_TYPE_3,null));
         } else {
             String[] statusArr = req.getStatus().split(",");
             statusList = Arrays.asList(statusArr);
 //            statusList.add(req.getStatus());
+        }
+        /**
+         * 多个lanId查询
+         */
+        OrderRequest bContext=Order2bContext.getDubboRequest();
+        if(!StringUtils.isEmpty(bContext.getLanId()) && bContext.getLanId().contains(",")){
+            req.setLanIdList(Arrays.asList(bContext.getLanId().split(",")));
+            bContext.setLanId(null);
         }
         req.setStatusAll(statusList);
         req.setIsDelete(null);
@@ -159,7 +158,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         List<String> statusList = new ArrayList<>();
         if (StringUtils.isEmpty(req.getStatus())) {
             statusList.addAll(
-                    selectOrderService.getOrderStatusByUser(OrderManagerConsts.USER_EXPORT_TYPE_2,""));
+                    selectOrderService.getOrderStatusByUser(OrderManagerConsts.USER_EXPORT_TYPE_2,null));
         } else {
             String[] statusArr = req.getStatus().split(",");
             statusList = Arrays.asList(statusArr);
@@ -167,10 +166,9 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         req.setIsDelete("0");
         if (!StringUtils.isEmpty(req.getUserName())) {
             req.setUserName("%" + req.getUserName() + "%");
-//            List<String> userIds=memberInfoReference.selectSuperBySupper(req.getSupplierName());
-//            if(!CollectionUtils.isEmpty(userIds)){
-//                req.setUserIds(userIds);
-//            }
+        }
+        if (!StringUtils.isEmpty(req.getSupplierName())) {
+            req.setSupplierName("%" + req.getSupplierName() + "%");
         }
         req.setStatusAll(statusList);
 
@@ -215,9 +213,10 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         OrderListExportResp resp = new OrderListExportResp();
         List<Integer> states = new ArrayList<>();
         ResultVO resultVO=null;
+        Boolean advanceType = !CollectionUtils.isEmpty(req.getOrderCatList()) && (req.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || req.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()));
         switch (req.getUserExportType()) {
             case OrderManagerConsts.USER_EXPORT_TYPE_1: //采购
-                if(OrderManagerConsts.ORDER_CAT_1.equals(req.getOrderCat())){
+                if(advanceType){
                     req.setUserId(req.getUserCode());
                     resultVO=queryAdvanceOrderList(req);
                 }else{
@@ -228,7 +227,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
                 break;
             case OrderManagerConsts.USER_EXPORT_TYPE_2: //销售
 
-                if(OrderManagerConsts.ORDER_CAT_1.equals(req.getOrderCat())){
+                if(advanceType){
                     AdvanceOrderReq selectReq=new AdvanceOrderReq();
                     BeanUtils.copyProperties(req,selectReq);
                     selectReq.setMerchantId(req.getUserCode());
@@ -242,7 +241,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
                 states.add(6); //已确认
                 break;
             case OrderManagerConsts.USER_EXPORT_TYPE_3: //管理
-                if(OrderManagerConsts.ORDER_CAT_1.equals(req.getOrderCat())){
+                if(advanceType){
                     resultVO=queryAdvanceOrderList(req);
                 }else{
                     resultVO = managerOrderList(req);
@@ -276,7 +275,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
             /**
              *  订单类型
              */
-            if (OrderManagerConsts.ORDER_CAT_1.equals(req.getOrderCat())) {
+            if (advanceType) {
                 AdvanceDTO advanceDTO = new AdvanceDTO();
                 AdvanceOrderDTO advanceOrder = orderSelectResp.getAdvanceOrder();
                 if(advanceOrder==null){
@@ -420,14 +419,15 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         List<String> statusList = new ArrayList<>();
         if (StringUtils.isEmpty(req.getStatus())) {
             statusList.addAll(
-                    selectOrderService.getOrderStatusByUser("",OrderManagerConsts.ORDER_CAT_1));
+                    selectOrderService.getOrderStatusByUser("",Lists.newArrayList(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode())));
         } else {
             String[] statusArr = req.getStatus().split(",");
             statusList = Arrays.asList(statusArr);
         }
         req.setStatusAll(statusList);
         // 订单类型为预售
-        req.setOrderCat(OrderManagerConsts.ORDER_CAT_1);
+        List<String> orderCatList = Lists.newArrayList(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode(), OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode());
+        req.setOrderCatList(orderCatList);
 
         /**
          * 多个lanId查询
@@ -525,7 +525,7 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         }
 
         //如果是预售单
-        if (OrderManagerConsts.ORDER_CAT_1.equals(orderSelectDetailResp.getOrderCat())) {
+        if (OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.equals(orderSelectDetailResp.getOrderCat()) || OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.equals(orderSelectDetailResp.getOrderCat())) {
             AdvanceOrder advanceOrder = advanceOrderManager.getAdvanceOrderByOrderId(orderSelectDetailResp.getOrderId());
             if (advanceOrder != null) {
                 AdvanceOrderDTO advanceOrderDTO = new AdvanceOrderDTO();
@@ -616,4 +616,24 @@ public class OrderSelectOpenServiceImpl implements OrderSelectOpenService {
         return null;
     }
 
+
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    @Override
+    public List<OrderDTO> selectNotDeliveryOrderByIds(List<String> orderIds) {
+        List<OrderInfoModel> orderInfoModellist = orderManager.selectNotDeliveryOrderByIds(orderIds);
+        List<OrderDTO> orderDTOList = Lists.newArrayList();
+        if (!CollectionUtils.isEmpty(orderInfoModellist)) {
+            for (OrderInfoModel orderInfoModel : orderInfoModellist) {
+                OrderDTO orderDTO = new OrderDTO();
+                BeanUtils.copyProperties(orderInfoModel, orderDTO);
+                orderDTOList.add(orderDTO);
+            }
+
+        }
+        return  orderDTOList;
+    }
 }

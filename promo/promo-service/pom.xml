@@ -40,6 +40,11 @@
         </dependency>
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
+            <artifactId>warehouse-client</artifactId>
+            <version>${promo.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>promo-client</artifactId>
             <version>${promo.version}</version>
         </dependency>

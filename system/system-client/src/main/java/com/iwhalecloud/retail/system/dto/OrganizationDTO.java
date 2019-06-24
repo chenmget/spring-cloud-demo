@@ -1,8 +1,5 @@
 package com.iwhalecloud.retail.system.dto;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -17,11 +14,14 @@ public class OrganizationDTO implements Serializable {
     @ApiModelProperty(value = "orgId")
     private String orgId;
 
-    @ApiModelProperty(value = "partnerOrgId")
-    private String partnerOrgId;
+    @ApiModelProperty(value = "上级组织标识,直接记录组织的直接管理上级标识")
+    private java.lang.String parentOrgId;
 
-    @ApiModelProperty(value = "partnerOrgName")
-    private String partnerOrgName;
+    @ApiModelProperty(value = "上级组织标识,直接记录组织的直接管理上级标识名称")
+    private java.lang.String parentOrgName;
+
+    @ApiModelProperty(value = "层次路径编码")
+    private java.lang.String pathCode;
 
     @ApiModelProperty(value = "orgCode")
     private String orgCode;

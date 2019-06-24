@@ -100,4 +100,20 @@ public class ProductsPageReq extends PageVO {
 
     @ApiModelProperty(value = "审核状态")
     private String auditState;
+
+    @ApiModelProperty(value = "采购类型")
+    private String purchaseType;
+    
+    @ApiModelProperty(value = "政企价格下限")
+    private String corporationPriceLower;
+
+    @ApiModelProperty(value = "政企价格上限")
+    private String corporationPriceUpper;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+    
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.goods2b.dto.ActivityGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ActivityGoodsReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProdFileReq;
 import com.iwhalecloud.retail.goods2b.entity.GoodsProductRel;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -38,4 +39,11 @@ public interface GoodsProductRelMapper extends BaseMapper<GoodsProductRel>{
     public List<ActivityGoodsDTO> qryActivityGoodsId(@Param("req") ActivityGoodsReq req);
 
     List<String> listGoodsBySupplierId(@Param("supplierId") String supplierId, @Param("productId") String productId);
+    
+    public Integer insertProdFile(@Param("req") ProdFileReq req) ;
+    
+    public String selectProdFileId();
+    
+    public void delProdFileByTargetId(@Param("goodsId") String goodsId) ;
+    
 }

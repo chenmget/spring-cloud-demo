@@ -209,9 +209,59 @@ public class ProductBaseUpdateReq extends AbstractRequest implements Serializabl
     private String typeId;
 
     /**
+     * 是否推送ITMS
+     */
+    @ApiModelProperty(value = "是否推送ITMS")
+    private String isItms;
+
+    /**
+     * 是否需要CT码
+     */
+    @ApiModelProperty(value = "是否需要CT码")
+    private String isCtCode;
+
+    /**
+     * 是否固网产品
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String isFixedLine;
+
+    /**
+     * 是否需要抽检
+     */
+    @ApiModelProperty(value = "是否需要抽检")
+    private String IsInspection;
+    /**
      * 平均供货价
      */
     @ApiModelProperty(value = "平均供货价")
     private Double avgSupplyPrice;
+
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
+
+    @ApiModelProperty(value = "oldProductBaseUpdateReqs")
+    private OldProductBaseUpdateReq oldProductBaseUpdateReq;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
+    /**
+     * 产品列表
+     */
+    @ApiModelProperty(value = "产品列表")
+    private List<ProductAddReq> productAddReqs;
+
+    /**
+     * 卖点
+     */
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 
 }

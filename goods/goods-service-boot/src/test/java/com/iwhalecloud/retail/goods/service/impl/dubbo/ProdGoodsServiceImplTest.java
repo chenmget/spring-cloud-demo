@@ -8,7 +8,6 @@ import com.iwhalecloud.retail.goods.dto.ResultVO;
 import com.iwhalecloud.retail.goods.dto.req.*;
 import com.iwhalecloud.retail.goods.dto.resp.*;
 import com.iwhalecloud.retail.goods.service.dubbo.ProdGoodsService;
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

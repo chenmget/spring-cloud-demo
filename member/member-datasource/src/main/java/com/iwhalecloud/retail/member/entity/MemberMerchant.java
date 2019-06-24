@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.member.entity;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import lombok.Data;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * MemberMerchant
@@ -26,7 +26,7 @@ public class MemberMerchant implements Serializable {
   
   	
   	//属性 begin
-  	/**
+	/**
   	 * 商家ID
   	 */
 	@TableId

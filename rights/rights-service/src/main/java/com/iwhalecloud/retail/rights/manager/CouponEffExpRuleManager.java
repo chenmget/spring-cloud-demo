@@ -1,22 +1,20 @@
 package com.iwhalecloud.retail.rights.manager;
 
-import java.util.Date;
-import java.util.List;
-
-import javax.annotation.Resource;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.iwhalecloud.retail.rights.consts.RightsStatusConsts;
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.rights.consts.RightsStatusConsts;
 import com.iwhalecloud.retail.rights.dto.request.CommonQueryByMktResIdReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.SaveCouponEffExpRuleReqDTO;
 import com.iwhalecloud.retail.rights.dto.request.UpdateCouponEffExpRuleReqDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponEffExpRuleRespDTO;
 import com.iwhalecloud.retail.rights.entity.CouponEffExpRule;
 import com.iwhalecloud.retail.rights.mapper.CouponEffExpRuleMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
 
 
 @Component
@@ -89,4 +87,30 @@ public class CouponEffExpRuleManager{
         return couponEffExpRuleMapper.selectList(queryWrapper);
     }
 
+    /**
+     * 新增优惠券生失效规则
+     * @param couponEffExpRule
+     * @return
+     */
+    public Integer  addCouponEffExpRule(CouponEffExpRule couponEffExpRule){
+        couponEffExpRule.setStatusCd(RightsStatusConsts.RIGHTS_STATUS_UNOBTAIN);
+        couponEffExpRule.setCreateDate(new Date());
+        return couponEffExpRuleMapper.insert(couponEffExpRule);
+    }
+
+    /**
+     * 根据活动时间更新优惠券生失效时间
+     * @param mktResIds
+     * @param startDate
+     * @param endDate
+     * @return
+     */
+    public Integer updateCouponEffExpDate(List<String> mktResIds, Date startDate, Date endDate) {
+        CouponEffExpRule couponEffExpRule = new CouponEffExpRule();
+        couponEffExpRule.setEffDate(startDate);
+        couponEffExpRule.setExpDate(endDate);
+        QueryWrapper<CouponEffExpRule> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in(CouponEffExpRule.FieldNames.mktResId.getTableFieldName(), mktResIds);
+        return couponEffExpRuleMapper.update(couponEffExpRule, queryWrapper);
+    }
 }

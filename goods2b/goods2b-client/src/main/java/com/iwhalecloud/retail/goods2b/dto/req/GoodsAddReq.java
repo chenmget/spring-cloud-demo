@@ -8,7 +8,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
@@ -76,11 +75,11 @@ public class GoodsAddReq extends AbstractRequest implements Serializable {
     @ApiModelProperty(value = "发布地市")
     private List<RegionReq> regionList;
 
-    /**
-     * 零售商标签
-     */
-    @ApiModelProperty(value = "零售商标签")
-    private List<String> tagList;
+//    /**
+//     * 零售商标签
+//     */
+//    @ApiModelProperty(value = "零售商标签")
+//    private List<String> tagList;
 
     /**
      * 渠道类型

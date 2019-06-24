@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -10,7 +9,6 @@ import com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO;
 import com.iwhalecloud.retail.goods2b.dto.TagTelDTO;
 import com.iwhalecloud.retail.goods2b.dto.TagsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
 import com.iwhalecloud.retail.goods2b.manager.GoodsProductRelManager;
 import com.iwhalecloud.retail.goods2b.manager.TagTelManager;
@@ -56,6 +54,11 @@ public class TagsServiceImpl implements TagsService {
         return ResultVO.success(tagsManager.listProdTags());
     }
 
+    @Override
+    public ResultVO<List<TagsDTO>> listProdTagsChannel() {
+        return ResultVO.success(tagsManager.listProdTagsChannel());
+    }
+    
     @Override
     public ResultVO<String> addProdTags(TagsDTO tagsDTO) {
         log.info("TagsServiceImpl.addProdTags tagsDTO={}", JSON.toJSON(tagsDTO));

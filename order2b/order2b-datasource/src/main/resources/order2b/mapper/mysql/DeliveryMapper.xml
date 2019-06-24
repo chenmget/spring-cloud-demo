@@ -86,4 +86,25 @@
 
 		</where>
 	</select>
+
+	<select id="getSettleRecordOrder" resultType="com.iwhalecloud.retail.order2b.dto.model.order.SettleRecordOrderDTO"
+			parameterType="com.iwhalecloud.retail.order2b.dto.model.order.SettleRecordOrderDTO">
+		select DISTINCT b.order_id as orderId ,b.RES_NBR as resNbr,c.SUPPLIER_ID as supplierId,c.SUPPLIER_CODE as supplierCode,c.MERCHANT_ID as merchantId,
+		c.MERCHANT_CODE as merchantCode,d.PRICE as price,d.COUPON_PRICE as couponPrice,a.CREATE_TIME as deliveryTime,a.lan_id as lanId,c.create_time as orderCreateTime,
+		c.SHIP_USER_ID as supplierAccountId ,c.CREATE_USER_ID  as merchantAccountId
+		from ORD_DELIVERY a,ORD_ORDER_ITEM_DETAIL b,ORD_ORDER c,ORD_ORDER_ITEMS d
+		where a.ORDER_ID = b.order_id
+		AND a.order_id = c.order_id
+		AND a.batch_id = b.batch_id
+		AND a.order_id = d.order_id
+		AND b.product_id = d.product_id
+		and c.is_delete='0'
+		and d.COUPON_PRICE > 0
+		and c.lan_id = #{lanId}
+		and b.order_id in
+		<foreach collection="ids" index="index" item="item" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+
+	</select>
 </mapper>

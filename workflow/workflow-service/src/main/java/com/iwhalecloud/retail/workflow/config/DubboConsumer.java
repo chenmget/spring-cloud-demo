@@ -52,6 +52,7 @@ public class DubboConsumer {
         ReferenceConfig  reference= referenceConfig.get(key);
         if(reference==null){
             try {
+            	log.info("------------------------------------------DubboConsumer.getConsumer-------className = -------------"+className);
                 reference = initConsumer(className, serviceGroup);
 
                 referenceConfig.put(key, reference);

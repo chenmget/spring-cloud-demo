@@ -8,11 +8,13 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.AttrSpecConst;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
+import com.iwhalecloud.retail.goods2b.common.TypeConst;
 import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.TypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.TypeDetailResp;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.entity.ProdTypeComplex;
 import com.iwhalecloud.retail.goods2b.entity.Type;
@@ -59,6 +61,24 @@ public class TypeServiceImpl implements TypeService {
 
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
+
+    @Value("${type.moblie}")
+    private String moblie;
+
+    @Value("${type.router}")
+    private String router;
+
+    @Value("${type.intelligentTermina}")
+    private String intelligentTermina;
+
+    @Value("${type.fusionTerminal}")
+    private String fusionTerminal;
+
+    @Value("${type.setTopBox}")
+    private String setTopBox;
+
+    @Value("${type.opticalModem}")
+    private String opticalModem;
 
     @Override
     @Transactional
@@ -112,20 +132,25 @@ public class TypeServiceImpl implements TypeService {
 
     private void saveAttrSpec(TypeDTO typeDTO, String typeId) {
         List<AttrSpecDTO> attrDTOS = typeDTO.getSpecDTOS();
-        for (AttrSpecDTO dto : attrDTOS) {
-            dto.setTypeId(typeId);
-            dto.setAttrType(AttrSpecConst.SPEC_TYPE);
-            dto.setStatusCd("1000");
-            attrSpecManager.addAttrSpec(dto);
+        if(!CollectionUtils.isEmpty(attrDTOS)){
+            for (AttrSpecDTO dto : attrDTOS) {
+                dto.setTypeId(typeId);
+                dto.setAttrType(AttrSpecConst.SPEC_TYPE);
+                dto.setStatusCd("1000");
+                attrSpecManager.addAttrSpec(dto);
+            }
+        }
+        
+        List<AttrSpecDTO> specDTOS = typeDTO.getAttrDTOS();
+        if(!CollectionUtils.isEmpty(specDTOS)){
+            for (AttrSpecDTO dto : specDTOS) {
+                dto.setTypeId(typeId);
+                dto.setAttrType(AttrSpecConst.ATTR_TYPE);
+                dto.setStatusCd("1000");
+                attrSpecManager.addAttrSpec(dto);
+            }
         }
 
-        List<AttrSpecDTO> specDTOS = typeDTO.getAttrDTOS();
-        for (AttrSpecDTO dto : specDTOS) {
-            dto.setTypeId(typeId);
-            dto.setAttrType(AttrSpecConst.ATTR_TYPE);
-            dto.setStatusCd("1000");
-            attrSpecManager.addAttrSpec(dto);
-        }
 
         List<TypeDTO.BrandReq> brandReqS = typeDTO.getBrandIds();
         if(!CollectionUtils.isEmpty(brandReqS)){
@@ -273,6 +298,20 @@ public class TypeServiceImpl implements TypeService {
         }
     }
 
+    @Override
+    public ResultVO<List<TypeDTO>> selectAll() {
+        List<TypeDTO> typeDTOs = new ArrayList<>();
+        List<Type> types = typeManager.selectAll();
+        if(!CollectionUtils.isEmpty(types)){
+            for(Type type:types){
+                TypeDTO dto = new TypeDTO();
+                BeanUtils.copyProperties(type, dto);
+                typeDTOs.add(dto);
+            }
+        }
+        return ResultVO.success(typeDTOs);
+    }
+
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
@@ -285,5 +324,56 @@ public class TypeServiceImpl implements TypeService {
         }else{
             return ResultVO.success(false);
         }
+    }
+
+    @Override
+    public ResultVO<TypeDetailResp> getDetailType(TypeSelectByIdReq req){
+        String rootTypeId = "-1";
+        Type type = null;
+        String parentId = req.getTypeId();
+        TypeDetailResp typeDetailResp = new TypeDetailResp();
+        while (true){
+            type = typeManager.selectById(parentId);
+            log.info("TypeServiceImpl.queryTypeBrand attrSpecManager.queryProdTypeComplexbyTypeId req={}, resp={}", parentId, JSON.toJSONString(type));
+            if (null == type) {
+                break;
+            }
+
+            if (moblie.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.MOBLIE.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.MOBLIE.getValue());
+                break;
+            } else if(router.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.ROUTER.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.ROUTER.getValue());
+                break;
+            } else if(intelligentTermina.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getValue());
+                break;
+            }else if(fusionTerminal.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getValue());
+                break;
+            }else if(setTopBox.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.SET_TOP_BOX.getValue());
+                break;
+            }else if(opticalModem.equals(parentId)) {
+                typeDetailResp.setDetailCode(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getCode());
+                typeDetailResp.setDetailName(TypeConst.TYPE_DETAIL.OPTICAL_MODEM.getValue());
+                break;
+            }
+
+            parentId = type.getParentTypeId();
+            if (StringUtils.isBlank(parentId) || rootTypeId.equals(parentId)) {
+                break;
+            }
+        }
+        if (null == type) {
+            return ResultVO.success();
+        }
+        BeanUtils.copyProperties(type, typeDetailResp);
+        return ResultVO.success(typeDetailResp);
     }
 }

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head xmlns:th="http://www.w3.org/1999/xhtml">
+    <title>网银支付接口</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <script th:src="@{/js/jquery-1.7.js}"></script>
+    <script th:src="@{/js/common.js}"></script>
+
+    <script language="javascript" type="text/javascript">
+        function pay() {
+            var requestUrl=basePath()+"trans/pay";
+            var orignOrgLoginCode=$("#ORGLOGINCODE").val();
+            var orignPayAccount=$("#PAYACCOUNT").val();
+            var orignCardUserName=$("#CARDUSERNAME").val();
+            var orignCertNo=$("#CERTNO").val();
+            var orignMobile=$("#MOBILE").val();
+            $.ajax({
+                type: "post",
+                url: requestUrl,
+                data : $('#payForm').serialize(),
+                dataType:"json",
+                success:function (data) {
+                    if (data.SIGNSTR != null) {
+                        $("#ORGLOGINCODE").val(data.ORGLOGINCODE);
+                        $("#PAYACCOUNT").val(data.PAYACCOUNT);
+                        $("#CARDUSERNAME").val(data.CARDUSERNAME);
+                        $("#CERTNO").val(data.CERTNO);
+                        $("#MOBILE").val(data.MOBILE);
+                        $("#SIGNSTR").val(data.SIGNSTR);
+                        $("#AESKEY").val(data.AESKEY);
+                        $("#payForm").submit();
+                        $("#ORGLOGINCODE").val(orignOrgLoginCode);
+                        $("#PAYACCOUNT").val(orignPayAccount);
+                        $("#CARDUSERNAME").val(orignCardUserName);
+                        $("#CERTNO").val(orignCertNo);
+                        $("#MOBILE").val(orignMobile);
+                    } else {
+                        alert("签名失败，请联系商户");
+                        return false;
+                    }
+                }
+            })
+        }
+
+        $(function () {
+            /*进入焦点时触发*/
+            $("#dynamicId").focus();
+
+        });
+    </script>
+</head>
+<body>
+<center>
+    <form th:action="${busConfig.URL}" method="POST" id="payForm" name="payForm">
+
+        <table style="text-align: right;" >
+            <tr style="height: 25px">
+                <td colspan="3">
+                    <h1><font color="red">网银支付接口</font></h1>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" id="ORGLOGINCODE" name="ORGLOGINCODE" th:value="${busConfig.ORGLOGINCODE}"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" id="PLATCODE" name="PLATCODE" th:value="${busConfig.PLATCODE}"/>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">订单号</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="ORDERID" name="ORDERID" value="" />
+                    <script>
+                        document.getElementById("ORDERID").value=getExtOrderSeq();
+                    </script>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">订单金额(单位:分)</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="ORDERAMOUNT" name="ORDERAMOUNT"/>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">支付方式</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="PAYTYPE" name="PAYTYPE" value="1"/>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">同步通知地址</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="SYNNOTICEURL" name="SYNNOTICEURL" th:value="${busConfig.SYNNOTICEURL}"/>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">异步通知地址</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="ASYNNOTICEURL" name="ASYNNOTICEURL" th:value="${busConfig.ASYNNOTICEURL}"/>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">银行卡号</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="PAYACCOUNT" name="PAYACCOUNT"/>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">户名</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="CARDUSERNAME" name="CARDUSERNAME" value="" />
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">证件号</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="CERTNO" name="CERTNO" value="" />
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">证件类型</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="CERTTYPE" name="CERTTYPE" value="" />
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">银行预留手机号</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="MOBILE" name="MOBILE" value="" />
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">对公/对私标志</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="PERENTFLAG" name="PERENTFLAG"/>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">卡类型</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="CARDTYPE" name="CARDTYPE"/>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">银行编码</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="BANKCODE" name="BANKCODE"/>
+                </td>
+            </tr>
+
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">备注1</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="COMMENT1" name="COMMENT1"/>
+                </td>
+            </tr>
+            <tr style="height: 25px">
+                <td>
+                    <span class="input-group-addon">备注2</span>
+                </td>
+                <td colspan="2">
+                    <input type="text" style="width: 200px" class="form-control-text" id="COMMENT2" name="COMMENT2"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" id="SIGNSTR" name="SIGNSTR"/>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="hidden" id="AESKEY" name="AESKEY"/>
+                </td>
+            </tr>
+            <td align="center"><input type="button" value="提交" onclick="pay()"/></td>
+        </table>
+    </form>
+</center>
+</body>
+</html>

@@ -52,4 +52,8 @@ public interface ProductBaseMapper extends BaseMapper<ProductBase>{
      * @return
      */
     Double getAvgSupplyPrice(@Param("productBaseId") String productBaseId);
+    
+    public String selectisFixedLineByBatchId(@Param("batchId") String batchId) ;
+
+    public String getSeq();
 }

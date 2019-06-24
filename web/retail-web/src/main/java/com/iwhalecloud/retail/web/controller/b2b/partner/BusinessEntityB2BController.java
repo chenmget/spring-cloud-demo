@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * @Author zhong.wenlong
  * @Date 2018/12/27
- *
+ * <p>
  * 经营主体
  **/
 @Slf4j
@@ -38,11 +38,11 @@ public class BusinessEntityB2BController {
 
     @ApiOperation(value = "经营主体信息新建接口", notes = "经营主体信息新建接口")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数不全"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数不全"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/save")
-    public ResultVO<BusinessEntityDTO> saveBusinessEntity(@RequestBody @ApiParam(value = "经营主体信息新建入参", required = true) BusinessEntitySaveReq businessEntitySaveReq){
+    @PostMapping(value = "/save")
+    public ResultVO<BusinessEntityDTO> saveBusinessEntity(@RequestBody @ApiParam(value = "经营主体信息新建入参", required = true) BusinessEntitySaveReq businessEntitySaveReq) {
         log.info("BusinessEntityB2BController.saveBusinessEntity(), 入参businessEntitySaveReq={} ", businessEntitySaveReq);
         ResultVO resp = businessEntityService.saveBusinessEntity(businessEntitySaveReq);
         log.info("BusinessEntityB2BController.saveBusinessEntity(), 出参resp={} ", resp);
@@ -51,10 +51,10 @@ public class BusinessEntityB2BController {
 
     @ApiOperation(value = "经营主体信息更新接口", notes = "厂商信息更新接口。")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数不全"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数不全"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PutMapping(value="/update")
+    @PutMapping(value = "/update")
     public ResultVO<Integer> updateBusinessEntity(
             @RequestBody @ApiParam(value = "经营主体信息更新入参", required = true) BusinessEntityUpdateReq businessEntityUpdateReq
     ) {
@@ -69,13 +69,13 @@ public class BusinessEntityB2BController {
             @ApiImplicitParam(name = "businessEntityId", value = "经营主体ID", paramType = "query", required = true, dataType = "String")
     })
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数不全"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数不全"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @DeleteMapping(value="/delete")
+    @DeleteMapping(value = "/delete")
     public ResultVO<Integer> deleteBusinessEntity(@RequestParam(value = "businessEntityId") String businessEntityId) {
         log.info("BusinessEntityB2BController.deleteBusinessEntity(), 入参businessEntityId={} ", businessEntityId);
-        if(StringUtils.isEmpty(businessEntityId)){
+        if (StringUtils.isEmpty(businessEntityId)) {
             return ResultVO.error("经营主体ID不能为空");
         }
         ResultVO resp = businessEntityService.deleteBusinessEntityById(businessEntityId);
@@ -88,13 +88,13 @@ public class BusinessEntityB2BController {
             @ApiImplicitParam(name = "businessEntityId", value = "经营主体ID", paramType = "query", required = true, dataType = "String"),
     })
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数不全"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数不全"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @GetMapping(value="/get")
+    @GetMapping(value = "/get")
     public ResultVO<BusinessEntityDTO> getBusinessEntity(@RequestParam(value = "businessEntityId") String businessEntityId) {
         log.info("BusinessEntityB2BController.getBusinessEntity(), 入参businessEntityId={} ", businessEntityId);
-        if(StringUtils.isEmpty(businessEntityId)){
+        if (StringUtils.isEmpty(businessEntityId)) {
             return ResultVO.error("经营主体ID不能为空");
         }
         BusinessEntityGetReq req = new BusinessEntityGetReq();
@@ -106,11 +106,11 @@ public class BusinessEntityB2BController {
 
     @ApiOperation(value = "经营主体信息分页列表查询接口", notes = "经营主体信息分页列表查询，名称和编码都是模糊查询。")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数不全"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数不全"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/page")
-    public ResultVO<Page<BusinessEntityDTO>> pageBusinessEntity(@RequestBody @ApiParam(value = "经营主体信息分页入参", required = true) BusinessEntityPageReq businessEntityPageReq){
+    @PostMapping(value = "/page")
+    public ResultVO<Page<BusinessEntityDTO>> pageBusinessEntity(@RequestBody @ApiParam(value = "经营主体信息分页入参", required = true) BusinessEntityPageReq businessEntityPageReq) {
         log.info("BusinessEntityB2BController.pageBusinessEntity(), 入参businessEntityPageReq={} ", businessEntityPageReq);
         ResultVO resp = businessEntityService.pageBusinessEntity(businessEntityPageReq);
         log.info("BusinessEntityB2BController.pageBusinessEntity(), 出参resp={} ", resp);
@@ -119,11 +119,11 @@ public class BusinessEntityB2BController {
 
     @ApiOperation(value = "经营主体信息列表查询接口", notes = "经营主体信息列表查询，名称和编码都是模糊查询。")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数不全"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数不全"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/list")
-    public ResultVO listBusinessEntity(@RequestBody @ApiParam(value = "经营主体信息列表查询入参", required = true) BusinessEntityListReq businessEntityListReq){
+    @PostMapping(value = "/list")
+    public ResultVO listBusinessEntity(@RequestBody @ApiParam(value = "经营主体信息列表查询入参", required = true) BusinessEntityListReq businessEntityListReq) {
         log.info("BusinessEntityB2BController.listBusinessEntity(), 入参businessEntityPageReq={} ", businessEntityListReq);
         ResultVO resp = businessEntityService.listBusinessEntity(businessEntityListReq);
         log.info("BusinessEntityB2BController.listBusinessEntity(), 出参resp={} ", resp);
@@ -132,27 +132,29 @@ public class BusinessEntityB2BController {
 
     @ApiOperation(value = "经营主体信息分页列表查询接口", notes = "有权限的经营主体信息分页列表查询，名称和编码都是模糊查询。")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数不全"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数不全"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="/pageBusinessEntityByRight")
+    @PostMapping(value = "/pageBusinessEntityByRight")
     @UserLoginToken
-    public ResultVO pageBusinessEntityByRight(@RequestBody @ApiParam(value = "经营主体信息分页入参", required = true) BusinessEntityPageByRightsReq req){
+    public ResultVO pageBusinessEntityByRight(@RequestBody @ApiParam(value = "经营主体信息分页入参", required = true) BusinessEntityPageByRightsReq req) {
 
         Boolean isAdminType = UserContext.isAdminType();
         MerchantRulesCommonReq commonReq = new MerchantRulesCommonReq();
         commonReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
         if (UserContext.getUserOtherMsg() != null && UserContext.getUserOtherMsg().getMerchant() != null && !isAdminType) {
             String merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
-            ResultVO<List<String>> permissionVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+            commonReq.setMerchantId(merchantId);
+            ResultVO<List<String>> permissionVO = merchantRulesService.getBusinessRegionAndMerchantPermission(commonReq);
             log.info("BusinessEntityB2BController.pageBusinessEntityByRight merchantRulesService.getRegionAndMerchantPermission, req= {} ", merchantId, JSON.toJSONString(permissionVO));
             if (permissionVO.isSuccess() && !CollectionUtils.isEmpty(permissionVO.getResultData())) {
                 req.setMerchantIdList(permissionVO.getResultData());
             }
-        }else if(isAdminType && !StringUtils.isEmpty(req.getMerchantId())){
+        } else if (isAdminType && !StringUtils.isEmpty(req.getMerchantId())) {
             // 管理员登陆且指定商家
             String merchantId = req.getMerchantId();
-            ResultVO<List<String>> permissionVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+            commonReq.setMerchantId(merchantId);
+            ResultVO<List<String>> permissionVO = merchantRulesService.getBusinessRegionAndMerchantPermission(commonReq);
             log.info("BusinessEntityB2BController.pageBusinessEntityByRight merchantRulesService.getRegionAndMerchantPermission, req= {} ", req.getMerchantId(), JSON.toJSONString(permissionVO));
             if (permissionVO.isSuccess() && !CollectionUtils.isEmpty(permissionVO.getResultData())) {
                 req.setMerchantIdList(permissionVO.getResultData());

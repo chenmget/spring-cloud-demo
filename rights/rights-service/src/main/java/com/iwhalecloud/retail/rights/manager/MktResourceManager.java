@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.rights.manager;
 
-import javax.annotation.Resource;
-
+import com.iwhalecloud.retail.rights.mapper.MktResourceMapper;
 import org.springframework.stereotype.Component;
 
-import com.iwhalecloud.retail.rights.mapper.MktResourceMapper;
+import javax.annotation.Resource;
 
 
 @Component

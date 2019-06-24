@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.promo.dto.resp;
 
-import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -114,4 +113,10 @@ public class MarketingActivityListResp implements Serializable {
      */
     @ApiModelProperty(value = "活动发货截止时间 deliver_end_time")
     private Date deliverEndTime;
+
+    /**
+     * 是否修改审批中：0否/1是 is_modifying
+     */
+    @ApiModelProperty(value="修改标识，是否修改审批中：0否/1是 is_modifying")
+    private String isModifying;
 }

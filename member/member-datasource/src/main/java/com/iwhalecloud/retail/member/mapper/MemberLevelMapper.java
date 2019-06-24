@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.member.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.member.dto.request.MemberLevelQueryReq;
 import com.iwhalecloud.retail.member.dto.response.MemberLevelQueryResp;

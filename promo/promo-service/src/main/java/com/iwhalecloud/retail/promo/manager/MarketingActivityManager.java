@@ -6,30 +6,28 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityReq;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityResp;
 import com.iwhalecloud.retail.promo.dto.req.AdvanceActivityProductInfoReq;
-import com.iwhalecloud.retail.promo.dto.req.MarketingActivityAddReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
 import com.iwhalecloud.retail.promo.dto.resp.AdvanceActivityProductInfoResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
-import com.iwhalecloud.retail.promo.entity.Promotion;
-import com.iwhalecloud.retail.promo.mapper.ActivityProductMapper;
-import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.promo.entity.MarketingActivity;
+import com.iwhalecloud.retail.promo.entity.MarketingActivityModify;
+import com.iwhalecloud.retail.promo.mapper.ActivityProductMapper;
 import com.iwhalecloud.retail.promo.mapper.MarketingActivityMapper;
+import com.iwhalecloud.retail.promo.mapper.MarketingActivityModifyMapper;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
-import com.iwhalecloud.retail.system.entity.User;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import java.beans.beancontext.BeanContext;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -42,10 +40,13 @@ public class MarketingActivityManager{
     @Resource
     private ActivityProductMapper activityProductMapper;
 
+    @Resource
+    private MarketingActivityModifyMapper marketingActivityModifyMapper;
+
     @Reference
     private UserService userService;
     /**
-     * 添加营销活动
+     * 添加或修改营销活动
      * @param marketingActivity 营销活动实体
      * @return
      */
@@ -55,7 +56,10 @@ public class MarketingActivityManager{
             marketingActivity.setGmtModified(new Date());
             //is_delete 默认为 0-未删
             marketingActivity.setIsDeleted("0");
+            //STATUS_CD_1("1","已保存"),STATUS_CD_10("10","待审核"),STATUS_CD_20("20","审核通过"),
+            //STATUS_CD_30("40","已终止"),STATUS_CD_PLUS_20("30","审核不通过"),STATUS_CD_PLUS_1("0","已取消");
             marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_1.getCode());
+            //PAY_TYPE_1("1","预付定金"),PAY_TYPE_2("2","付全款");
             marketingActivity.setPayType(PromoConst.PayType.PAY_TYPE_1.getCode());
             return marketingActivityMapper.insert(marketingActivity);
         } else{
@@ -66,6 +70,65 @@ public class MarketingActivityManager{
         }
     }
 
+    /**
+     * 添加营销活动变更内容
+     * @param mktId,marketingActivityModify 营销活动实体
+     * @return
+     */
+    public int addMarketingActivityModify(String mktId,MarketingActivityModify marketingActivityModify) {
+        if(StringUtils.isEmpty(mktId)){
+            marketingActivityModify.setGmtCreate(new Date());
+            marketingActivityModify.setGmtModified(new Date());
+            //is_delete 默认为 0-未删
+            marketingActivityModify.setIsDeleted("0");
+            marketingActivityModify.setStatus(PromoConst.STATUSCD.STATUS_CD_10.getCode());
+            marketingActivityModify.setPayType(PromoConst.PayType.PAY_TYPE_1.getCode());
+            marketingActivityModify.setVerNum(1L);
+            marketingActivityModify.setOperType("ADD");
+            return marketingActivityModifyMapper.insert(marketingActivityModify);
+        }
+        return 0;
+    }
+
+    /**
+     * 审核通过变更营销活动变更内容
+     * @param marketingActivityModify 营销活动实体
+     * @return
+     */
+    public int updateMarketingActivityModify(MarketingActivityModify marketingActivityModify) {
+            marketingActivityModify.setGmtCreate(new Date());
+            marketingActivityModify.setGmtModified(new Date());
+            //is_delete 默认为 0-未删
+            marketingActivityModify.setIsDeleted("0");
+            marketingActivityModify.setStatus(PromoConst.STATUSCD.STATUS_CD_10.getCode());
+            marketingActivityModify.setPayType(PromoConst.PayType.PAY_TYPE_1.getCode());
+            marketingActivityModify.setOperType("MOD");
+            return marketingActivityModifyMapper.insert(marketingActivityModify);
+    }
+    /**
+     * 添加营销活动变更内容
+     * @param mktId,marketingActivityModify 营销活动实体
+     * @return
+     */
+    public List<MarketingActivityModify> queryMarketingActivityModifySize(String mktId) {
+            QueryWrapper<MarketingActivityModify> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq(MarketingActivityModify.FieldNames.marketingActivityId.getTableFieldName(),mktId);
+            queryWrapper.eq(MarketingActivityModify.FieldNames.isDeleted.getTableFieldName(),PromoConst.UNDELETED);
+            List<MarketingActivityModify> modifies = marketingActivityModifyMapper.selectList(queryWrapper);
+            return modifies;
+//            log.info("MarketingActivityManager.addMarketingActivityModify modifies{}",modifies);
+//            marketingActivityModify.setGmtCreate(new Date());
+//            marketingActivityModify.setGmtModified(new Date());
+//            //is_delete 默认为 0-未删
+//            marketingActivityModify.setIsDeleted("0");
+//            marketingActivityModify.setStatus(PromoConst.STATUSCD.STATUS_CD_10.getCode());
+//            marketingActivityModify.setPayType(PromoConst.PayType.PAY_TYPE_1.getCode());
+//            if (!CollectionUtils.isEmpty(modifies)){
+//                marketingActivityModify.setVerNum(Long.valueOf(modifies.size()+1));
+//            }
+//            marketingActivityModify.setOperType("MOD");
+//            return marketingActivityModifyMapper.insert(marketingActivityModify);
+    }
     /**
      * 查询营销活动列表
      * @param req 查询营销活动列表
@@ -89,6 +152,16 @@ public class MarketingActivityManager{
         return prodGoodsPage;
     }
 
+    /**
+     * 通过营销活动名字查询营销活动
+     * @param req
+     * @return
+     */
+    public List<MarketingActivityResp> getMarketingCampaign(MarketingActivityReq req){
+    	return marketingActivityMapper.getMarketingCampaign(req);
+    }
+    
+    
     /**
      * 根据ID查询营销活动
      * @param id 询营销活动ID
@@ -177,17 +250,17 @@ public class MarketingActivityManager{
         queryWrapper.in(MarketingActivity.FieldNames.id.getTableFieldName(), idList);
         return marketingActivityMapper.selectList(queryWrapper);
     }
-    /**
-     * 根据活动ID更新状态
-     * @param marketingActivityId
-     * @return
-     */
-    public ResultVO<Boolean> updateMarketingActivityStatus(String marketingActivityId){
-        MarketingActivity marketingActivity = new MarketingActivity();
-        marketingActivity.setId(marketingActivityId);
-        marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_10.getCode());
-        return ResultVO.success(marketingActivityMapper.updateById(marketingActivity) > 0);
-    }
+//    /**
+//     * 根据活动ID更新状态
+//     * @param marketingActivityId
+//     * @return
+//     */
+//    public ResultVO<Boolean> updateMarketingActivityStatus(String marketingActivityId){
+//        MarketingActivity marketingActivity = new MarketingActivity();
+//        marketingActivity.setId(marketingActivityId);
+//        marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_10.getCode());
+//        return ResultVO.success(marketingActivityMapper.updateById(marketingActivity) > 0);
+//    }
 
 
     /**
@@ -202,6 +275,19 @@ public class MarketingActivityManager{
         return marketingActivityMapper.selectOne(queryWrapper);
     }
 
+    /**
+     * 根据活动id查询活动信息
+     * @param marketingActivityId
+     * @return
+     */
+    public MarketingActivity queryMarketingActivityTime(String marketingActivityId){
+//        QueryWrapper queryWrapper = new QueryWrapper();
+//        queryWrapper.eq(MarketingActivity.FieldNames.id.getTableFieldName(),marketingActivityId);
+//        queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(),PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+//        return marketingActivityMapper.selectOne(queryWrapper);
+    	return marketingActivityMapper.queryMarketingActivityTime(marketingActivityId);
+    }
+    
     /**
      * 更新预售活动的规则
      * @param marketingActivity
@@ -304,5 +390,44 @@ public class MarketingActivityManager{
         }
         queryWrapper.eq(MarketingActivity.FieldNames.activityType.getTableFieldName(), activityType);
         return marketingActivityMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 查询发货时间临近的活动
+     */
+    public List<MarketingActivity> queryActivityOrderDeliveryClose(String earlyWarningDays){
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(),PromoConst.UNDELETED);
+        queryWrapper.ge(MarketingActivity.FieldNames.deliverEndTime.getTableFieldName(),LocalDate.now());
+        // 若数据字典未查到提前预警天数则提前5天预警
+        if (StringUtils.isNotEmpty(earlyWarningDays)) {
+            queryWrapper.le(MarketingActivity.FieldNames.deliverEndTime.getTableFieldName(),LocalDate.now().plusDays(Long.valueOf(earlyWarningDays)));
+        } else {
+            queryWrapper.le(MarketingActivity.FieldNames.deliverEndTime.getTableFieldName(),LocalDate.now().plusDays(5L));
+
+        }
+        return marketingActivityMapper.selectList(queryWrapper);
+    }
+
+    /**
+     * 更新营销活动
+     * @param marketingActivity
+     * @return
+     */
+    public Integer updateMarketingActivity(MarketingActivity marketingActivity) {
+        return marketingActivityMapper.updateById(marketingActivity);
+    }
+
+    /**
+     * 更新营销活动修改状态标识
+     * @param activityId 营销活动id
+     * @param isModifying 营销活动修改标识
+     * @return
+     */
+    public Integer updateMarketingActivityToModifying(String activityId,String isModifying) {
+        MarketingActivity marketingActivity = new MarketingActivity();
+        marketingActivity.setId(activityId);
+        marketingActivity.setIsModifying(isModifying);
+        return marketingActivityMapper.updateById(marketingActivity);
     }
 }

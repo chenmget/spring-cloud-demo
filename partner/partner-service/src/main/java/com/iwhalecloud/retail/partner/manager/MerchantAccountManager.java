@@ -103,6 +103,11 @@ public class MerchantAccountManager{
             hasParam = true;
             queryWrapper.like(MerchantAccount.FieldNames.bankAccount.getTableFieldName(), req.getBankAccount());
         }
+        if(!CollectionUtils.isEmpty(req.getMerchantIdList())){
+            hasParam = true;
+            queryWrapper.in(MerchantAccount.FieldNames.merchantId.getTableFieldName(), req.getMerchantIdList());
+        }
+
         if (!hasParam) {
             // 没参数 返回空  不能查整个表
             return Lists.newArrayList();

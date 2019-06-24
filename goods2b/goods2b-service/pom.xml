@@ -104,6 +104,13 @@
 
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
+            <artifactId>order2b-client</artifactId>
+            <version>2.0.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>promo-client</artifactId>
             <version>2.0.0-SNAPSHOT</version>
             <scope>compile</scope>

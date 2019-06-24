@@ -37,4 +37,7 @@ public class LoginResp implements Serializable {
     @ApiModelProperty(value = "登录信息  未登录   已登录")
     private String loginStatusMsg = "未登录";
 
+    @ApiModelProperty(value = "changePwdCount")
+    private Integer changePwdCount;
+
 }

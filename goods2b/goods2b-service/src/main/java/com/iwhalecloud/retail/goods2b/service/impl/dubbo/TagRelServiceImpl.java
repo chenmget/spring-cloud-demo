@@ -1,10 +1,12 @@
 package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.TagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
+import com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp;
 import com.iwhalecloud.retail.goods2b.entity.TagRel;
 import com.iwhalecloud.retail.goods2b.manager.TagRelManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TagRelService;
@@ -61,7 +63,7 @@ public class TagRelServiceImpl implements TagRelService {
         List<TagRel> tagRelList = Lists.newArrayList();
         for (String tag : relBatchAddReq.getTagList()) {
             TagRel tagRel = new TagRel();
-            tagRel.setGoodsId(relBatchAddReq.getGoodsId());
+            tagRel.setProductBaseId(relBatchAddReq.getProductBaseId());
             tagRel.setTagId(tag);
             tagRelList.add(tagRel);
         }
@@ -96,13 +98,40 @@ public class TagRelServiceImpl implements TagRelService {
      */
     @Override
     public ResultVO<Boolean> deleteTagRelByGoodsId(TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq){
-        tagRelManager.deleteTagRelByGoodsId(relDeleteByGoodsIdReq.getGoodsId());
+        tagRelManager.deleteTagRelByProductBaseId(relDeleteByGoodsIdReq.getProductBaseId());
         return ResultVO.success(true);
     }
 
     @Override
     public ResultVO<List<TagRelDTO>> listTagByGoodsId(TagRelListByGoodsIdReq relListByGoodsIdReq) {
-        return ResultVO.success(tagRelManager.listTagByGoodsId(relListByGoodsIdReq.getGoodsId()));
+        return ResultVO.success(tagRelManager.listTagByProductBaseId(relListByGoodsIdReq.getProductBaseId()));
     }
 
+    @Override
+    public ResultVO<List<TagRelListResp>> listTagRel(TagRelListReq req) {
+        return ResultVO.success(tagRelManager.listTagRel(req));
+    }
+
+    @Override
+    public ResultVO<Boolean> batchAddTagRelProductId(TagRelBatchAddReq req) {
+        log.info("TagRelServiceImpl.batchAddTagRelProductId req={}", JSON.toJSONString(req));
+        List<TagRel> tagRelList = Lists.newArrayList();
+        for (String tag : req.getTagList()) {
+            TagRel tagRel = new TagRel();
+            tagRel.setProductId(req.getProductId());
+            tagRel.setTagId(tag);
+            tagRelList.add(tagRel);
+        }
+        boolean saveFlag = tagRelManager.saveBatch(tagRelList);
+        log.info("TagRelServiceImpl.batchAddTagRelProductId saveFlag={}", saveFlag);
+        return ResultVO.success(saveFlag);
+    }
+
+
+    @Override
+    public ResultVO<Boolean> deleteTagRelByProductId(TagRelDeleteByGoodsIdReq req){
+        log.info("TagRelServiceImpl.deleteTagRelByProductId req={}", JSON.toJSONString(req));
+        tagRelManager.deleteTagRelByProductId(req.getProductId());
+        return ResultVO.success(true);
+    }
 }

@@ -3,6 +3,9 @@ package com.iwhalecloud.retail.order2b.manager;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
+import com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO;
+import com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.report.OrderStatisticsRawReq;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.entity.OrderItem;
@@ -18,6 +21,7 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -176,6 +180,39 @@ public class OrderManager {
     //查询订单项
     public List<OrderItem> selectOrderItem(OrderItemModel item) {
         return orderItemMapper.selectOrderItem(item);
+    }
+
+    public Page<FtpOrderDataResp> queryFtpOrderDataRespList(FtpOrderDataReq req){
+        Page<FtpOrderDataResp> page = new Page<FtpOrderDataResp>(req.getPageNo(), req.getPageSize());
+        page.setSearchCount(false);
+        return orderMapper.queryFtpOrderDataRespList(page,req);
+    }
+    public String getFstTransDate(){
+        return orderMapper.getFstTransDate();
+    }
+    public int queryFtpOrderDataRespListCount(FtpOrderDataReq req){
+        return orderMapper.queryFtpOrderDataRespListCount(req);
+    }
+    /**
+     * 根据orderId查询未全部发货订单
+     * @param orderIds
+     * @return
+     */
+    public List<OrderInfoModel> selectNotDeliveryOrderByIds(List<String> orderIds) {
+        return orderMapper.selectNotDeliveryOrderByIds(orderIds);
+
+    }
+
+    public List<GoodsSaleOrderDTO> getGoodsSaleNumByTime(Date begtime,String lanId){
+        return orderMapper.getGoodsSaleNumByTime(begtime,lanId);
+    }
+
+    public List<GoodsSaleOrderDTO> getGoodsSaleNum(String lanId){
+        return orderMapper.getGoodsSaleNum(lanId);
+    }
+
+    public List<GoodsSaleOrderDTO> getGoodsSaleNumByProductId(String productId,Date begtime,String lanId){
+        return orderMapper.getGoodsSaleNumByProductId(productId, begtime,lanId);
     }
 
 }

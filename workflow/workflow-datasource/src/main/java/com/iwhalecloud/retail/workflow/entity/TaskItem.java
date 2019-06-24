@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.workflow.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -32,13 +31,13 @@ public class TaskItem implements Serializable {
   	 */
 	@TableId
 	@ApiModelProperty(value = "任务项ID  ")
-  	private java.lang.String taskItemId;
+  	private String taskItemId;
   	
   	/**
   	 * 任务ID  
   	 */
 	@ApiModelProperty(value = "任务ID  ")
-  	private java.lang.String taskId;
+  	private String taskId;
   	
   	/**
   	 * 任务类型  流程：1
@@ -46,43 +45,43 @@ public class TaskItem implements Serializable {
   	 */
 	@ApiModelProperty(value = "任务类型  流程：1\n" +
             "工单：2")
-  	private java.lang.String taskType;
+  	private String taskType;
   	
   	/**
   	 * 路由ID  任务类型不为1（流程类时为-1）
   	 */
 	@ApiModelProperty(value = "路由ID  任务类型不为1（流程类时为-1）")
-  	private java.lang.String routeId;
+  	private String routeId;
   	
   	/**
   	 * 路由名称  任务类型不为1（流程类时为空）
   	 */
 	@ApiModelProperty(value = "路由名称  任务类型不为1（流程类时为空）")
-  	private java.lang.String routeName;
+  	private String routeName;
   	
   	/**
   	 * 上一节点  任务类型不为1（流程类时为-1）
   	 */
 	@ApiModelProperty(value = "上一节点  任务类型不为1（流程类时为-1）")
-  	private java.lang.String preNodeId;
+  	private String preNodeId;
   	
   	/**
   	 * 上一节点名称  任务类型不为1（流程类时为空）
   	 */
 	@ApiModelProperty(value = "上一节点名称  任务类型不为1（流程类时为空）")
-  	private java.lang.String preNodeName;
+  	private String preNodeName;
   	
   	/**
   	 * 当前节点  任务类型不为1（流程类时为-1）
   	 */
 	@ApiModelProperty(value = "当前节点  任务类型不为1（流程类时为-1）")
-  	private java.lang.String curNodeId;
+  	private String curNodeId;
   	
   	/**
   	 * 当前节点名称  任务类型不为1（流程类时为空）
   	 */
 	@ApiModelProperty(value = "当前节点名称  任务类型不为1（流程类时为空）")
-  	private java.lang.String curNodeName;
+  	private String curNodeName;
   	
   	/**
   	 * 状态  1：待领取
@@ -92,7 +91,7 @@ public class TaskItem implements Serializable {
 	@ApiModelProperty(value = "状态  1：待领取\n" +
             "2：待处理\n" +
             "3：已处理")
-  	private java.lang.String itemStatus;
+  	private String itemStatus;
   	
   	/**
   	 * 创建时间  当前记录的创建时间
@@ -116,19 +115,19 @@ public class TaskItem implements Serializable {
   	 * 任务处理人  
   	 */
 	@ApiModelProperty(value = "任务处理人  ")
-  	private java.lang.String handlerUserId;
+  	private String handlerUserId;
   	
   	/**
   	 * 任务处理人名称  
   	 */
 	@ApiModelProperty(value = "任务处理人名称  ")
-  	private java.lang.String handlerUserName;
+  	private String handlerUserName;
   	
   	/**
   	 * 处理意见  
   	 */
 	@ApiModelProperty(value = "处理意见  ")
-  	private java.lang.String handlerMsg;
+  	private String handlerMsg;
   	
   	
   	//属性 end

@@ -14,11 +14,6 @@ public class MerchantRulesListReq extends PageVO implements Serializable {
     private static final long serialVersionUID = -2226785874416304896L;
 
     //属性 begin
-    /**
-     * 关联ID
-     */
-//    @ApiModelProperty(value = "关联ID")
-//    private java.lang.String merchantRuleId;
 
     /**
      * 商家ID

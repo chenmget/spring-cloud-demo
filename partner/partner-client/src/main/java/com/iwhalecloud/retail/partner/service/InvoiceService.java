@@ -2,9 +2,13 @@ package com.iwhalecloud.retail.partner.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.req.InvoiceAddReq;
+import com.iwhalecloud.retail.partner.dto.req.InvoicePageReq;
+import com.iwhalecloud.retail.partner.dto.req.QueryInvoiceByMerchantIdsReq;
 import com.iwhalecloud.retail.partner.dto.resp.InvoiceAddResp;
 import com.iwhalecloud.retail.partner.dto.resp.InvoicePageResp;
+
+import java.util.List;
 
 public interface InvoiceService {
 
@@ -38,6 +42,11 @@ public interface InvoiceService {
 
 //    int auditingParInvoiceFinish(String invoiceId);
 
-
+    /**
+     * 批量查询发票信息
+     * @param req
+     * @return
+     */
+    ResultVO<List<InvoicePageResp>> queryInvoiceByMerchantIds(QueryInvoiceByMerchantIdsReq req);
 
 }

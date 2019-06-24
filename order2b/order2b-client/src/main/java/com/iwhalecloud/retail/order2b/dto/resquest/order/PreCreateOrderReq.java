@@ -17,10 +17,10 @@ public class PreCreateOrderReq extends MRequest implements Serializable {
     /**
      * 订单信息
      */
-    @ApiModelProperty(value = "用户id,等于userid",hidden = true)
+    @ApiModelProperty(value = "用户id,等于userid", hidden = true)
     private String memberId;
 
-    @ApiModelProperty("商家id")
+    @ApiModelProperty("商家id(卖家的）")
     @NullCheckValidate(message = "merchantId 字段不能为空")
     private String merchantId;
 
@@ -39,7 +39,7 @@ public class PreCreateOrderReq extends MRequest implements Serializable {
     private List<CouponInsDTO> couponInsList;
 
     @ApiModelProperty(value = "预售单=1，普通单=0",hidden = true)
-    private String orderCat;
+    private List<String> orderCatList;
 
     @ApiModelProperty("预售订单，活动id")
     private String activityId;

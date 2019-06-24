@@ -35,12 +35,12 @@
 		   <!--<artifactId>ojdbc6</artifactId>-->
 		   <!--<version>${ojdbc6.version}</version>-->
 		<!--</dependency>-->
-		<dependency>
-			<groupId>com.alibaba</groupId>
-			<artifactId>dubbo-config-api</artifactId>
-			<version>RELEASE</version>
-			<scope>test</scope>
-		</dependency>
+		<!--<dependency>-->
+			<!--<groupId>com.alibaba</groupId>-->
+			<!--<artifactId>dubbo-config-api</artifactId>-->
+			<!--<version>RELEASE</version>-->
+			<!--<scope>test</scope>-->
+		<!--</dependency>-->
 
 		<dependency>
 			<groupId>com.google.code.gson</groupId>

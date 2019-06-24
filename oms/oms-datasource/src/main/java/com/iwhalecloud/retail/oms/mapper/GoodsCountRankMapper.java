@@ -4,11 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.oms.dto.GoodsCountRankDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.GoodsCountRankRequest;
-import com.iwhalecloud.retail.oms.entity.EventLog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-
-import java.util.List;
 
 @Mapper
 public interface GoodsCountRankMapper extends BaseMapper {

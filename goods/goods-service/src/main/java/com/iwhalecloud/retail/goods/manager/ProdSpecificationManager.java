@@ -1,13 +1,5 @@
 package com.iwhalecloud.retail.goods.manager;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
-
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.goods.dto.req.ProdSpecificationAddReq;
 import com.iwhalecloud.retail.goods.dto.req.ProdSpecificationDeleteReq;
@@ -15,6 +7,12 @@ import com.iwhalecloud.retail.goods.dto.req.ProdSpecificationUpdateReq;
 import com.iwhalecloud.retail.goods.dto.resp.ProdSpecificationGetResp;
 import com.iwhalecloud.retail.goods.entity.ProdSpecification;
 import com.iwhalecloud.retail.goods.mapper.ProdSpecificationMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Component

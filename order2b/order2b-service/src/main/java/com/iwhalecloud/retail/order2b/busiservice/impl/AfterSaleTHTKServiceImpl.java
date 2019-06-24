@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.busiservice.impl;
 
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.AfterSaleTHTKService;
 import com.iwhalecloud.retail.order2b.busiservice.AfterSalesTHService;
 import com.iwhalecloud.retail.order2b.config.DBTableSequence;
@@ -20,6 +21,7 @@ import com.iwhalecloud.retail.order2b.manager.AfterSaleManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.manager.OrderZFlowManager;
 import com.iwhalecloud.retail.order2b.manager.PromotionManager;
+import com.iwhalecloud.retail.order2b.mapper.OrderMapper;
 import com.iwhalecloud.retail.order2b.model.OrderItemDetailModel;
 import com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel;
 import com.iwhalecloud.retail.order2b.model.PromotionModel;
@@ -35,8 +37,11 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class AfterSaleTHTKServiceImpl implements AfterSaleTHTKService {
@@ -69,6 +74,9 @@ public class AfterSaleTHTKServiceImpl implements AfterSaleTHTKService {
     @Autowired
     private PromotionManager promotionManager;
 
+    @Autowired
+    private OrderMapper orderMapper;
+    
     @Override
     public CommonResultResp tkCheck(OrderApplyReq req) {
 
@@ -191,7 +199,7 @@ public class AfterSaleTHTKServiceImpl implements AfterSaleTHTKService {
     public CommonResultResp checkActivity(OrderApplyReq req, Order order) {
 
         CommonResultResp resp = new CommonResultResp();
-        if (OrderManagerConsts.ORDER_CAT_1.equals(order.getOrderCat())) {
+        if (OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.equals(order.getOrderCat()) || OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.equals(order.getOrderCat())) {
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             resp.setResultMsg("预售订单不能退货退款");
             return resp;
@@ -233,7 +241,8 @@ public class AfterSaleTHTKServiceImpl implements AfterSaleTHTKService {
         orderApply.setApplicantId(req.getUserCode());
         orderApply.setHandlerId(req.getHandlerId());
         orderApply.setSupplierName(req.getSupplierName());
-        orderApply.setBatchId(orderApply.getBatchId() + 1);
+        Integer batchId = orderApply.getBatchId() == null ? 1 : orderApply.getBatchId()+1;
+        orderApply.setBatchId(batchId);
         orderApply.setApplyState(OrderAllStatus.ORDER_STATUS_21.getCode());
         orderApply.setCreateTime(String.valueOf(new Timestamp(System.currentTimeMillis())));
         orderApply.setSourceFrom(req.getSourceFrom());
@@ -436,15 +445,54 @@ public class AfterSaleTHTKServiceImpl implements AfterSaleTHTKService {
         orderApply.setRefundDesc(request.getPayRemark());
         orderApply.setApplyState(OrderAllStatus.ORDER_STATUS_29.getCode()); //待买家确认收款
         orderApply.setRefundImgUrl(request.getRefundImgUrl());
-        /**
-         * 更新申请单
-         */
-        int update = afterSaleManager.updateApplyState(orderApply);
-        if (update < 1) {
-            resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-            resp.setResultMsg("商家退款失败");
-            return resp;
+        
+        //如果是翼支付的订单所有的货退款
+        if("1".equals(request.getPayType())) {
+        	String orderId = request.getOrderId();
+            List<OrderItem> list = orderManager.selectOrderItemsList(orderId);
+            int num = 0;//订单数量
+//            int receiveNum = 0;//收货数量
+            int returnNum = 0;//退货数量
+            for(int i=0;i<list.size();i++) {
+            	OrderItem orderItem = list.get(i);
+            	num += orderItem.getNum();
+//            	receiveNum += orderItem.getReceiveNum();
+            	returnNum += orderItem.getReturnNum();
+            }
+            
+//            if(num == (receiveNum+returnNum)) {//如果订单数量=收货数量+退货数量
+            if(num == returnNum) {
+            	Order order = new Order();
+                order.setOrderId(orderId);
+                Order resOrder = orderMapper.getOrderById(order);
+                String payMoney = resOrder.getOrderAmount().toString();
+                String resPayMoney = payMoney.substring(0, payMoney.indexOf('.'));
+                String payTransId = resOrder.getPayTransId();
+                String callUrl = "ord.operbalance.preAuthConfirm";
+                String reqSeq = "PRE" + DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS").format(LocalDateTime.now());
+            	PayAuthorizationService payAuthorizationService = new PayAuthorizationService();
+            	Map<String, Object> resultCall = payAuthorizationService.call(callUrl, orderId, null, reqSeq, payTransId, resPayMoney);
+            	boolean flag = (boolean)resultCall.get("flag");
+            	int update = afterSaleManager.updateApplyState(orderApply);
+                if (update < 1 || !flag) {
+                    resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                    resp.setResultMsg("商家退款失败");
+                    return resp;
+                }
+            }
+            
+        }else {
+        	/**
+             * 更新申请单
+             */
+            int update = afterSaleManager.updateApplyState(orderApply);
+            if (update < 1) {
+                resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                resp.setResultMsg("商家退款失败");
+                return resp;
+            }
         }
+        
         OrderZFlowDTO zFlowDTO = new OrderZFlowDTO();
         zFlowDTO.setOrderId(request.getOrderApplyId());
         zFlowDTO.setHandlerId(request.getUserId());
@@ -459,5 +507,5 @@ public class AfterSaleTHTKServiceImpl implements AfterSaleTHTKService {
         resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         return resp;
     }
-
+    
 }

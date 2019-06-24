@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.goods2b.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -40,11 +39,17 @@ public class TagRel implements Serializable {
   	private String tagId;
   	
   	/**
-  	 * goodsId
+  	 * productBaseId
   	 */
-	@ApiModelProperty(value = "goodsId")
-  	private String goodsId;
-  	
+	@ApiModelProperty(value = "productBaseId")
+  	private String productBaseId;
+
+  	/**
+  	 * productId
+  	 */
+	@ApiModelProperty(value = "productId")
+  	private String productId;
+
   	
   	//属性 end
   	
@@ -53,8 +58,10 @@ public class TagRel implements Serializable {
         relId,
         /** tagId */
         tagId,
-        /** goodsId */
-        goodsId
+        /** productBaseId */
+		productBaseId,
+        /** productId */
+		productId
     }
 
 	

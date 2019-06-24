@@ -1,10 +1,14 @@
 package com.iwhalecloud.retail.order2b.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.order2b.config.WhaleCloudDBKeySequence;
+import com.iwhalecloud.retail.order2b.dto.response.OrderItemDetailReBateResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.promo.ReBateOrderInDetailReq;
 import com.iwhalecloud.retail.order2b.entity.OrderItemDetail;
 import com.iwhalecloud.retail.order2b.model.OrderItemDetailModel;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -27,5 +31,7 @@ public interface OrderItemDetailMapper extends BaseMapper<OrderItemDetail> {
     List<String> selectOrderIdByresNbr(OrderItemDetailModel resNbr);
 
     List<OrderItemDetail> selectOrderItemDetail(OrderItemDetailModel orderItemDetail);
+
+    Page<OrderItemDetailReBateResp> queryOrderItemDetailByOrderId(Page<OrderItemDetailReBateResp> page,@Param("req") ReBateOrderInDetailReq req);
 
 }

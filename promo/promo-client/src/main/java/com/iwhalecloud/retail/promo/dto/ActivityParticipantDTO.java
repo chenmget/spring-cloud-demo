@@ -86,6 +86,18 @@ public class ActivityParticipantDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "销售点名称")
   	private java.lang.String shopName;
+
+	/**
+	 * 筛选类型
+	 */
+	@ApiModelProperty(value = "筛选类型")
+	private java.lang.String filterType;
+
+	/**
+	 * 筛选条件json值
+	 */
+	@ApiModelProperty(value = "筛选条件json值")
+	private java.lang.String filterValue;
 	
 //	/**
 //  	 * 记录首次创建的员工标识。
@@ -155,5 +167,17 @@ public class ActivityParticipantDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "是否删除：0未删、1删除。")
 	private String isDeleted;
-  	
+
+	/**
+	 * 状态,0：待审核,1：有效,-1：审核不通过
+	 */
+	@ApiModelProperty(value = "状态,0：待审核,1：有效,-1：审核不通过")
+	private java.lang.String status;
+
+	/**
+	 * 操作类型，add：新增，mod：修改，del：删除
+	 */
+	@ApiModelProperty(value = "操作类型，add：新增，mod：修改，del：删除")
+	private java.lang.String operType;
+
 }

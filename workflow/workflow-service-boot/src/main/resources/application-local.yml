@@ -8,6 +8,7 @@ spring.dubbo:
     application:
       name: wf-provider
     registry:
+#      address: zookeeper://172.21.72.75:8121
       address: zookeeper://localhost:2181
       username:
       password:
@@ -21,7 +22,7 @@ spring.redis:
 #    host: 127.0.0.1
 #    port: 6379
     cluster:
-      nodes: 10.45.47.129:7021,10.45.47.129:7022,10.45.47.129:7023,10.45.47.129:7024,10.45.47.129:7025,10.45.47.129:7026
+      nodes: 10.45.46.241:7001,10.45.46.242:7001,10.45.46.243:7001
       timeout: 10000
       max-redirects: 3
     expireSeconds: 120
@@ -32,6 +33,15 @@ spring.redis:
       max-wait: 1000
       min-idle: 5
 #    password:
+
+  #i18n国际化配置
+ # messages:
+    #指定message的basename，多个以逗号分隔，如果不加包名的话，默认从classpath路径开始，默认: messages
+#    basename: i18n/workflow
+    #设定加载的资源文件缓存失效时间，-1的话为永不过期，默认为-1
+#    cache-seconds: 3600
+    #设定Message bundles的编码，默认: UTF-8
+#    encoding: UTF-8
 
 logging.level.com.iwhalecloud.retail.workflow.mapper: debug
  

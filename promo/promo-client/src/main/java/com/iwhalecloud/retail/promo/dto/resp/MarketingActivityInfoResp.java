@@ -44,4 +44,5 @@ public class MarketingActivityInfoResp implements Serializable {
      */
     @ApiModelProperty(value = "预售补贴产品列表")
     List<PreSubsidyProductRespDTO> preSaleProductInfo;
+
 }

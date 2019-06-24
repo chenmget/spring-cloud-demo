@@ -4,7 +4,9 @@ package com.iwhalecloud.retail.warehouse.service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 
 import java.util.List;
 
@@ -12,11 +14,17 @@ public interface SupplierResourceInstService {
 
     /**
      * 添加串码
-     *
      * @param req
      * @return
      */
     ResultVO addResourceInst(ResourceInstAddReq req);
+
+    /**
+     * 管理员添加串码
+     * @param req
+     * @return
+     */
+    ResultVO addResourceInstByAdmin(ResourceInstAddReq req);
 
     /**
      * 删除串码
@@ -24,15 +32,7 @@ public interface SupplierResourceInstService {
      * @param req
      * @return
      */
-    ResultVO delResourceInst(ResourceInstUpdateReq req);
-
-    /**
-     * 还原串码
-     *
-     * @param req
-     * @return
-     */
-    ResultVO resetResourceInst(ResourceInstUpdateReq req);
+    ResultVO delResourceInst(AdminResourceInstDelReq req);
 
     /**
      * 获取列表
@@ -40,7 +40,7 @@ public interface SupplierResourceInstService {
      * @param req
      * @return
      */
-    ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req);
+    ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req);
 
     /**
      * 调拨串码
@@ -50,14 +50,6 @@ public interface SupplierResourceInstService {
      */
     ResultVO allocateResourceInst(SupplierResourceInstAllocateReq req);
 
-
-    /**
-     * 订单发货 判断串码有效性
-     *
-     * @param req
-     * @return
-     */
-    ResultVO validResourceInst(ValidResourceInstReq req);
 
     /**
      * 订单发货 串码出库
@@ -97,7 +89,7 @@ public interface SupplierResourceInstService {
      * @param req
      * @return
      */
-    ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req);
+    ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req);
 
     /**
      * 冻结/解冻
@@ -128,4 +120,51 @@ public interface SupplierResourceInstService {
      * @return
      */
     public ResultVO confirmRefuseNbr(ConfirmReciveNbrReq req);
+
+    /**
+     * 订单发货 判断串码有效性
+     *
+     * @param req
+     * @return
+     */
+    ResultVO validResourceInst(DeliveryValidResourceInstReq req);
+
+    /**
+     * 供应商新增串码
+     *
+     * @param req
+     * @return
+     */
+    ResultVO validNbr(ResourceInstValidReq req);
+
+    /**
+     * 新增串码后查询串码列表
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ResourceInstListPageResp>> getResourceInstListForTask(ResourceInstListPageReq req);
+
+    /**
+     * 查询校验串码
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req);
+
+    /**
+     * 零售商串码入库多线程处理
+     * @param req
+     * @return
+     */
+    ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req);
+
+    /**
+     * 导出串码查询
+     * @param req
+     * @return
+     */
+    ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req);
+
+
+    public ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req);
 }

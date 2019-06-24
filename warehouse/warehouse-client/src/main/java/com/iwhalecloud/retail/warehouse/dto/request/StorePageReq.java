@@ -67,4 +67,16 @@ public class StorePageReq extends PageVO {
     @ApiModelProperty(value = "本地网名称")
     private java.lang.String lanIdName;
 
+    /**
+     * 仓库层级
+     */
+    @ApiModelProperty(value = "仓库层级")
+    private String storeGrade;
+
+    /**
+     * mktResStoreId
+     */
+    @ApiModelProperty(value = "mktResStoreId")
+    private String mktResStoreId;
+
 }

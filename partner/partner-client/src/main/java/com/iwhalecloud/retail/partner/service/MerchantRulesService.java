@@ -21,32 +21,18 @@ public interface MerchantRulesService {
     ResultVO<Integer> saveMerchantRules(MerchantRulesSaveReq req);
 
     /**
-     * 获取一个 商家 权限规则
-     * @param merchantRulesId
-     * @return
-     */
-    ResultVO<MerchantRulesDTO> getMerchantRulesById(String merchantRulesId);
-
-    /**
-     * 更新 商家 权限规则
-     * @param req
-     * @return
-     */
-//    ResultVO<Integer> updateMerchantRules(MerchantRulesUpdateReq req);
-
-    /**
      * 删除 商家 权限规则
      * @param req
      * @return
      */
     ResultVO<Integer> deleteMerchantRules(MerchantRulesDeleteReq req);
 
-    /**
-     * 商家 权限规则 信息 列表查询
-     * @param req
-     * @return
-     */
-    ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesListReq req);
+//    /**
+//     * 商家 权限规则 信息 列表查询
+//     * @param req
+//     * @return
+//     */
+//    ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesListReq req);
 
     /**
      * 商家 权限规则详情 信息 列表查询
@@ -54,6 +40,20 @@ public interface MerchantRulesService {
      * @return
      */
     ResultVO<List<MerchantRulesDetailDTO>> listMerchantRulesDetail(MerchantRulesDetailListReq req);
+
+    /**
+     * 商家 权限规则信息 列表查询
+     * @param req
+     * @return
+     */
+    ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesDetailListReq req);
+
+    /**
+     * 商家 权限规则详情 信息 列表查询分页
+     * @param req
+     * @return
+     */
+    ResultVO<Page<MerchantRulesDetailDTO>> pageMerchantRulesDetail(MerchantRulesDetailListReq req);
 
     /**
      * 商家 权限规则信息 列表查询
@@ -114,12 +114,19 @@ public interface MerchantRulesService {
     ResultVO<List<String>> getProductAndBrandPermission(String merchantId);
 
     /**
-     * 通过merchantId查询商家区域和对象权限集合
+     * 通过merchantId查询 调拨权限的 商家区域和对象权限集合
      * @param req
      * @return 机型id集合
      */
-    ResultVO<List<String>> getRegionAndMerchantPermission(MerchantRulesCommonReq req);
-    
+    ResultVO<List<String>> getTransferRegionAndMerchantPermission(MerchantRulesCommonReq req);
+
+    /**
+     * 通过merchantId查询 经营权限的   商家区域和对象权限集合
+     * @param req
+     * @return 机型id集合
+     */
+    ResultVO<List<String>> getBusinessRegionAndMerchantPermission(MerchantRulesCommonReq req);
+
     /**
      * 批量添加 商家 权限规则
      * @param req
@@ -134,5 +141,14 @@ public interface MerchantRulesService {
      * @return ResultVO
      */
     ResultVO<String> checkMerchantRules(MerchantRulesCheckReq req);
+
+    /**
+     * 商家权限规则校验 商家是否有经营权限进行提示
+     *
+     * @param merchantId 规则校验入参
+     * @param productBaseId 规则校验入参
+     * @return ResultVO
+     */
+    ResultVO<Boolean> checkProdListRule(String merchantId,String productBaseId);
 
 }

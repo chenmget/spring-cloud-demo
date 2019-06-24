@@ -218,14 +218,26 @@ public class ResourceInst implements Serializable {
 	@ApiModelProperty(value = "记录自注册状态")
   	private java.lang.String selfRegStatus;
 
-  	/**
-  	 * 产品类型
-  	 */
+	/**
+	 * 产品类型
+	 */
 	@ApiModelProperty(value = "产品类型")
-  	private java.lang.String typeId;
+	private java.lang.String typeId;
 
-  	
-  	//属性 end
+	/**
+	 * SN码
+	 */
+	@ApiModelProperty(value = "SN码")
+	private java.lang.String snCode;
+
+	/**
+	 * 网络终端（包含光猫、机顶盒、融合终端）记录MAC码
+	 */
+	@ApiModelProperty(value = "macCode")
+	private java.lang.String macCode;
+
+
+	//属性 end
 	
     /** 字段名称枚举. */
     public enum FieldNames {
@@ -320,7 +332,16 @@ public class ResourceInst implements Serializable {
 		crmStatus("crmStatus","CRM_STATUS"),
 		
 		/** 记录自注册状态. */
-		selfRegStatus("selfRegStatus","SELF_REG_STATUS");
+		selfRegStatus("selfRegStatus","SELF_REG_STATUS"),
+
+		/**产品类型. */
+		typeId("typeId","TYPE_ID"),
+
+		/**SN码. */
+		snCode("snCode","sn_code"),
+
+		/** 网络终端（包含光猫、机顶盒、融合终端）记录MAC码. */
+		macCode("macCode","mac_code");
 
 		private String fieldName;
 		private String tableFieldName;

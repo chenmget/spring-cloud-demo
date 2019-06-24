@@ -1,6 +1,6 @@
 package com.iwhalecloud.retail.warehouse.dto.request;
 
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,6 +31,6 @@ public class ResourceInstItemReq implements Serializable {
 	 * 串码实列集
 	 */
 	@ApiModelProperty(value = "串码实列集")
-	private List<ResourceInstListResp> resourceInstListRespList;
+	private List<ResourceInstListPageResp> resourceInstListRespListPage;
 
 }

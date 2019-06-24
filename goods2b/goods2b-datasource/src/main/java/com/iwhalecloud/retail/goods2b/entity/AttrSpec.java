@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.goods2b.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -201,6 +200,9 @@ public class AttrSpec implements Serializable {
 
 	@ApiModelProperty(value = "查询条件排序")
 	private int filterOrder;
+
+	@ApiModelProperty(value = "是否展示")
+	private String isDisplay;
   	
   	//属性 end
 	
@@ -299,6 +301,8 @@ public class AttrSpec implements Serializable {
 
 		/**是否为默认查询条件*/
 		isDefaultFilter("isDefaultFilter","IS_DEFAULT_FILTER"),
+
+		isDisplay("isDisplay","IS_DISPLAY"),
 
 		/**查询条件排序*/
 		filterOrder("filterOrder","FILTER_ORDER");

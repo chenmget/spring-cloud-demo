@@ -7,7 +7,6 @@ import com.iwhalecloud.retail.order.dto.response.CartListResp;
 import com.iwhalecloud.retail.order.dto.resquest.*;
 import com.iwhalecloud.retail.order.service.CartService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component

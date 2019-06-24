@@ -5,7 +5,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.AdminResourceInstDelReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstPutInReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.entity.ResourceInst;
 
 import java.util.List;
@@ -26,7 +26,7 @@ public interface ResourceInstLogService {
      * @param req
      * @param resourceInsts
      */
-    void updateResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstListResp> resourceInsts);
+    void updateResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstListPageResp> resourceInsts);
 
     /**
      * 串码根据主键更新写事件、事件明细
@@ -48,5 +48,12 @@ public interface ResourceInstLogService {
      * @param req
      * @param resourceInsts
      */
-    void delResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstDTO> resourceInsts);
+    void delResourceInstLog(AdminResourceInstDelReq req, List<ResourceInstDTO> resourceInsts);
+
+    /**
+     * 供应商发货（串码）写事件、事件明细
+     * @param req
+     * @param resourceInsts
+     */
+    void supplierDeliveryOutResourceInstLog(ResourceInstUpdateReq req, List<ResourceInstDTO> resourceInsts);
 }

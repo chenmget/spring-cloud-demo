@@ -7,9 +7,7 @@ import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.mapper.ProductMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -62,6 +60,15 @@ public class ProductManager {
      */
     public ProductResp getProduct(String productId) {
         return productMapper.getProduct(productId);
+    }
+    
+    /**
+     * 根据产品ID获取产品对象
+     * @param productId 产品ID
+     * @return
+     */
+    public ProductResp getProductInfo(String productId) {
+        return productMapper.getProducts(productId);
     }
 
     /**
@@ -175,6 +182,16 @@ public class ProductManager {
     public ProductPageResp getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO){
         return productMapper.getProductInfo(queryProductInfoReqDTO);
     }
+    
+    /**
+     * 根据产品ID获取产品信息
+     * @param queryProductInfoReqDTO
+     * @return
+     */
+    public ProductPageResp getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO){
+        return productMapper.getProductInfor(queryProductInfoReqDTO);
+    }
+    
     public int updateAuditStateByProductBaseId(ProductAuditStateUpdateReq req){
 //        Product record = new Product();
 //        record.setProductId(productId);
@@ -211,6 +228,24 @@ public class ProductManager {
     }
 
     /**
+     * 根据条件查询产品（返利使用）
+     * @param req
+     * @return
+     */
+    public List<ProductResp> getProductForRebate(ProductRebateReq req){
+        return productMapper.getProductForRebate(req);
+    }
+
+    /**
+     * 查询产品sn, is_fixed_line(对接营销资源用)
+     * @param productId
+     * @return
+     */
+    public ProductForResourceResp getProductForResource(String productId) {
+        return productMapper.getProductForResource(productId);
+    }
+
+     /**
      * 根据产品名称或编码查询产品
      * @param request
      * @return
@@ -218,4 +253,25 @@ public class ProductManager {
     public Integer getDuplicate(ProductGetDuplicateReq request){
         return productMapper.getDuplicate(request);
     }
+
+    /**
+     * 根据产品Id列表查询产品信息
+     * @param productIdList
+     * @return
+     */
+    public List<ProductInfoResp> getProductInfoByIds( List<String> productIdList){
+        return productMapper.getProductInfoByIds(productIdList);
+    }
+    
+    public String selectNextChangeId() {
+		return productMapper.selectNextChangeId();
+	}
+    
+    public String selectNextChangeDetailId() {
+    	return productMapper.selectNextChangeDetailId();
+    }
+    
+    public String selectisFixedLineByBatchId(String batchId) {
+		return productMapper.selectisFixedLineByBatchId(batchId);
+	}
 }

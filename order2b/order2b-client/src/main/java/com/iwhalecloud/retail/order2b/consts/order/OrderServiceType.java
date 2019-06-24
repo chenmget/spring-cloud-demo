@@ -12,6 +12,7 @@ public enum OrderServiceType implements EnumInterface {
     ORDER_SHIP_TYPE_2("退费关系","2",""),
     ORDER_SHIP_TYPE_3("换货关系","3",""),
     ORDER_SHIP_TYPE_4("退货关系","4",""),
+    ORDER_SHIP_TYPE_5("订单关闭","5",""),
             ;
 
 

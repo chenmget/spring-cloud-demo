@@ -112,4 +112,27 @@ public class ResourceInstPutInReq implements java.io.Serializable {
 	@ApiModelProperty(value = "串码来源")
 	private java.lang.String sourceType;
 
+	/**
+	 * 事件状态
+	 */
+	@ApiModelProperty(value = "事件状态")
+	private java.lang.String eventStatusCd;
+
+	/**
+	 * 对象类型
+	 */
+	@ApiModelProperty(value = "对象类型")
+	private String objType;
+
+	/**
+	 * 对象标识
+	 */
+	@ApiModelProperty(value = "对象标识")
+	private String objId;
+
+	/**
+	 * 记录本地网标识。
+	 */
+	@ApiModelProperty(value = "记录本地网标识")
+	private String regionId;
 }

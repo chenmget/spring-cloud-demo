@@ -1,21 +1,53 @@
 package com.iwhalecloud.retail.system.service;
 
 
-import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
+import com.iwhalecloud.retail.system.dto.request.OrganizationChildListReq;
+import com.iwhalecloud.retail.system.dto.request.OrganizationListReq;
 import com.iwhalecloud.retail.system.dto.request.OrganizationsQueryReq;
+import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
+import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
 
-public interface OrganizationService{
+import java.util.List;
 
-    public ResultVO saveOrganization(OrganizationDTO organizationDTO);
+public interface OrganizationService {
 
-    public ResultVO listOrganization(String parentId);
+    ResultVO saveOrganization(OrganizationDTO organizationDTO);
 
-    public ResultVO getOrganization(String orgId);
+    ResultVO listOrganization(String parentId);
 
-    public ResultVO queryOrganizationsForPage(OrganizationsQueryReq organizationsQueryReq);
+    /**
+     * 根据ID 获取组织信息
+     * @param orgId
+     * @return
+     */
+    ResultVO<OrganizationDTO> getOrganization(String orgId);
 
-    public ResultVO deleteOrganization(String orgId);
+    ResultVO queryOrganizationsForPage(OrganizationsQueryReq organizationsQueryReq);
 
-    public ResultVO updateOrganization(OrganizationDTO organizationDTO);
+    ResultVO deleteOrganization(String orgId);
+
+    ResultVO updateOrganization(OrganizationDTO organizationDTO);
+
+    /**
+     * 查询十四个地市的org_id(库存入库使用)
+     * @return
+     */
+    ResultVO<List<OrganizationRegionResp>> queryRegionOrganizationId();
+
+    /**
+     * 根据条件查询组织列表
+     * @param req
+     * @return
+     */
+    ResultVO<List<OrganizationListResp>> listOrganization(OrganizationListReq req);
+
+    /**
+     * 根据orgId集合查询下属的子组织
+     * @param req
+     * @return
+     */
+    ResultVO<List<OrganizationListResp>> listOrganizationChild(OrganizationChildListReq req);
+
 }

@@ -15,6 +15,8 @@ public class SendGoodsItemDTO implements Serializable {
 
     private String productId;
 
+    private Integer deliveryNum;
+
     /**
      * 串码id
      */

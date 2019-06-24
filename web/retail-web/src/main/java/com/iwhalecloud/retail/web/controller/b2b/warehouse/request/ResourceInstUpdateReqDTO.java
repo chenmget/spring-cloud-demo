@@ -7,6 +7,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -33,5 +34,11 @@ public class ResourceInstUpdateReqDTO implements Serializable {
 	 */
 	@ApiModelProperty(value = "商家Id。")
 	private String merchantId;
+
+	/**
+	 * 串码、产品类型键值对
+	 */
+	@ApiModelProperty(value = "串码、产品类型键值对")
+	private Map<String, String> nbrAndTypeId;
 
 }

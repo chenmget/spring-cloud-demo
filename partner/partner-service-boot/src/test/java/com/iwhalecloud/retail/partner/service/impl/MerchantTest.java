@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.partner.PartnerServiceApplication;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp;
+import com.iwhalecloud.retail.partner.manager.MerchantManager;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import org.assertj.core.util.Lists;
 import org.junit.Test;
@@ -23,6 +24,9 @@ public class MerchantTest {
 
     @Autowired
     private MerchantService merchantService;
+
+    @Autowired
+    private MerchantManager merchantManager;
 
     @Test
     public void count() {
@@ -148,6 +152,21 @@ public class MerchantTest {
 //        list1.addAll(list2);
 
         System.out.print(list1.toString());
+    }
 
+    @Test
+    public void getMerchantForOrder() {
+        MerchantGetReq req = new MerchantGetReq();
+        req.setMerchantId("4300001063072");
+        ResultVO resultVO = merchantService.getMerchantForOrder(req);
+        System.out.print("结果：" + resultVO.toString());
+    }
+
+    @Test
+    public void listMerchantForOrder() {
+        MerchantLigthReq req = new MerchantLigthReq();
+        req.setMerchantName("廖");
+        ResultVO resultVO = merchantService.listMerchantForOrder(req);
+        System.out.print("结果：" + resultVO.toString());
     }
 }

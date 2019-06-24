@@ -32,5 +32,21 @@
             and lower(t.INVOICE_TYPE) = #{req.invoiceType} 
         </if>
     </select>
+    <select id="queryInvoiceByMerchantIds" resultType="com.iwhalecloud.retail.partner.dto.resp.InvoicePageResp"
+            parameterType="com.iwhalecloud.retail.partner.dto.req.QueryInvoiceByMerchantIdsReq">
+        select
+        <include refid="allFields"></include>
+        from PAR_INVOICE t where 1=1
+        <if test="req.merchantIdList != null and req.merchantIdList.size > 0">
+            and t.MERCHANT_ID in
+            <foreach collection="req.merchantIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="req.invoiceType != null and req.invoiceType != ''">
+            and lower(t.INVOICE_TYPE) = #{req.invoiceType}
+        </if>
+    </select>
 
 </mapper>

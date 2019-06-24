@@ -32,12 +32,12 @@ public class ResourceConst {
     public final static String OUT_PUT_STOAGE = "1000";
 
     /**
-     * 常量
+     * 常量是
      */
     public final static String  CONSTANT_YES = "1";
 
     /**
-     * 常量
+     * 常量否
      */
     public final static String  CONSTANT_NO = "0";
 
@@ -54,6 +54,22 @@ public class ResourceConst {
      * 调拨两端都要审核流程实例ID
      */
     public final static String  ALLOCATE_WORK_FLOW_INST_2 = "12";
+    /**
+     * 移动串码审核流程
+     */
+    public final static String  MOVE_NBR_WORK_FLOW_INST = "13";
+    /**
+     * 一步抽检流程（固网）
+     */
+    public final static String  ONE_STEP_WORK_FLOW_INST = "14";
+    /**
+     * 厂商串码入库集采流程实例（固网）
+     */
+    public final static String  FIXED_NBR_WORK_FLOW_INST = "15";
+    /**
+     * 两步抽检流程（固网）
+     */
+    public final static String  TWO_STEP_WORK_FLOW_INST = "16";
 
     /**
      * 调拨返回成功的消息
@@ -79,6 +95,10 @@ public class ResourceConst {
      */
     public final static String NULL_STORE_ID = "-1";
 
+    /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
 
     /**
      * 串码实列状态
@@ -98,7 +118,7 @@ public class ResourceConst {
         // 1205	退换货已冻结
         RESTORAGED("1205","退换货已冻结"),
         // 1203	已销售未补贴
-        SALED("1203","交易出库"),
+        SALED("1203","已销售"),
         // 1110	已作废
         DELETED("1110","已作废");
 
@@ -312,7 +332,9 @@ public class ResourceConst {
         // 删除
         DELETE("1010","删除"),
         // 裸机销售
-        BARE_MACHINE_SALE("1013","裸机销售");
+        BARE_MACHINE_SALE("1013","裸机销售"),
+        // 无需记录事件
+        NO_RECORD("9999","无需记录事件");
 
         private String code;
         private String name;
@@ -343,6 +365,7 @@ public class ResourceConst {
      * 资源类型
      */
     public enum MKTResInstType {
+
         // 交易
         TRANSACTION("1","社采"),
         // 非交易
@@ -350,7 +373,9 @@ public class ResourceConst {
         // 备机
         STANDBYMACHINE("3","备机"),
         // 省内代收
-        COLLECTION_BY_PROVINCE("4","省内代收");
+        COLLECTION_BY_PROVINCE("4","省内代收"),
+        // 省内代收
+        TEST_FIX_LINE("5","测试终端");
 
         private String code;
         private String name;
@@ -467,7 +492,16 @@ public class ResourceConst {
         // 完成
         DONE("1003","完成"),
         // 取消
-        CANCEL("1004","取消");
+        CANCEL("1004","取消"),
+        //待抽检
+        WAIT_SPOTCHECK("1006","待抽检"),
+        //待抽检
+        WAIT_SPOTCHECK_CUSTSUP("1007","待抽检-客支中心"),
+        //抽检不通过
+        WAIT_SPOTCHECK_MOBINT("1008","待抽检-移互部"),
+        //待审核
+        WATI_REVIEW("1009","待审核");
+
 
         private String code;
         private String name;
@@ -850,4 +884,173 @@ public class ResourceConst {
         }
     }
 
+    /**
+     * 仓库大类
+     */
+    public enum STORE_TYPE{
+        // 终端库
+        PROVINCE("1000","省级库"),
+        CITY("1100","本地网库");
+
+        private String code;
+        private String name;
+
+        STORE_TYPE(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public static String getStoreTypeName(String name){
+            for (STORE_SUB_TYPE storeSubType : STORE_SUB_TYPE.values()){
+                if(storeSubType.code.equals(name)){
+                    return storeSubType.name;
+                }
+            }
+            return "";
+        }
+    }
+
+    /**
+     * 仓库大类
+     */
+    public enum STORE_GRADE{
+        // 终端库
+        PROVINCE("1000","省级库"),
+        CITY("1100","本地网库");
+
+        private String code;
+        private String name;
+
+        STORE_GRADE(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public static String getStoreGradeName(String name){
+            for (STORE_SUB_TYPE storeSubType : STORE_SUB_TYPE.values()){
+                if(storeSubType.code.equals(name)){
+                    return storeSubType.name;
+                }
+            }
+            return "";
+        }
+    }
+
+    /**
+     * 申请单详情状态
+     */
+    public enum DetailStatusCd{
+        STATUS_CD_1002("1002","处理中"),
+        STATUS_CD_1003("1003","完成"),
+        STATUS_CD_1004("1004","审核不通过"),
+        STATUS_CD_1005("1005","审核通过"),
+        STATUS_CD_1009("1009","待审核");
+        private String code;
+        private String name;
+
+        DetailStatusCd(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public static String getNameByCode(String code) {
+            DetailStatusCd[] enums = values();
+            for (DetailStatusCd obj : enums) {
+                if (obj.code.equals(code)) {
+                    return obj.name;
+                }
+            }
+            return null;
+        }
+        public static String getCodeByName(String name) {
+            DetailStatusCd[] enums = values();
+            for (DetailStatusCd obj : enums) {
+                if (obj.name.equals(name)) {
+                    return obj.code;
+                }
+            }
+            return null;
+        }
+    }
+
+    /**
+     * 集采类型
+     */
+    public enum IS_GOVORJC{
+        IS_GOVORJC_1("1","政企"),
+        IS_GOVORJC_2("2","集采");
+        private String code;
+        private String name;
+
+        IS_GOVORJC(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+
+    }
 }

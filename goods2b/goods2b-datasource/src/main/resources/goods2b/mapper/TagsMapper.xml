@@ -20,5 +20,11 @@
         <include refid="Base_Column_List"></include>
          from prod_tags where IS_DELETED=0
     </select>
+    
+    <select id="listProdTagsChannel" resultType="com.iwhalecloud.retail.goods2b.dto.TagsDTO">
+        select
+        <include refid="Base_Column_List"></include>
+         from prod_tags where IS_DELETED=0 AND tag_type = '01'
+    </select>
 
 </mapper>

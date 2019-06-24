@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.workflow.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -81,6 +80,12 @@ public class Route implements Serializable {
   	 */
 	@ApiModelProperty(value = "顺序 ")
   	private Long sort;
+
+	/**
+	 * 路由条件
+	 */
+	@ApiModelProperty(value = "路由条件")
+	private String routeCondition;
   	
   	/**
   	 * 描述 

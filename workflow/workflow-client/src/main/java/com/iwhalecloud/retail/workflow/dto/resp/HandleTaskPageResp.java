@@ -113,19 +113,19 @@ public class HandleTaskPageResp implements Serializable {
     private java.util.Date createTime;
 
     @ApiModelProperty(value = "当前节点ID")
-    private java.lang.String curNodeId;
+    private String curNodeId;
 
     @ApiModelProperty(value = "当前节点名称")
-    private java.lang.String curNodeName;
+    private String curNodeName;
 
     @ApiModelProperty(value = "最后处理时间")
     private java.util.Date lastDealTime;
 
     @ApiModelProperty(value = "扩展信息1")
-    private java.lang.String extends1;
+    private String extends1;
 
     @ApiModelProperty(value = "1:处理中\n" +
             "2：办结")
-    private java.lang.String taskStatus;
+    private String taskStatus;
 
 }

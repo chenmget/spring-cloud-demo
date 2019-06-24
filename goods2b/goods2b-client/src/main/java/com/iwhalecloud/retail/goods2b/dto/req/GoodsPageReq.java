@@ -33,9 +33,6 @@ public class GoodsPageReq extends PageVO {
     @ApiModelProperty(value = "地市ID或编码（暂不可用）")
     private String regionCity;
 
-    /*@ApiModelProperty(value = "供应商名称")
-    private String supplierName;*/
-
     @ApiModelProperty(value = "供应商ID列表(仅供管理员选择用)")
     private List<String> supplierIds;
 
@@ -75,12 +72,44 @@ public class GoodsPageReq extends PageVO {
     @ApiModelProperty(value = "产品编码")
     private String sn;
 
+    /**
+     * 支付方式
+     */
+    @ApiModelProperty(value = "支付方式")
+    private String payments;
     @ApiModelProperty(value = "供应商ID")
     private String supplierId;
 
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
 
+    @ApiModelProperty(value = "供应商 所属 地市ID （本地网）")
+    private String supplierLanId;
+
     @ApiModelProperty(value = "供应商类型")
     private String merchantType;
+
+    @ApiModelProperty(value = "类型Id")
+    private String typeId;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
+    /**
+     * 是否预售
+     */
+    @ApiModelProperty(value = "是否预售")
+    private Integer isAdvanceSale;
+
+    @ApiModelProperty(value = "attrValue1")
+    private String attrValue1;
+
+    @ApiModelProperty(value = "attrValue2")
+    private String attrValue2;
+
+    @ApiModelProperty(value = "attrValue3")
+    private String attrValue3;
 }

@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
+import com.iwhalecloud.retail.goods2b.dto.resp.*;
 
 import java.util.List;
 
@@ -29,6 +26,13 @@ public interface ProductService {
     ResultVO<ProductResp> getProduct(ProductGetByIdReq req);
 
     /**
+     * 根据产品ID获取产品对象
+     * @param req 产品ID
+     * @return 产品对象
+     */
+    ResultVO<ProductResp> getProductInfo(ProductGetByIdReq req);
+    
+    /**
      * 根据产品编码获取产品对象
      * @param sn
      * @return
@@ -41,7 +45,14 @@ public interface ProductService {
      * @param req
      * @return
      */
-    public ResultVO<Integer> addProduct (ProductAddReq req);
+    public String addProduct (ProductAddReq req);
+
+//    /**
+//     * 根据产品编码获取产品对象
+//     * @param sn
+//     * @return
+//     */
+//    ResultVO<ProductResp> getProductBySn(String sn);
 
     /**
      * 添加产品-中台
@@ -98,6 +109,13 @@ public interface ProductService {
      * @return
      */
     ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req);
+    
+    /**
+     * 条件分页查询(政企价格导出)
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ProductPageResp>> selectPageProductAdminDc(ProductsPageReq req);
 
     /**
      * 条件分页查询-All
@@ -135,6 +153,14 @@ public interface ProductService {
     ResultVO<QueryProductInfoResqDTO> getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO);
 
     /**
+     *查询产品信息
+     * @param queryProductInfoReqDTO
+     * @return
+     */
+    ResultVO<QueryProductInfoResqDTO> getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO);
+
+    
+    /**
      * 添加产品标签
      * @param req
      * @return
@@ -168,9 +194,38 @@ public interface ProductService {
     ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req);
 
     /**
+<<<<<<< HEAD
+     * 返利使用
+     * @param req
+     * @return
+     */
+    ResultVO<List<ProductResp>> getProductForRebate(ProductRebateReq req);
+
+    /**
+     * 查询产品sn, is_fixed_line(对接营销资源用)
+     * @param req
+     * @return
+     */
+    ResultVO<ProductForResourceResp> getProductForResource(ProductGetByIdReq req);
+
+    /**
      * 根据产品名称或编码查询产品
      * @param req
      * @return
      */
     ResultVO<Integer> getDuplicate (ProductGetDuplicateReq req);
+
+    /**
+     * 根据产品id列表查询产品信息
+     * @param productIdList
+     * @return
+     */
+    public List<ProductInfoResp> getProductInfoByIds( List<String> productIdList);
+    
+    public String selectNextChangeId();
+    
+    public String selectNextChangeDetailId() ;
+    
+    public String selectisFixedLineByBatchId(String batchId) ;
+    
 }

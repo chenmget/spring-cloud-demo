@@ -98,4 +98,16 @@ public class ProductBaseListReq extends PageVO{
      */
     @ApiModelProperty(value = "产品id集合")
     private List<String> productIdList;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
+    /**
+     * 卖点
+     */
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 }

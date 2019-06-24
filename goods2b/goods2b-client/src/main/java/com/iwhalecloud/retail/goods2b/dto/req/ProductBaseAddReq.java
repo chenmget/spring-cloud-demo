@@ -82,6 +82,17 @@ public class ProductBaseAddReq extends AbstractRequest implements Serializable {
     private String isCtCode;
 
     /**
+     * 是否需要抽检
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String IsInspection;
+
+    /**
+     * 是否固网产品
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String isFixedLine;
+    /**
      * 产品编码
      */
     @ApiModelProperty(value = "产品编码")
@@ -99,11 +110,11 @@ public class ProductBaseAddReq extends AbstractRequest implements Serializable {
     @ApiModelProperty(value = "换货对象")
     private String exchangeObject;
 
-    /**
-     * 采购类型
-     */
-    @ApiModelProperty(value = "采购类型")
-    private String purchaseType;
+//    /**
+//     * 采购类型
+//     */
+//    @ApiModelProperty(value = "采购类型")
+//    private String purchaseType;
 
     /**
      * 参数1
@@ -547,4 +558,24 @@ public class ProductBaseAddReq extends AbstractRequest implements Serializable {
      */
     @ApiModelProperty(value = "manufacturerId")
     private String manufacturerId;
+
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
+
+    private String purchaseType;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
+    /**
+     * 卖点
+     */
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 }

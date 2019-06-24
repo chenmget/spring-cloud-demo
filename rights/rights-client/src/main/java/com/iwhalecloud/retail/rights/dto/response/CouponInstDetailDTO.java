@@ -46,6 +46,8 @@ public class CouponInstDetailDTO implements Serializable {
     @ApiModelProperty(value = "优化券类: 1:平台优惠券  2:商家优惠券 3:产品优惠券")
     private java.lang.String couponType;
 
+    @ApiModelProperty(value = "活动id")
+    private String marketingActivityId;
 
     /**** 以下是 coupon_discount_rule 表 字段*/
 

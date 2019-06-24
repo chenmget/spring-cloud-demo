@@ -114,7 +114,18 @@ public class UserManager {
 
     public Page<UserDTO> pageUser(UserPageReq req){
         Page<UserDTO> page =  new Page<UserDTO>(req.getPageNo(), req.getPageSize());
-        return userMapper.pageUser(page, req);
+        Page<UserDTO> pageUserDTO = userMapper.pageUser(page, req);
+        List<UserDTO> listUserDTO = pageUserDTO.getRecords();
+        for(int i=0;i<listUserDTO.size();i++) {
+        	UserDTO userDTO = listUserDTO.get(i);
+        	if(userDTO != null) {
+        		String regionName = userMapper.getRegionNameByRegionId(userDTO.getRegionId());
+        		userDTO.setRegionId(regionName);
+        	}
+        }
+        
+        
+        return pageUserDTO;
     }
 
     /**

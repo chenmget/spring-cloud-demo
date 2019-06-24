@@ -31,12 +31,12 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	@ApiModelProperty(value = "记录营销资源实例编码。")
 	@NotEmpty(message = "串码不能为空")
   	private List<String> mktResInstNbrs;
-	
+
 	/**
-  	 * 固网终端需要CT码管理时，记录CT码
-  	 */
-	@ApiModelProperty(value = "固网终端需要CT码管理时，记录CT码")
-  	private Map<String, String> ctCode;
+	 * 抽检串码列表
+	 */
+	@ApiModelProperty(value = "抽检串码列表")
+	private List<String> checkMktResInstNbrs;
 	
 	/**
   	 * 营销资源标识，记录product_id
@@ -64,7 +64,7 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	/**
   	 * 01 交易 2 非交易 03 备机
   	 */
-	@ApiModelProperty(value = "01 交易,02 非交易,03 备机")
+	@ApiModelProperty(value = "1 社采,2 集采,3 备机, 4 省内代收")
   	private String mktResInstType;
 
 	/**
@@ -123,9 +123,9 @@ public class ResourceInstAddReq implements java.io.Serializable {
   	private String statusCd;
 
 	/**
-	 * 商家标识
+	 * 零售商商家标识
 	 */
-	@ApiModelProperty(value = "商家标识")
+	@ApiModelProperty(value = "零售商商家标识")
 	private String merchantId;
 
 	/**
@@ -213,13 +213,13 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	/**
 	 * 商家编码
 	 */
-	@ApiModelProperty(value = "商家编码")
+	@ApiModelProperty(value = "零售商编码")
 	private String merchantCode;
 
 	/**
 	 * 商家名称
 	 */
-	@ApiModelProperty(value = "商家名称")
+	@ApiModelProperty(value = "零售商名称")
 	private String merchantName;
 
 	/**
@@ -227,4 +227,72 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "产品类型")
 	private String typeId;
+
+	/**
+	 * 营销资源导入批次。
+	 */
+	@ApiModelProperty(value = "营销资源导入批次。")
+	private String mktResUploadBatch;
+
+	@ApiModelProperty(value = "是否固网终端")
+	private String isFixedLine;
+	/**
+	 * 源商家标识
+	 */
+	@ApiModelProperty(value = "源商家标识")
+	private String sourcemerchantId;
+
+	/**
+	 * 固网终端需要CT码管理时，记录CT码
+	 */
+	@ApiModelProperty(value = "记录CT码")
+	private String ctCode;
+
+	/**
+	 * snCode
+	 */
+	@ApiModelProperty(value = "snCode")
+	private String snCode;
+
+	/**
+	 * macCode
+	 */
+	@ApiModelProperty(value = "macCode")
+	private String macCode;
+
+	/**
+	 * 下单时间
+	 */
+	@ApiModelProperty(value = "下单时间")
+	private java.util.Date createTime;
+
+	/**
+	 * 抽检同步ITMS串码列表
+	 */
+	@ApiModelProperty(value = "抽检同步ITMS串码列表")
+	private List<String> threeCheckMktResInstNbrs;
+
+	/**
+	 * 键串码，值SN码
+	 */
+	@ApiModelProperty(value = "键串码，值SN码")
+	private Map<String, String> snCodeMap;
+
+	/**
+	 * 固网终端需要CT码管理时，记录CT码
+	 */
+	@ApiModelProperty(value = "键串码，值macCode")
+	private Map<String, String> macCodeMap;
+
+	/**
+	 * 固网终端需要CT码管理时，记录CT码
+	 */
+	@ApiModelProperty(value = "键串码，值CT码")
+	private Map<String, String> ctCodeMap;
+
+	/**
+	 * 事件状态
+	 */
+	@ApiModelProperty(value = "事件状态")
+	private java.lang.String eventStatusCd;
 }

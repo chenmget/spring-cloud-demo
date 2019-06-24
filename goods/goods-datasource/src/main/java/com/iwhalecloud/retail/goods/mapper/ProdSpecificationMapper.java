@@ -1,12 +1,11 @@
 package com.iwhalecloud.retail.goods.mapper;
 
 
-import java.util.List;
-
-import org.apache.ibatis.annotations.Mapper;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.iwhalecloud.retail.goods.entity.ProdSpecification;
+import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * @Class: ProdSpecificationMapper

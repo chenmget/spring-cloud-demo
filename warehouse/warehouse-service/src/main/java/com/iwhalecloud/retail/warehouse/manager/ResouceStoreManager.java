@@ -13,6 +13,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 
 @Component
@@ -65,5 +66,18 @@ public class ResouceStoreManager extends ServiceImpl<ResouceStoreMapper, Resouce
 
     public String getStoreId(StoreGetStoreIdReq req){
         return resouceStoreMapper.getStoreId(req);
+    }
+
+    public String getStoreIdByLanId(String lanId){
+        return resouceStoreMapper.getStoreIdByLanId(lanId);
+    }
+
+    /**
+     * 查询仓库ID列表
+     * @param objIdList 使用对象集合
+     * @return
+     */
+    public List<ResouceStoreDTO> listGivenStore(List<String> objIdList){
+        return resouceStoreMapper.listGivenStore(objIdList);
     }
 }

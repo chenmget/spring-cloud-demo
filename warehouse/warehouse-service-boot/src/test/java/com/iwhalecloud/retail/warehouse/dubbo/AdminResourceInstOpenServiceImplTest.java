@@ -15,8 +15,6 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import static org.junit.Assert.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = WarehouseServiceApplication.class)
 @Slf4j
@@ -53,7 +51,7 @@ public class AdminResourceInstOpenServiceImplTest {
     @Test
     public void updateResourceInstByIds() {
         AdminResourceInstDelReq req = new AdminResourceInstDelReq();
-        req.setMktResInstIds(Lists.newArrayList("1087187305600696321","1087187305822994433"));
+        req.setMktResInstIdList(Lists.newArrayList("1087187305600696321","1087187305822994433"));
         req.setCheckStatusCd(Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
                 ResourceConst.STATUSCD.AUDITING.getCode(),
                 ResourceConst.STATUSCD.ALLOCATIONED.getCode(),

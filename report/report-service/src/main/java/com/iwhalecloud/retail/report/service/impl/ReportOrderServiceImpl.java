@@ -1,26 +1,18 @@
 package com.iwhalecloud.retail.report.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.report.dto.MenuDTO;
-import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
 import com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq;
 import com.iwhalecloud.retail.report.dto.request.ReportOrderNbrDaoReq;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderNbrResp;
 import com.iwhalecloud.retail.report.dto.response.ReportOrderResp;
-import com.iwhalecloud.retail.report.entity.Menu;
-import com.iwhalecloud.retail.report.manager.MenuManager;
-import com.iwhalecloud.retail.report.manager.ReportManager;
 import com.iwhalecloud.retail.report.manager.ReportOrderManager;
 import com.iwhalecloud.retail.report.service.ReportOrderService;
-import com.iwhalecloud.retail.report.service.ReportService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
 @Service
 public class ReportOrderServiceImpl implements ReportOrderService {
 	 
@@ -29,6 +21,11 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 
 	@Override
 	public ResultVO<Page<ReportOrderResp>> getReportOrderList1(ReportOrderDaoReq req) {
+		String productName = req.getProductName();
+		if(productName != null) {
+			productName = productName.replace(" ", "%");
+			req.setProductName(productName);
+		}
  		Page<ReportOrderResp> page = (Page<ReportOrderResp>) reportOrderManager.listReportOrder(req);
 	    List<ReportOrderResp> list = page.getRecords();
 	    
@@ -37,7 +34,9 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	String create_time = dto.getCreateTime();
 	    	String pay_time = dto.getPayTime();
 	    	String receive_time = dto.getReceiveTime();
-	    	String couponMoney = dto.getCouponMoney();
+	    	String paymentType = dto.getPaymentType();
+	    	dto.setPrice(dto.getPrice()/100);
+	    	dto.setTotalMoney(dto.getTotalMoney()/100);
 	    	if(create_time != null && create_time != "" ){
 	    		String[] createTime = create_time.split("\\.");
 	    		if(createTime.length>0){
@@ -60,16 +59,23 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			dto.setReceiveTime(receive_time);
 	    		}
 			}
-			if(couponMoney != null && couponMoney != "" && couponMoney.length()>2){
-				couponMoney = couponMoney.substring(0,couponMoney.length()-2);
-				dto.setCouponMoney(couponMoney);
+			
+			if("1".equals(paymentType)){
+				dto.setPaymentType("线上支付");
+			}else if ("3".equals(paymentType)) {
+				dto.setPaymentType("线下支付");
+			}else {
+				dto.setPaymentType("其他");
 			}
+			
+			dto.setCouponMoney(dto.getCouponMoney()/100);
+			dto.setTotalCouponMoney(dto.getTotalCouponMoney()/100);
 	    	// TODO 通过orderId查出串码
 	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(orderId);
 	    	
 	    	 dto.setNbr(li);
 	    	
-	    	 dto.setShipNum(Integer.toString(li.size()));
+	    	 dto.setShipNum(li.size());
 	    }
 	    return ResultVO.success(page);
 	}
@@ -83,19 +89,21 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	// TODO 通过orderId查出串码
 	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(orderId);
 	    	 dto.setNbr(li);
-	    	 dto.setShipNum(Integer.toString(li.size()));
+	    	 dto.setShipNum(li.size());
 	    }
 	    
 	    List<ReportOrderResp> list2 = new ArrayList<ReportOrderResp>();
 	    for(ReportOrderResp rr : list){
 	    	String status = rr.getStatus();//订单状态
 	    	String orderType = rr.getOrderType();//订单类型
-	    	String type = rr.getType();//交易类型
-//	    	String paymentType = rr.getPaymentType();//支付类型
-	    	String payType = rr.getPayType();//支付方式
+	    	String orderCat = rr.getOrderCat();//交易类型
+	    	String paymentType = rr.getPaymentType();//支付类型
 	    	String lanId = rr.getLanId();
 	    	String couponType = rr.getCouponType();//优惠类型
-
+	    	rr.setTotalCouponMoney(rr.getTotalCouponMoney()/100);
+	    	rr.setCouponMoney(rr.getCouponMoney()/100);
+	    	rr.setPrice(rr.getPrice()/100);
+	    	rr.setTotalMoney(rr.getTotalMoney()/100);
 	    	if(status != null){
 	    		if("2".equals(status)){
 	    			rr.setStatus("待支付");
@@ -139,13 +147,13 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			rr.setStatus("已换货");
 	    		}else if("41".equals(status)){
 	    			rr.setStatus("部分发货");
+	    		}else {
+	    			rr.setStatus("其他");
 	    		}
 	    	}
 	    	
 	    	if(orderType != null){
-	    		if("2".equals(orderType)){
-	    			rr.setOrderType("未知");
-	    		}else if("11".equals(orderType)){
+	    		if("11".equals(orderType)){
 	    			rr.setOrderType("省包至地包交易订单");
 	    		}else if("12".equals(orderType)){
 	    			rr.setOrderType("省包至零售商交易订单");
@@ -159,33 +167,30 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			rr.setOrderType("零售商到客户交易订单");
 	    		}else if("21".equals(orderType)){
 	    			rr.setOrderType("分销交易订单");
+	    		}else {
+	    			rr.setOrderType("其他");
 	    		}
 	    	}
 	    	
-	    	if(type != null){
-	    		if("0".equals(type)){
-	    			rr.setType("普通分销");
-	    		}else if("1".equals(type)){
-	    			rr.setType("预售");
+	    	if(orderCat != null){
+	    		if("0".equals(orderCat)){
+	    			rr.setOrderCat("普通分销");
+	    		}else if("1".equals(orderCat)){
+	    			rr.setOrderCat("预售");
+	    		}else {
+	    			rr.setOrderCat("其他");
 	    		}
 	    	}
 	    	
-//	    	if(paymentType != null){
-//	    		if("1".equals(paymentType)){
-//	    			rr.setPaymentType("在线支付");
-//	    		}else if("2".equals(paymentType)){
-//	    			rr.setPaymentType("线下支付");
-//	    		}
-//	    	}
-	    	
-	    	if(payType != null){
-	    		if("1".equals(payType)){
-	    			rr.setPayType("翼支付");
-	    		}else if("3".equals(payType)){
-	    			rr.setPayType("线下支付");
-	    		}
+	    	if(paymentType != null){
+	    		if("1".equals(paymentType)){
+	    			rr.setPaymentType("在线支付");
+	    		}else if("3".equals(paymentType)){
+	    			rr.setPaymentType("线下支付");
+	    		} else {
+	    			rr.setPaymentType("其他");
+	    		} 
 	    	}
-	    	
 	    	if(lanId != null){
 				if("730".equals(lanId)){
 					rr.setLanId("岳阳市");
@@ -230,6 +235,8 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    			rr.setCouponType("赠送");
 	    		}else if("50".equals(couponType)){
 	    			rr.setCouponType("红包");
+	    		}else {
+	    			rr.setCouponType("其他");
 	    		}
 	    	}
 	    	

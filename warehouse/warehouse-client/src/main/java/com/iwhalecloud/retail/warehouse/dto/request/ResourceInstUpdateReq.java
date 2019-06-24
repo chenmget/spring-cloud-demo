@@ -5,7 +5,9 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -31,12 +33,6 @@ public class ResourceInstUpdateReq implements Serializable {
 	 */
 	@ApiModelProperty(value = "实列状态")
 	private String statusCd;
-
-	/**
-	 * 商家Id
-	 */
-	@ApiModelProperty(value = "商家Id。")
-	private String merchantId;
 
 	/**
 	 * 营销资源仓库标识
@@ -112,4 +108,66 @@ public class ResourceInstUpdateReq implements Serializable {
 	 */
 	@ApiModelProperty(value = "产品类型")
 	private String typeId;
+
+	/**
+	 * 串码、产品类型键值对
+	 */
+	@ApiModelProperty(value = "串码、产品类型键值对")
+	private Map<String, String> nbrAndTypeId;
+
+	/**
+	 * 商家Id
+	 */
+	@ApiModelProperty(value = "商家Id。")
+	private String merchantId;
+
+	/**
+	 * 商家名称
+	 */
+	@ApiModelProperty(value = "商家名称")
+	private String merchantName;
+
+	/**
+	 * 商家编码
+	 */
+	@ApiModelProperty(value = "商家编码")
+	private String merchantCode;
+	/**
+	 * 供应商名称
+	 */
+	@ApiModelProperty(value = "供应商名称")
+	private String supplierName;
+
+	/**
+	 * 供应商编码
+	 */
+	@ApiModelProperty(value = "供应商编码")
+	private String supplierCode;
+
+	/**
+	 * 本地网标识
+	 */
+	@ApiModelProperty(value = "本地网标识")
+	private String lanId;
+	/**
+	 * 公共管理区域标识
+	 */
+	@ApiModelProperty(value = "公共管理区域标识")
+	private String regionId;
+	/**
+	 * 订单号
+	 */
+	@ApiModelProperty(value = "订单号")
+	private String orderId;
+	/**
+	 * 下单时间
+	 */
+	@ApiModelProperty(value = "下单时间")
+	private Date createTime;
+
+	/**
+	 * 事件状态
+	 */
+	@ApiModelProperty(value = "事件状态")
+	private java.lang.String eventStatusCd;
 }

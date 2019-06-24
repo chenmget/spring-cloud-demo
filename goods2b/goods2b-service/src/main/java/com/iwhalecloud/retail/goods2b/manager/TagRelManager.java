@@ -2,12 +2,13 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.goods2b.dto.TagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.TagRelAddReq;
+import com.iwhalecloud.retail.goods2b.dto.req.TagRelListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TagRelUpdateReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp;
 import com.iwhalecloud.retail.goods2b.entity.TagRel;
 import com.iwhalecloud.retail.goods2b.mapper.TagRelMapper;
 import org.springframework.beans.BeanUtils;
@@ -24,12 +25,12 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
     @Resource
     private TagRelMapper tagRelMapper;
 
-    public void addTagRel(String[] tagIds, String goodsId) {
+    public void addTagRel(String[] tagIds, String productBaseId) {
         if (tagIds != null && tagIds.length > 0) {
             for (String tagId : tagIds) {
                 TagRel tagRel = new TagRel();
                 tagRel.setTagId(tagId);
-                tagRel.setGoodsId(goodsId);
+                tagRel.setProductBaseId(productBaseId);
                 tagRelMapper.insert(tagRel);
             }
         }
@@ -110,12 +111,12 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
 
     /**
      * 删除标签商品关系
-     * @param goodsId
+     * @param productBaseId
      * @return
      */
-    public int deleteTagRelByGoodsId(String goodsId){
+    public int deleteTagRelByProductBaseId(String productBaseId){
         UpdateWrapper<TagRel> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("GOODS_ID",goodsId);
+        updateWrapper.eq("PRODUCT_BASE_ID",productBaseId);
         return tagRelMapper.delete(updateWrapper);
     }
 
@@ -124,9 +125,9 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
      * 根据商品ID查询标签
      * @return
      */
-    public List<TagRelDTO> listTagByGoodsId(String goodsId) {
+    public List<TagRelDTO> listTagByProductBaseId(String productBaseId) {
         QueryWrapper<TagRel> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("GOODS_ID",goodsId);
+        queryWrapper.eq("PRODUCT_BASE_ID",productBaseId);
         List<TagRel> tagRelList = tagRelMapper.selectList(queryWrapper);
         List<TagRelDTO> tagRelDTOList = Lists.newArrayList();
         if (!CollectionUtils.isEmpty(tagRelList)) {
@@ -137,5 +138,25 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
             }
         }
         return tagRelDTOList;
+    }
+
+    /**
+     * 查询产商品标签关联集合
+     * @param req
+     * @return
+     */
+    public List<TagRelListResp> listTagRel(TagRelListReq req){
+        return tagRelMapper.listTagRel(req);
+    }
+
+    /**
+     * 删除标签产品关系
+     * @param productId
+     * @return
+     */
+    public int deleteTagRelByProductId(String productId){
+        UpdateWrapper<TagRel> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("PRODUCT_ID",productId);
+        return tagRelMapper.delete(updateWrapper);
     }
 }

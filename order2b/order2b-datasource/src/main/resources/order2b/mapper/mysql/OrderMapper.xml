@@ -101,11 +101,17 @@
             <if test="req.paymentType!=null and req.paymentType!=''">
                 and pay_type = #{req.paymentType}
             </if>
-            <if test="req.orderCat !=null and req.orderCat !=''">
-                and ORDER_CAT =#{req.orderCat}
+            <if test="req.orderCatList !=null and req.orderCatList.size()>0">
+                AND ORDER_CAT IN
+                <foreach collection="req.orderCatList" open="(" close=")" item="item" index="index" separator=",">
+                    #{item}
+                </foreach>
             </if>
             <if test="req.sourceFrom !=null and req.sourceFrom !=''">
                 and SOURCE_FROM=#{req.sourceFrom}
+            </if>
+            <if test="req.orderType !=null and req.orderType !=''">
+                and ORDER_TYPE=#{req.orderType}
             </if>
 
         </where>
@@ -209,4 +215,108 @@
             </if>
         </where>
     </select>
+
+    <select id="queryFtpOrderDataRespList" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq"
+            resultType="com.iwhalecloud.retail.order2b.dto.response.FtpOrderDataResp">
+        SELECT
+            t.BUYER_CODE AS cust_id,
+            t.order_id,
+            t.update_time,
+            DATE_FORMAT(t.create_time, '%Y%m') AS yr_Mon,
+            t.ORDER_AMOUNT AS Trans_Amt,
+            (SELECT SUM(num) FROM ord_order_items item where item.order_id=t.order_id) as goods_Cnt
+        FROM
+            ord_order t
+        WHERE
+            t. STATUS IN (6, 10)
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
+        order by t.update_time
+
+    </select>
+    <select id="getFstTransDate" resultType="java.lang.String">
+        select t.create_time from ord_order t  where t.status in(6,10) order by t.create_time  LIMIT 0,1
+    </select>
+    <select id="queryFtpOrderDataRespListCount" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.order.FtpOrderDataReq"
+            resultType="java.lang.Integer">
+        select count(1)
+        from ord_order t where t.status in(6,10)
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.startDate}, '%Y-%m-%d')   ]]>
+        <![CDATA[   and DATE_FORMAT(t.update_time, '%Y-%m-%d')>=  DATE_FORMAT(#{req.endDate}, '%Y-%m-%d')   ]]>
+
+    </select>
+
+
+
+    <select id="selectNotDeliveryOrderByIds" parameterType="list"
+            resultType="com.iwhalecloud.retail.order2b.model.OrderInfoModel">
+        select * from ord_order
+        WHERE 1 = 1
+        AND is_delete = 0
+        AND status IN (0,11,12,2,13,14,3,4)
+        AND order_id IN
+        <foreach collection="list" item="item" separator="," open="(" close=")" index="index">
+            #{item}
+        </foreach>
+        order by create_time desc
+    </select>
+
+
+    <select id="getGoodsSaleNumByTime"
+            resultType="com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO">
+        select b.product_id as productId,sum(b.num) as saleNum from ord_order a, ord_order_items b
+        where a.order_id = b.order_id
+        and a.lan_id = b.lan_id
+        and a.status in (4,41,5,6,10)
+        and a.create_time > #{beginTime}
+        and a.create_time <![CDATA[<=]]> DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
+        AND a.lan_id = #{lanId}
+        group by b.product_id
+        order by saleNum
+    </select>
+
+    <select id="getGoodsSaleNum"
+            resultType="com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO">
+        select b.product_id as productId,sum(b.num) as saleNum from ord_order a, ord_order_items b
+        where a.order_id = b.order_id
+        and a.lan_id = b.lan_id
+        and a.create_time <![CDATA[<=]]> DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
+        AND a.lan_id = #{lanId}
+        group by b.product_id
+        order by saleNum
+    </select>
+
+    <select id="getGoodsSaleNumByProductId"
+            resultType="com.iwhalecloud.retail.order2b.dto.model.order.GoodsSaleOrderDTO">
+        select b.product_id as productId,sum(b.num) as saleNum from ord_order a, ord_order_items b
+        where a.order_id = b.order_id
+        and a.lan_id = b.lan_id
+        and b.product_id = #{productId}
+        and a.create_time > #{beginTime}
+        and a.create_time <![CDATA[<=]]> DATE_FORMAT(CURDATE(),'%Y-%m-%d %H:%i:%s')
+        AND a.lan_id = #{lanId}
+        group by b.product_id
+        order by saleNum
+    </select>
+
+    <select id="findPayAccountByOrderId" resultType="java.lang.String">
+        select pma.account_name as account from
+        (select su.rel_code from ord_order as oo inner join sys_user as su on oo.create_user_id = su.user_id and oo.order_id = #{orderId}) as t1
+        inner join par_merchant_account as pma on pma.MERCHANT_ID = t1.rel_code and pma.ACCOUNT_TYPE = '1' and pma.state = '1'
+    </select>
+
+    <select id="findReptAccountAndMoneyByOrderId" resultType="java.util.Map">
+        select pma.account_name as account, oo.pay_money as pay_money from par_merchant_account as pma inner join ord_order as oo
+        on pma.merchant_id = oo.merchant_id
+        and oo.order_id = #{orderId} and pma.ACCOUNT_TYPE = '1' and pma.state = '1'
+    </select>
+
+    <insert id="updatePayTransId">
+        update ord_order set pay_trans_id = #{reqSeq} where order_id = #{orderId}
+    </insert>
+
+	<insert id="updateStatusByOrderId">
+        update ord_order set status = #{status}, pay_type = #{status} where order_id = #{orderId}
+    </insert>
+	
 </mapper>

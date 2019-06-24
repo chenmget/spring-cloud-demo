@@ -42,6 +42,17 @@ public class GoodsRegionRelDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "regionName")
   	private String regionName;
-	
+
+	/**
+	 * 组织ID, sys_commom_org表主键
+	 */
+	@ApiModelProperty(value = "组织ID, sys_commom_org表主键")
+	private java.lang.String orgId;
+
+	/**
+	 * 组织名称
+	 */
+	@ApiModelProperty(value = "组织名称")
+	private java.lang.String orgName;
   	
 }

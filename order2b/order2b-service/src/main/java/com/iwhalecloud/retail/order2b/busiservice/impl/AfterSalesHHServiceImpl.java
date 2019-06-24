@@ -17,12 +17,18 @@ import com.iwhalecloud.retail.order2b.dto.response.AfterSaleResNbrResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.ReceiveGoodsReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SelectAfterSalesReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SendGoodsRequest;
-import com.iwhalecloud.retail.order2b.entity.*;
+import com.iwhalecloud.retail.order2b.entity.Delivery;
+import com.iwhalecloud.retail.order2b.entity.OrderApply;
+import com.iwhalecloud.retail.order2b.entity.OrderItem;
+import com.iwhalecloud.retail.order2b.entity.OrderItemDetail;
 import com.iwhalecloud.retail.order2b.manager.AfterSaleManager;
 import com.iwhalecloud.retail.order2b.manager.DeliveryManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.manager.OrderZFlowManager;
-import com.iwhalecloud.retail.order2b.model.*;
+import com.iwhalecloud.retail.order2b.model.AfterSalesModel;
+import com.iwhalecloud.retail.order2b.model.HHReceiveGoodsModel;
+import com.iwhalecloud.retail.order2b.model.OrderItemDetailModel;
+import com.iwhalecloud.retail.order2b.model.SelectAfterModel;
 import com.iwhalecloud.retail.order2b.reference.TaskManagerReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -69,14 +75,6 @@ public class AfterSalesHHServiceImpl implements AfterSalesHHService {
         if (!request.getShipNum().equals(orderApply.getSubmitNum())) {
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             resp.setResultMsg("换货数量与本次发货数量不匹配");
-            return resp;
-        }
-
-        /**
-         * 串码校验
-         */
-        resp = deliverGoodsService.resNbrValidity(request);
-        if (resp.isFailure()) {
             return resp;
         }
 
@@ -183,6 +181,7 @@ public class AfterSalesHHServiceImpl implements AfterSalesHHService {
         model.setDetailList(reqList);
         model.setState(OrderAllStatus.ORDER_STATUS_6.getCode());
         orderManager.updateResNbr(model);
+        //TODO 2 确认收货状态修改时修改 翼支付确认授权接口
 
         resp=hhFinish(request);
         resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);

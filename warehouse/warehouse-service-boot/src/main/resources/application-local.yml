@@ -10,21 +10,30 @@ spring:
       name: warehouse-provider
     registry:
 #      address: zookeeper://10.45.47.87:2285
-      address: zookeeper://localhost:2181
+      address: zookeeper://172.21.72.75:8121
     protocol:
       name: dubbo
-      port: 20888
+      port: 20886
     scan: com.iwhalecloud.retail
+
+  #i18n国际化配置
+  messages:
+    #指定message的basename，多个以逗号分隔，如果不加包名的话，默认从classpath路径开始，默认: messages
+    basename: i18n/warehouse
+    #设定加载的资源文件缓存失效时间，-1的话为永不过期，默认为-1
+    cache-seconds: 3600
+    #设定Message bundles的编码，默认: UTF-8
+    encoding: UTF-8
 
 jmx:
   enabled: false
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
-  username: szxtest
-  #password: szxtest.2019
-  password: kw0KpgWfOpAVqO4sdMTlLIcXrbbZOIXl4gwhUZqqNehmasEh/58907TPY7kguZ91Ke7rGLUVEkX5YpOBemm18g==
+  url: jdbc:mysql://134.176.110.182:8903/CLOUDS?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: yhj
+        #password: szxtest.2019
+  password: Yhj_20190118
 
   druid:
     #2.连接池配置
@@ -68,7 +77,7 @@ spring.datasource:
       allow: 127.0.0.1
     filters: config,stat,wall,log4j
     #设置public key
-    connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJptiLaauFuYuwkmQ2S0NSsvjdka34BLnbG5zFcuRqFi7RJowXs7P/dSmQWmlrx5RekyriyBUzgAgSbTFt1NpMsCAwEAAQ==
+   # connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJptiLaauFuYuwkmQ2S0NSsvjdka34BLnbG5zFcuRqFi7RJowXs7P/dSmQWmlrx5RekyriyBUzgAgSbTFt1NpMsCAwEAAQ==
 
 
 # 分布式文件系统FDFS配置
@@ -79,3 +88,40 @@ zop:
   secret: ODA1NzM5Zjg1ZDVmNDBiNGVjYzVkNzVmOGJmZTRlYmM=
   url: http://134.176.102.33:9080/api/rest
   timeout: 50000
+
+#webService配置
+webService:
+   inventoryUrl: http://ws.webxml.com.cn/WebServices/MobileCodeWS.asmx?wsdl
+
+#ITMS文件入库
+ftp:
+  basePath: src/main/resources/mkt2itms
+  #basePath: E:/iwhale/code/retail/warehouse/warehouse-service-boot/src/main/resources/mkt2itms
+  baseDir: /home/itsm_y/itmsfile
+  ftpAddress: 134.176.97.50
+  ftpPort: 21
+  ftpUserName: itsm_y
+  ftpPassword: AerxygC4n88#
+  gmAdd: /data/back/Terminal/add
+  iptvAdd: /data/back/IPTV/add
+  gmModify: /data/back/Terminal/modify
+  iptvModify: /data/back/IPTV/modify
+  gmDelete: /data/back/Terminal/delete
+  iptvDelete: /data/back/IPTV/delete
+  gmdirAdd: /home/itsm_y/itmsfile/data/back/Failure/Terminal/add/
+  iptvdirAdd: /home/itsm_y/itmsfile/data/back/Failure/IPTV/add/
+  gmdirModify: /home/itsm_y/itmsfile/data/back/Failure/Terminal/modify/
+  iptvdirModify: /home/itsm_y/itmsfile/data/back/Failure/IPTV/modify/
+  gmdirDelete: /home/itsm_y/itmsfile/data/back/Failure/Terminal/delete/
+  iptvdirDelete: /home/itsm_y/itmsfile/data/back/Failure/IPTV/delete/
+  extName: txt
+  num: 1000
+
+#商家增加串码机顶盒、三合一终端产品类型id
+addNbrService:
+  typeId: 10350158,
+  checkMaxNum: 10
+
+# 能开接口用的测试环境和正式环境区分标识（测试环境加Test）
+zopServiceEnv: Test
+

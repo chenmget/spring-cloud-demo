@@ -127,5 +127,46 @@ public class ProductPageResp implements Serializable {
     @ApiModelProperty(value = "审核状态")
     private String auditState;
 
+    @ApiModelProperty(value = "是否有串码")
+    private String isImei;
 
+    @ApiModelProperty(value = "是否推送ITMS")
+    private String isItms;
+
+    @ApiModelProperty(value = "是否需要CT码")
+    private String isCtCode;
+
+    @ApiModelProperty(value = "是否需要抽检")
+    private String isInspection;
+
+    @ApiModelProperty(value = "是否固网终端")
+    private String isFixedLine;
+
+    @ApiModelProperty(value = "采购类型")
+    private String purchaseType;
+
+    @ApiModelProperty(value = "政企价格")
+    private double corporationPrice;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+    
+    /**
+     * 政企价格审核状态
+     */
+    @ApiModelProperty(value = "政企价格审核状态")
+    private String priceStatus;
+
+    @ApiModelProperty(value = "地包供货价下限")
+    private String localSupplyFeeLower;
+
+    @ApiModelProperty(value = "地包供货价上限")
+    private String localSupplyFeeUpper;
+
+    @ApiModelProperty(value = "产品类型父ID")
+    private String parentTypeId;
+    
 }

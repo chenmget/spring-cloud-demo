@@ -3,18 +3,20 @@ package com.iwhalecloud.retail.promo.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
-import com.iwhalecloud.retail.promo.dto.PromotionWithMarketingActivityDTO;
+import com.iwhalecloud.retail.promo.dto.*;
 import com.iwhalecloud.retail.promo.dto.req.*;
 import com.iwhalecloud.retail.promo.dto.resp.*;
 
 import java.util.List;
+
 
 public interface MarketingActivityService{
 
     ResultVO<MarketingActivityAddResp> addMarketingActivity(MarketingActivityAddReq req);
 
     ResultVO<MarketingActivityDetailResp> queryMarketingActivity(String id);
+    
+    ResultVO<MarketingActivityDetailResp> queryMarketingActivityFor(String id);
 
     ResultVO<Page<MarketingActivityListResp>> listMarketingActivity(MarketingActivityListReq req);
 
@@ -23,6 +25,16 @@ public interface MarketingActivityService{
     ResultVO<Boolean> endMarketingActivity(EndMarketingActivityStatusReq req);
 
     ResultVO<Boolean> startMarketingActivity(StartMarketingActivityStatusReq req);
+
+    ResultVO<List<MarketingActivityResp>> getMarketingCampaign(MarketingActivityReq req);
+    /**
+     * 查询B2B产品适用活动
+     * 逻辑：先检查商家是否有可以参加的活动 ，可以参加  就返回 活动产品 关联对象（主要是获取活动价格）
+     * @param req 入参: 产品ID 买家商家ID  卖家商家ID  活动类型
+     * @return 活动产品 关联对象
+     */
+    ResultVO<ActivityProductDTO> getActivityProduct(MarketingActivityQueryByGoodsReq req);
+
 
     /**
      * 查询B2B商品适用活动
@@ -51,6 +63,14 @@ public interface MarketingActivityService{
      * @return
      */
     ResultVO<Boolean> updateMarketingActivity(MarketingActivityAddReq req);
+
+    /**
+     * 销活动变更审核
+     * @param originalActivity
+     * @param changedActivity
+     * @return
+     */
+    ResultVO marketingActivityChangeAuitProcess(MarketingActivityDTO originalActivity,MarketingActivityAddReq changedActivity);
     /**
      * 营销活动审核
      * @param userId  invoiceId
@@ -73,12 +93,26 @@ public interface MarketingActivityService{
     ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfo(String activityId);
 
     /**
+     * 根据营销活动ID查询营销活动、优惠券、参与产品详情
+     * @param activityId
+     * @return
+     */
+    ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfor(String activityId);
+    
+    /**
      * 据营销活动ID查询营销活动信息
      * @param queryMarketingActivityReq
      * @return
      */
     ResultVO<MarketingActivityDTO> queryMarketingActivityById(QueryMarketingActivityReq queryMarketingActivityReq);
-
+    
+    /**
+     * 据营销活动ID查询营销活动信息
+     * @param queryMarketingActivityReq
+     * @return
+     */
+    ResultVO<MarketingActivityDTO> queryMarketingActivityByIdtime(QueryMarketingActivityReq queryMarketingActivityReq);
+    
     /**
      * 更新预售活动的规则
      * @param marketingActivityAddReq
@@ -143,4 +177,25 @@ public interface MarketingActivityService{
      * @param req
      */
     void auitMarketingActivity(AuitMarketingActivityReq req);
+
+
+    /**
+     * 对活动发货时间截止前未发货的订单预警
+     * @return
+     */
+    void notifyMerchantActivityOrderDelivery();
+
+    /**
+     * 营销活动变更内容审核流程
+     * @param userId  invoiceId
+     * @return
+     */
+    ResultVO marketingActivityModifyAuitStartProcess(String mktName,String userId,String userName,String orgName,String sysPostName,String id);
+
+    /**
+     * 营销活动变更内容审核
+     * @param req
+     */
+    void auitMarketingActivityMoify(AuitMarketingActivityReq req);
+
 }

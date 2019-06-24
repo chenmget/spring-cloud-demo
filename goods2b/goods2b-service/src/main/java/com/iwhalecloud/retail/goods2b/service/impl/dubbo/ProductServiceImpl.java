@@ -12,18 +12,12 @@ import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
+import com.iwhalecloud.retail.goods2b.dto.resp.*;
+import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.entity.ProdFile;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
-import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
-import com.iwhalecloud.retail.goods2b.manager.ProductManager;
-import com.iwhalecloud.retail.goods2b.manager.TagTelManager;
-import com.iwhalecloud.retail.goods2b.manager.TagsManager;
-import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
+import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
@@ -57,13 +51,13 @@ public class ProductServiceImpl implements ProductService {
     private MerchantService merchantService;
 
     @Autowired
-    private ProductBaseService productBaseService;
-
-    @Autowired
     private TagsManager tagsManager;
 
     @Autowired
     private TagTelManager tagTelManager;
+
+    @Autowired
+    private BrandManager brandManager;
 
     @Override
     public ResultVO<String> getMerchantByProduct(MerChantGetProductReq req) {
@@ -75,10 +69,14 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(productManager.getProduct(req.getProductId()));
     }
 
+    @Override
+    public ResultVO<ProductResp> getProductInfo(ProductGetByIdReq req) {
+        return ResultVO.success(productManager.getProductInfo(req.getProductId()));
+    }
 
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
-    public ResultVO<Integer> addProduct(ProductAddReq req){
+    public String addProduct(ProductAddReq req){
         Product t = new Product();
         BeanUtils.copyProperties(req, t);
         Date now = new Date();
@@ -91,7 +89,6 @@ public class ProductServiceImpl implements ProductService {
         }
 
         Integer num = productManager.insert(t);
-
         // 添加图片
         String productId = t.getProductId();
         String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
@@ -105,7 +102,7 @@ public class ProductServiceImpl implements ProductService {
                 fileManager.addFile(file);
             }
         }
-        return ResultVO.success(num);
+        return productId;
     }
 
     @Override
@@ -259,6 +256,13 @@ public class ProductServiceImpl implements ProductService {
         List<ProductDTO> list = page.getRecords();
         if (!CollectionUtils.isEmpty(list)) {
             for (ProductDTO product : list) {
+                String brandId = product.getBrandId();
+                if(StringUtils.isNotEmpty(brandId)){
+                    Brand brand=brandManager.getBrandByBrandId(brandId);
+                    if(null!=brand){
+                        product.setBrandName(brand.getName());
+                    }
+                }
                 String productId = product.getProductId();
                 // 查询默认图片
                 String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
@@ -318,6 +322,72 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResultVO<Page<ProductPageResp>> selectPageProductAdminDc(ProductsPageReq req) {
+        Page<ProductPageResp> page = productManager.selectPageProductAdmin(req);
+        List<ProductPageResp> respList = page.getRecords();
+        for (ProductPageResp resp : respList){
+        	Double corporationPrice = resp.getCorporationPrice();
+        	Double cost = resp.getCost();
+        	String isFixedLine = resp.getIsFixedLine();//是否固网  1固网  0非固网
+        	String supplyFeeLower = resp.getSupplyFeeLower();//政企价格下限
+        	if(corporationPrice == 0.0 || corporationPrice == null) {
+        		if("1".equals(isFixedLine)) {
+        			resp.setCorporationPrice(Integer.parseInt(supplyFeeLower)/100);
+        		}else {
+        			resp.setCorporationPrice(cost/100);
+        		}
+        	} else {
+        		resp.setCorporationPrice(corporationPrice/100);
+        	}
+//        	resp.setCorporationPrice(corporationPrice/100);
+//        	resp.setCost(cost/100);
+        	String purchaseType = resp.getPurchaseType();
+        	if("1".equals(purchaseType)){
+        		resp.setPurchaseType("集采");
+        	}else if("2".equals(purchaseType)){
+        		resp.setPurchaseType("社采");
+        	}
+            MerchantGetReq merchantGetReq = new MerchantGetReq();
+            merchantGetReq.setMerchantId(resp.getManufacturerId());
+            ResultVO<MerchantDTO> result = merchantService.getMerchant(merchantGetReq);
+            MerchantDTO dto = result.getResultData();
+            resp.setManufacturerName(null!=dto? dto.getMerchantName():null);
+            // 设置规格名
+            ProductDTO productDTO = new ProductDTO();
+            BeanUtils.copyProperties(resp, productDTO);
+            String specName = this.getSpecName(productDTO);
+            resp.setSpecName(specName);
+
+            // 查询缩略图图片
+            String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
+            String nailType = FileConst.ProductSubType.NAIL_SUB.getType();
+            List<ProdFileDTO> nailImages =  fileManager.getFile(resp.getProductId(), targetType,nailType);
+            if(null == nailImages || nailImages.isEmpty()){
+                // // 没有缩略图图片，查询默认图片
+                String defaultType = FileConst.ProductSubType.DEFAULT_SUB.getType();
+                nailImages =  fileManager.getFile(resp.getProductId(), targetType,defaultType);
+            }
+
+            if(null == nailImages || nailImages.isEmpty()){
+                continue;
+            }
+            StringBuilder url = new StringBuilder();
+            for (int i = 0;  i< nailImages.size(); i++){
+                ProdFileDTO file = nailImages.get(i);
+                if (i == (nailImages.size() - 1)){
+                    url.append(file.getFileUrl());
+                }else {
+                    url.append(file.getFileUrl()).append(",");
+                }
+            }
+            resp.setDefaultImages(url.toString());
+        }
+        page.setRecords(respList);
+        log.info("ProductServiceImpl.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respList));
+        return ResultVO.success(page);
+    }
+    
+    @Override
     public ResultVO<Page<ProductPageResp>> selectPageProductAdminAll(ProductsPageReq req) {
         Page<ProductPageResp> page = productManager.selectPageProductAdminAll(req);
         List<ProductPageResp> respList = page.getRecords();
@@ -374,6 +444,14 @@ public class ProductServiceImpl implements ProductService {
             ProductDTO productDTO = new ProductDTO();
             BeanUtils.copyProperties(resp, productDTO);
             String specName = this.getSpecName(productDTO);
+            if (StringUtils.isNotBlank(resp.getAttrValue1()) && StringUtils.isNotBlank(resp.getAttrValue3())) {
+                String memorySpec = resp.getAttrValue3() + " + " + resp.getAttrValue1();
+                resp.setMemorySpec(memorySpec);
+            }else if(StringUtils.isNotBlank(resp.getAttrValue1()) && StringUtils.isBlank(resp.getAttrValue3())){
+                resp.setMemorySpec(resp.getAttrValue1());
+            }else if(StringUtils.isBlank(resp.getAttrValue1()) && StringUtils.isNotBlank(resp.getAttrValue3())){
+                resp.setMemorySpec(resp.getAttrValue3());
+            }
             resp.setSpecName(specName);
         }
         return ResultVO.success(respList);
@@ -411,11 +489,37 @@ public class ProductServiceImpl implements ProductService {
             ProductDTO productDTO = new ProductDTO();
             BeanUtils.copyProperties(productInfo, productDTO);
             String specName = this.getSpecName(productDTO);
+            
             queryProductInfoResqDTO.setSpecName(specName);
         }
         return ResultVO.success(queryProductInfoResqDTO);
     }
 
+    @Override
+    public ResultVO<QueryProductInfoResqDTO> getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO) {
+        QueryProductInfoResqDTO queryProductInfoResqDTO = new QueryProductInfoResqDTO();
+        ProductPageResp productInfo = productManager.getProductInfor(queryProductInfoReqDTO);
+        log.info("ProductServiceImpl.getProductInfo productManager.getProductInfo productInfo={}", JSON.toJSON(productInfo));
+        if(productInfo != null){
+            BeanUtils.copyProperties(productInfo,queryProductInfoResqDTO);
+            ProductDTO productDTO = new ProductDTO();
+            BeanUtils.copyProperties(productInfo, productDTO);
+            String specName = this.getSpecName(productDTO);
+//            String color = productDTO.getColor();
+            String color = productDTO.getAttrValue2();
+//            String memory = productDTO.getMemory();
+            String memory = productDTO.getAttrValue3();
+            String typeName = productDTO.getTypeName();
+            String unitType = productDTO.getUnitType();
+            queryProductInfoResqDTO.setSpecName(specName);
+            queryProductInfoResqDTO.setColor(color);
+            queryProductInfoResqDTO.setMemory(memory);
+            queryProductInfoResqDTO.setTypeName(typeName);
+            queryProductInfoResqDTO.setUnitType(unitType);
+        }
+        return ResultVO.success(queryProductInfoResqDTO);
+    }
+    
     @Override
     @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
     public ResultVO<Boolean> addProductTags(ProductTagsAddReq req) {
@@ -510,7 +614,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public ResultVO<List<ProductResp>> getProductForRebate(ProductRebateReq req){
+        return ResultVO.success(productManager.getProductForRebate(req));
+    }
+
+    @Override
+    public ResultVO<ProductForResourceResp> getProductForResource(ProductGetByIdReq req) {
+        return ResultVO.success(productManager.getProductForResource(req.getProductId()));
+    }
+
+    @Override
     public ResultVO<Integer> getDuplicate(ProductGetDuplicateReq req) {
+        log.info("ProductServiceImpl.getDuplicate req={}", req);
         Integer num=0;
         // 产品编码
         if (StringUtils.isNotBlank(req.getSn()) || StringUtils.isNotBlank(req.getUnitName())) {
@@ -519,8 +634,33 @@ public class ProductServiceImpl implements ProductService {
             dto.setSn(req.getSn());
             dto.setUnitName(req.getUnitName());
             dto.setBothNotNull(bothNotNull);
+            if(StringUtils.isNotEmpty(req.getProductId())){
+                dto.setProductId(req.getProductId());
+            }
             num = productManager.getDuplicate(dto);
         }
         return ResultVO.success(num);
     }
+
+
+    @Override
+    public List<ProductInfoResp> getProductInfoByIds(List<String> productIdList) {
+        log.info("ProductServiceImpl.getDuplicate productIdList={}", productIdList);
+        return productManager.getProductInfoByIds(productIdList);
+    }
+    
+    @Override
+    public String selectNextChangeId() {
+		return productManager.selectNextChangeId();
+	}
+    
+    @Override
+    public String selectNextChangeDetailId() {
+		return productManager.selectNextChangeDetailId();
+	}
+    
+    @Override
+    public String selectisFixedLineByBatchId(String batchId) {
+		return productManager.selectisFixedLineByBatchId(batchId);
+	}
 }

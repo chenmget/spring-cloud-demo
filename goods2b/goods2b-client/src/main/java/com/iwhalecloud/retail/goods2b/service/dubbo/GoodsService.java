@@ -4,16 +4,18 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.MerchantDTO;
+import com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 
 import java.util.List;
 
-public interface GoodsService{
+public interface GoodsService {
 
     /**
      * 新增商品
+     *
      * @param req
      * @return
      */
@@ -21,6 +23,7 @@ public interface GoodsService{
 
     /**
      * 新增商品--中台
+     *
      * @param req
      * @return
      */
@@ -28,13 +31,15 @@ public interface GoodsService{
 
     /**
      * 修改商品
+     *
      * @param req
      * @return
      */
-    ResultVO<GoodsOperateResp> editGoods(GoodsEditReq req) throws GoodsRulesException ;
+    ResultVO<GoodsOperateResp> editGoods(GoodsEditReq req) throws GoodsRulesException;
 
     /**
      * 修改商品--中台
+     *
      * @param req
      * @return
      */
@@ -42,6 +47,7 @@ public interface GoodsService{
 
     /**
      * 删除商品
+     *
      * @param req
      * @return
      */
@@ -49,6 +55,7 @@ public interface GoodsService{
 
     /**
      * 商品分页查询
+     *
      * @param req
      * @return
      */
@@ -56,6 +63,7 @@ public interface GoodsService{
 
     /**
      * 根据商品ID修改上下架状态
+     *
      * @param goodsMarketEnableReq
      * @return
      */
@@ -63,6 +71,7 @@ public interface GoodsService{
 
     /**
      * 根据商品ID修改审核状态
+     *
      * @param goodsAuditStateReq
      * @return
      */
@@ -70,6 +79,7 @@ public interface GoodsService{
 
     /**
      * 根据条件进行商品分页查询（管理端）
+     *
      * @param req
      * @return
      */
@@ -78,6 +88,7 @@ public interface GoodsService{
 
     /**
      * 查询商品详情
+     *
      * @param req
      * @return
      */
@@ -85,6 +96,7 @@ public interface GoodsService{
 
     /**
      * 查询商品列表
+     *
      * @param goodsIdListReq
      * @return
      */
@@ -92,6 +104,7 @@ public interface GoodsService{
 
     /**
      * 根据商品id修改购买数量
+     *
      * @param req
      * @return
      */
@@ -99,6 +112,7 @@ public interface GoodsService{
 
     /**
      * 根据商品id查询供应商信息
+     *
      * @param goodsSupplierIDGetReq
      * @return
      */
@@ -111,4 +125,13 @@ public interface GoodsService{
      * @return 更新结果
      */
     ResultVO<Boolean> updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req);
+
+    /**
+     * 根据产品id查询省包商品
+     *
+     * @param goodsId
+     * @param productId
+     * @return
+     */
+    List<SupplierGoodsDTO> querySupplierGoods(String goodsId, String productId);
 }

@@ -26,4 +26,10 @@ public interface TagsMapper extends BaseMapper<Tags>{
      * @return
      */
     List<TagsDTO> listProdTags();
+    
+    /**
+     * 查询渠道标签列表
+     * @return
+     */
+    List<TagsDTO> listProdTagsChannel();
 }

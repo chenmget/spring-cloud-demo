@@ -14,6 +14,8 @@ public enum ActionFlowType implements EnumInterface {
     ORDER_HANDLER_SL("受理", "SL", ""),
     ORDER_HANDLER_QX("取消", "QX", ""),
     ORDER_HANDLER_SC("删除", "SC", ""),
+    ORDER_HANDLER_SQGB("卖家申请关闭", "SQGB", ""),
+    ORDER_HANDLER_GB("已关闭", "GB", ""),
 
     /**
      * 下单

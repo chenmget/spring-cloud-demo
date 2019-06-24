@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductAddReq;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
 import java.io.Serializable;
@@ -83,6 +82,18 @@ public class ProductBaseAddReqDTO implements Serializable {
      */
     @ApiModelProperty(value = "是否需要CT码")
     private String isCtCode;
+
+    /**
+     * 是否需要抽检
+     */
+    @ApiModelProperty(value = "是否需要抽检")
+    private String IsInspection;
+
+    /**
+     * 是否固网产品
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String isFixedLine;
 
     /**
      * 产品编码
@@ -539,4 +550,22 @@ public class ProductBaseAddReqDTO implements Serializable {
      */
     @ApiModelProperty(value = "manufacturerId")
     private String manufacturerId;
+
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
+    /**
+     * 卖点
+     */
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 }

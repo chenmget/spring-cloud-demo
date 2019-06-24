@@ -59,4 +59,11 @@ public interface MerchantTagRelService {
      */
     ResultVO<List<MerchantTagRelDTO>> listMerchantTagRel(MerchantTagRelListReq req);
 
+    /**
+     * 查询商家和标签的集合
+     * @param req
+     * @return
+     */
+    ResultVO<List<MerchantTagRelDTO>> listMerchantAndTag(MerchantTagRelListReq req);
+
 }

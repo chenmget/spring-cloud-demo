@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.workflow.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -94,7 +93,13 @@ public class NodeRights implements Serializable {
 	@ApiModelProperty(value = "修改用户ID ")
   	private String updateUserId;
   	
-  	
+  	/**
+  	 * 记录环节路由的条件ID，引用到条件规则表
+  	 */
+	@ApiModelProperty(value = "记录环节路由的条件ID，引用到条件规则表 ")
+  	private String 	routeCondition;
+
+
   	//属性 end
   	
   	public static enum FieldNames{

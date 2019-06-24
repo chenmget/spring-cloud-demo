@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.busiservice.impl;
 
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.CancelOrderService;
 import com.iwhalecloud.retail.order2b.busiservice.CreateOrderService;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
@@ -26,7 +27,6 @@ import org.springframework.util.CollectionUtils;
 import java.util.Date;
 import java.util.List;
 
-
 @Service
 public class CancelOrderServiceImpl implements CancelOrderService {
 
@@ -48,6 +48,9 @@ public class CancelOrderServiceImpl implements CancelOrderService {
     @Autowired
     private WhaleCloudKeyGenerator whaleCloudKeyGenerator;
 
+    @Autowired
+    private PayAuthorizationService payAuthorizationService;
+
     @Override
     public CommonResultResp cancelOrder(UpdateOrderStatusRequest request) {
         CommonResultResp resp = new CommonResultResp();
@@ -63,6 +66,16 @@ public class CancelOrderServiceImpl implements CancelOrderService {
             resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
             return resp;
         }
+        //TODO 2已付定金未付尾款，时间超过自动确认定金金额
+        //  已付定金，未付尾款
+        if(!OrderAllStatus.ORDER_STATUS_13.getCode().equals(order.getStatus()) && OrderAllStatus.ORDER_STATUS_14.getCode().equals(order.getStatus())){
+            Boolean flag = payAuthorizationService.authorizationConfirmation(order.getOrderId());
+            if(!flag){
+                resp.setResultMsg("关闭订单，翼支付预授权确认失败。");
+                resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            }
+        }
+
         updateOrderFlowService.cancelOrder(request);
 
         CreateOrderLogModel logModel = new CreateOrderLogModel();

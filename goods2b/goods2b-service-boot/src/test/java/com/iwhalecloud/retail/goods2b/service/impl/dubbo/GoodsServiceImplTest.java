@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.Goods2BServiceApplication;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
+import com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsService;
@@ -48,7 +49,7 @@ public class GoodsServiceImplTest {
         List<String> tagList = Lists.newArrayList();
         tagList.add("1");
         tagList.add("1070147537508532226");
-        req.setTagList(tagList);
+//        req.setTagList(tagList);
         req.setChannelType("渠道类型");
         req.setEffDate(new Date());
         req.setExpDate(new Date());
@@ -58,7 +59,7 @@ public class GoodsServiceImplTest {
         req.setGoodsName("这是一个商品测试");
         req.setTypeId("1");
         req.setMktprice(100.0);
-        req.setTagList(tagList);
+//        req.setTagList(tagList);
         req.setTargetType("2");
         List<FileAddReq> fileAddReqList = Lists.newArrayList();
         FileAddReq fileAddReq = new FileAddReq();
@@ -156,6 +157,10 @@ public class GoodsServiceImplTest {
         req.setPageSize(20);
 //        req.setSourceFrom("hnyhj_b2b");
         req.setIsLogin(true);
+        req.setLanId("731");
+        req.setRegionId("73101");
+        req.setOrgPathCode("843073100000000");
+        req.setIsLogin(true);
         List<String> supplierIdList = new ArrayList<>();
         supplierIdList.add("4301811025392");
         req.setSupplierIdList(supplierIdList);
@@ -234,5 +239,13 @@ public class GoodsServiceImplTest {
         req.setBrandIdList(brandList);
         ResultVO<Page<GoodsPageResp>> pageResultVO = goodsService.queryPageByConditionAdmin(req);
         System.out.println(pageResultVO.getResultData());
+    }
+
+    @Test
+    public void testQry(){
+        String goodsId = "10147709";
+        String productId = "10002460";
+        List<SupplierGoodsDTO> supplierGoodsDTOs = goodsService.querySupplierGoods(goodsId, productId);
+        System.out.println(supplierGoodsDTOs);
     }
 }

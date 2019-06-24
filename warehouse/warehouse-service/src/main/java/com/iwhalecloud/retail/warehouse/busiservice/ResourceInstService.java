@@ -6,20 +6,27 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
 import com.iwhalecloud.retail.warehouse.model.MerchantInfByNbrModel;
 
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public interface ResourceInstService {
 
     /**
-     * 添加串码（手动）
+     * 厂商添加串码
      * @param req
      * @return
      */
-    public ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req);
+    Boolean addResourceInstByMerchant(ResourceInstAddReq req, CopyOnWriteArrayList<String> mktResInstNbrs);
+    /**
+     * 非厂商添加串码
+     * @param req
+     * @return
+     */
+    Boolean addResourceInst(ResourceInstAddReq req);
 
     /**
      * 添加串码（交易）
@@ -61,7 +68,7 @@ public interface ResourceInstService {
      * @param req
      * @return
      */
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req);
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req);
 
     /**
      * 查询机型
@@ -86,10 +93,10 @@ public interface ResourceInstService {
 
     /**
      * 根据查询主键集合串码实列
-     * @param idList
+     * @param req
      * @return
      */
-    List<ResourceInstDTO> selectByIds(List<String> idList);
+    List<ResourceInstDTO> selectByIds(ResourceInstsGetByIdListAndStoreIdReq req);
 
     /**
      * 根据串码查商家信息
@@ -109,12 +116,20 @@ public interface ResourceInstService {
      * @param req
      * @return
      */
-     ResultVO<List<ResourceInstListResp>> getExportResourceInstList(ResourceInstListReq req);
+     ResultVO<List<ResourceInstListResp>> listResourceInst(ResourceInstListReq req);
 
     /**
-     * 查询串码是否参与补贴
-     * @param nbrAndProductId
+     * 获取主键
      * @return
      */
-    ResultVO<Boolean> nbrHasActivity(Map<String, String> nbrAndProductId);
+    String getPrimaryKey();
+
+    /**
+     * 根据查询条件串码实列(手动分页，插件自带的线程不安全)
+     * @param req
+     * @return
+     */
+    List<ResourceInstListPageResp> getResourceInstListManual(ResourceInstListPageReq req);
+
+    String selectMktResInstType(ResourceStoreIdResnbr req);
 }

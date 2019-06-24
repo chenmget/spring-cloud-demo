@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.MktResItmsReturnRecMapper">
+
+<sql id="allFields">
+    t.MKT_RES_ITMS_RETURN_REC_ID 
+    ,t.RETURN_FILE_NAME 
+    ,t.MKT_RES_INST_NBR 
+    ,t.STATUS_CD 
+    ,t.REMARK 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+</sql>
+    <insert id="batchAddMKTReturnInfo" parameterType="java.util.List" useGeneratedKeys="true">
+        insert into MKT_RES_ITMS_RETURN_REC (MKT_RES_ITMS_RETURN_REC_ID, RETURN_FILE_NAME, MKT_RES_INST_NBR, STATUS_CD, CREATE_STAFF,CREATE_DATE)
+        values
+        <foreach collection="list" index="index" item="item" separator=",">
+            (#{item.mktResItmsReturnRecId},#{item.returnFileName},#{item.mktResInstNbr},#{item.statusCd},#{item.createStaff},#{item.createDate})
+        </foreach>
+    </insert>
+
+</mapper>

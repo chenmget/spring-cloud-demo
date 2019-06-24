@@ -1,12 +1,19 @@
 
 package com.iwhalecloud.retail.rights.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.promo.common.PromoConst;
+import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
+import com.iwhalecloud.retail.promo.dto.req.ActivityProductListReq;
+import com.iwhalecloud.retail.promo.dto.req.VerifyProductPurchasesLimitReq;
+import com.iwhalecloud.retail.promo.dto.resp.VerifyProductPurchasesLimitResp;
+import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.rights.common.ResultCodeEnum;
 import com.iwhalecloud.retail.rights.common.RightsConst;
 import com.iwhalecloud.retail.rights.consts.RightsStatusConsts;
@@ -66,8 +73,12 @@ public class CouponInstServiceImpl implements CouponInstService {
     @Autowired
 	CouponInstHandler couponInstHandler;
 
+	@Reference
+	private ActivityProductService activityProductService;
 
-    /**
+
+
+	/**
      * 权益实例入库
      * @param dto
      * @return
@@ -1019,8 +1030,9 @@ public class CouponInstServiceImpl implements CouponInstService {
                 for (OrderItemWithCouponDTO orderItem : orderItemWithCouponList) {
                     if (objIdList.contains(orderItem.getProductId())) {
                         // 在适用对象列表
-						// 规则校验
-                        if (isConformRules(curCouponInst, orderItem)) {
+						// 规则校验  并检查购买数量限制（2019.4.15)
+                        if (isConformRules(curCouponInst, orderItem)
+								&& checkPurchaseNumber(orderItem.getProductId(), curCouponInst.getMarketingActivityId(), orderItem.getNum())) {
 							log.info("优惠券实例{}优惠券ID{} 满足订单项{}", curCouponInst.getCouponInstId(), curCouponInst.getMktResId(), orderItem.getOrderItemId());
 
 							// 判断金额 满足  设置该优惠券对订单有效，并保存对应订单项
@@ -1118,48 +1130,9 @@ public class CouponInstServiceImpl implements CouponInstService {
 				}
 			}
 
-//			for (int i = 0; i < req.getSelectedCouponList().size(); i++) {
-//				SelectedCouponDTO selectedCoupon = req.getSelectedCouponList().get(i);
-//
-//				if (selectedCoupon.getOrderItemId() == null) {
-//					// 没有
-//					log.info("已选中的优惠实例{}没有对应的订单项，可能是平台优惠券", selectedCoupon.getCouponInstId());
-//					continue;
-//				}
-//
-//				if (StringUtils.equals(couponOrderItemDTO.getOrderItemId(), selectedCoupon.getOrderItemId())) {
-//					// 当前订单项ID  和  已选中的优惠券 对应的订单项ID 相同  计算订单项的优惠金额 并保存优惠券信息
-//					for (int j = 0; j < allCouponInst.size(); j++) {
-//
-//						CouponInstDetailDTO currentCouponInst = allCouponInst.get(j);
-//
-//						// 该订单已绑定优惠券 累加减免金额
-//						if (StringUtils.equals(selectedCoupon.getCouponInstId(), currentCouponInst.getCouponInstId())) {
-//
-//							log.info("订单项{} 绑定的优惠券实例ID{}优惠券ID{} 不满足条件", orderItem.getOrderItemId(), coupon.getCouponInstId(), coupon.getMktResId(), currentDiscount);
-//
-//							Double discount = calculateOrderDiscount(); // 减免金额
-//
-//							// 累加  优惠金额
-//							discount += currentCouponInst.getDiscountValue();
-//
-//							// 保存订单项  绑定的优惠券信息
-//							if (CollectionUtils.isEmpty(newOrderItem.getBingCouponList())) {
-//								newOrderItem.setBingCouponList(Lists.newArrayList(currentCouponInst));
-//							} else {
-//								newOrderItem.getBingCouponList().add(currentCouponInst);
-//							}
-//							log.info("订单项{} 已绑定优惠券实例ID{}优惠券ID{}", newOrderItem.getOrderItemId(), currentCouponInst.getCouponInstId(),currentCouponInst.getMktResId());
-//						}
-//					}
-//				}
-//			}
-
-//			newOrderItem.setDiscount(discount);
 			log.info("订单项{} 已经优惠 {}", newOrderItem.getOrderItemId(), newOrderItem.getDiscount());
 			respList.add(newOrderItem); // 保存信息
 		});
-
 
 		return respList;
 	}
@@ -1231,11 +1204,11 @@ public class CouponInstServiceImpl implements CouponInstService {
 	}
 
     /**
-     * 计算订单金额是否满足 优惠券实例的抵扣规则
-     * @param couponInstDetailDTO 优惠券实例
-     * @param orderItemWithCouponDTO 订单项
-     * @return
-     */
+	 * 计算订单金额是否满足 优惠券实例的抵扣规则
+	 * @param couponInstDetailDTO 优惠券实例
+	 * @param orderItemWithCouponDTO 订单项
+	 * @return
+	 */
 	private boolean isConformRules(CouponInstDetailDTO couponInstDetailDTO, OrderItemWithCouponDTO orderItemWithCouponDTO) {
 		boolean isValid = false;
 
@@ -1245,10 +1218,10 @@ public class CouponInstServiceImpl implements CouponInstService {
 		Double minValue = couponInstDetailDTO.getMinValue(); // 取已选中的优惠券列表中最大的
 
 		// 判断该订单是否有 已经相同的优惠券 （有就判断是否可以叠加使用）
-        if (!CollectionUtils.isEmpty(orderItemWithCouponDTO.getBingCouponList())) {
-            for (CouponInstDetailDTO bindCouponInst: orderItemWithCouponDTO.getBingCouponList()) {
+		if (!CollectionUtils.isEmpty(orderItemWithCouponDTO.getBingCouponList())) {
+			for (CouponInstDetailDTO bindCouponInst: orderItemWithCouponDTO.getBingCouponList()) {
 
-            	// 更新 抵扣 上限  下限
+				// 更新 抵扣 上限  下限
 				if (maxValue > bindCouponInst.getMaxValue()) {
 					maxValue = bindCouponInst.getMaxValue();
 				}
@@ -1256,28 +1229,28 @@ public class CouponInstServiceImpl implements CouponInstService {
 					minValue = bindCouponInst.getMinValue();
 				}
 
-            	if (StringUtils.equals(couponInstDetailDTO.getMktResId(), bindCouponInst.getMktResId())) {
-                	if (StringUtils.equals(bindCouponInst.getReuseFlag(), RightsStatusConsts.REUSE_FLAG_NO)) {
-                        // 不能叠加使用
+				if (StringUtils.equals(couponInstDetailDTO.getMktResId(), bindCouponInst.getMktResId())) {
+					if (StringUtils.equals(bindCouponInst.getReuseFlag(), RightsStatusConsts.REUSE_FLAG_NO)) {
+						// 不能叠加使用
 						log.info("优惠实例ID{} 优惠券ID{}不能叠加使用", bindCouponInst.getCouponInstId(), bindCouponInst.getMktResId());
 //						return false;
 						return isValid;
-                    }
-                }
-            }
-        }
+					}
+				}
+			}
+		}
 
 		// 1、计算是否满足
 		Double orderCount = 0.00; // 订单总金额
 
-        // 产品价格
-        Double price = orderItemWithCouponDTO.getPrice();
-        // 产品价格直减金额
-        Double priceDiscount = orderItemWithCouponDTO.getPriceDiscount();
+		// 产品价格
+		Double price = orderItemWithCouponDTO.getPrice();
+		// 产品价格直减金额
+		Double priceDiscount = orderItemWithCouponDTO.getPriceDiscount();
 
-        orderCount = (price - priceDiscount) * orderItemWithCouponDTO.getNum();
+		orderCount = (price - priceDiscount) * orderItemWithCouponDTO.getNum();
 
-        Double orderDiscount = orderItemWithCouponDTO.getDiscount(); // 当前订单已经优惠啦多少钱（已经选中有优惠券的才不为0）
+		Double orderDiscount = orderItemWithCouponDTO.getDiscount(); // 当前订单已经优惠啦多少钱（已经选中有优惠券的才不为0）
 
 		// 抵扣条件 （订单额大于此值 才能用优惠券）
 		Double ruleAmount = couponInstDetailDTO.getRuleAmount();
@@ -1314,6 +1287,58 @@ public class CouponInstServiceImpl implements CouponInstService {
 		isValid = true;
 		return isValid;
 	}
+
+	/**
+	 * 2019.04.15  zhong.wenlong
+	 * 校验产品购买数量是否满足 限制数量
+	 * 逻辑：根据产品ID和活动ID 去act_activity_product表 查询 "是否限制数量"标示 字段是否为 1（有限制）
+	 * 为1：根据产品ID和活动ID去购买记录表查询已购买的数量  加上 当前购买的数量  和 act_activity_product表的 "num" 字段值比较
+	 * @param productId 产品ID
+	 * @param activityId 活动ID
+	 * @param num 当前购买数量
+	 * @return
+	 */
+	private boolean checkPurchaseNumber(String productId, String activityId, Integer num) {
+		boolean isValid = true;
+		if (StringUtils.isEmpty(productId) || StringUtils.isEmpty(activityId)) {
+			// 有空值 不校验  直接返回true
+			log.info("产品ID或活动ID为空，不进行数量校验");
+			return isValid;
+		}
+
+		ActivityProductListReq req = new ActivityProductListReq();
+		req.setMarketingActivityIds(Lists.newArrayList(productId));
+		req.setProductId(productId);
+		List<ActivityProductDTO> list = activityProductService.queryActivityProducts(req).getResultData();
+		if (!CollectionUtils.isEmpty(list)) {
+			// 去第一条数据 （数据无误的话  结果应该就是只有一条数据的）
+			ActivityProductDTO dto = list.get(0);
+			if (StringUtils.equals(PromoConst.ProductNumFlg.ProductNumFlg_1.getCode(), dto.getNumLimitFlg())) {
+				// 有限制
+				log.info("参加活动{}的产品{}有购买数量限制", activityId, productId);
+				VerifyProductPurchasesLimitReq limitReq = new VerifyProductPurchasesLimitReq();
+				limitReq.setActivityId(activityId);
+				limitReq.setProductId(productId);
+				limitReq.setPurchaseCount(num);
+				VerifyProductPurchasesLimitResp resp = activityProductService.verifyProductPurchasesLimit(limitReq).getResultData();
+				if (Objects.nonNull(resp)
+						&& StringUtils.equals(ResultCodeEnum.ERROR.getCode(), resp.getResultCode())) {
+					// 校验不通过
+					log.info("参加活动{}的产品{} 购买数量校验不通过，优惠券不可用", activityId, productId);
+					isValid = false;
+				} else if (Objects.nonNull(resp)
+						&& StringUtils.equals(ResultCodeEnum.SUCCESS.getCode(), resp.getResultCode())) {
+					log.info("参加活动{}的产品{} 购买数量校验通过，优惠券可用", activityId, productId);
+				} else {
+					isValid = false;
+					log.info("参加活动{}的产品{}购买数量校验返回为空，调用校验失败", activityId, productId);
+				}
+			}
+		}
+
+		return isValid;
+	}
+
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
@@ -1384,33 +1409,50 @@ public class CouponInstServiceImpl implements CouponInstService {
 	@Override
 //	@Transactional(rollbackFor = Exception.class)
 	public ResultVO receiveRights(SaveRightsRequestDTO saveRightsRequestDTO) {
+		log.info("CouponInstServiceImpl receiveRights saveRightsRequestDTO={}",JSON.toJSON(saveRightsRequestDTO));
 		Long supplyNum = saveRightsRequestDTO.getSupplyNum();
 		if (supplyNum == null || 0 == supplyNum) {
 			return ResultVO.error("领取数量不可用");
 		}
-		CouponSupplyRuleRespDTO couponSupplyRuleRespDTO = couponSupplyRuleManager.queryCouponSupplyRuleOne(saveRightsRequestDTO.getMktResId());
-		log.info("CouponInstServiceImpl receiveRights queryCouponSupplyRuleOne--> couponSupplyRuleRespDTO={}",JSON.toJSON(couponSupplyRuleRespDTO));
-		if (couponSupplyRuleRespDTO == null) {
+		CouponSupplyRule couponSupplyRule = couponSupplyRuleManager.selectOneCouponSupplyRule(saveRightsRequestDTO.getMktResId());
+		log.info("CouponInstServiceImpl receiveRights couponSupplyRuleManager.selectOneCouponSupplyRule--> couponSupplyRule={}",JSON.toJSON(couponSupplyRule));
+		if (couponSupplyRule == null) {
 			return ResultVO.error("优惠券领取规则不存在");
 		}
-		if (new Date().after(couponSupplyRuleRespDTO.getEndTime()) || new Date().before(couponSupplyRuleRespDTO.getBeginTime())) {
+		//判断领取时间可用
+		if (new Date().after(couponSupplyRule.getEndTime()) || new Date().before(couponSupplyRule.getBeginTime())) {
 			return ResultVO.error("优惠券不在领取时间范围");
 		}
-		if(couponSupplyRuleRespDTO.getSupplyNum()<supplyNum){
+		//当优惠券领取限制为是的时候，判断可领取数量是否可用
+		if(RightsConst.LimitFlg.LIMIT_FLG_1.getType().equals(couponSupplyRule.getSupplyLimitFlg()) && couponSupplyRule.getSupplyNum()<supplyNum){
 			return ResultVO.error("领取数量大于领取规则可领取数量");
 		}
-		Integer sum = couponInstManager.queryAreadyReceiveNum(saveRightsRequestDTO.getMktResId());
-		if (sum + supplyNum > couponSupplyRuleRespDTO.getMaxNum()) {
-			return ResultVO.error("优惠券库存不足");
+		//当优惠券总量限制为否的时候，判断券总量是否可用
+		if(RightsConst.LimitFlg.LIMIT_FLG_1.getType().equals(couponSupplyRule.getNumLimitFlg())){
+			Integer sum = couponInstManager.queryAreadyReceiveNum(saveRightsRequestDTO.getMktResId());
+			if (sum + supplyNum > couponSupplyRule.getMaxNum()) {
+				return ResultVO.error("优惠券库存不足");
+			}
 		}
-		Integer receiveNum = couponInstManager.queryCustAreadyReceiveNum(saveRightsRequestDTO.getMktResId(), saveRightsRequestDTO.getCustNum());
-		if(couponSupplyRuleRespDTO.getSupplyNum()<receiveNum+supplyNum){
-			return ResultVO.error("用户领取数量达到领取上线");
+		//当优惠券领取总量限制为否的时候，判断领取总量是否可用
+		if (RightsConst.LimitFlg.LIMIT_FLG_1.getType().equals(couponSupplyRule.getSupplyLimitFlg())) {
+			Integer receiveNum = couponInstManager.queryCustAreadyReceiveNum(saveRightsRequestDTO.getMktResId(), saveRightsRequestDTO.getCustNum());
+			if (couponSupplyRule.getSupplyNum() < receiveNum + supplyNum) {
+				return ResultVO.error("用户领取数量达到领取上线");
+			}
 		}
 		CouponEffExpRuleRespDTO couponEffExpRuleRespDTO = couponEffExpRuleManager.queryCouponEffExpRuleOne(saveRightsRequestDTO.getMktResId());
+		log.info("CouponInstServiceImpl receiveRights couponEffExpRuleManager.queryCouponEffExpRuleOne--> couponEffExpRuleRespDTO={}",JSON.toJSON(couponEffExpRuleRespDTO));
+		if(couponEffExpRuleRespDTO == null){
+			return ResultVO.error("优惠券生失效规则不存在");
+		}
 		CouponDiscountRuleRespDTO couponDiscountRuleRespDTO = couponDiscountRuleManager.queryCouponDiscountRuleOne(saveRightsRequestDTO.getMktResId());
+		log.info("CouponInstServiceImpl receiveRights couponDiscountRuleManager.queryCouponDiscountRuleOne--> couponDiscountRuleRespDTO={}",JSON.toJSON(couponDiscountRuleRespDTO));
+		if(couponDiscountRuleRespDTO == null){
+			return ResultVO.error("优惠券抵扣规则不存在");
+		}
 		for (int i = 0; i < supplyNum; i++) {
-			/**领取实例*/
+			//领取实例
 			CouponInst couponInst = new CouponInst();
 			Long biggestInstNbr = couponInstManager.queryBiggestInstNbr();
 			biggestInstNbr = biggestInstNbr == null ? 0 : biggestInstNbr;
@@ -1427,10 +1469,9 @@ public class CouponInstServiceImpl implements CouponInstService {
 			couponInst.setCustAcctId(saveRightsRequestDTO.getCustNum());
 			couponInst.setCouponAmount(couponDiscountRuleRespDTO.getDiscountValue().longValue());
 			couponInstManager.insertCouponInst(couponInst);
-			/**优惠券领取记录*/
-			String couponInstId = couponInst.getCouponInstId();
+			//优惠券领取记录
 			CouponInstProvRec couponInstProvRec = new CouponInstProvRec();
-			couponInstProvRec.setCouponInstId(couponInstId);
+			couponInstProvRec.setCouponInstId(couponInst.getCouponInstId());
 			couponInstProvRec.setProvObjId(saveRightsRequestDTO.getCustNum());
 			couponInstProvRec.setCreateDate(new Date());
 			couponInstProvRec.setUpdateDate(new Date());

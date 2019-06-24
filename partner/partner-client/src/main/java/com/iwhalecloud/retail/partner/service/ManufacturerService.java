@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.ManufacturerDTO;
 import com.iwhalecloud.retail.partner.dto.req.ManufacturerGetReq;
+import com.iwhalecloud.retail.partner.dto.req.ManufacturerPageReq;
 import com.iwhalecloud.retail.partner.dto.req.ManufacturerSaveReq;
 import com.iwhalecloud.retail.partner.dto.req.ManufacturerUpdateReq;
-import com.iwhalecloud.retail.partner.dto.req.ManufacturerPageReq;
 
 public interface ManufacturerService{
 

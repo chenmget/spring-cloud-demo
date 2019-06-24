@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.goods2b.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -180,7 +179,7 @@ public class Goods implements Serializable {
 	private Integer isAdvanceSale;
 
 	/**
-	 * 是否预售商品
+	 * 是否前置补贴
 	 */
 	@ApiModelProperty(value = "是否前置补贴商品 1.是 0.否")
 	private Integer isSubsidy;

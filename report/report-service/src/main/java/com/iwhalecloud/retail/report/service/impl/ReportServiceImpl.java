@@ -1,10 +1,5 @@
 package com.iwhalecloud.retail.report.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -13,6 +8,10 @@ import com.iwhalecloud.retail.report.dto.response.ProductListAllResp;
 import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
 import com.iwhalecloud.retail.report.manager.ReportManager;
 import com.iwhalecloud.retail.report.service.ReportService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 public class ReportServiceImpl implements ReportService {

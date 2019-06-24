@@ -2,12 +2,11 @@ package com.iwhalecloud.retail.warehouse.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.warehouse.dto.request.PageProductReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstUpdateReq;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
+
+import java.util.List;
 
 /**
  * 厂家串码操作
@@ -21,7 +20,7 @@ public interface MerchantResourceInstService {
      * @param req
      * @return
      */
-    ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req);
+    ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req);
 
     /**
      * 商家删除串码
@@ -37,7 +36,7 @@ public interface MerchantResourceInstService {
      * @param req
      * @return
      */
-    ResultVO<ResourceInstAddResp> addResourceInst(ResourceInstAddReq req);
+    ResultVO addResourceInst(ResourceInstAddReq req);
 
     /**
      * 商家选择产品
@@ -46,4 +45,50 @@ public interface MerchantResourceInstService {
      * @return
      */
     ResultVO selectProduct(PageProductReq req);
+
+    /**
+     * 商家新增串码
+     *
+     * @param req
+     * @return
+     */
+    ResultVO validNbr(ResourceInstValidReq req);
+
+    /**
+     * 查询校验串码
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req);
+
+    ResultVO exceutorDelNbr(ResourceUploadTempDelReq req);
+
+    /**
+     * 多线程查询临时串码
+     * @param req
+     * @return
+     */
+    List<ResourceUploadTempListResp> exceutorQueryTempNbr(ResourceUploadTempDelReq req);
+
+    /**
+     * 管理员给厂商增加串码（不走审核，也没有大批量）
+     * @param req
+     * @return
+     */
+    ResultVO addResourceInstByAdmin(ResourceInstAddReq req);
+
+    /**
+     * 查询导出的串码
+     * @param req
+     * @return
+     */
+    ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req);
+
+    /**
+     * 厂商给省仓库录入测试固网终端串码
+     * @param req
+     * @return
+     */
+    ResultVO addResourceInstForProvinceStore(ResourceInstAddReq req);
+
 }

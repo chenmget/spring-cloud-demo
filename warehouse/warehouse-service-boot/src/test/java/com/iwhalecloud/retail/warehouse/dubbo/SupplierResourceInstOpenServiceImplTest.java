@@ -14,11 +14,6 @@ import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
-
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = WarehouseServiceApplication.class)
 @Slf4j
@@ -50,8 +45,8 @@ public class SupplierResourceInstOpenServiceImplTest {
 
     @Test
     public void delResourceInst() {
-        ResourceInstUpdateReq req = new ResourceInstUpdateReq();
-        req.setMktResInstNbrs(Lists.newArrayList("20190314180401","20190314180401"));
+        AdminResourceInstDelReq req = new AdminResourceInstDelReq();
+        req.setMktResInstIdList(Lists.newArrayList("20190314180401","20190314180401"));
         req.setCheckStatusCd(Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
                 ResourceConst.STATUSCD.AUDITING.getCode(),
                 ResourceConst.STATUSCD.ALLOCATIONED.getCode(),

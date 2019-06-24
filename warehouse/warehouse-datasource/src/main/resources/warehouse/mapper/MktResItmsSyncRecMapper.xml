@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper">
+
+	<select id="findDateMKTInfoByParamsOld" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
+		SELECT
+		NOW() AS SYNC_DATE,
+		'000' AS SYNC_BATCH_ID,
+		t.MKT_RES_EVENT_ID,
+		t.MKT_RES_CHNG_EVT_DETAIL_ID,
+		t.MKT_RES_INST_NBR,
+		t.MKT_RES_ID,
+		#{even.eventType} AS EVENT_TYPE,
+		t.BRAND_ID,
+        <if test="eventType == 1001">
+            case when t.DET_LAN_ID='10000000' then '999' else t.DET_LAN_ID end ORIG_LAN_ID,
+        </if>
+        <if test="eventType == 1002  or eventType == 1003 or eventType == 1004 or eventType == 1007  or eventType == 1009">
+            case when t.ORIG_LAN_ID='10000000' then '999' else t.ORIG_LAN_ID end ORIG_LAN_ID,
+        </if>
+		t.BRAND_NAME,
+		t.UNIT_TYPE,
+		'0' AS STATUS_CD,
+		#{even.statusDate} AS STATUS_DATE,
+		'admin' CREATE_STAFF,
+		#{even.createDate} AS CREATE_DATE
+		FROM(
+		SELECT
+		base.IS_ITMS,det.MKT_RES_EVENT_ID,store.LAN_ID STORE_LAN_ID,par.MERCHANT_TYPE,inst.MKT_RES_ID,
+		store.STORE_TYPE,det.MKT_RES_CHNG_EVT_DETAIL_ID,det.MKT_RES_INST_NBR,
+		case when store.STORE_TYPE='1000' then '999' else store.LAN_ID end LAN_ID,
+		bra.brand_id,bra.NAME as BRAND_NAME,base.UNIT_TYPE,det.MKT_RES_STORE_ID,
+		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.destStoreId}) AS DET_LAN_ID,
+		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.mktResStoreId}) AS ORIG_LAN_ID
+		FROM
+		(
+		select * from MKT_RES_CHNG_EVT_DETAIL mkt where 1=1
+		<if test="eventType == 1002 or eventType == 1003 or eventType == 1007">
+			and mkt.MKT_RES_EVENT_ID = #{even.mktResEventId} and mkt.MKT_RES_STORE_ID = #{even.mktResStoreId}
+		</if>
+		<if test="eventType == 1001 or eventType == 1004  or eventType == 1009">
+			and mkt.MKT_RES_EVENT_ID = #{even.mktResEventId} and mkt.MKT_RES_STORE_ID = #{even.destStoreId}
+		</if>
+		) det
+		<if test="eventType == 1002 or eventType == 1003 or eventType == 1007">
+			INNER JOIN MKT_RES_INST inst ON inst.MKT_RES_STORE_ID = #{even.mktResStoreId} AND inst.MKT_RES_INST_NBR =det.MKT_RES_INST_NBR
+			INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = #{even.mktResStoreId}
+		</if>
+		<if test="eventType == 1001 or eventType == 1004 or eventType == 1009">
+			INNER JOIN MKT_RES_INST inst ON inst.MKT_RES_STORE_ID = #{even.destStoreId} AND inst.MKT_RES_INST_NBR =det.MKT_RES_INST_NBR
+			INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = #{even.destStoreId}
+		</if>
+		INNER JOIN PROD_PRODUCT prod ON prod.PRODUCT_ID = inst.MKT_RES_ID
+		INNER JOIN PROD_PRODUCT_BASE base ON base.PRODUCT_BASE_ID = prod.PRODUCT_BASE_ID
+		INNER JOIN PROD_BRAND bra ON bra.BRAND_ID = base.BRAND_ID
+		<if test="eventType == 1001 or eventType == 1002 or eventType == 1004 or eventType == 1009">
+		LEFT JOIN MKT_RES_STORE_OBJ_REL rel ON rel.MKT_RES_STORE_ID = #{even.destStoreId}
+		</if>
+		<if test="eventType == 1003 or eventType == 1007">
+			LEFT JOIN MKT_RES_STORE_OBJ_REL rel ON rel.MKT_RES_STORE_ID = #{even.mktResStoreId}
+		</if>
+		LEFT JOIN PAR_MERCHANT par ON par.MERCHANT_ID = rel.OBJ_ID
+		) t
+		where 1=1
+		AND t.LAN_ID = #{lanId}
+		<if test="eventType == 1001 or eventType == 1007">
+			AND (t.MERCHANT_TYPE = '2' OR t.STORE_TYPE IN ('1000','1100'))
+		</if>
+		<if test="eventType == 1003 or eventType == 1009">
+			AND t.MERCHANT_TYPE = '3'
+		</if>
+		<if test="eventType == 1002">
+			AND t.DET_LAN_ID != t.ORIG_LAN_ID
+		</if>
+		<if test="eventType == 1004">
+			AND t.STORE_TYPE = '1100'
+		</if>
+		AND t.IS_ITMS IN
+		<foreach collection="isItms" index="index" item="itemIsItms" open="(" separator="," close=")">
+			#{itemIsItms}
+		</foreach>
+	</select>
+
+	<select id="findDateMKTInfoByParams" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
+		SELECT
+		NOW() AS SYNC_DATE,
+		'000' AS SYNC_BATCH_ID,
+		t.MKT_RES_EVENT_ID,
+		t.MKT_RES_CHNG_EVT_DETAIL_ID,
+		t.MKT_RES_INST_NBR,
+		t.MKT_RES_ID,
+		#{even.eventType} AS EVENT_TYPE,
+		t.BRAND_ID,
+		<if test="eventType == 1001">
+			case when t.DET_LAN_ID='10000000' then '999' else t.DET_LAN_ID end ORIG_LAN_ID,
+		</if>
+		<if test="eventType == 1002  or eventType == 1003 or eventType == 1007  or eventType == 1009">
+			case when t.ORIG_LAN_ID='10000000' then '999' else t.ORIG_LAN_ID end ORIG_LAN_ID,
+		</if>
+		t.BRAND_NAME,
+		t.UNIT_TYPE,
+		'0' AS STATUS_CD,
+		#{even.statusDate} AS STATUS_DATE,
+		'admin' CREATE_STAFF,
+		#{even.createDate} AS CREATE_DATE,
+		t.IS_ITMS AS REMARK
+		FROM(
+		SELECT
+		base.IS_ITMS,#{det.mktResEventId} AS MKT_RES_EVENT_ID,store.LAN_ID STORE_LAN_ID,par.MERCHANT_TYPE,inst.MKT_RES_ID,
+		store.STORE_TYPE,#{det.mktResChngEvtDetailId} AS MKT_RES_CHNG_EVT_DETAIL_ID,#{det.mktResInstNbr} AS MKT_RES_INST_NBR,
+		case when store.STORE_TYPE='1000' then '999' else store.LAN_ID end LAN_ID,
+		bra.brand_id,bra.NAME as BRAND_NAME,base.UNIT_TYPE,#{det.mktResStoreId} AS MKT_RES_STORE_ID,
+		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.destStoreId}) AS DET_LAN_ID,
+		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.mktResStoreId}) AS ORIG_LAN_ID
+		FROM
+		<if test="eventType == 1002 or eventType == 1003 or eventType == 1007">
+			(select * from MKT_RES_INST m where m.MKT_RES_STORE_ID = #{even.mktResStoreId} AND m.MKT_RES_INST_NBR =#{det.mktResInstNbr}) inst
+			INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = #{even.mktResStoreId}
+		</if>
+		<if test="eventType == 1001 or eventType == 1004 or eventType == 1009">
+			(select * from MKT_RES_INST m where m.MKT_RES_STORE_ID = #{even.destStoreId} AND m.MKT_RES_INST_NBR =#{det.mktResInstNbr}) inst
+			INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = #{even.destStoreId}
+		</if>
+		INNER JOIN PROD_PRODUCT prod ON prod.PRODUCT_ID = inst.MKT_RES_ID
+		INNER JOIN PROD_PRODUCT_BASE base ON base.PRODUCT_BASE_ID = prod.PRODUCT_BASE_ID
+		INNER JOIN PROD_BRAND bra ON bra.BRAND_ID = base.BRAND_ID
+		<if test="eventType == 1001 or eventType == 1002 or eventType == 1004 or eventType == 1009">
+			LEFT JOIN MKT_RES_STORE_OBJ_REL rel ON rel.MKT_RES_STORE_ID = #{even.destStoreId}
+		</if>
+		<if test="eventType == 1003 or eventType == 1007">
+			LEFT JOIN MKT_RES_STORE_OBJ_REL rel ON rel.MKT_RES_STORE_ID = #{even.mktResStoreId}
+		</if>
+		LEFT JOIN PAR_MERCHANT par ON par.MERCHANT_ID = rel.OBJ_ID
+		) t
+		where 1=1
+		AND t.LAN_ID = #{lanId}
+		<if test="eventType == 1001 or eventType == 1007">
+			AND (t.MERCHANT_TYPE = '2' OR t.STORE_TYPE IN ('1000','1100'))
+		</if>
+		<if test="eventType == 1003 or eventType == 1009">
+			AND t.MERCHANT_TYPE = '3'
+		</if>
+		<if test="eventType == 1002">
+			AND t.DET_LAN_ID != t.ORIG_LAN_ID
+		</if>
+		<if test="eventType == 1004">
+			AND t.STORE_TYPE = '1100'
+		</if>
+		AND t.IS_ITMS IN
+		<foreach collection="isItms" index="index" item="itemIsItms" open="(" separator="," close=")">
+			#{itemIsItms}
+		</foreach>
+	</select>
+  <select id="findMKTInfoByLadId" resultType="java.util.HashMap">
+		SELECT
+			CONCAT(mrisr.MKT_RES_INST_NBR, ',', mrisr.BRAND_NAME, mrisr.UNIT_TYPE, ',2,', mrisr.ORIG_LAN_ID) as itmsStr,
+			mrisr.MKT_RES_ITMS_SYNC_REC_ID	as id
+		FROM
+			MKT_RES_ITMS_SYNC_REC mrisr
+			INNER JOIN PROD_PRODUCT_BASE ppb ON mrisr.BRAND_ID = ppb.BRAND_ID
+			INNER JOIN MKT_RES_EVENT mre ON mre.MKT_RES_EVENT_ID = mrisr.MKT_RES_EVENT_ID 
+			AND mre.EVENT_TYPE in
+			<foreach collection="eventTypeArray" index="index" item="item" open="(" separator="," close=")">
+          	#{item}
+     		</foreach>
+			AND ppb.TYPE_ID = #{typeId}
+			<if test="startDate != '' and startDate != null">
+            AND mrisr.CREATE_DATE &gt;= #{startDate}
+        	</if>
+        	AND mrisr.ORIG_LAN_ID = #{lanId}
+  </select>
+  
+  <update id="updateFileNameById">
+		UPDATE MKT_RES_ITMS_SYNC_REC mrisr
+			SET mrisr.SYNC_FILE_NAME = #{destFileName},
+			mrisr.SYNC_BATCH_ID = #{syncBatchId}
+		WHERE
+			mrisr.MKT_RES_ITMS_SYNC_REC_ID = #{id}
+  </update>
+
+  <select id="getSeqBysendDir" resultType="java.lang.String">
+		SELECT
+			mrisr.SYNC_BATCH_ID mrisr
+		FROM
+			MKT_RES_ITMS_SYNC_REC mrisr 
+		WHERE
+			mrisr.SYNC_FILE_NAME LIKE CONCAT('%',#{sendDir},'%')
+		ORDER BY
+			mrisr.SYNC_BATCH_ID DESC 
+		LIMIT 1
+  </select>
+
+	<insert id="batchAddMKTInfo" parameterType="java.util.List" useGeneratedKeys="true">
+		insert into MKT_RES_ITMS_SYNC_REC (MKT_RES_ITMS_SYNC_REC_ID, SYNC_DATE, SYNC_BATCH_ID, SYNC_FILE_NAME, MKT_RES_EVENT_ID,
+		MKT_RES_CHNG_EVT_DETAIL_ID,
+		MKT_RES_INST_NBR, BRAND_ID, BRAND_NAME, UNIT_TYPE, ORIG_LAN_ID, DEST_LAN_ID,
+		STATUS_CD, STATUS_DATE, REMARK, CREATE_STAFF, CREATE_DATE)
+		values
+		<foreach collection="list" index="index" item="item" separator=",">
+			(#{item.mktResItmsSyncRecId},#{item.syncDate},#{item.syncBatchId},#{item.syncFileName},#{item.mktResEventId},
+			#{item.mktResChngEvtDetailId},#{item.mktResInstNbr},#{item.brandId},#{item.brandName},#{item.unitType},#{item.origLanId},
+			#{item.destLanId},#{item.statusCd},#{item.statusDate},#{item.remark},#{item.createStaff},#{item.createDate})
+		</foreach>
+	</insert>
+	<update id="updateByMktResChngEvtDetailId">
+			UPDATE MKT_RES_ITMS_SYNC_REC
+			SET SYNC_FILE_NAME = #{destFileName},
+			SYNC_BATCH_ID = #{syncBatchId}
+			WHERE
+			 MKT_RES_CHNG_EVT_DETAIL_ID = #{mktResChngEvtDetailId}
+	</update>
+</mapper>

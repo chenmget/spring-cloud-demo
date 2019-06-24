@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.rights.dto.response;
 
-import lombok.Data;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 /**
  * 定义优惠券相关的基本信息,如优惠方式、管理类型、使用系统等

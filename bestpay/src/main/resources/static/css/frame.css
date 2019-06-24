@@ -1,0 +1,50 @@
+#framecontentTop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 10%;
+    width: 100%;
+    overflow: hidden;
+    vertical-align: middle;
+    background-color: greenyellow;
+}
+
+#framecontentLeft {
+    position: fixed;
+    top: 100px;
+    left: 0;
+    height: 100%;
+    width: 20%;
+    overflow: hidden;
+    border: 1px solid red;
+    vertical-align: top;
+    background-color:darkgray;
+}
+
+#maincontent {
+    position: fixed;
+    left:20%; /*Set left value to WidthOfLeftFrameDiv*/
+    top: 10%; /*Set top value to HeightOfTopFrameDiv*/
+    right: 0;
+    bottom: 0;
+    color: blue;
+    overflow: scroll;
+    border: 1px solid #ff0000;
+    background:darkgrey;
+    border-top: solid 2px #70cbea;
+    border-left: solid 2px #70cbea;
+    overflow-y: scroll;
+}
+
+* html body {
+    padding: 100px 0 0 150px; /*Set value to (HeightOfTopFrameDiv 0 0 WidthOfLeftFrameDiv)*/
+}
+
+* html #maincontent {
+    height: 90%;
+    width: 80%;
+}
+
+* html #framecontentTop {
+    width: 100%;
+}

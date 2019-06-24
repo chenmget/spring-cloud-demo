@@ -1,0 +1,25 @@
+/*
+body{
+    background:url("../images/butterfly1.jpg") no-repeat fixed;
+    width: 80%;height: 90%;
+    background-size:100%100%;
+    border: 1px solid goldenrod;
+}
+*/
+h1{
+    color:#ff0000;
+    font-family:arial,verdana,sans-serif;font-style:italic;font-weight:bolder;font-size:80px;
+}
+
+span{
+    font-weight:bold;
+    color:blue;
+}
+
+.form-control-text{
+    color: red;
+    margin: 0 auto ;
+    border-style:outset;
+    border-color:gold;
+}
+

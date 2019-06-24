@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.order2b.mapper.PurApplyDeliveryMapper">
+
+    <sql id="allFields">
+    t.DELIVERY_ID
+    ,t.DELIVERY_TYPE
+    ,t.APPLY_ID
+    ,t.USER_ID
+    ,t.SHIP_TYPE
+    ,t.IS_PROTECT
+    ,t.PROTECT_PRICE
+    ,t.SHIP_NAME
+    ,t.PROVINCE_ID
+    ,t.PROVINCE
+    ,t.CITY_ID
+    ,t.CITY
+    ,t.REGION_ID
+    ,t.REGION
+    ,t.SHIP_ADDR
+    ,t.SHIP_ZIP
+    ,t.SHIP_TEL
+    ,t.SHIP_MOBILE
+    ,t.SHIP_EMAIL
+    ,t.SHIP_NUM
+    ,t.PRINT_STATUS
+    ,t.WEIGHT
+    ,t.SHIP_STATUS
+    ,t.BATCH_ID
+    ,t.SHIPPING_COMPANY
+    ,t.SHIPPING_AMOUNT
+    ,t.SHIPPING_TIME
+    ,t.POST_FEE
+    ,t.LOGI_RECEIVER
+    ,t.LOGI_RECEIVER_PHONE
+    ,t.USER_RECIEVE_TIME
+    ,t.SHIP_DESC
+    ,t.CREATE_STAFF
+    ,t.CREATE_DATE
+    ,t.UPDATE_STAFF
+    ,t.UPDATE_DATE
+
+</sql>
+
+	<select id="getSeqApplyItemDetailBatchId" resultType="java.lang.String">
+		SELECT SEQ_APPLY_ITEM_DETAIL_BATCH_ID.nextval 
+	</select>
+
+
+    <select id="getDeliveryInfoByApplyID"  parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp">
+        SELECT d.product_id as productId ,'' as unitName,d.mkt_res_inst_nbr as mktResInstNbr,d.batch_id as batchId,d.create_date as createDate
+        from pur_apply_item_detail d
+        WHERE  d.status_cd='5' and d.apply_id =#{applyId}
+
+    </select>
+</mapper>

@@ -20,6 +20,9 @@
         ,t.CRM_STATUS
         ,t.SELF_REG_STATUS
         ,t.IF_PRE_SUBSIDY
+        ,t.TYPE_ID
+        ,t.SN_CODE
+        ,t.MAC_CODE
     </sql>
 
     <sql id="nbrSource">
@@ -38,6 +41,56 @@
     </select>
 
     <select id="getStoreIdByNbr" resultType="java.lang.String">
-        SELECT MKT_RES_STORE_ID from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr}
+         SELECT MKT_RES_STORE_ID from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr}
     </select>
+
+    <select id="listResourceInstsTrack" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackGetReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO">
+        select <include refid="allFields" />
+        from mkt_res_inst_track t
+        where 1 = 1
+        <if test="null!=mktResInstNbrList and mktResInstNbrList.size > 0">
+            and t.mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstNbrList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=ctCodeList and ctCodeList.size > 0">
+            and t.ct_code in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="ctCodeList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=snCodeList and snCodeList.size > 0">
+            and t.sn_code in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="snCodeList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=macCodeList and macCodeList.size > 0">
+            and t.mac_code in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="macCodeList">
+                #{item}
+            </foreach>
+        </if>
+        <if test="null!=statusCd and ''!=statusCd">
+            and t.status_cd = #{statusCd}
+        </if>
+        <if test="null!=merchantId and ''!=merchantId">
+            and t.merchant_id = #{merchantId}
+        </if>
+        <if test="null!=mktResId and ''!=mktResId">
+            and t.mkt_res_id = #{mktResId}
+        </if>
+        <if test="null!=typeId and ''!=typeId">
+            and t.type_id = #{typeId}
+        </if>
+        <if test="null!=mktResStoreId and ''!=mktResStoreId">
+            and t.mkt_res_store_id = #{mktResStoreId}
+        </if>
+        <if test="null!=sourceType and ''!=sourceType">
+            and t.source_type = #{sourceType}
+        </if>
+    </select>
+
 </mapper>

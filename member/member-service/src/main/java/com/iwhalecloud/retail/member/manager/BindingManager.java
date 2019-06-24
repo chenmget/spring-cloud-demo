@@ -1,13 +1,5 @@
 package com.iwhalecloud.retail.member.manager;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.annotation.Resource;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Component;
-
 import com.iwhalecloud.retail.member.dto.request.BindingAddReq;
 import com.iwhalecloud.retail.member.dto.request.BindingDeleteReq;
 import com.iwhalecloud.retail.member.dto.request.BindingQueryReq;
@@ -15,6 +7,12 @@ import com.iwhalecloud.retail.member.dto.request.BindingUpdateReq;
 import com.iwhalecloud.retail.member.dto.response.BindingQueryResp;
 import com.iwhalecloud.retail.member.entity.Binding;
 import com.iwhalecloud.retail.member.mapper.BindingMapper;
+import org.springframework.beans.BeanUtils;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Component

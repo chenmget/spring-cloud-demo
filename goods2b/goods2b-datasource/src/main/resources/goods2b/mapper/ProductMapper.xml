@@ -35,18 +35,29 @@
     ,t.UPDATE_DATE
     ,t.SOURCE_FROM
     ,t.AUDIT_STATE
+    ,t.PURCHASE_TYPE
   </sql>
 
   <!-- getProduct-->
   <select id="getProduct" parameterType="java.lang.String"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductResp">
-    Select <include refid="allFields" />,ppb.brand_id,ppb.is_ct_code,ppb.product_name,ppb.product_code,ppb.unit_type,ppb.type_id
+    Select <include refid="allFields" />,ppb.brand_id,ppb.is_ct_code,ppb.product_name,ppb.product_code,ppb.unit_type,ppb.type_id,ppb.brand_id
     FROM prod_product t
     left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
     WHERE t.product_id = #{productId}
     AND t.is_deleted = '0'
   </select>
 
+  <select id="getProducts" parameterType="java.lang.String"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductResp">
+    Select <include refid="allFields" />,ppb.unit_type_name AS unitTypeName,pb.name AS brandName,ppb.brand_id,ppb.is_ct_code,ppb.product_name,ppb.product_code,ppb.unit_type,ppb.type_id,pt.type_name
+    FROM prod_product t
+    left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
+    left join prod_type pt on pt.type_id = ppb.type_id
+    left join prod_brand pb on pb.brand_id = ppb.brand_id
+    WHERE t.product_id = #{productId}
+    AND t.is_deleted = '0'
+  </select>
 
   <sql id="pageProductFields">
     p.PRODUCT_ID,
@@ -57,12 +68,18 @@
     p.COLOR,
     p.SN,
     p.MANUFACTURER_ID,
+    p.CORPORATION_PRICE,
     p.COST,
     p.STATUS,
     p.SOURCE_FROM,
     p.AUDIT_STATE,
     b.UNIT_TYPE,
     b.UNIT_TYPE_NAME,
+    b.IS_IMEI,
+    b.IS_ITMS,
+    b.IS_CT_CODE,
+    b.IS_INSPECTION,
+    b.IS_FIXED_LINE,
     c.CAT_ID,
     c.CAT_NAME,
     t.TYPE_ID,
@@ -83,81 +100,174 @@
     b.EXP_DATE,
     p.SUPPLY_FEE_LOWER,
     p.SUPPLY_FEE_UPPER,
+    p.LOCAL_SUPPLY_FEE_LOWER,
+    p.LOCAL_SUPPLY_FEE_UPPER,
+    p.PURCHASE_TYPE,
     pb.name AS brand_name,
-    pb.BRAND_ID
+    pb.BRAND_ID,
+    b.PRICE_LEVEL,
+    p.PRICE_STATUS
   </sql>
   <select id="selectPageProductAdmin" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
-      select <include refid="pageProductFields"/>
-      from prod_product p
-      inner join prod_product_base b on p.PRODUCT_BASE_ID = b.PRODUCT_BASE_ID
-      left join prod_cat c on b.CAT_ID = c.CAT_ID
-      left join prod_type t on t.TYPE_ID = b.TYPE_ID
-      left join prod_brand pb on pb.BRAND_ID = b.BRAND_ID
-      where p.IS_DELETED = '0' and b.IS_DELETED = '0' and pb.is_deleted = '0'
-        <if test="null!=pageReq.sn and ''!=pageReq.sn">
-          and p.SN = #{pageReq.sn}
-        </if>
-        <if test="null!=pageReq.unitName and ''!=pageReq.unitName">
-          and upper(p.UNIT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.unitName})),'%')
-        </if>
-        <if test="null!=pageReq.productName and ''!=pageReq.productName">
-          and upper(b.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.productName})),'%')
-        </if>
-        <if test="null!=pageReq.catName and ''!=pageReq.catName">
-          and upper(c.CAT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.catName})),'%')
-        </if>
-        <if test="null!=pageReq.typeId and ''!=pageReq.typeId">
-          and t.TYPE_ID = #{pageReq.typeId}
-        </if>
-        <if test="null!=pageReq.statusList and pageReq.statusList.size > 0">
-          and p.STATUS in
-          <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.statusList">
-            #{item}
-          </foreach>
-        </if>
-        <if test="null!=pageReq.catId and ''!=pageReq.catId">
-          and c.CAT_ID = #{pageReq.catId}
-        </if>
-        <if test="null!=pageReq.unitType and ''!=pageReq.unitType">
-          and b.UNIT_TYPE = #{pageReq.unitType}
-        </if>
-        <if test="null!=pageReq.isDeleted and ''!=pageReq.isDeleted">
-          and p.IS_DELETED = #{pageReq.isDeleted}
-        </if>
-        <if test="null!=pageReq.manufacturerId and ''!=pageReq.manufacturerId">
-          and p.MANUFACTURER_ID = #{pageReq.manufacturerId}
-        </if>
-        <if test="null!=pageReq.productIdList and pageReq.productIdList.size > 0">
-          and p.PRODUCT_ID in
-          <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productIdList">
-            #{item}
-          </foreach>
-        </if>
-        <if test="null!=pageReq.productBaseIdList and pageReq.productBaseIdList.size > 0">
-          and b.PRODUCT_BASE_ID in
-          <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productBaseIdList">
-            #{item}
-          </foreach>
-        </if>
-        <if test="null!=pageReq.brandIdList and pageReq.brandIdList.size > 0">
-          and pb.BRAND_ID in
-          <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.brandIdList">
-            #{item}
-          </foreach>
-        </if>
-        <if test="null!=pageReq.createStaff">
-          and b.CREATE_STAFF = = #{pageReq.createStaff}
-        </if>
-        <if test="null!=pageReq.costLower and ''!=pageReq.costLower">
-          and p.COST <![CDATA[ >= ]]> #{pageReq.costLower}
-        </if>
-        <if test="null!=pageReq.costUpper and ''!=pageReq.costUpper">
-          and p.COST <![CDATA[ <= ]]> #{pageReq.costUpper}
-        </if>
-      <if test="null!=pageReq.auditState and ''!=pageReq.auditState">
-        and p.AUDIT_STATE = #{pageReq.auditState}
-      </if>
+    select <include refid="pageProductFields"/>,t.PARENT_TYPE_ID
+    from prod_product p
+    inner join prod_product_base b on p.PRODUCT_BASE_ID = b.PRODUCT_BASE_ID
+    left join prod_cat c on b.CAT_ID = c.CAT_ID
+    left join prod_type t on t.TYPE_ID = b.TYPE_ID
+    left join prod_brand pb on pb.BRAND_ID = b.BRAND_ID
+    where p.IS_DELETED = '0' and b.IS_DELETED = '0' and pb.is_deleted = '0'
+    <if test="null!=pageReq.sn and ''!=pageReq.sn">
+      and p.SN = #{pageReq.sn}
+    </if>
+    <if test="null!=pageReq.unitName and ''!=pageReq.unitName">
+      and upper(p.UNIT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.unitName})),'%')
+    </if>
+    <if test="null!=pageReq.productName and ''!=pageReq.productName">
+      and upper(b.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.productName})),'%')
+    </if>
+    <if test="null!=pageReq.catName and ''!=pageReq.catName">
+      and upper(c.CAT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.catName})),'%')
+    </if>
+    <if test="null!=pageReq.typeId and ''!=pageReq.typeId">
+      and t.TYPE_ID = #{pageReq.typeId}
+    </if>
+    <if test="null!=pageReq.statusList and pageReq.statusList.size > 0">
+      and p.STATUS in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.statusList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.catId and ''!=pageReq.catId">
+      and c.CAT_ID = #{pageReq.catId}
+    </if>
+    <if test="null!=pageReq.unitType and ''!=pageReq.unitType">
+      and b.UNIT_TYPE = #{pageReq.unitType}
+    </if>
+    <if test="null!=pageReq.isDeleted and ''!=pageReq.isDeleted">
+      and p.IS_DELETED = #{pageReq.isDeleted}
+    </if>
+    <if test="null!=pageReq.manufacturerId and ''!=pageReq.manufacturerId">
+      and p.MANUFACTURER_ID = #{pageReq.manufacturerId}
+    </if>
+    <if test="null!=pageReq.productIdList and pageReq.productIdList.size > 0">
+      and p.PRODUCT_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productIdList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.productBaseIdList and pageReq.productBaseIdList.size > 0">
+      and b.PRODUCT_BASE_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productBaseIdList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.brandIdList and pageReq.brandIdList.size > 0">
+      and pb.BRAND_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.brandIdList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.createStaff">
+      and b.CREATE_STAFF = = #{pageReq.createStaff}
+    </if>
+    <if test="null!=pageReq.costLower and ''!=pageReq.costLower">
+      and p.COST <![CDATA[ >= ]]> #{pageReq.costLower}
+    </if>
+    <if test="null!=pageReq.costUpper and ''!=pageReq.costUpper">
+      and p.COST <![CDATA[ <= ]]> #{pageReq.costUpper}
+    </if>
+    <if test="null!=pageReq.auditState and ''!=pageReq.auditState">
+      and p.AUDIT_STATE = #{pageReq.auditState}
+    </if>
+    <if test="null!=pageReq.purchaseType and ''!=pageReq.purchaseType">
+      and p.PURCHASE_TYPE = #{pageReq.purchaseType}
+    </if>
+    <if test="null!=pageReq.corporationPriceLower and ''!=pageReq.corporationPriceLower">
+      and p.CORPORATION_PRICE <![CDATA[ >= ]]> #{pageReq.corporationPriceLower}
+    </if>
+    <if test="null!=pageReq.corporationPriceUpper and ''!=pageReq.corporationPriceUpper">
+      and p.CORPORATION_PRICE <![CDATA[ <= ]]> #{pageReq.corporationPriceUpper}
+    </if>
+
+    order by p.CREATE_DATE DESC
+  </select>
+
+  <select id="selectPageProductAdminAll" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
+    select <include refid="pageProductFields"/>
+    from prod_product p
+    inner join prod_product_base b on p.PRODUCT_BASE_ID = b.PRODUCT_BASE_ID
+    left join prod_cat c on b.CAT_ID = c.CAT_ID
+    left join prod_type t on t.TYPE_ID = b.TYPE_ID
+    left join prod_brand pb on pb.BRAND_ID = b.BRAND_ID
+    where 1=1
+    <if test="null!=pageReq.sn and ''!=pageReq.sn">
+      and p.SN = #{pageReq.sn}
+    </if>
+    <if test="null!=pageReq.unitName and ''!=pageReq.unitName">
+      and upper(p.UNIT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.unitName})),'%')
+    </if>
+    <if test="null!=pageReq.productName and ''!=pageReq.productName">
+      and upper(b.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.productName})),'%')
+    </if>
+    <if test="null!=pageReq.catName and ''!=pageReq.catName">
+      and upper(c.CAT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.catName})),'%')
+    </if>
+    <if test="null!=pageReq.typeId and ''!=pageReq.typeId">
+      and t.TYPE_ID = #{pageReq.typeId}
+    </if>
+    <if test="null!=pageReq.statusList and pageReq.statusList.size > 0">
+      and p.STATUS in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.statusList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.catId and ''!=pageReq.catId">
+      and c.CAT_ID = #{pageReq.catId}
+    </if>
+    <if test="null!=pageReq.unitType and ''!=pageReq.unitType">
+      and b.UNIT_TYPE = #{pageReq.unitType}
+    </if>
+    <if test="null!=pageReq.isDeleted and ''!=pageReq.isDeleted">
+      and p.IS_DELETED = #{pageReq.isDeleted}
+    </if>
+    <if test="null!=pageReq.manufacturerId and ''!=pageReq.manufacturerId">
+      and p.MANUFACTURER_ID = #{pageReq.manufacturerId}
+    </if>
+    <if test="null!=pageReq.productIdList and pageReq.productIdList.size > 0">
+      and p.PRODUCT_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productIdList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.productBaseIdList and pageReq.productBaseIdList.size > 0">
+      and b.PRODUCT_BASE_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.productBaseIdList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.brandIdList and pageReq.brandIdList.size > 0">
+      and pb.BRAND_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.brandIdList">
+        #{item}
+      </foreach>
+    </if>
+    <if test="null!=pageReq.createStaff">
+      and b.CREATE_STAFF = = #{pageReq.createStaff}
+    </if>
+    <if test="null!=pageReq.priceLevel">
+      and b.PRICE_LEVEL = = #{pageReq.priceLevel}
+    </if>
+    <if test="null!=pageReq.costLower and ''!=pageReq.costLower">
+      and p.COST <![CDATA[ >= ]]> #{pageReq.costLower}
+    </if>
+    <if test="null!=pageReq.costUpper and ''!=pageReq.costUpper">
+      and p.COST <![CDATA[ <= ]]> #{pageReq.costUpper}
+    </if>
+    <if test="null!=pageReq.auditState and ''!=pageReq.auditState">
+      and p.AUDIT_STATE = #{pageReq.auditState}
+    </if>
 
 
     order by p.CREATE_DATE DESC
@@ -242,9 +352,11 @@
 
   <select id="selectProduct" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductGetReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.ProductDTO">
-    select <include refid="allFields" />,ppb.product_code,ppb.unit_type
+    select <include refid="allFields" />,ppb.product_code,ppb.unit_type,ppb.type_id,ppb.product_name,pt.type_name,pb.name as brandName
     from prod_product t
     left join prod_product_base ppb on ppb.product_base_id = t.product_base_id
+    left join prod_brand pb on pb.BRAND_ID = ppb.BRAND_ID
+    left join prod_type pt on pt.type_id = ppb.type_id
     where 1 = 1 and t.IS_DELETED = '0' and ppb.IS_DELETED = '0'
     <if test="null!=req.productIdList and req.productIdList.size>0" >
       and t.product_id in
@@ -304,6 +416,9 @@
     <if test="null!=unitTypeName and ''!=unitTypeName">
       and upper(ppb.unit_type_name) like CONCAT(CONCAT('%',upper(#{unitTypeName})),'%')
     </if>
+    <if test="null!=productName and ''!=productName">
+      and upper(ppb.product_name) like CONCAT(CONCAT('%',upper(#{productName})),'%')
+    </if>
   </select>
 
   <!--根据产品ID产归属商家-->
@@ -325,11 +440,25 @@
 
   <select id="getProductInfo" parameterType="com.iwhalecloud.retail.goods2b.dto.req.QueryProductInfoReqDTO"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
-    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name
+    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name,ppb.unit_type,ppb.type_id,pt.type_name
     from prod_product t
     left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
     left join prod_brand pb on pb.brand_id = ppb.brand_id
-    where 1 = 1 and t.is_deleted = '0' and ppb.is_deleted = '0' and pb.is_deleted = '0'
+    left join prod_type pt on pt.type_id = ppb.type_id
+    where 1 = 1 and t.is_deleted = '0' and ppb.is_deleted = '0' and pb.is_deleted = '0' and pt.is_deleted = '0'
+    <if test="null!=productId and ''!=productId">
+      and t.product_id = #{productId}
+    </if>
+  </select>
+
+  <select id="getProductInfor" parameterType="com.iwhalecloud.retail.goods2b.dto.req.QueryProductInfoReqDTO"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
+    select t.*,ppb.product_name,ppb.unit_type_name as unitTypeName,pb.name as brand_name,ppb.unit_type,pt.type_name,pt.type_id
+    from prod_product t
+    left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
+    left join prod_brand pb on pb.brand_id = ppb.brand_id
+    left join prod_type pt on pt.type_id = ppb.type_id
+    where 1 = 1 and t.is_deleted = '0'
     <if test="null!=productId and ''!=productId">
       and t.product_id = #{productId}
     </if>
@@ -346,6 +475,9 @@
     </if>
     <if test="!bothNotNull and null!=unitName and ''!=unitName">
       upper(t.unit_name) = upper(#{unitName})
+    </if>
+    <if test="null!=productId and ''!=productId">
+      and t.product_id != #{productId}
     </if>
   </select>
 
@@ -397,5 +529,71 @@
     WHERE t.product_base_id = #{productBaseId}
     AND t.is_deleted = '0'
   </select>
+  <select id="getProductForRebate" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductRebateReq"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductResp">
+    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name,ppb.unit_type
+    from prod_product t
+    left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
+    left join prod_brand pb on pb.brand_id = ppb.brand_id
+    where 1 = 1 and t.is_deleted = '0' and ppb.is_deleted = '0' and pb.is_deleted = '0'
+    <if test="null!=req.productName and ''!=req.productName">
+      and upper(ppb.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
+    </if>
+    <if test="null!=req.brandName and ''!=req.brandName">
+      and upper(pb.name) like CONCAT(CONCAT('%',upper(#{req.brandName})),'%')
 
+    </if>
+    <if test="null!=req.brandId and ''!=req.brandId">
+      and pb.BRAND_ID =#{req.brandId}
+    </if>
+    <if test="null!=req.unitType and ''!=req.unitType">
+      and upper(ppb.unit_Type) like CONCAT(CONCAT('%',upper(#{req.unitType})),'%')
+    </if>
+    <if test="null!=req.typeId and ''!=req.typeId">
+      and ppb.type_id =#{req.typeId}
+    </if>
+  </select>
+
+  <!-- getProductForResource-->
+  <select id="getProductForResource" parameterType="java.lang.String"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp">
+    Select t.sn, ppb.is_fixed_line, ppb.type_id
+    FROM prod_product t
+    left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
+    WHERE t.product_id = #{productId}
+    AND t.is_deleted = '0'
+  </select>
+
+  <select id="getProductInfoByIds" parameterType="java.lang.String"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductInfoResp">
+    SELECT PRODUCT_ID as productId ,CORPORATION_PRICE as corporationPrice,UNIT_NAME as unitName
+    FROM prod_product
+    WHERE
+    <if test="null!=productIds">
+      PRODUCT_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="productIds">
+        #{item}
+      </foreach>
+    </if>
+  </select>
+
+	<select id="selectNextChangeId" resultType="java.lang.String" >
+ 	 	select seq_PRODUCT_CHANGE_ID.nextVal
+  	</select>
+  	
+  	<select id="selectNextChangeDetailId" resultType="java.lang.String" >
+ 	 	select seq_PRODUCT_CHANGE_DETAIL_ID.nextVal
+  	</select>
+  	
+ 	<select id="selectisFixedLineByBatchId" parameterType="java.lang.String"
+ 	resultType="java.lang.String" >
+		select
+			a.is_fixed_line
+		from
+			prod_product_base a,prod_product b
+		where
+			a.product_base_id = b.product_base_id
+		and
+			b.sn = #{batchId}
+  </select>
 </mapper>

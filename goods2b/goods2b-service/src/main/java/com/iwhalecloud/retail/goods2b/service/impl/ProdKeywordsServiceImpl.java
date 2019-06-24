@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.goods2b.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ProdKeywordsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdKeywordsPageQueryReq;
-import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.goods2b.manager.ProdKeywordsManager;
 import com.iwhalecloud.retail.goods2b.service.ProdKeywordsService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 @Service

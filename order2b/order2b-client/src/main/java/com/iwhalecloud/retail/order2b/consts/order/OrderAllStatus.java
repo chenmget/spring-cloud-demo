@@ -29,6 +29,7 @@ public enum OrderAllStatus {
     ORDER_STATUS_14("待支付尾款","14",""),
     ORDER_STATUS_3("已支付、待受理","3",""),
     ORDER_STATUS_4("已受理待发货","4",""),
+    ORDER_STATUS_4_("已关闭","-4",""),
     ORDER_STATUS_41("部分发货","41",""),
     ORDER_STATUS_5("待收货确认","5",""),
     ORDER_STATUS_6("收货确认","6","（待评价）"),
@@ -54,7 +55,7 @@ public enum OrderAllStatus {
     ORDER_STATUS_28("待商家退款","28",""),
     ORDER_STATUS_29("待买家确认收款","29",""),
 
-
+    ORDER_STATUS_31("卖家申请关闭","31",""),
 
     ;
 

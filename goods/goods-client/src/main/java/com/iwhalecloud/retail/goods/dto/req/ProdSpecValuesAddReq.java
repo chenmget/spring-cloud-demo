@@ -2,10 +2,9 @@ package com.iwhalecloud.retail.goods.dto.req;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 /**
  * 规格值新增对象

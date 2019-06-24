@@ -23,4 +23,10 @@ public class ResourceRequestUpdateReq implements Serializable {
      */
     @ApiModelProperty(value = "记录状态。LOVB=RES-C-0010")
     private String statusCd;
+
+    /**
+     * 记录首次创建的时间。
+     */
+    @ApiModelProperty(value = "记录首次创建的时间。")
+    private java.util.Date createDate;
 }

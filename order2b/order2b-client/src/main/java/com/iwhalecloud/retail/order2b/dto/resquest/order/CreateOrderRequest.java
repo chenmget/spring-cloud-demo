@@ -1,9 +1,9 @@
 package com.iwhalecloud.retail.order2b.dto.resquest.order;
 
-import com.iwhalecloud.retail.order2b.consts.order.OrderPaymentType;
-import com.iwhalecloud.retail.order2b.consts.order.OrderShipType;
 import com.iwhalecloud.retail.order2b.annotation.EnumCheckValidate;
 import com.iwhalecloud.retail.order2b.annotation.NullCheckValidate;
+import com.iwhalecloud.retail.order2b.consts.order.OrderPaymentType;
+import com.iwhalecloud.retail.order2b.consts.order.OrderShipType;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

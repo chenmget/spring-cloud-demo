@@ -11,7 +11,6 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantLimitDTO;
-import com.iwhalecloud.retail.partner.dto.req.MerchantLimitUpdateReq;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
@@ -24,8 +23,7 @@ import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.manager.ResourceBatchRecManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
@@ -97,8 +95,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
     private CommonRegionService commonRegionService;
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Deprecated
     public ResultVO addResourceInstByGreenChannel(ResourceInstAddReq req) {
         // step1 绿色通道额度校验
         String merchantId = req.getMerchantId();
@@ -151,7 +148,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
             processStartDTO.setTitle("绿色通道超过限额审批流程");
             processStartDTO.setApplyUserId(req.getCreateStaff());
             processStartDTO.setApplyUserName(merchantDTO.getMerchantName());
-            processStartDTO.setProcessId(ResourceConst.GREEN_CHANNEL_WORK_FLOW_INST);
+            processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_08.getTypeCode());
             processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1090.getTaskSubType());
             processStartDTO.setApplyUserName(req.getApplyUserName());
             if (resultVO != null && resultVO.getResultData() != null) {
@@ -179,40 +176,12 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
             ResultVO<ResourceRequestResp> respResultVO = resourceRequestService.queryResourceRequest(queryReq);
             return ResultVO.error(ResourceConst.SUCESS_MSG);
         } else {
-            Integer totalesInstNbrs = req.getMktResInstNbrs().size();
-            // step2 串码入库
-            req.setStorageType(ResourceConst.STORAGETYPE.GREEN_CHANNEL.getCode());
-            req.setSourceType(ResourceConst.SOURCE_TYPE.RETAILER.getCode());
-            req.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
-            req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-            req.setMerchantType(merchantDTO.getMerchantType());
-            req.setMerchantName(merchantDTO.getMerchantName());
-            req.setMerchantCode(merchantDTO.getMerchantCode());
-            req.setLanId(merchantDTO.getLanId());
-            req.setRegionId(merchantDTO.getCity());
-            req.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-            req.setDestStoreId(mktResStoreId);
-            ResultVO<ResourceInstAddResp> resultVO = resourceInstService.addResourceInst(req);
-            log.info("RetailerResourceInstServiceImpl.addResourceInstByGreenChannel() addResourceInst --> resultVO={}", JSON.toJSONString(resultVO));
-            int failInstNbrs = 0;
-            if (null != resultVO && null != resultVO.getResultData() && !CollectionUtils.isEmpty(resultVO.getResultData().getPutInFailNbrs())) {
-                List<String> list = resultVO.getResultData().getPutInFailNbrs();
-                failInstNbrs = list.size();
-            }
-            // step3 修改绿色通道免审核额度
-            Long usedInstNbrsNum = merchantLimitDTO.getResultData().getSerialNumUsed() + (totalesInstNbrs - failInstNbrs);
-            MerchantLimitUpdateReq merchantLimitUpdateReq = new MerchantLimitUpdateReq();
-            merchantLimitUpdateReq.setMerchantId(merchantId);
-            merchantLimitUpdateReq.setSerialNumUsed(usedInstNbrsNum);
-            ResultVO updateGreenChannelUseLimit = merchantLimitService.updateMerchantLimit(merchantLimitUpdateReq);
-            log.info("RetailerResourceInstServiceImpl.addResourceInstByGreenChannel merchantLimitService.updateMerchantLimit merchantLimitUpdateReq={}, resp={}", JSON.toJSONString(merchantLimitUpdateReq), JSON.toJSONString(updateGreenChannelUseLimit));
-            return resultVO;
+            return ResultVO.success();
         }
     }
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Deprecated
     public ResultVO delResourceInst(ResourceInstUpdateReq req) {
         log.info("RetailerResourceInstServiceImpl.delResourceInst req={}", JSON.toJSONString(req));
         // 获取仓库
@@ -227,8 +196,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
     }
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Deprecated
     public ResultVO confirmReciveNbr(ConfirmReciveNbrReq req) {
         // step1 申请单状态改为完成
         String resReqId = req.getResReqId();
@@ -270,7 +238,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
                 ResourceConst.STATUSCD.RESTORAGED.getCode(),
                 ResourceConst.STATUSCD.SALED.getCode(),
                 ResourceConst.STATUSCD.DELETED.getCode());
-        updateReq.setMktResInstIds(mktResInstIds);
+        updateReq.setMktResInstIdList(mktResInstIds);
         updateReq.setCheckStatusCd(checkStatusCd);
         updateReq.setStatusCd(ResourceConst.STATUSCD.ALLOCATIONED.getCode());
         updateReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
@@ -279,16 +247,18 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         updateReq.setDestStoreId(resourceRequestResp.getDestStoreId());
         updateReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         ResultVO<List<String>> updateVO = resourceInstService.updateResourceInstByIds(updateReq);
+        log.info("RetailerResourceInstServiceImpl.pickResourceInst resourceInstService.updateResourceInstByIds req={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updateVO));
 
         // step3 领用方入库
-        // 找出串码实列
-        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(mktResInstIds);
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(mktResInstIds);
+        selectReq.setMktResStoreId(resourceRequestResp.getDestStoreId());
+        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(selectReq);
         // 筛选出状态不正确的串码实列,只有调拨中的可用
         String allocationedStatuscd = ResourceConst.STATUSCD.ALLOCATIONED.getCode();
         List<ResourceInstDTO> allocationedInsts = insts.stream().filter(t -> allocationedStatuscd.equals(t.getStatusCd())).collect(Collectors.toList());
         // 按产品维度组装数据
         Map<String, List<ResourceInstDTO>> map = allocationedInsts.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
-
         ResourceInstPutInReq instPutInReq = new ResourceInstPutInReq();
         instPutInReq.setMerchantId(req.getMerchantId());
         instPutInReq.setInsts(map);
@@ -299,13 +269,11 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         instPutInReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         ResultVO resultResourceInstPutIn = resourceInstService.resourceInstPutIn(instPutInReq);
         log.info("RetailerResourceInstServiceImpl.pickResourceInst resourceInstService.resourceInstPutIn req={}, resp={}", JSON.toJSONString(instPutInReq), JSON.toJSONString(resultResourceInstPutIn));
-
         return ResultVO.success(instPutInReq.getUnUse());
     }
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Deprecated
     public ResultVO confirmRefuseNbr(ConfirmReciveNbrReq req) {
         // step1 申请单修改状态
         ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
@@ -335,7 +303,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         updateReq.setCheckStatusCd(checkStatusCd);
         updateReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         updateReq.setEventType(ResourceConst.EVENTTYPE.RECYCLE.getCode());
-        updateReq.setMktResInstIds(mktResInstIds);
+        updateReq.setMktResInstIdList(mktResInstIds);
         updateReq.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(req.getResReqId());
@@ -344,13 +312,12 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
     }
 
     @Override
-    public ResultVO<Page<ResourceInstListResp>> listResourceInst(ResourceInstListReq req) {
+    public ResultVO<Page<ResourceInstListPageResp>> listResourceInst(ResourceInstListPageReq req) {
         return resourceInstService.getResourceInstList(req);
     }
 
     @Override
-    //todo 事务先去掉，影响主流i程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Deprecated
     public ResultVO retreatStorageResourceInst(RetreatStorageReq req) {
         //step1: 申请单id->串码
         //step2: 零售商串码已退库
@@ -377,10 +344,11 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
     }
 
     @Override
-    public ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req) {
-        List<ResourceInstListResp> list = resourceInstManager.getBatch(req);
+    @Deprecated
+    public ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req) {
+        List<ResourceInstListPageResp> list = resourceInstManager.getBatch(req);
         // 添加产品信息
-        for (ResourceInstListResp resp : list) {
+        for (ResourceInstListPageResp resp : list) {
             String productId = resp.getMktResId();
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
             queryReq.setProductId(productId);
@@ -417,8 +385,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
      * 4、目标仓库处理人进行调拨收货确认，确认后串码进行入库操作；
      */
     @Override
-    //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Deprecated
     public ResultVO allocateResourceInst(RetailerResourceInstAllocateReq req) {
         //step 1: 校验是否需要审核单
         ResultVO<ResouceStoreDTO> destStoreVO = resouceStoreService.getResouceStore(req.getDestStoreId());
@@ -445,27 +412,20 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         if (null == sourceMerchantDTO) {
             return ResultVO.error("商家获取失败");
         }
-
         // 是否商家是否同一经营主体
         Boolean isNotSameMerchant = !destMerchantDTO.getBusinessEntityCode().equals(sourceMerchantDTO.getBusinessEntityCode());
-
-        // 是否有前置补贴
-        ResultVO<Boolean> nbrHasActivityVO = resourceInstService.nbrHasActivity(req.getNbrAndProductId());
-        log.info("RetailerResourceInstServiceImpl.allocateResourceInst resourceInstService.nbrHasActivity req={},resp={}", req.getNbrAndProductId(), JSON.toJSONString(nbrHasActivityVO));
-        Boolean nbrHasActivity = false;
-        if (nbrHasActivityVO.isSuccess()) {
-            nbrHasActivity = nbrHasActivityVO.getResultData();
-        }
-
         // step3 如果跨地市或不属于同一个商家实体需要审核，申请单状态为处理中
         String requestStatusCd = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
-        if (isTransRegional || isNotSameMerchant || nbrHasActivity) {
+        if (isTransRegional || isNotSameMerchant) {
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
             successMessage = ResourceConst.ALLOCATE_AUDITING_MSG;
         }
         //新增申请单
-        List<ResourceInstDTO> resourceInstDTOList = resourceInstManager.selectByIds(req.getMktResInstIds());
+        ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        selectReq.setMktResInstIdList(req.getMktResInstIds());
+        selectReq.setMktResStoreId(req.getMktResStoreId());
+        List<ResourceInstDTO> resourceInstDTOList = resourceInstManager.selectByIds(selectReq);
         List<ResourceRequestAddReq.ResourceRequestInst> resourceRequestInsts = new ArrayList<>();
         for (ResourceInstDTO resourceInstDTO : resourceInstDTOList) {
             ResourceRequestAddReq.ResourceRequestInst resourceRequestInst = new ResourceRequestAddReq.ResourceRequestInst();
@@ -524,7 +484,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         processStartDTO.setTitle("调拨审批流程");
         processStartDTO.setApplyUserId(createStaff);
         processStartDTO.setApplyUserName(sourceMerchantDTO.getMerchantName());
-        processStartDTO.setProcessId(ResourceConst.ALLOCATE_WORK_FLOW_INST);
+        processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_07.getTypeCode());
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
         processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1010.getTaskSubType());
 
@@ -553,52 +513,14 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
     }
 
     @Override
-    //todo 事务先去掉，影响主流程 200_539
-//    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    @Deprecated
     public ResultVO pickResourceInst(ResourceInstPickupReq req) {
-        AdminResourceInstDelReq delReq = new AdminResourceInstDelReq();
-        // 设置状态校验条件
-        List<String> checkStatusCd = Lists.newArrayList(
-                ResourceConst.STATUSCD.DELETED.getCode(),
-                ResourceConst.STATUSCD.AUDITING.getCode(),
-                ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
-                ResourceConst.STATUSCD.RESTORAGEING.getCode(),
-                ResourceConst.STATUSCD.RESTORAGED.getCode());
-        delReq.setCheckStatusCd(checkStatusCd);
-        // step1 源库设为已调拨
-        delReq.setMktResInstIds(req.getMktResInstIds());
-        delReq.setStatusCd(ResourceConst.STATUSCD.SALED.getCode());
-        delReq.setEventType(ResourceConst.EVENTTYPE.RECEIVE.getCode());
-        ResultVO updateResultVO = resourceInstService.updateResourceInstByIds(delReq);
-
-        List<String> mktResInstIds = delReq.getMktResInstIds();
-        List<String> unUse = (List<String>) updateResultVO.getResultData();
-        if (null != unUse && unUse.size() == req.getMktResInstIds().size()) {
-            return ResultVO.error("串码id不正确");
-        }
-        mktResInstIds.removeAll(unUse);
-        // step2 领用方入库
-        // 找出串码实列
-        List<ResourceInstDTO> insts = resourceInstManager.selectByIds(mktResInstIds);
-        // 按产品维度组装数据
-        Map<String, List<ResourceInstDTO>> map = insts.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
-
-        ResourceInstPutInReq instPutInReq = new ResourceInstPutInReq();
-        BeanUtils.copyProperties(delReq, instPutInReq);
-        instPutInReq.setMerchantId(req.getMerchantId());
-        instPutInReq.setInsts(map);
-        instPutInReq.setCreateStaff(req.getUpdateStaff());
-        instPutInReq.setStorageType(ResourceConst.STORAGETYPE.LEADING_INTO_STORAGE.getCode());
-        ResultVO resultResourceInstPutIn = resourceInstService.resourceInstPutIn(instPutInReq);
-        log.info("RetailerResourceInstServiceImpl.pickResourceInst resourceInstService.resourceInstPutIn req={}, resp={}", JSON.toJSONString(instPutInReq), JSON.toJSONString(resultResourceInstPutIn));
-        if (null != unUse && unUse.size() == req.getMktResInstIds().size()) {
-            return ResultVO.success("串码id不正确", unUse);
-        }
-        return ResultVO.success(instPutInReq.getUnUse());
+        return ResultVO.success();
     }
 
     @Override
-    public ResultVO<List<ResourceInstListResp>> getExportResourceInstList(ResourceInstListReq req){
-        return resourceInstService.getExportResourceInstList(req);
+    public ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId){
+        return null;
     }
+
 }

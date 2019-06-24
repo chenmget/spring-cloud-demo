@@ -37,6 +37,7 @@
     ,t.BUY_COUNT
     ,t.SUPPLIER_ID
     ,t.SELLING_POINT
+    ,t.SALLING_POINT
     ,t.SOURCE_FROM
     ,t.MERCHANT_TYPE
     ,t.PRODUCT_BASE_ID
@@ -45,6 +46,7 @@
     ,t.PRODUCT_ID
     ,t.IS_ADVANCE_SALE
     ,t.IS_SUBSIDY
+    ,t.PAYMENTS
 </sql>
 
 <sql id="fullJoinFieIds">
@@ -152,6 +154,8 @@
 ,t5.PARAM68
 ,t5.PARAM69
 ,t5.PARAM70
+,t0.PAYMENTS
+,t3.SALLING_POINT
 </sql>
     <select id="queryGoodsForPage" resultType="com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp" parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsForPageQueryReq">
         select
@@ -226,6 +230,9 @@
         <if test="req.regionId != null and req.lanId != null and req.targetId == null">
             and t.GOODS_ID in
             (select DISTINCT goods_id from prod_goods_region_rel where (REGION_ID = #{req.regionId } or REGION_ID = #{req.lanId }) and LAN_ID = #{req.lanId }
+            <if test="req.orgPathCode != null and req.orgPathCode != ''">
+                and INSTR(#{req.orgPathCode}, ORG_ID)
+            </if>
             UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)
         </if>
         <if test="req.regionId == null and req.lanId == null and req.targetId != null">
@@ -236,11 +243,17 @@
         <if test="req.regionId != null and req.lanId != null and req.targetId != null">
             and t.GOODS_ID in
             (select DISTINCT goods_id from prod_goods_region_rel where (REGION_ID = #{req.regionId } or REGION_ID = #{req.lanId })  and LAN_ID = #{req.lanId }
+                <if test="req.orgPathCode != null and req.orgPathCode != ''">
+                    and INSTR(#{req.orgPathCode}, ORG_ID)
+                </if>
             UNION select DISTINCT goods_id from prod_goods_target_rel where TARGET_ID = #{req.targetId }
             UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)
         </if>
         <if test="req.sourceFrom != null">
             and t.SOURCE_FROM = #{req.sourceFrom }
+        </if>
+        <if test="req.payments != null">
+            and t.PAYMENTS like CONCAT(CONCAT('%', #{req.payments}), '%')
         </if>
         <if test="req.isLogin == null or !req.isLogin">
             and t.IS_ALLOT = 0
@@ -285,11 +298,14 @@
             parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq">
         select distinct g.GOODS_ID as goodsId,g.GOODS_NAME as goodsName,g.MARKET_ENABLE as marketEnable,c.CAT_ID as goodsCatId,c.CAT_NAME as goodsCatName,
         g.SUPPLIER_ID as supplierId ,g.AUDIT_STATE as auditState,g.IS_ALLOT as isAllot,g.SOURCE_FROM as sourceFrom,g.MERCHANT_TYPE as merchantType,g.TARGET_TYPE as targetType,
-        pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn,g.MKTPRICE,t.deliveryPrice
+        pb.brand_id as brandId, pb.name as brandName ,t.PRODUCT_BASE_ID as productBaseId,t.UNIT_TYPE as unitType, t.sn,g.MKTPRICE,g.PAYMENTS as payments,t.deliveryPrice,t.COLOR,t.MEMORY,
+        attrValue1,attrValue2,attrValue3,t.priceLevel,g.IS_ADVANCE_SALE as isAdvanceSale
         from prod_goods g left join prod_cat c on g.GOODS_CAT_ID=c.CAT_ID
         left join prod_brand pb on g.brand_id=pb.brand_id
         left join
-        (select pgpr.goods_id,pgpr.PRODUCT_ID,group_concat(pp.sn) sn,group_concat(pgpr.delivery_price) deliveryPrice,ppb.PRODUCT_BASE_ID,ppb.UNIT_TYPE from PROD_GOODS_PRODUCT_REL pgpr,PROD_PRODUCT pp,PROD_PRODUCT_BASE ppb
+        (select pgpr.goods_id,pgpr.PRODUCT_ID,group_concat(pp.sn) sn,group_concat(pgpr.delivery_price) deliveryPrice,ppb.PRODUCT_BASE_ID,ppb.UNIT_TYPE,pp.COLOR,pp.MEMORY,
+        group_concat(pp.ATTR_VALUE1) attrValue1,group_concat(pp.ATTR_VALUE2) attrValue2,group_concat(pp.ATTR_VALUE3) attrValue3, ppb.PRICE_LEVEL as priceLevel
+        from PROD_GOODS_PRODUCT_REL pgpr,PROD_PRODUCT pp,PROD_PRODUCT_BASE ppb
         where  pgpr.PRODUCT_ID = pp.PRODUCT_ID
         and pgpr.PRODUCT_BASE_ID = ppb.PRODUCT_BASE_ID GROUP BY pgpr.GOODS_ID) t on t.goods_id=g.goods_id
         <where>
@@ -306,6 +322,17 @@
             </if>
             <if test="null!=req.sourceFrom">
                 and g.SOURCE_FROM=#{req.sourceFrom}
+            </if>
+            <if test="null!=req.isAdvanceSale">
+                and g.IS_ADVANCE_SALE=#{req.isAdvanceSale}
+            </if>
+            <if test="null!=req.typeId and req.typeId!='' and '-1'!=req.typeId">
+                and g.GOODS_ID in (select GOODS_ID from prod_product_base a,PROD_GOODS_PRODUCT_REL b
+                where a.PRODUCT_BASE_ID = b.PRODUCT_BASE_ID
+                and a.TYPE_ID=#{req.typeId})
+            </if>
+            <if test="null!=req.payments">
+                and g.PAYMENTS like CONCAT(CONCAT('%', #{req.payments}), '%')
             </if>
 
             <if test="null!=req.supplierIds">
@@ -361,6 +388,15 @@
             <if test="req.deliveryPriceStart == null and req.deliveryPriceEnd != null">
                 and g.GOODS_ID in (select goods_id from prod_goods_product_rel where DELIVERY_PRICE &lt;= #{req.deliveryPriceEnd })
             </if>
+            <if test="req.attrValue1 != null and req.attrValue1 == null">
+                and g.GOODS_ID in (select GOODS_ID from prod_goods_product_rel t1,prod_product t2 where t1.PRODUCT_ID=t2.PRODUCT_ID and t2.attr_Value1 = #{req.attrValue1 })
+            </if>
+            <if test="req.attrValue2 != null and req.attrValue2 == null">
+                and g.GOODS_ID in (select GOODS_ID from prod_goods_product_rel t1,prod_product t2 where t1.PRODUCT_ID=t2.PRODUCT_ID and t2.attr_Value2 = #{req.attrValue2 })
+            </if>
+            <if test="req.attrValue3 != null and req.attrValue3 == null">
+                and g.GOODS_ID in (select GOODS_ID from prod_goods_product_rel t1,prod_product t2 where t1.PRODUCT_ID=t2.PRODUCT_ID and t2.attr_Value3 = #{req.attrValue3 })
+            </if>
             <if test="null!=req.productBaseId">
                 and t.PRODUCT_BASE_ID=#{req.productBaseId}
             </if>
@@ -406,5 +442,26 @@
         AND t1.MERCHANT_TYPE = '2'
         AND t3.PRODUCT_BASE_ID = #{productBaseId}
         GROUP by t3.PRODUCT_BASE_ID
+    </select>
+
+    <select id="listSupplierGoodsByType" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.goods2b.dto.SupplierGoodsDTO">
+        SELECT
+        t1.GOODS_ID,
+        t1.GOODS_NAME,
+        t1.SUPPLIER_ID,
+        t2.PRODUCT_ID,
+        t2.SUPPLY_NUM,
+        t2.DELIVERY_PRICE,
+        t1.MKTPRICE
+        FROM
+        prod_goods t1,
+        prod_goods_product_rel t2
+        WHERE
+        t1.IS_DELETED = 0
+        AND t1.MARKET_ENABLE = 1
+        AND t2.SUPPLY_NUM > 0
+        AND t1.MERCHANT_TYPE = #{merchantType}
+        AND t1.GOODS_ID = t2.GOODS_ID
+        AND t2.PRODUCT_ID = #{productId}
     </select>
 </mapper>

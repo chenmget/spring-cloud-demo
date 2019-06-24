@@ -375,7 +375,7 @@ public class MemberDockingAbilityServiceImpl implements MemberDockingAbilityServ
         if (params instanceof String) {
             MemberGroupQueryGroupReq req = JSON.parseObject(params, new TypeReference<MemberGroupQueryGroupReq>() {
             });
-            ResultVO<Page<MemberGroupQueryResp>> resultVO = memberGroupService.queryGroupByMemberForPage(req);
+            ResultVO<Page<GroupQueryResp>> resultVO = memberGroupService.queryGroupByMemberForPage(req);
             if (successResultMap(resultMap, resultVO)) {
                 return resultMap;
             }
@@ -393,7 +393,7 @@ public class MemberDockingAbilityServiceImpl implements MemberDockingAbilityServ
         if (params instanceof String) {
             MemberGroupQueryMemberReq req = JSON.parseObject(params, new TypeReference<MemberGroupQueryMemberReq>() {
             });
-            ResultVO<Page<GroupQueryResp>> resultVO = memberGroupService.queryMemberByGroupForPage(req);
+            ResultVO<Page<MemberGroupQueryResp>> resultVO = memberGroupService.queryMemberByGroupForPage(req);
             if (successResultMap(resultMap, resultVO)) {
                 return resultMap;
             }

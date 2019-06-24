@@ -72,6 +72,12 @@ public class RouteDTO implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "顺序 ")
   	private Long sort;
+
+	/**
+	 * 路由条件
+	 */
+	@ApiModelProperty(value = "路由条件")
+	private Long routeCondition;
 	
 	/**
   	 * 描述 

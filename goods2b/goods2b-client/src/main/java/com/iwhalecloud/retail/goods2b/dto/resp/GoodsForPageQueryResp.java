@@ -93,6 +93,12 @@ public class GoodsForPageQueryResp implements Serializable {
     private String sellingPoint;
 
     /**
+     * 卖点
+     */
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
+
+    /**
      * 来源平台
      */
     @ApiModelProperty(value = "来源平台")
@@ -124,6 +130,7 @@ public class GoodsForPageQueryResp implements Serializable {
 
     @ApiModelProperty(value = "订购数量")
     private String supplyNum;
+
     /**
      * 是否预售商品
      */
@@ -136,4 +143,9 @@ public class GoodsForPageQueryResp implements Serializable {
      */
     @ApiModelProperty(value = "是否前置补贴商品 1.是 0.否")
     private Integer isSubsidy;
+    /**
+     * 支付方式
+     */
+    @ApiModelProperty(value = "支付方式")
+    private String payments;
 }

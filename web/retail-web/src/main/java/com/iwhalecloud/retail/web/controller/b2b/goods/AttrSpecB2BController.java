@@ -1,9 +1,8 @@
 package com.iwhalecloud.retail.web.controller.b2b.goods;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
-
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.AttrSpecAddReq;
 import com.iwhalecloud.retail.goods2b.dto.req.AttrSpecUpdateReq;
 import com.iwhalecloud.retail.goods2b.service.AttrSpecService;
@@ -13,7 +12,6 @@ import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -59,7 +57,7 @@ public class AttrSpecB2BController {
         return attrSpecService.updateAttrSpec(req, UserContext.getUserId());
     }
 
-    /*@ApiOperation(value = "查询类别属性与设置的实例值", notes = "查询列表")
+   /* @ApiOperation(value = "查询类别属性与设置的实例值", notes = "查询列表")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
@@ -69,7 +67,7 @@ public class AttrSpecB2BController {
             @RequestParam( value = "typeId", required = true )String typeId,
             @RequestParam( value = "goodsId", required = true )String goodsId) {
         return attrSpecService.queryAttrSpecWithInstValue(typeId,goodsId);
-    }
+    }*/
 
     @ApiOperation(value = "根据类别获取属性规格配置", notes = "查询列表")
     @ApiResponses({
@@ -80,5 +78,5 @@ public class AttrSpecB2BController {
     public ResultVO<List<AttrSpecDTO>> queryAttrSpecList(
             @RequestParam( value = "typeId", required = true )String typeId) {
         return attrSpecService.queryAttrSpecList(typeId);
-    }*/
+    }
 }

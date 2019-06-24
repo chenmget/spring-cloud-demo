@@ -3,7 +3,10 @@ package com.iwhalecloud.retail.web.controller.partner;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.TagsConst;
 import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
@@ -88,14 +91,63 @@ public class MerchantController {
         return pageResultVO;
     }
 
-    @ApiOperation(value = "商家列表导出", notes = "商家列表导出")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "accountId", value = "商家账户ID", paramType = "query", required = true, dataType = "String"),
-    })
+    /**
+     * 获取商家分页列表
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "获取商家分页列表接口", notes = "前置条件：只有政企供货标签的供应商可以做政企供货，可以根据商家名称、编码、类型条件进行筛选查询")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
+    @RequestMapping(value = "/pageWithRule", method = RequestMethod.POST)
+    public ResultVO<Page<MerchantPageResp>> pageMerchantWithRule(@RequestBody MerchantPageReq req) {
+        MerchantTagRelListReq merchantTagRelListReq = new MerchantTagRelListReq();
+        merchantTagRelListReq.setTagId(TagsConst.GOVERNMENT_ENTERPRISE_SUPPLIERS);
+        ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(merchantTagRelListReq);
+        log.info("MerchantController.pageMerchantWithRule() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(merchantTagRelListReq), JSON.toJSONString(listResultVO));
+        if (null == listResultVO || !listResultVO.isSuccess() || CollectionUtils.isEmpty(listResultVO.getResultData())) {
+            return ResultVO.error("只有政企供货标签的供应商可以做政企供货");
+        }
+        List<String> merchantIds = Lists.newArrayList();
+        for (MerchantTagRelDTO merchantTagRelDTO : listResultVO.getResultData()) {
+            merchantIds.add(merchantTagRelDTO.getMerchantId());
+        }
+        if (CollectionUtils.isEmpty(merchantIds)) {
+            return ResultVO.error("没有政企供货标签的供应商可以做政企供货");
+        }
+        if (StringUtils.isNotEmpty(req.getMerchantId())) {
+            if (!merchantIds.contains(req.getMerchantId())) {
+                return ResultVO.error("没有政企供货标签的供应商可以做政企供货");
+            }
+        } else {
+            req.setMerchantIdList(merchantIds);
+        }
+        log.info("MerchantController.pageMerchantWithRule() input: MerchantPageReq={}", JSON.toJSONString(req));
+        ResultVO<Page<MerchantPageResp>> pageResultVO = merchantService.pageMerchant(req);
+        // 追加用户登录帐号
+        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
+            List<MerchantPageResp> merchantDTOS = pageResultVO.getResultData().getRecords();
+
+            if (!CollectionUtils.isEmpty(merchantDTOS)) {
+                merchantDTOS.forEach(merchantDTO -> {
+                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+                });
+            }
+        }
+        return pageResultVO;
+    }
+
+    @ApiOperation(value = "商家列表导出", notes = "商家列表导出")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "accountId", value = "商家账户ID", paramType = "query", required = true, dataType = "String")
+    })
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })//lws
     @RequestMapping(value = "/exportMerchantList", method = RequestMethod.POST)
     public void exportMerchantList(@RequestBody MerchantPageReq req, HttpServletResponse response) {
         log.info("MerchantController.exportMerchantList() input: MerchantPageReq={}", JSON.toJSONString(req));
@@ -103,6 +155,15 @@ public class MerchantController {
         //数据量控制在1万条
         req.setPageSize(EXPORT_PAGE_SIZE);
         ResultVO<Page<MerchantPageResp>> resultVO = merchantService.pageMerchant(req);
+        if (null != resultVO && resultVO.isSuccess() && null != resultVO.getResultData()) {
+            List<MerchantPageResp> merchantDTOS = resultVO.getResultData().getRecords();
+
+            if (!CollectionUtils.isEmpty(merchantDTOS)) {
+                merchantDTOS.forEach(merchantDTO -> {
+                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+                });
+            }
+        }
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         OutputStream output = null;
         try {
@@ -119,7 +180,7 @@ public class MerchantController {
         } catch (Exception e) {
             log.error("商家列表导出失败 error={}", e);
         } finally {
-            if (null != output){
+            if (null != output) {
                 try {
                     output.close();
                 } catch (IOException e) {
@@ -157,7 +218,7 @@ public class MerchantController {
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
-    })
+    })//lws
     @RequestMapping(value = "/exportRetailMerchantList", method = RequestMethod.POST)
     public void exportRetailMerchantList(@RequestBody RetailMerchantPageReq req, HttpServletResponse response) {
         log.info("MerchantController.exportMerchantList() input: MerchantPageReq={}", JSON.toJSONString(req));
@@ -165,6 +226,13 @@ public class MerchantController {
         // 数据量控制在1万条
         req.setPageSize(EXPORT_PAGE_SIZE);
         ResultVO<Page<RetailMerchantDTO>> resultVO = merchantService.pageRetailMerchant(req);
+        List<RetailMerchantDTO> merchantDTOS = resultVO.getResultData().getRecords();
+
+        if (!CollectionUtils.isEmpty(merchantDTOS)) {
+            merchantDTOS.forEach(merchantDTO -> {
+                merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+            });
+        }
         List<ExcelTitleName> excelTitleNames = MerchantColumn.retailMerchantFields();
         OutputStream output = null;
         try {
@@ -181,7 +249,7 @@ public class MerchantController {
         } catch (Exception e) {
             log.error("零售商列表导出失败 error={}", e);
         } finally {
-            if (null != output){
+            if (null != output) {
                 try {
                     output.close();
                 } catch (IOException e) {
@@ -219,6 +287,7 @@ public class MerchantController {
 
     /**
      * 获取用户登录名称
+     *
      * @param merchantId 商家ID
      * @return
      */
@@ -246,6 +315,15 @@ public class MerchantController {
         req.setPageNo(EXPORT_PAGE_NO);
         req.setPageSize(EXPORT_PAGE_SIZE);
         ResultVO<Page<SupplyMerchantDTO>> resultVO = merchantService.pageSupplyMerchant(req);
+        if (null != resultVO && resultVO.isSuccess() && null != resultVO.getResultData()) {
+            List<SupplyMerchantDTO> merchantDTOS = resultVO.getResultData().getRecords();
+            if (!CollectionUtils.isEmpty(merchantDTOS)) {
+                merchantDTOS.forEach(merchantDTO -> {
+                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+                });
+            }
+        }
+
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         excelTitleNames = MerchantColumn.complementSupplyMerchantFileds(excelTitleNames);
         OutputStream output = null;
@@ -263,7 +341,7 @@ public class MerchantController {
         } catch (Exception e) {
             log.error("供应商列表导出失败 error={}", e);
         } finally {
-            if (null != output){
+            if (null != output) {
                 try {
                     output.close();
                 } catch (IOException e) {
@@ -308,6 +386,14 @@ public class MerchantController {
         req.setPageNo(EXPORT_PAGE_NO);
         req.setPageSize(EXPORT_PAGE_SIZE);
         ResultVO<Page<FactoryMerchantDTO>> resultVO = merchantService.pageFactoryMerchant(req);
+        if (null != resultVO && resultVO.isSuccess() && null != resultVO.getResultData()) {
+            List<FactoryMerchantDTO> merchantDTOS = resultVO.getResultData().getRecords();
+            if (!CollectionUtils.isEmpty(merchantDTOS)) {
+                merchantDTOS.forEach(merchantDTO -> {
+                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
+                });
+            }
+        }
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         OutputStream output = null;
         try {
@@ -324,7 +410,7 @@ public class MerchantController {
         } catch (Exception e) {
             log.error("厂商列表导出失败 error={}", e);
         } finally {
-            if (null != output){
+            if (null != output) {
                 try {
                     output.close();
                 } catch (IOException e) {
@@ -342,7 +428,7 @@ public class MerchantController {
      */
     @ApiOperation(value = "获取商家详情", notes = "获取商家详情")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "merchantId", value = "商家ID", paramType = "query", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "merchantId", value = "商家ID", paramType = "query", required = true, dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
@@ -420,7 +506,6 @@ public class MerchantController {
         }
     }
 
-
     /**
      * 保存商家标签
      *
@@ -493,6 +578,36 @@ public class MerchantController {
     }
 
     /**
+     * 获取商家标签列表
+     *
+     * @return
+     */
+    @ApiOperation(value = "获取商家标签列表接口", notes = "获取商家是否含有政企供应商标签列表接口")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "merchantId", value = "商家ID", paramType = "query", required = true, dataType = "String"),
+    })
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/governmentEnterpriseSuppliers", method = RequestMethod.GET)
+    public ResultVO<Boolean> governmentEnterpriseSuppliers() {
+        UserDTO curLoginUserDTO = UserContext.getUser();
+        if (curLoginUserDTO == null) {
+            return ResultVO.errorEnum(ResultCodeEnum.NOT_LOGIN);
+        }
+        MerchantTagRelListReq req = new MerchantTagRelListReq();
+        req.setMerchantId(curLoginUserDTO.getRelCode());
+        req.setTagId(TagsConst.GOVERNMENT_ENTERPRISE_STORES);
+        ResultVO<List<MerchantTagRelDTO>> listResultVO = merchantTagRelService.listMerchantTagRel(req);
+        log.info("MerchantController.governmentEnterpriseSuppliers() merchantTagRelService.listMerchantTagRel merchantTagRelListReq={}, listResultVO={}", JSON.toJSONString(req), JSON.toJSONString(listResultVO));
+        if (null != listResultVO && listResultVO.isSuccess() && !CollectionUtils.isEmpty(listResultVO.getResultData())) {
+            return ResultVO.success(true);
+        }
+        return ResultVO.success(false);
+    }
+
+    /**
      * 删除商家标签
      *
      * @param relId
@@ -500,7 +615,7 @@ public class MerchantController {
      */
     @ApiOperation(value = "删除商家标签", notes = "获取商家标签接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "relId", value = "商家-标签关联ID", paramType = "query", required = true, dataType = "String"),
+            @ApiImplicitParam(name = "relId", value = "商家-标签关联ID", paramType = "query", required = true, dataType = "String")
     })
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
@@ -515,6 +630,7 @@ public class MerchantController {
 
     /**
      * 获取商家分页列表
+     *
      * @param req
      * @return
      */
@@ -538,14 +654,14 @@ public class MerchantController {
         if (UserContext.getUserOtherMsg() != null && UserContext.getUserOtherMsg().getMerchant() != null && !isAdminType) {
             String merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
             commonReq.setMerchantId(merchantId);
-            ResultVO<List<String>> permissionVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+            ResultVO<List<String>> permissionVO = merchantRulesService.getBusinessRegionAndMerchantPermission(commonReq);
             if (permissionVO.isSuccess() && !CollectionUtils.isEmpty(permissionVO.getResultData())) {
                 req.setMerchantIdList(permissionVO.getResultData());
             }
         } else if (isAdminType && StringUtils.isNotBlank(req.getMerchantId())) {
             // 管理员登陆且指定商家
             commonReq.setMerchantId(req.getMerchantId());
-            ResultVO<List<String>> permissionVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+            ResultVO<List<String>> permissionVO = merchantRulesService.getBusinessRegionAndMerchantPermission(commonReq);
             if (permissionVO.isSuccess() && !CollectionUtils.isEmpty(permissionVO.getResultData())) {
                 req.setMerchantIdList(permissionVO.getResultData());
             }

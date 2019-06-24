@@ -5,10 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.QueryProductInfoResqDTO;
+import com.iwhalecloud.retail.goods2b.dto.resp.*;
 import com.iwhalecloud.retail.goods2b.entity.Product;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -66,6 +63,14 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
     public ProductResp getProduct(@Param("productId")String productId);
+    
+    /**
+     * 根据IdId
+     * @param productId
+     * @return
+     */
+    public ProductResp getProducts(@Param("productId")String productId);
+    
     /**
      * 根据厂商ID获取产品数量
      * @param manufacturerId
@@ -79,7 +84,14 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
      ProductPageResp getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO);
-
+     
+     /**
+      * 根据产品id查询产品信息
+      * @param queryProductInfoReqDTO
+      * @return
+      */
+     ProductPageResp getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO);
+      
     /**
      * 根据产品名称或编码查询产品
      * @param request
@@ -103,6 +115,35 @@ public interface ProductMapper extends BaseMapper<Product>{
      */
     List<String> listProduct(@Param("productBaseId")String productBaseId);
 
+    /**
+     * 查询产品(返利使用)
+     * @param req
+     * @return
+     */
+    List<ProductResp> getProductForRebate(@Param("req")ProductRebateReq req);
+
+    /**
+     * 查询产品sn, is_fixed_line(对接营销资源用)
+     * @param productId
+     * @return
+     */
+    ProductForResourceResp getProductForResource(String productId);
 
     public Integer updateAttrValue10(ProductAuditStateUpdateReq request);
+
+    /**
+     * 查询产品信息列表根据产品id
+     * @param productIds
+     * @return
+     */
+
+    public List<ProductInfoResp> getProductInfoByIds(@Param("productIds")List<String>productIds);
+
+
+    public String selectNextChangeId();
+    
+    public String selectNextChangeDetailId();
+    
+    public String selectisFixedLineByBatchId(String batchId);
+
 }

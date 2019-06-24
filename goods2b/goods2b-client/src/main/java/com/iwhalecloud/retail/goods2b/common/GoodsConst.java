@@ -10,6 +10,15 @@ public class GoodsConst {
     // 文件上传表prod_file使用的缓存名称
     public static final String CACHE_NAME_PROD_FILE = "prod_file";
 
+    public static final String CACHE_NAME_GOODS_SALE_ORDER = "goods_sale_order";
+
+    public static final String CACHE_KEY_GOODS_SALE_ORDER_7 = "goods_sale_order_7";
+
+    public static final String CACHE_KEY_GOODS_SALE_ORDER_30 = "goods_sale_order_30";
+
+    public static final String CACHE_NAME_PRODUCT_SALE_ORDER = "product_sale_order";
+
+    public static final String CACHE_NAME_PRODUCT_SALE_ORDER_WHOLE = "product_sale_order_whole";
     /**
      * 关联类型
      */
@@ -73,20 +82,30 @@ public class GoodsConst {
      * 商品发布对象 按对象
      */
     public static final String TARGET_TYPE_TARGET = "2";
+
+    public static final Double GOODS_MKT_PRICE = 159900D;
+
+    public static final Double AVG_SUPPLY_PRICE = 0.03;
+
+    /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
+
     /**
      * 状态常量
      */
     public enum GoodsType {
-        TERMINAL("1","终端"),
-        PACKAGE("2","套餐"),
-        PARTS("3","配件"),
-        CONTRACT("4","合约计划"),
-        OTHER("5","其它");
+        TERMINAL("1", "终端"),
+        PACKAGE("2", "套餐"),
+        PARTS("3", "配件"),
+        CONTRACT("4", "合约计划"),
+        OTHER("5", "其它");
 
         private String code;
         private String value;
 
-        GoodsType(String code, String value){
+        GoodsType(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -107,18 +126,19 @@ public class GoodsConst {
         /**
          * 商品关联推荐
          */
-        RECOMMEND(0,"RECOMMEND"),
+        RECOMMEND(0, "RECOMMEND"),
         /**
          * 关联终端
          */
-        TERMINAL_PLAN(1,"TERMINAL_PLAN"),
+        TERMINAL_PLAN(1, "TERMINAL_PLAN"),
         /**
          * 关联套餐
          */
-        CONTRACT_OFFER(2,"CONTRACT_OFFER");
+        CONTRACT_OFFER(2, "CONTRACT_OFFER");
         private String value;
         private Integer code;
-        GoodsRelType(Integer code, String value){
+
+        GoodsRelType(Integer code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -135,14 +155,15 @@ public class GoodsConst {
         /**
          * 可用
          */
-        ENABLE(0,"可用"),
+        ENABLE(0, "可用"),
         /**
          * 不可用
          */
-        DISABLE(1,"不可用");
+        DISABLE(1, "不可用");
         private String value;
         private Integer code;
-        DisabledEnum(Integer code, String value){
+
+        DisabledEnum(Integer code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -161,13 +182,13 @@ public class GoodsConst {
      * 状态常量
      */
     public enum StatusCdEnum {
-        STATUS_CD_VALD("1000","有效"),
-        STATUS_CD_INVALD("1100","失效");
+        STATUS_CD_VALD("1000", "有效"),
+        STATUS_CD_INVALD("1100", "失效");
 
         private String code;
         private String value;
 
-        StatusCdEnum(String code, String value){
+        StatusCdEnum(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -249,14 +270,14 @@ public class GoodsConst {
      * 状态常量
      */
     public enum TagTypeEnum {
-        GOODS_TAG("01","商品标签"),
-        CHANNEL_TAG("02","渠道标签"),
-        PRODUCT_TAG("03","产品标签");
+        GOODS_TAG("01", "商品标签"),
+        CHANNEL_TAG("02", "渠道标签"),
+        PRODUCT_TAG("03", "产品标签");
 
         private String code;
         private String value;
 
-        TagTypeEnum(String code, String value){
+        TagTypeEnum(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -274,15 +295,15 @@ public class GoodsConst {
      * 状态常量
      */
     public enum AuditStateEnum {
-        WAIT_SUBMIT("1","待提交"),
-        AUDITING("2","审核中"),
-        AUDITED("3","审核通过"),
-        NOT_AUDITED("4","审核不通过");
+        WAIT_SUBMIT("1", "待提交"),
+        AUDITING("2", "审核中"),
+        AUDITED("3", "审核通过"),
+        NOT_AUDITED("4", "审核不通过");
 
         private String code;
         private String value;
 
-        AuditStateEnum(String code, String value){
+        AuditStateEnum(String code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -300,13 +321,13 @@ public class GoodsConst {
      * 状态常量
      */
     public enum IsAllotEnum {
-        IS_NOT_ALLOT(0,"未分货"),
-        IS_ALLOT(1,"分货");
+        IS_NOT_ALLOT(0, "未分货"),
+        IS_ALLOT(1, "分货");
 
         private Integer code;
         private String value;
 
-        IsAllotEnum(Integer code, String value){
+        IsAllotEnum(Integer code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -327,16 +348,16 @@ public class GoodsConst {
         /**
          * 非预售商品
          */
-        IS_NOT_ADVANCE_SALE(0,"非预售商品"),
+        IS_NOT_ADVANCE_SALE(0, "非预售商品"),
         /**
          * 预售商品
          */
-        IS_ADVANCE_SALE(1,"预售商品");
+        IS_ADVANCE_SALE(1, "预售商品");
 
         private Integer code;
         private String value;
 
-        IsAdvanceSale(Integer code, String value){
+        IsAdvanceSale(Integer code, String value) {
             this.code = code;
             this.value = value;
         }
@@ -357,16 +378,16 @@ public class GoodsConst {
         /**
          * 非前置补贴商品
          */
-        IS_NOT_SUBSIDY(0,"非前置补贴商品"),
+        IS_NOT_SUBSIDY(0, "非前置补贴商品"),
         /**
          * 前置补贴商品
          */
-        IS_SUBSIDY(1,"前置补贴商品");
+        IS_SUBSIDY(1, "前置补贴商品");
 
         private Integer code;
         private String value;
 
-        IsSubsidy(Integer code, String value){
+        IsSubsidy(Integer code, String value) {
             this.code = code;
             this.value = value;
         }

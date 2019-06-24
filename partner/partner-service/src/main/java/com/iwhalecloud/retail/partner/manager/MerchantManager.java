@@ -12,6 +12,7 @@ import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantLigthResp;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp;
 import com.iwhalecloud.retail.partner.entity.Invoice;
 import com.iwhalecloud.retail.partner.entity.Merchant;
@@ -56,6 +57,7 @@ public class MerchantManager {
 
     /**
      * 根据条件 查询商家条数
+     *
      * @param req
      * @return
      */
@@ -75,6 +77,7 @@ public class MerchantManager {
 
     /**
      * 根据条件（精确）查找单个 商家
+     *
      * @param req
      * @return
      */
@@ -106,61 +109,71 @@ public class MerchantManager {
     }
 
     /**
-     *  更新商家信息
-     *  直接清楚掉缓存中对应的数据
+     * 更新商家信息
+     * 直接清楚掉缓存中对应的数据
+     *
      * @param merchant
      * @return
      */
     @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_MERCHANT, key = "#merchant.merchantId")
-    public int updateMerchant(Merchant merchant){
+    public int updateMerchant(Merchant merchant) {
+//        QueryWrapper<Merchant> queryWrapper = new QueryWrapper<Merchant>();
+//        queryWrapper.eq(Merchant.FieldNames.merchantId.getTableFieldName(), merchant.getMerchantId());
+//        merchant.setMerchantId(null);
+//        return merchantMapper.update(merchant, queryWrapper);
         return merchantMapper.updateById(merchant);
     }
 
     /**
      * 商家信息列表
+     *
      * @param req
      * @return
      */
-    public List<MerchantDTO> listMerchant(MerchantListReq req){
+    public List<MerchantDTO> listMerchant(MerchantListReq req) {
         QueryWrapper<Merchant> queryWrapper = new QueryWrapper<Merchant>();
         Boolean hasParam = false;
-        if(!StringUtils.isEmpty(req.getMerchantCode())){
+        if (!StringUtils.isEmpty(req.getAssignedFlg())) {
+            hasParam = true;
+            queryWrapper.eq(Merchant.FieldNames.assignedFlg.getTableFieldName(), req.getAssignedFlg());
+        }
+        if (!StringUtils.isEmpty(req.getMerchantCode())) {
             hasParam = true;
             queryWrapper.like(Merchant.FieldNames.merchantCode.getTableFieldName(), req.getMerchantCode());
         }
-        if(!StringUtils.isEmpty(req.getMerchantName())){
+        if (!StringUtils.isEmpty(req.getMerchantName())) {
             hasParam = true;
             queryWrapper.like(Merchant.FieldNames.merchantName.getTableFieldName(), req.getMerchantName());
         }
-        if(!StringUtils.isEmpty(req.getMerchantType())){
+        if (!StringUtils.isEmpty(req.getMerchantType())) {
             hasParam = true;
             queryWrapper.eq(Merchant.FieldNames.merchantType.getTableFieldName(), req.getMerchantType());
         }
-        if(!StringUtils.isEmpty(req.getLanId())){
+        if (!StringUtils.isEmpty(req.getLanId())) {
             hasParam = true;
             queryWrapper.eq(Merchant.FieldNames.lanId.getTableFieldName(), req.getLanId());
         }
-        if(!StringUtils.isEmpty(req.getCity())){
+        if (!StringUtils.isEmpty(req.getCity())) {
             hasParam = true;
             queryWrapper.eq(Merchant.FieldNames.city.getTableFieldName(), req.getCity());
         }
-        if(!CollectionUtils.isEmpty(req.getMerchantIdList())){
+        if (!CollectionUtils.isEmpty(req.getMerchantIdList())) {
             hasParam = true;
             queryWrapper.in(Merchant.FieldNames.merchantId.getTableFieldName(), req.getMerchantIdList());
         }
-        if(!CollectionUtils.isEmpty(req.getMerchantCodeList())){
+        if (!CollectionUtils.isEmpty(req.getMerchantCodeList())) {
             hasParam = true;
             queryWrapper.in(Merchant.FieldNames.merchantCode.getTableFieldName(), req.getMerchantCodeList());
         }
-        if(!CollectionUtils.isEmpty(req.getBusinessEntityCodeList())){
+        if (!CollectionUtils.isEmpty(req.getBusinessEntityCodeList())) {
             hasParam = true;
             queryWrapper.in(Merchant.FieldNames.businessEntityCode.getTableFieldName(), req.getBusinessEntityCodeList());
         }
-        if(!CollectionUtils.isEmpty(req.getCityList())){
+        if (!CollectionUtils.isEmpty(req.getCityList())) {
             hasParam = true;
             queryWrapper.in(Merchant.FieldNames.city.getTableFieldName(), req.getCityList());
         }
-        if(!CollectionUtils.isEmpty(req.getParCrmOrgIdList())){
+        if (!CollectionUtils.isEmpty(req.getParCrmOrgIdList())) {
             hasParam = true;
             queryWrapper.in(Merchant.FieldNames.parCrmOrgId.getTableFieldName(), req.getParCrmOrgIdList());
         }
@@ -184,7 +197,8 @@ public class MerchantManager {
                 Merchant.FieldNames.parCrmOrgId.getTableFieldName(),
                 Merchant.FieldNames.parCrmOrgCode.getTableFieldName(),
                 Merchant.FieldNames.linkman.getTableFieldName(),
-                Merchant.FieldNames.phoneNo.getTableFieldName()
+                Merchant.FieldNames.phoneNo.getTableFieldName(),
+                Merchant.FieldNames.assignedFlg.getTableFieldName()
         );
 
         List<MerchantDTO> merchantDTOList = Lists.newArrayList();
@@ -192,7 +206,7 @@ public class MerchantManager {
             return merchantDTOList;
         }
         List<Merchant> merchantList = merchantMapper.selectList(queryWrapper);
-        if(!CollectionUtils.isEmpty(merchantList)) {
+        if (!CollectionUtils.isEmpty(merchantList)) {
             for (Merchant merchant : merchantList) {
                 MerchantDTO merchantDTO = new MerchantDTO();
                 BeanUtils.copyProperties(merchant, merchantDTO);
@@ -223,10 +237,12 @@ public class MerchantManager {
 
     /**
      * 商家信息列表分页
+     *
      * @param req
      * @return
      */
-    public Page<MerchantPageResp> pageMerchant(MerchantPageReq req){
+    public Page<MerchantPageResp> pageMerchant(MerchantPageReq req) {
+
 
         // 是否需要先获取userId集合（后面判空用） 查询条件有涉及到通过user_id字段关联的其他表字段且有值时 为true
         Boolean isNeedGetUserIdList = false;
@@ -252,7 +268,7 @@ public class MerchantManager {
             UserListReq userListReq = new UserListReq();
             userListReq.setLoginName(req.getLoginName());
             userListReq.setStatusCd(req.getUserStatus());
-            List<String> resultList= getMerchantIdListByLoginName(userListReq);
+            List<String> resultList = getMerchantIdListByLoginName(userListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -269,7 +285,7 @@ public class MerchantManager {
             BeanUtils.copyProperties(req, invoiceListReq);
             invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
 
-            List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
+            List<String> resultList = getMerchantIdListByInvoice(invoiceListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -283,7 +299,7 @@ public class MerchantManager {
 
         // 分组标签 转换成 merchant_id
         if (!StringUtils.isEmpty(req.getTagId())) {
-            List<String> resultList= getMerchantIdListByTag(req.getTagId());
+            List<String> resultList = getMerchantIdListByTag(req.getTagId());
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -291,6 +307,23 @@ public class MerchantManager {
                 merchantIdList = resultList;
             }
             isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
+        }
+
+        // 专票状态
+        String vatInvoiceStatus = req.getVatInvoiceStatus();
+        // 营业执照到期日
+        Date busiLicenceExpDate = req.getBusiLicenceExpDate();
+        if (!StringUtils.isEmpty(vatInvoiceStatus) || !StringUtils.isEmpty(busiLicenceExpDate)) {
+            InvoiceListReq invoiceListReq = new InvoiceListReq();
+            invoiceListReq.setBusiLicenceExpDate(busiLicenceExpDate);
+            invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
+            invoiceListReq.setVatInvoiceStatus(vatInvoiceStatus);
+            List<Invoice> invoiceList = invoiceManager.listInvoice(invoiceListReq);
+            for (Invoice invoice : invoiceList) {
+                merchantIdList.add(invoice.getMerchantId());
+            }
+            // 这个赋值要放到最后面
+            isNeedGetMerchantIdList = true;
         }
 
         if (CollectionUtils.isEmpty(userIdList)
@@ -323,10 +356,11 @@ public class MerchantManager {
 
     /**
      * 供应商类型的商家（详细）信息列表分页
+     *
      * @param req
      * @return
      */
-    public Page<Merchant> pageRetailMerchant(RetailMerchantPageReq req){
+    public Page<Merchant> pageRetailMerchant(RetailMerchantPageReq req) {
 
         // 条件过滤
         QueryWrapper<Merchant> queryWrapper = new QueryWrapper<>();
@@ -401,7 +435,7 @@ public class MerchantManager {
             UserListReq userListReq = new UserListReq();
             userListReq.setLoginName(req.getLoginName());
             userListReq.setStatusCd(req.getUserStatus());
-            List<String> resultList= getMerchantIdListByLoginName(userListReq);
+            List<String> resultList = getMerchantIdListByLoginName(userListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -419,7 +453,7 @@ public class MerchantManager {
             BeanUtils.copyProperties(req, invoiceListReq);
             invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
 
-            List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
+            List<String> resultList = getMerchantIdListByInvoice(invoiceListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -433,7 +467,7 @@ public class MerchantManager {
 
         // 分组标签 转换成 merchant_id
         if (!StringUtils.isEmpty(req.getTagId())) {
-            List<String> resultList= getMerchantIdListByTag(req.getTagId());
+            List<String> resultList = getMerchantIdListByTag(req.getTagId());
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -470,18 +504,19 @@ public class MerchantManager {
         }
 
 
-        Page<Merchant> resultPage =  new Page<Merchant>(req.getPageNo(), req.getPageSize());
-        resultPage =  (Page)merchantMapper.selectPage(resultPage, queryWrapper);
+        Page<Merchant> resultPage = new Page<Merchant>(req.getPageNo(), req.getPageSize());
+        resultPage = (Page) merchantMapper.selectPage(resultPage, queryWrapper);
         return resultPage;
     }
 
 
     /**
      * 供应商类型的商家（详细）信息列表分页
+     *
      * @param req
      * @return
      */
-    public Page<Merchant> pageSupplierMerchant(SupplyMerchantPageReq req){
+    public Page<Merchant> pageSupplierMerchant(SupplyMerchantPageReq req) {
 
         // 条件过滤
         QueryWrapper<Merchant> queryWrapper = new QueryWrapper<>();
@@ -525,7 +560,7 @@ public class MerchantManager {
             UserListReq userListReq = new UserListReq();
             userListReq.setLoginName(req.getLoginName());
             userListReq.setStatusCd(req.getUserStatus());
-            List<String> resultList= getMerchantIdListByLoginName(userListReq);
+            List<String> resultList = getMerchantIdListByLoginName(userListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -544,7 +579,7 @@ public class MerchantManager {
             BeanUtils.copyProperties(req, invoiceListReq);
             invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
 
-            List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
+            List<String> resultList = getMerchantIdListByInvoice(invoiceListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -560,7 +595,7 @@ public class MerchantManager {
         if (!StringUtils.isEmpty(req.getAccount())) {
             MerchantAccountListReq merchantAccountListReq = new MerchantAccountListReq();
             merchantAccountListReq.setAccount(req.getAccount());
-            List<String> resultList= getMerchantIdListByAccount(merchantAccountListReq);
+            List<String> resultList = getMerchantIdListByAccount(merchantAccountListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -597,17 +632,18 @@ public class MerchantManager {
         }
 
 
-        Page<Merchant> resultPage =  new Page<Merchant>(req.getPageNo(), req.getPageSize());
-        resultPage =  (Page)merchantMapper.selectPage(resultPage, queryWrapper);
+        Page<Merchant> resultPage = new Page<Merchant>(req.getPageNo(), req.getPageSize());
+        resultPage = (Page) merchantMapper.selectPage(resultPage, queryWrapper);
         return resultPage;
     }
 
     /**
      * 厂家类型的商家（详细）信息列表分页
+     *
      * @param req
      * @return
      */
-    public Page<Merchant> pageFactoryMerchant(FactoryMerchantPageReq req){
+    public Page<Merchant> pageFactoryMerchant(FactoryMerchantPageReq req) {
 
         // 条件过滤
         QueryWrapper<Merchant> queryWrapper = new QueryWrapper<>();
@@ -618,10 +654,10 @@ public class MerchantManager {
         queryWrapper.eq(Merchant.FieldNames.merchantType.getTableFieldName(), PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
 
         // 条件是：like(模糊查询的）  的字段
-        if(!StringUtils.isEmpty(req.getMerchantCode())){ // 商家编码
+        if (!StringUtils.isEmpty(req.getMerchantCode())) { // 商家编码
             queryWrapper.like(Merchant.FieldNames.merchantCode.getTableFieldName(), req.getMerchantCode());
         }
-        if(!StringUtils.isEmpty(req.getMerchantName())){ // 商家名称
+        if (!StringUtils.isEmpty(req.getMerchantName())) { // 商家名称
             queryWrapper.like(Merchant.FieldNames.merchantName.getTableFieldName(), req.getMerchantName());
         }
 
@@ -635,7 +671,7 @@ public class MerchantManager {
         if (!StringUtils.isEmpty(req.getLoginName())) {
             UserListReq userListReq = new UserListReq();
             userListReq.setLoginName(req.getLoginName());
-            List<String> resultList= getMerchantIdListByLoginName(userListReq);
+            List<String> resultList = getMerchantIdListByLoginName(userListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -652,7 +688,7 @@ public class MerchantManager {
             BeanUtils.copyProperties(req, invoiceListReq);
             invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
 
-            List<String> resultList= getMerchantIdListByInvoice(invoiceListReq);
+            List<String> resultList = getMerchantIdListByInvoice(invoiceListReq);
             if (isNeedGetMerchantIdList) {
                 // 取交集
                 merchantIdList.retainAll(resultList);
@@ -672,18 +708,19 @@ public class MerchantManager {
         }
 
         // 条件是：in(包含的）  的字段
-        if(!CollectionUtils.isEmpty(merchantIdList)){
+        if (!CollectionUtils.isEmpty(merchantIdList)) {
             // user_id
             queryWrapper.in(Merchant.FieldNames.merchantId.getTableFieldName(), merchantIdList);
         }
 
-        Page<Merchant> resultPage =  new Page<Merchant>(req.getPageNo(), req.getPageSize());
-        resultPage =  (Page)merchantMapper.selectPage(resultPage, queryWrapper);
+        Page<Merchant> resultPage = new Page<Merchant>(req.getPageNo(), req.getPageSize());
+        resultPage = (Page) merchantMapper.selectPage(resultPage, queryWrapper);
         return resultPage;
     }
 
     /**
      * 根据 loginName 获取 模糊查询对应的 userId 集合
+     *
      * @param req
      * @return
      */
@@ -700,6 +737,7 @@ public class MerchantManager {
 
     /**
      * 根据 loginName 获取 模糊查询对应的 merchant_id 集合
+     *
      * @param req
      * @return
      */
@@ -716,6 +754,7 @@ public class MerchantManager {
 
     /**
      * 根据 par_invoice表字段 模糊查询对应的 merchantId 集合
+     *
      * @param req
      * @return
      */
@@ -732,6 +771,7 @@ public class MerchantManager {
 
     /**
      * 根据 par_merchant_account表字段 模糊查询对应的 merchantId 集合
+     *
      * @param req
      * @return
      */
@@ -748,6 +788,7 @@ public class MerchantManager {
 
     /**
      * 根据 prod_merchant_tag_rel表字段 模糊查询对应的 merchantId 集合
+     *
      * @param tagId
      * @return
      */
@@ -768,16 +809,18 @@ public class MerchantManager {
 
     /**
      * 添加商家
+     *
      * @param merchant 商家主体
      * @return
      */
-    public int insertMerchant(Merchant merchant){
+    public int insertMerchant(Merchant merchant) {
         return merchantMapper.insert(merchant);
     }
 
     /**
      * 根据商家编码更新商家信息
      * 调用这个更新要清除全部的缓存，因为没有根据code 做缓存
+     *
      * @param merchantDetailDTO
      * @return
      */
@@ -788,21 +831,42 @@ public class MerchantManager {
         Merchant merchant = new Merchant();
         BeanUtils.copyProperties(merchantDetailDTO, merchant);
         merchant.setLastUpdateDate(new Date());
-        return merchantMapper.update(merchant,queryWrapper);
+        return merchantMapper.update(merchant, queryWrapper);
     }
 
     /**
      * 根据地区集合查询商家
+     *
      * @param merchantListReq
      * @return
      */
-    public List<Merchant> listMerchantByLanCity(MerchantListReq merchantListReq){
-        List<String> cityList = merchantListReq.getCityList();
-        QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.in(Merchant.FieldNames.city.getTableFieldName(),cityList);
+    public List<Merchant> listMerchantByLanCity(MerchantListLanCityReq merchantListReq) {
+        QueryWrapper<Merchant> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in(Merchant.FieldNames.city.getTableFieldName(), merchantListReq.getCityList());
         queryWrapper.or();
-        queryWrapper.in(Merchant.FieldNames.lanId.getTableFieldName(),cityList);
+        queryWrapper.in(Merchant.FieldNames.lanId.getTableFieldName(), merchantListReq.getLanList());
+        //只查询出商家的id字段
+        queryWrapper.select(Merchant.FieldNames.merchantId.getTableFieldName());
         return merchantMapper.selectList(queryWrapper);
     }
 
+    /**
+     * 商家信息列表（只取部分必要字段）
+     *
+     * @param req
+     * @return
+     */
+    public List<MerchantLigthResp> listMerchantForOrder(MerchantLigthReq req) {
+        return merchantMapper.listMerchantForOrder(req);
+    }
+
+    /**
+     * 商家信息列表（只取部分必要字段）
+     *
+     * @param req
+     * @return
+     */
+    public MerchantLigthResp getMerchantForOrder(MerchantGetReq req) {
+        return merchantMapper.getMerchantForOrder(req);
+    }
 }

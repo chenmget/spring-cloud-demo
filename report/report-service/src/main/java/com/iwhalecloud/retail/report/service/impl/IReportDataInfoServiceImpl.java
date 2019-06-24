@@ -1,22 +1,15 @@
 package com.iwhalecloud.retail.report.service.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
 import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
-import com.iwhalecloud.retail.report.dto.response.ProductListAllResp;
-import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
 import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
 import com.iwhalecloud.retail.report.manager.ReportDataInfoManager;
-import com.iwhalecloud.retail.report.manager.ReportManager;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 @Service
 public class IReportDataInfoServiceImpl implements IReportDataInfoService {

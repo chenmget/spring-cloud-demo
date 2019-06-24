@@ -40,5 +40,15 @@ public class Constant {
      */
     private String noOrderId;
 
+    /**
+     * 变更中
+     */
+    private String modifying;
+
+    /**
+     * 没有任何变更项
+     */
+    private String noModify;
+
 
 }

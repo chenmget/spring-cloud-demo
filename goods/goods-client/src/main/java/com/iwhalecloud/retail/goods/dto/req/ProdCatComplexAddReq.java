@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.goods.dto.req;
 
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 @Data
 public class ProdCatComplexAddReq implements Serializable{

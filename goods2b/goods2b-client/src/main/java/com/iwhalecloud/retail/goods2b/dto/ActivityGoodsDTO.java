@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.goods2b.dto;
 
-import com.iwhalecloud.retail.dto.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

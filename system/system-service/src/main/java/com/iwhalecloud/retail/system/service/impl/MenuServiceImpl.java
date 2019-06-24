@@ -1,16 +1,16 @@
 package com.iwhalecloud.retail.system.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.system.dto.MenuDTO;
 import com.iwhalecloud.retail.system.dto.request.MenuListReq;
 import com.iwhalecloud.retail.system.entity.Menu;
+import com.iwhalecloud.retail.system.manager.MenuManager;
 import com.iwhalecloud.retail.system.manager.RoleMenuManager;
+import com.iwhalecloud.retail.system.service.MenuService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
-import com.iwhalecloud.retail.system.manager.MenuManager;
-import com.iwhalecloud.retail.system.service.MenuService;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -82,5 +82,10 @@ public class MenuServiceImpl implements MenuService {
         }else{
             return ResultVO.errorEnum(ResultCodeEnum.ERROR);
         }
+    }
+
+    @Override
+    public List<MenuDTO> getMenuByRoleId(String usrId) {
+        return menuManager.getMenuByRoleId(usrId);
     }
 }

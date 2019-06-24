@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.web.controller.rights.request;
 
-import java.io.Serializable;
-
 import lombok.Data;
-
 import org.hibernate.validator.constraints.NotBlank;
+
+import java.io.Serializable;
 
 @Data
 public class InputRightsReq implements Serializable{

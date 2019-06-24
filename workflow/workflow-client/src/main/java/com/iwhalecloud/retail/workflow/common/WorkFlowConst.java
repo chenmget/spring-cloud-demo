@@ -28,6 +28,15 @@ public class WorkFlowConst {
     public static final String RelType = "RECOMMEND";
 
     /**
+     * 执行节点
+     */
+    public static final String NODE_TYPE_1="1";
+    /**
+     * 执行判断节点
+     */
+    public static final String NODE_TYPE_2="2";
+
+    /**
      * 系统来源
      */
     public static final String SourceFrom = "MM";
@@ -75,6 +84,10 @@ public class WorkFlowConst {
     /**任务项状态：已处理*/
     public static final String TASK_ITEM_STATE_FINISH = "3";
 
+    /**
+     * 国际化配置文件里当前语言
+     */
+    public static final String LOCALE_CODE = "Locale";
 
     /**
      * 是否被删除
@@ -274,7 +287,7 @@ public class WorkFlowConst {
 
     public enum TASK_SUB_TYPE {
         TASK_SUB_TYPE_1010("1","1010","串码调拨调流程（调出方要审核）"),
-        TASK_SUB_TYPE_1020("1","1020","厂家固网终端抽检流程"),
+        TASK_SUB_TYPE_1020("1","1020","录入移动串码审批流程"),
         TASK_SUB_TYPE_1030("1","1030","供应商库存管理流程"),
         TASK_SUB_TYPE_1040("1","1040","集采终端调货流程"),
         TASK_SUB_TYPE_1050("1","1050","地包商调货流程"),
@@ -303,7 +316,20 @@ public class WorkFlowConst {
         TASK_SUB_TYPE_2020("1","2020","专票信息流程"),
         TASK_SUB_TYPE_2030("1","2030","前置补贴补录流程"),
         TASK_SUB_TYPE_2040("1","2040","串码调拨流程（调出方、调入方都要审核）"),
-        TASK_SUB_TYPE_2050("1","2050","通知公告审核流程");
+        TASK_SUB_TYPE_2050("1","2050","通知公告审核流程"),
+        TASK_SUB_TYPE_2060("1","2060","商家权限申请审核流程"),
+        TASK_SUB_TYPE_3010("1","3010","录入固网串码审批流程"),
+        TASK_SUB_TYPE_3020("1","3020","采购申请单审核流程"),
+        TASK_SUB_TYPE_3040("1","3040","采购申请单审核流程"),
+        TASK_SUB_TYPE_3030("1","3030","采购申审核流程"),
+        TASK_SUB_TYPE_9504("1","9504","政企价格修改审核流程"),
+        TASK_SUB_TYPE_9604("1","9604","移动终端政企价格修改审核流程"),
+        TASK_SUB_TYPE_9605("1","9605","固网终端政企价格修改审核流程"),
+        TASK_SUB_TYPE_3040301("1","3040301","地包商管理"),
+        TASK_SUB_TYPE_3040501("1","3040501","厂商管理"),
+        TASK_SUB_TYPE_3040601("1","3040601","国/省包管理3"),
+        TASK_SUB_TYPE_1142("1","1142","营销活动变更流程");
+
 
         private String taskType;
         private String taskSubType;
@@ -350,6 +376,35 @@ public class WorkFlowConst {
 
         public String getName() {
             return name;
+        }
+    }
+
+    /**
+     * 流程process_id
+     */
+    public enum PROCESS_ID {
+        PROCESS_07("7","调拨调出方审核流程实例"),
+        PROCESS_08("8","绿色通道流程实例"),
+        PROCESS_12("12","调拨两端都要审核流程实例"),
+        PROCESS_13("13","移动串码审核流程"),
+        PROCESS_14("14","厂商录入固网、泛智能终端串码审核流程（两步审核）"),
+        PROCESS_15("15","厂商串码入库集采流程实例（固网）（一步审核）"),
+        PROCESS_16("16","厂商录入固网社采(仅指机顶盒、三合一终端）串码审核流程（三步审核）");
+
+        private String typeCode;
+        private String typeName;
+
+        PROCESS_ID(String typeCode, String typeName) {
+            this.typeCode = typeCode;
+            this.typeName = typeName;
+        }
+
+        public String getTypeCode() {
+            return typeCode;
+        }
+
+        public String getTypeName() {
+            return typeName;
         }
     }
 }

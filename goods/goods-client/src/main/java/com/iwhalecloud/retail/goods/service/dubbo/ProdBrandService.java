@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.goods.service.dubbo;
 
-import java.util.List;
-
 import com.iwhalecloud.retail.goods.dto.ResultVO;
 import com.iwhalecloud.retail.goods.dto.req.ProdBrandAddReq;
 import com.iwhalecloud.retail.goods.dto.req.ProdBrandDeleteReq;
 import com.iwhalecloud.retail.goods.dto.req.ProdBrandGetReq;
 import com.iwhalecloud.retail.goods.dto.req.ProdBrandUpdateReq;
 import com.iwhalecloud.retail.goods.dto.resp.ProdBrandGetResp;
+
+import java.util.List;
 
 
 public interface ProdBrandService{

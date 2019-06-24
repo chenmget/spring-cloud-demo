@@ -56,16 +56,4 @@ public class MerchantRulesSaveReq implements Serializable {
     @ApiModelProperty(value = "对象ID集合  用于批量插入")
     private List<String> targetIdList;
 
-    /**
-     * 限额
-     */
-//    @ApiModelProperty(value = "限额")
-//    private java.lang.Long maxSerialNum;
-
-    /**
-     * 本月已使用
-     */
-//    @ApiModelProperty(value = "本月已使用")
-//    private java.lang.Long serialNumUsed;
-
 }

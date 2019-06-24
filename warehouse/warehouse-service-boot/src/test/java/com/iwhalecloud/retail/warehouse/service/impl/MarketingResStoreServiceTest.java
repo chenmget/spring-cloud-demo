@@ -1,8 +1,10 @@
 package com.iwhalecloud.retail.warehouse.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
+import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
 import com.iwhalecloud.retail.warehouse.dto.request.markres.SynMarkResStoreReq;
 import com.iwhalecloud.retail.warehouse.dto.request.markresswap.*;
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.QryMktInstInfoByConditionItemSwapResp;
@@ -10,14 +12,20 @@ import com.iwhalecloud.retail.warehouse.dto.response.markresswap.QryStoreMktInst
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.StoreInventoryQuantityItemSwapResp;
 import com.iwhalecloud.retail.warehouse.dto.response.markresswap.base.QueryMarkResQueryResultsSwapResp;
 import com.iwhalecloud.retail.warehouse.service.MarketingResStoreService;
+import com.iwhalecloud.retail.warehouse.service.MerchantAddNbrProcessingPassActionService;
+import com.iwhalecloud.retail.warehouse.util.MarketingZopClientUtil;
+import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -33,6 +41,12 @@ import java.util.List;
 public class MarketingResStoreServiceTest {
     @Reference
     private MarketingResStoreService marketingResStoreService;
+
+    @Reference
+    private MerchantAddNbrProcessingPassActionService merchantAddNbrProcessingPassActionService;
+
+    @Autowired
+    private MarketingZopClientUtil zopClientUtil;
 
     @Test
     public void syncTerminal() {
@@ -66,7 +80,7 @@ public class MarketingResStoreServiceTest {
         List<EBuyTerminalItemSwapReq> mktResList = new ArrayList<EBuyTerminalItemSwapReq>();
         EBuyTerminalItemSwapReq item1 = new EBuyTerminalItemSwapReq();
 
-        item1.setBarCode("BC54FC5B30EAa");//BC54FC5B30EAa,BC54FC5B30EAb
+        item1.setBarCode("BC54FC5B30EAQ");//BC54FC5B30EAa,BC54FC5B30EAb
         item1.setLanId("734");
         item1.setMktId("15599");
         item1.setPurchaseType("2");
@@ -75,10 +89,10 @@ public class MarketingResStoreServiceTest {
         item1.setSupplyCode("DBS0042908");
         item1.setSupplyName("湖南华龙伟业通信技术有限公司_长沙地包");
 
-//        mktResList.add(item1);
+        mktResList.add(item1);
         EBuyTerminalItemSwapReq item2 = new EBuyTerminalItemSwapReq();
 
-        item2.setBarCode("BC54FC5B30EAB");//BC54FC5B30EAa,BC54FC5B30EAb
+        item2.setBarCode("BC54FC5B30EAK");//BC54FC5B30EAa,BC54FC5B30EAb
         item2.setLanId("734");
         item2.setMktId("15599");
         item2.setPurchaseType("2");
@@ -109,8 +123,8 @@ public class MarketingResStoreServiceTest {
     @Test
     public void qryStoreMktInstInfo() {
         QryStoreMktInstInfoSwapReq req = new QryStoreMktInstInfoSwapReq();
-        req.setBarCode("A000009BB1FA20");
-        req.setStoreId("102654034");//102654034
+        req.setBarCode("BC54FC5B30EAQ");
+        req.setStoreId("203658057");//102654034
         req.setPageIndex("1");
         req.setPageSize("10");
 
@@ -158,4 +172,28 @@ public class MarketingResStoreServiceTest {
 
         marketingResStoreService.synMarkResStore(req);
     }
+
+    @Test
+    public void run(){
+        InvokeRouteServiceRequest params = new InvokeRouteServiceRequest();
+        params.setBusinessId("11916310");
+
+        merchantAddNbrProcessingPassActionService.run(params);
+    }
+
+    @Test
+    public void callExcuteNoticeITMS(){
+        StringBuffer params = new StringBuffer();
+        String addMethod = "ITMS_DELL";
+        params.append("city_code=").append("731").append("#warehouse=").append("11").append("#source=2").
+                append("#factory=手机");
+        Map request = new HashMap<>();
+        request.put("deviceId", "1010190");
+        request.put("userName", "测试");
+        request.put("code", addMethod);
+        request.put("params", params.toString());
+        ResultVO resultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
+        log.info("MerchantResourceInstServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS resp={}", JSON.toJSONString(resultVO));
+    }
+
 }

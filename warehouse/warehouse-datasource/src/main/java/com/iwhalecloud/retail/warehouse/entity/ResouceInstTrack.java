@@ -133,9 +133,24 @@ public class ResouceInstTrack implements Serializable {
 	@ApiModelProperty(value = "是否绿色通道")
 	private java.lang.String ifGreenChannel;
 
+	/**
+	 * 产品类型
+	 */
+	@ApiModelProperty(value = "产品类型")
+	private java.lang.String typeId;
+	/**
+	 * SN码
+	 */
+	@ApiModelProperty(value = "SN码")
+	private java.lang.String snCode;
+
+	/**
+	 * 网络终端（包含光猫、机顶盒、融合终端）记录MAC码
+	 */
+	@ApiModelProperty(value = "macCode")
+	private java.lang.String macCode;
 
 	//属性 end
-	
     /** 字段名称枚举. */
     public enum FieldNames {
 		/** 记录营销资源实例编码。. */
@@ -181,7 +196,26 @@ public class ResouceInstTrack implements Serializable {
 		selfRegStatus("selfRegStatus","SELF_REG_STATUS"),
 		
 		/** 是/否. */
-		ifPreSubsidy("ifPreSubsidy","IF_PRE_SUBSIDY");
+		ifPreSubsidy("ifPreSubsidy","IF_PRE_SUBSIDY"),
+
+		/** 是否省内直供. */
+		ifDirectSuppLy("ifDirectSuppLy","IF_DIRECT_SUPPLY"),
+
+		/** 是否地包供货. */
+		ifGroundSupply("ifGroundSupply","IF_GROUND_SUPPLY"),
+
+		/**是否绿色通道. */
+		ifGreenChannel("ifGreenChannel","IF_GREEN_CHANNEL"),
+
+		/**产品类型. */
+		typeId("typeId","TYPE_ID"),
+
+		/**SN码. */
+		snCode("snCode","sn_code"),
+
+		/** 网络终端（包含光猫、机顶盒、融合终端）记录MAC码. */
+		macCode("macCode","mac_code");
+
 
 		private String fieldName;
 		private String tableFieldName;

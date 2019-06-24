@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDetailDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackDetailGetReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceInstTrackDetail;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackDetailMapper;
@@ -25,10 +26,10 @@ public class ResouceInstTrackDetailManager {
 
     /**
      * 通过串码查轨迹明细
-     * @param nbr
+     * @param req
      * @return
      */
-    public List<ResourceInstTrackDetailListResp> getResourceInstTrackDetailByNbr(String nbr){
-        return resouceInstTrackDetailMapper.getResourceInstTrackDetailByNbr(nbr);
+    public List<ResourceInstTrackDetailListResp> getResourceInstTrackDetailByNbr(ResourceInstsTrackDetailGetReq req){
+        return resouceInstTrackDetailMapper.getResourceInstTrackDetailByNbr(req);
     }
 }

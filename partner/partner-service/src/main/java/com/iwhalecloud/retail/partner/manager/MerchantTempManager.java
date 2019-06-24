@@ -2,14 +2,12 @@ package com.iwhalecloud.retail.partner.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iwhalecloud.retail.partner.dto.BusinessEntityTempDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantTempDTO;
-import com.iwhalecloud.retail.partner.entity.BusinessEntityTemp;
 import com.iwhalecloud.retail.partner.entity.MerchantTemp;
 import com.iwhalecloud.retail.partner.mapper.MerchantTempMapper;
 import org.springframework.stereotype.Component;
-import javax.annotation.Resource;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 

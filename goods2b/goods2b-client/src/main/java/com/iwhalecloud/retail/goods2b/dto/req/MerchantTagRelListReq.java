@@ -13,12 +13,11 @@ public class MerchantTagRelListReq extends AbstractRequest implements java.io.Se
     private static final long serialVersionUID = -3664120367721004392L;
 
 
-    //属性 begin
     /**
      * 关联ID
      */
-//    @ApiModelProperty(value = "关联ID")
-//    private String relId;
+    @ApiModelProperty(value = "权限对应关联ID")
+    private List<String> relTagIdList;
 
     /**
      * 标签ID

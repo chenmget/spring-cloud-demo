@@ -12,7 +12,9 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.warehouse.util.ProfileUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +57,15 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     }
 
     @Override
-    public ResultVO delResourceInst(ResourceInstUpdateReq req) {
+    public ResultVO addResourceInstByAdmin(ResourceInstAddReq req) {
+        log.info("SupplierResourceInstOpenServiceImpl.addResourceInstByAdmin req={}", JSON.toJSONString(req));
+        ResultVO resp = supplierResourceInstService.addResourceInstByAdmin(req);
+        resouceInstTrackService.asynSaveTrackForSupplier(req, resp);
+        return resp;
+    }
+
+    @Override
+    public ResultVO delResourceInst(AdminResourceInstDelReq req) {
         log.info("SupplierResourceInstOpenServiceImpl.delResourceInst req={}", JSON.toJSONString(req));
         ResultVO resp = supplierResourceInstService.delResourceInst(req);
         resouceInstTrackService.asynDeleteTrackForSupplier(req, resp);
@@ -63,15 +73,7 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     }
 
     @Override
-    public ResultVO resetResourceInst(ResourceInstUpdateReq req) {
-        log.info("SupplierResourceInstOpenServiceImpl.resetResourceInst req={}", JSON.toJSONString(req));
-        ResultVO resp = supplierResourceInstService.resetResourceInst(req);
-        resouceInstTrackService.asynResetTrackForSupplier(req, resp);
-        return resp;
-    }
-
-    @Override
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(ResourceInstListReq req) {
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("SupplierResourceInstOpenServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
         return supplierResourceInstService.getResourceInstList(req);
     }
@@ -84,11 +86,6 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
         return resp;
     }
 
-    @Override
-    public ResultVO validResourceInst(ValidResourceInstReq req) {
-        log.info("SupplierResourceInstOpenServiceImpl.validResourceInst req={}", JSON.toJSONString(req));
-        return supplierResourceInstService.validResourceInst(req);
-    }
 
     @Override
     public ResultVO<Boolean> deliveryOutResourceInst(DeliveryResourceInstReq req) {
@@ -148,7 +145,7 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     }
 
     @Override
-    public ResultVO<List<ResourceInstListResp>> getBatch(ResourceInstBatchReq req){
+    public ResultVO<List<ResourceInstListPageResp>> getBatch(ResourceInstBatchReq req){
         log.info("SupplierResourceInstOpenServiceImpl.getBatch req={}", JSON.toJSONString(req));
         req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         return supplierResourceInstService.getBatch(req);
@@ -176,5 +173,48 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
         ResultVO resp = supplierResourceInstService.confirmRefuseNbr(req);
         resouceInstTrackService.allocateResourceIntsWarehousingCancelForRetail(req, resp);
         return resp;
+    }
+
+    @Override
+    public ResultVO validResourceInst(DeliveryValidResourceInstReq req) {
+        ResultVO resp = supplierResourceInstService.validResourceInst(req);
+        log.info("SupplierResourceInstOpenServiceImpl.validResourceInst req={}", JSON.toJSONString(req), JSON.toJSONString(resp));
+        return resp;
+    }
+
+    @Override
+    public ResultVO validNbr(ResourceInstValidReq req) {
+        ResultVO resp = supplierResourceInstService.validNbr(req);
+        log.info("SupplierResourceInstOpenServiceImpl.validNbr req={}", JSON.toJSONString(req), JSON.toJSONString(resp));
+        return resp;
+    }
+
+    @Override
+    public ResultVO getResourceInstListForTask(ResourceInstListPageReq req) {
+        ResultVO resp = supplierResourceInstService.getResourceInstListForTask(req);
+        log.info("SupplierResourceInstOpenServiceImpl.getResourceInstListForTask req={}", JSON.toJSONString(req), JSON.toJSONString(resp));
+        return resp;
+    }
+
+    @Override
+    public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req){
+        ResultVO resp = supplierResourceInstService.listResourceUploadTemp(req);
+        return resp;
+    }
+
+    @Override
+    public ResultVO exceutorAddNbrForSupplier(ResourceInstAddReq req){
+        ResultVO resp = supplierResourceInstService.exceutorAddNbrForSupplier(req);
+        return resp;
+    }
+
+    @Override
+    public ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req){
+        return supplierResourceInstService.queryForExport(req);
+    }
+
+    @Override
+    public ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req) {
+        return supplierResourceInstService.getMktResInstNbrForCheck(req);
     }
 }

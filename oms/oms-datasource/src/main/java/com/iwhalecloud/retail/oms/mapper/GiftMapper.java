@@ -1,13 +1,12 @@
 package com.iwhalecloud.retail.oms.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.oms.dto.response.gift.GiftRespDTO;
 import com.iwhalecloud.retail.oms.dto.resquest.gift.ListGiftReqDTO;
 import com.iwhalecloud.retail.oms.entity.gif.Gift;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 
 /**

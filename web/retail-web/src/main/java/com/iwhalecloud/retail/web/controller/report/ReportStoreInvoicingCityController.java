@@ -13,8 +13,6 @@ import com.iwhalecloud.retail.report.service.ReportStInvCityService;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResNberExcel;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
-import com.iwhalecloud.retail.web.controller.partner.utils.ExcelToMerchantListUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -25,14 +23,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.io.OutputStream;
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Created by jiyou on 2019/4/11.
@@ -127,6 +122,7 @@ public class ReportStoreInvoicingCityController extends BaseController {
 
         // 创建excel
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data, orderMap, "门店进销存地市报表");
+
         deliveryGoodsResNberExcel.exportExcel("门店进销存地市报表",workbook,response);
 //        return deliveryGoodsResNberExcel.uploadExcel(workbook);
         

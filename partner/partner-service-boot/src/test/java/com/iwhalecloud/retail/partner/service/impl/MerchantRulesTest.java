@@ -4,7 +4,10 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.PartnerServiceApplication;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
-import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.req.MerchantRulesCheckReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantRulesDeleteReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantRulesDetailListReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantRulesSaveReq;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,12 +37,6 @@ public class MerchantRulesTest {
         System.out.print("结果：" + resultVO.toString());
     }
 
-    @Test
-    public void get(){
-        MerchantRulesSaveReq req = new MerchantRulesSaveReq();
-        ResultVO resultVO = merchantRulesService.getMerchantRulesById("10115828");
-        System.out.print("结果：" + resultVO.toString());
-    }
 
     @Test
     public void delete(){
@@ -52,15 +49,6 @@ public class MerchantRulesTest {
         System.out.print("结果：" + resultVO.toString());
     }
 
-    @Test
-    public void list(){
-        MerchantRulesListReq req = new MerchantRulesListReq();
-        req.setMerchantId("777");
-        req.setRuleType("1");
-        req.setTargetType("1");
-        ResultVO resultVO = merchantRulesService.listMerchantRules(req);
-        System.out.print("结果：" + resultVO.toString());
-    }
 
     @Test
     public void listDetail(){

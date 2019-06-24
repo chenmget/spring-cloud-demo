@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -15,15 +16,9 @@ import java.util.List;
  */
 @Data
 @ApiModel(value = "对应模型mkt_res_inst, 对应实体ResourceInst类")
-public class ResourceInstsGetReq {
+public class ResourceInstsGetReq implements Serializable{
 
   	private static final long serialVersionUID = 1L;
-
-	/**
-	 * 商家ID
-	 */
-	@ApiModelProperty(value = "商家ID")
-	private String merchantId;
 
 	/**
 	 * 默认查询可用状态

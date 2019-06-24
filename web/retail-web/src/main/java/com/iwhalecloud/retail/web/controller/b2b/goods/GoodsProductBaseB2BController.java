@@ -335,4 +335,57 @@ public class GoodsProductBaseB2BController {
         return productIds;
     }
 
+    @ApiOperation(value = "新-查询产品基本信息查询", notes = "新-查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="getProductBaseListNew")
+    @UserLoginToken
+    public ResultVO<Page<ProductBaseGetResp>> getProductBaseListNew(@RequestBody ProductBaseListReq req) {
+
+        String merchantId = null;
+        Boolean isAdminType = UserContext.isAdminType();
+        Integer userFounder = UserContext.getUser().getUserFounder();
+        if (UserContext.getUserOtherMsg() != null && UserContext.getUserOtherMsg().getMerchant() != null && !isAdminType &&SystemConst.USER_FOUNDER_8 != userFounder) {
+            merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
+        }else if(isAdminType && StringUtils.isNotBlank(req.getMerchantId())){
+            // 管理员选产品如果传过来商家id则查看权限；没传的话查看全部
+            merchantId = req.getMerchantId();
+        }else if(isAdminType && StringUtils.isBlank(req.getMerchantId())){
+            // 管理员选产品如果没传过来商家id；查看全部
+            return prodProductBaseService.getProductBaseList(req);
+        }else if(SystemConst.USER_FOUNDER_8 == userFounder){
+            // 厂商查看自己建的产品
+            merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
+            req.setManufacturerId(merchantId);
+            return prodProductBaseService.getProductBaseList(req);
+        }
+
+        return prodProductBaseService.getProductBaseList(req);
+    }
+
+    @ApiOperation(value = "根据输入数量取序列", notes = "根据输入数量取序列")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/getSeq")
+    ResultVO<List<String>> getSeq(@RequestParam(value = "num") int num) {
+        log.info("GoodsController getSeq num={}", num);
+        return prodProductBaseService.getSeq(num);
+
+    }
+
+    @ApiOperation(value = "查询指定产品id是否有销售记录", notes = "查询指定产品id是否有销售记录")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/isSaleByProductId")
+    ResultVO<Boolean> isSaleByProductId(@RequestParam(value = "productId") String productId) {
+        log.info("GoodsController isSaleByProductId productId={}", productId);
+        return ResultVO.success(prodProductBaseService.isSaleByProductId(productId));
+
+    }
 }

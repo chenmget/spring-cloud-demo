@@ -16,19 +16,19 @@ public class TaskPageResp implements Serializable {
      * taskId
      */
     @ApiModelProperty(value = "任务ID")
-    private java.lang.String taskId;
+    private String taskId;
 
     /**
      * formId
      */
     @ApiModelProperty(value = "主单ID")
-    private java.lang.String formId;
+    private String formId;
 
     /**
      * taskTitle
      */
     @ApiModelProperty(value = "标题")
-    private java.lang.String taskTitle;
+    private String taskTitle;
 
     /**
      * 流程：1
@@ -36,7 +36,7 @@ public class TaskPageResp implements Serializable {
      */
     @ApiModelProperty(value = "流程大类[流程：1\n" +
             "工单：2")
-    private java.lang.String taskType;
+    private String taskType;
 
     /**
      * 任务类型为1流程时
@@ -98,13 +98,13 @@ public class TaskPageResp implements Serializable {
             "      1250：2C固网售后维修流程 " +
             "      1260：售后返厂流程 " +
             "      2010：2B订单销售]")
-    private java.lang.String taskSubType;
+    private String taskSubType;
 
     /**
      * 第一个发起流程的用户名称
      */
     @ApiModelProperty(value = "申请人")
-    private java.lang.String createUserName;
+    private String createUserName;
 
     /**
      * 创建流程的时间
@@ -113,7 +113,7 @@ public class TaskPageResp implements Serializable {
     private java.util.Date createTime;
 
     @ApiModelProperty(value = "任务项ID  ")
-    private java.lang.String taskItemId;
+    private String taskItemId;
 
     /**
      * 状态  1：待领取
@@ -123,7 +123,7 @@ public class TaskPageResp implements Serializable {
     @ApiModelProperty(value = "状态  1：待领取\n" +
             "2：待处理\n" +
             "3：已处理")
-    private java.lang.String itemStatus;
+    private String itemStatus;
 
     /**
      * 任务分派时间  任务领取的时间
@@ -132,14 +132,17 @@ public class TaskPageResp implements Serializable {
     private java.util.Date assignTime;
 
     @ApiModelProperty(value = "当前节点ID")
-    private java.lang.String curNodeId;
+    private String curNodeId;
 
     @ApiModelProperty(value = "当前节点名称")
-    private java.lang.String curNodeName;
+    private String curNodeName;
 
     @ApiModelProperty(value = "最后处理时间")
     private java.util.Date lastDealTime;
 
     @ApiModelProperty(value = "扩展信息1")
-    private java.lang.String extends1;
+    private String extends1;
+
+    @ApiModelProperty(value = "processId")
+    private String processId;
 }

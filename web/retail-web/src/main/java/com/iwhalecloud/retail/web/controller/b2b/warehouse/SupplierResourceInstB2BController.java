@@ -5,29 +5,30 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
+import com.iwhalecloud.retail.goods2b.service.AttrSpecService;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceAllocateResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
-import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ConfirmReciveNbrReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAddReqDTO;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstAllocateReqDTO;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstUpdateReqDTO;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.request.ResourceInstUpdateByIdReqDTO;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExportCSVUtils;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ResourceInstColum;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.OutputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,13 +57,16 @@ public class SupplierResourceInstB2BController {
     @Reference
     private MerchantRulesService merchantRulesService;
 
-    @ApiOperation(value = "厂商串码管理页面", notes = "条件分页查询")
+    @Reference
+    private AttrSpecService attrSpecService;
+
+    @ApiOperation(value = "供应商串码管理页面", notes = "条件分页查询")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="getResourceInstList")
-    public ResultVO<Page<ResourceInstListResp>> getResourceInstList(@RequestBody ResourceInstListReq req) {
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(@RequestBody ResourceInstListPageReq req) {
         if (StringUtils.isEmpty(req.getMktResStoreIds())) {
             return ResultVO.error("仓库为空");
         }
@@ -75,9 +80,9 @@ public class SupplierResourceInstB2BController {
     })
     @DeleteMapping(value="delResourceInst")
     @UserLoginToken
-    public ResultVO<List<String>> delResourceInst(@RequestBody ResourceInstUpdateReqDTO dto) {
+    public ResultVO<List<String>> delResourceInst(@RequestBody ResourceInstUpdateByIdReqDTO dto) {
         String userId = UserContext.getUserId();
-        ResourceInstUpdateReq req = new ResourceInstUpdateReq();
+        AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
         List<String> checkStatusCd = new ArrayList<String>(1);
@@ -89,26 +94,6 @@ public class SupplierResourceInstB2BController {
         return supplierResourceInstService.delResourceInst(req);
     }
 
-    @ApiOperation(value = "串码还原在库可用", notes = "串码还原在库可用")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping(value="resetResourceInst")
-    @UserLoginToken
-    public ResultVO<List<String>> resetResourceInst(@RequestBody ResourceInstUpdateReqDTO dto) {
-        String userId = UserContext.getUserId();
-        ResourceInstUpdateReq req = new ResourceInstUpdateReq();
-        BeanUtils.copyProperties(dto, req);
-        req.setUpdateStaff(userId);
-        List<String> checkStatusCd = new ArrayList<String>(1);
-        checkStatusCd.add(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        req.setEventType(ResourceConst.EVENTTYPE.RECYCLE.getCode());
-        req.setCheckStatusCd(checkStatusCd);
-        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        req.setMerchantId(UserContext.getMerchantId());
-        return supplierResourceInstService.resetResourceInst(req);
-    }
 
     @ApiOperation(value = "串码入库", notes = "添加操作")
     @ApiResponses({
@@ -123,11 +108,12 @@ public class SupplierResourceInstB2BController {
         req.setCreateStaff(userId);
         req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        req.setSourceType(ResourceConst.SOURCE_TYPE.SUPPLIER.getCode());
+        req.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         BeanUtils.copyProperties(dto, req);
         req.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_INPUT.getCode());
         req.setMerchantId(UserContext.getMerchantId());
-        return supplierResourceInstService.addResourceInst(req);
+        log.info("SupplierResourceInstB2BController.addResourceInst req={}", JSON.toJSONString(req));
+        return supplierResourceInstService.exceutorAddNbrForSupplier(req);
     }
     @ApiOperation(value = "调拨串码", notes = "调拨串码")
     @ApiResponses({
@@ -166,7 +152,7 @@ public class SupplierResourceInstB2BController {
 
         String  merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
         ResultVO<TransferPermissionGetResp> transferPermissionVO = merchantRulesService.getTransferPermission(merchantId);
-        log.info("RetailerResourceInstB2BController.getBatch merchantRulesService.getTransferPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
+        log.info("SupplierResourceInstB2BController.getBatch merchantRulesService.getTransferPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
         if (null == transferPermissionVO || !transferPermissionVO.isSuccess() || null == transferPermissionVO.getResultData()) {
             // 没有权限，直接返回不能查到数据
             return ResultVO.success(resourceAllocateResp);
@@ -174,15 +160,15 @@ public class SupplierResourceInstB2BController {
 
         TransferPermissionGetResp resp = transferPermissionVO.getResultData();
         List mktResIdList = CollectionUtils.isEmpty(resp.getProductIdList()) ? Lists.newArrayList("-1") : resp.getProductIdList();
-        ResultVO<List<ResourceInstListResp>> respListVO = supplierResourceInstService.getBatch(req);
-        log.info("RetailerResourceInstB2BController.getBatch retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respListVO));
-        List<ResourceInstListResp> respList = respListVO.getResultData();
+        ResultVO<List<ResourceInstListPageResp>> respListVO = supplierResourceInstService.getBatch(req);
+        log.info("SupplierResourceInstB2BController.getBatch retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respListVO));
+        List<ResourceInstListPageResp> respList = respListVO.getResultData();
         // 有机型权限的串码
-        List<ResourceInstListResp> resourceInstRespList = respList.stream().filter(s -> mktResIdList.contains(s.getMktResId())).collect(Collectors.toList());
-        List<String> resourceInstNbrList = resourceInstRespList.stream().map(ResourceInstListResp::getMktResInstNbr).collect(Collectors.toList());
+        List<ResourceInstListPageResp> resourceInstRespList = respList.stream().filter(s -> mktResIdList.contains(s.getMktResId())).collect(Collectors.toList());
+        List<String> resourceInstNbrList = resourceInstRespList.stream().map(ResourceInstListPageResp::getMktResInstNbr).collect(Collectors.toList());
 
         // 无机型权限的串码
-        List<String> getBatchNbrList = respList.stream().map(ResourceInstListResp::getMktResInstNbr).collect(Collectors.toList());
+        List<String> getBatchNbrList = respList.stream().map(ResourceInstListPageResp::getMktResInstNbr).collect(Collectors.toList());
         getBatchNbrList.removeAll(resourceInstNbrList);
 
         // 状态不对的串码,传进来的串码去掉有权限的，去掉没权限的
@@ -190,7 +176,7 @@ public class SupplierResourceInstB2BController {
         nbrs.removeAll(resourceInstNbrList);
         nbrs.removeAll(getBatchNbrList);
 
-        resourceAllocateResp.setResourceInstListRespList(resourceInstRespList);
+        resourceAllocateResp.setResourceInstListRespListPage(resourceInstRespList);
         resourceAllocateResp.setStatusWrongNbrs(nbrs);
         resourceAllocateResp.setNoRightsNbrs(getBatchNbrList);
         return ResultVO.success(resourceAllocateResp);
@@ -203,26 +189,28 @@ public class SupplierResourceInstB2BController {
     })
     @PostMapping(value="nbrExport")
     @UserLoginToken
-    public void nbrExport(@RequestBody ResourceInstListReq req, HttpServletResponse response) {
-        ResultVO<Page<ResourceInstListResp>> dataVO = supplierResourceInstService.getResourceInstList(req);
-        if (!dataVO.isSuccess()) {
+    public void nbrExport(@RequestBody ResourceInstListPageReq req, HttpServletResponse response) {
+        ResultVO<List<AttrSpecDTO>> attrSpecListVO= attrSpecService.queryAttrSpecList(req.getTypeId());
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.queryForExport req={}, num={}", JSON.toJSONString(req), JSON.toJSONString(attrSpecListVO));
+        ResultVO<List<ResourceInstListPageResp>> dataVO = supplierResourceInstService.queryForExport(req);
+        if (!dataVO.isSuccess() || CollectionUtils.isEmpty(dataVO.getResultData())) {
             return;
         }
-        List<ResourceInstListResp> list = dataVO.getResultData().getRecords();
-        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.listResourceInst req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(list));
+        if (!attrSpecListVO.isSuccess() || CollectionUtils.isEmpty(attrSpecListVO.getResultData())) {
+            return;
+        }
+        List<ResourceInstListPageResp> list = dataVO.getResultData();
+        log.info("SupplierResourceInstB2BController.nbrExport supplierResourceInstService.queryForExport req={}, num={}", JSON.toJSONString(req), list.size());
         List<ExcelTitleName> excelTitleNames = ResourceInstColum.supplierColumn();
         try{
-            //创建Excel
-            Workbook workbook = new HSSFWorkbook();
-            String fileName = "串码列表";
-            ExcelToNbrUtils.builderOrderExcel(workbook, list, excelTitleNames, false);
-
             OutputStream output = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-            response.setContentType("application/msexcel;charset=UTF-8");
+            String fileName = "串码列表";
+            ExportCSVUtils.doExport(output, list, excelTitleNames, attrSpecListVO.getResultData(), false);
+            response.setContentType("application/ms-txt.numberformat:@");
             response.setCharacterEncoding("UTF-8");
-            workbook.write(output);
+            response.setHeader("Pragma", "public");
+            response.setHeader("Cache-Control", "max-age=30");
+            response.setHeader("Content-Disposition", "attachment; filename=" + URLEncoder.encode(fileName, "UTF-8"));
             output.close();
         }catch (Exception e){
             log.error("串码导出失败",e);
@@ -242,10 +230,48 @@ public class SupplierResourceInstB2BController {
         req.setUpdateStaff(userId);
         String confirmRecive = "0";
         BeanUtils.copyProperties(dto, req);
+        req.setMerchantId(UserContext.getMerchantId());
         if (confirmRecive.equals(dto.getIsPass())) {
             return supplierResourceInstService.confirmReciveNbr(req);
         }else{
             return supplierResourceInstService.confirmRefuseNbr(req);
         }
+    }
+
+    @ApiOperation(value = "校验串码", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="validNbr")
+    @UserLoginToken
+    public ResultVO<Page<ResourceUploadTempListResp>> validNbr(@RequestBody ResourceInstValidReq req) {
+        req.setMerchantId(UserContext.getMerchantId());
+        req.setCreateStaff(UserContext.getUserId());
+        req.setMerchantType(UserContext.getUserOtherMsg().getMerchant().getMerchantType());
+        return supplierResourceInstService.validNbr(req);
+    }
+
+    @ApiOperation(value = "新增串码后查询串码列表", notes = "条件分页查询")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="getResourceInstListForTask")
+    public ResultVO<Page<ResourceInstListPageResp>> getResourceInstListForTask(@RequestBody ResourceInstListPageReq req) {
+        if (StringUtils.isEmpty(req.getMktResStoreIds())) {
+            return ResultVO.error("仓库为空");
+        }
+        return supplierResourceInstService.getResourceInstListForTask(req);
+    }
+
+    @ApiOperation(value = "校验串码查询", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="listResourceUploadTemp")
+    public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(@RequestBody ResourceUploadTempListPageReq req) {
+        return supplierResourceInstService.listResourceUploadTemp(req);
     }
 }

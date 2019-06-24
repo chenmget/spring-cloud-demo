@@ -23,4 +23,10 @@ public class WorkTaskHandleReq implements Serializable {
 
     @ApiModelProperty(value = "处理用户名称")
     private String handlerUserName;
+
+    @ApiModelProperty("任务类型")
+    private String taskType;
+
+    @ApiModelProperty("任务子类型")
+    private String taskSubType;
 }

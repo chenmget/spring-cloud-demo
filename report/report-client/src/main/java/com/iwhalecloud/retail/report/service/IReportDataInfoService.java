@@ -1,14 +1,11 @@
 package com.iwhalecloud.retail.report.service;
 
-import java.util.List;
-
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
 import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
-import com.iwhalecloud.retail.report.dto.response.ProductListAllResp;
-import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
 import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
+
+import java.util.List;
 
 public interface IReportDataInfoService {
 	//供应商只能看自己的仓库

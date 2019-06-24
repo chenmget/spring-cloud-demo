@@ -5,11 +5,8 @@ import com.iwhalecloud.retail.order.dto.ReportOrderShopRankDTO;
 import com.iwhalecloud.retail.order.dto.ReportOrderTimeIntervalDTO;
 import com.iwhalecloud.retail.order.dto.resquest.ReportOrderOpeDeskReq;
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Mapper
 public interface OrderOperationDeskMapper extends BaseMapper {

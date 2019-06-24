@@ -1,9 +1,11 @@
 package com.iwhalecloud.retail.goods2b.service.impl;
 
+import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.AttrSpecConst;
 import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.AttrSpecAddReq;
 import com.iwhalecloud.retail.goods2b.dto.req.AttrSpecUpdateReq;
@@ -15,6 +17,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -41,8 +44,21 @@ public class AttrSpecServiceImpl implements AttrSpecService {
         }
 
         List<AttrSpecDTO> attrSpecDTOs =  attrSpecManager.queryAttrSpecList(typeId);
-        log.info("AttrSpecServiceImpl.queryAttrSpecList attrSpecDTOs={}", JSON.toJSON(attrSpecDTOs));
-        return ResultVOUtils.genQueryResultVO(attrSpecDTOs);
+        if (CollectionUtils.isEmpty(attrSpecDTOs)) {
+            return ResultVOUtils.genQueryResultVO(attrSpecDTOs);
+        }
+        List<AttrSpecDTO> attrSpecList = new ArrayList<AttrSpecDTO>();
+        for (AttrSpecDTO dto : attrSpecDTOs) {
+            // 只返回attrValue的对象
+            String attrValue = AttrSpecConst.getAttrValue(dto.getFiledName());
+            if (StringUtils.isEmpty(attrValue)) {
+                continue;
+            }
+            dto.setFiledName(attrValue);
+            attrSpecList.add(dto);
+        }
+        log.info("AttrSpecServiceImpl.queryAttrSpecList attrSpecDTOs={}", JSON.toJSON(attrSpecList));
+        return ResultVOUtils.genQueryResultVO(attrSpecList);
     }
 
     /**

@@ -2,7 +2,7 @@ project:
   name: 本机环境
 
 server:
-  port: 8085
+  port: 8088
 
 spring:
   dubbo:
@@ -10,10 +10,10 @@ spring:
       name: partner-provider
     registry:
 #      address: zookeeper://10.45.47.87:2285
-      address: zookeeper://localhost:2181
+      address: zookeeper://127.0.0.1:2181
     protocol:
       name: dubbo
-      port: 20885
+      port: 20888
     scan: com.iwhalecloud.retail
 
   redis:
@@ -21,7 +21,7 @@ spring:
     #    host: 127.0.0.1
     #    port: 6379
     cluster:
-      nodes: 10.45.47.129:7021,10.45.47.129:7022,10.45.47.129:7023,10.45.47.129:7024,10.45.47.129:7025,10.45.47.129:7026
+      nodes: 10.45.46.241:7001,10.45.46.242:7001,10.45.46.243:7001
       timeout: 10000
       max-redirects: 3
     expireSeconds: 86400 #一天
@@ -32,6 +32,15 @@ spring:
       max-wait: 1000
       min-idle: 5
 #    password:
+
+  #i18n国际化配置
+  messages:
+    #指定message的basename，多个以逗号分隔，如果不加包名的话，默认从classpath路径开始，默认: messages
+    basename: i18n/partner
+    #设定加载的资源文件缓存失效时间，-1的话为永不过期，默认为-1
+    cache-seconds: 3600
+    #设定Message bundles的编码，默认: UTF-8
+    encoding: UTF-8
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
@@ -91,3 +100,9 @@ spring.datasource:
 #    username: fdfs
 #    password: cl3AO&UXBdip
 #    port: 21
+
+
+#零售商交易平台登陆开关 0：可以登录；1：提示BSS3.0登陆
+retailer:
+    login: 1
+

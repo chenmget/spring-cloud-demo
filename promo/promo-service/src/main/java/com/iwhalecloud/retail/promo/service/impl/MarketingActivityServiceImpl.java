@@ -6,8 +6,13 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
+import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
+import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantListLanCityReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.constant.Constant;
@@ -27,18 +32,21 @@ import com.iwhalecloud.retail.rights.dto.request.QueryCouponByProductAndActivity
 import com.iwhalecloud.retail.rights.dto.request.QueryPreSubsidyReqDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponApplyObjectRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponRuleAndTypeQueryResp;
-import com.iwhalecloud.retail.rights.service.CouponApplyObjectService;
-import com.iwhalecloud.retail.rights.service.CouponInstService;
-import com.iwhalecloud.retail.rights.service.MktResCouponService;
-import com.iwhalecloud.retail.rights.service.PreSubsidyCouponService;
+import com.iwhalecloud.retail.rights.service.*;
+import com.iwhalecloud.retail.system.common.SysUserMessageConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.ConfigInfoDTO;
+import com.iwhalecloud.retail.system.dto.SysUserMessageDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.dto.request.UserGetReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.system.service.ConfigInfoService;
+import com.iwhalecloud.retail.system.service.SysUserMessageService;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
+import com.iwhalecloud.retail.workflow.dto.TaskDTO;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
@@ -51,9 +59,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
-import javax.naming.Context;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component("marketingActivityService")
@@ -61,6 +69,12 @@ import java.util.List;
 public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Autowired
     private MarketingActivityManager marketingActivityManager;
+
+    @Autowired
+    private ActivityChangeManager activityChangeManager;
+
+    @Autowired
+    private ActivityChangeDetailManager activityChangeDetailManager;
 
     @Autowired
     private ActivityScopeManager activityScopeManager;
@@ -76,6 +90,9 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     @Autowired
     private PromotionManager promotionManager;
+
+    @Autowired
+    private HistoryPurchaseManager historyPurchaseManager;
 
     @Autowired
     private ActivityRuleManager activityRuleManager;
@@ -108,12 +125,33 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     private CouponApplyObjectService couponApplyObjectService;
 
     @Reference
+    private OrderSelectOpenService orderSelectOpenService;
+
+    @Reference
+    private SysUserMessageService sysUserMessageService;
+
+    @Reference
+    private ConfigInfoService configInfoService;
+
+    @Reference
     private UserService userService;
 
     @Autowired
     private Constant constant;
 
+    @Reference
+    private MktResCouponTaskService mktResCouponTaskService;
+
+    @Reference
+    private ProductService productService;
+
+    @Autowired
+    private AccountBalanceTypeManager accountBalanceTypeManager;
+
+    @Autowired
+    private AccountBalanceRuleManager accountBalanceRuleManager;
     private List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryRespList;
+
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -125,7 +163,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         marketingActivityManager.addMarketingActivity(marketingActivity);
         String marketingActivityId = marketingActivity.getId();
         String marketingActivityCode = marketingActivity.getCode();
-
+        MarketingActivityModify marketingActivityModify = new MarketingActivityModify();
+        BeanUtils.copyProperties(req, marketingActivityModify);
+        marketingActivityModify.setMarketingActivityId(marketingActivityId);
+        marketingActivityManager.addMarketingActivityModify(req.getId(), marketingActivityModify);
+        //营销活动变更内容Id
+        String marketingActivityModifyId = marketingActivityModify.getId();
         List<ActivityScopeDTO> activityScopeDTOList = req.getActivityScopeList();
         List<ActivityScope> activityScopeList = Lists.newArrayList();
         activityScopeManager.deleteActivityScopeBatch(marketingActivityId);
@@ -134,6 +177,9 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 ActivityScope activityScope = new ActivityScope();
                 BeanUtils.copyProperties(activityScopeDTO, activityScope);
                 activityScope.setMarketingActivityId(marketingActivityId);
+                Date dt = new Date();
+                activityScope.setGmtCreate(dt);
+                activityScope.setGmtModified(dt);
                 activityScope.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
                 activityScopeList.add(activityScope);
             }
@@ -150,19 +196,179 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 ActivityParticipant activityParticipant = new ActivityParticipant();
                 BeanUtils.copyProperties(activityParticipantDTO, activityParticipant);
                 activityParticipant.setMarketingActivityId(marketingActivityId);
+                Date dt = new Date();
+                activityParticipant.setGmtCreate(dt);
+                activityParticipant.setGmtModified(dt);
                 activityParticipant.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
                 activityParticipantList.add(activityParticipant);
             }
             // 添加活动参与人员
             activityParticipantManager.addActivityParticipantBatch(activityParticipantList);
         }
+        //返利活动
+        if (PromoConst.ACTIVITYTYPE.REBATE.getCode().equals(req.getActivityType())) {
+
+            //添加账户余额类型
+            AccountBalanceType balanceType = new AccountBalanceType();
+            balanceType.setBalanceTypeName(req.getName());
+            balanceType.setActId(marketingActivityId);
+            balanceType.setCreateStaff(req.getCreator());
+            balanceType.setUpdateStaff(req.getModifier());
+            balanceType.setRemark(req.getDescription());
+            accountBalanceTypeManager.addAccountBalanceType(balanceType);
+            String balanceTypeId = balanceType.getBalanceTypeId();
+            log.info("MarketingActivityServiceImpl.addMarketingActivity balanceTypeId={}", JSON.toJSONString(balanceTypeId));
+            //添加账户余额使用规则
+            AccountBalanceRule balanceRule = new AccountBalanceRule();
+            balanceRule.setBalanceTypeId(balanceTypeId);
+            balanceRule.setObjId(req.getInitiator());
+            balanceRule.setCreateStaff(req.getCreator());
+            balanceRule.setUpdateStaff(req.getModifier());
+            accountBalanceRuleManager.addAccountBalanceRule(balanceRule);
+        }
         MarketingActivityAddResp marketingActivityAddResp = new MarketingActivityAddResp();
         marketingActivityAddResp.setId(marketingActivityId);
+        marketingActivityAddResp.setMarketingActivityModifyId(marketingActivityModifyId);
         return ResultVO.success(marketingActivityAddResp);
     }
 
     @Override
     public ResultVO<MarketingActivityDetailResp> queryMarketingActivity(String id) {
+        log.info("MarketingActivityServiceImpl.queryMarketingActivity id={}", id);
+        ResultVO<MarketingActivityDTO> resultVO = marketingActivityManager.getMarketingActivityDtoById(id);
+        MarketingActivityDTO marketingActivityDTO = resultVO.getResultData();
+        log.info("MarketingActivityServiceImpl.queryMarketingActivity marketingActivityDTO{}", marketingActivityDTO);
+        if (marketingActivityDTO == null) {
+            return ResultVO.error(constant.getNoMarketingActivity());
+        }
+        MarketingActivityDetailResp resp = new MarketingActivityDetailResp();
+        BeanUtils.copyProperties(marketingActivityDTO, resp);
+        String marketingActivityCode = marketingActivityDTO.getCode();
+        String marketingActivityId = marketingActivityDTO.getId();
+        List<ActivityScopeDTO> activityScopeDTOList = activityScopeManager.queryActivityScopeByMktIdAndStatus(marketingActivityId, PromoConst.Status.Audited.getCode());
+        log.info("MarketingActivityServiceImpl.queryMarketingActivity activityScopeList=" + activityScopeDTOList);
+
+        if (!CollectionUtils.isEmpty(activityScopeDTOList)) {
+            for (ActivityScopeDTO activityScopeDTO : activityScopeDTOList
+            ) {
+                List<String> list = new ArrayList<>();
+                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
+                list.add(activityScopeDTO.getLanId());
+                commonRegionListReq.setRegionIdList(list);
+                ResultVO<List<CommonRegionDTO>> lancommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(lancommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : lancommonRegionDTOList.getResultData()
+                    ) {
+                        activityScopeDTO.setLanName(commonRegionDTO.getRegionName());
+                        activityScopeDTO.setKey(commonRegionDTO.getRegionId());
+                        activityScopeDTO.setTitle(commonRegionDTO.getRegionName());
+                        activityScopeDTO.setRegionId(commonRegionDTO.getRegionId());
+                    }
+                }
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity commonRegionDTOList=" +
+                        lancommonRegionDTOList.getResultData());
+                list.clear();
+                commonRegionListReq.getRegionIdList().clear();
+                list.add(activityScopeDTO.getCity());
+                commonRegionListReq.setRegionIdList(list);
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity list commonRegionListReq=" +
+                        list, commonRegionListReq.getRegionIdList());
+                ResultVO<List<CommonRegionDTO>> citycommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(citycommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : citycommonRegionDTOList.getResultData()
+                    ) {
+                        activityScopeDTO.setCityName(commonRegionDTO.getRegionName());
+                        activityScopeDTO.setKey(commonRegionDTO.getRegionId());
+                        activityScopeDTO.setTitle(commonRegionDTO.getRegionName());
+                        activityScopeDTO.setRegionId(commonRegionDTO.getRegionId());
+                    }
+                }
+            }
+            List<ActivityScopeDTO> activityScopeDTOLists = ReflectUtils.batchAssign(activityScopeDTOList, ActivityScopeDTO.class);
+            resp.setActivityScopeList(activityScopeDTOLists);
+            log.info("MarketingActivityServiceImpl.queryMarketingActivity resp.getActivityScopeList=" +
+                    resp.getActivityScopeList());
+        }
+        List<ActivityParticipantDTO> activityParticipantDTOList = activityParticipantManager.queryActivityParticipantByMktIdAndStatus(marketingActivityId, PromoConst.Status.Audited.getCode());
+        log.info("MarketingActivityServiceImpl.queryMarketingActivity activityParticipantDTOList=" +
+                activityParticipantDTOList);
+        if (!CollectionUtils.isEmpty(activityParticipantDTOList)) {
+            for (ActivityParticipantDTO activityParticipantDTO : activityParticipantDTOList
+            ) {
+                List<String> list = new ArrayList<>();
+                CommonRegionListReq commonRegionListReq = new CommonRegionListReq();
+                list.add(activityParticipantDTO.getLanId());
+                commonRegionListReq.setRegionIdList(list);
+                ResultVO<List<CommonRegionDTO>> lancommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(lancommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : lancommonRegionDTOList.getResultData()
+                    ) {
+                        activityParticipantDTO.setLanName(commonRegionDTO.getRegionName());
+                        activityParticipantDTO.setKey(commonRegionDTO.getRegionId());
+                        activityParticipantDTO.setTitle(commonRegionDTO.getRegionName());
+                        activityParticipantDTO.setRegionId(commonRegionDTO.getRegionId());
+                    }
+                }
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity lancommonRegionDTOList=" +
+                        lancommonRegionDTOList.getResultData());
+                list.clear();
+                commonRegionListReq.getRegionIdList().clear();
+                list.add(activityParticipantDTO.getCity());
+                commonRegionListReq.setRegionIdList(list);
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity list commonRegionListReq=" +
+                        list, commonRegionListReq.getRegionIdList());
+                ResultVO<List<CommonRegionDTO>> citycommonRegionDTOList = commonRegionService.listCommonRegion(commonRegionListReq);
+                if (!CollectionUtils.isEmpty(citycommonRegionDTOList.getResultData())) {
+                    for (CommonRegionDTO commonRegionDTO : citycommonRegionDTOList.getResultData()) {
+                        activityParticipantDTO.setCityName(commonRegionDTO.getRegionName());
+                        activityParticipantDTO.setKey(commonRegionDTO.getRegionId());
+                        activityParticipantDTO.setTitle(commonRegionDTO.getRegionName());
+                        ;
+                        activityParticipantDTO.setRegionId(commonRegionDTO.getRegionId());
+                    }
+                }
+                log.info("MarketingActivityServiceImpl.queryMarketingActivity citycommonRegionDTOList=" +
+                        citycommonRegionDTOList.getResultData());
+            }
+            List<ActivityParticipantDTO> activityParticipantDTOLists = ReflectUtils.batchAssign(activityParticipantDTOList, ActivityParticipantDTO.class);
+            resp.setActivityParticipantList(activityParticipantDTOLists);
+            log.info("MarketingActivityServiceImpl.queryMarketingActivity resp.getActivityParticipantList=" +
+                    resp.getActivityParticipantList());
+        }
+        // 根据活动编码查询参与活动产品
+        List<ActivityProduct> activityGoodsList = activityProductManager.queryActivityProductByCondition(marketingActivityId);
+        if (!CollectionUtils.isEmpty(activityGoodsList)) {
+            List<ActivityProductDTO> activityProductDTOList = ReflectUtils.batchAssign(activityGoodsList, ActivityProductDTO.class);
+            if (!CollectionUtils.isEmpty(activityProductDTOList)) {
+                for (int i = 0; i < activityProductDTOList.size(); i++) {
+                    ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                    productGetByIdReq.setProductId(activityProductDTOList.get(i).getProductId());
+                    ResultVO<ProductResp> respResultVO = productService.getProduct(productGetByIdReq);
+                    if (null != respResultVO.getResultData()) {
+                        activityProductDTOList.get(i).setUnitName(respResultVO.getResultData().getUnitName());
+                        activityProductDTOList.get(i).setSn(respResultVO.getResultData().getSn());
+                    }
+                }
+            }
+            resp.setActivityProductList(activityProductDTOList);
+        }
+        // 根据活动编码查询活动规则
+        List<ActivityRule> activityRuleList = activityRuleManager.queryActivityRuleByCondition(marketingActivityId);
+        if (!CollectionUtils.isEmpty(activityRuleList)) {
+            List<ActivityRuleDTO> activityRuleDTOList = ReflectUtils.batchAssign(activityRuleList, ActivityRuleDTO.class);
+            resp.setActivityRuleDTOList(activityRuleDTOList);
+        }
+        // 根据活动编码查询优惠信息
+        List<Promotion> promotionList = promotionManager.queryPromotionByCondition(marketingActivityId);
+        if (!CollectionUtils.isEmpty(promotionList)) {
+            List<PromotionDTO> promotionDTOList = ReflectUtils.batchAssign(promotionList, PromotionDTO.class);
+            resp.setPromotionDTOList(promotionDTOList);
+        }
+        return ResultVO.success(resp);
+    }
+
+    @Override
+    public ResultVO<MarketingActivityDetailResp> queryMarketingActivityFor(String id) {
         log.info("MarketingActivityServiceImpl.queryMarketingActivity id={}", id);
         ResultVO<MarketingActivityDTO> resultVO = marketingActivityManager.getMarketingActivityDtoById(id);
         MarketingActivityDTO marketingActivityDTO = resultVO.getResultData();
@@ -268,6 +474,24 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         List<ActivityProduct> activityGoodsList = activityProductManager.queryActivityProductByCondition(marketingActivityId);
         if (!CollectionUtils.isEmpty(activityGoodsList)) {
             List<ActivityProductDTO> activityProductDTOList = ReflectUtils.batchAssign(activityGoodsList, ActivityProductDTO.class);
+            if (!CollectionUtils.isEmpty(activityProductDTOList)) {
+                for (int i = 0; i < activityProductDTOList.size(); i++) {
+                    ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
+                    productGetByIdReq.setProductId(activityProductDTOList.get(i).getProductId());
+                    ResultVO<ProductResp> respResultVO = productService.getProductInfo(productGetByIdReq);
+                    if (null != respResultVO.getResultData()) {
+                        activityProductDTOList.get(i).setUnitName(respResultVO.getResultData().getUnitName());
+                        activityProductDTOList.get(i).setSn(respResultVO.getResultData().getSn());
+                        activityProductDTOList.get(i).setTypeName(respResultVO.getResultData().getTypeName());//lws
+                        activityProductDTOList.get(i).setProductName(respResultVO.getResultData().getProductName());//lws
+                        activityProductDTOList.get(i).setColor(respResultVO.getResultData().getColor());//lws
+                        activityProductDTOList.get(i).setMemory(respResultVO.getResultData().getMemory());//lws
+                        activityProductDTOList.get(i).setUnitTypeName(respResultVO.getResultData().getUnitTypeName());//lws
+                        activityProductDTOList.get(i).setBrandName(respResultVO.getResultData().getBrandName());//lws
+                        activityProductDTOList.get(i).setUnitTypeName(respResultVO.getResultData().getUnitTypeName());//lws
+                    }
+                }
+            }
             resp.setActivityProductList(activityProductDTOList);
         }
         // 根据活动编码查询活动规则
@@ -292,6 +516,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     }
 
     @Override
+    public ResultVO<List<MarketingActivityResp>> getMarketingCampaign(MarketingActivityReq req) {
+        log.info("MarketingActivityServiceImpl.getMarketingCampaign req={}", JSON.toJSONString(req));
+        return ResultVO.success(marketingActivityManager.getMarketingCampaign(req));
+    }
+
+    @Override
     public ResultVO<Boolean> cancleMarketingActivity(CancelMarketingActivityStatusReq req) {
         log.info("MarketingActivityServiceImpl.endMarketingActivity id={}", req.getActivityId());
         return ResultVO.success(marketingActivityManager.deleteMarketingActivityById(req.getActivityId(), PromoConst.STATUSCD.STATUS_CD_PLUS_1.getCode()));
@@ -308,6 +538,38 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         log.info("MarketingActivityServiceImpl.startMarketingActivity id={}", req.getActivityId());
         return ResultVO.success(marketingActivityManager.updateMarketingActivityById(req.getActivityId(), PromoConst.STATUSCD.STATUS_CD_1.getCode()));
     }
+
+    /**
+     * 查询B2B产品适用活动
+     * 逻辑：先检查商家是否有可以参加的活动 ，可以参加  就返回 活动产品 关联对象（主要是获取活动价格）
+     *
+     * @param req 入参数
+     * @return 活动产品 关联对象
+     */
+    @Override
+    public ResultVO<ActivityProductDTO> getActivityProduct(MarketingActivityQueryByGoodsReq req) {
+        log.info("MarketingActivityServiceImpl.getActivityProduct req={}", JSON.toJSONString(req));
+        ResultVO<ActivityProductDTO> resp = ResultVO.success(null);
+        ResultVO<List<MarketingGoodsActivityQueryResp>> resultVO = listGoodsMarketingActivitys(req);
+        if (resultVO.isSuccess() && !CollectionUtils.isEmpty(resultVO.getResultData())) {
+            // 取第一条
+            MarketingGoodsActivityQueryResp marketingGoodsActivityQueryResp = resultVO.getResultData().get(0);
+            // 取活动产品关联信息
+            ActivityProductListReq activityProductListReq = new ActivityProductListReq();
+            activityProductListReq.setProductId(req.getProductId());
+            activityProductListReq.setMarketingActivityIds(Lists.newArrayList(marketingGoodsActivityQueryResp.getId()));
+            ResultVO<List<ActivityProductDTO>> activityProductResultVO = activityProductService.queryActivityProducts(activityProductListReq);
+            if (activityProductResultVO.isSuccess() && !CollectionUtils.isEmpty(activityProductResultVO.getResultData())) {
+                // 取第一个
+                ActivityProductDTO activityProductDTO = activityProductResultVO.getResultData().get(0);
+                // 设置返回值
+                resp.setResultData(activityProductDTO);
+            }
+        }
+        log.info("MarketingActivityServiceImpl.getActivityProduct out={}", JSON.toJSONString(resp));
+        return resp;
+    }
+
 
     /**
      * 查询商品详情页面中的适用活动
@@ -401,6 +663,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                         marketingAndPromotionResp.setId(marketingActivity.getId());
                         marketingAndPromotionResp.setPromotionPrice(String.valueOf(activityGoodsList.get(k).getDiscountAmount()));
                         marketingAndPromotionResp.setProductId(activityGoodsList.get(k).getProductId());
+                        marketingAndPromotionResp.setNum(activityGoodsList.get(k).getNum());
+
                         respList.add(marketingAndPromotionResp);
                     }
                 }
@@ -529,6 +793,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryRespList = Lists.newArrayList();
         ResultVO<List<MarketingGoodsActivityQueryResp>> listResultVO = this.listGoodsMarketingActivitys(req);
         List<MarketingGoodsActivityQueryResp> activityList = listResultVO.getResultData();
+        VerifyProductPurchasesLimitReq verifyProductPurchasesLimitReq = new VerifyProductPurchasesLimitReq();
         if (!CollectionUtils.isEmpty(activityList)) {
             List<String> marketingActivityIdList = Lists.newArrayList();
             activityList.forEach(item -> {
@@ -539,10 +804,20 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             if (!CollectionUtils.isEmpty(productList)) {
                 productList.forEach(item -> {
                     if (null != item.getDiscountAmount()) {
-                        MarketingReliefActivityQueryResp marketingReliefActivityQueryResp = new MarketingReliefActivityQueryResp();
-                        marketingReliefActivityQueryResp.setMarketingActivityId(item.getMarketingActivityId());
-                        marketingReliefActivityQueryResp.setPromotionPrice(String.valueOf(item.getDiscountAmount()));
-                        marketingReliefActivityQueryRespList.add(marketingReliefActivityQueryResp);
+                        if (PromoConst.ProductNumFlg.ProductNumFlg_1.getCode().equals(item.getNumLimitFlg())) {
+                            verifyProductPurchasesLimitReq.setPurchaseCount(1);
+                            verifyProductPurchasesLimitReq.setActivityId(item.getMarketingActivityId());
+                            verifyProductPurchasesLimitReq.setProductId(item.getProductId());
+                            Long buyCount = historyPurchaseManager.queryActProductPurchasedSum(verifyProductPurchasesLimitReq);
+                            if (buyCount != null) {
+                                if (item.getNum() < buyCount) {
+                                    MarketingReliefActivityQueryResp marketingReliefActivityQueryResp = new MarketingReliefActivityQueryResp();
+                                    marketingReliefActivityQueryResp.setMarketingActivityId(item.getMarketingActivityId());
+                                    marketingReliefActivityQueryResp.setPromotionPrice(String.valueOf(item.getDiscountAmount()));
+                                    marketingReliefActivityQueryRespList.add(marketingReliefActivityQueryResp);
+                                }
+                            }
+                        }
                     }
                 });
             }
@@ -612,19 +887,55 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
      * @return
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public ResultVO<Boolean> updateMarketingActivity(MarketingActivityAddReq req) {
         log.info("MarketingActivityServiceImpl.updateMarketingActivity req={}", JSON.toJSONString(req));
         MarketingActivity marketingActivity = new MarketingActivity();
         BeanUtils.copyProperties(req, marketingActivity);
         String marketingActivityId = marketingActivity.getId();
         if (StringUtils.isNotEmpty(marketingActivityId)) {
-            ResultVO<MarketingActivityAddResp> response = addMarketingActivity(req);
-            log.info("MarketingActivityServiceImpl.updateMarketingActivity resp={}", JSON.toJSONString(response));
-            if (response.isSuccess() && null != response.getResultData()) {
-
-                return ResultVO.successMessage(constant.getUpdateSuccess());
+            //1. 先判断此数据的状态， 审核通过用新逻辑，不通过用原逻辑
+            ResultVO<MarketingActivityDTO> result = marketingActivityManager.getMarketingActivityDtoById(marketingActivityId);
+            MarketingActivityDTO marketingActivityDTO = result.getResultData();
+            // STATUS_CD_20("20","审核通过")
+            if (marketingActivityDTO != null && PromoConst.STATUSCD.STATUS_CD_20.getCode().equals(marketingActivityDTO.getStatus())) {
+//                int num = 0;
+//                List<MarketingActivityModify> list = marketingActivityManager.queryMarketingActivityModifySize(req.getId());
+//                if (!CollectionUtils.isEmpty(list)){
+//                    num = list.size();
+//                }
+//                MarketingActivityModify marketingActivityModify = new MarketingActivityModify();
+//                req.setId("");
+//                BeanUtils.copyProperties(req, marketingActivityModify);
+//                marketingActivityModify.setMarketingActivityId(marketingActivityId);
+//                marketingActivityModify.setVerNum(Long.valueOf(num+1));
+//                int size =  marketingActivityManager.updateMarketingActivityModify(marketingActivityModify);
+//                if (size > 0){
+//                  return ResultVO.successMessage(constant.getUpdateSuccess());
+//                } else {
+//                  return ResultVO.error(constant.getUpdateFaile());
+//                }
+                //新变更审核逻辑-开始
+                try {
+                    ResultVO processResult = marketingActivityChangeAuitProcess(marketingActivityDTO, req);
+                    if (!processResult.isSuccess()) {
+                        return processResult;
+                    }
+                    return ResultVO.successMessage(constant.getUpdateSuccess());
+                } catch (Exception e) {
+                    log.info("MarketingActivityServiceImpl.updateMarketingActivity req={}", JSON.toJSONString(req));
+                    log.error("MarketingActivityServiceImpl.updateMarketingActivity 变更营销活动通过审核失败", e);
+                    return ResultVO.error(constant.getUpdateFaile());
+                }
+                //新变更审核逻辑-结束
             } else {
-                return ResultVO.error(constant.getUpdateFaile());
+                ResultVO<MarketingActivityAddResp> response = addMarketingActivity(req);
+                log.info("MarketingActivityServiceImpl.updateMarketingActivity resp={}", JSON.toJSONString(response));
+                if (response.isSuccess() && null != response.getResultData()) {
+                    return ResultVO.successMessage(constant.getUpdateSuccess());
+                } else {
+                    return ResultVO.error(constant.getUpdateFaile());
+                }
             }
         } else {
             return ResultVO.error(constant.getNoMarketingActivityId());
@@ -632,7 +943,517 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     }
 
     /**
-     * 营销活动审核
+     * 活动变更流程主方法，包含添加变更数据和启动审核流程
+     *
+     * @param originalActivity
+     * @param changedActivity
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVO marketingActivityChangeAuitProcess(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity) {
+        if (PromoConst.ActivityIsModifying.YES.getCode().equals(originalActivity.getIsModifying())) {
+            return ResultVO.error(constant.getModifying());
+        }
+        //1.插入变更信息，包含比较变更数据和原数据，获取变更项，插入变更表和变更明细表
+        String changeId = addMarketingActivityChange(originalActivity, changedActivity);
+        if (changeId == null) {
+            return ResultVO.error(constant.getNoModify());
+        }
+        //2.将营销活动“修改标识”改为1(在审核修改中)
+        marketingActivityManager.updateMarketingActivityToModifying(changedActivity.getId(), PromoConst.ActivityIsModifying.YES.getCode());
+        //3.起变更审核流程
+        ResultVO auditMktResultVO = activityChangeAuitStartProcess(changedActivity.getName(), changedActivity.getUserId(), changedActivity.getUserName(), changedActivity.getOrgId(), changedActivity.getSysPostName(), changedActivity.getId(), changeId);
+        return auditMktResultVO;
+
+    }
+
+    /**
+     * 增加营销活动变更信息
+     *
+     * @param originalActivity 原活动
+     * @param changedActivity  变更后的活动
+     * @return 变更信息id
+     */
+    private String addMarketingActivityChange(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity) {
+
+        //获取原活动信息，与新活动信息比较获取变更明细信息
+        List<ActivityChangeDetail> activityChangeDetails = calculateActivityChangeDetail(originalActivity, changedActivity);
+        if (activityChangeDetails.size() == 0) {
+            return null;
+        }
+        //通过查询该活动的最新变更信息,计算出新变更版本号，与变更明细共用
+        Long num = 0L;
+        List<ActivityChange> changes = activityChangeManager.queryActivityChangeByActivityId(changedActivity.getId());
+        if (changes != null && changes.size() > 0) {
+            num = changes.size() + 1L;
+        }
+        //从全局sequence获取id序号作为本实例的id
+        String changeId = activityChangeManager.getPrimaryKey();
+        String createStaff = changedActivity.getModifier();
+        Date createDate = new Date();
+        //封装活动变更信息模型
+        ActivityChange activityChange = new ActivityChange();
+        activityChange.setChangeId(changeId);
+        activityChange.setVerNum(num);
+        activityChange.setCreateDate(createDate);
+        activityChange.setCreateStaff(createStaff);
+        activityChange.setMarketingActivityId(changedActivity.getId());
+        activityChange.setAuditState(PromoConst.AuditState.AuditState_2.getCode());
+
+        //补充变更详情相关关联信息
+        for (ActivityChangeDetail activityChangeDetail : activityChangeDetails) {
+            activityChangeDetail.setChangeId(changeId);
+            activityChangeDetail.setVerNum(Long.valueOf(num));
+            activityChangeDetail.setCreateDate(createDate);
+            activityChangeDetail.setCreateStaff(createStaff);
+        }
+        //保存活动变更信息
+        activityChangeManager.insertActivityChange(activityChange);
+        //保存活动变更明细信息
+        activityChangeDetailManager.addActivityChangeDetailBatch(activityChangeDetails);
+        return changeId;
+    }
+
+    /**
+     * 计算营销活动变更详情信息
+     *
+     * @param originalActivity 原活动
+     * @param changedActivity  变更后的活动
+     * @return
+     */
+    private List<ActivityChangeDetail> calculateActivityChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity) {
+        List<ActivityChangeDetail> activityChangeDetails = new ArrayList<>();
+
+        // 1.计算活动名称、概述、描述信息,获取变更数据
+        calculateActivityNameAndBriefAndDescriptionChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 2.计算活动时间信息,获取变更数据
+        calculateActivityTimeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 3.计算发货时间信息,获取变更数据
+        calculateDeliverTimeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 4.计算支付定金信息,获取变更数据
+        calculatePreTimeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 5.计算活动支付尾款信息,获取变更数据
+        calculateImgChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 6.计算活动图片信息,获取变更数据
+        calculatePayTimeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 7.计算活动参与范围信息,获取变更数据
+        calculateScopeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 8.计算活动参与对象信息,获取变更数据
+        calculateParticipantChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+        return activityChangeDetails;
+    }
+
+    /**
+     * 计算活动名称、概述、描述信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateActivityNameAndBriefAndDescriptionChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        //1.比较活动基本信息
+        //1.1 比较活动名称
+        if(StringUtils.isNotEmpty(changedActivity.getName())&&!changedActivity.getName().equals(originalActivity.getName())){
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.name.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.name.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_1.getCode());
+            activityChangeDetail.setOldValue(originalActivity.getName());
+            activityChangeDetail.setNewValue(changedActivity.getName());
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+
+        //1.2 比较活动概述
+        if(StringUtils.isNotEmpty(changedActivity.getBrief())&&!changedActivity.getBrief().equals(originalActivity.getBrief())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.brief.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.brief.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_1.getCode());
+            activityChangeDetail.setOldValue(originalActivity.getBrief());
+            activityChangeDetail.setNewValue(changedActivity.getBrief());
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        //1.3 比较活动描述
+        if(StringUtils.isNotEmpty(changedActivity.getDescription())&&!changedActivity.getDescription().equals(originalActivity.getDescription())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.description.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.description.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_1.getCode());
+            activityChangeDetail.setOldValue(originalActivity.getDescription());
+            activityChangeDetail.setNewValue(changedActivity.getDescription());
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+    }
+    /**
+     * 计算活动时间信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateActivityTimeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 2.比较活动时间（包括开始时间和结束时间）
+        // 2.1 活动开始时间
+        if ((changedActivity.getStartTime() != null && changedActivity.getStartTime().getTime() > 0) && !changedActivity.getStartTime().equals(originalActivity.getStartTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.startTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.startTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getStartTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getStartTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        // 2.2 活动结束时间
+        if ((changedActivity.getEndTime() != null && changedActivity.getEndTime().getTime() > 0) && !changedActivity.getEndTime().equals(originalActivity.getEndTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.endTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.endTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getEndTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getEndTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+
+    }
+
+
+    /**
+     * 计算发货时间信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateDeliverTimeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 3比较发货时间（包括开始时间和结束时间）
+        // 3.1 活动发货开始时间
+        if ((changedActivity.getDeliverStartTime() != null && changedActivity.getDeliverStartTime().getTime() > 0) && !changedActivity.getDeliverStartTime().equals(originalActivity.getDeliverStartTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.deliverStartTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.deliverStartTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getDeliverStartTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getDeliverStartTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        // 3.2 活动发货结束时间
+        if ((changedActivity.getDeliverEndTime() != null && changedActivity.getDeliverEndTime().getTime() > 0) && !changedActivity.getDeliverEndTime().equals(originalActivity.getDeliverEndTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.deliverEndTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.deliverEndTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getDeliverEndTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getDeliverEndTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+
+    }
+
+    /**
+     * 计算支付定金时间信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculatePreTimeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 4比较支付定金时间（包括开始时间和结束时间）
+        // 4.1 支付定金开始时间
+        if ((changedActivity.getPreStartTime() != null && changedActivity.getPreStartTime().getTime() > 0) && !changedActivity.getPreStartTime().equals(originalActivity.getPreStartTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.preStartTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.preStartTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getPreStartTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getPreStartTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        //1.4.2 支付定金结束时间
+        if ((changedActivity.getPreEndTime() != null && changedActivity.getPreEndTime().getTime() > 0) && !changedActivity.getPreEndTime().equals(originalActivity.getPreEndTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.preEndTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.preEndTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getPreEndTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getPreEndTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+    }
+
+    /**
+     * 计算活动支付尾款信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculatePayTimeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 5比较支付尾款时间（包括开始时间和结束时间）
+        // 5.1 支付尾款开始时间
+        if ((changedActivity.getTailPayStartTime() != null && changedActivity.getTailPayStartTime().getTime() > 0) && !changedActivity.getTailPayStartTime().equals(originalActivity.getTailPayStartTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.tailPayStartTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.tailPayStartTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getTailPayStartTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getTailPayStartTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        //5.2 支付尾款结束时间
+        if ((changedActivity.getTailPayEndTime() != null && changedActivity.getTailPayEndTime().getTime() > 0) && !changedActivity.getTailPayEndTime().equals(originalActivity.getTailPayEndTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.tailPayEndTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.tailPayEndTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getTailPayEndTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getTailPayEndTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+
+    }
+
+    /**
+     * 计算活动图片信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateImgChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 6 比较活动图片
+        // 6.1 比较活动顶部图片
+        if (StringUtils.isNotEmpty(changedActivity.getTopImgUrl()) && !changedActivity.getTopImgUrl().equals(originalActivity.getTopImgUrl())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.topImgUrl.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.topImgUrl.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_3.getCode());
+            activityChangeDetail.setOldValue(originalActivity.getTopImgUrl());
+            activityChangeDetail.setNewValue(changedActivity.getTopImgUrl());
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        // 6.2 比较活动页面图片
+        if (StringUtils.isNotEmpty(changedActivity.getPageImgUrl()) && !changedActivity.getPageImgUrl().equals(originalActivity.getPageImgUrl())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.pageImgUrl.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.pageImgUrl.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_3.getCode());
+            activityChangeDetail.setOldValue(originalActivity.getPageImgUrl());
+            activityChangeDetail.setNewValue(changedActivity.getPageImgUrl());
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+    }
+
+    /**
+     * 计算活动参与范围信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateScopeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 7.比较活动范围信息
+        //获取原活动范围数据和变更后是活动范围数据
+        List<ActivityScopeDTO> originalActivityScopeDTOList = activityScopeManager.queryActivityScopeByMktIdAndStatus(originalActivity.getId(), PromoConst.Status.Audited.getCode());
+        List<ActivityScopeDTO> changedActivityScopeDTOList = changedActivity.getActivityScopeList();
+        if (!CollectionUtils.isEmpty(changedActivityScopeDTOList) && changedActivityScopeDTOList.size() > originalActivityScopeDTOList.size()) {
+            List<String> originalActivityScopeLanIds = originalActivityScopeDTOList.stream().map(ActivityScopeDTO::getLanId).collect(Collectors.toList());
+            List<String> originalActivityScopeCitys = originalActivityScopeDTOList.stream().map(ActivityScopeDTO::getCity).collect(Collectors.toList());
+            List<String> originalActivitySupplierCodes = originalActivityScopeDTOList.stream().map(ActivityScopeDTO::getSupplierCode).collect(Collectors.toList());
+            for (ActivityScopeDTO changedActivityScopeDTO : changedActivityScopeDTOList) {
+                if (changedActivityScopeDTOList == null || "null".equals(changedActivityScopeDTO)) {
+                    continue;
+                }
+                String lanId = changedActivityScopeDTO.getLanId() == null ? "" : changedActivityScopeDTO.getLanId();
+                String city = changedActivityScopeDTO.getCity() == null ? "" : changedActivityScopeDTO.getCity();
+                String supplierCode = changedActivityScopeDTO.getSupplierCode() == null ? "" : changedActivityScopeDTO.getSupplierCode();
+                if (originalActivityScopeLanIds.contains(lanId) || originalActivityScopeCitys.contains(city)) {
+                    continue;
+                }
+                if (originalActivitySupplierCodes.contains(supplierCode)) {
+                    continue;
+                }
+                //如果该范围不在原范围里，准备进行添加，并写变更详情表
+                //封装活动范围信息
+                ActivityScope activityScope = new ActivityScope();
+                BeanUtils.copyProperties(changedActivityScopeDTO, activityScope);
+                activityScope.setMarketingActivityId(originalActivity.getId());
+                Date dt = new Date();
+                activityScope.setGmtCreate(dt);
+                activityScope.setGmtModified(dt);
+                activityScope.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+                activityScope.setStatus(PromoConst.Status.WaitAudit.getCode());
+                activityScopeManager.insertActivityScope(activityScope);
+                //封装变更明细信息
+                ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+                activityChangeDetail.setOperType(PromoConst.OperType.ADD.getCode());
+                activityChangeDetail.setTableName(ActivityScope.TNAME);
+                activityChangeDetail.setKeyValue(activityScope.getId());
+                activityChangeDetail.setFieldType(changedActivity.getActivityScopeType());
+                activityChangeDetails.add(activityChangeDetail);
+
+            }
+        }
+    }
+
+    /**
+     * 计算活动参与对象信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateParticipantChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 8.比较活动参与对象信息
+        // 获取原活动参与对象数据和变更后是活动参与对象数据
+        List<ActivityParticipantDTO> originalParticipantDTOList = activityParticipantManager.queryActivityParticipantByMktIdAndStatus(originalActivity.getId(), PromoConst.Status.Audited.getCode());
+        List<ActivityParticipantDTO> changedParticipantDTOList = changedActivity.getActivityParticipantList();
+        // 比较得出参与对象变更项
+        List<ActivityParticipantDTO> newParticipantDTOList = new ArrayList<>();
+        String participantType = changedActivity.getActivityParticipantType();
+        // 8.1如果是"按条件过滤"的参与对象变更，用如下逻辑判断变更项
+        if (!CollectionUtils.isEmpty(changedParticipantDTOList) && changedParticipantDTOList.size() == originalParticipantDTOList.size()&&PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode().equals(participantType)) {
+            ActivityParticipantDTO changedParticipantDTO = changedParticipantDTOList.get(0);
+            String originalParticipantFilterValue = originalParticipantDTOList.get(0).getFilterValue();
+            String changeParticipantFilterValue = changedParticipantDTO.getFilterValue();
+            if (!originalParticipantFilterValue.equals(changeParticipantFilterValue)) {
+                changedParticipantDTO.setOperType(PromoConst.OperType.MOD.getCode());
+                newParticipantDTOList.add(changedParticipantDTO);
+            }
+        }
+        // 8.2如果是"按地市/按商家"的参与对象的新增，用如下逻辑判断新增项
+        if (!CollectionUtils.isEmpty(changedParticipantDTOList) && changedParticipantDTOList.size() > originalParticipantDTOList.size()) {
+            List<String> originalParticipantLanIds = originalParticipantDTOList.stream().map(ActivityParticipantDTO::getLanId).collect(Collectors.toList());
+            List<String> originalParticipantCitys = originalParticipantDTOList.stream().map(ActivityParticipantDTO::getCity).collect(Collectors.toList());
+            List<String> originalParticipantMerchantCodes = originalParticipantDTOList.stream().map(ActivityParticipantDTO::getMerchantCode).collect(Collectors.toList());
+            for (ActivityParticipantDTO changedParticipantDTO : changedParticipantDTOList) {
+                if (changedParticipantDTO == null || "null".equals(changedParticipantDTO)) {
+                    continue;
+                }
+                String lanId = changedParticipantDTO.getLanId() == null ? "" : changedParticipantDTO.getLanId();
+                String city = changedParticipantDTO.getCity() == null ? "" : changedParticipantDTO.getCity();
+                String merchantCode = changedParticipantDTO.getMerchantCode() == null ? "" : changedParticipantDTO.getMerchantCode();
+                if (originalParticipantLanIds.contains(lanId) || originalParticipantCitys.contains(city)) {
+                    continue;
+                }
+                if (originalParticipantMerchantCodes.contains(merchantCode)) {
+                    continue;
+                }
+
+                //添加到变更项列表
+                changedParticipantDTO.setOperType(PromoConst.OperType.ADD.getCode());
+                newParticipantDTOList.add(changedParticipantDTO);
+            }
+
+        }
+        // 8.3进行参与对象变更项插入和变更记录新增
+        for (ActivityParticipantDTO newParticipantDTO : newParticipantDTOList){
+            //如果该范围不在原参与对象里，准备进行添加，并写变更详情表
+            ActivityParticipant activityParticipant = new ActivityParticipant();
+            BeanUtils.copyProperties(newParticipantDTO, activityParticipant);
+            activityParticipant.setMarketingActivityId(originalActivity.getId());
+            Date dt = new Date();
+            activityParticipant.setGmtCreate(dt);
+            activityParticipant.setGmtModified(dt);
+            activityParticipant.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+            activityParticipant.setStatus(PromoConst.Status.WaitAudit.getCode());
+            activityParticipantManager.insertActivityParticipant(activityParticipant);
+            //封装变更明细信息
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(newParticipantDTO.getOperType());
+            activityChangeDetail.setTableName(ActivityParticipant.TNAME);
+            activityChangeDetail.setKeyValue(activityParticipant.getId());
+            activityChangeDetail.setFieldType(changedActivity.getActivityParticipantType());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+    }
+
+    /**
+     * date 转换成 time字符
+     *
+     * @param date
+     * @return
+     */
+    private String dateToTimeStr(Date date) {
+        if (Objects.isNull(date)) {
+            return null;
+        }
+        return String.valueOf(date.getTime());
+    }
+
+
+    /**
+     * 营销活动变更审核启动流程
+     *
+     * @param activityName 流程名（这里使用活动名称）
+     * @param userId       发起人id
+     * @param userName     发起人用户名
+     * @param orgName      发起人组织
+     * @param sysPostName  发起人岗位名称
+     * @param activityId   业务id
+     * @param changeId     变更id
+     * @return
+     */
+    private ResultVO activityChangeAuitStartProcess(String activityName, String userId, String userName, String orgName, String sysPostName, String activityId, String changeId) {
+        log.info("MarketingActivityServiceImpl.activityChangeAuitStartProcess activityName={},userId={}, userName{}," +
+                "orgName{}, sysPostName{}, activityId{}", activityName, userId, userName, orgName, sysPostName, activityId);
+        ProcessStartReq processStartDTO = new ProcessStartReq();
+        processStartDTO.setTitle(activityName);
+        //创建流程者，参数需要提供
+        processStartDTO.setApplyUserId(userId);
+        processStartDTO.setApplyUserName(userName);
+        processStartDTO.setExtends1(orgName + sysPostName);
+        processStartDTO.setProcessId("3060101");
+        processStartDTO.setFormId(activityId);
+        processStartDTO.setParamsType(2);
+        processStartDTO.setParamsValue(changeId);
+        //TASK_SUB_TYPE_1142("1","1142","营销活动变更流程");
+        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1142.getTaskSubType());
+        log.info("MarketingActivityServiceImpl.activityChangeAuitStartProcess req={}", JSON.toJSONString(processStartDTO));
+        //开启流程
+        return taskService.startProcess(processStartDTO);
+    }
+
+    /**
+     * 营销活动审核启动流程
      *
      * @param userId,invoiceId
      * @return
@@ -758,10 +1579,79 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         return ResultVO.success(marketingActivityInfoResp);
     }
 
+    /**
+     * 根据营销活动ID查询营销活动、优惠券、参与产品详情
+     *
+     * @param activityId
+     * @return
+     */
+    @Override
+    public ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfor(String activityId) {
+        MarketingActivityInfoResp marketingActivityInfoResp = new MarketingActivityInfoResp();
+
+        //营销活动基本信息
+        MarketingActivityDetailResp marketingActivityDetailResp = queryMarketingActivityFor(activityId).getResultData();
+        marketingActivityInfoResp.setMarketingActivityDetailResp(marketingActivityDetailResp);
+        QueryPreSubsidyReqDTO queryPreSubsidyReqDTO = new QueryPreSubsidyReqDTO();
+        queryPreSubsidyReqDTO.setMarketingActivityId(activityId);
+        if (PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode().equals(marketingActivityDetailResp.getActivityType())) {
+            //营销活动优惠券列表信息
+            List<QueryPreSubsidyCouponResqDTO> queryPreSubsidyCouponResqDTOList = new ArrayList<>();
+            List couponList = preSubsidyCouponService.queryPreSubsidyCoupon(queryPreSubsidyReqDTO).getResultData();
+            if (couponList != null && couponList.size() > 0) {
+                for (int i = 0; i < couponList.size(); i++) {
+                    QueryPreSubsidyCouponResqDTO queryPreSubsidyCouponResqDTO = new QueryPreSubsidyCouponResqDTO();
+                    BeanUtils.copyProperties(couponList.get(i), queryPreSubsidyCouponResqDTO);
+                    queryPreSubsidyCouponResqDTOList.add(queryPreSubsidyCouponResqDTO);
+                }
+            }
+            marketingActivityInfoResp.setQueryPreSubsidyCouponResqDTOList(queryPreSubsidyCouponResqDTOList);
+
+            //营销活动产品列表信息
+            List<PreSubsidyProductPromResqDTO> preSubsidyProductPromResqDTOS = new ArrayList<>();
+            //前置补贴活动
+            List<com.iwhalecloud.retail.rights.dto.response.PreSubsidyProductPromResqDTO> productList =
+                    preSubsidyCouponService.queryPreSubsidyProductInfo(queryPreSubsidyReqDTO).getResultData();
+            if (productList != null && productList.size() > 0) {
+                for (int i = 0; i < productList.size(); i++) {
+                    PreSubsidyProductPromResqDTO preSubsidyProductPromResqDTO = new PreSubsidyProductPromResqDTO();
+                    BeanUtils.copyProperties(productList.get(i), preSubsidyProductPromResqDTO);
+
+                    // 取前置补贴活动价 zhong.wenlong
+                    if (Objects.nonNull(productList.get(i))) {
+                        preSubsidyProductPromResqDTO.setPrice(productList.get(i).getActivityProductResq().getPrice());
+                        preSubsidyProductPromResqDTO.setProductPic(productList.get(i).getActivityProductResq().getProductPic());
+                        preSubsidyProductPromResqDTO.setProductPicUseType(productList.get(i).getActivityProductResq().getProductPicUseType());
+                    }
+
+                    preSubsidyProductPromResqDTO.setNum(productList.get(i).getActivityProductResq().getNum());
+                    preSubsidyProductPromResqDTO.setDiscountAmount(productList.get(i).getActivityProductResq().getDiscountAmount());
+                    preSubsidyProductPromResqDTOS.add(preSubsidyProductPromResqDTO);
+                }
+            }
+            marketingActivityInfoResp.setQueryPreSubsidyProductPromResqDTOList(preSubsidyProductPromResqDTOS);
+        } else if (PromoConst.ACTIVITYTYPE.BOOKING.getCode().equals(marketingActivityDetailResp.getActivityType())) {
+            QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
+            queryMarketingActivityReq.setMarketingActivityId(activityId);
+            //预售活动
+            ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = activityProductService.queryPreSaleProductInfo(queryMarketingActivityReq);
+            marketingActivityInfoResp.setPreSaleProductInfo(listResultVO.getResultData());
+        }
+        return ResultVO.success(marketingActivityInfoResp);
+    }
+
     @Override
     public ResultVO<MarketingActivityDTO> queryMarketingActivityById(QueryMarketingActivityReq queryMarketingActivityReq) {
         MarketingActivityDTO marketingActivityDTO = new MarketingActivityDTO();
         MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivity(queryMarketingActivityReq.getMarketingActivityId());
+        BeanUtils.copyProperties(marketingActivity, marketingActivityDTO);
+        return ResultVO.success(marketingActivityDTO);
+    }
+
+    @Override
+    public ResultVO<MarketingActivityDTO> queryMarketingActivityByIdtime(QueryMarketingActivityReq queryMarketingActivityReq) {
+        MarketingActivityDTO marketingActivityDTO = new MarketingActivityDTO();
+        MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivityTime(queryMarketingActivityReq.getMarketingActivityId());
         BeanUtils.copyProperties(marketingActivity, marketingActivityDTO);
         return ResultVO.success(marketingActivityDTO);
     }
@@ -862,6 +1752,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         log.info("MarketingActivityServiceImpl.queryActMerchant--> marketingActivityId={}", marketingActivityId);
         List<String> strings = Lists.newArrayList();
         MarketingActivity marketingActivity = marketingActivityManager.queryMarketingActivity(marketingActivityId);
+
         if (marketingActivity == null) {
             return ResultVO.error("活动不存在");
         }
@@ -872,11 +1763,31 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         }
         String activityParticipantType = marketingActivity.getActivityParticipantType();
         if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(activityParticipantType)) {
-            for (ActivityParticipant activityParticipant : activityParticipants) {
-                /** 参与对象表当前merchant_code字段存的是merchant_id*/
-                if (StringUtils.isNotEmpty(activityParticipant.getMerchantCode())) {
-                    strings.add(activityParticipant.getMerchantCode());
+            /** 参与对象表当前merchant_code字段存的是merchant_id*/
+            strings = activityParticipants.stream().map(ActivityParticipant::getMerchantCode).collect(Collectors.toList());
+        } else if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(activityParticipantType)) {
+            //获取活动参与对象的地区集合
+            List<String> lanList = Lists.newArrayList();
+            List<String> cityList = Lists.newArrayList();
+            activityParticipants.stream().filter((ActivityParticipant activityParticipant) ->
+                    StringUtils.isNotEmpty(activityParticipant.getLanId()) || StringUtils.isNotEmpty(activityParticipant.getLanId())
+            ).forEach((ActivityParticipant activityParticipant) -> {
+                if (StringUtils.isNotEmpty(activityParticipant.getCity())) {
+                    cityList.add(activityParticipant.getCity());
+                } else {
+                    lanList.add(activityParticipant.getLanId());
                 }
+            });
+            if (lanList.size() > 0 || cityList.size() > 0) {
+                MerchantListLanCityReq merchantListLanCityReq = new MerchantListLanCityReq();
+                merchantListLanCityReq.setCityList(cityList);
+                merchantListLanCityReq.setLanList(lanList);
+                ResultVO<List<String>> listResultVO = merchantService.listMerchantByLanCity(merchantListLanCityReq);
+                log.info("MarketingActivityServiceImpl.queryActMerchant listMerchantByLanCity --> listResultVO={}", JSON.toJSON(listResultVO));
+                if (!listResultVO.isSuccess()) {
+                    return ResultVO.error("获取商家失败");
+                }
+                strings = listResultVO.getResultData();
             }
         } else if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(activityParticipantType)) {
             List<String> participants = Lists.newArrayList();
@@ -888,12 +1799,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 }
             }
             if (participants.size() > 0) {
-                MerchantListReq merchantListReq = new MerchantListReq();
+                MerchantListLanCityReq merchantListReq = new MerchantListLanCityReq();
                 merchantListReq.setCityList(participants);
-                ResultVO<List<MerchantDTO>> listResultVO = merchantService.listMerchantByLanCity(merchantListReq);
+                ResultVO<List<String>> listResultVO = merchantService.listMerchantByLanCity(merchantListReq);
                 log.info("MarketingActivityServiceImpl.queryActMerchant listMerchantByLanCity --> listResultVO={}", JSON.toJSON(listResultVO));
-                for (MerchantDTO merchantDTO : listResultVO.getResultData()) {
-                    strings.add(merchantDTO.getMerchantId());
+                for (String merchantDTO : listResultVO.getResultData()) {
+                    strings.add(merchantDTO);
                 }
             }
         }
@@ -910,11 +1821,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         if (listResultVO.getResultData().size() <= 0) {
             return ResultVO.error("该活动没有参与的商家");
         }
+        //异步写优惠券推送任务表
         AutoPushCouponReq autoPushCouponReq = new AutoPushCouponReq();
         autoPushCouponReq.setMarketingActivityId(marketingActivityId);
         autoPushCouponReq.setMerchantIds(listResultVO.getResultData());
-        couponInstService.autoPushCoupon(autoPushCouponReq);
-        return ResultVO.success("成功推送!");
+        mktResCouponTaskService.addMktResCouponTask(autoPushCouponReq);
+        return ResultVO.success();
     }
 
     public ResultVO turnActMarket(String userId, String userName, String mktId) {
@@ -975,6 +1887,154 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                     log.info("MarketingActivityServiceImpl.addMarketingActivity 修改营销活动驳回审核失败");
                     e.printStackTrace();
                 }
+            }
+        }
+    }
+
+    private class ActivityContent implements Serializable {
+        public ActivityContent(Date deliverEndItme, String title, String content) {
+            this.deliverEndItme = deliverEndItme;
+            this.title = title;
+            this.content = content;
+        }
+
+        Date deliverEndItme;
+        String title;
+        String content;
+    }
+
+    /**
+     * 对活动发货时间截止前未发货的订单预警
+     *
+     * @return
+     */
+    @Override
+    public void notifyMerchantActivityOrderDelivery() {
+        // 从数据字典取提前预警天数
+        ConfigInfoDTO configInfoDTO = configInfoService.getConfigInfoById(SysUserMessageConst.DELIVER_END_TIME_NOTIFY_DAYS);
+        String earlyWarningDays = configInfoDTO.getCfValue();
+        // 查询发货时间临近的活动
+        List<MarketingActivity> marketingActivityList = marketingActivityManager.queryActivityOrderDeliveryClose(earlyWarningDays);
+        if (CollectionUtils.isEmpty(marketingActivityList)) {
+            return;
+        }
+
+        // 活动ID和发货截止时间
+        Map<String, ActivityContent> activityIdAndDeliverEndTimeMap = new HashMap();
+        for (MarketingActivity marketingActivity : marketingActivityList) {
+            activityIdAndDeliverEndTimeMap.put(marketingActivity.getId(), new ActivityContent(marketingActivity.getDeliverEndTime(), marketingActivity.getName(), marketingActivity.getDescription()));
+        }
+
+        // 根据活动ID查询活动购买记录
+        List<HistoryPurchase> historyPurchaseList = historyPurchaseManager.queryHistoryPurchaseByMarketingActivityId(Lists.newArrayList(activityIdAndDeliverEndTimeMap.keySet()));
+        if (CollectionUtils.isEmpty(historyPurchaseList)) {
+            return;
+        }
+
+        // 查询未完成发货订单信息
+        List<String> orderIdList;
+        for (HistoryPurchase historyPurchase : historyPurchaseList) {
+            orderIdList = Lists.newArrayList();
+            orderIdList.add(historyPurchase.getOrderId());
+            List<OrderDTO> orderDTOList = orderSelectOpenService.selectNotDeliveryOrderByIds(orderIdList);
+
+            if (CollectionUtils.isEmpty(orderDTOList)) {
+                continue;
+            }
+
+            // 根据ordeId查询任务信息获取任务Id
+            for (OrderDTO orderDTO : orderDTOList) {
+                List<TaskDTO> taskDTOs = taskService.getTaskByFormId(orderDTO.getOrderId()).getResultData();
+                if (CollectionUtils.isEmpty(taskDTOs)) {
+                    continue;
+                }
+                // 组装用户消息准备入库
+                for (TaskDTO taskDTO : taskDTOs) {
+                    SysUserMessageDTO sysUserMessageDTO = new SysUserMessageDTO();
+                    sysUserMessageDTO.setTaskId(taskDTO.getTaskId());
+                    sysUserMessageDTO.setEndTime(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).deliverEndItme);
+                    sysUserMessageDTO.setTitle(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).title + SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_TITLE);
+                    sysUserMessageDTO.setContent(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).content);
+                    if (!Objects.isNull(orderDTO.getMerchantId())) {
+                        MerchantDTO merchantDTO = merchantService.getMerchantInfoById(orderDTO.getMerchantId());
+                        if (!Objects.isNull(merchantDTO)) {
+                            sysUserMessageDTO.setUserId(merchantDTO.getUserId());
+                        }
+                    }
+                    sysUserMessageService.addSysUserMessage(sysUserMessageDTO);
+                }
+            }
+        }
+    }
+
+    @Override
+    public ResultVO marketingActivityModifyAuitStartProcess(String mktName, String userId, String userName, String orgName, String sysPostName, String id) {
+        log.info("MarketingActivityServiceImpl.marketingActivityAuit userId={} userName{}" +
+                        "lanId{} regionId{} marketId{}",
+                userId, userName, orgName, sysPostName, id);
+        ProcessStartReq processStartDTO = new ProcessStartReq();
+        processStartDTO.setTitle(mktName);
+        //创建流程者，参数需要提供
+        processStartDTO.setApplyUserId(userId);
+        processStartDTO.setApplyUserName(userName);
+        processStartDTO.setExtends1(orgName + sysPostName);
+        processStartDTO.setProcessId("10");
+        //营销活动变更内容Id
+        processStartDTO.setFormId(id);
+        //TASK_SUB_TYPE_1140 销售活动配置流程
+        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2060.getTaskSubType());
+        ResultVO taskServiceRV = new ResultVO();
+        try {
+            //开启流程
+            taskServiceRV = taskService.startProcess(processStartDTO);
+            return ResultVO.success();
+        } catch (Exception ex) {
+            return ResultVO.error();
+        } finally {
+            log.info("MarketingActivityServiceImpl.marketingActivityAuit req={},resp={}",
+                    JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
+        }
+    }
+
+    @Override
+    public void auitMarketingActivityMoify(AuitMarketingActivityReq req) {
+//        if (org.springframework.util.StringUtils.isEmpty(req.getMarketingActivityModiftyId())){
+//            try{
+//                List<MarketingActivityModify> modifies =marketingActivityManager.queryMarketingActivityModifySize(req.getId());
+//                String id= null;
+//                if (!CollectionUtils.isEmpty(modifies)){
+//                    id = modifies.get(modifies.size()-1).getId();
+//                }
+//                //审核变更内容表最新数据
+//                ResultVO auditMktResultVO = marketingActivityModifyAuitStartProcess(req.getName(),req.getUserId(),req.getUserName(),req.getOrgId(),req.getSysPostName(), id);
+//            }catch (Exception e){
+//                log.info("MarketingActivityServiceImpl.addMarketingActivity 新增营销活动审核失败");
+//                e.printStackTrace();
+//            }
+//        }
+        List<MarketingActivityModify> modifies = marketingActivityManager.queryMarketingActivityModifySize(req.getId());
+        MarketingActivityModify marketingActivityModify = new MarketingActivityModify();
+        String id = null;
+        if (!CollectionUtils.isEmpty(modifies)) {
+            marketingActivityModify = modifies.get(modifies.size() - 1);
+        }
+        ResultVO<MarketingActivityDetailResp> respResultVO = queryMarketingActivity(req.getId());
+        MarketingActivityDetailResp marketingActivityDetailResp = respResultVO.getResultData();
+        //修改的时候 如果是审核通过或者是审核中 不起流程
+        if (PromoConst.STATUSCD.STATUS_CD_20.getCode().equals(marketingActivityModify.getStatus())
+                || PromoConst.STATUSCD.STATUS_CD_10.getCode().equals(marketingActivityModify.getStatus())) {
+            try {
+                ResultVO auditMktResultVO = marketingActivityModifyAuitStartProcess(req.getName(), req.getUserId(), req.getUserName(), req.getOrgId(), req.getSysPostName(), id);
+            } catch (Exception e) {
+                log.info("MarketingActivityServiceImpl.auitMarketingActivityMoify 变更营销活动通过审核失败");
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                ResultVO workFlowResultVO = turnActMarket(req.getUserId(), req.getUserName(), id);
+            } catch (Exception e) {
+                log.info("MarketingActivityServiceImpl.auitMarketingActivityMoify 变更营销活动驳回审核失败");
+                e.printStackTrace();
             }
         }
     }

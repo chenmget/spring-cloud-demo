@@ -8,10 +8,13 @@ import com.iwhalecloud.retail.goods2b.dto.req.TypeDeleteByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeIsUsedQueryByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeListByNameReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeSelectByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.TypeDetailResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TypeService;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -57,6 +60,12 @@ public class TypeB2BController {
         return listTypeResp;
     }
 
+    @ApiOperation(value = "查询全部产品类型", notes = "")
+    @GetMapping(value = "/listAll")
+    public ResultVO<List<TypeDTO>> listAll(){
+        return typeService.selectAll();
+    }
+
     @ApiOperation(value = "查询产品列表", notes = "")
     @GetMapping(value = "/selectById/{typeId}")
     public ResultVO selectById(@PathVariable("typeId") String typeId){
@@ -83,6 +92,21 @@ public class TypeB2BController {
         TypeIsUsedQueryByIdReq req = new TypeIsUsedQueryByIdReq();
         req.setTypeId(typeId);
         return typeService.typeIsUsed(req);
+    }
+
+    @ApiOperation(value = "产品类型详细分类", notes = "传入typeId进行查询操作")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "typeId", value = "类型id", paramType = "query", required = true, dataType = "String")
+    })
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/getDetailType")
+    public ResultVO<TypeDetailResp> getDetailType(@RequestParam String typeId) {
+        TypeSelectByIdReq req = new TypeSelectByIdReq();
+        req.setTypeId(typeId);
+        return typeService.getDetailType(req);
     }
 
 }

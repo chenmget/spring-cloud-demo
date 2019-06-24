@@ -57,7 +57,8 @@ public class MarketingActivitiesServiceImpl implements MarketingActivitiesServic
         /**
          * 预售活动
          */
-        if (OrderManagerConsts.ORDER_CAT_1.equals(request.getOrderCat())) {
+        Boolean advanceType = CollectionUtils.isEmpty(request.getOrderCatList()) && (request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+        if (advanceType) {
             resp = activityManagerReference.selectAdvanceOrderInfo(request,model);
             if(resp.isFailure()){
                 return resp;
@@ -158,7 +159,8 @@ public class MarketingActivitiesServiceImpl implements MarketingActivitiesServic
         /**
          * 预售活动
          */
-        if (OrderManagerConsts.ORDER_CAT_1.equals(request.getOrderCat())) {
+        Boolean advanceType = CollectionUtils.isEmpty(request.getOrderCatList()) && (request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || request.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+        if (advanceType) {
             resp = activityManagerReference.selectAdvanceOrderInfo(request,model);
             if(resp.isFailure()){
                 return resp;

@@ -40,4 +40,7 @@ public class AdvanceOrder {
     private String createTime;
     private String sourceFrom;
 
+    private String advanceTransId;    //  定金交易流水id
+    private String restTransId;       //  尾款交易流水id
+
 }

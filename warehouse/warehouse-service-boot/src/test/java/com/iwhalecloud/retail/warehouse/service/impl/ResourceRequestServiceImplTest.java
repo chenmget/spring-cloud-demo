@@ -2,18 +2,15 @@ package com.iwhalecloud.retail.warehouse.service.impl;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestItemQueryReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestQueryReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
+import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestQueryResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
+import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Assert;
@@ -31,6 +28,8 @@ public class ResourceRequestServiceImplTest {
 
     @Autowired
     private ResourceRequestService requestService;
+    @Autowired
+    private ResourceReqDetailManager resourceReqDetailManager;
     @Test
     public void insertResourceRequest() {
         ResourceRequestAddReq addReq = new ResourceRequestAddReq();
@@ -76,5 +75,12 @@ public class ResourceRequestServiceImplTest {
         req.setMktResReqId("1087274333727121410");
         ResultVO<ResourceRequestResp> resp = requestService.queryResourceRequestDetail(req);
         Assert.assertEquals(resp.getResultCode(),ResultCodeEnum.SUCCESS.getCode());
+    }
+    @Test
+    public void listDetail(){
+        ResourceReqDetailQueryReq req = new ResourceReqDetailQueryReq();
+        req.setMktResReqId("10131118");
+        List<ResourceReqDetailDTO> resp = resourceReqDetailManager.listDetail(req);
+        Assert.assertEquals(resp,ResultCodeEnum.SUCCESS.getCode());
     }
 }

@@ -2,10 +2,9 @@ package com.iwhalecloud.retail.rights.dto.response;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 /**
  * 优惠券领取规则,如领取次数、领取有效期、领取时间段（月循环、周循环）
@@ -79,5 +78,14 @@ public class CouponSupplyRuleRespDTO implements Serializable {
   	 */
 	@ApiModelProperty(value = "备注")
   	private String remark;
-  	
+
+	@ApiModelProperty(value = "是不限制券总数量")
+	private String numLimitFlg;
+
+	@ApiModelProperty(value = "是否限制券的单用户领取数量")
+	private String supplyLimitFlg;
+
+	@ApiModelProperty(value = "领取方式")
+	private String releaseMode;
+
 }

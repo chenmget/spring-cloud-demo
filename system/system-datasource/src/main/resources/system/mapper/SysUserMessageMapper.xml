@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.system.mapper.SysUserMessageMapper">
+
+<sql id="allFields">
+    t.MESSAGE_ID 
+    ,t.USER_ID 
+    ,t.MESSAGE_TYPE 
+    ,t.TITLE 
+    ,t.CONTENT 
+    ,t.TASK_ID 
+    ,t.BEGIN_TIME 
+    ,t.END_TIME 
+    ,t.FILE_URL 
+    ,t.CREATE_TIME 
+    ,t.CREATE_USER_ID 
+    ,t.UPDATE_TIME 
+    ,t.UPDATE_USER_ID 
+    ,t.STATUS 
+</sql>
+
+<update id="updateReadFlagByUserId">
+	UPDATE sys_user_message sym 
+		SET sym.READ_FLAG = '1',
+		sym.READ_TIME = NOW( ) 
+	WHERE
+		sym.USER_ID = #{userId}
+		AND sym.READ_FLAG != '1'
+</update>
+
+  <select id="getSysUserMsgCountByUserIdAndMsgType" resultType="java.lang.Long">
+	SELECT
+		count( 1 ) 
+	FROM
+		sys_user_message sum 
+	WHERE
+		sum.USER_ID = #{userId} 
+    <if test="messageType != '' and messageType != null">
+        and sum.MESSAGE_TYPE = #{messageType}
+    </if>
+    	and sum.STATUS = '1'
+  </select>
+  
+   <select id="getSysMsgNotReadAcount" resultType="java.lang.Long">
+	SELECT
+		count( 1 ) 
+	FROM
+		sys_user_message sum 
+	WHERE
+		sum.USER_ID = #{userId} 
+    AND
+    	sum.READ_FLAG != '1'
+    AND
+        sum.STATUS = '1'
+  </select>
+
+<update id="updateSysMesByTaskId">
+    UPDATE sys_user_message sym
+    SET sym.STATUS = '1',
+    sym.END_TIME = NOW( )
+    WHERE
+    sym.TASK_ID = #{taskId}
+</update>
+</mapper>

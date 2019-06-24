@@ -9,7 +9,10 @@ public enum OrderPayType implements EnumInterface {
 
     NULL("","",""),
     PAY_TYPE_1("翼支付","1",""),
-    PAY_TYPE_3("线下支付","3",""),
+    PAY_TYPE_2("微信","2",""),
+    PAY_TYPE_3("支付宝","3",""),
+    PAY_TYPE_4("线下支付","4",""),
+    PAY_TYPE_5("翼支付预授权支付","5",""),
             ;
 
 

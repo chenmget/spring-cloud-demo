@@ -95,6 +95,18 @@ public class ProductDetailResp extends PageVO {
     private String isCtCode;
 
     /**
+     * 是否需要抽检
+     */
+    @ApiModelProperty(value = "是否需要抽检")
+    private String IsInspection;
+
+    /**
+     * 是否固网产品
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String isFixedLine;
+
+    /**
      * 产品编码
      */
     @ApiModelProperty(value = "产品编码")
@@ -559,4 +571,22 @@ public class ProductDetailResp extends PageVO {
      */
     @ApiModelProperty(value = "归属厂家名称")
     private String manufacturerName;
+
+    /**
+     * 零售商标签
+     */
+    @ApiModelProperty(value = "零售商标签")
+    private List<String> tagList;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
+    /**
+     * 卖点
+     */
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 }

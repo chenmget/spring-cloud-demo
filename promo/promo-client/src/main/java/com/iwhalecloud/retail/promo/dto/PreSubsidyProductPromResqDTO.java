@@ -74,4 +74,78 @@ public class PreSubsidyProductPromResqDTO implements Serializable {
     @ApiModelProperty(value = "产品规格")
     private String specName;
     
+    /**
+     * 颜色
+     */
+    @ApiModelProperty(value = "颜色")
+    private String color;
+    
+    /**
+     * 内存
+     */
+    @ApiModelProperty(value = "内存")
+    private String memory;
+    
+    /**
+     * 产品类型
+     */
+    @ApiModelProperty(value = "产品类型")
+    private String typeName;
+
+    /**
+     * 	活动中的商品价格 前置补贴活动保存产品的地包强制供货价 限时抢购活动保存产品的抢购价
+     */
+    @ApiModelProperty(value = "活动中的商品价格 前置补贴活动保存产品的地包强制供货价 限时抢购活动保存产品的抢购价")
+    private java.lang.Long price;
+    
+    /**
+	 * 活动图片应用方式
+	 */
+	@ApiModelProperty(value = "活动图片应用方式")
+	private String productPicUseType;
+	
+	/**
+	 * 活动图片
+	 */
+	@ApiModelProperty(value = "活动图片")
+	private String productPic;
+
+    /**
+     * 产品规格
+     */
+    @ApiModelProperty(value = "产品型号")
+    private String unitType;
+
+    @ApiModelProperty(value = "产品类型")
+    private String typeId;
+
+    @ApiModelProperty(value = "规格1")
+    private String attrValue1;
+
+    @ApiModelProperty(value = "规格2")
+    private String attrValue2;
+
+    @ApiModelProperty(value = "规格3")
+    private String attrValue3;
+
+    @ApiModelProperty(value = "规格4")
+    private String attrValue4;
+
+    @ApiModelProperty(value = "规格5")
+    private String attrValue5;
+
+    @ApiModelProperty(value = "规格6")
+    private String attrValue6;
+
+    @ApiModelProperty(value = "规格7")
+    private String attrValue7;
+
+    @ApiModelProperty(value = "规格8")
+    private String attrValue8;
+
+    @ApiModelProperty(value = "规格9")
+    private String attrValue9;
+
+    @ApiModelProperty(value = "规格10")
+    private String attrValue10;
 }

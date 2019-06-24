@@ -1,10 +1,12 @@
 package com.iwhalecloud.retail.order2b.busiservice.impl;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.member.dto.response.MemberAddressRespDTO;
+import com.iwhalecloud.retail.member.service.MemberAddressService;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
-import com.iwhalecloud.retail.order2b.config.Order2bContext;
 import com.iwhalecloud.retail.order2b.consts.OrderManagerConsts;
 import com.iwhalecloud.retail.order2b.consts.order.OrderAllStatus;
 import com.iwhalecloud.retail.order2b.dto.model.order.CouponInsDTO;
@@ -14,8 +16,12 @@ import com.iwhalecloud.retail.order2b.manager.AfterSaleManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.manager.PromotionManager;
 import com.iwhalecloud.retail.order2b.model.*;
+import com.iwhalecloud.retail.order2b.reference.MemberInfoReference;
 import com.iwhalecloud.retail.order2b.util.CurrencyUtil;
 import com.iwhalecloud.retail.order2b.util.Utils;
+import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantLigthReq;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantLigthResp;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,9 +47,15 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     @Autowired
     private AdvanceOrderManager advanceOrderManager;
 
+    @Autowired
+    private MemberInfoReference memberInfoReference;
+
 
     @Value("${fdfs.show.url}")
     private String showUrl;
+
+    @Reference
+    private MemberAddressService memberAddressService;
 
     @Override
     public IPage<OrderInfoModel> selectOrderListByOrder(SelectOrderDetailModel req) {
@@ -56,8 +68,8 @@ public class SelectOrderServiceImpl implements SelectOrderService {
         /**
          * 默认查询普通订单
          */
-        if (OrderManagerConsts.ORDER_CAT_1.equals(req.getOrderCat())) {
-            req.setOrderCat(OrderManagerConsts.ORDER_CAT_1);
+        Boolean advanceType = !CollectionUtils.isEmpty(req.getOrderCatList()) && (req.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || req.getOrderCatList().contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+        if (advanceType) {
             if (!CollectionUtils.isEmpty(req.getStatusAll())) {
                 req.getStatusAll().add(OrderAllStatus.ORDER_STATUS_13.getCode());
                 req.getStatusAll().add(OrderAllStatus.ORDER_STATUS_14.getCode());
@@ -66,6 +78,19 @@ public class SelectOrderServiceImpl implements SelectOrderService {
         IPage<OrderInfoModel> list = orderManager.selectOrderListByOrder(req);
         if (CollectionUtils.isEmpty(list.getRecords())) {
             return list;
+        }
+
+        if (!CollectionUtils.isEmpty(list.getRecords())) {
+            for(OrderInfoModel orderInfoModel:list.getRecords()){
+                String receiveAddrId = orderInfoModel.getReceiveAddrId();
+                if(!StringUtils.isEmpty(receiveAddrId)){
+                    MemberAddressRespDTO memberAddressRespDTO = memberAddressService.queryAddress(receiveAddrId);
+                    if(null!=memberAddressRespDTO){
+                        orderInfoModel.setReceiveAddr(memberAddressRespDTO.getProvince()+memberAddressRespDTO.getCity()+
+                                memberAddressRespDTO.getRegion()+memberAddressRespDTO.getAddr());
+                    }
+                }
+            }
         }
         /**
          * 营销活动
@@ -83,14 +108,14 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     @Override
     public IPage<AfterSalesModel> selectAfterSale(SelectAfterModel req) {
 
-        List<String> itemList = new ArrayList<>();
+        List<List<String>> itemList = new ArrayList<>();
         //商品查询
-        List<String> goodsOrderLsit = new ArrayList<>();
+
         if (!StringUtils.isEmpty(req.getGoodsName())//商品名称
                 || !StringUtils.isEmpty(req.getGoodsSn())//编码
                 || !StringUtils.isEmpty(req.getBrandName())//类别
                 ) {
-            goodsOrderLsit.add("-1");
+            List<String> goodsOrderLsit = new ArrayList<>();
             OrderItemModel orderItem = new OrderItemModel();
             if (!StringUtils.isEmpty(req.getGoodsName())) {
                 orderItem.setGoodsName("%" + req.getGoodsName() + "%");
@@ -107,14 +132,19 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             for (OrderItem i : gList) {
                 goodsOrderLsit.add(i.getItemId());
             }
-            itemList.addAll(goodsOrderLsit);
-            itemList.retainAll(goodsOrderLsit);
+            itemList.add(goodsOrderLsit);
+        }
+
+        if (!StringUtils.isEmpty(req.getMerchantCode()) || !StringUtils.isEmpty(req.getMerchantName()) || !StringUtils.isEmpty(req.getBusinessEntityName())) {
+            MerchantLigthReq merchantLigthReq = new MerchantLigthReq();
+            BeanUtils.copyProperties(req, merchantLigthReq);
+            List<String> merchantIdList = memberInfoReference.listMerchantIdList(merchantLigthReq);
+            req.setApplicantIdList(merchantIdList);
         }
 
         //串码查询
-        List<String> resBerLsit = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getResNbr())) {
-            resBerLsit.add("-1");
+            List<String> resBerLsit = new ArrayList<>();
             OrderItemDetailModel orderItemDetail = new OrderItemDetailModel();
             orderItemDetail.setResNbr(req.getResNbr());
             orderItemDetail.setLanIdList(req.getLanIdList());
@@ -122,11 +152,19 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             for (OrderItemDetail orderItemDetail1 : dList) {
                 resBerLsit.add(orderItemDetail1.getItemId());
             }
-            itemList.addAll(resBerLsit);
-            itemList.retainAll(resBerLsit);
+            itemList.add(resBerLsit);
         }
+
+        /**
+         * 查询出来的itemId,求交集
+         */
         if (!CollectionUtils.isEmpty(itemList)) {
-            req.setItemList(new ArrayList<>(itemList));
+            List<String> orderItemList=new ArrayList<>();
+            orderItemList.addAll(itemList.get(0));
+            for (int i=1;i<itemList.size();i++){
+                orderItemList.retainAll(itemList.get(i));
+            }
+            req.setItemList(orderItemList);
         }
 
         //供应商查询
@@ -149,6 +187,16 @@ public class SelectOrderServiceImpl implements SelectOrderService {
 
             if (!StringUtils.isEmpty(model.getRefundImgUrl())) {
                 model.setRefundImgUrl(Utils.attacheUrlPrefix(showUrl, model.getRefundImgUrl()));
+            }
+
+            // 组装申请人信息
+            if (!StringUtils.isEmpty(model.getApplicantId())) {
+                MerchantGetReq merchantGetReq = new MerchantGetReq();
+                merchantGetReq.setMerchantId(model.getApplicantId());
+                MerchantLigthResp merchantLigthResp = memberInfoReference.getMerchantForOrder(merchantGetReq);
+                if (null != merchantGetReq) {
+                    BeanUtils.copyProperties(merchantLigthResp, model);
+                }
             }
         }
 
@@ -254,7 +302,7 @@ public class SelectOrderServiceImpl implements SelectOrderService {
     }
 
     @Override
-    public List<String> getOrderStatusByUser(String userType, String orderType) {
+    public List<String> getOrderStatusByUser(String userType, List<String> orderTypeList) {
         List<String> statusList = new ArrayList<>();
 
         statusList.add(OrderAllStatus.ORDER_STATUS_12.getCode());
@@ -269,6 +317,8 @@ public class SelectOrderServiceImpl implements SelectOrderService {
         statusList.add(OrderAllStatus.ORDER_STATUS_6.getCode());
         statusList.add(OrderAllStatus.ORDER_STATUS_10.getCode());
         statusList.add(OrderAllStatus.ORDER_STATUS_10_.getCode());
+        statusList.add(OrderAllStatus.ORDER_STATUS_4_.getCode());
+        statusList.add(OrderAllStatus.ORDER_STATUS_31.getCode());
 
         switch (userType) {
             case OrderManagerConsts.USER_EXPORT_TYPE_1:
@@ -278,14 +328,10 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             case OrderManagerConsts.USER_EXPORT_TYPE_3:
                 break;
         }
-
-        switch (orderType) {
-            case OrderManagerConsts.ORDER_CAT_1:
-                statusList.add(OrderAllStatus.ORDER_STATUS_14.getCode());
-                statusList.add(OrderAllStatus.ORDER_STATUS_13.getCode());
-                break;
-            default:
-                break;
+        Boolean advanceType = !CollectionUtils.isEmpty(orderTypeList) && (orderTypeList.contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode()) || orderTypeList.contains(OrderManagerConsts.ORDER_CAT.ORDER_CAT_3.getCode()));
+        if (advanceType) {
+            statusList.add(OrderAllStatus.ORDER_STATUS_14.getCode());
+            statusList.add(OrderAllStatus.ORDER_STATUS_13.getCode());
         }
         return statusList;
     }
@@ -301,14 +347,15 @@ public class SelectOrderServiceImpl implements SelectOrderService {
          * 组装订单id
          */
         promotionModel.setOrderIdList(new ArrayList<>(modelList.size()));
+        promotionModel.setLanIdList(new ArrayList<>(modelList.size()));
         for (OrderInfoModel orderInfoModel:modelList){
             promotionModel.getOrderIdList().add(orderInfoModel.getOrderId());
-
-            if(StringUtils.isEmpty(Order2bContext.getDubboRequest().getLanId())){
-                List<String> lanIds=new ArrayList<>(1);
-                lanIds.add(orderInfoModel.getLanId());
-                promotionModel.setLanIdList(lanIds);
-            }
+            promotionModel.getLanIdList().add(orderInfoModel.getLanId());
+//            if(StringUtils.isEmpty(Order2bContext.getDubboRequest().getLanId())){
+//                List<String> lanIds=new ArrayList<>(1);
+//                lanIds.add(orderInfoModel.getLanId());
+//                promotionModel.setLanIdList(lanIds);
+//            }
         }
 
         List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);
@@ -348,15 +395,15 @@ public class SelectOrderServiceImpl implements SelectOrderService {
      */
     private List<String> getOrderListByCondition(SelectOrderDetailModel req) {
         List<String> orderList = new ArrayList<>();
+        List<List<String>> selectList=new ArrayList<>();
 
         if (!CollectionUtils.isEmpty(req.getReqOrderList())) {
-            orderList.addAll(req.getReqOrderList());
+            selectList.add(req.getReqOrderList());
         }
 
         //商品、品牌、商品编码查询
-        List<String> goodsOrderLsit = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getGoodsName()) || !StringUtils.isEmpty(req.getGoodsSn()) || !StringUtils.isEmpty(req.getBrandName())) {
-            goodsOrderLsit.add("-1");
+            List<String> goodsOrderLsit = new ArrayList<>();
             OrderItemModel orderItem = new OrderItemModel();
             if (!StringUtils.isEmpty(req.getGoodsName())) {
                 orderItem.setGoodsName("%" + req.getGoodsName() + "%");
@@ -372,27 +419,22 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             for (OrderItem i : gList) {
                 goodsOrderLsit.add(i.getOrderId());
             }
-            orderList.addAll(goodsOrderLsit);
-            orderList.retainAll(goodsOrderLsit);
+            selectList.add(goodsOrderLsit);
         }
 
         //串码查询
-        List<String> resBerLsit = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getResNbr())) {
-            resBerLsit.add("-1");
+            List<String> resBerLsit = new ArrayList<>();
             OrderItemDetailModel model=new OrderItemDetailModel();
             model.setLanIdList(req.getLanIdList());
             model.setResNbr(req.getResNbr());
             resBerLsit.addAll(orderManager.selectOrderIdByresNbr(model));
-
-            orderList.addAll(resBerLsit);
-            orderList.retainAll(resBerLsit);
+            selectList.add(resBerLsit);
         }
 
         //营销活动查询
-        List<String> promotionList = new ArrayList<>();
         if (!StringUtils.isEmpty(req.getActivityPromoName())) {
-            promotionList.add("-1");
+            List<String> promotionList = new ArrayList<>();
             PromotionModel promotionModel = new PromotionModel();
             promotionModel.setMktActName("%" + req.getActivityPromoName() + "%");
             promotionModel.setLanIdList(req.getLanIdList());
@@ -400,17 +442,23 @@ public class SelectOrderServiceImpl implements SelectOrderService {
             for (Promotion promotion : promotions) {
                 promotionList.add(promotion.getOrderId());
             }
-            orderList.addAll(promotionList);
-            orderList.retainAll(promotionList);
+            selectList.add(promotionList);
+        }
+        if(CollectionUtils.isEmpty(selectList)){
+            return orderList;
+        }
+        orderList.addAll(selectList.get(0));
+        for (int i=1;i<selectList.size();i++){
+            orderList.retainAll(selectList.get(i));
         }
         return orderList;
     }
 
     public static void main(String[] args) {
-        List<String> list = new ArrayList<>();
-        list.add("-1");
-        list.retainAll(new ArrayList<>());
-        System.out.println(list);
+        List<String> list = null;
+        Boolean test = !CollectionUtils.isEmpty(list) && list.contains(0);
+        System.out.println(test);
+//        list.retainAll(new ArrayList<>());
     }
 
 

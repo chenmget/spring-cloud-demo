@@ -3,9 +3,7 @@ package com.iwhalecloud.retail.partner.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.dto.PartnerAccountDTO;
-import com.iwhalecloud.retail.partner.dto.PartnerDTO;
 import com.iwhalecloud.retail.partner.dto.req.PartnerAccountPageReq;
-import com.iwhalecloud.retail.partner.dto.req.PartnerPageReq;
 
 public interface PartnerAccountService{
 

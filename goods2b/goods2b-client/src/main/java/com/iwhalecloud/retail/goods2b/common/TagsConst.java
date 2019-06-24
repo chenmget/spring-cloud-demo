@@ -6,6 +6,17 @@ package com.iwhalecloud.retail.goods2b.common;
  * @Description:
  **/
 public class TagsConst {
+
+    /**
+     * 政企门店
+     */
+    public static final String GOVERNMENT_ENTERPRISE_STORES = "2019052901";
+
+    /**
+     * 政企供货
+     */
+    public static final String GOVERNMENT_ENTERPRISE_SUPPLIERS = "2019052902";
+
     /**
      * 是否被删除
      */

@@ -1,11 +1,11 @@
 package com.iwhalecloud.retail.oms.service.impl;
 
+import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.oms.dto.TRfidGoodsRelDTO;
 import com.iwhalecloud.retail.oms.manager.RfidGoodsRelManager;
 import com.iwhalecloud.retail.oms.service.RfidGoodsRelService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.alibaba.dubbo.config.annotation.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;

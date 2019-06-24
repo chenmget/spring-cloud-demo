@@ -1,12 +1,10 @@
 package com.iwhalecloud.retail.goods2b.service.dubbo;
 
 
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsDetailDTO;
 import com.iwhalecloud.retail.goods2b.dto.TagsDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
-import com.iwhalecloud.retail.goods2b.dto.resp.GoodsForPageQueryResp;
 
 import java.util.List;
 
@@ -24,6 +22,12 @@ public interface TagsService {
      */
     ResultVO<List<TagsDTO>> listProdTags();
 
+    /**
+     * 查询标签列表 没有参数
+     * @return
+     */
+    ResultVO<List<TagsDTO>> listProdTagsChannel();
+    
     /**
      * 添加标签
      * @return

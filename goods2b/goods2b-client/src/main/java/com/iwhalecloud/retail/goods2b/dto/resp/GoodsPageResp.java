@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.goods2b.dto.resp;
 
+import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRegionRelDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -30,6 +31,12 @@ public class GoodsPageResp implements Serializable {
     @ApiModelProperty(value = "供应商名称")
     private String supplierName;
 
+    @ApiModelProperty(value = "供应商地市ID（本地网）")
+    private String supplierLanId;
+
+    @ApiModelProperty(value = "供应商名称地市名称（本地网）")
+    private String supplierLanName;
+
     @ApiModelProperty(value = "商品名称")
     private String goodsName;
 
@@ -58,6 +65,12 @@ public class GoodsPageResp implements Serializable {
     private Integer isAllot;
 
     /**
+     * 是否分货
+     */
+    @ApiModelProperty(value = "是否预售")
+    private Integer isAdvanceSale;
+
+    /**
      * 来源平台
      */
     @ApiModelProperty(value = "来源平台")
@@ -77,6 +90,12 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "品牌名称")
     private String brandName;
+
+    /**
+     * 支付方式
+     */
+    @ApiModelProperty(value = "支付方式")
+    private String payments;
 
     /**
      * 市场价
@@ -104,4 +123,28 @@ public class GoodsPageResp implements Serializable {
 
     @ApiModelProperty(value = "类型Id")
     private String typeId;
+
+    @ApiModelProperty(value = "颜色")
+    private String color;
+
+    @ApiModelProperty(value = "内存")
+    private String memory;
+
+    @ApiModelProperty(value = "attrValue1")
+    private String attrValue1;
+
+    @ApiModelProperty(value = "attrValue2")
+    private String attrValue2;
+
+    @ApiModelProperty(value = "attrValue3")
+    private String attrValue3;
+
+    @ApiModelProperty(value = "attrDTOS")
+    List<AttrSpecDTO> attrSpecDTOs;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
 }

@@ -2,10 +2,9 @@ package com.iwhalecloud.retail.order2b.dto.response;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
-
-import lombok.Data;
 
 /**
  * OrderRecommender

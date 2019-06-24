@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.order2b.busiservice.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.authpay.PayAuthorizationService;
 import com.iwhalecloud.retail.order2b.busiservice.ReceiveGoodsService;
 import com.iwhalecloud.retail.order2b.busiservice.SelectOrderService;
 import com.iwhalecloud.retail.order2b.busiservice.UpdateOrderFlowService;
@@ -59,6 +60,9 @@ public class ReceiveGoodsServiceImpl implements ReceiveGoodsService {
 
     @Autowired
     private TaskManagerReference taskManagerReference;
+
+    @Autowired
+    PayAuthorizationService payAuthorizationService;
 
     @Override
     public CommonResultResp receiveGoodsCheck(ReceiveGoodsReq req) {
@@ -232,6 +236,13 @@ public class ReceiveGoodsServiceImpl implements ReceiveGoodsService {
 
             taskManagerReference.updateTask(request.getOrderId(), request.getUserId());
             taskManagerReference.addTaskByHandlerOne("待评价",request.getOrderId(), request.getUserId(), orderInfoModel.getCreateUserId());
+
+            //TODO 2修改订单状态时调用翼支付确认支付接口 谢杞
+            Boolean flag = payAuthorizationService.authorizationConfirmation(request.getOrderId());
+            if(!flag){
+                resp.setResultMsg("关闭订单，翼支付预授权确认失败。");
+                resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            }
         }
         resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
         return resp;

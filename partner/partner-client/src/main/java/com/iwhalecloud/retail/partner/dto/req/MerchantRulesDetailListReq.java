@@ -4,7 +4,6 @@ import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
 
@@ -60,6 +59,18 @@ public class MerchantRulesDetailListReq extends PageVO implements Serializable {
 
     @ApiModelProperty(value = "品牌id")
     private java.lang.String brandId;
+
+    /**
+     * 查询表PROD_TYPE使用
+     */
+    @ApiModelProperty(value = "产品类型")
+    private String typeId;
+
+    /**
+     * 查询表PROD_CAT使用
+     */
+    @ApiModelProperty(value = "产品类别")
+    private String catId;
 
     /******  查机型 或 产品 用到的字段   ***/
 

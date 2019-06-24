@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.workflow.dto.resp;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableId;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -93,6 +91,9 @@ public class DealTaskDetailGetResp implements Serializable {
     @ApiModelProperty(value = "下一个节点集合")
     private List<RouteInfo> routeInfos;
 
+    @ApiModelProperty(value = "配置环节展示的业务界面地址 ")
+    private String nodePage;
+
     /**
      * 环节处理记录
      */
@@ -126,6 +127,9 @@ public class DealTaskDetailGetResp implements Serializable {
                 "2：待处理\n" +
                 "3：已处理")
         private java.lang.String itemStatus;
+
+        @ApiModelProperty("附件url")
+        private String appendixUrl;
     }
 
     /**

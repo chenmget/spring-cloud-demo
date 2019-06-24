@@ -7,8 +7,6 @@ import com.iwhalecloud.retail.workflow.extservice.WFServiceExecutor;
 import com.iwhalecloud.retail.workflow.extservice.params.ServiceParamContext;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.List;
-
 /**
  * 商品模块服务流程控制器
  * @author z

@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResourceUploadTempMapper">
+
+<sql id="simpleFields">
+    t.MKT_RES_UPLOAD_BATCH
+    ,t.MKT_RES_INST_NBR
+    ,t.RESULT
+    ,t.RESULT_DESC
+    ,t.CT_CODE
+    ,t.sn_code
+    ,t.mac_code
+    ,t.MKT_RES_REQ_DETAIL_ID
+    ,t.STATUS_CD
+    ,t.remark
+</sql>
+
+
+    <select id="listResourceUploadTemp" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempListPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp" >
+        Select <include refid="simpleFields" />
+        FROM MKT_RES_UPLOAD_TEMP t
+        WHERE 1=1 and MKT_RES_UPLOAD_BATCH=#{req.mktResUploadBatch}
+        <if test="req.mktResInstNbr != null">
+            and MKT_RES_INST_NBR = #{req.mktResInstNbr}
+        </if>
+        <if test="req.result != null">
+            and RESULT = #{req.result}
+        </if>
+        <if test="req.statusCd != null">
+            and status_cd = #{req.statusCd}
+        </if>
+        ORDER BY T.MKT_RES_INST_NBR DESC
+    </select>
+
+    <delete id="delResourceUploadTemp" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempDelReq">
+        DELETE FROM MKT_RES_UPLOAD_TEMP
+        WHERE 1=1 and MKT_RES_UPLOAD_BATCH=#{mktResUploadBatch}
+        <if test="mktResInstNbrList != null">
+            and MKT_RES_INST_NBR = #{mktResInstNbrList}
+        </if>
+    </delete>
+
+
+    <select id="countTotal"  parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempDelReq" resultType="java.lang.Integer" >
+        Select count(MKT_RES_INST_NBR) FROM MKT_RES_UPLOAD_TEMP
+        WHERE 1=1 and MKT_RES_UPLOAD_BATCH = #{mktResUploadBatch}
+        <if test="result != null">
+            and RESULT = #{result}
+        </if>
+    </select>
+
+    <select id="executorlistResourceUploadTemp" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceUploadTempListPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp" >
+        Select <include refid="simpleFields" />
+        FROM MKT_RES_UPLOAD_TEMP t
+        WHERE 1=1 and MKT_RES_UPLOAD_BATCH=#{req.mktResUploadBatch}
+        <if test="req.mktResInstNbr != null">
+            and MKT_RES_INST_NBR = #{req.mktResInstNbr}
+        </if>
+        <if test="req.result != null">
+            and RESULT = #{req.result}
+        </if>
+        ORDER BY T.MKT_RES_INST_NBR DESC
+        LIMIT #{req.pageStartNo}, #{req.pageSize}
+    </select>
+</mapper>

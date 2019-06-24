@@ -15,6 +15,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantLimitDTO;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.system.service.NoticeUserService;
+import com.iwhalecloud.retail.system.service.SysUserMessageService;
 import com.iwhalecloud.retail.warehouse.service.ResourceInstStoreService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.dto.WorkPlatformMsgDTO;
@@ -63,6 +64,9 @@ public class WorkPlatformShowB2BController {
 
     @Reference
     private MerchantLimitService merchantLimitService;
+    
+    @Reference
+    private SysUserMessageService sysUserMessageService;
 
     @ApiOperation(value = "工作台待处理、我的申请、我的消息", notes = "工作台缩略信息")
     @ApiResponses({
@@ -77,6 +81,8 @@ public class WorkPlatformShowB2BController {
         dto.setUnhandledItemCount(getUnhandledItemCount(userId));
         dto.setAppliedItemCount(getAppliedItemCount(userId));
         dto.setNotReadNoticeCount(noticeUserService.getNotReadNoticeCount(userId).getResultData());
+        dto.setSysAlarmCount(getSysUserMessage(userId, "2"));
+        dto.setHandledItemCount(getHandledItemCount(userId));
         return ResultVO.success(dto);
     }
 
@@ -234,7 +240,24 @@ public class WorkPlatformShowB2BController {
         if (resultVO.isSuccess()) {
             return resultVO.getResultData();
         }
-        log.error("call taskService.queryTaskCnt failed,req={},resultVO={}", JSON.toJSONString(req),JSON.toJSONString(resultVO));
+        log.error("call taskService.queryHandleTaskCnt failed,req={},resultVO={}", JSON.toJSONString(req),JSON.toJSONString(resultVO));
+
+        return 0L;
+    }
+
+    /**
+     * 获取我的经办总数
+     * @param userId 用户ID
+     * @return
+     */
+    private Long getHandledItemCount(String userId) {
+        HandleTaskPageReq req = new HandleTaskPageReq();
+        req.setHandlerUserId(userId);                                    //我创建的
+        ResultVO<Long> resultVO = taskService.queryHandleTaskCnt(req);
+        if (resultVO.isSuccess()) {
+            return resultVO.getResultData();
+        }
+        log.error("call taskService.queryHandleTaskCnt failed,req={},resultVO={}", JSON.toJSONString(req), JSON.toJSONString(resultVO));
 
         return 0L;
     }
@@ -293,5 +316,16 @@ public class WorkPlatformShowB2BController {
         req.setPageSize(pageSize);
         return productService.selectProduct(req);
 
+    }
+    
+    
+    /**
+     * 获取用户的业务告警数量
+     * @param userId 用户ID
+     * @return
+     */
+    private Long getSysUserMessage(String userId, String messageType) {
+        Long count = sysUserMessageService.getSysUserMsgCountByUserIdAndMsgType(userId, messageType);
+        return count;
     }
 }

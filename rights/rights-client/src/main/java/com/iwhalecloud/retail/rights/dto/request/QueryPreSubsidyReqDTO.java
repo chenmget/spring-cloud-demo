@@ -20,11 +20,17 @@ public class QueryPreSubsidyReqDTO extends AbstractRequest implements Serializab
      * 营销活动id
      */
     @ApiModelProperty(value = "营销活动id")
-    String marketingActivityId;
+    private String marketingActivityId;
 
     /**
      * 优惠券id
      */
     @ApiModelProperty(value = "优惠券id")
-    String mktResId;
+    private String mktResId;
+
+    /**
+     * 券种类
+     */
+    @ApiModelProperty(value = "券种类")
+    private String couponKind;
 }

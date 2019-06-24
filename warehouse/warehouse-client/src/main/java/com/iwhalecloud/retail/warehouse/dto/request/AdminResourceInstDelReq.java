@@ -39,7 +39,7 @@ public class AdminResourceInstDelReq implements Serializable{
 	 * 串码主键。
 	 */
 	@ApiModelProperty(value = "串码主键")
-	private List<String> mktResInstIds;
+	private List<String> mktResInstIdList;
 
 	/**
 	 * 更新后状态
@@ -97,4 +97,22 @@ public class AdminResourceInstDelReq implements Serializable{
 	 */
 	@ApiModelProperty(value = "营销资源仓库标识")
 	private String mktResStoreId;
+
+	/**
+	 * 商家id
+	 */
+	@ApiModelProperty(value = "商家id")
+	private String merchantId;
+
+	/**
+	 * 事件状态
+	 */
+	@ApiModelProperty(value = "事件状态")
+	private java.lang.String eventStatusCd;
+
+	/**
+	 * 订单号
+	 */
+	@ApiModelProperty(value = "订单号")
+	private java.lang.String orderId;
 }

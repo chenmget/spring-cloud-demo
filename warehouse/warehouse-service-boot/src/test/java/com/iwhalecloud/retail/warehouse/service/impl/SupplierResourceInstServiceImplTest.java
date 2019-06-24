@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
+import com.iwhalecloud.retail.warehouse.service.TradeResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,11 +20,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.junit.Assert.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = WarehouseServiceApplication.class)
@@ -35,6 +33,9 @@ public class SupplierResourceInstServiceImplTest {
 
     @Autowired
     private ResourceInstService resourceInstService;
+
+    @Reference
+    private TradeResourceInstService tradeResourceInstService;
 
     //场景一：省包(卖) 地保(买)  省包发货
     @Test
@@ -90,9 +91,11 @@ public class SupplierResourceInstServiceImplTest {
         req.setSellerMerchantId("4301811025392");
 
         String json = "{\"deliveryResourceInstItemList\":[{\"mktResInstNbrs\":[\"013001\"],\"orderItemId\":\"20190129103506630775894\",\"productId\":\"1089765013613895682\"}],\"sellerMerchantId\":\"4301811025392\"}";
+        json = "{\"buyerMerchantId\":\"10000696\",\"deliveryResourceInstItemList\":[{\"mktResInstNbrs\":[\"201906191448000000000001\",\"201906191452000000000001\"],\"orderItemId\":\"201906194710002186\",\"productId\":\"10661373\"}],\"orderId\":\"201906194710002166\",\"sellerMerchantId\":\"10000659\",\"updateStockReq\":{\"itemList\":[{\"num\":-2,\"productId\":\"10661373\"}],\"merchantId\":\"10000659\"}}";
         Gson gson = new Gson();
         req  = gson.fromJson(json, new TypeToken<DeliveryResourceInstReq>(){}.getType());
-        supplierResourceInstService.deliveryOutResourceInst(req);
+        ResultVO resultVO = supplierResourceInstService.deliveryOutResourceInst(req);
+        System.out.print(resultVO);
     }
 
     //场景二：地保(卖) 零售商(买)   省包发货
@@ -189,9 +192,9 @@ public class SupplierResourceInstServiceImplTest {
 
     @Test
     public void validResourceInst() {
-        String json = "{\"merchantId\":\"4301811025392\",\"productIds\":[{\"mktResInstNbr\":[\"123\"],\"productId\":\"1089765013613895682\"}]}";
+        String json = "{\"merchantId\":\"4301811025392\",\"productIdList\":[\"123\"],\"mktResInstNbrList\":[\"123\"]}";
         Gson gson = new Gson();
-        ValidResourceInstReq req = gson.fromJson(json, new TypeToken<ValidResourceInstReq>(){}.getType());
+        DeliveryValidResourceInstReq req = gson.fromJson(json, new TypeToken<ValidResourceInstReq>(){}.getType());
         ResultVO<Boolean> resultVO = supplierResourceInstService.validResourceInst(req);
         log.info("resultVO={}", JSON.toJSONString(resultVO));
     }
@@ -217,5 +220,28 @@ public class SupplierResourceInstServiceImplTest {
         Gson gson = new Gson();
         DeliveryResourceInstReq req = gson.fromJson(json, new TypeToken<DeliveryResourceInstReq>(){}.getType());
         supplierResourceInstService.backDeliveryInResourceInst(req);
+    }
+
+    @Test
+    public void tradeOutResourceInst(){
+        String json = "{\"tradeResourceInstItemList\":" +
+                "[{\"mktResInstNbrs\":[\"101000000003\"]," +
+                "\"orderItemId\":\"20190225090207222641306\"," +
+                "\"productId\":\"100005111\"}],\"sellerMerchantId\":\"4301811025392\",\"lanId\":\"746\"}";
+        Gson gson = new Gson();
+        TradeResourceInstReq req = gson.fromJson(json, new TypeToken<TradeResourceInstReq>(){}.getType());
+        tradeResourceInstService.tradeOutResourceInst(req);
+    }
+
+
+    @Test
+    public void tradeInResourceInst(){
+        String json = "{\"tradeResourceInstItemList\":" +
+                "[{\"mktResInstNbrs\":[\"101000000003\"]," +
+                "\"orderItemId\":\"20190225090207222641306\"," +
+                "\"productId\":\"100005111\"}],\"sellerMerchantId\":\"4301811025392\",\"lanId\":\"746\"}";
+        Gson gson = new Gson();
+        TradeResourceInstReq req = gson.fromJson(json, new TypeToken<TradeResourceInstReq>(){}.getType());
+        tradeResourceInstService.tradeInResourceInst(req);
     }
 }

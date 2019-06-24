@@ -34,7 +34,7 @@ public class MerchantAccountListReq implements Serializable {
     private String merchantId;
 
     /**
-     * 商家ID
+     * 商家ID集合
      */
     @ApiModelProperty(value = "商家ID集合")
     private List<String> merchantIdList;
@@ -50,4 +50,10 @@ public class MerchantAccountListReq implements Serializable {
      */
     @ApiModelProperty(value = "帐户名称/银行账户")
     private String bankAccount;
+    
+    /**
+     * 翼支付登录号
+     */
+    @ApiModelProperty(value = "翼支付登录号")
+    private String accountName;
 }

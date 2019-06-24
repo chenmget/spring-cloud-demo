@@ -44,4 +44,13 @@ public class SelectAfterSalesReq extends SRequest implements Serializable {
     @ApiModelProperty("品牌名称")
     private String brandName;
 
+    @ApiModelProperty(value = "商家编码")
+    private String merchantCode;
+
+    @ApiModelProperty(value = "商家名称")
+    private String merchantName;
+
+    @ApiModelProperty(value = "商家所属经营主体名称")
+    private String businessEntityName;
+
 }

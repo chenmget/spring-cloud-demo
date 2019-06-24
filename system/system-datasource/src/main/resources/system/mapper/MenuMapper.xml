@@ -98,4 +98,11 @@
       </if>
     </trim>
   </insert>
+
+  <select id="getMenuByRoleId" resultType="com.iwhalecloud.retail.system.dto.MenuDTO">
+        select distinct sm.MENU_ID, sm.PARENT_MENU_ID, sm.MENU_NAME, sm.MENU_DESC, sm.MENU_URL, sm.MENU_TYPE, sm.STATUS_CD, sm.CREATE_STAFF,
+                sm.CREATE_DATE, sm.UPDATE_STAFF, sm.UPDATE_DATE, sm.PLATFORM
+            from sys_menu sm join sys_role_menu srm on sm.MENU_ID = srm.MENU_ID join sys_user_role sur on sur.ROLE_ID = srm.ROLE_ID and USER_ID = #{userId}
+  </select>
+
 </mapper>

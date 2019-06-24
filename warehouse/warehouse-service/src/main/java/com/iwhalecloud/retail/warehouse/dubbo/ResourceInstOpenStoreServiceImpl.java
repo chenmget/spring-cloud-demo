@@ -50,4 +50,13 @@ public class ResourceInstOpenStoreServiceImpl implements ResourceInstStoreServic
     public ResultVO<List<InventoryWarningResp>> queryInventoryWarning(List<InventoryWaringReq> req) {
         return resourceInstStoreService.queryInventoryWarning(req);
     }
+
+    @Override
+    public void syncMktToITMS() {
+        resourceInstStoreService.syncMktToITMS();
+    }
+    @Override
+    public void syncMktToITMSBack() {
+        resourceInstStoreService.syncMktToITMSBack();
+    }
 }

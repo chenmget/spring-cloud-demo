@@ -18,7 +18,6 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +49,6 @@ public class ResourceBatchRecServiceImpl implements ResourceBatchRecService {
     @Async
     public ResultVO saveEventAndBatch(BatchAndEventAddReq req) {
         Map<String, List<String>> mktResIdAndNbrMap = req.getMktResIdAndNbrMap();
-        List<String> mktResIdList = new ArrayList<>();
         for (Map.Entry<String, List<String>> entry : mktResIdAndNbrMap.entrySet()) {
 
             // step1增加批次事件并把ID返回
@@ -66,34 +64,16 @@ public class ResourceBatchRecServiceImpl implements ResourceBatchRecService {
             String eventId = resouceEventManager.insertResouceEvent(eventDTO);
             log.info("ResourceInstServiceImpl.addResourceInst resouceEventManager.insertResouceEvent req={},eventId={}", JSON.toJSONString(eventDTO), JSON.toJSONString(eventId));
 
-            // 串码目标仓库也加一条明细,如果没传，像调拨，在调拨的时候就插入了，收货的时候不需要在插入
-            String mktResStoreId = req.getMktResStoreId();
-            if (!StringUtils.isEmpty(mktResStoreId) && !ResourceConst.NULL_STORE_ID.equals(mktResStoreId)) {
-                for(String nbr : entry.getValue()){
-                    // 增加事件明细
-                    ResourceChngEvtDetailDTO detailDTO = new ResourceChngEvtDetailDTO();
-                    BeanUtils.copyProperties(req, detailDTO);
-                    detailDTO.setMktResEventId(eventId);
-                    detailDTO.setChngType(ResourceConst.PUT_IN_STOAGE);
-                    detailDTO.setStatusCd(ResourceConst.StatusCdEnum.STATUS_CD_VALD.getCode());
-                    detailDTO.setMktResInstNbr(nbr);
-                    int addChngEvtDetailCnt = resourceChngEvtDetailManager.insertChngEvtDetail(detailDTO);
-                    log.info("ResourceInstServiceImpl.addResourceInst detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
-                }
-            }
-
-            String destStroeId = req.getDestStoreId();
-            if (!StringUtils.isEmpty(destStroeId)) {
-                for(String nbr : entry.getValue()){
-                    ResourceChngEvtDetailDTO detailDTO = new ResourceChngEvtDetailDTO();
-                    BeanUtils.copyProperties(req, detailDTO);
-                    detailDTO.setMktResEventId(eventId);
-                    detailDTO.setChngType(ResourceConst.OUT_PUT_STOAGE);
-                    detailDTO.setStatusCd(ResourceConst.StatusCdEnum.STATUS_CD_INVALD.getCode());
-                    detailDTO.setMktResInstNbr(nbr);
-                    int addChngEvtDetailCnt = resourceChngEvtDetailManager.insertChngEvtDetail(detailDTO);
-                    log.info("ResourceInstServiceImpl.addResourceInst detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
-                }
+            for(String nbr : entry.getValue()){
+                // 增加事件明细
+                ResourceChngEvtDetailDTO detailDTO = new ResourceChngEvtDetailDTO();
+                BeanUtils.copyProperties(req, detailDTO);
+                detailDTO.setMktResEventId(eventId);
+                detailDTO.setChngType(ResourceConst.PUT_IN_STOAGE);
+                detailDTO.setStatusCd(ResourceConst.StatusCdEnum.STATUS_CD_VALD.getCode());
+                detailDTO.setMktResInstNbr(nbr);
+                int addChngEvtDetailCnt = resourceChngEvtDetailManager.insertChngEvtDetail(detailDTO);
+                log.info("ResourceInstServiceImpl.addResourceInst detailManager.insertChngEvtDetail req={} addChngEvtDetailCnt={}", JSON.toJSONString(detailDTO), addChngEvtDetailCnt);
             }
         }
 

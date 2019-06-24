@@ -15,7 +15,9 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
+import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreObjRelDTO;
@@ -61,6 +63,9 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
 
     @Autowired
     private ResourceInstManager resourceInstManager;
+
+    @Reference
+    private OrganizationService organizationService;
 
     @Override
     public Page<ResouceStoreDTO> pageStore(StorePageReq req) {
@@ -131,7 +136,7 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
         MerchantRulesCommonReq commonReq = new MerchantRulesCommonReq();
         commonReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType());
         commonReq.setMerchantId(req.getMerchantId());
-        ResultVO<List<String>> permissionMerchantIdListVO = merchantRulesService.getRegionAndMerchantPermission(commonReq);
+        ResultVO<List<String>> permissionMerchantIdListVO = merchantRulesService.getTransferRegionAndMerchantPermission(commonReq);
         log.info("ResouceStoreServiceImpl.pageMerchantAllocateStore merchantService.getRegionAndMerchantPermission req={},resp={}", JSON.toJSONString(commonReq), JSON.toJSONString(permissionMerchantIdListVO));
         if (permissionMerchantIdListVO != null && permissionMerchantIdListVO.isSuccess() && !CollectionUtils.isEmpty(permissionMerchantIdListVO.getResultData())) {
             List<String> permissionMerchantIdList = permissionMerchantIdListVO.getResultData();
@@ -198,6 +203,11 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
     public String getStoreId(StoreGetStoreIdReq req){
         log.info("ResouceStoreServiceImpl.getStoreId req={}", JSON.toJSONString(req));
         return resouceStoreManager.getStoreId(req);
+    }
+    @Override
+    public String getStoreIdByLanId(String lanId){
+        log.info("ResouceStoreServiceImpl.getStoreIdByLanId req={}", JSON.toJSONString(lanId));
+        return resouceStoreManager.getStoreIdByLanId(lanId);
     }
 
     @Override
@@ -363,4 +373,16 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
         }
         return list;
     }
+
+    @Override
+    public ResultVO<List<ResouceStoreDTO>> listGivenStore(){
+        ResultVO<List<OrganizationRegionResp>> organizationRegionRespVO = organizationService.queryRegionOrganizationId();
+        if (!organizationRegionRespVO.isSuccess() || CollectionUtils.isEmpty(organizationRegionRespVO.getResultData())) {
+            return ResultVO.error("获取地市级对象失败");
+        }
+        List<OrganizationRegionResp> organizationRegionResp = organizationRegionRespVO.getResultData();
+        List<String> objIdList = organizationRegionResp.stream().map(OrganizationRegionResp::getOrgId).collect(Collectors.toList());
+        return ResultVO.success(resouceStoreManager.listGivenStore(objIdList));
+    }
+
 }

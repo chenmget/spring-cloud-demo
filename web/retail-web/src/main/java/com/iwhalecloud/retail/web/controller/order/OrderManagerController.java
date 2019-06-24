@@ -1,12 +1,8 @@
+
 package com.iwhalecloud.retail.web.controller.order;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
-import com.iwhalecloud.retail.web.annotation.GoodsRankingsAnnotation;
-import com.iwhalecloud.retail.web.annotation.UserLoginToken;
-import com.iwhalecloud.retail.web.interceptor.MemberContext;
-import com.iwhalecloud.retail.web.interceptor.UserContext;
-import com.iwhalecloud.retail.web.utils.ResponseComUtil;
 import com.iwhalecloud.retail.order.consts.OmsCommonConsts;
 import com.iwhalecloud.retail.order.consts.order.LoginUserType;
 import com.iwhalecloud.retail.order.dto.ResultVO;
@@ -16,6 +12,11 @@ import com.iwhalecloud.retail.order.service.MemberOrderOpenService;
 import com.iwhalecloud.retail.order.service.OperatorOrderOpenService;
 import com.iwhalecloud.retail.order.service.OrderManagerOpenService;
 import com.iwhalecloud.retail.partner.service.PartnerShopService;
+import com.iwhalecloud.retail.web.annotation.GoodsRankingsAnnotation;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
+import com.iwhalecloud.retail.web.interceptor.MemberContext;
+import com.iwhalecloud.retail.web.interceptor.UserContext;
+import com.iwhalecloud.retail.web.utils.ResponseComUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

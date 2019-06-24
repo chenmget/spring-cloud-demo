@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.rights.entity;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import lombok.Data;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * 记录优惠券的使用规则信息
@@ -136,6 +136,9 @@ public class CouponDiscountRule implements Serializable {
   	 */
 	@ApiModelProperty(value = "备注")
   	private java.lang.String remark;
+
+	@ApiModelProperty(value = "混合使用范围")
+	private String mixUseTarget;
   	
   	
   	//属性 end
@@ -196,7 +199,10 @@ public class CouponDiscountRule implements Serializable {
 		updateDate("updateDate","UPDATE_DATE"),
 
 		/** 备注. */
-		remark("remark","REMARK");
+		remark("remark","REMARK"),
+
+		/** 混合使用范围*/
+		mixUseTarget("mixUseTarget","mix_use_target");
 
 		private String fieldName;
 		private String tableFieldName;

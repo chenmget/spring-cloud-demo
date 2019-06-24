@@ -3,17 +3,16 @@ package com.iwhalecloud.retail.warehouse.dubbo.workflow;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.BatchAndEventAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstAddReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq;
-import com.iwhalecloud.retail.warehouse.dto.request.ResourceRequestUpdateReq;
+import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.manager.ResourceReqDetailManager;
 import com.iwhalecloud.retail.warehouse.service.GreenChannelProcessingPassActionService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
@@ -57,18 +56,17 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
 
     @Autowired
     private ResourceBatchRecService resourceBatchRecService;
-    
+
+    @Autowired
+    private ResouceInstTrackService resouceInstTrackService;
+
+    @Autowired
+    private ResourceReqDetailManager resourceReqDetailManager;
+
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
         //对应申请单ID
         String businessId = params.getBusinessId();
-        //修改申请单状态变为审核通过
-        ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
-        reqUpdate.setMktResReqId(businessId);
-        reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
-        ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
-        log.info("GreenChannelProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
-        // 申请单ID->明细
         //根据申请单表保存的源仓库和申请单明细找到对应的串码
         ResourceReqDetailQueryReq detailQueryReq = new ResourceReqDetailQueryReq();
         detailQueryReq.setMktResReqId(businessId);
@@ -76,8 +74,6 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
         log.info("GreenChannelProcessingPassActionImpl.run detailManager.listDetail detailQueryReq={}, resp={}", JSON.toJSONString(detailQueryReq), JSON.toJSONString(reqDetailDTOS));
         List<String> mktResInstNbrs = reqDetailDTOS.stream().map(ResourceReqDetailDTO::getMktResInstNbr).collect(Collectors.toList());
         ResourceReqDetailDTO detailDTO = reqDetailDTOS.get(0);
-
-        // 明细->入库
         //根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
         ResourceInstAddReq addReq = new ResourceInstAddReq();
         addReq.setMktResInstNbrs(mktResInstNbrs);
@@ -85,8 +81,7 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
         addReq.setSourceType(ResourceConst.SOURCE_TYPE.RETAILER.getCode());
         addReq.setStorageType(ResourceConst.STORAGETYPE.GREEN_CHANNEL.getCode());
         addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-        addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-        addReq.setDestStoreId(detailDTO.getMktResStoreId());
+        addReq.setMktResStoreId(detailDTO.getMktResStoreId());
         addReq.setMktResId(detailDTO.getMktResId());
 
         ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getMktResStoreId());
@@ -109,11 +104,22 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             addRespResultVO = resourceInstService.syncTerminal(addReq);
             log.info("GreenChannelProcessingPassActionImpl.run resourceInstService.syncTerminal addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addRespResultVO));
         } else {
-            addRespResultVO = resourceInstService.addResourceInst(addReq);
-            log.info("GreenChannelProcessingPassActionImpl.run resourceInstService.addResourceInst addReq={}, resp={}", JSON.toJSONString(addReq), JSON.toJSONString(addRespResultVO));
+            addRespResultVO = ResultVO.success();
         }
-
         if (addRespResultVO.isSuccess()) {
+            //修改申请单状态变为审核通过
+            ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
+            reqUpdate.setMktResReqId(businessId);
+            reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
+            ResultVO<Boolean> updatRequestVO = requestService.updateResourceRequestState(reqUpdate);
+            log.info("GreenChannelProcessingPassActionImpl.run requestService.updateResourceRequestState reqUpdate={}, resp={}", JSON.toJSONString(reqUpdate), JSON.toJSONString(updatRequestVO));
+            ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
+            detailUpdateReq.setMktResReqItemIdList(Lists.newArrayList(detailDTO.getMktResReqItemId()));
+            detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
+            detailUpdateReq.setUpdateStaff(params.getHandlerUserId());
+            Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
+            log.info("MerchantAddNbrProcessingPassActionImpl.run resourceReqDetailManager.updateResourceReqDetailStatusCd detailUpdateReq={}, resp={}", JSON.toJSONString(detailUpdateReq), detailNum);
+
             // step3 增加事件和批次
             Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(reqDetailDTOS);
             BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
@@ -125,9 +131,11 @@ public class GreenChannelProcessingPassActionImpl implements GreenChannelProcess
             batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
             batchAndEventAddReq.setMerchantId(merchantId);
             batchAndEventAddReq.setCreateStaff(merchantId);
+            batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-            log.info("ResourceInstServiceImpl.syncTerminal resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
+            log.info("GreenChannelProcessingPassActionImpl.run resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         }
+        resouceInstTrackService.asynGreenChannelForRetail(addReq, addRespResultVO);
         return ResultVO.success();
     }
 

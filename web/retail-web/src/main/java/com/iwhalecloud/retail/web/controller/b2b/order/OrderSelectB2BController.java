@@ -24,6 +24,7 @@ import com.iwhalecloud.retail.web.controller.b2b.order.service.DeliveryGoodsResN
 import com.iwhalecloud.retail.web.controller.b2b.order.service.OrderExportUtil;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -54,6 +56,10 @@ public class OrderSelectB2BController {
         request.setUserId(UserContext.getUserId());
         request.setUserCode(UserContext.getUser().getRelCode());
         request.setLanId(UserContext.getUser().getLanId());
+        if (StringUtils.isNotBlank(request.getOrderCat())) {
+            String orderCat = request.getOrderCat();
+            request.setOrderCatList(Arrays.asList(orderCat.split(",")));
+        }
         ResultVO<IPage<OrderSelectResp>> resultVO = orderSelectOpenService.purchaseOrderList(request);
         ResultVO<IPage<OrderSelectSwapResp>> resultSwap = OrderSelectSwap.swapResultOrderSelectRespList(resultVO);
         return resultSwap;
@@ -71,6 +77,9 @@ public class OrderSelectB2BController {
         request.setPageSize(60000);
         request.setUserId(UserContext.getUserId());
         request.setUserCode(UserContext.getUser().getRelCode());
+//        request.setUserId("1");
+//        request.setUserCode("4331301047393");
+//        request.setUserExportType("3");
         ResultVO<OrderListExportResp> resultVO = orderSelectOpenService.orderExport(request);
         if (!resultVO.isSuccess()) {
             result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
@@ -146,6 +155,10 @@ public class OrderSelectB2BController {
     @RequestMapping(value = "/managerOrderList", method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<IPage<OrderSelectSwapResp>> managerOrderList(@RequestBody SelectOrderReq request) {
+        if (StringUtils.isNotBlank(request.getOrderCat())) {
+            String orderCat = request.getOrderCat();
+            request.setOrderCatList(Arrays.asList(orderCat.split(",")));
+        }
         ResultVO<IPage<OrderSelectResp>> resultVO = orderSelectOpenService.managerOrderList(request);
         ResultVO<IPage<OrderSelectSwapResp>> resultSwap = OrderSelectSwap.swapResultOrderSelectRespList(resultVO);
         return resultSwap;
@@ -160,6 +173,10 @@ public class OrderSelectB2BController {
         request.setUserId(UserContext.getUserId());
         request.setUserCode(UserContext.getUser().getRelCode());
 
+        if (StringUtils.isNotBlank(request.getOrderCat())) {
+            String orderCat = request.getOrderCat();
+            request.setOrderCatList(Arrays.asList(orderCat.split(",")));
+        }
         ResultVO<IPage<OrderSelectResp>> resultVO = orderSelectOpenService.salesOrderList(request);
         ResultVO<IPage<OrderSelectSwapResp>> resultSwap = OrderSelectSwap.swapResultOrderSelectRespList(resultVO);
         return resultSwap;

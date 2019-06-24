@@ -1,23 +1,8 @@
 package com.iwhalecloud.retail.web.controller.gift;
 
-import com.iwhalecloud.retail.dto.ResultVO;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiResponse;
-import io.swagger.annotations.ApiResponses;
-import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.oms.dto.response.gift.GiftRespDTO;
 import com.iwhalecloud.retail.oms.dto.response.gift.UserGiftExchangeRespDTO;
@@ -29,6 +14,9 @@ import com.iwhalecloud.retail.oms.service.gift.GiftService;
 import com.iwhalecloud.retail.oms.service.gift.UserGiftExchangeService;
 import com.iwhalecloud.retail.oms.service.gift.UserPointRecordService;
 import com.iwhalecloud.retail.web.controller.BaseController;
+import io.swagger.annotations.*;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.web.bind.annotation.*;
 
 
 /**

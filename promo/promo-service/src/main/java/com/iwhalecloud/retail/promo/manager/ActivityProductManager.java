@@ -2,8 +2,10 @@ package com.iwhalecloud.retail.promo.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.req.ActivityProductListReq;
+import com.iwhalecloud.retail.promo.dto.req.ActivityProductReq;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
 import com.iwhalecloud.retail.promo.mapper.ActivityProductMapper;
 import org.apache.commons.lang3.StringUtils;
@@ -189,5 +191,30 @@ public class ActivityProductManager extends ServiceImpl<ActivityProductMapper,Ac
         queryWrapper.eq(ActivityProduct.FieldNames.productId.getTableFieldName(), productId);
         queryWrapper.eq(ActivityProduct.FieldNames.isDeleted.getTableFieldName(),PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
         return activityProductMapper.selectList(queryWrapper);
+    }
+    /**
+     * 保存更改后的产品信息
+     * @param activityProductReq
+     * @return
+     */
+    public ResultVO saveActProduct(ActivityProductReq activityProductReq){
+        if (null == activityProductReq){
+            return  ResultVO.error("ActivityProductServiceImpl.saveActProduct activityProductReq is null");
+        }
+        return activityProductMapper.saveActProduct(activityProductReq);
+    }
+
+    /**
+     * 删除返利产品
+     * @param activityProductReq
+     * @return
+     */
+    public ResultVO deleteReBateProductActivity(ActivityProductReq activityProductReq) {
+        if (org.springframework.util.StringUtils.isEmpty(activityProductReq.getMarketingActivityId()) ||
+                org.springframework.util.StringUtils.isEmpty(activityProductReq.getProductId())){
+            return  ResultVO.error("ActivityProductServiceImpl.deleteReBateProductActivity activityProductReq is null");
+        }
+        activityProductReq.setGmtModified(new Date());
+        return activityProductMapper.deleteReBateProductActivity(activityProductReq);
     }
 }

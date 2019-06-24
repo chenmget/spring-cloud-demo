@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.oms.dto.resquest.cloud;
 
-import com.iwhalecloud.retail.oms.dto.CloudShelfBindUserDTO;
 import com.iwhalecloud.retail.oms.dto.DefaultCategoryDTO;
-import com.iwhalecloud.retail.oms.dto.resquest.cloud.CloudDeviceReqDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
 import java.io.Serializable;
 import java.util.List;
 

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.promo.mapper.AccountBalanceMapper">
+
+<sql id="allFields">
+    t.ACCOUNT_BALANCE_ID 
+    ,t.ACCT_ID 
+    ,t.CUST_ID 
+    ,t.BALANCE_TYPE_ID 
+    ,t.AMOUNT 
+    ,t.UNEFFECTIVE_AMOUNT 
+    ,t.INVALID_AMOUNT 
+    ,t.STATUS_CD 
+    ,t.STATUS_DATE 
+    ,t.CREATE_STAFF 
+    ,t.CREATE_DATE 
+    ,t.UPDATE_STAFF 
+    ,t.UPDATE_DATE 
+    ,t.REMARK 
+    ,t.CYCLE_TYPE 
+    ,t.CYCLE_UPPER 
+    ,t.CYCLE_LOWER 
+    ,t.EFF_DATE 
+    ,t.EXP_DATE 
+</sql>
+    <select id="queryAccountBalanceList" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceReq"
+            resultType="com.iwhalecloud.retail.promo.dto.AccountBalanceDTO">
+        select <include refid="allFields" /> from ACCOUNT_BALANCE t inner JOIN ACCOUNT b
+        on t.acct_id=b.acct_id
+        WHERE B.STATUS_CD='1000' AND B.EFF_DATE&lt;=SYSDATE() AND B.EXP_DATE&gt;=SYSDATE()
+        and t.STATUS_CD='1000' AND t.EFF_DATE&lt;=SYSDATE() AND t.EXP_DATE&gt;=SYSDATE()
+        and t.acct_id=#{req.acctId}
+        <if test="req.custId != null and req.custId != ''">
+            and t.CUST_ID = #{req.custId}
+        </if>
+
+        <if test="req.balanceTypeId != null and req.balanceTypeId != ''">
+            and t.balance_Type_Id = #{req.balanceTypeId}
+        </if>
+
+
+    </select>
+    <select id="getBalanceSt" parameterType="com.iwhalecloud.retail.promo.dto.req.AccountBalanceStReq"
+            resultType="com.iwhalecloud.retail.promo.dto.resp.AccountBalanceStResp">
+        SELECT SUM(A.AMOUNT) AS TOTAL_AMOUNT,SUM(A.UNEFFECTIVE_AMOUNT) AS TOTAL_UN_EFF_AMOUNT,
+        SUM(A.INVALID_AMOUNT) TOTAL_INVAILD_AMOUNT FROM ACCOUNT_BALANCE A
+        INNER JOIN ACCOUNT B ON A.ACCT_ID=B.ACCT_ID WHERE B.STATUS_CD='1000'
+        AND B.EFF_DATE&lt;=SYSDATE() AND B.EXP_DATE&gt;=SYSDATE()
+        AND  A.STATUS_CD='1000' AND A.EFF_DATE&lt;=SYSDATE() AND A.EXP_DATE&gt;=SYSDATE() and B.ACCT_ID = #{req.acctId}
+        <if test="req.acctType != null and req.acctType != ''">
+            and B.ACCT_TYPE = #{req.acctType}
+        </if>
+
+    </select>
+    <select id="getAccountBalanceSum" parameterType="com.iwhalecloud.retail.promo.dto.req.AccountBalanceStReq"
+            resultType="java.lang.Integer">
+        SELECT count(A.ACCOUNT_BALANCE_ID)  FROM ACCOUNT_BALANCE A
+        INNER JOIN ACCOUNT B ON A.ACCT_ID=B.ACCT_ID WHERE
+          A.STATUS_CD='1000' AND A.EFF_DATE&lt;=SYSDATE() AND A.EXP_DATE&gt;=SYSDATE() and B.ACCT_ID = #{req.acctId}
+        <if test="req.acctType != null and req.acctType != ''">
+            and B.ACCT_TYPE = #{req.acctType}
+        </if>
+
+    </select>
+    <select id="queryAccountBalanceAllForPage" parameterType="com.iwhalecloud.retail.promo.dto.req.QueryAccountBalanceAllReq"
+            resultType="com.iwhalecloud.retail.promo.dto.resp.QueryAccountBalanceAllResp">
+        select a.ACCT_ID,a.ACCOUNT_BALANCE_ID,a.AMOUNT,a.UNEFFECTIVE_AMOUNT,a.BALANCE_TYPE_ID,
+        a.INVALID_AMOUNT,a.CYCLE_LOWER,a.CYCLE_UPPER,a.EFF_DATE,a.EXP_DATE,a.STATUS_CD,a.CYCLE_TYPE,
+        a.AMOUNT as total_Amount
+        ,b.CUST_ID
+        from account_balance a inner join account b on a.ACCT_ID=b.ACCT_ID
+
+            where b.STATUS_CD='1000' AND b.EFF_DATE&lt;=SYSDATE() AND b.EXP_DATE&gt;=SYSDATE() and a.acct_id=#{req.acctId}
+            <if test="req.custId != null and req.custId != ''">
+                and B.CUST_ID = #{req.custId}
+            </if>
+          <if test="req.acctType != null and req.acctType != ''">
+                and B.ACCT_TYPE = #{req.acctType}
+          </if>
+          <if test="req.acctId != null and req.acctId != ''">
+            and B.ACCT_ID = #{req.acctId}
+          </if>
+        <if test="req.supplierId != null and req.supplierId != ''">
+            and d.obj_id = #{req.supplierId}
+        </if>
+          <if test="req.effDateStart != null and req.effDateStart != ''">
+                <![CDATA[   and DATE_FORMAT(a.EFF_DATE, '%Y-%m-%d')>=  DATE_FORMAT(#{req.effDateStart}, '%Y-%m-%d')   ]]>
+          </if>
+          <if test="req.effDateEnd != null and req.effDateEnd != ''">
+                <![CDATA[   and DATE_FORMAT(a.EFF_DATE, '%Y-%m-%d')<=  DATE_FORMAT(#{req.effDateEnd}, '%Y-%m-%d')   ]]>
+          </if>
+        <if test="req.balanceTypeIdList != null and req.balanceTypeIdList.size>0">
+            and a.BALANCE_TYPE_ID in
+            <foreach collection="req.balanceTypeIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+
+    </select>
+
+</mapper>

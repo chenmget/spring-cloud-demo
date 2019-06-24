@@ -1,43 +1,103 @@
 package com.iwhalecloud.retail.report.dto.request;
 
 import com.iwhalecloud.retail.dto.PageVO;
-
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class ReportCodeStatementsReq extends PageVO  {
 	
 	private static final long serialVersionUID = 1L;
-	private String serialToCity; // 串码流向区县
-	private String serialToLanId; // 串码流入地市
-	private String serialFrom; // 串码来源
-	private String serialType; // 串码类型
-	private String serialStatus; // 串码状态
-    private String registerType; // 自注册状态
-    private String brand; // 品牌
-    private String productType; // 机型
-    private String jyName; // 经营主体名称
-    private String city; // 市县
-    private String lanId; // 地市
-    private String lssName; // 零售商名称
-    private String lssCode; // 零售商编码
-    private String gysName; // 供应商名称
-    private String gysCode; // 供应商编码
-    private String orderNo; // 订单号
-    private String serial; // 串码
-    private String fromLss; // 归属零售商
-    private String outTimeStart; // 出库起时间
-    private String outTimeEnd; // 出库止时间
-    private String createTimeStart; // 入库起时间
-    private String createTimeEnd; // 入库止时间
-    private String xdCreateTimeStart; // 下单起时间
+	
+	@ApiModelProperty(value = "xdCreateTimeStart")
+	private String xdCreateTimeStart; // 下单起时间
+	
+	@ApiModelProperty(value = "xdCreateTimeEnd")
     private String xdCreateTimeEnd; // 下单止时间     
-    private String userType;
-    private String productCode; // 产品编码
-    private String manufacturerCode;//厂家编码
-    private String cpType; // 产品类别
-    private String typeId;//产品类型
-    private String legacyAccount;//零售商归属原系统还是云货架
-    private String mktResStoreId;//仓库ID
-
+	
+	@ApiModelProperty(value = "lanIdName")
+    private List<String> lanIdName; // 地市
+	
+	@ApiModelProperty(value = "orgName")
+    private List<String> orgName; // 经营单元
+	
+	@ApiModelProperty(value = "statusCd")
+    private String statusCd; // 串码状态
+	
+	@ApiModelProperty(value = "createTimeStart")
+    private String createTimeStart; // 入库起时间
+	
+	@ApiModelProperty(value = "createTimeEnd")
+    private String createTimeEnd; // 入库止时间
+	
+	@ApiModelProperty(value = "mktResInstType")
+    private String mktResInstType; // 串码类型
+	
+	@ApiModelProperty(value = "sourceType")
+    private String sourceType; // 串码来源
+	
+	@ApiModelProperty(value = "selfRegStatus")
+    private String selfRegStatus; // 自注册状态
+	
+	@ApiModelProperty(value = "outTimeStart")
+    private String outTimeStart; // 出库起时间
+	
+	@ApiModelProperty(value = "outTimeEnd")
+    private String outTimeEnd; // 出库止时间
+	
+	@ApiModelProperty(value = "productType")
+    private String productType;//产品类型
+	
+	@ApiModelProperty(value = "brandName")
+    private String brandName; // 品牌
+	
+	@ApiModelProperty(value = "crmStatus")
+    private String crmStatus;//CRM状态
+	
+	@ApiModelProperty(value = "mktResInstNbr")
+    private String mktResInstNbr; // 串码 
+	
+	@ApiModelProperty(value = "unitType")
+    private String unitType;//产品型号
+	
+	@ApiModelProperty(value = "productName")
+    private String productName; // 产品名称
+	
+	@ApiModelProperty(value = "orderId")
+    private String orderId; // 订单号
+	
+	@ApiModelProperty(value = "productCode")
+    private String productCode; // 营销资源编码
+	
+	@ApiModelProperty(value = "destLanIdName")
+    private List<String> destLanIdName; // 串码流入地市
+	
+	@ApiModelProperty(value = "supplierName")
+    private String supplierName; // 供应商名称
+	
+	@ApiModelProperty(value = "supplierCode")
+    private String supplierCode; // 供应商编码
+	
+	@ApiModelProperty(value = "destOrgName")
+    private List<String> destOrgName; // 串码流向经营单元
+	
+	@ApiModelProperty(value = "partnerName")
+	private String partnerName; // 零售商名称
+	
+	@ApiModelProperty(value = "partnerCode")
+    private String partnerCode; // 零售商编码
+	
+	@ApiModelProperty(value = "businessEntityName")
+    private String businessEntityName; // 经营主体名称
+	
+	@ApiModelProperty(value = "destMerchantName")
+    private String destMerchantName; // 串码流向
+	
+	@ApiModelProperty(value = "mktResStoreId")
+	private String mktResStoreId; //仓库ID
+	
+	@ApiModelProperty(value = "shangJiaId")
+	private String shangJiaId; //厂商或者供应商或者零售商ID
 }

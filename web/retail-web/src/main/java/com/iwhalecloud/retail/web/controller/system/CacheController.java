@@ -5,6 +5,7 @@ import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.web.controller.BaseController;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -108,6 +109,21 @@ public class CacheController extends BaseController {
         return ResultVO.success(true);
     }
 
+    /**
+     * 这个方法会清除通用组织信息两个缓存
+     */
+    @ApiOperation(value = "cleanCacheCommonOrg(通用组织信息）表缓存", notes = "sys_common_org（通用组织信息）表缓存")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/cleanCacheCommonOrg", method = RequestMethod.GET)
+    @CacheEvict(value = {SystemConst.CACHE_NAME_SYS_COMMON_ORG, SystemConst.CACHE_NAME_SYS_COMMON_ORG_LIST}, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheCommonOrg() {
+        log.info("CacheController.cleanCacheCommonOrg clean sys_common_org table cache success!!!");
+        return ResultVO.success(true);
+    }
+
     @ApiOperation(value = "清空par_merchant(商家）表缓存", notes = "清空par_merchant(商家）表缓存")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
@@ -120,6 +136,18 @@ public class CacheController extends BaseController {
         return ResultVO.success(true);
     }
 
+    @ApiOperation(value = "清空par_merchant_account(商家）表缓存", notes = "清空par_merchant_account(商家）表缓存")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/cleanCacheMerchantAccount", method = RequestMethod.GET)
+    @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_MERCHANT_ACCOUNT, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheMerchantAccount() {
+        log.info("CacheController.cleanCacheMerchantAccount clean par_merchant table cache success!!!");
+        return ResultVO.success(true);
+    }
+    
     @ApiOperation(value = "清空par_business_entity(经营主体）表缓存", notes = "清空par_business_entity(经营主体）表缓存")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
@@ -141,6 +169,61 @@ public class CacheController extends BaseController {
     @CacheEvict(value = GoodsConst.CACHE_NAME_PROD_FILE, allEntries = true, beforeInvocation = true)
     public ResultVO<Boolean> cleanCacheProdFile() {
         log.info("CacheController.cleanCacheProdFile clean prod_file table cache success!!!");
+        return ResultVO.success(true);
+    }
+
+    @ApiOperation(value = "清空wf_route表缓存", notes = "清空wf_route表缓存")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/cleanCacheNameWfRoute", method = RequestMethod.GET)
+    @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_ROUTE, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWfRoute() {
+        log.info("CacheController.cleanCacheNameWfRoute clean wf_route table cache success!!!");
+        return ResultVO.success(true);
+    }
+
+    @ApiOperation(value = "清空wf_node表缓存", notes = "清空wf_node表缓存")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/cleanCacheNameWfNote", method = RequestMethod.GET)
+    @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_NODE, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWfNote() {
+        log.info("CacheController.cleanCacheNameWfNote clean wf_node table cache success!!!");
+        return ResultVO.success(true);
+    }
+
+    @ApiOperation(value = "清空GoodSaleNum缓存", notes = "清空GoodSaleNum缓存")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/cleanCacheGoodSaleNum", method = RequestMethod.GET)
+    @CacheEvict(value = GoodsConst.CACHE_NAME_GOODS_SALE_ORDER, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheGoodSaleNum() {
+        log.info("CacheController.cleanCacheGoodSaleNum clean GoodSaleNum table cache success!!!");
+        return ResultVO.success(true);
+    }
+    @RequestMapping(value = "/cleanCacheNameWfNoteRights", method = RequestMethod.GET)
+    @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_NODE_RIGHTS, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWfNoteRights() {
+        log.info("CacheController.cleanCacheNameWfNote clean wf_node_rights table cache success!!!");
+        return ResultVO.success(true);
+    }
+    @RequestMapping(value = "/cleanCacheNameWfRouteService", method = RequestMethod.GET)
+    @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_ROUTE_SERVICE, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWfRouteService() {
+        log.info("CacheController.cleanCacheNameWfRouteService clean wf_route_service table cache success!!!");
+        return ResultVO.success(true);
+    }
+
+    @RequestMapping(value = "/cleanCacheNameWfService", method = RequestMethod.GET)
+    @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_SERVICE, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWfService() {
+        log.info("CacheController.cleanCacheNameWfService clean wf_service table cache success!!!");
         return ResultVO.success(true);
     }
 }

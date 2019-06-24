@@ -108,9 +108,9 @@
 
         <!--定时任务-->
         <dependency>
-	        <groupId>org.quartz</groupId>
-	        <artifactId>quartz-all</artifactId>
-	        <version>2.1.7</version>
+            <groupId>org.quartz</groupId>
+            <artifactId>quartz-all</artifactId>
+            <version>2.1.7</version>
         </dependency>
         <dependency>
             <groupId>org.quartz</groupId>

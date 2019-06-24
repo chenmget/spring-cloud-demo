@@ -23,23 +23,16 @@ public class MerchantTagRelManager {
 
     /**
      * 添加一个 店中商(分销商)和标签 关联关系
-     *
      * @param merchantTagRel
      * @return
      */
     public int insert(MerchantTagRel merchantTagRel) {
         int resultInt = merchantTagRelMapper.insert(merchantTagRel);
-//        if(resultInt > 0){
-//            MerchantTagRelDTO merchantTagRelDTO = new MerchantTagRelDTO();
-//            BeanUtils.copyProperties(merchantTagRel, merchantTagRelDTO);
-//            return merchantTagRelDTO;
-//        }
         return resultInt;
     }
 
     /**
      * 获取一个 店中商(分销商)和标签 关联关系
-     *
      * @param relId
      * @return
      */
@@ -56,13 +49,13 @@ public class MerchantTagRelManager {
 
     /**
      * 删除 店中商(分销商)和标签 关联关系
-     *
      * @param req
      * @return
      */
     public int deleteMerchantTagRel(MerchantTagRelDeleteReq req) {
         QueryWrapper<MerchantTagRel> queryWrapper = new QueryWrapper<MerchantTagRel>();
-        Boolean hasParams = false; // 是否有参数
+        // 是否有参数
+        Boolean hasParams = false;
         if (!StringUtils.isEmpty(req.getRelId())) {
             hasParams = true;
             queryWrapper.eq(MerchantTagRel.FieldNames.relId.getTableFieldName(), req.getRelId());
@@ -84,13 +77,13 @@ public class MerchantTagRelManager {
 
     /**
      * 批量删除店中商(分销商)和标签 关联关系
-     *
      * @param req
      * @return
      */
     public int deleteMerchantTagRelBatch(MerchantTagRelDeleteBatchReq req) {
         QueryWrapper<MerchantTagRel> queryWrapper = new QueryWrapper<MerchantTagRel>();
-        Boolean hasParams = false; // 是否有参数
+        // 是否有参数
+        Boolean hasParams = false;
         if (!StringUtils.isEmpty(req.getRelId())) {
             hasParams = true;
             queryWrapper.eq(MerchantTagRel.FieldNames.relId.getTableFieldName(), req.getRelId());
@@ -117,22 +110,15 @@ public class MerchantTagRelManager {
      * @return
      */
     public List<MerchantTagRelDTO> listMerchantTagRel(MerchantTagRelListReq req) {
-
         return merchantTagRelMapper.listMerchantTagRel(req);
-//        QueryWrapper<MerchantTagRel> queryWrapper = new QueryWrapper<MerchantTagRel>();
-//        if(!StringUtils.isEmpty(req.getMerchantId())){
-//            queryWrapper.eq(MerchantTagRel.FieldNames.merchantId.getTableFieldName(), req.getMerchantId());
-//        }
-//        if(!StringUtils.isEmpty(req.getTagId())){
-//            queryWrapper.eq(MerchantTagRel.FieldNames.tagId.getTableFieldName(), req.getTagId());
-//        }
-//        List<MerchantTagRel> merchantTagRelList = merchantTagRelMapper.selectList(queryWrapper);
-//        List<MerchantTagRelDTO> merchantTagRelDTOList = new ArrayList<>();
-//        for (MerchantTagRel merchantTagRel : merchantTagRelList) {
-//            MerchantTagRelDTO merchantTagRelDTO = new MerchantTagRelDTO();
-//            BeanUtils.copyProperties(merchantTagRel, merchantTagRelDTO);
-//            merchantTagRelDTOList.add(merchantTagRelDTO);
-//        }
-//        return merchantTagRelDTOList;
+    }
+
+    /**
+     * 查询商家和标签的集合
+     * @param req
+     * @return
+     */
+    public List<MerchantTagRelDTO> listMerchantAndTag(MerchantTagRelListReq req){
+        return merchantTagRelMapper.listMerchantAndTag(req);
     }
 }

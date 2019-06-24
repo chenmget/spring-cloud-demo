@@ -4,9 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceEventDTO;
-import com.iwhalecloud.retail.warehouse.dto.request.ResouceEventUpdateReq;
 import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
-import com.iwhalecloud.retail.warehouse.entity.ResourceChngEvtDetail;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceEventMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceChngEvtDetailMapper;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceInstMapper;
@@ -51,38 +49,38 @@ public class ResouceEventManager {
             queryWrapper.eq(ResouceEvent.FieldNames.mktResId.getTableFieldName(), resouceEventDTO.getMktResId());
             queryWrapper.eq(ResouceEvent.FieldNames.eventType.getTableFieldName(), resouceEventDTO.getEventType());
             event = resouceEventMapper.selectOne(queryWrapper);
+            log.info("ResouceEventManager.insertResouceEvent resouceEventMapper.selectOne, event={}", JSON.toJSONString(event));
             if (null == event) {
                 exist = false;
             } else {
                 exist = true;
             }
-
         }
+
         if (!exist) {
             ResouceEvent resouceEvent = new ResouceEvent();
             BeanUtils.copyProperties(resouceEventDTO, resouceEvent);
             resouceEvent.setCreateDate(now);
             resouceEvent.setStatusDate(now);
             resouceEvent.setAcceptDate(now);
-            resouceEvent.setStatusCd(ResourceConst.EVENTSTATE.PROCESSING.getCode());
+            if (StringUtils.isEmpty(resouceEventDTO.getStatusCd())) {
+                resouceEvent.setStatusCd(ResourceConst.EVENTSTATE.PROCESSING.getCode());
+            }
             resouceEvent.setMktResEventNbr(resourceInstMapper.getPrimaryKey());
             resouceEvent.setUpdateDate(now);
             resouceEventMapper.insert(resouceEvent);
             eventId = resouceEvent.getMktResEventId();
         } else {
-            ResouceEvent updateEvent = new ResouceEvent();
-            updateEvent.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
-            updateEvent.setUpdateDate(now);
-            int i = resouceEventMapper.update(updateEvent, queryWrapper);
+            event.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
+            if (StringUtils.isNotEmpty(resouceEventDTO.getStatusCd())) {
+                event.setStatusCd(resouceEventDTO.getStatusCd());
+            }
+            event.setUpdateDate(now);
+            event.setStatusDate(now);
+            event.setUpdateStaff(event.getMerchantId());
+            Integer num = resouceEventMapper.updateResourceEventStatusCd(event);
+            log.info("ResouceEventManager.insertResouceEvent resouceEventMapper.updateResourceEventStatusCd req={}, num={}", JSON.toJSONString(event), num);
             eventId = event.getMktResEventId();
-
-            ResourceChngEvtDetail resourceChngEvtDetail = new ResourceChngEvtDetail();
-            resourceChngEvtDetail.setUpdateDate(now);
-            resourceChngEvtDetail.setStatusDate(now);
-            QueryWrapper detailQueryWrapper = new QueryWrapper();
-            detailQueryWrapper.eq(ResourceChngEvtDetail.FieldNames.mktResEventId.getTableFieldName(), eventId);
-            detailQueryWrapper.eq(ResourceChngEvtDetail.FieldNames.mktResStoreId.getTableFieldName(), resouceEventDTO.getMktResStoreId());
-            resourceChngEvtDetailMapper.update(resourceChngEvtDetail, detailQueryWrapper);
         }
         return eventId;
     }

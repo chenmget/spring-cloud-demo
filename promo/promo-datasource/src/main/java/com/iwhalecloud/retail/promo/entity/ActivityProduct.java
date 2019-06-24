@@ -1,13 +1,13 @@
 package com.iwhalecloud.retail.promo.entity;
 
 import com.baomidou.mybatisplus.annotation.KeySequence;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import java.io.Serializable;
-import lombok.Data;
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
 
 /**
  * ActivityProduct
@@ -52,9 +52,9 @@ public class ActivityProduct implements Serializable {
   	private java.lang.String productId;
   	
   	/**
-  	 * 价格
+  	 * 	活动中的商品价格 前置补贴活动保存产品的地包强制供货价 限时抢购活动保存产品的抢购价
   	 */
-	@ApiModelProperty(value = "价格")
+	@ApiModelProperty(value = "活动中的商品价格 前置补贴活动保存产品的地包强制供货价 限时抢购活动保存产品的抢购价")
   	private java.lang.Long price;
   	
   	/**
@@ -124,7 +124,24 @@ public class ActivityProduct implements Serializable {
 	 */
 	@ApiModelProperty(value = "记录数据来源。")
 	private java.lang.String sourceFrom;
-  	
+
+	/**
+	 * 是否限制产品参与总数量
+	 1.限制
+	 0.不限制
+	 */
+	@ApiModelProperty(value = "产品参与总数量限制标识")
+	private String numLimitFlg;
+	/**
+	 * 活动图片应用方式
+	 */
+	@ApiModelProperty(value = "活动图片应用方式")
+	private String productPicUseType;
+	/**
+	 * 活动图片
+	 */
+	@ApiModelProperty(value = "活动图片")
+	private String productPic;
   	//属性 end
 	
     /** 字段名称枚举. */
@@ -180,7 +197,20 @@ public class ActivityProduct implements Serializable {
 		gmtModified("gmtModified","GMT_MODIFIED"),
 
 		/** 记录数据来源 */
-		sourceFrom("sourceFrom","SOURCE_FROM");
+		sourceFrom("sourceFrom","SOURCE_FROM"),
+
+		/**是否限制产品参与总数量
+		 1.限制
+		 0.不限制*/
+		numLimitFlg("numLimitFlg","NUM_LIMIT_FLG"),
+    	/**
+    	 * 活动图片
+    	 */
+    	productPic("productPic","PRODUCT_PIC"),
+    	/**
+    	 * 活动图片应用方式
+    	 */
+    	productPicUseType("productPicUseType","PRODUCT_PIC_USE_TYPE");  
 
 		private String fieldName;
 		private String tableFieldName;

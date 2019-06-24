@@ -1,7 +1,7 @@
 package com.iwhalecloud.retail.member.pojo.request;
 
-import lombok.Data;
 import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 @Data
 public class LoginByMobileReq {

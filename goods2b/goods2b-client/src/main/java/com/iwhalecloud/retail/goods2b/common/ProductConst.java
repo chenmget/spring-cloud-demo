@@ -8,7 +8,19 @@ public class ProductConst {
 
     public static final String APP_PRODUCT_FLOW_PROCESS_ID="1";
 
+    public static final String BRANDEDIT_PRODUCT_FLOW_PROCESS_ID="20";
+
+    public static final String OPEREDIT_PRODUCT_FLOW_PROCESS_ID="21";
+
+    public static final String EDIT_PRODUCT_FLOW_PROCESS_ID="22";
+
     public static final String UPDATE_PRODUCT_FLOW_PROCESS_ID="10";
+
+    public static final String MODEL_PRODUCT_FLOW_PROCESS_ID="31";
+
+    public static final String ITV_PRODUCT_FLOW_PROCESS_ID="32";
+
+    public static final String INTELLIGENCE_PRODUCT_FLOW_PROCESS_ID="33";
 
     /**
      * 状态常量
@@ -76,6 +88,48 @@ public class ProductConst {
         }
     }
 
+    public enum isInspection {
+        NO("0","不需要"),
+        YES("1","需要");
+
+        private String code;
+        private String value;
+
+        isInspection(String code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
+    public enum isItms {
+        NOPUSH("0","不推送"),
+        PUSHIPTV("1","推送为IPTV"),
+        PUSHMODEL("2","推送为光猫"),
+        PUSHIPTVMODEL("3","同时推送为IPTV和光猫");
+
+        private String code;
+        private String value;
+
+        isItms(String code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
     /**
      * 是否被删除
      */
@@ -91,6 +145,55 @@ public class ProductConst {
         private String value;
         private String code;
         IsDelete(String code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
+    /**
+     * 是否被删除
+     */
+    public enum operType {
+        ADD("ADD","新增"),
+        MOD("MOD","修改"),
+        DEL("DEL","删除");
+        private String value;
+        private String code;
+        operType(String code, String value){
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+        public String getValue() {
+            return value;
+        }
+    }
+
+    /**
+     * 采购类型
+     */
+    public enum purchaseType {
+        /**
+         * 否
+         */
+        COLLECTIVE("1","集采"),
+        /**
+         * 是
+         */
+        SOCIOLOGY("2","社采");
+        private String value;
+        private String code;
+        purchaseType(String code, String value){
             this.code = code;
             this.value = value;
         }

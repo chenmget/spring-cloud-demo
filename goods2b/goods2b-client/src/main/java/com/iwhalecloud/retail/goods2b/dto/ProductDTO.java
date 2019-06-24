@@ -233,4 +233,24 @@ public class ProductDTO extends PageVO {
 	@ApiModelProperty(value = "审核状态")
 	private String auditState;
 
+	@ApiModelProperty(value = "类型ID")
+	private String typeId;
+	
+	@ApiModelProperty(value = "产品类型")
+	private String typeName;
+
+	@ApiModelProperty(value = "品牌")
+	private String brandId;
+
+	@ApiModelProperty(value = "品牌名称")
+	private String brandName;
+
+	@ApiModelProperty(value = "采购类型")
+	private String purchaseType;
+
+	@ApiModelProperty(value = "产品名称")
+	private String productName;
+
+	@ApiModelProperty(value = "是否有销售记录")
+	private Boolean isSale;
 }

@@ -25,6 +25,12 @@ public class WorkTaskAddReq implements Serializable {
     @ApiModelProperty(value = "taskTitle")
     private java.lang.String taskTitle;
 
+    @ApiModelProperty("任务类型")
+    private String taskType;
+
+    @ApiModelProperty("任务子类型")
+    private String taskSubType;
+
 //    /**
 //     * 流程：1
 //     工单：2

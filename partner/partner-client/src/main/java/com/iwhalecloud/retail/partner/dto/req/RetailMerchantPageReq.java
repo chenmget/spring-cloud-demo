@@ -96,4 +96,7 @@ public class RetailMerchantPageReq extends PageVO {
     @ApiModelProperty(value = "标签ID")
     private String tagId;
 
+    @ApiModelProperty(value = "专票状态 1 未录入/2 审核通过/3 审核中/4 审核不通过/5 已过期")
+    private String vatInvoiceStatus;
+
 }

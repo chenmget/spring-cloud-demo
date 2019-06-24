@@ -2,12 +2,10 @@ package com.iwhalecloud.retail.rights.dto.request;
 
 import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.io.Serializable;
+import lombok.Data;
 
 import javax.validation.constraints.NotNull;
-
-import lombok.Data;
+import java.io.Serializable;
 
 @Data
 public class UpdateCouponSupplyRuleReqDTO extends AbstractRequest implements Serializable{
@@ -89,4 +87,10 @@ public class UpdateCouponSupplyRuleReqDTO extends AbstractRequest implements Ser
 	 */
 	@ApiModelProperty(value = "更新时间")
 	private java.util.Date updateDate;
+
+	@ApiModelProperty(value = "是不限制券总数量")
+	private String numLimitFlg;
+
+	@ApiModelProperty(value = "是否限制券的单用户领取数量")
+	private String supplyLimitFlg;
 }

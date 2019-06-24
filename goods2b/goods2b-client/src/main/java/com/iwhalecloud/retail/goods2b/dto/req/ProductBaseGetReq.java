@@ -70,6 +70,12 @@ public class ProductBaseGetReq extends AbstractRequest implements Serializable {
     private String isCtCode;
 
     /**
+     * 是否需要抽检
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String isFixedLine;
+
+    /**
      * 产品编码
      */
     @ApiModelProperty(value = "产品编码")
@@ -91,5 +97,17 @@ public class ProductBaseGetReq extends AbstractRequest implements Serializable {
      */
     @ApiModelProperty(value = "isDeleted")
     private String isDeleted;
+
+    /**
+     * 价格档位
+     */
+    @ApiModelProperty(value = "价格档位")
+    private String priceLevel;
+
+    /**
+     * 卖点
+     */
+    @ApiModelProperty(value = "卖点")
+    private String sallingPoint;
 
 }

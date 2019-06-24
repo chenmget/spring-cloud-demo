@@ -89,8 +89,6 @@ public class CartServiceImpl implements CartService {
         AddCartReq checkReq = new AddCartReq();
         BeanUtils.copyProperties(cart, checkReq);
         checkReq.setNum(checkReq.getNum()+req.getNum());
-
-
         if (UpdateCartReq.ACTION_NUM.equals(req.getAction())) {
 
             /**

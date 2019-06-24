@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.system.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.KeySequence;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -97,6 +96,12 @@ public class User implements Serializable {
     @ApiModelProperty(value = "userSource")
     private Integer userSource;
 
+    @ApiModelProperty(value = "changePwdTime")
+    private Date changePwdTime;
+
+    @ApiModelProperty(value = "changePwdCount")
+    private Integer changePwdCount;
+
     /** 字段名称枚举. */
     public enum FieldNames {
         /** 用户ID. */
@@ -175,7 +180,13 @@ public class User implements Serializable {
         sysPostName("sysPostName","SYS_POST_NAME"),
 
         /** 工号来源. */
-        userSource("userSource","USER_SOURCE");
+        userSource("userSource","USER_SOURCE"),
+
+        /** 密码修改时间*/
+        changePwdTime("changePwdTime","CHANGE_PWD_TIME"),
+
+        /** 密码修改次数*/
+        changePwdCount("changePwdCount","CHANGE_PWD_COUNT");
 
         private String fieldName;
         private String tableFieldName;

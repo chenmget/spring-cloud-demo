@@ -57,6 +57,13 @@ public class ProductResp implements Serializable {
      */
     @ApiModelProperty(value = "提货价")
     private Double deliveryPrice;
+
+    /**
+     * 初始提货价
+     */
+    @ApiModelProperty(value = "初始提货价")
+    private Double initialPrice;
+
     /**
      * 上架数量
      */
@@ -239,4 +246,23 @@ public class ProductResp implements Serializable {
      */
     @ApiModelProperty(value = "产品类型")
     private String typeId;
+    
+    /**
+     * 产品类型
+     */
+    @ApiModelProperty(value = "产品类型")
+    private String typeName;
+    
+    /**
+     * 品牌名称
+     */
+    @ApiModelProperty(value = "品牌名称")
+    private String brandName;
+    
+    /**
+     * 型号名称
+     */
+    @ApiModelProperty(value = "型号名称")
+    private String unitTypeName;
+    
 }

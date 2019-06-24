@@ -1,22 +1,21 @@
 package com.iwhalecloud.retail.member;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.member.dto.request.MemberAddReq;
+import com.iwhalecloud.retail.member.dto.request.MemberIsExistsReq;
+import com.iwhalecloud.retail.member.dto.request.MemberLoginReq;
 import com.iwhalecloud.retail.member.dto.request.MemberPageReq;
+import com.iwhalecloud.retail.member.dto.response.MemberIsExistsResp;
 import com.iwhalecloud.retail.member.dto.response.MemberLoginResp;
+import com.iwhalecloud.retail.member.dto.response.MemberResp;
+import com.iwhalecloud.retail.member.service.MemberService;
 import lombok.extern.slf4j.Slf4j;
-
+import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.member.dto.request.MemberIsExistsReq;
-import com.iwhalecloud.retail.member.dto.request.MemberLoginReq;
-import com.iwhalecloud.retail.member.dto.request.MemberAddReq;
-import com.iwhalecloud.retail.member.dto.response.MemberIsExistsResp;
-import com.iwhalecloud.retail.member.dto.response.MemberResp;
-import com.iwhalecloud.retail.member.service.MemberService;
 
 
 @RunWith(SpringRunner.class)
@@ -66,4 +65,12 @@ public class MemberServiceTest {
 		Page result = memberService.pageMember(req);
 		log.info("222");
 	}
+	
+	@Test
+	public void checkPayAccount(){
+		int result = memberService.checkPayAccount("12312312");
+		System.out.println(result);
+	}
+	
+	
 }

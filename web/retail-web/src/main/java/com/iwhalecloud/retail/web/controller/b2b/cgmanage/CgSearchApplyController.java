@@ -96,12 +96,12 @@ public class CgSearchApplyController extends BaseController {
 		Date date = new Date();
 		String applyCode = date.getTime() + "";
 		String relCode = user.getRelCode();//申请人工号    写表的     relCode对应merchant_id
-		ResultVO<MerchantDTO>  merchantDTO=  merchantService.getMerchantById(relCode);
-		if(merchantDTO.getResultData() == null) {
-			return ResultVO.error("该申请人没有商家信息");
-		}
-		String applyMerchantName = merchantDTO.getResultData().getMerchantName();
-//		String applyMerchantName = user.getUserName();//申请人名称  展示的
+//		ResultVO<MerchantDTO>  merchantDTO=  merchantService.getMerchantById(relCode);
+//		if(merchantDTO.getResultData() == null) {
+//			return ResultVO.error("该申请人没有商家信息");
+//		}
+//		String applyMerchantName = merchantDTO.getResultData().getMerchantName();
+		String applyMerchantName = user.getUserName();//申请人名称  展示的
 		String lanId = user.getLanId();//申请地市  写表的
 		String applyAdress = purApplyService.hqDiShiBuMen(lanId); //申请地市   展示的
 		String regionId = user.getRegionId();//申请部门  //写表的

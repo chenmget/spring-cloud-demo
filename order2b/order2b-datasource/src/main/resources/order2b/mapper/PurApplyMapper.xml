@@ -8,7 +8,7 @@
 			a.APPLY_ID AS applyId,
 			a.APPLY_CODE AS applyCode,
 			a.APPLY_NAME AS applyName,
-			a.CREATE_DATE AS applyTime,
+		    DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
 		    a.MERCHANT_ID As merchantId,
 			a.APPLY_MERCHANT_ID As applyMerchantId,
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
@@ -54,7 +54,7 @@
 			a.APPLY_ID AS applyId,
 			a.APPLY_CODE AS applyCode,
 			a.APPLY_NAME AS projectName,
-            DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
+	        DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
 			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
 			a.STATUS_CD AS STATUS,
@@ -212,7 +212,7 @@
 		a.merchant_id as supplierId,
 		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_CODE=a.merchant_code) AS supplierName,
 		a.status_cd as statusCd,
-        DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS createDate
+	    DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS createDate
 	FROM 
 		pur_apply a
 		where 1=1 and a.apply_id = #{req.applyId}

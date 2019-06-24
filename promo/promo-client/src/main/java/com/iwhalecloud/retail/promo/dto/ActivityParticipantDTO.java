@@ -174,4 +174,10 @@ public class ActivityParticipantDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "状态,0：待审核,1：有效,-1：审核不通过")
 	private java.lang.String status;
 
+	/**
+	 * 操作类型，add：新增，mod：修改，del：删除
+	 */
+	@ApiModelProperty(value = "操作类型，add：新增，mod：修改，del：删除")
+	private java.lang.String operType;
+
 }

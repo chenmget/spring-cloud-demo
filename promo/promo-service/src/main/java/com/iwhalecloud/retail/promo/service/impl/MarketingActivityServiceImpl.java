@@ -1024,9 +1024,43 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
      */
     private List<ActivityChangeDetail> calculateActivityChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity) {
         List<ActivityChangeDetail> activityChangeDetails = new ArrayList<>();
+
+        // 1.计算活动名称、概述、描述信息,获取变更数据
+        calculateActivityNameAndBriefAndDescriptionChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 2.计算活动时间信息,获取变更数据
+        calculateActivityTimeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 3.计算发货时间信息,获取变更数据
+        calculateDeliverTimeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 4.计算支付定金信息,获取变更数据
+        calculatePreTimeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 5.计算活动支付尾款信息,获取变更数据
+        calculateImgChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 6.计算活动图片信息,获取变更数据
+        calculatePayTimeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 7.计算活动参与范围信息,获取变更数据
+        calculateScopeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+
+        // 8.计算活动参与对象信息,获取变更数据
+        calculateParticipantChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+        return activityChangeDetails;
+    }
+
+    /**
+     * 计算活动名称、概述、描述信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateActivityNameAndBriefAndDescriptionChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
         //1.比较活动基本信息
         //1.1 比较活动名称
-        if (StringUtils.isNotEmpty(changedActivity.getName()) && !changedActivity.getName().equals(originalActivity.getName())) {
+        if(StringUtils.isNotEmpty(changedActivity.getName())&&!changedActivity.getName().equals(originalActivity.getName())){
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1038,138 +1072,9 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetail.setKeyValue(originalActivity.getId());
             activityChangeDetails.add(activityChangeDetail);
         }
-        //1.2比较活动时间（包括开始时间和结束时间）
-        // 1.2.1 活动开始时间
-        if ((changedActivity.getStartTime() != null && changedActivity.getStartTime().getTime() > 0) && !changedActivity.getStartTime().equals(originalActivity.getStartTime())) {
-            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
-            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
-            activityChangeDetail.setTableName(MarketingActivity.TNAME);
-            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.startTime.getTableFieldName());
-            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.startTime.getTableFieldComment());
-            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
-//            activityChangeDetail.setOldValue(String.valueOf(originalActivity.getStartTime().getTime()));
-//            activityChangeDetail.setNewValue(String.valueOf(changedActivity.getStartTime().getTime()));
-            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getStartTime()));
-            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getStartTime()));
 
-            activityChangeDetail.setKeyValue(originalActivity.getId());
-            activityChangeDetails.add(activityChangeDetail);
-        }
-        //1.2.2 活动结束时间
-        if ((changedActivity.getEndTime() != null && changedActivity.getEndTime().getTime() > 0) && !changedActivity.getEndTime().equals(originalActivity.getEndTime())) {
-            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
-            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
-            activityChangeDetail.setTableName(MarketingActivity.TNAME);
-            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.endTime.getTableFieldName());
-            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.endTime.getTableFieldComment());
-            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
-//            activityChangeDetail.setOldValue(String.valueOf(originalActivity.getEndTime().getTime()));
-//            activityChangeDetail.setNewValue(String.valueOf(changedActivity.getEndTime().getTime()));
-            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getEndTime()));
-            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getEndTime()));
-
-            activityChangeDetail.setKeyValue(originalActivity.getId());
-            activityChangeDetails.add(activityChangeDetail);
-        }
-        //1.3比较发货时间（包括开始时间和结束时间）
-        // 1.3.1 活动发货开始时间
-        if ((changedActivity.getDeliverStartTime() != null && changedActivity.getDeliverStartTime().getTime() > 0) && !changedActivity.getDeliverStartTime().equals(originalActivity.getDeliverStartTime())) {
-            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
-            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
-            activityChangeDetail.setTableName(MarketingActivity.TNAME);
-            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.deliverStartTime.getTableFieldName());
-            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.deliverStartTime.getTableFieldComment());
-            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
-//            activityChangeDetail.setOldValue(String.valueOf(originalActivity.getDeliverStartTime().getTime()));
-//            activityChangeDetail.setNewValue(String.valueOf(changedActivity.getDeliverStartTime().getTime()));
-            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getDeliverStartTime()));
-            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getDeliverStartTime()));
-
-            activityChangeDetail.setKeyValue(originalActivity.getId());
-            activityChangeDetails.add(activityChangeDetail);
-        }
-        //1.3.2 活动发货结束时间
-        if ((changedActivity.getDeliverEndTime() != null && changedActivity.getDeliverEndTime().getTime() > 0) && !changedActivity.getDeliverEndTime().equals(originalActivity.getDeliverEndTime())) {
-            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
-            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
-            activityChangeDetail.setTableName(MarketingActivity.TNAME);
-            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.deliverEndTime.getTableFieldName());
-            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.deliverEndTime.getTableFieldComment());
-            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
-//            activityChangeDetail.setOldValue(String.valueOf(originalActivity.getDeliverEndTime().getTime()));
-//            activityChangeDetail.setNewValue(String.valueOf(changedActivity.getDeliverEndTime().getTime()));
-            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getDeliverEndTime()));
-            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getDeliverEndTime()));
-            activityChangeDetail.setKeyValue(originalActivity.getId());
-            activityChangeDetails.add(activityChangeDetail);
-        }
-
-        //1.4比较支付定金时间（包括开始时间和结束时间）
-        // 1.4.1 支付定金开始时间
-        if ((changedActivity.getPreStartTime() != null && changedActivity.getPreStartTime().getTime() > 0) && !changedActivity.getPreStartTime().equals(originalActivity.getPreStartTime())) {
-            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
-            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
-            activityChangeDetail.setTableName(MarketingActivity.TNAME);
-            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.preStartTime.getTableFieldName());
-            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.preStartTime.getTableFieldComment());
-            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
-//            activityChangeDetail.setOldValue(String.valueOf(originalActivity.getPreStartTime().getTime()));
-//            activityChangeDetail.setNewValue(String.valueOf(changedActivity.getPreStartTime().getTime()));
-            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getPreStartTime()));
-            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getPreStartTime()));
-
-            activityChangeDetail.setKeyValue(originalActivity.getId());
-            activityChangeDetails.add(activityChangeDetail);
-        }
-        //1.4.2 支付定金结束时间
-        if ((changedActivity.getPreEndTime() != null && changedActivity.getPreEndTime().getTime() > 0) && !changedActivity.getPreEndTime().equals(originalActivity.getPreEndTime())) {
-            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
-            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
-            activityChangeDetail.setTableName(MarketingActivity.TNAME);
-            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.preEndTime.getTableFieldName());
-            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.preEndTime.getTableFieldComment());
-            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
-//            activityChangeDetail.setOldValue(String.valueOf(originalActivity.getPreEndTime().getTime()));
-//            activityChangeDetail.setNewValue(String.valueOf(changedActivity.getPreEndTime().getTime()));
-            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getPreEndTime()));
-            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getPreEndTime()));
-            activityChangeDetail.setKeyValue(originalActivity.getId());
-            activityChangeDetails.add(activityChangeDetail);
-        }
-
-        //1.5比较支付尾款时间（包括开始时间和结束时间）
-        // 1.5.1 支付尾款开始时间
-        if ((changedActivity.getTailPayStartTime() != null && changedActivity.getTailPayStartTime().getTime() > 0) && !changedActivity.getTailPayStartTime().equals(originalActivity.getTailPayStartTime())) {
-            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
-            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
-            activityChangeDetail.setTableName(MarketingActivity.TNAME);
-            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.tailPayStartTime.getTableFieldName());
-            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.tailPayStartTime.getTableFieldComment());
-            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
-//            activityChangeDetail.setOldValue(String.valueOf(originalActivity.getTailPayStartTime().getTime()));
-//            activityChangeDetail.setNewValue(String.valueOf(changedActivity.getTailPayStartTime().getTime()));
-            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getTailPayStartTime()));
-            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getTailPayStartTime()));
-            activityChangeDetail.setKeyValue(originalActivity.getId());
-            activityChangeDetails.add(activityChangeDetail);
-        }
-        //1.5.2 支付尾款结束时间
-        if ((changedActivity.getTailPayEndTime() != null && changedActivity.getTailPayEndTime().getTime() > 0) && !changedActivity.getTailPayEndTime().equals(originalActivity.getTailPayEndTime())) {
-            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
-            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
-            activityChangeDetail.setTableName(MarketingActivity.TNAME);
-            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.tailPayEndTime.getTableFieldName());
-            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.tailPayEndTime.getTableFieldComment());
-            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
-//            activityChangeDetail.setOldValue(String.valueOf(originalActivity.getTailPayEndTime().getTime()));
-//            activityChangeDetail.setNewValue(String.valueOf(changedActivity.getTailPayEndTime().getTime()));
-            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getTailPayEndTime()));
-            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getTailPayEndTime()));
-            activityChangeDetail.setKeyValue(originalActivity.getId());
-            activityChangeDetails.add(activityChangeDetail);
-        }
-        //1.6 比较活动概述
-        if (StringUtils.isNotEmpty(changedActivity.getBrief()) && !changedActivity.getBrief().equals(originalActivity.getBrief())) {
+        //1.2 比较活动概述
+        if(StringUtils.isNotEmpty(changedActivity.getBrief())&&!changedActivity.getBrief().equals(originalActivity.getBrief())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1181,8 +1086,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetail.setKeyValue(originalActivity.getId());
             activityChangeDetails.add(activityChangeDetail);
         }
-        //1.7 比较活动描述
-        if (StringUtils.isNotEmpty(changedActivity.getDescription()) && !changedActivity.getDescription().equals(originalActivity.getDescription())) {
+        //1.3 比较活动描述
+        if(StringUtils.isNotEmpty(changedActivity.getDescription())&&!changedActivity.getDescription().equals(originalActivity.getDescription())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
@@ -1194,7 +1099,164 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetail.setKeyValue(originalActivity.getId());
             activityChangeDetails.add(activityChangeDetail);
         }
-        //1.8 比较活动顶部图片
+    }
+    /**
+     * 计算活动时间信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateActivityTimeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 2.比较活动时间（包括开始时间和结束时间）
+        // 2.1 活动开始时间
+        if ((changedActivity.getStartTime() != null && changedActivity.getStartTime().getTime() > 0) && !changedActivity.getStartTime().equals(originalActivity.getStartTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.startTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.startTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getStartTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getStartTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        // 2.2 活动结束时间
+        if ((changedActivity.getEndTime() != null && changedActivity.getEndTime().getTime() > 0) && !changedActivity.getEndTime().equals(originalActivity.getEndTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.endTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.endTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getEndTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getEndTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+
+    }
+
+
+    /**
+     * 计算发货时间信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateDeliverTimeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 3比较发货时间（包括开始时间和结束时间）
+        // 3.1 活动发货开始时间
+        if ((changedActivity.getDeliverStartTime() != null && changedActivity.getDeliverStartTime().getTime() > 0) && !changedActivity.getDeliverStartTime().equals(originalActivity.getDeliverStartTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.deliverStartTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.deliverStartTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getDeliverStartTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getDeliverStartTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        // 3.2 活动发货结束时间
+        if ((changedActivity.getDeliverEndTime() != null && changedActivity.getDeliverEndTime().getTime() > 0) && !changedActivity.getDeliverEndTime().equals(originalActivity.getDeliverEndTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.deliverEndTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.deliverEndTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getDeliverEndTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getDeliverEndTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+
+    }
+
+    /**
+     * 计算支付定金时间信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculatePreTimeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 4比较支付定金时间（包括开始时间和结束时间）
+        // 4.1 支付定金开始时间
+        if ((changedActivity.getPreStartTime() != null && changedActivity.getPreStartTime().getTime() > 0) && !changedActivity.getPreStartTime().equals(originalActivity.getPreStartTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.preStartTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.preStartTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getPreStartTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getPreStartTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        //1.4.2 支付定金结束时间
+        if ((changedActivity.getPreEndTime() != null && changedActivity.getPreEndTime().getTime() > 0) && !changedActivity.getPreEndTime().equals(originalActivity.getPreEndTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.preEndTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.preEndTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getPreEndTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getPreEndTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+    }
+
+    /**
+     * 计算活动支付尾款信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculatePayTimeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 5比较支付尾款时间（包括开始时间和结束时间）
+        // 5.1 支付尾款开始时间
+        if ((changedActivity.getTailPayStartTime() != null && changedActivity.getTailPayStartTime().getTime() > 0) && !changedActivity.getTailPayStartTime().equals(originalActivity.getTailPayStartTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.tailPayStartTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.tailPayStartTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getTailPayStartTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getTailPayStartTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        //5.2 支付尾款结束时间
+        if ((changedActivity.getTailPayEndTime() != null && changedActivity.getTailPayEndTime().getTime() > 0) && !changedActivity.getTailPayEndTime().equals(originalActivity.getTailPayEndTime())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.tailPayEndTime.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.tailPayEndTime.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_2.getCode());
+            activityChangeDetail.setOldValue(dateToTimeStr(originalActivity.getTailPayEndTime()));
+            activityChangeDetail.setNewValue(dateToTimeStr(changedActivity.getTailPayEndTime()));
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+
+    }
+
+    /**
+     * 计算活动图片信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateImgChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 6 比较活动图片
+        // 6.1 比较活动顶部图片
         if (StringUtils.isNotEmpty(changedActivity.getTopImgUrl()) && !changedActivity.getTopImgUrl().equals(originalActivity.getTopImgUrl())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
@@ -1207,7 +1269,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetail.setKeyValue(originalActivity.getId());
             activityChangeDetails.add(activityChangeDetail);
         }
-        //1.9 比较活动页面图片
+        // 6.2 比较活动页面图片
         if (StringUtils.isNotEmpty(changedActivity.getPageImgUrl()) && !changedActivity.getPageImgUrl().equals(originalActivity.getPageImgUrl())) {
             ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
             activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
@@ -1220,8 +1282,16 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetail.setKeyValue(originalActivity.getId());
             activityChangeDetails.add(activityChangeDetail);
         }
+    }
 
-        //2.比较活动范围信息
+    /**
+     * 计算活动参与范围信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateScopeChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 7.比较活动范围信息
         //获取原活动范围数据和变更后是活动范围数据
         List<ActivityScopeDTO> originalActivityScopeDTOList = activityScopeManager.queryActivityScopeByMktIdAndStatus(originalActivity.getId(), PromoConst.Status.Audited.getCode());
         List<ActivityScopeDTO> changedActivityScopeDTOList = changedActivity.getActivityScopeList();
@@ -1263,54 +1333,77 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
             }
         }
+    }
 
-        //2.比较活动参与对象信息
-        //获取原活动参与对象数据和变更后是活动参与对象数据
-        List<ActivityParticipantDTO> originalActivityParticipantDTOList = activityParticipantManager.queryActivityParticipantByMktIdAndStatus(originalActivity.getId(), PromoConst.Status.Audited.getCode());
-        List<ActivityParticipantDTO> changedActivityParticipantDTOList = changedActivity.getActivityParticipantList();
-        if (!CollectionUtils.isEmpty(changedActivityParticipantDTOList) && changedActivityParticipantDTOList.size() > originalActivityParticipantDTOList.size()) {
-            List<String> originalActivityParticipantLanIds = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getLanId).collect(Collectors.toList());
-            List<String> originalActivityParticipantCitys = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getCity).collect(Collectors.toList());
-            List<String> originalActivityParticipantMerchantCodes = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getMerchantCode).collect(Collectors.toList());
-            List<String> originalActivityParticipantFilterValues = originalActivityParticipantDTOList.stream().map(ActivityParticipantDTO::getFilterValue).collect(Collectors.toList());
-            for (ActivityParticipantDTO changedActivityParticipantDTO : changedActivityParticipantDTOList) {
-                if (changedActivityParticipantDTO == null || "null".equals(changedActivityParticipantDTO)) {
-                    continue;
-                }
-                String lanId = changedActivityParticipantDTO.getLanId() == null ? "" : changedActivityParticipantDTO.getLanId();
-                String city = changedActivityParticipantDTO.getCity() == null ? "" : changedActivityParticipantDTO.getCity();
-                String merchantCode = changedActivityParticipantDTO.getMerchantCode() == null ? "" : changedActivityParticipantDTO.getMerchantCode();
-                String filterValue = changedActivityParticipantDTO.getFilterValue() == null ? "" : changedActivityParticipantDTO.getFilterValue();
-                if (originalActivityParticipantLanIds.contains(lanId) || originalActivityParticipantCitys.contains(city)) {
-                    continue;
-                }
-                if (originalActivityParticipantMerchantCodes.contains(merchantCode)) {
-                    continue;
-                }
-                if (originalActivityParticipantFilterValues.contains(filterValue)) {
-                    continue;
-                }
-                //如果该范围不在原参与对象里，准备进行添加，并写变更详情表
-                ActivityParticipant activityParticipant = new ActivityParticipant();
-                BeanUtils.copyProperties(changedActivityParticipantDTO, activityParticipant);
-                activityParticipant.setMarketingActivityId(originalActivity.getId());
-                Date dt = new Date();
-                activityParticipant.setGmtCreate(dt);
-                activityParticipant.setGmtModified(dt);
-                activityParticipant.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
-                activityParticipant.setStatus(PromoConst.Status.WaitAudit.getCode());
-                activityParticipantManager.insertActivityParticipant(activityParticipant);
-                //封装变更明细信息
-                ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
-                activityChangeDetail.setOperType(PromoConst.OperType.ADD.getCode());
-                activityChangeDetail.setTableName(ActivityParticipant.TNAME);
-                activityChangeDetail.setKeyValue(activityParticipant.getId());
-                activityChangeDetail.setFieldType(changedActivity.getActivityParticipantType());
-                activityChangeDetails.add(activityChangeDetail);
+    /**
+     * 计算活动参与对象信息,获取变更数据
+     * @param originalActivity  原活动信息
+     * @param changedActivity   变更后的活动信息
+     * @param activityChangeDetails 活动变更数据集合
+     */
+    private void calculateParticipantChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+        // 8.比较活动参与对象信息
+        // 获取原活动参与对象数据和变更后是活动参与对象数据
+        List<ActivityParticipantDTO> originalParticipantDTOList = activityParticipantManager.queryActivityParticipantByMktIdAndStatus(originalActivity.getId(), PromoConst.Status.Audited.getCode());
+        List<ActivityParticipantDTO> changedParticipantDTOList = changedActivity.getActivityParticipantList();
+        // 比较得出参与对象变更项
+        List<ActivityParticipantDTO> newParticipantDTOList = new ArrayList<>();
+        String participantType = changedActivity.getActivityParticipantType();
+        // 8.1如果是"按条件过滤"的参与对象变更，用如下逻辑判断变更项
+        if (!CollectionUtils.isEmpty(changedParticipantDTOList) && changedParticipantDTOList.size() == originalParticipantDTOList.size()&&PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode().equals(participantType)) {
+            ActivityParticipantDTO changedParticipantDTO = changedParticipantDTOList.get(0);
+            String originalParticipantFilterValue = originalParticipantDTOList.get(0).getFilterValue();
+            String changeParticipantFilterValue = changedParticipantDTO.getFilterValue();
+            if (!originalParticipantFilterValue.equals(changeParticipantFilterValue)) {
+                changedParticipantDTO.setOperType(PromoConst.OperType.MOD.getCode());
+                newParticipantDTOList.add(changedParticipantDTO);
             }
         }
+        // 8.2如果是"按地市/按商家"的参与对象的新增，用如下逻辑判断新增项
+        if (!CollectionUtils.isEmpty(changedParticipantDTOList) && changedParticipantDTOList.size() > originalParticipantDTOList.size()) {
+            List<String> originalParticipantLanIds = originalParticipantDTOList.stream().map(ActivityParticipantDTO::getLanId).collect(Collectors.toList());
+            List<String> originalParticipantCitys = originalParticipantDTOList.stream().map(ActivityParticipantDTO::getCity).collect(Collectors.toList());
+            List<String> originalParticipantMerchantCodes = originalParticipantDTOList.stream().map(ActivityParticipantDTO::getMerchantCode).collect(Collectors.toList());
+            for (ActivityParticipantDTO changedParticipantDTO : changedParticipantDTOList) {
+                if (changedParticipantDTO == null || "null".equals(changedParticipantDTO)) {
+                    continue;
+                }
+                String lanId = changedParticipantDTO.getLanId() == null ? "" : changedParticipantDTO.getLanId();
+                String city = changedParticipantDTO.getCity() == null ? "" : changedParticipantDTO.getCity();
+                String merchantCode = changedParticipantDTO.getMerchantCode() == null ? "" : changedParticipantDTO.getMerchantCode();
+                if (originalParticipantLanIds.contains(lanId) || originalParticipantCitys.contains(city)) {
+                    continue;
+                }
+                if (originalParticipantMerchantCodes.contains(merchantCode)) {
+                    continue;
+                }
 
-        return activityChangeDetails;
+                //添加到变更项列表
+                changedParticipantDTO.setOperType(PromoConst.OperType.ADD.getCode());
+                newParticipantDTOList.add(changedParticipantDTO);
+            }
+
+        }
+        // 8.3进行参与对象变更项插入和变更记录新增
+        for (ActivityParticipantDTO newParticipantDTO : newParticipantDTOList){
+            //如果该范围不在原参与对象里，准备进行添加，并写变更详情表
+            ActivityParticipant activityParticipant = new ActivityParticipant();
+            BeanUtils.copyProperties(newParticipantDTO, activityParticipant);
+            activityParticipant.setMarketingActivityId(originalActivity.getId());
+            Date dt = new Date();
+            activityParticipant.setGmtCreate(dt);
+            activityParticipant.setGmtModified(dt);
+            activityParticipant.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+            activityParticipant.setStatus(PromoConst.Status.WaitAudit.getCode());
+            activityParticipantManager.insertActivityParticipant(activityParticipant);
+            //封装变更明细信息
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(newParticipantDTO.getOperType());
+            activityChangeDetail.setTableName(ActivityParticipant.TNAME);
+            activityChangeDetail.setKeyValue(activityParticipant.getId());
+            activityChangeDetail.setFieldType(changedActivity.getActivityParticipantType());
+            activityChangeDetails.add(activityChangeDetail);
+        }
     }
 
     /**

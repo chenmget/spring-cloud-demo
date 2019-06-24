@@ -24,14 +24,12 @@
     ,filter_type
     ,filter_value
 </sql>
-    <delete id="deleteActivityParticipantBatch" parameterType="java.lang.String">
-        delete
-
-        FROM act_activity_participant  where 1=1
+    <update id="deleteActivityParticipantBatch" parameterType="java.lang.String">
+        update act_activity_participant set IS_DELETED = "1" where 1=1
         <if test="_parameter != null and _parameter != '' ">
             and MARKETING_ACTIVITY_ID = #{marketingActivityId}
         </if>
-    </delete>
+    </update>
     <select id="queryActivityParticipantByMktId" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO">
         select
         <include refid="allFields"></include>

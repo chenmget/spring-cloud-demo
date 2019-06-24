@@ -1,0 +1,42 @@
+project:
+  name: 翼支付去支付
+
+#
+server:
+  port: 8009
+
+#
+spring:
+  dubbo:
+    application:
+      name: pay-provider
+    registry:
+      address: zookeeper://127.0.0.1:2181
+    protocol:
+      name: dubbo
+      port: 27891
+    scan: com.iwhalecloud.retail
+  thymeleaf:
+    mode: HTML5
+    encoding: UTF-8
+    content-type: text/html
+    cache: false
+
+#
+pay:
+  #jks文件路径
+  jksPath: E:\workspace\pay\config\server.jks
+  #jks token值
+  jksToken: 123456
+  jksAlias: server
+  #发起方登录号
+  ORGLOGINCODE: 13308418900
+  #平台号
+  PLATCODE: 8614050900698985
+  #同步通知URL
+  SYNNOTICEURL: http:/134.176.97.49:8008/notify/forwardUrl
+  #异步通知URL
+  ASYNNOTICEURL: http://134.176.97.49:8008/trans/asynNotify
+  #请求URL地址
+  URL: http://132.224.23.10:7002/payment_plugin/payRequestV3.do
+  BestpayPublicKey: MIIEAzCCAuugAwIBAgIQaByrVM2PXDnlj+FV8Vik6TANBgkqhkiG9w0BAQUFADBvMQswCQYDVQQGEwJDTjEkMCIGA1UEChMbTkVUQ0EgQ2VydGlmaWNhdGUgQXV0aG9yaXR5MRkwFwYDVQQLExBTZXJ2ZXIgQ2xhc3NBIENBMR8wHQYDVQQDExZORVRDQSBTZXJ2ZXIgQ2xhc3NBIENBMB4XDTEyMDUyMzE2MDAwMFoXDTEzMDUyNDE1NTk1OVowbjELMAkGA1UEBhMCQ04xEjAQBgNVBAgTCUd1YW5nZG9uZzEnMCUGA1UECh4eWSl//HU1W1BVRlKhZwmWUFFsU/hef04cUgZRbFP4MSIwIAYDVQQDExllbnRlcnByaXNlLmJlc3RwYXkuY29tLmNuMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCXJj30rLaut9yxT+yeuPGIeDhcVGMZuxJ03ygkmckhJwzrefULtSh0XUMheYPpUgZfn7UKNN1cbMUTLMYd5KMSQdltAiTsUcmi2SW27ikVowfjA9yMwYQ/7d+HTcOvalfCd2k6KHByahig02LC7BpNXtPdDPN7A5QjJcfT4lxgwwIDAQABo4IBHjCCARowHwYDVR0jBBgwFoAUuvNKBSTm+CTI5lfaeI0MWeRDZMowHQYDVR0OBBYEFIMIQX6GW79AxsltJr2aYBQZS+GhMFcGA1UdIARQME4wTAYKKwYBBAGBkkgBCjA+MDwGCCsGAQUFBwIBFjBodHRwOi8vd3d3LmNuY2EubmV0L2NzL2tub3dsZWRnZS93aGl0ZXBhcGVyL2Nwcy8wJAYDVR0RBB0wG4IZZW50ZXJwcmlzZS5iZXN0cGF5LmNvbS5jbjAMBgNVHRMBAf8EAjAAMA4GA1UdDwEB/wQEAwIEsDA7BgNVHR8ENDAyMDCgLqAshipodHRwOi8vY2xhc3NhY2ExLmNuY2EubmV0L2NybC9TZXJ2ZXJDQS5jcmwwDQYJKoZIhvcNAQEFBQADggEBAAX3psJhH/4+au2N8PnWsHtk5Nx7sOb6h0kc+tIptof3A1GzvOLh/xVwtB2vDvd4YuZy6oT81JGMocL4+iO/Vi3qF0ut/cN2t6lFNdmNPo7/rkrRDNNVKwix9K+xeW6+SwNnATlc8/9SM5b1z8bTs5JCq9F7fDRyA5AquAPYjXTOw4Tt33NaX0Gv+IbF4rPzI/qTWTGlS63/fmMiCncwHXLfcS3eWxpVMGC7CExtLEwBHDaZWa9yztkKn/rQAduHb7VSpSQ6bvZXONa2ltMTe1xhgP9zpCRtGUXE9Rnzh2ZscG8ajA4kK2cxellzCLshsafxnngbWRWC8wHp4Y/gqK0=

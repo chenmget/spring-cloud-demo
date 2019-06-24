@@ -34,8 +34,8 @@ public class ResourceReqDetailUpdateReq implements Serializable {
     @ApiModelProperty(value = "状态变更的时间。")
     private java.util.Date statusDate  = new Date();
 
-    @ApiModelProperty(value = "记录营销资源申请单明细标识")
-    private List<String> mktResReqDetailIdList;
+    @ApiModelProperty(value = "串码")
+    private List<String> mktResInstNbrs;
 
     @ApiModelProperty(value = "审核说明")
     private String remark;

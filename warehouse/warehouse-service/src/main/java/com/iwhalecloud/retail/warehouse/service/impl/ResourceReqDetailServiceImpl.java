@@ -128,7 +128,6 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
             //查询状态为审核通过或审核不通过，查询用户审核过的明细
             req.setUpdateStaff(req.getUserId());
             respPage = resourceReqDetailManager.listResourceRequestPage(req);
-
         }else if(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode().equals(req.getStatusCd())){
             //查询状态为待审核
             //如果审核时间查询条件不为空，直接返回空数据
@@ -156,6 +155,7 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
             req.setUpdateStaff(null);
             respPage=resourceReqDetailManager.listResourceRequestPage(req);
         }
+        //组装返回值
         Page<ResourceReqDetailPageResp> result=fillResourceRequestDetailPage(respPage);
         return ResultVO.success(result);
     }
@@ -169,35 +169,36 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
         return ResultVO.success(result);
     }
 
+    /**
+     * 组装串码明细相关产品，商家信息
+     * @param respPage
+     * @return
+     */
     private Page<ResourceReqDetailPageResp> fillResourceRequestDetailPage (Page<ResourceReqDetailPageDTO> respPage){
         List<ResourceReqDetailPageDTO> list = respPage.getRecords();
         Page<ResourceReqDetailPageResp> result=new Page<ResourceReqDetailPageResp>();
         BeanUtils.copyProperties(respPage, result);
-        if (null == list || list.isEmpty()) {
+        if (CollectionUtils.isEmpty(list)) {
             return result;
         }
-
         //根据mktResId分组，减少调用服务次数，组装品牌名，产品名，商家名
         Map<String, List<ResourceReqDetailPageDTO>> map = list.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
-        //商家id与商家名集合，如果id相同，直接从集合中拿
+        //商家id与商家名map，如果厂商id相同，直接从map中拿
         Map<String,String> merchantMap=new HashMap<>();
         for (Map.Entry<String, List<ResourceReqDetailPageDTO>> entry : map.entrySet()) {
             String mktResId = entry.getKey();
-            if (StringUtils.isBlank(mktResId)) {
-                continue;
-            }
             ProductResourceInstGetReq queryReq = new ProductResourceInstGetReq();
             queryReq.setProductId(mktResId);
-            ResultVO<List<ProductResourceResp>> resultVO = productService.getProductResource(queryReq);
-            log.info("ResourceReqDetailServiceImpl.listResourceRequestPage.getProductResource req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(resultVO));
-            List<ProductResourceResp> prodList = resultVO.getResultData();
-            if (CollectionUtils.isEmpty(prodList)) {
+            ResultVO<List<ProductResourceResp>> prodectResultVO = productService.getProductResource(queryReq);
+            log.info("ResourceReqDetailServiceImpl.fillResourceRequestDetailPage.getProductResource req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(prodectResultVO));
+            if (!prodectResultVO.isSuccess() || CollectionUtils.isEmpty(prodectResultVO.getResultData())) {
                 continue;
             }
+            List<ProductResourceResp> prodList = prodectResultVO.getResultData();
             ProductResourceResp prodResp = prodList.get(0);
             List<ResourceReqDetailPageDTO> instList =entry.getValue();
             for (ResourceReqDetailPageDTO resp : instList) {
-                //填充审核状态,日期
+                //填充审核状态
                 resp.setStatusCdName(ResourceConst.DetailStatusCd.getNameByCode(resp.getStatusCd()));
                 // 添加产品信息
                 BeanUtils.copyProperties(prodResp, resp);
@@ -210,7 +211,7 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
                     }
                     //通过厂家id获取厂家信息
                     ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(merchantId);
-                    log.info("ResourceReqDetailServiceImpl.listResourceRequestPage.getMerchantById req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(merchantResultVO));
+                    log.info("ResourceReqDetailServiceImpl.fillResourceRequestDetailPage.getMerchantById req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(merchantResultVO));
                     if (merchantResultVO.isSuccess() && null != merchantResultVO.getResultData()) {
                         MerchantDTO merchantDTO = merchantResultVO.getResultData();
                         resp.setMerchantName(merchantDTO.getMerchantName());
@@ -246,8 +247,9 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
      * @param
      * @return
      */
-    private List<String> getUserHandleFormId(String userId) {
-        log.info("ResourceReqDetailServiceImpl.listRequestDetailByUserId,userId={}",userId);
+    @Override
+    public List<String> getUserHandleFormId(String userId) {
+        log.info("ResourceReqDetailServiceImpl.getUserHandleFormId,userId={}",userId);
         //申请单id集合
         List<String> formIdList=new ArrayList<>();
         //查询串码审核工作流的待办流程，找出对应申请单id
@@ -259,7 +261,7 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
                 .append(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1020.getTaskSubType());
         taskPageReq.setTaskSubTypeList(Arrays.asList(taskSubType.toString().split(",")));
         ResultVO<Page<TaskPageResp>> pageResultVO = taskService.queryTaskPage(taskPageReq);
-        log.info("ResourceReqDetailServiceImpl.listRequestDetailByUserId.queryTaskPage req={} resp={}",JSON.toJSONString(taskPageReq),JSON.toJSONString(pageResultVO));
+        log.info("ResourceReqDetailServiceImpl.getUserHandleFormId.queryTaskPage req={} resp={}",JSON.toJSONString(taskPageReq),JSON.toJSONString(pageResultVO));
         if(!pageResultVO.isSuccess()){
             return formIdList;
         }
@@ -272,7 +274,7 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
                 routeReq.setProcessId(task.getProcessId());
                 routeReq.setCurNodeId(task.getCurNodeId());
                 ResultVO<List<RouteDTO>> routeResult=routeService.listRoute(routeReq);
-                log.info("ResourceReqDetailServiceImpl.listRequestDetailByUserId.routeResult req={} resp={}",JSON.toJSONString(routeReq),JSON.toJSONString(routeResult));
+                log.info("ResourceReqDetailServiceImpl.getUserHandleFormId.routeResult req={} resp={}",JSON.toJSONString(routeReq),JSON.toJSONString(routeResult));
                 if(!routeResult.isSuccess()){
                    continue;
                 }

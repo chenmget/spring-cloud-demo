@@ -177,4 +177,44 @@ public class Constant {
      */
     private String zopNbrExists;
 
+    /**
+     * 串码申请单中已存在
+     */
+    private String reqDetailNbrExists;
+
+    /**
+     * 路由器及泛智能终端的终端串码只能包含大写字母、数字和-，且必须为12位
+     */
+    private String vaileNbr12;
+
+    /**
+     * 光猫的终端串码只能包含大写字母、数字和-，且必须为24位
+     */
+    private String vaileNbr24;
+
+    /**
+     * 融合终端的终端串码只能包含大写字母、数字和-，且必须为32位
+     */
+    private String vaileNbr32;
+
+    /**
+     * 机顶盒的终端串码只能包含大写字母、数字和-，且必须为32位或39位
+     */
+    private String vaileNbr32Or39;
+
+    /**
+     * MAC码库中已存在
+     */
+    private String macExists;
+
+    /**
+     * SN码库中已存在
+     */
+    private String snExists;
+
+    /**
+     * CTEI码库中已存在
+     */
+    private String ctExists;
+
 }

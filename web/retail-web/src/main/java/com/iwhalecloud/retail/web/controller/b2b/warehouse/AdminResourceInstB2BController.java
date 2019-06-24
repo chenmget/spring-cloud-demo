@@ -291,8 +291,7 @@ public class AdminResourceInstB2BController {
     @GetMapping(value="listResourceRequestDetailPage")
     @UserLoginToken
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestPage(ResourceReqDetailQueryReq req) {
-        UserDTO userDTO = UserContext.getUser();
-        req.setUserId(userDTO.getUserId());
+        req.setUserId(UserContext.getUser().getUserId());
         return resourceReqDetailService.listResourceRequestDetailPage(req);
     }
 
@@ -304,8 +303,7 @@ public class AdminResourceInstB2BController {
     @PostMapping(value="exportNbrDetail")
     @UserLoginToken
     public void exportNbrDetail(@RequestBody ResourceReqDetailQueryReq req, HttpServletResponse response) {
-        UserDTO userDTO = UserContext.getUser();
-        req.setUpdateStaff(userDTO.getUserId());
+        req.setUserId(UserContext.getUser().getUserId());
         ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listResourceRequestDetailPage(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
         log.info("AdminResourceInstB2BController.exportNbrDetail resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
@@ -390,8 +388,7 @@ public class AdminResourceInstB2BController {
     @RequestMapping(value = "/submitNbrAudit",method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<String> submitNbrAudit(@RequestBody ResourceUploadTempListPageReq req) {
-        String userId = UserContext.getUserId();
-        req.setUpdateStaff(userId);
+        req.setUpdateStaff(UserContext.getUserId());
         return resourceInstService.submitNbrAudit(req);
     }
 
@@ -403,10 +400,8 @@ public class AdminResourceInstB2BController {
     @RequestMapping(value = "/batchAuditNbr",method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<String> batchAuditNbr(@RequestBody ResourceInstCheckReq req) {
-        String userId = UserContext.getUserId();
-        String userName=UserContext.getUser().getUserName();
-        req.setUpdateStaff(userId);
-        req.setUpdateStaffName(userName);
+        req.setUpdateStaff(UserContext.getUserId());
+        req.setUpdateStaffName(UserContext.getUser().getUserName());
         return resourceInstService.batchAuditNbr(req);
     }
 

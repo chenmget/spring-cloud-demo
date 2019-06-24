@@ -17,16 +17,11 @@ import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
 import com.iwhalecloud.retail.order2b.dto.model.order.SendGoodsItemDTO;
 import com.iwhalecloud.retail.order2b.dto.response.DeliveryGoodsResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SendGoodsRequest;
-import com.iwhalecloud.retail.order2b.entity.Delivery;
-import com.iwhalecloud.retail.order2b.entity.Order;
-import com.iwhalecloud.retail.order2b.entity.OrderItem;
-import com.iwhalecloud.retail.order2b.entity.OrderItemDetail;
+import com.iwhalecloud.retail.order2b.entity.*;
 import com.iwhalecloud.retail.order2b.manager.DeliveryManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
-import com.iwhalecloud.retail.order2b.model.MemberAddrModel;
-import com.iwhalecloud.retail.order2b.model.OrderInfoModel;
-import com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel;
-import com.iwhalecloud.retail.order2b.model.SelectOrderDetailModel;
+import com.iwhalecloud.retail.order2b.manager.PromotionManager;
+import com.iwhalecloud.retail.order2b.model.*;
 import com.iwhalecloud.retail.order2b.reference.*;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
@@ -83,6 +78,9 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
 
     @Autowired
     private ActivityManagerReference activityManagerReference;
+
+    @Autowired
+    private PromotionManager promotionManager;
 
 
     @Override
@@ -245,7 +243,11 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
         List<String> productIdList = orderItemList.stream().map(OrderItem::getProductId).collect(Collectors.toList());
 
         productIdList = productIdList.stream().distinct().collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(productIdList)) {
+        PromotionModel promotionModel = new PromotionModel();
+        promotionModel.setOrderId(request.getOrderId());
+        List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);
+        log.info("OrderDRGoodsOpenServiceImpl.valieNbr promotionManager.selectPromotion promotionModel={}, resp={}", JSON.toJSONString(promotionModel) , JSON.toJSONString(promotions));
+        if (!CollectionUtils.isEmpty(productIdList) && !CollectionUtils.isEmpty(promotions)) {
             MarketingActivityDTO activityDTO = activityManagerReference.validActivityEndTimeByProductId(productIdList, PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
             if (null != activityDTO) {
                 resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);

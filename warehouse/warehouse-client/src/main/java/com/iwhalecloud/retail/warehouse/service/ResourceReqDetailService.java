@@ -41,4 +41,11 @@ public interface ResourceReqDetailService {
      * @return
      */
     ResultVO<Page<ResourceReqDetailPageResp>> listMerchantResourceRequestDetailPage(ResourceReqDetailQueryReq req);
+
+    /**
+     * 获取用户工作流中待办的串码审核流程申请单id
+     * @param userId
+     * @return
+     */
+    List<String> getUserHandleFormId(String userId);
 }

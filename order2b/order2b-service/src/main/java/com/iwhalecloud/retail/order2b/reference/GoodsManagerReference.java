@@ -172,7 +172,7 @@ public class GoodsManagerReference {
             // 前置补贴活动的统一货价(转换为Double)
             detail.setDeliveryPrice(activityProductDTO.getPrice() * 1D);
         }
-        String orderCat = null;
+        String orderCat = OrderManagerConsts.ORDER_CAT.ORDER_CAT_0.getCode();
         // 是否分货 1是 0否
         Integer isAllot = detail.getIsAllot();
         // 是否为预售商品

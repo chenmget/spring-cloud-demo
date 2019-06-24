@@ -1,13 +1,19 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.TestBase;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
+import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
@@ -28,6 +34,8 @@ public class PurApplyServiceImplTest  extends TestBase {
 //                    isFixedLine=null, typeName=null, productId=100006163)], addFileReq=[])
     @Resource
     private PurApplyService purApplyService;
+    @Autowired
+    private PurApplyManager purApplyManager;
 
     @Test
     public void tcProcureApply() {
@@ -242,6 +250,39 @@ public class PurApplyServiceImplTest  extends TestBase {
         ResultVO v= purApplyService.updatePurTypeByApplyId(req);
         System.out.println(JSON.toJSONString(v));
     }
+    @Test
+    public void cgSearchApply1(){
+        String json = "{\"applyCode\":\"\",\"startDate\":\"\",\"endDate\":\"\",\"applyName\":\"\",\"pageNo\":1,\"pageSize\":10,\"sourceFrom\":\"\"}";
+//        PurApplyReq req = new PurApplyReq();
+        Gson gson = new Gson();
+        PurApplyReq req = gson.fromJson(json, new TypeToken<PurApplyReq>(){}.getType());
+//        log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
+        req.setLanId("731");
+//        String userId = UserContext.getUserId();
+//		String userId = "100028487";
+//        PriCityManagerResp login = purApplyService.getLoginInfo(userId);
+//        Integer userFounder = UserContext.getUser().getUserFounder();
+        //传过来的APPLY_TYPE看
 
+//        String lanId = login.getLanId();
+
+//        log.info("1查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
+//        if(userFounder!=null) {
+//            if(9==userFounder){//地市管理员
+//                log.info("2查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
+//                req.setLanId(lanId);
+//            }
+//        }
+//        Boolean isMerchant= UserContext.isMerchant();
+//        if(isMerchant==true) {
+//            req.setMerchantId(UserContext.getMerchantId());
+//            log.info("查询采购申请单报表*******************isMerchant = "+isMerchant +" **************UserContext.getMerchantId() = "+UserContext.getMerchantId());
+//        }
+//
+//        log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
+        ResultVO resultVO =   purApplyService.cgSearchApply(req);
+        System.out.println(resultVO);
+//        return ResultVO.success(purApplyResp);
+    }
 
 }

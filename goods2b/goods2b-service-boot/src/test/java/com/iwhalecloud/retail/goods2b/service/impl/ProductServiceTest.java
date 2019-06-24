@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.goods2b.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -14,18 +15,21 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.goods2b.utils.ZopClientUtil;
+import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.ztesoft.zop.common.message.ResponseResult;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Z
@@ -38,6 +42,8 @@ public class ProductServiceTest {
 
     @Resource
     private ProductService productService;
+    @Resource
+    private MerchantRulesService merchantRulesService;
 
     @Test
     public void getProductTest() {
@@ -140,6 +146,33 @@ public class ProductServiceTest {
 
         ResultVO<Page<ProductPageResp>>  r=  productService.selectPageProductAdmin(req);
         System.out.println(JSON.toJSONString(r));
+    }
+    @Test
+    public  void chackprocduct() {
+        String json="{\"pageNo\":1,\"pageSize\":10,\"typeId\":\"201903142030001\",\"manufacturerId\":\"10000696\",\"statusList\":[3]}";
+        Gson gson = new Gson();
+        ProductsPageReq req  = gson.fromJson(json, new TypeToken<ProductsPageReq>(){}.getType());
+        String merchantId = req.getManufacturerId();
+        // 供应商、零售商
+        ResultVO<List<String>> productIdListVO = merchantRulesService.getProductAndBrandPermission(merchantId);
+       // log.info("GoodsProductB2BController.selectPageProductAdmin.getProductAndBrandPermission req={}, merchantId={}", merchantId, JSON.toJSONString(productIdListVO));
+        if (productIdListVO.isSuccess() && !CollectionUtils.isEmpty(productIdListVO.getResultData())) {
+            // // 设置机型权限
+            List<String> productIdList = productIdListVO.getResultData();
+            List<String> originProductList = req.getProductIdList();
+            if (!CollectionUtils.isEmpty(originProductList)) {
+                String nullListValue = "null";
+                originProductList = originProductList.stream().filter(t -> productIdList.contains(t)).collect(Collectors.toList());
+                originProductList = CollectionUtils.isEmpty(originProductList) ? Lists.newArrayList(nullListValue) : originProductList;
+                req.setProductIdList(originProductList);
+            }else {
+                req.setProductIdList(productIdList);
+            }
+        }
+
+        ResultVO<Page<ProductPageResp>> productPageRespPage = productService.selectPageProductAdmin(req);
+        List<ProductPageResp> list = productPageRespPage.getResultData().getRecords();
+        //log.info("GoodsProductB2BController.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
     }
 
 }

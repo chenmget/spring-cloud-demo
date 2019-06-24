@@ -65,6 +65,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 				purApplyResps.setTaskId(wfTaskResp.getTaskId());
 				purApplyResps.setTaskItemId(wfTaskResp.getTaskItemId());
 			}
+//			String createDate = purApplyResps.getApplyTime();
+//			createDate = createDate.substring(0, createDate.length()-2);
+//			purApplyResps.setApplyTime(createDate);
 		}
 		return ResultVO.success(purApplyResp);
 	}
@@ -359,9 +362,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	public CkProcureApplyResp ckApplyData1(PurApplyReq req) {
 		CkProcureApplyResp ckProcureApplyResp  = purApplyManager.ckApplyData1(req);
-		String createDate = ckProcureApplyResp.getCreateDate();
-		createDate = createDate.substring(0, createDate.length()-2);
-		ckProcureApplyResp.setCreateDate(createDate);
+//		String createDate = ckProcureApplyResp.getCreateDate();
+//		createDate = createDate.substring(0, createDate.length()-2);
+//		ckProcureApplyResp.setCreateDate(createDate);
 		 return ckProcureApplyResp;
 	}
 	

@@ -62,14 +62,14 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 			
 			if("1".equals(paymentType)){
 				dto.setPaymentType("线上支付");
-			}else if ("2".equals(paymentType)) {
+			}else if ("3".equals(paymentType)) {
 				dto.setPaymentType("线下支付");
 			}else {
 				dto.setPaymentType("其他");
 			}
 			
 			dto.setCouponMoney(dto.getCouponMoney()/100);
-			dto.setTotalCouponMoney(dto.getTotalCouponMoney());
+			dto.setTotalCouponMoney(dto.getTotalCouponMoney()/100);
 	    	// TODO 通过orderId查出串码
 	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(orderId);
 	    	
@@ -185,7 +185,7 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    	if(paymentType != null){
 	    		if("1".equals(paymentType)){
 	    			rr.setPaymentType("在线支付");
-	    		}else if("2".equals(paymentType)){
+	    		}else if("3".equals(paymentType)){
 	    			rr.setPaymentType("线下支付");
 	    		} else {
 	    			rr.setPaymentType("其他");

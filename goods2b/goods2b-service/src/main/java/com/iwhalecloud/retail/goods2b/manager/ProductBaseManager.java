@@ -167,6 +167,10 @@ public class ProductBaseManager {
             hasParam = true;
             queryWrapper.eq("IS_CT_CODE", req.getIsCtCode());
         }
+        if(StringUtils.isNotBlank(req.getIsFixedLine())){
+            hasParam = true;
+            queryWrapper.eq("IS_FIXED_LINE", req.getIsFixedLine());
+        }
         if(StringUtils.isNotBlank(req.getProductCode())){
             hasParam = true;
             queryWrapper.eq("PRODUCT_CODE", req.getProductCode());

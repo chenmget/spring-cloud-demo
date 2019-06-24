@@ -35,6 +35,9 @@ public class ResourceReqDetailPageDTO implements Serializable {
     @ApiModelProperty(value = "产品编码")
     private String sn;
 
+    @ApiModelProperty(value = "产品名称")
+    private String productName;
+
     //属性 begin
     /**
      * 记录营销资源申请单明细标识

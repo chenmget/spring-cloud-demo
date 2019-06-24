@@ -1020,4 +1020,37 @@ public class ResourceConst {
             return null;
         }
     }
+
+    /**
+     * 集采类型
+     */
+    public enum IS_GOVORJC{
+        IS_GOVORJC_1("1","政企"),
+        IS_GOVORJC_2("2","集采");
+        private String code;
+        private String name;
+
+        IS_GOVORJC(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+
+    }
 }

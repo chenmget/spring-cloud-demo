@@ -773,6 +773,8 @@ public class RunableTask {
             //写死大一点，串码可能重复，查询出来后根据申请单明细id进行匹配
             legalQuery.setPageSize(10000);
             legalQuery.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
+            //申请单类型为串码入库
+            legalQuery.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
             Page<ResourceReqDetailPageDTO> legalRespPage = resourceReqDetailManager.listResourceRequestPage(legalQuery);
             //合法的串码
             List<ResourceReqDetailPageDTO> legalDetails=legalRespPage.getRecords();
@@ -830,6 +832,7 @@ public class RunableTask {
                 repatQuery.setMktResInstNbrs(nbrList);
                 repatQuery.setPageNo(1);
                 repatQuery.setPageSize(10000);
+                repatQuery.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
                 Page<ResourceReqDetailPageDTO> repeatRespPage = resourceReqDetailManager.listResourceRequestPage(repatQuery);
                 List<String> repeatNbrList=repeatRespPage.getRecords().stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
                 for (String mktResInstNbr : repeatNbrList) {

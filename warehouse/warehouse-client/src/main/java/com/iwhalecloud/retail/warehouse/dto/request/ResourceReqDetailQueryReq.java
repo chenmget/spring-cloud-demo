@@ -71,4 +71,7 @@ public class ResourceReqDetailQueryReq extends PageVO implements Serializable {
 
     @ApiModelProperty(value = "用户id")
     private String userId;
+
+    @ApiModelProperty(value = "申请单id")
+    private String reqType;
 }

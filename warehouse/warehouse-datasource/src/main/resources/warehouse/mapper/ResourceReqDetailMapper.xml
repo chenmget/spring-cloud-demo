@@ -133,6 +133,9 @@
                 #{item}
             </foreach>
         </if>
+        <if test = "null != req.reqType and '' != req.reqType">
+            and rest.req_type = #{req.reqType}
+        </if>
         <if test = "null != req.reqCode and '' != req.reqCode">
             and rest.REQ_CODE = #{req.reqCode}
         </if>

@@ -454,7 +454,9 @@
 
     <select id="getMktResInstNbrForCheck" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceStoreIdResnbr"
             resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp">
-        SELECT MKT_RES_INST_NBR as mktResInstNbr,MKT_RES_ID as mktResId from mkt_res_inst WHERE MKT_RES_INST_NBR=#{req.mktResInstNbr} AND status_cd=1202 AND MKT_RES_STORE_ID=#{req.mktResStoreId}
+        SELECT MKT_RES_INST_NBR as mktResInstNbr,MKT_RES_ID as mktResId ,PURCHASE_TYPE as purchaseType from mkt_res_inst
+        LEFT JOIN PROD_PRODUCT ON product_id=MKT_RES_ID
+        WHERE MKT_RES_INST_NBR=#{req.mktResInstNbr} AND status_cd=1202 AND MKT_RES_STORE_ID=#{req.mktResStoreId}
     </select>
 
 </mapper>

@@ -98,8 +98,13 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         if (MktResStoreId==null) {
             return ResultVO.error("没有查到该供应商仓库");
         }
+        //通过采购申请单查询采购申请单项
+        List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
+        log.info("3.通过采购申请单查询采购申请单项purApplyItem =" + JSON.toJSONString(purApplyItem));
         // 存 key 产品id  - value 串码列表
         Map<String,List<String>> map = new HashMap<String,List<String>>();
+        // 判断采购类型是否一致
+        Integer typeflag = 0;
         for (int i=0;i<mktResInstNbr.size();i++) {
             //开始验证串码的有效性
             String mktResInstNbrCheck = mktResInstNbr.get(i);
@@ -120,16 +125,42 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
             resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbrCheck);
             resourceStoreIdResnbr.setMktResStoreId(MktResStoreId);
-            log.info("3.resourceStoreIdResnbr{} =" + JSON.toJSONString(resourceStoreIdResnbr));
+            log.info("4.resourceStoreIdResnbr{} =" + JSON.toJSONString(resourceStoreIdResnbr));
             ResourceInstCheckResp resourceInstCheckResp = supplierResourceInstService.getMktResInstNbrForCheck(resourceStoreIdResnbr);
 //            long count = queryMktResInstNbr.getResultData().getTotal();
             if (resourceInstCheckResp==null) {
                 return ResultVO.error("该仓库查不到该串码"+mktResInstNbr);
             } else {
+                String purchaseType = resourceInstCheckResp.getPurchaseType();// 产品采购类型
+                if (purchaseType==null) {
+                    purchaseType="0";
+                }
+
                 //开始出理串码和产品id 归类，
 //                List<ResourceInstListPageResp> resultData = queryMktResInstNbr.getResultData().getRecords();
 //                ResourceInstListPageResp resourceInstListPageResp = resultData.get(0);
                 String productId = resourceInstCheckResp.getMktResId();//产品ID
+
+                // 判断采购类型是否一致
+                // Integer typeflag = 0;
+                for (PurApplyItem pItem:purApplyItem) {
+                    String proId = pItem.getProductId();
+                    if (productId.equals(proId)) {
+                        String purType = pItem.getPurType();
+                        if (purType==null) {
+                            purType="0";
+                        }
+                        if(!purType.equals(purchaseType)) {
+                            typeflag=1;
+                            break;
+                        }
+
+                    }
+
+                }
+                if (typeflag==1) {
+                    break;
+                }
                 if (map.get(productId)==null) {
                     List<String> mktResInstNbrList = new ArrayList<String>();
                     mktResInstNbrList.add(mktResInstNbrCheck);
@@ -141,7 +172,10 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 }
             }
         }
-        log.info("4.产品对应串码map =" + JSON.toJSONString(map));
+        if (typeflag==1) {
+            return ResultVO.error("产品的采购类型不一样，请检查！");
+        }
+        log.info("5.产品对应串码map =" + JSON.toJSONString(map));
         //判断一下 ，产品id 对应的串码数 相加 是否等于总的串码数
 //        TradeResourceInstItem tradeResourceInstItem = new TradeResourceInstItem();
         List<TradeResourceInstItem> tradeResourceInstItemItemList = new ArrayList<TradeResourceInstItem>();
@@ -158,9 +192,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             return ResultVO.error("产品对应的串码数和总的串码数不相等");
         }
 
-        //通过采购申请单查询采购申请单项
-        List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
-        log.info("5.通过采购申请单查询采购申请单项purApplyItem =" + JSON.toJSONString(purApplyItem));
+
 
 //        判断是否有申请单外的串码类型
         String othersProductId="";

@@ -65,9 +65,6 @@ public class PurApplyServiceImpl implements PurApplyService {
 				purApplyResps.setTaskId(wfTaskResp.getTaskId());
 				purApplyResps.setTaskItemId(wfTaskResp.getTaskItemId());
 			}
-			String createDate = purApplyResps.getApplyTime();
-			createDate = createDate.substring(0, createDate.length()-2);
-			purApplyResps.setApplyTime(createDate);
 		}
 		return ResultVO.success(purApplyResp);
 	}

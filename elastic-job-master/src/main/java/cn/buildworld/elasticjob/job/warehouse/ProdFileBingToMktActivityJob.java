@@ -9,9 +9,13 @@ import com.dangdang.elasticjob.lite.annotation.ElasticSimpleJob;
 import com.iwhalecloud.retail.promo.service.ProdFileBingToService;
 
 import lombok.extern.slf4j.Slf4j;
+/**
+ * 生效的活动配置活动图片
+ * @author liweisong
+ *
+ */
 
-
-@ElasticSimpleJob(cron = "0 09 16 ? * *",
+@ElasticSimpleJob(cron = "0 0 1 * * ?",
 jobName = "firstJob",
 shardingTotalCount = 1,
 jobParameter = "测试参数",

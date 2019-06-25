@@ -267,7 +267,7 @@ public class ReportOrderController extends BaseController {
 		int userType = UserContext.getUser().getUserFounder();
 		//超级管理员，省管理员，省包商取前端传过来的地市集合
 		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2 || userType == SystemConst.USER_FOUNDER_4) {//超级管理员  省管理员  省供应商
-			if(req == null) {
+			if(req == null || req.getLanIdList() == null) {
 				return ResultVO.success();
 			}
 		} else if (userType == SystemConst.USER_FOUNDER_9 || userType == SystemConst.USER_FOUNDER_5 || userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//地市管理员   地市供应商 零售商

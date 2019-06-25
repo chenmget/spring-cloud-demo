@@ -8,6 +8,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.entity.PurApply;
 import com.iwhalecloud.retail.order2b.entity.PurApplyDelivery;
+import com.iwhalecloud.retail.order2b.entity.PurApplyItemDetail;
 import com.iwhalecloud.retail.order2b.mapper.PurApplyDeliveryMapper;
 import com.iwhalecloud.retail.order2b.mapper.PurApplyMapper;
 import com.iwhalecloud.retail.system.common.DateUtils;
@@ -15,6 +16,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @auther lin.wenhui@iwhalecloud.com
@@ -64,6 +66,10 @@ public class PurApplyDeliveryManager {
         Page<PurApplyDeliveryResp> page=new Page<>(req.getPageNo(),req.getPageSize());
         Page<PurApplyDeliveryResp> pageReport = purApplyDeliveryMapper.getDeliveryInfoByApplyID(page,req.getApplyId());
         return pageReport;
+    }
+
+    public List<PurApplyItemDetail> getDeliveryListByApplyID(String applyId) {
+        return  purApplyDeliveryMapper.getDeliveryListByApplyID(applyId);
     }
 }
 

@@ -35,13 +35,14 @@
 				 par.MERCHANT_CODE AS merchantCode,
 				 par.BUSINESS_ENTITY_NAME AS businessEntityName,
 				 par.LAN_ID AS lanId,
-				 so.org_name as orgName,
+				 sco.org_name as orgName,
 				 a.create_time,
 				 b.item_id AS itemId
 			FROM 
 				 ord_order a
 				 LEFT JOIN par_merchant par ON par.merchant_id = a.user_id
 				 LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
+				 LEFT JOIN sys_common_org sco ON INSTR(so.path_code,sco.path_code) AND sco.org_level='3'
 				 ,ord_order_items b
 				 LEFT JOIN prod_product c ON b.PRODUCT_ID=c.PRODUCT_ID
 				 LEFT JOIN prod_product_base d ON c.product_base_id= d.product_base_id

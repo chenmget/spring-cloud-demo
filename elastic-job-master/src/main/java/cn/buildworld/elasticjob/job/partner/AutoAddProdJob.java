@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantRulesDeleteReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantUpdateReq;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.partner.service.NewParMerchAddProdService;
@@ -64,6 +65,12 @@ public class AutoAddProdJob implements SimpleJob {
                     List<String> targetIdList = newParMerchAddProdService.selectProductIdList();
                     req.setTargetIdList(targetIdList);
                     newParMerchAddProdService.addProd(req);
+
+                    MerchantUpdateReq merchantUpdateReq = new MerchantUpdateReq();
+                    merchantUpdateReq.setMerchantId(merchantDTO.getMerchantId());
+                    merchantUpdateReq.setAssignedFlg("8");
+                    merchantService.updateMerchant(merchantUpdateReq);
+
                 }
             }
         }

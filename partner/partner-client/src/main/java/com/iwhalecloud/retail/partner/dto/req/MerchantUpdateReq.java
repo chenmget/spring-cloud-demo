@@ -42,4 +42,7 @@ public class MerchantUpdateReq implements Serializable {
             " 已归档1300 预退出8922 冻结8923 主动暂停1001  异常暂停1002   无效1100  终止1101  " +
             " 退出1102  未生效1200  已归档1300 预退出8922  冻结8923 ")
     private java.lang.String status;
+
+    @ApiModelProperty(value = "是否已赋权")
+    private java.lang.String assignedFlg;
 }

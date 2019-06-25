@@ -1,5 +1,190 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workingSetManager>
+<workingSet editPageId="org.eclipse.jdt.internal.ui.DynamicSourcesWorkingSet" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1561187418764_2" label="Java Main Sources" name="Java Main Sources">
+<item elementID="=goods-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-camera-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-camera-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-camera-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-camera-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-camera-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-camera-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=partner-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=system-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=system-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=system-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=warehouse-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=warehouse-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=warehouse-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=workflow-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods2b-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=member-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=member-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=member-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=member-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order2b-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=promo-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=report-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=report-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=report-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=report-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=rights-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=system-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=system-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=system-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=workflow-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=workflow-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=workflow-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=elastic-job-master/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=elastic-job-master/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods2b-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods2b-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods2b-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods2b-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods2b-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=member-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=member-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-client/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-service/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order2b-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order2b-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order2b-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order2b-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order2b-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=partner-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=partner-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=promo-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=promo-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=promo-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=retail-web/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=retail-web-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=retail-web-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=rights-datasource/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=rights-datasource/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=rights-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=rights-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=rights-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=warehouse-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=warehouse-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=warehouse-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=partner-service/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=partner-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=partner-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=promo-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=promo-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=report-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=report-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=workflow-service-boot/src\/main\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=workflow-service-boot/src\/main\/resources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.internal.ui.DynamicSourcesWorkingSet" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1561187418766_3" label="Java Test Sources" name="Java Test Sources">
+<item elementID="=system-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=elastic-job-master/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods2b-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=member-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=oms-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=order2b-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=retail-web-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=rights-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=warehouse-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=goods-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=partner-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=promo-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=report-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=workflow-service-boot/src\/test\/java" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1561187569636_4" label="retail-parent" name="retail-parent">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/promo-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/workflow-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/system" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/report-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/web" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/workflow-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/oms-camera-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods2b-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/partner" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/elastic-job-master" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/report-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/oms-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rights-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/oms-camera-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/member-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/retail-web" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/retail-web-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/report-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/oms" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/oms-camera-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/camera" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/promo" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order2b-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods2b" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/warehouse-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/warehouse-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/system-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rights" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/member-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/member-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods2b-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/report" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/partner-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rights-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/member-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/workflow-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/member" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods2b-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order2b-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order2b-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/oms-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rights-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/oms-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/promo-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/rights-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/warehouse-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/workflow-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/promo-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/warehouse-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/partner-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/oms-camera-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order2b-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/partner-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/promo-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/oms-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/warehouse" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/system-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/system-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/report-service" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/workflow" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/partner-service-boot" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods2b-datasource" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/order2b" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/goods-client" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/system-client" type="4"/>
+</workingSet>
 <workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1554263268663_0" label="Window Working Set" name="Aggregate for window 1554263268663"/>
 <workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" id="1556039736003_1" label="Window Working Set" name="Aggregate for window 1555924510587"/>
 </workingSetManager>

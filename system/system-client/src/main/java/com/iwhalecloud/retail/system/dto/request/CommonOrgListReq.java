@@ -31,4 +31,7 @@ public class CommonOrgListReq implements Serializable {
     @ApiModelProperty(value = "记录组织的级别。LOVB=LOC-C-0004")
     private String orgLevel;
 
+    @ApiModelProperty(value = "本地网id")
+    private String lanId;
+
 }

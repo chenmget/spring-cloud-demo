@@ -486,47 +486,6 @@ public class MerchantServiceImpl implements MerchantService {
         BeanUtils.copyProperties(merchantPage, targetPage);
         List<RetailMerchantDTO> targetList = Lists.newArrayList();
 
-//        for (Merchant merchant : merchantPage.getRecords()) {
-//            RetailMerchantDTO targetDTO = new RetailMerchantDTO();
-//            BeanUtils.copyProperties(merchant, targetDTO);
-//
-//            // 取本地网名称  市县名称
-//            targetDTO.setLanName(getRegionNameByRegionId(targetDTO.getLanId()));
-//            targetDTO.setCityName(getRegionNameByRegionId(targetDTO.getCity()));
-//
-//            // 营业执照号、税号、公司账号、营业执照失效期
-//            InvoiceListReq invoiceListReq = new InvoiceListReq();
-//            invoiceListReq.setMerchantId(targetDTO.getMerchantId());
-//            invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
-//            List<Invoice> invoiceList = invoiceManager.listInvoice(invoiceListReq);
-//            if (!CollectionUtils.isEmpty(invoiceList)) {
-//                // 取第一条数据
-//                Invoice invoice = invoiceList.get(0);
-//                targetDTO.setBusiLicenceCode(invoice.getBusiLicenceCode());
-//                targetDTO.setBusiLicenceExpDate(invoice.getBusiLicenceExpDate());
-//                targetDTO.setTaxCode(invoice.getTaxCode());
-//                targetDTO.setRegisterBankAcct(invoice.getRegisterBankAcct());
-//                // 不要用copyProperties  有可能两个表的数据不一样 覆盖商家名称
-////                BeanUtils.copyProperties(invoiceList.get(0), targetDTO);
-//            }
-//
-//            // 标签信息
-//            MerchantTagRelListReq tagRelListReq = new MerchantTagRelListReq();
-//            tagRelListReq.setMerchantId(targetDTO.getMerchantId());
-//            List<MerchantTagRelDTO> tagRelDTOList = merchantTagRelService.listMerchantTagRel(tagRelListReq).getResultData();
-//            if (!CollectionUtils.isEmpty(tagRelDTOList)) {
-//                // 取第一条数据
-//                List<String> tagNameList = Lists.newArrayList();
-//                for (MerchantTagRelDTO merchantTagRelDTO : tagRelDTOList) {
-//                    tagNameList.add(merchantTagRelDTO.getTagName());
-//                }
-//                // 用逗号分隔拼接
-//                targetDTO.setTagNames(StringUtils.join(tagNameList, ","));
-//            }
-//            targetList.add(targetDTO);
-//        }
-
-
         /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
         if (!CollectionUtils.isEmpty(merchantPage.getRecords())) {
 

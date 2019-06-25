@@ -62,6 +62,9 @@ public class CommonOrgManager {
         if (!StringUtils.isEmpty(req.getParentOrgId())) {
             queryWrapper.eq(CommonOrg.FieldNames.parentOrgId.getTableFieldName(), req.getParentOrgId());
         }
+        if (!StringUtils.isEmpty(req.getLanId())) {
+            queryWrapper.eq(CommonOrg.FieldNames.lanId.getTableFieldName(), req.getLanId());
+        }
         if (!StringUtils.isEmpty(req.getOrgName())) {
             queryWrapper.like(CommonOrg.FieldNames.orgName.getTableFieldName(), req.getOrgName());
         }

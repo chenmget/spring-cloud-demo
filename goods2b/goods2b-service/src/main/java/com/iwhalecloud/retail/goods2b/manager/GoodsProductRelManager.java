@@ -151,6 +151,10 @@ public class GoodsProductRelManager {
     	return goodsProductRelMapper.selectProdFileId();
     }
     
+    public String isBindingToPricture(String targetId) {
+    	return goodsProductRelMapper.isBindingToPricture(targetId);
+    }
+    
     public void delProdFileByTargetId(String goodsId) {
     	goodsProductRelMapper.delProdFileByTargetId(goodsId);
     }

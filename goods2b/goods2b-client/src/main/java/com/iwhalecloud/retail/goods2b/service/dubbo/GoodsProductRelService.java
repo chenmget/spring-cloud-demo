@@ -64,9 +64,11 @@ public interface GoodsProductRelService{
 
     ResultVO<List<GoodsProductRelDTO>> listGoodsProductRel(String goodsId);
     
-    public void insertProdFile(ProdFileReq req);
+    void insertProdFile(ProdFileReq req);
     
-    public String selectProdFileId();
+    String selectProdFileId();
     
-    public void delProdFileByTargetId(String goodsId);
+    String isBindingToPricture(String targetId);
+    
+    void delProdFileByTargetId(String goodsId);
 }

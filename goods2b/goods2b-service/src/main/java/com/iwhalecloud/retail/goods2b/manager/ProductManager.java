@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
@@ -25,6 +26,7 @@ public class ProductManager {
 
     /**
      * 添加产品
+     *
      * @param req
      * @return
      */
@@ -37,7 +39,7 @@ public class ProductManager {
             dto.setUnitName(req.getUnitName());
             dto.setBothNotNull(bothNotNull);
             Integer num = productMapper.getDuplicate(dto);
-            if(null != num && num > 0){
+            if (null != num && num > 0) {
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "产品编码、营销资源名称不能重复");
             }
         }
@@ -46,6 +48,7 @@ public class ProductManager {
 
     /**
      * 根据产品ID获取产品对象
+     *
      * @param productId 产品ID
      * @return
      */
@@ -55,15 +58,17 @@ public class ProductManager {
 
     /**
      * 根据产品ID获取产品对象
+     *
      * @param productId 产品ID
      * @return
      */
     public ProductResp getProduct(String productId) {
         return productMapper.getProduct(productId);
     }
-    
+
     /**
      * 根据产品ID获取产品对象
+     *
      * @param productId 产品ID
      * @return
      */
@@ -73,15 +78,16 @@ public class ProductManager {
 
     /**
      * 根据产品编码获取产品对象
+     *
      * @param sn
      * @return
      */
-    public ProductResp getProductBySn(String sn){
+    public ProductResp getProductBySn(String sn) {
         QueryWrapper<Product> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(Product.FieldNames.sn.getFieldName(),sn);
+        queryWrapper.eq(Product.FieldNames.sn.getFieldName(), sn);
         Product product = productMapper.selectOne(queryWrapper);
         ProductResp productResp = new ProductResp();
-        if(product != null) {
+        if (product != null) {
             BeanUtils.copyProperties(product, productResp);
             return productResp;
         }
@@ -90,6 +96,7 @@ public class ProductManager {
 
     /**
      * 删除
+     *
      * @param productId
      * @return
      */
@@ -104,19 +111,21 @@ public class ProductManager {
 
     /**
      * 删除产品(Delete操作)
+     *
      * @param productId
      * @return
      */
     public Integer deleteProdProduct(String productId) {
         return productMapper.deleteById(productId);
     }
-    
+
     /**
      * 更新
+     *
      * @param req
      * @return
      */
-    public Integer updateProdProduct(ProductUpdateReq req){
+    public Integer updateProdProduct(ProductUpdateReq req) {
         Product t = new Product();
         BeanUtils.copyProperties(req, t);
         return productMapper.updateById(t);
@@ -124,6 +133,7 @@ public class ProductManager {
 
     /**
      * 通用查询
+     *
      * @param req
      * @return
      */
@@ -134,6 +144,7 @@ public class ProductManager {
 
     /**
      * 分页查询
+     *
      * @param req
      * @return
      */
@@ -144,6 +155,7 @@ public class ProductManager {
 
     /**
      * 分页查询
+     *
      * @param req
      * @return
      */
@@ -154,19 +166,21 @@ public class ProductManager {
 
     /**
      * 查询产品Id
+     *
      * @param req
      * @return
      */
-    public List<ProductResourceResp> getProductResource(ProductResourceInstGetReq req){
+    public List<ProductResourceResp> getProductResource(ProductResourceInstGetReq req) {
         return productMapper.getProductResource(req);
     }
 
-    public int getProductCountByManufId(String manufacturerId){
+    public int getProductCountByManufId(String manufacturerId) {
         return productMapper.getProductCountByManufId(manufacturerId);
     }
 
     /**
      * 根据产品ID获取产品对象
+     *
      * @param productIdList 产品ID列表
      * @return
      */
@@ -176,23 +190,25 @@ public class ProductManager {
 
     /**
      * 根据产品ID获取产品信息
+     *
      * @param queryProductInfoReqDTO
      * @return
      */
-    public ProductPageResp getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO){
+    public ProductPageResp getProductInfo(QueryProductInfoReqDTO queryProductInfoReqDTO) {
         return productMapper.getProductInfo(queryProductInfoReqDTO);
     }
-    
+
     /**
      * 根据产品ID获取产品信息
+     *
      * @param queryProductInfoReqDTO
      * @return
      */
-    public ProductPageResp getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO){
+    public ProductPageResp getProductInfor(QueryProductInfoReqDTO queryProductInfoReqDTO) {
         return productMapper.getProductInfor(queryProductInfoReqDTO);
     }
-    
-    public int updateAuditStateByProductBaseId(ProductAuditStateUpdateReq req){
+
+    public int updateAuditStateByProductBaseId(ProductAuditStateUpdateReq req) {
 //        Product record = new Product();
 //        record.setProductId(productId);
 //        record.setStatus(auditState);
@@ -204,22 +220,24 @@ public class ProductManager {
 
     }
 
-    public int updateAttrValue10(ProductAuditStateUpdateReq req){
+    public int updateAttrValue10(ProductAuditStateUpdateReq req) {
         return productMapper.updateAttrValue10(req);
 
     }
 
     /**
      * 权限过滤用
+     *
      * @param req
      * @return
      */
-    public List<ProductResp> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req){
+    public List<ProductResp> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req) {
         return productMapper.getProductByProductIdsAndBrandIds(req);
     }
 
     /**
      * 根据productBaseId查询
+     *
      * @param productBaseId
      * @return
      */
@@ -229,15 +247,17 @@ public class ProductManager {
 
     /**
      * 根据条件查询产品（返利使用）
+     *
      * @param req
      * @return
      */
-    public List<ProductResp> getProductForRebate(ProductRebateReq req){
+    public List<ProductResp> getProductForRebate(ProductRebateReq req) {
         return productMapper.getProductForRebate(req);
     }
 
     /**
      * 查询产品sn, is_fixed_line(对接营销资源用)
+     *
      * @param productId
      * @return
      */
@@ -245,33 +265,47 @@ public class ProductManager {
         return productMapper.getProductForResource(productId);
     }
 
-     /**
+    /**
      * 根据产品名称或编码查询产品
+     *
      * @param request
      * @return
      */
-    public Integer getDuplicate(ProductGetDuplicateReq request){
+    public Integer getDuplicate(ProductGetDuplicateReq request) {
         return productMapper.getDuplicate(request);
     }
 
     /**
      * 根据产品Id列表查询产品信息
+     *
      * @param productIdList
      * @return
      */
-    public List<ProductInfoResp> getProductInfoByIds( List<String> productIdList){
+    public List<ProductInfoResp> getProductInfoByIds(List<String> productIdList) {
         return productMapper.getProductInfoByIds(productIdList);
     }
-    
+
     public String selectNextChangeId() {
-		return productMapper.selectNextChangeId();
-	}
-    
-    public String selectNextChangeDetailId() {
-    	return productMapper.selectNextChangeDetailId();
+        return productMapper.selectNextChangeId();
     }
-    
+
+    public String selectNextChangeDetailId() {
+        return productMapper.selectNextChangeDetailId();
+    }
+
     public String selectisFixedLineByBatchId(String batchId) {
-		return productMapper.selectisFixedLineByBatchId(batchId);
-	}
+        return productMapper.selectisFixedLineByBatchId(batchId);
+    }
+
+
+    /**
+     * 根据条件查询产品ID集合（单表查询）
+     *
+     * @param req
+     * @return
+     */
+    public List<String> listProductId(ProductListReq req) {
+        return productMapper.listProductId(req);
+    }
+
 }

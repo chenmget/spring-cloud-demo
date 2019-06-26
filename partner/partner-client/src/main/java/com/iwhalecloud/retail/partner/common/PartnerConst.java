@@ -362,8 +362,7 @@ public class PartnerConst {
 
         ADD("A", "添加"),
         UPDATE("U", "修改"),
-        DELETE("D", "删除"),
-        ;
+        DELETE("D", "删除");
         private String type;
         private String name;
 
@@ -388,8 +387,7 @@ public class PartnerConst {
 
         AUDITING("1002", "审核中"),
         PASS("1003", "审核通过"),
-        NOT_PASS("1004", "审核不通过"),
-        ;
+        NOT_PASS("1004", "审核不通过");
         private String code;
         private String name;
 
@@ -412,8 +410,7 @@ public class PartnerConst {
      */
     public enum PermissionApplyTypeEnum {
 
-        PERMISSION_APPLY("10", "权限申请"),
-        ;
+        PERMISSION_APPLY("10", "权限申请");
         private String code;
         private String name;
 

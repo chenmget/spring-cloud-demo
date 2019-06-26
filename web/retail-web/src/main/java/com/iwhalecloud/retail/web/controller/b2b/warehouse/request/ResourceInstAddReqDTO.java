@@ -155,4 +155,10 @@ public class ResourceInstAddReqDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "键串码，值CT码")
 	private Map<String, String> ctCodeMap;
+
+	/**
+	 * 抽检泛智能串码列表
+	 */
+	@ApiModelProperty(value = "抽检泛智能串码列表")
+	private List<String> twoCheckMktResInstNbrs;
 }

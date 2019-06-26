@@ -1051,6 +1051,40 @@ public class ResourceConst {
             this.code = code;
         }
 
+    }
+
+
+    /**
+     * 申请单详情isFixLine字典值
+     */
+    public enum CheckType {
+        CheckType_1("1","技术抽检"),
+
+        CheckType_2("2","泛智能抽检");
+
+        private String code;
+        private String name;
+
+        CheckType(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
 
     }
 }

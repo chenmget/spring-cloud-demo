@@ -2,16 +2,13 @@ package cn.buildworld.elasticjob.job.partner;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.elasticjob.lite.annotation.ElasticSimpleJob;
 import com.google.common.collect.Lists;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
-import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductAuditStateUpdateReq;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductGetReq;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductListReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -23,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -61,22 +57,12 @@ public class AutoAddMerchantRulesJob implements SimpleJob {
             return;
         }
         try {
-            ProductGetReq req = new ProductGetReq();
-            req.setAttrValue10(ProductConst.attrValue10.EFFECTIVE.getCode());
-            ResultVO<Page<ProductDTO>> resultVO = productService.selectProduct(req);
-            log.info("AutoAddMerchantRulesJob selectProduct={}", resultVO.getResultData().getRecords().size());
-            // 要添加的机型ID 集合
-            List<String> productIds = new ArrayList<>();
-            if (resultVO.isSuccess() && null != resultVO.getResultData()) {
-                List<ProductDTO> productDTOs = resultVO.getResultData().getRecords();
-                if (!CollectionUtils.isEmpty(productDTOs)) {
-                    for (ProductDTO productDTO : productDTOs) {
-                        productIds.add(productDTO.getProductId());
-                    }
-                }
-            }
-
             // 新逻辑 zhongwenlong 2019.06.26
+
+            // 取要添加的机型ID 集合
+            ProductListReq req = new ProductListReq();
+            req.setAttrValue10(ProductConst.attrValue10.EFFECTIVE.getCode());
+            List<String> productIds = productService.listProductId(req).getResultData();
 
             log.info("AutoAddMerchantRulesJob 状态是：审核成功待添加权限 的产品ID集合：{} ", JSON.toJSONString(productIds));
             if (CollectionUtils.isEmpty(productIds)) {
@@ -123,6 +109,21 @@ public class AutoAddMerchantRulesJob implements SimpleJob {
             }
 
 /*          // 旧逻辑
+
+            ProductGetReq req = new ProductGetReq();
+            req.setAttrValue10(ProductConst.attrValue10.EFFECTIVE.getCode());
+            ResultVO<Page<ProductDTO>> resultVO = productService.selectProduct(req);
+            log.info("AutoAddMerchantRulesJob selectProduct={}", resultVO.getResultData().getRecords().size());
+            List<String> productIds = new ArrayList<>();
+            if (resultVO.isSuccess() && null != resultVO.getResultData()) {
+                List<ProductDTO> productDTOs = resultVO.getResultData().getRecords();
+                if (!CollectionUtils.isEmpty(productDTOs)) {
+                    for (ProductDTO productDTO : productDTOs) {
+                        productIds.add(productDTO.getProductId());
+                    }
+                }
+            }
+
             MerchantListReq merchantListReq = new MerchantListReq();
             merchantListReq.setMerchantType(PartnerConst.MerchantTypeEnum.PARTNER.getType());
             ResultVO<List<MerchantDTO>> merchantResultVo = merchantService.listMerchant(merchantListReq);

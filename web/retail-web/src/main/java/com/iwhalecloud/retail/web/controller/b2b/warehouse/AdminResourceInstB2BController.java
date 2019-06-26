@@ -405,5 +405,15 @@ public class AdminResourceInstB2BController {
         return resourceInstService.batchAuditNbr(req);
     }
 
+    @ApiOperation(value = "验证提交串码审核是否执行完毕", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value="validBatchAuditNbr")
+    public ResultVO<Boolean> validBatchAuditNbr() {
+        return resourceInstService.validBatchAuditNbr();
+    }
+
 
 }

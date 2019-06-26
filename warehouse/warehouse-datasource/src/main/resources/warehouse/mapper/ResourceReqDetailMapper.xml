@@ -169,7 +169,7 @@
         <if test = "null != req.updateStaff and '' != req.updateStaff">
             and detail.UPDATE_STAFF = #{req.updateStaff}
         </if>
-        order by detail.CREATE_DATE DESC
+        order by detail.CREATE_DATE DESC,detail.MKT_RES_REQ_DETAIL_ID
     </select>
 
     <select id="listDistinctResourceRequestByUser" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq"

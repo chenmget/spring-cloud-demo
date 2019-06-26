@@ -554,6 +554,28 @@ public class RunableTask {
         executorService.shutdown();
     }
 
+    public Boolean validBatchAuditNbr() {
+        try{
+            Boolean hasDone = true;
+            log.info("RunableTask.validBatchAuditNbr ={}", JSON.toJSONString(auditPassNbrFutureTaskResult));
+            if (CollectionUtils.isEmpty(auditPassNbrFutureTaskResult)) {
+                return false;
+            }
+            for (Future<Boolean> future : auditPassNbrFutureTaskResult) {
+                if (!future.isDone()) {
+                    return false;
+                }
+            }
+            return hasDone;
+        }catch (Throwable e) {
+            if (e instanceof ExecutionException) {
+                e = e.getCause();
+            }
+            log.error("error happen", e);
+        }
+        return true;
+    }
+
     class QueryNbrTask implements Callable<List<ResourceUploadTempListResp>> {
         private Integer pageNo;
         private Integer pageSize;
@@ -717,7 +739,8 @@ public class RunableTask {
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             String batchId = resourceInstService.getPrimaryKey();
             int length=data.size();
-            Integer excutorNum = length%perNum == 0 ? length/perNum : (length/perNum + 1);
+            int pageSize=5000;
+            Integer excutorNum = length%pageSize == 0 ? length/pageSize : (length/pageSize + 1);
             validNbrFutureTaskResult = new ArrayList<>(excutorNum);
             //串码集合，用于判断串码是否重复
             Map<String,String> nbrMap=new ConcurrentHashMap();
@@ -727,8 +750,8 @@ public class RunableTask {
 
             //分页处理
             for (Integer i = 0; i < excutorNum; i++) {
-                Integer maxNum = perNum * (i + 1) > length ? length : perNum * (i + 1);
-                List<ExcelResourceReqDetailDTO> subList = data.subList(perNum * i, maxNum);
+                Integer maxNum = pageSize * (i + 1) > length ? length : pageSize * (i + 1);
+                List<ExcelResourceReqDetailDTO> subList = data.subList(pageSize * i, maxNum);
                 CopyOnWriteArrayList<ExcelResourceReqDetailDTO> newList = new CopyOnWriteArrayList(subList);
                 Callable<Boolean> callable = new NbrValidCall(newList,batchId,userId,now,nbrMap,reqIds);
                 Future<Boolean> validFutureTask = executorService.submit(callable);
@@ -762,8 +785,9 @@ public class RunableTask {
         }
         @Override
         public Boolean call() throws Exception {
+            log.info("RunableTask.NbrValidCall.newList={}",JSON.toJSON(newList));
             //存入临时表的数据
-            List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
+            List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(5000);
             //需要审核的串码集合
             List<String> nbrList = newList.stream().map(ExcelResourceReqDetailDTO :: getMktResInstNbr).collect(Collectors.toList());
             //根据串码查询申请明细中状态为待审核的数据，存在说明该串码合法
@@ -778,14 +802,18 @@ public class RunableTask {
             Page<ResourceReqDetailPageDTO> legalRespPage = resourceReqDetailManager.listResourceRequestPage(legalQuery);
             //合法的串码
             List<ResourceReqDetailPageDTO> legalDetails=legalRespPage.getRecords();
-            log.info("RunableTask.NbrValidCall.newList={}",JSON.toJSON(newList));
+            //串码轨迹表中存在的串码
+            ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
+            trackGetReq.setMktResInstNbrList(new CopyOnWriteArrayList(nbrList));
+            ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
+            List<ResouceInstTrackDTO> trackDTOList = instsTrackvO.getResultData();
+            log.info("RunableTask.NbrValidCall resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(instsTrackvO));
             //记录合格的串码
             if (CollectionUtils.isNotEmpty(legalRespPage.getRecords())) {
                 List<String> legalNbrList=legalDetails.stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
                 for (ExcelResourceReqDetailDTO dto : newList) {
                     //确认是否能在合法的串码中找到对应的
-                    Optional<ResourceReqDetailPageDTO> optional=legalDetails.stream()
-                            .filter(t->t.getMktResInstNbr().equals(dto.getMktResInstNbr())).findFirst();
+                    Optional<ResourceReqDetailPageDTO> optional=legalDetails.stream().filter(t->t.getMktResInstNbr().equals(dto.getMktResInstNbr())).findFirst();
                     //临时表实例
                     ResouceUploadTemp inst = new ResouceUploadTemp();
                     inst.setMktResUploadBatch(batchId);
@@ -808,6 +836,17 @@ public class RunableTask {
                             //该串码的申请单不是该用户处理的
                             inst.setResult(ResourceConst.CONSTANT_YES);
                             inst.setResultDesc("您没有该串码的审核权限");
+                        }else if (trackDTOList.size()>0){
+                            Optional<ResouceInstTrackDTO> trackOptional = trackDTOList.stream().filter(t->t.getMktResInstNbr().equals(dto.getMktResInstNbr())).findFirst();
+                            if (trackOptional.isPresent()){
+                                //串码轨迹有数据
+                                inst.setResult(ResourceConst.CONSTANT_YES);
+                                inst.setResultDesc("串码重复申请");
+                            }else{
+                                nbrMap.put(resp.getMktResInstNbr(),"1");
+                                inst.setResult(ResourceConst.CONSTANT_NO);
+                                inst.setStatusCd(statusCd);
+                            }
                         }else{
                             //审核结果正常
                             nbrMap.put(resp.getMktResInstNbr(),"1");
@@ -893,12 +932,13 @@ public class RunableTask {
             //初始化线程池
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             int length=data.size();
-            Integer excutorNum = length%perNum == 0 ? length/perNum : (length/perNum + 1);
+            int pageSize=5000;
+            Integer excutorNum = length%pageSize == 0 ? length/pageSize : (length/pageSize + 1);
             auditPassNbrFutureTaskResult = new ArrayList<>(excutorNum);
             //分页处理
             for (Integer i = 0; i < excutorNum; i++) {
-                Integer maxNum = perNum * (i + 1) > length ? length : perNum * (i + 1);
-                List<ResourceReqDetailPageDTO> subList = data.subList(perNum * i, maxNum);
+                Integer maxNum = pageSize * (i + 1) > length ? length : pageSize * (i + 1);
+                List<ResourceReqDetailPageDTO> subList = data.subList(pageSize * i, maxNum);
                 CopyOnWriteArrayList<ResourceReqDetailPageDTO> newList = new CopyOnWriteArrayList(subList);
                 //按照申请单进行分组，根据申请单号和串码作为查询条件
                 Map<String, List<ResourceReqDetailPageDTO>> map = newList.stream().collect(Collectors.groupingBy(t -> t.getMktResReqId()));

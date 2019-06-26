@@ -117,12 +117,12 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         Long limitNum = Long.valueOf(req.getMktResInstNbrs().size());
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
-            return ResultVO.error("商家获取失败");
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         ResultVO<MerchantLimitDTO> merchantLimitDTO = merchantLimitService.getMerchantLimit(merchantId);
         log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel merchantLimitService.getMerchantLimit merchantId={}, resp={}", merchantId, JSON.toJSONString(merchantLimitDTO));
         if (!merchantLimitDTO.isSuccess() || merchantLimitDTO.getResultData() == null) {
-            return ResultVO.error("获取额度失败");
+            return ResultVO.error(constant.getMerchantLimitError());
         }
         // 获取仓库
         StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
@@ -158,7 +158,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel() resourceRequestService.insertResourceRequest req={}, resultVO={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVO));
             // step3 启动工作流
             ProcessStartReq processStartDTO = new ProcessStartReq();
-            processStartDTO.setTitle("绿色通道超过限额审批流程");
+            processStartDTO.setTitle(constant.getGreenChannelAboveLimitRequestTitle());
             processStartDTO.setApplyUserId(req.getCreateStaff());
             processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_08.getTypeCode());
             processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_1090.getTaskSubType());
@@ -169,7 +169,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             ResultVO startResultVO = taskService.startProcess(processStartDTO);
             log.info("RetailerResourceInstMarketServiceImpl.addResourceInstByGreenChannel taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
             if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
             }
             return ResultVO.error(ResourceConst.SUCESS_MSG + reqCode);
         }else{
@@ -212,7 +212,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 resourceInstStoreDTO.setQuantity(Long.valueOf(req.getMktResInstNbrs().size()));
                 int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
                 if (updateResInstStore < 1) {
-                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
                 }
                 log.info("RetailerResourceInstMarketServiceImpl.confirmReciveNbr resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
             }
@@ -237,7 +237,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         SynMktInstStatusSwapReq synMktInstStatusReq = new SynMktInstStatusSwapReq();
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(req.getMerchantId());
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
-            return ResultVO.error("商家获取失败");
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
 
         // 先获取串码，用来记录库存及事件
@@ -281,7 +281,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceInstStoreDTO.setQuantity(Long.valueOf(entry.getValue().size()));
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
             if (updateResInstStore < 1) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
             }
             log.info("RetailerResourceInstMarketServiceImpl.confirmReciveNbr resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         }
@@ -303,7 +303,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr requestService.queryResourceRequest req={},resp={}", JSON.toJSONString(resourceRequestReq),JSON.toJSONString(resourceRequestRespVO));
         Boolean statusNotRight = !resourceRequestRespVO.isSuccess() || resourceRequestRespVO.getResultData() == null || !statusCdReviewed.equals(resourceRequestRespVO.getResultData().getStatusCd());
         if (statusNotRight) {
-            return ResultVO.error(ResultCodeEnum.ERROR.getCode(), "申请单状态不正确");
+            return ResultVO.error(ResultCodeEnum.ERROR.getCode(), constant.getRequestItemInvalid());
         }
 
         ResourceRequestResp resourceRequestResp = resourceRequestRespVO.getResultData();
@@ -319,7 +319,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         List<ResourceReqDetailDTO> list = resourceReqDetailManager.listDetail(queryReq);
         log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceReqDetailManager.listDetail req={},resp={}", JSON.toJSONString(queryReq),JSON.toJSONString(list));
         if (null == list || list.isEmpty()) {
-            return ResultVO.error("没有查找到申请单");
+            return ResultVO.error(constant.getCannotGetRequestItemMsg());
         }
 
         // step3 领用方入库
@@ -373,7 +373,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 resourceInstStoreDTO.setQuantity(Long.valueOf(entry.getValue().size()));
                 int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
                 if (updateResInstStore < 1) {
-                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
                 }
                 log.info("RetailerResourceInstMarketServiceImpl.confirmReciveNbr resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
             }
@@ -392,7 +392,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         String statusCdReviewed = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
         Boolean statusNotRight = !resourceRequestRespVO.isSuccess() || resourceRequestRespVO.getResultData() == null || !statusCdReviewed.equals(resourceRequestRespVO.getResultData().getStatusCd());
         if (statusNotRight) {
-            return ResultVO.error(ResultCodeEnum.ERROR.getCode(), "申请单状态不正确");
+            return ResultVO.error(ResultCodeEnum.ERROR.getCode(), constant.getRequestItemInvalid());
         }
         ResourceRequestResp resourceRequestResp = resourceRequestRespVO.getResultData();
         ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
@@ -407,8 +407,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         List<ResourceReqDetailDTO> list = resourceReqDetailManager.listDetail(queryReq);
         log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceReqDetailManager.listDetail req={},resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(list));
 
-        if (null == list || list.isEmpty()) {
-            return ResultVO.error("没有查找到申请单");
+        if (CollectionUtils.isEmpty(list)) {
+            return ResultVO.error(constant.getCannotGetRequestItemMsg());
         }
         ResourceReqDetailDTO detailDTO = list.get(0);
 
@@ -579,13 +579,13 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getDestStoreId(), JSON.toJSONString(destMerchantVO));
         MerchantDTO destMerchantDTO = destMerchantVO.getResultData();
         if (null == destMerchantDTO) {
-            return ResultVO.error("商家获取失败");
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         ResultVO<MerchantDTO> sorctMerchantVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getMktResStoreId(), JSON.toJSONString(sorctMerchantVO));
         MerchantDTO sourceMerchantDTO = sorctMerchantVO.getResultData();
         if (null == sourceMerchantDTO) {
-            return ResultVO.error("商家获取失败");
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         String requestStatusCd = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
         String detailStatusCd = ResourceConst.DetailStatusCd.STATUS_CD_1002.getCode();
@@ -594,7 +594,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         String auditType = validAllocateNbr(sourceMerchantDTO, destMerchantDTO, mktResInstNbrs);
         String reqCode = resourceInstManager.getPrimaryKey();
         if (ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_0.getCode().equals(auditType)) {
-            return ResultVO.error("不能调拨，请检查调拨串码和目标仓库");
+            return ResultVO.error(constant.getCanNotAllocate());
         }else if(ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode().equals(auditType)){
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
             successMessage = ResourceConst.ALLOCATE_AUDITING_MSG + reqCode;
@@ -619,7 +619,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         }
         //新增申请单
         ResourceRequestAddReq resourceRequestAddReq = new ResourceRequestAddReq();
-        resourceRequestAddReq.setReqName("调拨申请单");
+        resourceRequestAddReq.setReqName(constant.getAllocateRequestItem());
         resourceRequestAddReq.setReqType(ResourceConst.REQTYPE.ALLOCATE_APPLYFOR.getCode());
         resourceRequestAddReq.setMktResStoreId(mktResStoreId);
         resourceRequestAddReq.setDestStoreId(destStoreId);
@@ -639,7 +639,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         // step4 如果不需要审核则发起流程目标仓库处理人，由目标仓库处理人决定是否接受
         String uuid = resourceInstManager.getPrimaryKey();
         ProcessStartReq processStartDTO = new ProcessStartReq();
-        processStartDTO.setTitle("调拨审批流程");
+        processStartDTO.setTitle(constant.getAddNbrWorkFlow());
         processStartDTO.setApplyUserId(req.getCreateStaff());
         processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_12.getTypeCode());
         processStartDTO.setFormId(resultVOInsertResReq.getResultData());
@@ -659,7 +659,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ResultVO taskServiceRV = taskService.startProcess(processStartDTO);
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst taskService.startProcess req={},resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
         if (!taskServiceRV.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
         }
         // 删除源串码
         String nbrs = StringUtils.join(mktResInstNbrs, ",");
@@ -687,7 +687,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
             log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
             if (updateResInstStore < 1) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
             }
         }
         return ResultVO.success(successMessage);
@@ -718,8 +718,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ResultVO<List<ResourceInstListResp>> merchantNbrInstVO = resourceInstService.listResourceInst(resourceInstListReq);
         log.info("RetailerResourceInstMarketServiceImpl.pickResourceInst resourceInstService.listResourceInst resourceInstListReq={}, resp={}", JSON.toJSONString(resourceInstListReq), JSON.toJSONString(merchantNbrInstVO));
         if (!merchantNbrInstVO.isSuccess() || CollectionUtils.isEmpty(merchantNbrInstVO.getResultData())) {
-            resourceInstAddResp.setPutInFailNbrs(req.getMktResInstNbrs());
-            return ResultVO.success("源仓库中不存在", resourceInstAddResp);
+            return ResultVO.error(constant.getNotExistsNbrInCity());
         }
         List<String> existNbrList = merchantNbrInstVO.getResultData().stream().map(ResourceInstListResp::getMktResInstNbr).collect(Collectors.toList());
         oraginalNbrList.removeAll(existNbrList);
@@ -822,7 +821,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 dto.setStatusDate(statusDate);
                 dto.setCreateDate(createDate);
             }catch (ParseException e){
-                log.error(e.toString(), "时间转换错误");
+                log.error(e.toString(), "time transfor error");
             }
             dto.setStatusCd(resp.getState());
             dto.setMerchantCode(resp.getProviderCode());

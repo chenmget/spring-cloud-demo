@@ -246,7 +246,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             }
             int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
             if (updateResInstStore < 1) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
             }
             log.info("ResourceInstServiceImpl.updateResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         }
@@ -265,7 +265,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         Integer successNum = resourceInstManager.updateResourceInst(updateReq);
         log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstManager.updateResourceInst req={},resp={}", JSON.toJSONString(updateReq), successNum);
         if (successNum != mktResInstNbrList.size()) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "发货出库失败");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getDeliveryOutFail());
         }
         ResourceInstsGetReq getReq = new ResourceInstsGetReq();
         getReq.setMktResId(req.getMktResId());
@@ -300,7 +300,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
         log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={} resp={}", JSON.toJSONString(resourceInstStoreDTO), updateResInstStore);
         if (updateResInstStore < 1) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
         }
         log.info("ResourceInstServiceImpl.updateResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
         return ResultVO.success();
@@ -356,7 +356,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         int num = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
         log.info("ResourceInstServiceImpl.addResourceInst resourceInstStoreManager.updateResourceInstStore req={} num={}", JSON.toJSONString(resourceInstStoreDTO), num);
         if (num < 1) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
         }
         resourceInstLogService.addResourceInstLog(req, resourceInsts, batchId);
         return addResInstCnt;
@@ -413,7 +413,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         int num = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
         log.info("ResourceInstServiceImpl.addResourceInst resourceInstStoreManager.updateResourceInstStore req={} num={}", JSON.toJSONString(resourceInstStoreDTO), num);
         if (num < 1) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
         }
         resourceInstLogService.addResourceInstLog(req, resourceInsts, batchId);
         return addResInstCnt;
@@ -458,7 +458,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         Boolean addResInstCnt = resourceInstManager.saveBatch(resourceInsts);
         log.info("ResourceInstServiceImpl.addResourceInstForTransaction resourceInstManager.saveBatch req={} resp={}", JSON.toJSONString(resourceInsts), addResInstCnt);
         if (!addResInstCnt) {
-            return ResultVO.error("串码入库失败");
+            return ResultVO.error(constant.getAddNbrFail());
         }
         ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
         BeanUtils.copyProperties(req, resourceInstStoreDTO);
@@ -470,7 +470,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         int num = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
         log.info("ResourceInstServiceImpl.addResourceInstForTransaction resourceInstStoreManager.updateResourceInstStore req={} num={}", JSON.toJSONString(resourceInstStoreDTO), num);
         if (num < 1) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
         }
         resourceInstLogService.addResourceInstLog(req, resourceInsts, batchId);
         return ResultVO.success();
@@ -591,7 +591,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             log.info("ResourceInstServiceImpl.updateResourceInstByIds resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateRestInstStore));
         }
 
-        return ResultVO.success("失败串码数据", unavailbaleNbrs);
+        return ResultVO.success(constant.getFailInNbrs(), unavailbaleNbrs);
     }
 
     @Override
@@ -618,7 +618,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 Integer num = resourceInstManager.updateResourceInstByIds(adminResourceInstDelReq);
                 log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction resourceInstManager.updateResourceInstByIds req={},resp={}", JSON.toJSONString(adminResourceInstDelReq), num);
                 if(num < 1){
-                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码更新失败");
+                    throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateNbrFail());
                 }
                 updatedInstList.add(dto);
                 sucessNum += 1;
@@ -648,7 +648,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             int updateRestInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
             log.info("ResourceInstServiceImpl.updateResourceInstByIdsForTransaction resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateRestInstStore));
         }
-        return ResultVO.success("失败串码数据", unavailbaleNbrs);
+        return ResultVO.success(constant.getFailInNbrs(), unavailbaleNbrs);
     }
 
     /**
@@ -712,7 +712,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             Boolean saveBatch = resourceInstManager.saveBatch(resourceInsts);
             log.info("ResourceInstServiceImpl.resourceInstPutIn resourceInstManager.addResourceInst req={}, resp={}", JSON.toJSONString(resourceInsts), saveBatch);
             if (!saveBatch) {
-                return ResultVO.error("串码入库失败");
+                return ResultVO.error(constant.getAddNbrFail());
             }
             // step3:修改库存(入库库)
             ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
@@ -724,7 +724,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
             Integer updateRestInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
             log.info("ResourceInstServiceImpl.resourceInstPutIn resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateRestInstStore));
             if (updateRestInstStore < 1) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "库存没更新成功");
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
             }
             // step4 增加事件
             ResourceInstAddReq resourceInstAddReq = new ResourceInstAddReq();

@@ -164,7 +164,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         req.setMktResStoreId(destStoreId);
         req.setMerchantType(merchantDTO.getMerchantType());
         req.setDestStoreId(mktResStoreId);
-        req.setSourceType(sourceMerchantDTO.getMerchantType());
         req.setLanId(merchantDTO.getLanId());
         req.setRegionId(merchantDTO.getCity());
         req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
@@ -174,7 +173,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         req.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         Boolean addNum = resourceInstService.addResourceInst(req);
         if (!addNum) {
-            return ResultVO.error("串码入库失败");
+            return ResultVO.error(constant.getAddNbrFail());
         }
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
         resourceInstUpdateReq.setDestStoreId(destStoreId);
@@ -237,13 +236,13 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getMktResStoreId(), JSON.toJSONString(sourceMerchantVO));
         MerchantDTO sourceMerchantDTO = sourceMerchantVO.getResultData();
         if (null == sourceMerchantDTO) {
-            return ResultVO.error("商家获取失败");
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         ResultVO<MerchantDTO> destMerchantVO = resouceStoreService.getMerchantByStore(req.getDestStoreId());
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resouceStoreService.getMerchantByStore req={},resp={}", req.getDestStoreId(), JSON.toJSONString(destMerchantVO));
         MerchantDTO destMerchantDTO = destMerchantVO.getResultData();
         if (null == destMerchantDTO) {
-            return ResultVO.error("商家获取失败");
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();
         selectReq.setMktResInstIdList(req.getMktResInstIds());
@@ -269,7 +268,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             resourceRequestInsts.add(resourceRequestInst);
         }
         ResourceRequestAddReq resourceRequestAddReq = new ResourceRequestAddReq();
-        resourceRequestAddReq.setReqName("调拨申请单");
+        resourceRequestAddReq.setReqName(constant.getAllocateRequestItem());
         resourceRequestAddReq.setReqType(ResourceConst.REQTYPE.ALLOCATE_APPLYFOR.getCode());
         resourceRequestAddReq.setMktResStoreId(req.getMktResStoreId());
         resourceRequestAddReq.setCreateStaff(req.getCreateStaff());
@@ -284,13 +283,13 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResultVO<String> resultVOInsertResReq = resourceRequestService.insertResourceRequest(resourceRequestAddReq);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resourceRequestService.insertResourceRequest req={},resp={}", JSON.toJSONString(resourceRequestAddReq), JSON.toJSONString(resultVOInsertResReq));
         if (resultVOInsertResReq == null || resultVOInsertResReq.getResultData() == null) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "添加申请单失败");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getAddRequestItemError());
         }
 
         // step3 发起流程到目标商家，由目标商家决定是否接受
         String createStaff = req.getCreateStaff();
         ProcessStartReq processStartDTO = new ProcessStartReq();
-        processStartDTO.setTitle("调拨审批流程");
+        processStartDTO.setTitle(constant.getAllocateWorkFlow());
         processStartDTO.setApplyUserId(createStaff);
         processStartDTO.setApplyUserName(sourceMerchantDTO.getMerchantName());
         processStartDTO.setProcessId(processId);
@@ -306,7 +305,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
         if (!startResultVO.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
         }
         // step4 修改源仓库串码为调拨中
         AdminResourceInstDelReq updateReq = new AdminResourceInstDelReq();
@@ -334,7 +333,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResultVO updateResultVO = resourceInstService.updateResourceInstByIds(updateReq);
         log.info("SupplierResourceInstServiceImpl.allocateResourceInst resourceInstService.updateResourceInstByIds req={},resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(updateResultVO));
         if (!updateResultVO.isSuccess()) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "更新串码失败");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateNbrFail());
         }
         return ResultVO.success(successMessage+reqCode);
     }
@@ -472,7 +471,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(req.getBuyerMerchantId());
         log.info("SupplierResourceInstServiceImpl.backDeliveryOutResourceInst merchantService.getMerchantById req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(merchantResultVO));
         if (null == merchantResultVO || !merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
-            return ResultVO.error("查无该商家");
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         // 源仓库(退库 卖家仓库)
         StoreGetStoreIdReq storePageReq = new StoreGetStoreIdReq();
@@ -516,7 +515,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         ResultVO<MerchantDTO> merchantResultVO = merchantService.getMerchantById(req.getSellerMerchantId());
         log.info("SupplierResourceInstServiceImpl.backDeliveryInResourceInst merchantService.getMerchantById req={},resp={}", JSON.toJSONString(req), JSON.toJSONString(merchantResultVO));
         if (null == merchantResultVO || !merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
-            return ResultVO.error("查无该商家");
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         MerchantDTO merchantDTO = merchantResultVO.getResultData();
         // 仓库
@@ -608,7 +607,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         String statusCdReviewed = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
         Boolean statusNotRight = !resourceRequestRespVO.isSuccess() || resourceRequestRespVO.getResultData() == null || !statusCdReviewed.equals(resourceRequestRespVO.getResultData().getStatusCd());
         if (statusNotRight) {
-            return ResultVO.error(ResultCodeEnum.ERROR.getCode(), "申请单状态不正确");
+            return ResultVO.error(ResultCodeEnum.ERROR.getCode(), constant.getRequestItemInvalid());
         }
         ResourceRequestResp resourceRequestResp = resourceRequestRespVO.getResultData();
         ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
@@ -623,10 +622,17 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         List<ResourceReqDetailDTO> list = resourceReqDetailManager.listDetail(queryReq);
         log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resourceReqDetailManager.listDetail req={},resp={}", JSON.toJSONString(queryReq),JSON.toJSONString(list));
         if (null == list || list.isEmpty()) {
-            return ResultVO.error("没有查找到申请单");
+            return ResultVO.error(constant.getCannotGetRequestItemMsg());
         }
+        ResourceReqDetailDTO detailDTO = list.get(0);
+        ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
+        detailUpdateReq.setMktResReqItemIdList(Lists.newArrayList(detailDTO.getMktResReqItemId()));
+        detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1003.getCode());
+        detailUpdateReq.setUpdateStaff(req.getUpdateStaff());
+        Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
+        log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resourceReqDetailManager.updateResourceReqDetailStatusCd detailUpdateReq={}, resp={}", JSON.toJSONString(detailUpdateReq), detailNum);
 
-        ResultVO<MerchantDTO> merchantDTOResultVO = resouceStoreService.getMerchantByStore(list.get(0).getDestStoreId());
+        ResultVO<MerchantDTO> merchantDTOResultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
         log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resouceStoreService.getMerchantByStore req={},resp={}", list.get(0).getDestStoreId(),JSON.toJSONString(merchantDTOResultVO));
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData() ) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
@@ -697,8 +703,16 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         List<ResourceReqDetailDTO> list = resourceReqDetailManager.listDetail(queryReq);
         log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resourceReqDetailManager.listDetail req={}, resp={}", JSON.toJSONString(queryReq), JSON.toJSONString(list));
         if (CollectionUtils.isEmpty(list)) {
-            return ResultVO.error("没有查找到申请单");
+            return ResultVO.error(constant.getCannotGetRequestItemMsg());
         }
+        ResourceReqDetailDTO detailDTO = list.get(0);
+        ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
+        detailUpdateReq.setMktResReqItemIdList(Lists.newArrayList(detailDTO.getMktResReqItemId()));
+        detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode());
+        detailUpdateReq.setUpdateStaff(req.getUpdateStaff());
+        Integer detailNum = resourceReqDetailManager.updateResourceReqDetailStatusCd(detailUpdateReq);
+        log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resourceReqDetailManager.updateResourceReqDetailStatusCd detailUpdateReq={}, resp={}", JSON.toJSONString(detailUpdateReq), detailNum);
+
         ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(list.get(0).getMktResStoreId());
         if (!merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
@@ -721,8 +735,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         updateReq.setObjType(ResourceConst.EVENT_OBJTYPE.PUT_STORAGE.getCode());
         updateReq.setObjId(req.getResReqId());
         updateReq.setMerchantId(merchantResultVO.getResultData().getMerchantId());
-        updateReq.setMktResStoreId(list.get(0).getDestStoreId());
-        updateReq.setDestStoreId(list.get(0).getMktResStoreId());
+        updateReq.setMktResStoreId(detailDTO.getDestStoreId());
+        updateReq.setDestStoreId(detailDTO.getMktResStoreId());
         updateReq.setEventStatusCd(ResourceConst.EVENTSTATE.CANCEL.getCode());
         ResultVO resp = resourceInstService.updateResourceInstByIds(updateReq);
         log.info("SupplierResourceInstServiceImpl.confirmRefuseNbr resourceInstService.resourceInstPutIn req={}, resp={}", JSON.toJSONString(updateReq), JSON.toJSONString(resp));
@@ -841,22 +855,22 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         resourceInstAddResp.setExistNbrs(existNbrs);
         mktResInstNbrs.removeAll(existNbrs);
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
-            return ResultVO.error("该产品串码已在库，请不要重复录入！");
+            return ResultVO.error(constant.getMktResInstExists());
         }
         List<ResouceInstTrackDTO> trackList = resourceInstCheckService.validMerchantStore(resourceInstValidReq);
         if(CollectionUtils.isEmpty(trackList)){
-            return ResultVO.error("厂商库该机型串码不存在！");
+            return ResultVO.error(constant.getNoResInstInMerchant());
         }
         List<String> nbrList = trackList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
         req.setMktResInstNbrs(nbrList);
         req.setMktResStoreId(manuResStoreId);
-        req.setSourceType(sourceMerchantDTO.getMerchantType());
+        req.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         req.setMktResInstType(trackList.get(0).getMktResInstType());
         mktResInstNbrs.removeAll(nbrList);
         resourceInstAddResp.setPutInFailNbrs(mktResInstNbrs);
         Boolean addNum = resourceInstService.addResourceInst(req);
         if (!addNum) {
-            return ResultVO.error("串码入库失败");
+            return ResultVO.error(constant.getAddNbrFail());
         }
         ResourceInstUpdateReq resourceInstUpdateReq = new ResourceInstUpdateReq();
         resourceInstUpdateReq.setDestStoreId(manuResStoreId);
@@ -892,7 +906,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
         log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
-        return ResultVO.success("串码入库完成", resourceInstAddResp);
+        return ResultVO.success(constant.getAddNbrSucess(), resourceInstAddResp);
     }
 
     @Override

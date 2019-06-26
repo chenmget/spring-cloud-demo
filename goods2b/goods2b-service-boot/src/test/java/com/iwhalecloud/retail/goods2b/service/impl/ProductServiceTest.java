@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.goods2b.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -22,14 +21,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Z
@@ -44,6 +41,15 @@ public class ProductServiceTest {
     private ProductService productService;
     @Resource
     private MerchantRulesService merchantRulesService;
+
+    @Test
+    public void listProductId() {
+        ProductListReq req = new ProductListReq();
+        req.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+        req.setIsDeleted(ProductConst.IsDelete.NO.getCode());
+        ResultVO<List<String>> resultVO = productService.listProductId(req);
+        System.out.println("resultVO=" + JSON.toJSON(resultVO));
+    }
 
     @Test
     public void getProductTest() {

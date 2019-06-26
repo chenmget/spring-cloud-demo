@@ -37,7 +37,7 @@
 
     <select id="resourceRequestPage" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailPageReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp">
-        select rest.MKT_RES_REQ_ID,detail.CT_CODE,detail.MKT_RES_INST_NBR,,detail.SN_CODE,detail.MAC_CODE
+        select rest.MKT_RES_REQ_ID,detail.CT_CODE,detail.MKT_RES_INST_NBR,detail.SN_CODE,detail.MAC_CODE,
         item.MKT_RES_ID
         from MKT_RES_REQUEST rest,MKT_RES_REQ_ITEM item,MKT_RES_REQ_DETAIL detail
         where 1=1

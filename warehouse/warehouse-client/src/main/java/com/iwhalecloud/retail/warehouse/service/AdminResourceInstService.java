@@ -74,4 +74,10 @@ public interface AdminResourceInstService {
      * @return
      */
     ResultVO<ResourceUploadTempCountResp> countResourceUploadTemp(ResourceUploadTempDelReq req);
+
+    /**
+     * 验证提交串码审核是否执行完成
+     * @return
+     */
+    ResultVO<Boolean> validBatchAuditNbr();
 }

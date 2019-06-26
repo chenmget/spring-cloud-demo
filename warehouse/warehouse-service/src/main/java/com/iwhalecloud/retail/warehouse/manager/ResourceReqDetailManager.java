@@ -111,7 +111,7 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
         detail.setStatusDate(req.getStatusDate());
         UpdateWrapper updateWrapper=new UpdateWrapper();
         updateWrapper.in(ResourceReqDetail.FieldNames.mktResInstNbr.getTableFieldName(),req.getMktResInstNbrs());
-        updateWrapper.eq(ResourceReqDetail.FieldNames.createDate.getTableFieldName(), req.getCreateDate());
+        //updateWrapper.eq(ResourceReqDetail.FieldNames.createDate.getTableFieldName(), req.getCreateDate());
         return resourceReqDetailMapper.update(detail,updateWrapper)>0;
     }
 

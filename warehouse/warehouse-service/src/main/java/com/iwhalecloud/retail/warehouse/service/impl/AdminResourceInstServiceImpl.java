@@ -280,15 +280,14 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         //申请单id,用于判断申请单下的明细是否都已被处理，处理后了修改申请单状态
         List<String> reqIds = resDetailList.stream().map(ResourceReqDetailPageDTO::getMktResReqId).collect(Collectors.toList());
         //修改申请单明细需要带上申请时间，所以根据申请时间进行分组
-        Map<Date, List<ResourceReqDetailPageDTO>> map = resDetailList.stream().collect(Collectors.groupingBy(t -> t.getCreateDate()));
-        for (Map.Entry<Date,List<ResourceReqDetailPageDTO>> entry:map.entrySet()){
+        Map<String, List<ResourceReqDetailPageDTO>> map = resDetailList.stream().collect(Collectors.groupingBy(t -> t.getMktResReqId()));
+        for (Map.Entry<String,List<ResourceReqDetailPageDTO>> entry:map.entrySet()){
             ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
             List<String> mktResInstNbrList = entry.getValue().stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
             detailUpdateReq.setMktResInstNbrs(mktResInstNbrList);
             detailUpdateReq.setUpdateStaff(req.getUpdateStaff());
             detailUpdateReq.setUpdateDate(now);
             detailUpdateReq.setStatusDate(now);
-            detailUpdateReq.setCreateDate(entry.getKey());
             detailUpdateReq.setRemark(req.getRemark());
             detailUpdateReq.setStatusCd(req.getCheckStatusCd());
             //修改明细状态
@@ -535,10 +534,14 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         //查询审核成功的串码集合
         req.setResult(ResourceConst.CONSTANT_NO);
         req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
-        List<ResourceUploadTempListResp> passList=resourceUploadTempManager.listResourceUpload(req);
+        req.setPageSize(100000);
+        req.setPageNo(1);
+        Page<ResourceUploadTempListResp> pagePass=resourceUploadTempManager.listResourceUploadTemp(req);
+        List<ResourceUploadTempListResp> passList=pagePass.getRecords();
         //查询审核失败的串码集合
         req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode());
-        List<ResourceUploadTempListResp> failList=resourceUploadTempManager.listResourceUpload(req);
+        Page<ResourceUploadTempListResp> pageFail=resourceUploadTempManager.listResourceUploadTemp(req);
+        List<ResourceUploadTempListResp> failList=pageFail.getRecords();
         //审核通过的串码
         if(CollectionUtils.isNotEmpty(passList)){
             ResourceInstCheckReq checkPassReq=new ResourceInstCheckReq();
@@ -582,6 +585,15 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
 
 
+    }
+
+    @Override
+    public ResultVO<Boolean> validBatchAuditNbr() {
+        if (runableTask.validBatchAuditNbr()) {
+            return ResultVO.success(true);
+        } else{
+            return ResultVO.success(false);
+        }
     }
 
 }

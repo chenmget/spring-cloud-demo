@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.warehouse.manager;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO;
@@ -102,17 +103,41 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
      * @param req
      */
     public boolean updateDetailByNbrs(ResourceReqDetailUpdateReq req) {
-        ResourceReqDetail detail=new ResourceReqDetail();
+        ResourceReqDetail detail = new ResourceReqDetail();
         detail.setStatusCd(req.getStatusCd());
         detail.setRemark(req.getRemark());
         detail.setUpdateStaff(req.getUpdateStaff());
         detail.setUpdateDate(req.getUpdateDate());
         detail.setRemark(req.getRemark());
         detail.setStatusDate(req.getStatusDate());
-        UpdateWrapper updateWrapper=new UpdateWrapper();
-        updateWrapper.in(ResourceReqDetail.FieldNames.mktResInstNbr.getTableFieldName(),req.getMktResInstNbrs());
+        UpdateWrapper updateWrapper = new UpdateWrapper();
+        updateWrapper.in(ResourceReqDetail.FieldNames.mktResInstNbr.getTableFieldName(), req.getMktResInstNbrs());
         //updateWrapper.eq(ResourceReqDetail.FieldNames.createDate.getTableFieldName(), req.getCreateDate());
-        return resourceReqDetailMapper.update(detail,updateWrapper)>0;
+
+        return resourceReqDetailMapper.update(detail, updateWrapper) > 0;
+    }
+
+    /**
+     * 根据明细ID集合批量修改申请单明细
+     * @param req
+     */
+    public boolean updateDetailByNbrsByDetailIds(ResourceReqDetailUpdateReq req) {
+
+        List<ResourceReqDetail> details = Lists.newArrayList();
+        ResourceReqDetail detail = new ResourceReqDetail();
+        detail.setStatusCd(req.getStatusCd());
+        detail.setRemark(req.getRemark());
+        detail.setUpdateStaff(req.getUpdateStaff());
+        detail.setUpdateDate(req.getUpdateDate());
+        detail.setRemark(req.getRemark());
+        detail.setStatusDate(req.getStatusDate());
+
+        for (String detailId : req.getMktResReqDetailIds()) {
+            detail.setMktResReqDetailId(detailId);
+            details.add(detail);
+        }
+
+       return super.updateBatchById(details);
     }
 
     /**

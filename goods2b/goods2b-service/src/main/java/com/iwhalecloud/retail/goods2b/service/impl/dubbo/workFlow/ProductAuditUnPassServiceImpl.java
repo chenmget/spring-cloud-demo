@@ -57,7 +57,9 @@ public class ProductAuditUnPassServiceImpl implements ProductAuditUnPassService 
         if(productBaseGetRespResultVO.isSuccess() && null!=productBaseGetRespResultVO.getResultData()){
             ProductBaseGetResp productBaseGetResp = productBaseGetRespResultVO.getResultData();
             String isInspection = productBaseGetResp.getIsInspection();
-            if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection)){
+            String isItms = productBaseGetResp.getIsItms();
+            if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection) &&
+                    StringUtils.isNotEmpty(isItms) &&  !ProductConst.isItms.NOPUSH.equals(isItms)){
                 String serialCode = productBaseGetResp.getParam20();  //串码  xxxx-1234556612
 //                String param = productBaseGetResp.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
                 String userName = productBaseGetResp.getParam18();  //login_name

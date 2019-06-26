@@ -181,7 +181,7 @@
 			a.CRM_STATUS AS crmStatus,
 			a.SELF_REG_STATUS AS selfRegStatus
 		FROM 
-			rpt_res_inst_detail_admin a
+			rpt_res_inst_detail_merchant a
 			LEFT JOIN prod_type b ON a.product_code = b.type_id
 			LEFT JOIN prod_product c ON a.product_id = c.product_id
 			LEFT JOIN prod_product_base d ON c.product_base_id = d.product_base_id

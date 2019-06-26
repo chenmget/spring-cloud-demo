@@ -15,10 +15,14 @@
 
     </select>
 
-    <select id="listProdTags" resultType="com.iwhalecloud.retail.goods2b.dto.TagsDTO">
+    <select id="listProdTags" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProdTagsListReq"
+            resultType="com.iwhalecloud.retail.goods2b.dto.TagsDTO">
         select
         <include refid="Base_Column_List"></include>
-         from prod_tags where IS_DELETED=0
+         from prod_tags t where t.IS_DELETED=0
+        <if test="null!=req.tagType and ''!=req.tagType">
+            and t.tagType = #{req.tagType}
+        </if>
     </select>
     
     <select id="listProdTagsChannel" resultType="com.iwhalecloud.retail.goods2b.dto.TagsDTO">

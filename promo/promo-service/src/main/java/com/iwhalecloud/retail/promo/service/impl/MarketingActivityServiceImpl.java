@@ -3,11 +3,16 @@ package com.iwhalecloud.retail.promo.service.impl;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
 import com.iwhalecloud.retail.order2b.service.OrderSelectOpenService;
@@ -144,6 +149,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     @Reference
     private ProductService productService;
+    @Reference
+    private MerchantTagRelService merchantTagRelService;
 
     @Autowired
     private AccountBalanceTypeManager accountBalanceTypeManager;
@@ -776,9 +783,109 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             if (activityParticipantList != null) {
                 marketingActivitieList.add(item);
             }
+        }else if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode().equals(activityParticipantType)) {
+            //查看该商家是否是活动对象(要求满足全部过滤条件)
+            boolean flag = isExistingInParticipantFilterValue(item, merchantCode);
+            if (flag) {
+                marketingActivitieList.add(item);
+            }
         }
+
         return false;
 
+    }
+
+    /**
+     * 判断商家merchantCode是否是活动activity参与对象
+     * @param activity 活动
+     * @param merchantCode 商家编码
+     * @return
+     */
+    private boolean isExistingInParticipantFilterValue(MarketingActivity activity,String merchantCode){
+        // 1.准备过滤条件数据
+        // 查询过滤条件是否存在，不存在则直接返回false;
+        List<ActivityParticipantDTO> activityParticipantDTOList  = activityParticipantManager.queryActivityParticipantByMktIdAndStatus(activity.getId(), PromoConst.Status.Audited.getCode());
+        ActivityParticipantDTO  activityParticipantDTO = CollectionUtils.isEmpty(activityParticipantDTOList)?null:activityParticipantDTOList.get(0);
+        if (activityParticipantDTO == null||activityParticipantDTO.getFilterValue()==null) {
+            return false;
+        }
+        String filterValue = activityParticipantDTO.getFilterValue();
+
+        // 2.准备商家数据
+        // 校验商家是否存在，不存在则直接返回false;
+        ResultVO<MerchantDTO> resultVO = merchantService.getMerchantByCode(merchantCode);
+        MerchantDTO merchantDTO = resultVO.getResultData();
+        if (merchantDTO == null) {
+            return false;
+        }
+        // 3.准备标签数据
+        // 查询商家标签信息
+        MerchantTagRelListReq req = new MerchantTagRelListReq();
+        req.setMerchantId(merchantDTO.getMerchantId());
+        ResultVO<List<MerchantTagRelDTO>> tagListResultVO = merchantTagRelService.listMerchantTagRel(req);
+        List<MerchantTagRelDTO> merchantTagRelDTOs = null;
+        if(tagListResultVO!=null&&tagListResultVO.getResultData()!=null){
+            merchantTagRelDTOs = tagListResultVO.getResultData();
+        }
+        //4.开始比较是否是活动参与对象
+        boolean flag = true;
+        try {
+            // 解析过滤条件内容
+            JSONObject filterValueJson = JSONObject.parseObject(filterValue);
+            JSONArray cityArray = filterValueJson.getJSONArray("cityList");
+            JSONArray countyArray = filterValueJson.getJSONArray("countyList");
+            JSONArray tagArray = filterValueJson.getJSONArray("tagList");
+            // 获取各级过滤条件ids
+            List<String> cityIds =  getFieldListFromJSONArray(cityArray,"regionId");
+            List<String> countyIds =  getFieldListFromJSONArray(countyArray,"regionId");
+            List<String> tagIds =  getFieldListFromJSONArray(tagArray,"tagId");
+
+            // 查看商家所在城市是否包含在城市条件里
+            if(!CollectionUtils.isEmpty(cityIds)){
+                flag = cityIds.contains(merchantDTO.getLanId());
+            }
+            // 查看商家所在区县是否包含在区县条件里
+            if(!CollectionUtils.isEmpty(countyIds)){
+                flag = countyIds.contains(merchantDTO.getCity());
+            }
+            // 查看商家标签是否包含在标签条件里
+            if(!CollectionUtils.isEmpty(tagIds)&&!CollectionUtils.isEmpty(merchantTagRelDTOs)){
+                //只要有一个商家标签包含在标签条件里就算包含
+                flag = false;
+                for (MerchantTagRelDTO merchantTagRelDTO : merchantTagRelDTOs) {
+                    if(tagIds.contains(merchantTagRelDTO.getTagId())){
+                        flag = true;
+                        break;
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.info("MarketingActivityServiceImpl.isActivityParticipant 处理异常，filterValue={}", filterValue);
+            return false;
+        }
+
+        return flag;
+    }
+
+    /**
+     * 从JsonArray里提取字段list
+     * @param array JsonArray模型对象
+     * @param field 要提取的字段
+     * @return
+     */
+    private List<String> getFieldListFromJSONArray(JSONArray array, String field){
+        List<String> list =  Lists.newArrayList();
+        try {
+            for (int i = 0; i < array.size(); i++) {
+                JSONObject object = array.getJSONObject(i);
+                String regionId = object.getString(field);
+                list.add(regionId);
+            }
+        } catch (Exception ex) {
+            log.info("MarketingActivityServiceImpl.getFieldListFromJSONArray 处理异常，array={}", array.toJSONString());
+            return list;
+        }
+        return list;
     }
 
     /**

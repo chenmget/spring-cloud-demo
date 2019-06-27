@@ -36,7 +36,8 @@
     ,t.SHOP_ADDRESS 
     ,t.PAR_CRM_ORG_ID 
     ,t.PAR_CRM_ORG_CODE 
-    ,t.IS_OWN_PROPERTY 
+    ,t.PAR_CRM_ORG_PATH_CODE
+    ,t.IS_OWN_PROPERTY
     ,t.LINKMAN 
     ,t.PHONE_NO 
     ,t.BUSI_CENTER_NAME 
@@ -91,6 +92,7 @@
     ,t.SHOP_ADDRESS
     ,t.PAR_CRM_ORG_ID
     ,t.PAR_CRM_ORG_CODE
+    ,t.PAR_CRM_ORG_PATH_CODE
     ,t.LINKMAN
     ,t.PHONE_NO
     ,t.EFF_DATE

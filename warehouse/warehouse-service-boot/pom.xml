@@ -107,6 +107,10 @@
 							<groupId>com.iwhalecloud.retail</groupId>
 							<artifactId>promo-client</artifactId>
 						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>zop-sdk</artifactId>
+						</include>
 					</includes>
 				</configuration>
 			</plugin>

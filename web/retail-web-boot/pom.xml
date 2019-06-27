@@ -46,6 +46,10 @@
                     <includes>
                         <include>
                             <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>retail-web</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
                             <artifactId>domain-object</artifactId>
                         </include>
                         <include>
@@ -119,6 +123,10 @@
                         <include>
                             <groupId>com.iwhalecloud.retail</groupId>
                             <artifactId>promo-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>zop-sdk</artifactId>
                         </include>
                     </includes>
                 </configuration>

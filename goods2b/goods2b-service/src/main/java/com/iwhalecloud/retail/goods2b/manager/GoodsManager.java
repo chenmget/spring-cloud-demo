@@ -127,4 +127,8 @@ public class GoodsManager{
     public List<SupplierGoodsDTO> listSupplierGoodsByType(String productId,String merchantType){
         return goodsMapper.listSupplierGoodsByType(productId,merchantType);
     }
+
+    public String getAvgPrice(String productId){
+        return goodsMapper.getAvgPrice(productId);
+    }
 }

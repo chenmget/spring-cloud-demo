@@ -464,4 +464,13 @@
         AND t1.GOODS_ID = t2.GOODS_ID
         AND t2.PRODUCT_ID = #{productId}
     </select>
+
+    <select id="getAvgPrice" parameterType="java.lang.String" resultType="java.lang.String">
+        select avg(c.DELIVERY_PRICE) as deliveryPrice from prod_goods a ,prod_goods_product_rel c
+         where a.MERCHANT_TYPE='3'
+           and a.MARKET_ENABLE='1'
+           and a.IS_DELETED='0'
+           and a.GOODS_ID = c.GOODS_ID
+           AND c.PRODUCT_ID = #{productId}
+    </select>
 </mapper>

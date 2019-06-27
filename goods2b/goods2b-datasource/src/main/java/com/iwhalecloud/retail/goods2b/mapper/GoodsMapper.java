@@ -59,4 +59,11 @@ public interface GoodsMapper extends BaseMapper<Goods>{
      */
     List<SupplierGoodsDTO> listSupplierGoodsByType(@Param("productId") String productId,@Param("merchantType")String merchantType);
 
+    /**
+     * 根据产品id查询省包商品规格平均价格
+     * @param productId
+     * @return
+     */
+    String getAvgPrice(@Param("productId") String productId);
+
 }

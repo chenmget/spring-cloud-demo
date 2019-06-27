@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.report.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.report.dto.request.MktResStoreIdReq;
 import com.iwhalecloud.retail.report.dto.request.ReportCodeStatementsReq;
 import com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp;
 import com.iwhalecloud.retail.report.entity.RptResInstDetailDay;
@@ -21,6 +22,6 @@ public interface ReportCodeStateMapper extends BaseMapper<RptResInstDetailDay>  
 	
 	public List<ReportCodeStatementsResp> getCodeStatementsReportAdmin(@Param("req") ReportCodeStatementsReq reportStorePurchaserReq);
 
-
+	String getMktResStoreId(@Param("req") MktResStoreIdReq req);
 }
 

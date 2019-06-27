@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.report.service.impl;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.report.dto.request.MktResStoreIdReq;
 import com.iwhalecloud.retail.report.dto.request.ReportCodeStatementsReq;
 import com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp;
 import com.iwhalecloud.retail.report.manager.ReportCodeStateManager;
@@ -367,11 +368,12 @@ public class ReportCodeStateServiceImpl implements ReportCodeStateService {
 			
 			list2.add(rr);
 		}
-		
-		
-		
         return ResultVO.success(list2);	
 	}
 	
+	@Override
+	public String getMktResStoreId(MktResStoreIdReq req) {
+		return reportCodeStateManager.getMktResStoreId(req);
+	}
 	
 }

@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
+import com.iwhalecloud.retail.report.dto.request.MktResStoreIdReq;
 import com.iwhalecloud.retail.report.dto.request.ReportCodeStatementsReq;
 import com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp;
 import com.iwhalecloud.retail.report.service.ReportCodeStateService;
@@ -84,10 +85,15 @@ public class ReportCodeStatementsController extends BaseController  {
 			return reportCodeStateService.getCodeStatementsReportAdmin(req);
 		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 
 				|| userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//省供应商4，地市供应商5，零售商3,厂商8
-			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
-			storeGetStoreIdReq.setStoreSubType("1300");
-			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+//			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+//			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
+//			storeGetStoreIdReq.setStoreSubType("1300");
+//			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+			
+			MktResStoreIdReq mktResStoreIdReq = new MktResStoreIdReq();
+			mktResStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
+			mktResStoreIdReq.setStoreSubType("1300");
+			String mktResStoreId = reportCodeStateService.getMktResStoreId(mktResStoreIdReq);
 			if(mktResStoreId == null) {
 				return ResultVO.error("当前商家没有仓库");
 			}
@@ -141,10 +147,15 @@ public class ReportCodeStatementsController extends BaseController  {
 			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
 		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 
 				|| userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//省供应商4，地市供应商5，零售商3,厂商8
-			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
-			storeGetStoreIdReq.setStoreSubType("1300");
-			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+//			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+//			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
+//			storeGetStoreIdReq.setStoreSubType("1300");
+//			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+			
+			MktResStoreIdReq mktResStoreIdReq = new MktResStoreIdReq();
+			mktResStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
+			mktResStoreIdReq.setStoreSubType("1300");
+			String mktResStoreId = reportCodeStateService.getMktResStoreId(mktResStoreIdReq);
 			if(mktResStoreId == null) {
 				return ;
 			}

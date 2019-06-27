@@ -217,5 +217,9 @@ public class PurApplyManager {
 		return purApplyMapper.updatePurTypeByApplyId(req);
 	}
 
-	
+	public Page<PurApplyReportResp> applySearchReport(PurApplyReportReq req) {
+		Page<PurApplyReportResp> page=new Page<>(req.getPageNo(),req.getPageSize());
+		Page<PurApplyReportResp> pageReport =purApplyMapper.applySearchReport(page,req);
+		return pageReport;
+	}
 }

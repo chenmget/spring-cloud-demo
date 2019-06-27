@@ -169,4 +169,9 @@ public class MerchantTest {
         ResultVO resultVO = merchantService.listMerchantForOrder(req);
         System.out.print("结果：" + resultVO.toString());
     }
+    @Test
+    public void getMerchantIdList() {
+        List<String> l =merchantService.getMerchantIdList("中绿");
+        System.out.print("结果：" + l.toString());
+    }
 }

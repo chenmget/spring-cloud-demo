@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.Goods2BServiceApplication;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductApplyInfoResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
@@ -39,4 +40,11 @@ public class ProductServiceImplTest {
         ResultVO<Page<ProductPageResp>> pageResultVO = productService.selectPageProductAdmin(req);
         System.out.println(JSON.toJSON(pageResultVO.getResultData()));
     }
+    @Test
+    public void getProductApplyInfo(){
+        String productId="100000065";
+        ProductApplyInfoResp r= productService.getProductApplyInfo(productId);
+        System.out.println(JSON.toJSON(r));
+    }
+
 }

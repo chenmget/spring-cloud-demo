@@ -146,4 +146,9 @@ public interface ProductMapper extends BaseMapper<Product>{
     
     public String selectisFixedLineByBatchId(String batchId);
 
+    public ProductApplyInfoResp getProductApplyInfo(@Param("productId")String productId);
+
+
+    public List<String>getProductIdListForApply(@Param("req")ProductGetIdReq req);
+
 }

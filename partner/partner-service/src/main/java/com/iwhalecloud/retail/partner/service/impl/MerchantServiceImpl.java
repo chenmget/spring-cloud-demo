@@ -853,4 +853,9 @@ public class MerchantServiceImpl implements MerchantService {
     public ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req){
         return ResultVO.success(merchantManager.getMerchantForOrder(req));
     }
+
+    @Override
+    public List<String> getMerchantIdList(String merchantName) {
+        return merchantManager.getMerchantIdList(merchantName);
+    }
 }

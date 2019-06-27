@@ -227,5 +227,11 @@ public interface ProductService {
     public String selectNextChangeDetailId() ;
     
     public String selectisFixedLineByBatchId(String batchId) ;
-    
+
+
+    public ProductApplyInfoResp getProductApplyInfo(String productId);
+
+    public List<String> getProductIdListForApply(ProductGetIdReq req);
+
+
 }

@@ -926,4 +926,11 @@ public class MerchantManager {
     public MerchantLigthResp getMerchantForOrder(MerchantGetReq req) {
         return merchantMapper.getMerchantForOrder(req);
     }
+
+
+
+    public List<String>getMerchantIdList(String merchantName) {
+        return merchantMapper.getMerchantIdList(merchantName);
+    }
 }
+

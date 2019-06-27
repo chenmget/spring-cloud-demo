@@ -750,11 +750,13 @@ public class PurApplyServiceImpl implements PurApplyService {
 			// 获取产品信息
 			if (productId !=null && productId.length()>0) {
 				ProductApplyInfoResp productApplyInfoResp= productService.getProductApplyInfo(productId);
+				if(null != productApplyInfoResp)
 				BeanUtils.copyProperties(productApplyInfoResp,purApplyReport);
 			}
 			// 获取商家名称
 			if (merchantId !=null  && merchantId.length()>0) {
 				MerchantDTO merchantDTO = merchantService.getMerchantInfoById(merchantId);
+				if(null != merchantDTO)
 				purApplyReport.setMerchantName(merchantDTO.getMerchantName());
 			}
 		}

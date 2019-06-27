@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.report.manager;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.report.dto.request.MktResStoreIdReq;
 import com.iwhalecloud.retail.report.dto.request.ReportCodeStatementsReq;
 import com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp;
 import com.iwhalecloud.retail.report.mapper.ReportCodeStateMapper;
@@ -37,4 +38,7 @@ public class ReportCodeStateManager {
 	        return pageReport;
 	}
 	
+	public String getMktResStoreId(MktResStoreIdReq req) {
+		return reportCodeStateMapper.getMktResStoreId(req);
+	}
 }

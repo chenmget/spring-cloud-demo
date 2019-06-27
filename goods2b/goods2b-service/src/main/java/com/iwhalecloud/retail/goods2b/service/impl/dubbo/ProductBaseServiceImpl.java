@@ -700,11 +700,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     }
                     //流程1
                     if( ProductConst.IsDelete.NO.getCode().equals(newUpdateReq.getIsDeleted()) &&
-                            (newUpdateReq.getCost() - oldUpdateReq.getCost() !=0 ||
-                            newUpdateReq.getLocalSupplyFeeLower() - oldUpdateReq.getLocalSupplyFeeLower() != 0 ||
-                            newUpdateReq.getLocalSupplyFeeUpper() - oldUpdateReq.getLocalSupplyFeeUpper() != 0 ||
-                            newUpdateReq.getSupplyFeeLower() - oldUpdateReq.getSupplyFeeLower() !=0 ||
-                            newUpdateReq.getSupplyFeeUpper() - oldUpdateReq.getSupplyFeeUpper() !=0)){
+                            ((null!=newUpdateReq.getCost() && null!=oldUpdateReq.getCost() && newUpdateReq.getCost() - oldUpdateReq.getCost() !=0) ||
+                            (null!=newUpdateReq.getLocalSupplyFeeLower() && null!=oldUpdateReq.getLocalSupplyFeeLower() && newUpdateReq.getLocalSupplyFeeLower() - oldUpdateReq.getLocalSupplyFeeLower() != 0) ||
+                            (null!=newUpdateReq.getLocalSupplyFeeUpper() && null!=oldUpdateReq.getLocalSupplyFeeUpper() && newUpdateReq.getLocalSupplyFeeUpper() - oldUpdateReq.getLocalSupplyFeeUpper() != 0) ||
+                            (null!=newUpdateReq.getSupplyFeeLower() && null!=oldUpdateReq.getSupplyFeeLower() && newUpdateReq.getSupplyFeeLower() - oldUpdateReq.getSupplyFeeLower() !=0) ||
+                            (null!=newUpdateReq.getSupplyFeeUpper() && null!=oldUpdateReq.getSupplyFeeUpper() && newUpdateReq.getSupplyFeeUpper() - oldUpdateReq.getSupplyFeeUpper() !=0))){
                         if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                             updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
                         }else{

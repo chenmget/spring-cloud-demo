@@ -71,11 +71,11 @@ public class ValidAndAddRunableTask {
             List<String> snCodeList = req.getSnCodeList();
             List<String> macCodeList = req.getMacCodeList();
             Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
-            BlockingQueue<Callable<Boolean>> tasks = new LinkedBlockingQueue<>();
             for (Integer i = 0; i < excutorNum; i++) {
                 Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
                 List<String> subList = nbrList.subList(perNum * i, maxNum);
                 CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
+                CopyOnWriteArrayList<String> newListTwo = new CopyOnWriteArrayList(subList);;
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 getReq.setTypeId(req.getTypeId());
                 getReq.setMktResInstNbrList(newList);
@@ -97,6 +97,7 @@ public class ValidAndAddRunableTask {
                 Callable<Boolean> callable = new ValidNbr(req, getReq, newList, batchId);
                 Future<Boolean> future = executorService.submit(callable);
                 futures.add(future);
+                log.info("ValidAndAddRunableTask.exceutorValid, getReq={},newList={}, batchId={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), batchId);
             }
             validFutureTaskResult.put(batchId, futures);
             log.info("ValidAndAddRunableTask.exceutorValid validFutureTaskResult={}, futures={}, batchId={}", JSON.toJSONString(validFutureTaskResult), JSON.toJSONString(futures), batchId);

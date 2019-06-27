@@ -34,4 +34,6 @@ public class CommonOrgListReq implements Serializable {
     @ApiModelProperty(value = "本地网id")
     private String lanId;
 
+    @ApiModelProperty(value = "本地网id集合")
+    private List<String> lanIdList;
 }

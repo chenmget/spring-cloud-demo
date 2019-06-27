@@ -61,6 +61,11 @@ public class RetailMerchantPageReq extends PageVO {
     @ApiModelProperty(value = "营销中心/支局（4级组织部）")
     private java.lang.String orgIdWithLevel4;
 
+    @ApiModelProperty(value = "经营单元(3级组织部门)id集合")
+    private List<String> orgIdWithLevel3List;
+
+    @ApiModelProperty(value = "营销中心/支局（4级组织部)id集合")
+    private List<String> orgIdWithLevel4List;
 
     @ApiModelProperty(value = "销售点编码")
     private java.lang.String shopCode;

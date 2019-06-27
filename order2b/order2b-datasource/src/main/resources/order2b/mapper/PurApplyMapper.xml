@@ -53,7 +53,7 @@
 		SELECT a.APPLY_NAME as applyName,a.APPLY_ID as applyId,a.APPLY_CODE as applyCode,a.LAN_ID as lanId,a.MERCHANT_ID as merchantId,
 		a.CREATE_DATE as applyTime,d.UPDATE_DATE as revingDate,d.PRODUCT_ID as productId,
 		d.MKT_RES_INST_NBR as mktResInstNbr,d.CREATE_DATE as deliveryDate ,e.RECEIVE_NAME as receiveName,
-		e.RECEIVE_ADDR as receiveAddr
+		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),e.RECEIVE_ADDR) as receiveAddr,e.CITY as receiveCity
 		from pur_apply a,pur_apply_item_detail d,pur_apply_ext e WHERE
 		d.APPLY_ID = a.APPLY_ID   AND a.APPLY_ID=e.APPLY_ID
 		<if test='req.regionId!=null and req.regionId!=""'>
@@ -496,7 +496,13 @@
   			CREATE_STAFF,
   			CREATE_DATE,
   			UPDATE_STAFF,
-  			UPDATE_DATE
+  			UPDATE_DATE,
+	        PROVINCE_ID,
+	        CITY_ID,
+	        REGION_ID,
+	        REGION,
+	        CITY,
+	        PROVINCE
   		) VALUES (
   			#{req.applyId},
   			#{req.consigeeName},
@@ -506,7 +512,13 @@
   			#{req.createStaff},
   			#{req.createDate},
   			#{req.updateStaff},
-  			#{req.updateDate}
+  			#{req.updateDate},
+	       #{req.provinceId},
+	       #{req.cityId},
+	       #{req.regionId},
+	       #{req.region},
+	       #{req.city},
+	       #{req.province}
   		)
   </select>
   
@@ -725,12 +737,16 @@
 		UPDATE
 		pur_apply_item_detail
 		SET
-		STATUS_CD='6'
+		STATUS_CD='6',
+		UPDATE_DATE=#{updateDate},
+		UPDATE_STAFF=#{updateUserId}
 		WHERE
+
 		MKT_RES_INST_NBR in
 		<foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstNbrList">
 			#{item}
 		</foreach>
+
 
 	</update>
 	<select id="getPurApplyByAppId" parameterType="String"

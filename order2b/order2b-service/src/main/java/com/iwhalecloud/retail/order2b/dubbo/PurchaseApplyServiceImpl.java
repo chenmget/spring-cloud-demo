@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -406,7 +407,11 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
 //    串码入库成功之后 更新确认收货
         if (allMktResInstNbrList!=null) {
-           Integer r = purApplyManager.updatePurApplyItemDetailStatusCd(allMktResInstNbrList);
+            Date date = new Date();
+            SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String updateDate = formatter.format(date);
+            String updateUserId=req.getCreateStaff();
+           Integer r = purApplyManager.updatePurApplyItemDetailStatusCd(allMktResInstNbrList,updateDate,updateUserId);
             log.info("5.更新确认收货成功数量"+ r);
 
         }
@@ -511,8 +516,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     }
 
     @Override
-    public Integer updatePurApplyItemDetailStatusCd(List<String> list) {
-        return purApplyManager.updatePurApplyItemDetailStatusCd(list);
+    public Integer updatePurApplyItemDetailStatusCd(List<String> list,String updateDate,String updateUserId) {
+        return purApplyManager.updatePurApplyItemDetailStatusCd(list,updateDate,updateUserId);
     }
 
     @Override

@@ -58,7 +58,7 @@ public interface PurchaseApplyService {
      */
     ResultVO<Page<PurApplyDeliveryResp>> getDeliveryInfoByApplyID(PurApplyReq req);
 
-   public  Integer updatePurApplyItemDetailStatusCd(List<String> list);
+   public Integer updatePurApplyItemDetailStatusCd(List<String> list,String updateDate,String updateUserId);
 
     List<PurApplyItemDetail>  getDeliveryListByApplyID(String applyId);
 

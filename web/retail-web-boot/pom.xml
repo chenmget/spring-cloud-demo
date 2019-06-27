@@ -46,6 +46,10 @@
                     <includes>
                         <include>
                             <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>retail-web</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
                             <artifactId>domain-object</artifactId>
                         </include>
                         <include>

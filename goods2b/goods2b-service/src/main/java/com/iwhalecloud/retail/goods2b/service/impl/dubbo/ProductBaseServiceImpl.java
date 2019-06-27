@@ -450,8 +450,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             String isDeleted = productUpdateReq.getIsDeleted();
             String state = productUpdateReq.getStatus();
             newState = state;
-            if(StringUtils.isEmpty(req.getIsFixedLine()) || (StringUtils.isNotEmpty(req.getIsFixedLine()) &&
-                    !"1".equals(req.getIsFixedLine()))){
+            if(ProductConst.IsDelete.NO.getCode().equals(isDeleted) && (StringUtils.isEmpty(req.getIsFixedLine()) ||
+                    (StringUtils.isNotEmpty(req.getIsFixedLine()) && !"1".equals(req.getIsFixedLine())))){
                 String sn = productUpdateReq.getSn();
                 String purchaseString = sn.substring(sn.length() - 3);
                 if ("100".equals(purchaseString)){

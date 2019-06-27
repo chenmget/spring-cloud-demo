@@ -10,7 +10,6 @@ spring.dubbo:
     registry:
  #     address: zookeeper://10.45.47.87:2285 10.45.46.238:8121
       address: zookeeper://localhost:2181
- #     address: zookeeper://172.21.72.75:8121
     protocol:
       name: dubbo
       port: 20882

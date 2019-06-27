@@ -68,8 +68,8 @@
 		<if test='req.purStartDate!=null and req.purStartDate!=""'>
 			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.purStartDate}, '%Y-%m-%d')
 		</if>
-		<if test='req.peurEndDate!=null and req.peurEndDate!=""'>
-			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.peurEndDate}, '%Y-%m-%d')
+		<if test='req.purEndDate!=null and req.purEndDate!=""'>
+			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.purEndDate}, '%Y-%m-%d')
 		</if>
 
 		<if test='req.revingStartDate!=null and req.revingStartDate!=""'>

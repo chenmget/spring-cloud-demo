@@ -4,7 +4,6 @@ import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
@@ -15,6 +14,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
@@ -121,6 +121,9 @@ public class RunableTask {
 
     @Reference
     private ResourceReqDetailService resourceReqDetailService;
+
+    @Autowired
+    private Constant constant;
 
 
     /**
@@ -265,7 +268,7 @@ public class RunableTask {
             }
             return allList;
         } catch (Exception e) {
-            log.error("临时串码查询异常", e);
+            log.error("query tempUpload error", e);
         }
         return null;
     }
@@ -303,7 +306,7 @@ public class RunableTask {
             }
             return allList;
         } catch (Exception e) {
-            log.error("临时串码查询异常", e);
+            log.error("query tempUpload error", e);
         }
         return null;
     }
@@ -375,10 +378,10 @@ public class RunableTask {
                                 // 非厂商的串码且状态为非删除(非厂商删除的串码可再次导入)
                                 if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
                                     inst.setResult(ResourceConst.CONSTANT_YES);
-                                    inst.setResultDesc("库中已存在");
+                                    inst.setResultDesc(constant.getMktResInstExists());
                                 } else if(deleteStatus.equals(dto.getStatusCd()) && StringUtils.isBlank(dto.getSourceType())){
                                     inst.setResult(ResourceConst.CONSTANT_YES);
-                                    inst.setResultDesc("厂商库不存在");
+                                    inst.setResultDesc(constant.getNoResInstInMerchant());
                                 }else{
                                     inst.setResult(ResourceConst.CONSTANT_NO);
                                 }
@@ -817,7 +820,7 @@ public class RunableTask {
                 List<String> legalNbrList=legalDetails.stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
                 for (ExcelResourceReqDetailDTO dto : newList) {
                     //确认是否能在合法的串码中找到对应的
-                    Optional<ResourceReqDetailPageDTO> optional=legalDetails.stream().filter(t->t.getMktResInstNbr().equals(dto.getMktResInstNbr())).findFirst();
+                    Optional<ResourceReqDetailPageDTO> optional=legalDetails.stream().filter(t -> t.getMktResInstNbr().equals(dto.getMktResInstNbr())).findFirst();
                     //临时表实例
                     ResouceUploadTemp inst = new ResouceUploadTemp();
                     inst.setMktResUploadBatch(batchId);

@@ -23,6 +23,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstCheckService;
 import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
@@ -72,6 +73,8 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
     private MerchantTagRelService merchantTagRelService;
     @Reference
     private TagRelService tagRelService;
+    @Autowired
+    private Constant constant;
 
 
     @Override
@@ -130,10 +133,14 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
     public List<ResourceRequestAddReq.ResourceRequestInst> getReqInst(ResourceInstAddReq req){
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         List<String> checkMktResInstNbrs = req.getCheckMktResInstNbrs();
+        List<String> twoCheckMktResInstNbrs = req.getTwoCheckMktResInstNbrs();
         List<ResourceRequestAddReq.ResourceRequestInst> instDTOList = new ArrayList<>(mktResInstNbrs.size());
         log.info("ResourceInstCheckServiceImpl.getReqInst reqNbrSize={}",  mktResInstNbrs.size());
         if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
             mktResInstNbrs.removeAll(checkMktResInstNbrs);
+        }
+        if (!CollectionUtils.isEmpty(twoCheckMktResInstNbrs)) {
+            mktResInstNbrs.removeAll(twoCheckMktResInstNbrs);
         }
         for (String nbr : mktResInstNbrs) {
             ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
@@ -152,12 +159,32 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         }
         log.info("ResourceInstCheckServiceImpl.getReqInst noCheckNbrSize={}",  instDTOList.size());
 
+        // 推送ITMS串码
         if (!CollectionUtils.isEmpty(checkMktResInstNbrs)) {
             for (String nbr : checkMktResInstNbrs) {
                 ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
                 instDTO.setMktResInstNbr(nbr);
                 instDTO.setMktResId(req.getMktResId());
-                instDTO.setIsInspection(ResourceConst.CONSTANT_YES);
+                instDTO.setIsInspection(ResourceConst.CheckType.CheckType_1.getCode());
+                if (null != req.getCtCodeMap()) {
+                    instDTO.setCtCode(req.getCtCodeMap().get(nbr));
+                }
+                if (null != req.getSnCodeMap()) {
+                    instDTO.setSnCode(req.getSnCodeMap().get(nbr));
+                }
+                if (null != req.getMacCodeMap()) {
+                    instDTO.setMacCode(req.getMacCodeMap().get(nbr));
+                }
+                instDTOList.add(instDTO);
+            }
+        }
+        // 泛智能抽检串码
+        if (!CollectionUtils.isEmpty(twoCheckMktResInstNbrs)) {
+            for (String nbr : twoCheckMktResInstNbrs) {
+                ResourceRequestAddReq.ResourceRequestInst instDTO = new ResourceRequestAddReq.ResourceRequestInst();
+                instDTO.setMktResInstNbr(nbr);
+                instDTO.setMktResId(req.getMktResId());
+                instDTO.setIsInspection(ResourceConst.CheckType.CheckType_2.getCode());
                 if (null != req.getCtCodeMap()) {
                     instDTO.setCtCode(req.getCtCodeMap().get(nbr));
                 }
@@ -182,21 +209,29 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
         // 固网串码审核流程
         if (ResourceConst.CONSTANT_YES.equals(req.getIsFixedLine())) {
             taskSubType = WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3010.getTaskSubType();
-            if (req.getMktResInstNbrs().size() < checkMaxNum || ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
+            TypeSelectByIdReq typeReq = new TypeSelectByIdReq();
+            typeReq.setTypeId(req.getTypeId());
+            ResultVO<TypeDetailResp> typeDetailRespResultVO = typeService.getDetailType(typeReq);
+            if (!typeDetailRespResultVO.isSuccess() || null == typeDetailRespResultVO.getResultData()) {
+                return ResultVO.error(constant.getTypeNotExists());
+            }
+            String detailCode = typeDetailRespResultVO.getResultData().getDetailCode();
+            // 集采或是录入串码数量小于十个走一步审核流程（泛智能除外）
+            Boolean process15 = (req.getMktResInstNbrs().size() < checkMaxNum || ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) && !TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode().equals(detailCode);
+            if (process15) {
                 requestStatusCd = ResourceConst.MKTRESSTATE.WATI_REVIEW.getCode();
                 processId = WorkFlowConst.PROCESS_ID.PROCESS_15.getTypeCode();
             }else {
-                TypeSelectByIdReq typeReq = new TypeSelectByIdReq();
-                typeReq.setTypeId(req.getTypeId());
-                ResultVO<TypeDetailResp> typeDetailRespResultVO = typeService.getDetailType(typeReq);
-                if (!typeDetailRespResultVO.isSuccess() || null == typeDetailRespResultVO.getResultData()) {
-                    return ResultVO.error("产品类型不存在");
-                }
-                String detailCode = typeDetailRespResultVO.getResultData().getDetailCode();
                 if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(detailCode) || TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(detailCode)) {
+                    // 融合终端、机顶盒
                     processId = WorkFlowConst.PROCESS_ID.PROCESS_16.getTypeCode();
                     requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK_CUSTSUP.getCode();
+                } else if(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode().equals(detailCode)){
+                    // 泛智能
+                    processId = WorkFlowConst.PROCESS_ID.PROCESS_201917.getTypeCode();
+                    requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK.getCode();
                 } else{
+                    // 社采
                     processId = WorkFlowConst.PROCESS_ID.PROCESS_14.getTypeCode();
                     requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK.getCode();
                 }

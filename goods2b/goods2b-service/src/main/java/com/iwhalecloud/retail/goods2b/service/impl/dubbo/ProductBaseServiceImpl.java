@@ -824,6 +824,16 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }
         }
 
+        //去重
+//        List<String> listTemp = new ArrayList();
+//        List<String> taglist = productDetail.getTagList();
+//        for(int i=0;i<taglist.size();i++){
+//            if(!listTemp.contains(taglist.get(i))){
+//                listTemp.add(taglist.get(i));
+//            }
+//        }
+//        productDetail.setTagList(listTemp);
+
         ProductExtGetReq productExtGetReq = new ProductExtGetReq();
         productExtGetReq.setProductBaseId(req.getProductBaseId());
         ResultVO<ProductExtGetResp> productExtVO = productExtService.getProductExt(productExtGetReq);

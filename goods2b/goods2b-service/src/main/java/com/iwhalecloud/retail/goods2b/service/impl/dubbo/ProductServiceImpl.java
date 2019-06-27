@@ -675,4 +675,19 @@ public class ProductServiceImpl implements ProductService {
         log.info("ProductServiceImpl.getProductIdListForApply req={}", req);
         return productManager.getProductIdListForApply(req);
     }
+
+    /**
+     * 根据条件查询产品ID集合（单表查询）
+     * @param req
+     * @return
+     */
+    @Override
+    public ResultVO<List<String>> listProductId(ProductListReq req) {
+        log.info("ProductServiceImpl.listProductId input: req={}", JSON.toJSONString(req));
+        List<String> productIdList = productManager.listProductId(req);
+        log.info("ProductServiceImpl.listProductId output: productIdList={}", JSON.toJSONString(productIdList));
+        return ResultVO.success(productIdList);
+    }
+
+
 }

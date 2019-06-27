@@ -194,7 +194,6 @@ public interface ProductService {
     ResultVO<List<ProductResp>> getProductByProductIdsAndBrandIds(ProductAndBrandGetReq req);
 
     /**
-<<<<<<< HEAD
      * 返利使用
      * @param req
      * @return
@@ -220,14 +219,20 @@ public interface ProductService {
      * @param productIdList
      * @return
      */
-    public List<ProductInfoResp> getProductInfoByIds( List<String> productIdList);
+    List<ProductInfoResp> getProductInfoByIds( List<String> productIdList);
     
-    public String selectNextChangeId();
+    String selectNextChangeId();
     
-    public String selectNextChangeDetailId() ;
+    String selectNextChangeDetailId();
     
-    public String selectisFixedLineByBatchId(String batchId) ;
+    String selectisFixedLineByBatchId(String batchId);
 
+    /**
+     * 根据条件查询产品ID集合（单表查询）
+     * @param req
+     * @return
+     */
+    ResultVO<List<String>> listProductId(ProductListReq req);
 
     public ProductApplyInfoResp getProductApplyInfo(String productId);
 

@@ -129,7 +129,7 @@ public interface ProductMapper extends BaseMapper<Product>{
      */
     ProductForResourceResp getProductForResource(String productId);
 
-    public Integer updateAttrValue10(ProductAuditStateUpdateReq request);
+    Integer updateAttrValue10(ProductAuditStateUpdateReq request);
 
     /**
      * 查询产品信息列表根据产品id
@@ -137,18 +137,24 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
 
-    public List<ProductInfoResp> getProductInfoByIds(@Param("productIds")List<String>productIds);
+    List<ProductInfoResp> getProductInfoByIds(@Param("productIds")List<String>productIds);
 
 
-    public String selectNextChangeId();
+    String selectNextChangeId();
     
-    public String selectNextChangeDetailId();
+    String selectNextChangeDetailId();
     
-    public String selectisFixedLineByBatchId(String batchId);
+    String selectisFixedLineByBatchId(String batchId);
 
     public ProductApplyInfoResp getProductApplyInfo(@Param("productId")String productId);
 
 
     public List<String>getProductIdListForApply(@Param("req")ProductGetIdReq req);
 
+    /**
+     * 根据条件查询产品ID集合（单表查询）
+     * @param req
+     * @return
+     */
+    List<String> listProductId(@Param("req")ProductListReq req);
 }

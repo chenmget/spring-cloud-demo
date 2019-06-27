@@ -657,8 +657,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             for(ProductUpdateReq oldUpdateReq:OldProductUpdateReqs){
                 if(newUpdateReq.getProductId().equals(oldUpdateReq.getProductId())){
                     //流程1
-                    if(!newUpdateReq.getSn().equals(oldUpdateReq.getSn()) ||
-                            !newUpdateReq.getIsDeleted().equals(oldUpdateReq.getIsDeleted())){
+                    if( ( StringUtils.isNotEmpty(newUpdateReq.getSn()) && StringUtils.isNotEmpty(oldUpdateReq.getSn()) && !newUpdateReq.getSn().equals(oldUpdateReq.getSn()) ) ||
+                            ( StringUtils.isNotEmpty(newUpdateReq.getIsDeleted()) && StringUtils.isNotEmpty(oldUpdateReq.getIsDeleted()) && !newUpdateReq.getIsDeleted().equals(oldUpdateReq.getIsDeleted()))){
                         if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                             updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
                         }else{

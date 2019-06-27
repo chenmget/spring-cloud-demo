@@ -124,15 +124,15 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
     public boolean updateDetailByDetailIds(ResourceReqDetailUpdateReq req) {
 
         List<ResourceReqDetail> details = Lists.newArrayList();
-        ResourceReqDetail detail = new ResourceReqDetail();
-        detail.setStatusCd(req.getStatusCd());
-        detail.setRemark(req.getRemark());
-        detail.setUpdateStaff(req.getUpdateStaff());
-        detail.setUpdateDate(req.getUpdateDate());
-        detail.setRemark(req.getRemark());
-        detail.setStatusDate(req.getStatusDate());
 
         for (String detailId : req.getMktResReqDetailIds()) {
+            ResourceReqDetail detail = new ResourceReqDetail();
+            detail.setStatusCd(req.getStatusCd());
+            detail.setRemark(req.getRemark());
+            detail.setUpdateStaff(req.getUpdateStaff());
+            detail.setUpdateDate(req.getUpdateDate());
+            detail.setRemark(req.getRemark());
+            detail.setStatusDate(req.getStatusDate());
             detail.setMktResReqDetailId(detailId);
             details.add(detail);
         }

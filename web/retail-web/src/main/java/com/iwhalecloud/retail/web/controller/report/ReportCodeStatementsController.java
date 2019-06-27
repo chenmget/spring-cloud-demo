@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.report.dto.response.ReportCodeStatementsResp;
 import com.iwhalecloud.retail.report.service.ReportCodeStateService;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.StoreGetStoreIdReq;
 import com.iwhalecloud.retail.warehouse.dto.request.StorePageReq;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -83,17 +84,16 @@ public class ReportCodeStatementsController extends BaseController  {
 			return reportCodeStateService.getCodeStatementsReportAdmin(req);
 		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 
 				|| userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//省供应商4，地市供应商5，零售商3,厂商8
-			StorePageReq storePageReq = new StorePageReq();
-			List<String> merchantIds = new ArrayList<String>();
-			merchantIds.add(UserContext.getUser().getRelCode());
-			storePageReq.setMerchantIds(merchantIds);
-			Page<ResouceStoreDTO> pageResouceStoreDTO = resouceStoreService.pageStore(storePageReq);
-			if(pageResouceStoreDTO == null) {
+			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
+			storeGetStoreIdReq.setStoreSubType("1300");
+			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+			if(mktResStoreId == null) {
 				return ResultVO.error("当前商家没有仓库");
 			}
 			req.setShangJiaId(UserContext.getUser().getRelCode());
-			log.info("************************************************* param={}",JSON.toJSONString(pageResouceStoreDTO));
-			req.setMktResStoreId(pageResouceStoreDTO.getRecords().get(0).getMktResStoreId());
+			log.info("************************************************* ");
+			req.setMktResStoreId(mktResStoreId);
 		} else {
 			return ResultVO.error("当前用户 没有权限");
 		}
@@ -139,18 +139,18 @@ public class ReportCodeStatementsController extends BaseController  {
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdName(list);
 			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
-		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 || userType == SystemConst.USER_FOUNDER_3) {//省供应商4，地市供应商5，零售商3
-			StorePageReq storePageReq = new StorePageReq();
-			List<String> merchantIds = new ArrayList<String>();
-			merchantIds.add(UserContext.getUser().getRelCode());
-			storePageReq.setMerchantIds(merchantIds);
-			Page<ResouceStoreDTO> pageResouceStoreDTO = resouceStoreService.pageStore(storePageReq);
-			if(pageResouceStoreDTO == null) {
+		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 
+				|| userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//省供应商4，地市供应商5，零售商3,厂商8
+			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
+			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
+			storeGetStoreIdReq.setStoreSubType("1300");
+			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
+			if(mktResStoreId == null) {
 				return ;
 			}
-			req.setMktResStoreId(pageResouceStoreDTO.getRecords().get(0).getMktResStoreId());
-			
-			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
+			req.setShangJiaId(UserContext.getUser().getRelCode());
+			log.info("************************************************* ");
+			req.setMktResStoreId(mktResStoreId);
 		} else {
 			return ;
 		}

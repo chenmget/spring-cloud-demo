@@ -19,6 +19,7 @@ import com.iwhalecloud.retail.partner.entity.Merchant;
 import com.iwhalecloud.retail.partner.entity.MerchantAccount;
 import com.iwhalecloud.retail.partner.mapper.MerchantMapper;
 import com.iwhalecloud.retail.system.common.SysOrgConst;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.OrganizationChildListReq;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
@@ -877,11 +878,17 @@ public class MerchantManager {
      * @return
      */
     public int insertMerchant(Merchant merchant) {
+        // 增加设置组织路径 逻辑 (组织ID不空  组织路径为空 就设置该字段）
+        if (!StringUtils.isEmpty(merchant.getParCrmOrgId())
+                && StringUtils.isEmpty(merchant.getParCrmOrgPathCode())) {
+            merchant.setParCrmOrgPathCode(getOrgPathCode(merchant.getParCrmOrgId()));
+        }
+
         return merchantMapper.insert(merchant);
     }
 
     /**
-     * 根据商家编码更新商家信息
+     * 根据商家编码更新商家信息(主要给同步商家信息用）
      * 调用这个更新要清除全部的缓存，因为没有根据code 做缓存
      *
      * @param merchantDetailDTO
@@ -889,6 +896,13 @@ public class MerchantManager {
      */
     @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_MERCHANT, allEntries = true)
     public int updateMerchantByCode(MerchantDetailDTO merchantDetailDTO) {
+
+        // 增加更新组织路径 逻辑 (组织ID不空  组织路径为空 就更新该字段）
+        if (!StringUtils.isEmpty(merchantDetailDTO.getParCrmOrgId())
+                && StringUtils.isEmpty(merchantDetailDTO.getParCrmOrgPathCode())) {
+            merchantDetailDTO.setParCrmOrgPathCode(getOrgPathCode(merchantDetailDTO.getParCrmOrgId()));
+        }
+
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(Merchant.FieldNames.merchantCode.getTableFieldName(), merchantDetailDTO.getMerchantCode());
         Merchant merchant = new Merchant();
@@ -896,6 +910,21 @@ public class MerchantManager {
         merchant.setLastUpdateDate(new Date());
         return merchantMapper.update(merchant, queryWrapper);
     }
+
+    /**
+     * 根据组织ID 取组织路径
+     * @param orgId
+     * @return
+     */
+    private String getOrgPathCode(String orgId) {
+        OrganizationDTO organizationDTO = organizationService.getOrganization(orgId).getResultData();
+        if (Objects.isNull(organizationDTO)) {
+            // 没取到组织
+            return null;
+        }
+        return organizationDTO.getPathCode();
+    }
+
 
     /**
      * 根据地区集合查询商家

@@ -141,6 +141,12 @@ public class MerchantDTO implements java.io.Serializable {
   	private java.lang.String parCrmOrgCode;
 
 	/**
+	 * (商家)CRM组织路径编码
+	 */
+	@ApiModelProperty(value = "(商家)CRM组织路径编码")
+	private java.lang.String parCrmOrgPathCode;
+	
+	/**
   	 * (商家)联系人	
   	 */
 	@ApiModelProperty(value = "(商家)联系人	")

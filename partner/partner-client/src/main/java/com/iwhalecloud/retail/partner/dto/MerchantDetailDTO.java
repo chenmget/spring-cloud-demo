@@ -260,6 +260,12 @@ public class MerchantDetailDTO implements Serializable {
     private java.lang.String parCrmOrgCode;
 
     /**
+     * (商家)CRM组织路径编码
+     */
+    @ApiModelProperty(value = "(商家)CRM组织路径编码")
+    private java.lang.String parCrmOrgPathCode;
+
+    /**
      * 是否自有物业
      */
     @ApiModelProperty(value = "是否自有物业	")

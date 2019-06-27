@@ -303,7 +303,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             List<String> mktResReqDetailIdList = entry.getValue().stream().map(ResourceReqDetailPageDTO::getMktResReqDetailId).collect(Collectors.toList());
             detailUpdateReq.setMktResReqDetailIds(mktResReqDetailIdList);
             //修改明细状态
-            resourceReqDetailManager.updateDetailByDetailIds(detailUpdateReq);
+            resourceReqDetailManager.updateDetailByNbrs(detailUpdateReq);
             long updateDetailByDetailIdsEndTime = System.currentTimeMillis();
             long updateDetailByDetailIdsConsuming = updateDetailByDetailIdsEndTime - updateDetailByDetailIdsStatTime;
             log.info("AdminResourceInstServiceImpl.doAuditResNbrUnPass updateDetailByDetailIds reqId={} endTime={} consumeTime={}", entry.getKey(), statTime, updateDetailByDetailIdsConsuming);

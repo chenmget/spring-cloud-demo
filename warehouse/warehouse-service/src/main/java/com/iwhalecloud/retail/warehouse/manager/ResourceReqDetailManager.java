@@ -117,28 +117,28 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
         return resourceReqDetailMapper.update(detail, updateWrapper) > 0;
     }
 
-    /**
-     * 根据明细ID集合批量修改申请单明细
-     * @param req
-     */
-    public boolean updateDetailByDetailIds(ResourceReqDetailUpdateReq req) {
-
-        List<ResourceReqDetail> details = Lists.newArrayList();
-
-        for (String detailId : req.getMktResReqDetailIds()) {
-            ResourceReqDetail detail = new ResourceReqDetail();
-            detail.setStatusCd(req.getStatusCd());
-            detail.setRemark(req.getRemark());
-            detail.setUpdateStaff(req.getUpdateStaff());
-            detail.setUpdateDate(req.getUpdateDate());
-            detail.setRemark(req.getRemark());
-            detail.setStatusDate(req.getStatusDate());
-            detail.setMktResReqDetailId(detailId);
-            details.add(detail);
-        }
-
-       return super.updateBatchById(details);
-    }
+//    /**
+//     * 根据明细ID集合批量修改申请单明细
+//     * @param req
+//     */
+//    public boolean updateDetailByDetailIds(ResourceReqDetailUpdateReq req) {
+//
+//        List<ResourceReqDetail> details = Lists.newArrayList();
+//
+//        for (String detailId : req.getMktResReqDetailIds()) {
+//            ResourceReqDetail detail = new ResourceReqDetail();
+//            detail.setStatusCd(req.getStatusCd());
+//            detail.setRemark(req.getRemark());
+//            detail.setUpdateStaff(req.getUpdateStaff());
+//            detail.setUpdateDate(req.getUpdateDate());
+//            detail.setRemark(req.getRemark());
+//            detail.setStatusDate(req.getStatusDate());
+//            detail.setMktResReqDetailId(detailId);
+//            details.add(detail);
+//        }
+//
+//       return super.updateBatchById(details);
+//    }
 
     /**
      * 获取用户处理的串码申请

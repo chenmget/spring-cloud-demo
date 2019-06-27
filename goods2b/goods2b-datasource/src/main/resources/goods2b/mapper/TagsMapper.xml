@@ -21,7 +21,7 @@
         <include refid="Base_Column_List"></include>
          from prod_tags t where t.IS_DELETED=0
         <if test="null!=req.tagType and ''!=req.tagType">
-            and t.tagType = #{req.tagType}
+            and t.tag_type = #{req.tagType}
         </if>
     </select>
     

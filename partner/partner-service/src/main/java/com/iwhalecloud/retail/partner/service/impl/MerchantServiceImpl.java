@@ -27,11 +27,10 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
-import com.iwhalecloud.retail.system.dto.request.UserEditReq;
-import com.iwhalecloud.retail.system.dto.request.UserGetReq;
-import com.iwhalecloud.retail.system.dto.request.UserListReq;
+import com.iwhalecloud.retail.system.dto.request.*;
+import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.BooleanUtils;
@@ -61,6 +60,9 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Reference
     private CommonRegionService commonRegionService;
+
+    @Reference
+    private OrganizationService organizationService;
 
     @Reference
     private MerchantTagRelService merchantTagRelService;
@@ -489,13 +491,25 @@ public class MerchantServiceImpl implements MerchantService {
         /***** 其他表字段  统一获取  避免循环获取  不然导出调用时可能会出现超时问题 *****/
         if (!CollectionUtils.isEmpty(merchantPage.getRecords())) {
 
-            HashSet<String> regionIdHashSet = new HashSet<>(); // 去重
-            HashSet<String> merchantIdHashSet = new HashSet<>(); // 去重
+            HashSet<String> regionIdHashSet = new HashSet<>(); // 所有区域ID去重
+            HashSet<String> merchantIdHashSet = new HashSet<>(); // 所有商家ID去重
+            HashSet<String> orgIdHashSet = new HashSet<>(); // 所有组织id去重
             for (Merchant entity : merchantPage.getRecords()) {
 
                 RetailMerchantDTO targetDTO = new RetailMerchantDTO();
                 BeanUtils.copyProperties(entity, targetDTO);
+
+                // 根据parCrmOrgPathCode取3、4级组织ID （如果有）
+                String orgIdWithLevel3 = getOrgIdByPathCode(targetDTO.getParCrmOrgPathCode(), 3);
+                String orgIdWithLevel4 = getOrgIdByPathCode(targetDTO.getParCrmOrgPathCode(), 4);
+                targetDTO.setOrgIdWithLevel3(orgIdWithLevel3);
+                targetDTO.setOrgIdWithLevel4(orgIdWithLevel4);
+
                 targetList.add(targetDTO);
+
+                // 取组织  ID集合
+                orgIdHashSet.add(orgIdWithLevel3);
+                orgIdHashSet.add(orgIdWithLevel4);
 
                 // 取本地网  市县  ID集合
                 regionIdHashSet.add(entity.getLanId());
@@ -508,9 +522,14 @@ public class MerchantServiceImpl implements MerchantService {
             Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
             Map<String, Invoice> invoiceMap = getInvoiceMap(merchantIdHashSet);
             Map<String, String> tagNamesMap = getTagNamesMap(merchantIdHashSet);
+            Map<String, String> orgNamesMap = getOrgNamesMap(orgIdHashSet);
 
-            // 取本地网名称  市县名称
+            // 设置 对应要翻译的名称
             for (RetailMerchantDTO dto : targetList) {
+
+                // 设置 3\4级组织名称
+                dto.setOrgNameWithLevel3(orgNamesMap.get(dto.getOrgIdWithLevel3()));
+                dto.setOrgNameWithLevel4(orgNamesMap.get(dto.getOrgIdWithLevel4()));
 
                 // 设置 本地网名称  市县名称
                 dto.setLanName(regionNamesMap.get(dto.getLanId()));
@@ -536,6 +555,29 @@ public class MerchantServiceImpl implements MerchantService {
         log.info("MerchantServiceImpl.pageRetailMerchant() output：list<RetailMerchantDTO>={}", JSON.toJSONString(targetPage.getRecords()));
         return ResultVO.success(targetPage);
     }
+
+    /**
+     * 根据pathCode 获取对应等级orgId
+     * @param pathCode
+     * @param level 取第几级 （从0开始
+     */
+    private String getOrgIdByPathCode(String pathCode, int level) {
+        // pathCode示例：1000000020.843000000000000.843073800000000.843073805020000.843073805021007
+        //  比如level= 3  取的值 是 843073805020000
+        if (StringUtils.isEmpty(pathCode) || level < 0) {
+            return null;
+        }
+        String[] orgIds = pathCode.split(".");
+        if (orgIds.length < level + 1) {
+            // 不够个数
+            return null;
+        }
+//        String orgId = null;
+//        orgId = orgIds[level];
+//        return orgId;
+        return orgIds[level];
+    }
+
 
     /**
      * 供应商类型的 商家 信息列表分页
@@ -711,6 +753,27 @@ public class MerchantServiceImpl implements MerchantService {
 
     /**
      * 根据regionId集合获取所有的  区域名称
+     * @param orgIdHashSet
+     * @return
+     */
+    private Map<String, String> getOrgNamesMap(HashSet<String> orgIdHashSet) {
+        Map resultMap = new HashMap();
+        if (CollectionUtils.isEmpty(orgIdHashSet)) {
+            return resultMap;
+        }
+        OrganizationListReq req = new OrganizationListReq();
+        req.setOrgIdList(Lists.newArrayList(orgIdHashSet));
+        List<OrganizationListResp> dtoList = organizationService.listOrganization(req).getResultData();
+        if (!CollectionUtils.isEmpty(dtoList)) {
+            dtoList.forEach(dto -> {
+                resultMap.put(dto.getOrgId(), dto.getOrgName());
+            });
+        }
+        return resultMap;
+    }
+
+    /**
+     * 根据regionId集合获取所有的  区域名称
      * @param regionIdHashSet
      * @return
      */
@@ -733,13 +796,15 @@ public class MerchantServiceImpl implements MerchantService {
      * @return
      */
     private Map<String, Invoice> getInvoiceMap(HashSet<String> merchantIdHashSet) {
-
+        Map<String, Invoice> resultMap = new HashMap();
+        if (CollectionUtils.isEmpty(merchantIdHashSet)) {
+            return resultMap;
+        }
         // 营业执照号、税号、公司账号、营业执照失效期
         InvoiceListReq invoiceListReq = new InvoiceListReq();
         invoiceListReq.setMerchantIdList(Lists.newArrayList(merchantIdHashSet));
         invoiceListReq.setInvoiceType(ParInvoiceConst.InvoiceType.SPECIAL_VAT_INVOICE.getCode());
         List<Invoice> invoiceList = invoiceManager.listInvoice(invoiceListReq);
-        Map<String, Invoice> resultMap = new HashMap();
         if (!CollectionUtils.isEmpty(invoiceList)) {
             invoiceList.forEach(invoice -> {
                 resultMap.put(invoice.getMerchantId(), invoice);

@@ -401,7 +401,7 @@ public class MerchantManager {
             queryWrapper.eq(Merchant.FieldNames.channelSubType.getTableFieldName(), req.getChannelSubType());
         }
 
-        // 条件是in
+            // 条件是in
         if (!CollectionUtils.isEmpty(req.getLanIdList())) {
             queryWrapper.in(Merchant.FieldNames.lanId.getTableFieldName(), req.getLanIdList());
         }
@@ -424,6 +424,12 @@ public class MerchantManager {
         }
         if (!StringUtils.isEmpty(req.getShopName())) { // 销售点名称
             queryWrapper.like(Merchant.FieldNames.shopName.getTableFieldName(), req.getShopName());
+        }
+        if (!StringUtils.isEmpty(req.getOrgIdWithLevel3())) { // 经营单元(3级组织部门)
+            queryWrapper.like(Merchant.FieldNames.parCrmOrgPathCode.getTableFieldName(), req.getOrgIdWithLevel3());
+        }
+        if (!StringUtils.isEmpty(req.getOrgIdWithLevel4())) { // 营销中心/支局（4级组织部）
+            queryWrapper.like(Merchant.FieldNames.parCrmOrgPathCode.getTableFieldName(), req.getOrgIdWithLevel4());
         }
 
 //        // 是否需要先获取userId集合（后面判空用） 查询条件有涉及到通过user_id字段关联的其他表字段且有值时 为true

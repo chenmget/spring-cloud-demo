@@ -46,14 +46,6 @@ public class PurApplyReportResp extends PageVO implements Serializable {
 
 	private  String attrValue1;//容量-规格1 字段
 
-	private String purStartDate; //采购开始时间
-	private String purEndDate; //采购结束时间
-
-	private String deliveryStartDate; //发货开始时间deliveryDate
-	private String deliveryEndDate; //发货结束时间
-
-	private String revingStartDate; //收货开始时间
-	private String revingEndDate; //收货结束时间
 
 
 

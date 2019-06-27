@@ -542,7 +542,7 @@
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductApplyInfoResp">
     SELECT p.product_id as productId,p.PRODUCT_BASE_ID as productBaseId,p.ATTR_VALUE1 as attrValue1,
     p.MEMORY as memory,p.COLOR as color,p.CORPORATION_PRICE as corporationPrice,br.`NAME` as brandName,
-    b.UNIT_TYPE_NAME as unitTypeName,b.UNIT_TYPE as unitType ,b.PRODUCT_CODE as productCode
+    b.UNIT_TYPE_NAME as unitTypeName,b.UNIT_TYPE as unitType ,p.SN as productCode,b.PRODUCT_NAME as productName
     from prod_product p
     LEFT JOIN prod_product_base b on b.PRODUCT_BASE_ID=p.PRODUCT_BASE_ID
     LEFT JOIN prod_brand br ON b.BRAND_ID = br.BRAND_ID

@@ -223,35 +223,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 				log.info("PurApplyServiceImpl.tcProcureApply req={},resp={}",
 						JSON.toJSONString(processStartDTO), JSON.toJSONString(resultVO));
 			}
-			// 申请单上选择的供应商 ，单子就由该供应商来审核  更新wf_task_item  的handler_user_id
-//			MerchantGetReq  merchantGetReq = new MerchantGetReq();
-//			merchantGetReq.setMerchantId(req.getApplyMerchantId());
-//			ResultVO<MerchantDetailDTO> merchantInfo =merchantService.getMerchantDetail(merchantGetReq);
-//			MerchantDetailDTO m = merchantInfo.getResultData();
-//			String userId = m.getUserId();
-//			String supplierName = m.getSupplierName();
-//			List<HandlerUser> list = new ArrayList<HandlerUser>();
-//			HandlerUser hUser = new HandlerUser();
-//			hUser.setHandlerUserId(userId);
-//			hUser.setHandlerUserName(supplierName);
-//			list.add(hUser);
-//			processStartDTO.setNextHandlerUser(list);
-
 
 		} else if (isSave.equals(PurApplyConsts.PUR_APPLY_EDIT)) {
 			//做编辑处理
 			int count =chooseCount(req);
 			log.info(req.getApplyId()+"count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
-//		System.out.println("count="+count+"如果count>0 采购价大于政企价格 要省公司审核");
-//			if (count>0) {
-//				req.setStatusCd("21");
-//				//更新省公司待审核状态
-//			}else {
-//				req.setStatusCd("20");
-//
-//			}
-//			purApplyManager.updatePurApply(req);
-
 			NextRouteAndReceiveTaskReq nextRouteAndReceiveTaskReq = new  NextRouteAndReceiveTaskReq();
 			nextRouteAndReceiveTaskReq.setFormId(req.getApplyId());
 			nextRouteAndReceiveTaskReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
@@ -274,14 +250,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 						if (PurApplyConsts.PUR_APPLY_SOCIAL_TYPE.equals(purchaseType)) {
 							map.put("CGJ",PurApplyConsts.PUR_APPLY_ADMIN_VALUE);//
 							//更新省公司待审核状态
-							//req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
-//							purApplyManager.updatePurApplyStatusCd(req);
-
-
-
                             pReq.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_ADMIN_PASS);
-                            //更新省公司待审核状态
-                          //  purApplyDeliveryManager.updatePurApplyStatus(pReq);
 							break;
 						}
 //					}

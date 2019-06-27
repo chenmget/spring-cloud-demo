@@ -86,7 +86,7 @@
 			and DATE_FORMAT(d.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.deliveryEndDate}, '%Y-%m-%d')
 		</if>
 		<if test="req.productIdList != null and req.productIdList.size() >0 ">
-			PRODUCT_ID in
+			and PRODUCT_ID in
 			<foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">
 				#{item}
 			</foreach>

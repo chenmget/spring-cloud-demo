@@ -95,6 +95,7 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
 
     public Page<ResourceReqDetailPageDTO> listResourceRequestPage(ResourceReqDetailQueryReq req) {
         Page<ResourceReqDetailPageDTO> page = new Page<ResourceReqDetailPageDTO>(req.getPageNo(), req.getPageSize());
+        page.setSearchCount(req.isSearchCount());
         return resourceReqDetailMapper.listResourceRequestPage(page,req);
     }
 
@@ -112,7 +113,7 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
         detail.setStatusDate(req.getStatusDate());
         UpdateWrapper updateWrapper = new UpdateWrapper();
         updateWrapper.in(ResourceReqDetail.FieldNames.mktResReqDetailId.getTableFieldName(), req.getMktResReqDetailIds());
-        updateWrapper.eq(ResourceReqDetail.FieldNames.createDate.getTableFieldName(), req.getCreateDate());
+        //updateWrapper.eq(ResourceReqDetail.FieldNames.createDate.getTableFieldName(), req.getCreateDate());
         return resourceReqDetailMapper.update(detail, updateWrapper) > 0;
     }
 

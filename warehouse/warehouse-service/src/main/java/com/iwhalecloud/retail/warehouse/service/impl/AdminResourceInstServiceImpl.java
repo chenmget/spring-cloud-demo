@@ -256,7 +256,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     }
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public ResultVO<String> batchAuditNbr(ResourceInstCheckReq req) {
         //申请单明细主键集合
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
@@ -272,6 +271,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         resourceReqDetailQueryReq.setPageSize(mktResInstNbrs.size()*2);
         resourceReqDetailQueryReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
         resourceReqDetailQueryReq.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
+        resourceReqDetailQueryReq.setSearchCount(false);
         Page<ResourceReqDetailPageDTO> respPage = resourceReqDetailManager.listResourceRequestPage(resourceReqDetailQueryReq);
         List<ResourceReqDetailPageDTO> resDetailList = respPage.getRecords();
         if (CollectionUtils.isEmpty(resDetailList)) {
@@ -294,10 +294,8 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             for (Map.Entry<String, List<ResourceReqDetailPageDTO>> entry : map.entrySet()) {
                 List<String> mktResReqDetailIdList = entry.getValue().stream().map(ResourceReqDetailPageDTO::getMktResReqDetailId).collect(Collectors.toList());
                 detailUpdateReq.setMktResReqDetailIds(mktResReqDetailIdList);
-
-                detailUpdateReq.setCreateDate(entry.getValue().get(0).getCreateDate());
                 //修改明细状态
-                resourceReqDetailManager.updateDetailByNbrs(detailUpdateReq);
+                resourceReqDetailManager.updateDetailByDetailIds(detailUpdateReq);
                 //验证明细是否全部处理，修改申请单状态
                 ResourceReqUpdateReq resourceReqUpdateReq = new ResourceReqUpdateReq();
                 resourceReqUpdateReq.setMktResReqId(entry.getKey());

@@ -742,7 +742,7 @@ public class RunableTask {
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             String batchId = resourceInstService.getPrimaryKey();
             int length=data.size();
-            int pageSize=5000;
+            int pageSize=length/10+10;
             Integer excutorNum = length%pageSize == 0 ? length/pageSize : (length/pageSize + 1);
             validNbrFutureTaskResult = new ArrayList<>(excutorNum);
             //串码集合，用于判断串码是否重复
@@ -802,6 +802,7 @@ public class RunableTask {
             legalQuery.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
             //申请单类型为串码入库
             legalQuery.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
+            legalQuery.setSearchCount(false);
             Page<ResourceReqDetailPageDTO> legalRespPage = resourceReqDetailManager.listResourceRequestPage(legalQuery);
             //合法的串码
             List<ResourceReqDetailPageDTO> legalDetails=legalRespPage.getRecords();
@@ -875,6 +876,7 @@ public class RunableTask {
                 repatQuery.setPageNo(1);
                 repatQuery.setPageSize(10000);
                 repatQuery.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
+                repatQuery.setSearchCount(false);
                 Page<ResourceReqDetailPageDTO> repeatRespPage = resourceReqDetailManager.listResourceRequestPage(repatQuery);
                 List<String> repeatNbrList=repeatRespPage.getRecords().stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
                 for (String mktResInstNbr : repeatNbrList) {
@@ -935,7 +937,7 @@ public class RunableTask {
             //初始化线程池
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             int length=data.size();
-            int pageSize=5000;
+            int pageSize=length/10+10;
             Integer excutorNum = length%pageSize == 0 ? length/pageSize : (length/pageSize + 1);
             auditPassNbrFutureTaskResult = new ArrayList<>(excutorNum);
             //分页处理
@@ -1024,6 +1026,8 @@ public class RunableTask {
                                 }
                             }
                             exceutorAddNbr(addReq);
+                            //修改串码轨迹
+                            exceutorAddNbrTrack(addReq);
                             log.info("RunableTask.auditPassResDetail resourceInstService.addResourceInst addReq={}", addReq);
                             // step3 修改申请单状态变为审核通过
                             ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
@@ -1033,7 +1037,6 @@ public class RunableTask {
                             detailUpdateReq.setStatusDate(now);
                             detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
                             detailUpdateReq.setMktResReqDetailIds(mktResDetailIds);
-                            detailUpdateReq.setCreateDate(createDate);
                             resourceReqDetailManager.updateDetailByNbrs(detailUpdateReq);
                             log.info("RunableTask.run requestService.auditPassResDetail reqUpdate={}", JSON.toJSONString(detailUpdateReq));
                             // step4 判断申请单是否已完成
@@ -1042,7 +1045,7 @@ public class RunableTask {
                             resourceReqUpdateReq.setUpdateStaff(updateStaff);
                             resourceReqUpdateReq.setUpdateStaffName(updateStaffName);
                             adminResourceInstService.checkResRequestFinish(resourceReqUpdateReq);
-                            return exceutorAddNbrTrack(addReq);
+                            return true;
                         }
                     };
                     Future<Boolean> validFutureTask = executorService.submit(callable);

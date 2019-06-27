@@ -520,6 +520,24 @@
 			b.sn = #{batchId}
   </select>
 
+  <!-- 根据条件查询产品ID集合（单表查询）-->
+  <select id="listProductId" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductListReq"
+          resultType="java.lang.String">
+    SELECT product_id
+    FROM prod_product
+    WHERE 1=1
+      <if test = "null != req.status and '' != req.status">
+        and status = #{req.status}
+      </if>
+      <if test = "null != req.isDeleted and '' != req.isDeleted">
+        and is_deleted = #{req.isDeleted}
+      </if>
+      <if test = "null != req.attrValue10 and '' != req.attrValue10">
+        and attr_value10 = #{req.attrValue10}
+      </if>
+  </select>
+
+
   <select id="getProductApplyInfo" parameterType="java.lang.String"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductApplyInfoResp">
     SELECT p.product_id as productId,p.PRODUCT_BASE_ID as productBaseId,p.ATTR_VALUE1 as attrValue1,

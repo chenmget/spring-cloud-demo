@@ -664,6 +664,10 @@ public class ProductServiceImpl implements ProductService {
 		return productManager.selectisFixedLineByBatchId(batchId);
 	}
 
+
+
+
+
     @Override
     public ProductApplyInfoResp getProductApplyInfo(String productId) {
         log.info("ProductServiceImpl.getProductApplyInfo productId={}", productId);

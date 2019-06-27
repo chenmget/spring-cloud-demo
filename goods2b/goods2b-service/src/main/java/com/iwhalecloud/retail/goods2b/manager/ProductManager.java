@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.manager;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
@@ -25,6 +26,7 @@ public class ProductManager {
 
     /**
      * 添加产品
+     *
      * @param req
      * @return
      */
@@ -76,6 +78,7 @@ public class ProductManager {
 
     /**
      * 根据产品编码获取产品对象
+     *
      * @param sn
      * @return
      */
@@ -291,9 +294,19 @@ public class ProductManager {
     }
 
     public String selectisFixedLineByBatchId(String batchId) {
-		return productMapper.selectisFixedLineByBatchId(batchId);
-	}
+        return productMapper.selectisFixedLineByBatchId(batchId);
+    }
 
+
+    /**
+     * 根据条件查询产品ID集合（单表查询）
+     *
+     * @param req
+     * @return
+     */
+    public List<String> listProductId(ProductListReq req) {
+        return productMapper.listProductId(req);
+    }
     /**
      * 查询产品信息 提供给政企省内代收报表使用
      * @param productId
@@ -312,14 +325,6 @@ public class ProductManager {
     }
 
 
-    /**
-     * 根据条件查询产品ID集合（单表查询）
-     *
-     * @param req
-     * @return
-     */
-    public List<String> listProductId(ProductListReq req) {
-        return productMapper.listProductId(req);
-    }
+
 
 }

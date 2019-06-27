@@ -30,8 +30,8 @@ public class TagsServiceImplTest {
 
     @Test
     public void listProdTags() {
-        ResultVO resultVO = tagsService.listProdTags();
-        System.out.println(resultVO.getResultData());
+//        ResultVO resultVO = tagsService.listProdTags();
+//        System.out.println(resultVO.getResultData());
     }
 
     @Test

@@ -146,15 +146,16 @@ public interface ProductMapper extends BaseMapper<Product>{
     
     String selectisFixedLineByBatchId(String batchId);
 
-    public ProductApplyInfoResp getProductApplyInfo(@Param("productId")String productId);
-
-
-    public List<String>getProductIdListForApply(@Param("req")ProductGetIdReq req);
-
     /**
      * 根据条件查询产品ID集合（单表查询）
      * @param req
      * @return
      */
     List<String> listProductId(@Param("req")ProductListReq req);
+    public ProductApplyInfoResp getProductApplyInfo(@Param("productId")String productId);
+
+
+    public List<String>getProductIdListForApply(@Param("req")ProductGetIdReq req);
+
+
 }

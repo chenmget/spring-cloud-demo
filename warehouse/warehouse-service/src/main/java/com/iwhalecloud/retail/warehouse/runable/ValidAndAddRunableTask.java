@@ -94,7 +94,7 @@ public class ValidAndAddRunableTask {
                     CopyOnWriteArrayList<String> subMacCodeList = new CopyOnWriteArrayList(macCodeList.subList(perNum * i, macCodeMaxNum));
                     getReq.setMacCodeList(subMacCodeList);
                 }
-                Callable<Boolean> callable = new ValidNbr(req, getReq, newList, batchId);
+                Callable<Boolean> callable = new ValidNbr(req, getReq, newListTwo, batchId);
                 Future<Boolean> future = executorService.submit(callable);
                 futures.add(future);
                 log.info("ValidAndAddRunableTask.exceutorValid, getReq={},newList={}, batchId={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), batchId);

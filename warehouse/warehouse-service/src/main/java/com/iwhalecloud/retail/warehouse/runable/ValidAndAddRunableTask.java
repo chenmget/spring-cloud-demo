@@ -75,6 +75,7 @@ public class ValidAndAddRunableTask {
                 Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
                 List<String> subList = nbrList.subList(perNum * i, maxNum);
                 CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
+                CopyOnWriteArrayList<String> newListTwo = new CopyOnWriteArrayList(subList);;
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 getReq.setTypeId(req.getTypeId());
                 getReq.setMktResInstNbrList(newList);
@@ -94,7 +95,7 @@ public class ValidAndAddRunableTask {
                     getReq.setMacCodeList(subMacCodeList);
                 }
                 log.info("ValidAndAddRunableTask.exceutorValid, getReq={},newList={}, batchId={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), batchId);
-                Callable<Boolean> callable = new ValidNbr(req, getReq, newList, batchId);
+                Callable<Boolean> callable = new ValidNbr(req, getReq, newListTwo, batchId);
                 tasks.put(callable);
             }
             List<Future<Boolean>> futures = executorService.invokeAll(tasks);

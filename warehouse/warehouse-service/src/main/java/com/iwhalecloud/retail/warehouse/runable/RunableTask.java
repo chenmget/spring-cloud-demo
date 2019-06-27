@@ -939,7 +939,7 @@ public class RunableTask {
 //            int length=data.size();
 //            int pageSize=length/10+10;
 //            Integer excutorNum = length%pageSize == 0 ? length/pageSize : (length/pageSize + 1);
-//            auditPassNbrFutureTaskResult = new ArrayList<>(excutorNum);
+
 //            //分页处理
 //            for (Integer i = 0; i < excutorNum; i++) {
 //                Integer maxNum = pageSize * (i + 1) > length ? length : pageSize * (i + 1);
@@ -947,6 +947,7 @@ public class RunableTask {
 //                CopyOnWriteArrayList<ResourceReqDetailPageDTO> newList = new CopyOnWriteArrayList(subList);
             //按照申请单进行分组，根据申请单号和串码作为查询条件
             Map<String, List<ResourceReqDetailPageDTO>> map = data.stream().collect(Collectors.groupingBy(t -> t.getMktResReqId()));
+            auditPassNbrFutureTaskResult = new ArrayList<>(map.size());
             for (Map.Entry<String,List<ResourceReqDetailPageDTO>> entry:map.entrySet()){
                 Callable<Boolean> callable = new Callable<Boolean>() {
                     @Override

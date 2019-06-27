@@ -1,7 +1,7 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.dubbo.config.annotation.Service;
+
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
@@ -27,6 +27,7 @@ import com.iwhalecloud.retail.warehouse.service.TradeResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -108,19 +109,6 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         for (int i=0;i<mktResInstNbr.size();i++) {
             //开始验证串码的有效性
             String mktResInstNbrCheck = mktResInstNbr.get(i);
-
-
-//        mktResInstNbr
-            //生成batchId
-//        String batchId = UUID.randomUUID().toString().replace("-", "");
-//            List<String> mktResStoreIds = new ArrayList<String>();
-            //查一下仓库
-//            mktResStoreIds.add(MktResStoreId);
-           // String mktResInstNbrCheck="";
-//            ResourceInstListPageReq resource = new ResourceInstListPageReq();
-//            resource.setMktResInstNbr(mktResInstNbrCheck);
-//            resource.setMktResStoreIds(mktResStoreIds);
-
 //            ResultVO<Page<ResourceInstListPageResp>> queryMktResInstNbr= supplierResourceInstService.getResourceInstList(resource);
             ResourceStoreIdResnbr resourceStoreIdResnbr = new ResourceStoreIdResnbr();
             resourceStoreIdResnbr.setMktResInstNbr(mktResInstNbrCheck);
@@ -131,29 +119,11 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             if (resourceInstCheckResp==null) {
                 return ResultVO.error("该仓库查不到该串码"+mktResInstNbr);
             } else {
-
                 // 判断串码是否有效
                 String statusCd = resourceInstCheckResp.getStatusCd();
                 if (!"1202".equals(statusCd)) {
-                    if (statusCd.equals("1301")) {
-                        return ResultVO.error("该串码"+mktResInstNbr+",待审核");
-                    } else if (statusCd.equals("1210")) {
-                        return ResultVO.error("该串码"+mktResInstNbr+",调拨中");
-                    } else if (statusCd.equals("1211")) {
-                        return ResultVO.error("该串码"+mktResInstNbr+",调拨中");
-                    } else if (statusCd.equals("1305")) {
-                        return ResultVO.error("该串码"+mktResInstNbr+",退库中");
-                    } else if (statusCd.equals("1306")) {
-                        return ResultVO.error("该串码"+mktResInstNbr+",换货中");
-                    } else if (statusCd.equals("1205")) {
-                        return ResultVO.error("该串码"+mktResInstNbr+",退换货已冻结");
-                    } else if (statusCd.equals("1203")) {
-                        return ResultVO.error("该串码"+mktResInstNbr+",已销售");
-                    } else if (statusCd.equals("1110")) {
-                        return ResultVO.error("该串码"+mktResInstNbr+",已作废");
-                    }else {
-                        return ResultVO.error("该串码"+mktResInstNbr+",不可用");
-                    }
+                    String msg = isValidMktResInstNbr(statusCd,mktResInstNbrCheck);
+                    ResultVO.error(msg);
                 }
 
                 String purchaseType = resourceInstCheckResp.getPurchaseType();// 产品采购类型
@@ -299,32 +269,6 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         if (i < 1) {
             return ResultVO.error("新增采购发货记录失败");
         }
-        //处理前端录入的串码数据
-        //String productIdAndMktResInstNbr = req.getProductIdAndMktResInstNbr();
-      // List<String> result = Arrays.asList(productIdAndMktResInstNbr.split(";"));
-       // List<String> productIdList = Lists.newArrayList();
-//        List<String> mktResInstNbr = Lists.newArrayList();
-//        mktResInstNbr = req.getMktResInstNbr();
-//        if(mktResInstNbr==null || mktResInstNbr.size()<=0) {
-//            return ResultVO.error("没有收到串码记录");
-//        }
-//        for (int l = 0; l < result.size(); l++) {
-//            if (l % 2 == 0) {
-//                productIdList.add(result.get(l));
-//            } else {
-//                mktResInstNbrList.add(result.get(l));
-//            }
-//        }
-//        req.setProductIdList(productIdList);
-//        req.setMktResInstNbrList(mktResInstNbrList);
-        //通过采购申请单查询采购申请单项
-//        List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
-//        for (PurApplyItem pI : purApplyItem) {
-//            String pId = pI.getProductId();
-//            String p = pI.getPurNum();
-//        }
-//        //通过采购申请单查询采购申请单项
-//        List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
         //新增采购申请单项明细
         List<PurApplyItemDetail> purApplyItemDetailList = Lists.newArrayList();
         for (PurApplyItem pI : purApplyItem) {
@@ -342,37 +286,9 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 }
             }
         }
-//        for (int m = 0; m < purApplyItem.size(); m++) {
-//            String pId = purApplyItem.getProductId();
-//            for (int n = 0; n < mktResInstNbr.size(); n++) {
-//                PurApplyItemDetail purApplyItemDetail = new PurApplyItemDetail();
-//                BeanUtils.copyProperties(req, purApplyItemDetail);
-//                purApplyItemDetail.setMktResInstNbr(mktResInstNbr.get(n));
-//                purApplyItemDetail.setProductId(purApplyItem.get(m).getProductId());
-//                purApplyItemDetail.setApplyItemId(purApplyItem.get(m).getApplyItemId());
-//                purApplyItemDetailList.add(purApplyItemDetail);
-//            }
-//        }
+
         boolean saveFlag = purApplyItemDetailManager.saveBatch(purApplyItemDetailList);
         log.info("PurApplyServiceImpl.delivery saveBatchResp = {}", saveFlag);
-
-
-        //判断是否全部发货完
-        // 1查一下 发货明细记录 有几条数据 是否和 条目表的数量一致
-//        int flag = 0; //定义是否完全发货标识
-//        for (PurApplyItem PurApplyItemTemp : purApplyItem) {
-//            String num = PurApplyItemTemp.getPurNum();//数量
-//            PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
-//            PurApplyItemReq.setApplyItem(PurApplyItemTemp.getApplyItemId());
-//            PurApplyItemReq.setProductId(PurApplyItemTemp.getProductId());
-//            log.info("7._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail =" +JSON.toJSONString(PurApplyItemReq));
-//            int count =purApplyManager.countPurApplyItemDetail(PurApplyItemReq);//查询发货的条数
-//            log.info("7._"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail = count ="+count+" = "+JSON.toJSONString(PurApplyItemReq));
-//            if (Integer.valueOf(num)!=count) {
-//                flag=1;//发货数量与条数数量不符合，标识还未完全发货
-//                break;
-//            }
-//        }
 
         if (flag==0) {//完全发货，修改采购单状态
             //更新采购申请单状态
@@ -402,6 +318,35 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     }
 
     /**
+     * 无效串码类型返回
+     *
+     * @param statusCd
+     * @param mktResInstNbr
+     * @return
+     */
+    String isValidMktResInstNbr(String statusCd,String mktResInstNbr) {
+        if (statusCd.equals("1301")) {
+            return "该串码"+mktResInstNbr+",待审核";
+        } else if (statusCd.equals("1210")) {
+            return "该串码"+mktResInstNbr+",调拨中";
+        } else if (statusCd.equals("1211")) {
+            return "该串码"+mktResInstNbr+",调拨中";
+        } else if (statusCd.equals("1305")) {
+            return "该串码"+mktResInstNbr+",退库中";
+        } else if (statusCd.equals("1306")) {
+            return "该串码"+mktResInstNbr+",换货中";
+        } else if (statusCd.equals("1205")) {
+            return "该串码"+mktResInstNbr+",退换货已冻结";
+        } else if (statusCd.equals("1203")) {
+            return "该串码"+mktResInstNbr+",已销售";
+        } else if (statusCd.equals("1110")) {
+            return "该串码"+mktResInstNbr+",已作废";
+        }else {
+            return "该串码"+mktResInstNbr+",不可用";
+        }
+    }
+
+    /**
      * 采购单确认收货
      *
      * @param req
@@ -411,37 +356,12 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO receiving(PurApplyReceivingReq req) {
         //串码入库
-        List<PurApplyItemDetail> purApplyItemDetailList = purApplyItemDetailManager.getPurApplyItemDetail(req.getApplyId());
+        //     List<PurApplyItemDetail> purApplyItemDetailList = purApplyItemDetailManager.getPurApplyItemDetail(req.getApplyId());
+        List<PurApplyItemDetail> purApplyItemDetailList =   purApplyDeliveryManager.getDeliveryListByApplyID(req.getApplyId());
         log.info("1.查询待收货的串码列表"+ JSON.toJSONString(purApplyItemDetailList));
         if (purApplyItemDetailList==null || purApplyItemDetailList.size()==0) {
             return ResultVO.error("暂无可收货的串码");
         }
-//        StoreGetStoreIdReq storeIdReq  = new StoreGetStoreIdReq();
-//        storeIdReq.setMerchantId(req.getMerchantId());//供应商 商家ID
-//        storeIdReq.setStoreSubType("1300");//终端类型
-//        String MktResStoreId= resouceStoreService.getStoreId(storeIdReq);//查询供应商仓库id
-//        log.info("PurApplyReceivingReq req"+ JSON.toJSONString(req)+" MktResStoreId="+MktResStoreId);
-
-        //
-//        for (PurApplyItemDetail purApplyItemDetail : purApplyItemDetailList) {
-//            List<String> MktResInstNbrsList = new ArrayList<String>();
-//            ResourceInstAddReq resourceInstAddReq = new ResourceInstAddReq();
-//            MktResInstNbrsList.add(purApplyItemDetail.getMktResInstNbr());
-//            BeanUtils.copyProperties(purApplyItemDetail, resourceInstAddReq);
-//            resourceInstAddReq.setMktResId(purApplyItemDetail.getProductId());
-//            resourceInstAddReq.setMktResInstType(req.getMktResInstType());
-//            resourceInstAddReq.setMerchantId(req.getMerchantId());
-//            resourceInstAddReq.setStatusCd(req.getStatusCd());
-//            resourceInstAddReq.setStorageType(req.getStorageType());
-//            resourceInstAddReq.setSourceType(req.getSourceType());
-//            resourceInstAddReq.setCreateStaff(req.getCreateStaff());
-//            resourceInstAddReq.setMktResStoreId(MktResStoreId);//仓库id
-//            resourceInstAddReq.setMktResInstNbrs(MktResInstNbrsList);//
-//            ResultVO resultVO = supplierResourceInstService.addResourceInstByAdmin(resourceInstAddReq);
-//            if(!resultVO.isSuccess()){
-//                return ResultVO.error(resultVO.getResultMsg());
-//            }
-//        }
 
         Map<String,List<String>> map  = new HashMap<String,List<String>>();
         List<String> allMktResInstNbrList = new ArrayList<String>();
@@ -557,7 +477,12 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     public ResultVO<Page<PurApplyDeliveryResp>>  getDeliveryInfoByApplyID(PurApplyReq req) {
 
         Page<PurApplyDeliveryResp> list = purApplyDeliveryManager.getDeliveryInfoByApplyID(req);
+
+        log.info("getDeliveryInfoByApplyID req{}"+JSON.toJSONString(list));
         List<PurApplyDeliveryResp> deliveryInfo = list.getRecords();
+        if (deliveryInfo==null || deliveryInfo.size()==0)  {
+            return ResultVO.success(list);
+        }
         List<String> prodIds = new ArrayList<String>();
         for(PurApplyDeliveryResp purApplyDeliveryResp:deliveryInfo) {
             String productId =purApplyDeliveryResp.getProductId();
@@ -588,6 +513,13 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
     @Override
     public Integer updatePurApplyItemDetailStatusCd(List<String> list) {
         return purApplyManager.updatePurApplyItemDetailStatusCd(list);
+    }
+
+    @Override
+    public List<PurApplyItemDetail> getDeliveryListByApplyID(String applyId) {
+//        List<PurApplyItemDetail> purApplyItemDetailList =
+
+        return purApplyDeliveryManager.getDeliveryListByApplyID(applyId);
     }
 
     public static void main(String[] args) {

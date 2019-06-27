@@ -98,4 +98,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 
 	public Integer updatePurTypeByApplyId(@Param("req")AddProductReq req);
 
+	public Page<PurApplyReportResp> applySearchReport(Page<PurApplyReportResp> page,@Param("req") PurApplyReportReq req) ;
+
+
 }

@@ -307,5 +307,24 @@ public class ProductManager {
     public List<String> listProductId(ProductListReq req) {
         return productMapper.listProductId(req);
     }
+    /**
+     * 查询产品信息 提供给政企省内代收报表使用
+     * @param productId
+     * @return
+     */
+    public ProductApplyInfoResp getProductApplyInfo(String productId) {
+        return productMapper.getProductApplyInfo(productId);
+    }
+    /**
+     * 查询产品id 提供给政企省内代收报表使用
+     * @param req
+     * @return
+     */
+    public List<String> getProductIdListForApply(ProductGetIdReq req) {
+        return productMapper.getProductIdListForApply(req);
+    }
+
+
+
 
 }

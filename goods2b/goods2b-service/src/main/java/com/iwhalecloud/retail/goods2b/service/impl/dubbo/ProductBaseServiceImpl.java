@@ -450,8 +450,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             String isDeleted = productUpdateReq.getIsDeleted();
             String state = productUpdateReq.getStatus();
             newState = state;
-            if(StringUtils.isEmpty(req.getIsFixedLine()) || (StringUtils.isNotEmpty(req.getIsFixedLine()) &&
-                    !"1".equals(req.getIsFixedLine()))){
+            if(ProductConst.IsDelete.NO.getCode().equals(isDeleted) && (StringUtils.isEmpty(req.getIsFixedLine()) ||
+                    (StringUtils.isNotEmpty(req.getIsFixedLine()) && !"1".equals(req.getIsFixedLine())))){
                 String sn = productUpdateReq.getSn();
                 String purchaseString = sn.substring(sn.length() - 3);
                 if ("100".equals(purchaseString)){
@@ -657,8 +657,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             for(ProductUpdateReq oldUpdateReq:OldProductUpdateReqs){
                 if(newUpdateReq.getProductId().equals(oldUpdateReq.getProductId())){
                     //流程1
-                    if(!newUpdateReq.getSn().equals(oldUpdateReq.getSn()) ||
-                            !newUpdateReq.getIsDeleted().equals(oldUpdateReq.getIsDeleted())){
+                    if( ( StringUtils.isNotEmpty(newUpdateReq.getSn()) && StringUtils.isNotEmpty(oldUpdateReq.getSn()) && !newUpdateReq.getSn().equals(oldUpdateReq.getSn()) ) ||
+                            ( StringUtils.isNotEmpty(newUpdateReq.getIsDeleted()) && StringUtils.isNotEmpty(oldUpdateReq.getIsDeleted()) && !newUpdateReq.getIsDeleted().equals(oldUpdateReq.getIsDeleted()))){
                         if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                             updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
                         }else{
@@ -699,11 +699,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                         }
                     }
                     //流程1
-                    if(newUpdateReq.getCost() - oldUpdateReq.getCost() !=0 ||
+                    if( ProductConst.IsDelete.NO.getCode().equals(newUpdateReq.getIsDeleted()) &&
+                            (newUpdateReq.getCost() - oldUpdateReq.getCost() !=0 ||
                             newUpdateReq.getLocalSupplyFeeLower() - oldUpdateReq.getLocalSupplyFeeLower() != 0 ||
                             newUpdateReq.getLocalSupplyFeeUpper() - oldUpdateReq.getLocalSupplyFeeUpper() != 0 ||
                             newUpdateReq.getSupplyFeeLower() - oldUpdateReq.getSupplyFeeLower() !=0 ||
-                            newUpdateReq.getSupplyFeeUpper() - oldUpdateReq.getSupplyFeeUpper() !=0){
+                            newUpdateReq.getSupplyFeeUpper() - oldUpdateReq.getSupplyFeeUpper() !=0)){
                         if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                             updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
                         }else{

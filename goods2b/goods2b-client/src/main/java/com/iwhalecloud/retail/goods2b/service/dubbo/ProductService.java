@@ -220,11 +220,11 @@ public interface ProductService {
      * @return
      */
     List<ProductInfoResp> getProductInfoByIds( List<String> productIdList);
-    
+
     String selectNextChangeId();
-    
+
     String selectNextChangeDetailId();
-    
+
     String selectisFixedLineByBatchId(String batchId);
 
     /**
@@ -233,6 +233,9 @@ public interface ProductService {
      * @return
      */
     ResultVO<List<String>> listProductId(ProductListReq req);
+    public ProductApplyInfoResp getProductApplyInfo(String productId);
+
+    public List<String> getProductIdListForApply(ProductGetIdReq req);
 
 
 }

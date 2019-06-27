@@ -237,6 +237,12 @@ public class Merchant implements Serializable {
     private java.lang.String parCrmOrgCode;
 
     /**
+     * (商家)CRM组织路径编码
+     */
+    @ApiModelProperty(value = "(商家)CRM组织路径编码")
+    private java.lang.String parCrmOrgPathCode;
+
+    /**
      * 是否自有物业
      */
     @ApiModelProperty(value = "是否自有物业	")
@@ -639,6 +645,11 @@ public class Merchant implements Serializable {
          * (商家)CRM组织编码.
          */
         parCrmOrgCode("parCrmOrgCode", "PAR_CRM_ORG_CODE"),
+
+        /**
+         * (商家)CRM组织路径编码.
+         */
+        parCrmOrgPathCode("parCrmOrgPathCode", "PAR_CRM_ORG_PATH_CODE"),
 
         /**
          * 是否自有物业	.

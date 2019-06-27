@@ -5,6 +5,8 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductGetIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductApplyInfoResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
@@ -12,6 +14,8 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.manager.PurApplyDeliveryManager;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
+import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.UserService;
@@ -21,6 +25,7 @@ import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -715,6 +720,65 @@ public class PurApplyServiceImpl implements PurApplyService {
 		return resultVO;
 	}
 
+	@Override
+	public ResultVO<Page<PurApplyReportResp>> applySearchReport(PurApplyReportReq req) {
+		log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
+		if (req.getLanId()!=null) {
+			req.setRegionId(req.getLanId());
+		}
+		Boolean flag = productParamCheck(req);
+        if (flag == true) {
+			ProductGetIdReq productGetIdReq = new ProductGetIdReq();
+			BeanUtils.copyProperties(req,productGetIdReq);
+			List<String> productIdList = productService.getProductIdListForApply(productGetIdReq);
+			req.setProductIdList(productIdList);
+		}
+        if (req.getMerchantName()!=null || req.getMerchantName().length()>0) {
+			List<String> merchantIdList = merchantService.getMerchantIdList(req.getMerchantName());
+			req.setMerchantIdList(merchantIdList);
+		}
+
+		//req.setRegionId();
+		Page<PurApplyReportResp> purApplyReportResp = purApplyManager.applySearchReport(req);
+		List<PurApplyReportResp>  list=purApplyReportResp.getRecords();
+		if (list ==null || list.size()==0 ) {
+			return ResultVO.success(purApplyReportResp);
+		}
+		for (PurApplyReportResp purApplyReport: list) {
+			String productId= purApplyReport.getProductId();
+			String merchantId = purApplyReport.getMerchantId();
+			// 获取产品信息
+			if (productId !=null && productId.length()>0) {
+				ProductApplyInfoResp productApplyInfoResp= productService.getProductApplyInfo(productId);
+				BeanUtils.copyProperties(productApplyInfoResp,purApplyReport);
+			}
+			// 获取商家名称
+			if (merchantId !=null  && merchantId.length()>0) {
+				MerchantDTO merchantDTO = merchantService.getMerchantInfoById(merchantId);
+				purApplyReport.setMerchantName(merchantDTO.getMerchantName());
+			}
+		}
+		return ResultVO.success(purApplyReportResp);
+	}
+    public boolean productParamCheck(PurApplyReportReq req) {
+        if (req.getProductName()!=null && req.getProductName().length()>0) {
+			return true;
+		}
+		if (req.getProductCode()!=null && req.getProductCode().length()>0) {
+			return true;
+		}
+		if (req.getUnitType()!=null && req.getUnitType().length()>0) {
+			return true;
+		}
+		if (req.getMemory()!=null && req.getMemory().length()>0) {
+			return true;
+		}
+		if (req.getColor()!=null && req.getColor().length()>0) {
+			return true;
+		}
+		return false;
+
+	}
 	public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(UpdateCorporationPriceReq req){
 		List<ProdProductChangeDetail> list = purApplyManager.searchCommitPriceInfo(req);
 		return ResultVO.success(list);

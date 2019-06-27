@@ -6,12 +6,12 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.TestBase;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
+import com.iwhalecloud.retail.order2b.entity.PurApplyItemDetail;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
+import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -36,6 +36,9 @@ public class PurApplyServiceImplTest  extends TestBase {
     private PurApplyService purApplyService;
     @Autowired
     private PurApplyManager purApplyManager;
+    @Resource
+    private PurchaseApplyService purchaseApplyService;
+
 
     @Test
     public void tcProcureApply() {
@@ -251,11 +254,11 @@ public class PurApplyServiceImplTest  extends TestBase {
         System.out.println(JSON.toJSONString(v));
     }
     @Test
-    public void cgSearchApply1(){
+    public void applySearchReport(){
         String json = "{\"applyCode\":\"\",\"startDate\":\"\",\"endDate\":\"\",\"applyName\":\"\",\"pageNo\":1,\"pageSize\":10,\"sourceFrom\":\"\"}";
 //        PurApplyReq req = new PurApplyReq();
         Gson gson = new Gson();
-        PurApplyReq req = gson.fromJson(json, new TypeToken<PurApplyReq>(){}.getType());
+        PurApplyReportReq req = gson.fromJson(json, new TypeToken<PurApplyReportReq>(){}.getType());
 //        log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
         req.setLanId("731");
 //        String userId = UserContext.getUserId();
@@ -280,9 +283,21 @@ public class PurApplyServiceImplTest  extends TestBase {
 //        }
 //
 //        log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
-        ResultVO resultVO =   purApplyService.cgSearchApply(req);
-        System.out.println(resultVO);
+        ResultVO resultVO =   purApplyService.applySearchReport(req);
+        System.out.println(JSON.toJSONString(resultVO));
 //        return ResultVO.success(purApplyResp);
+    }
+
+    @Test
+    public void getDeliveryListByApplyID() {
+        String applyId="1997";
+        List<PurApplyItemDetail> l = purchaseApplyService.getDeliveryListByApplyID(applyId);
+        System.out.println("lllll==="+JSON.toJSONString(l));
+        PurApplyReq r = new PurApplyReq();
+        r.setApplyId(applyId);
+        ResultVO<Page<PurApplyDeliveryResp>> resultVO = purchaseApplyService.getDeliveryInfoByApplyID(r);
+        System.out.println("lllll==="+JSON.toJSONString(resultVO));
+
     }
 
 }

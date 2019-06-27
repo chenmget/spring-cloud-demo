@@ -664,6 +664,22 @@ public class ProductServiceImpl implements ProductService {
 		return productManager.selectisFixedLineByBatchId(batchId);
 	}
 
+
+
+
+
+    @Override
+    public ProductApplyInfoResp getProductApplyInfo(String productId) {
+        log.info("ProductServiceImpl.getProductApplyInfo productId={}", productId);
+        return productManager.getProductApplyInfo(productId);
+    }
+
+    @Override
+    public List<String> getProductIdListForApply(ProductGetIdReq req) {
+        log.info("ProductServiceImpl.getProductIdListForApply req={}", req);
+        return productManager.getProductIdListForApply(req);
+    }
+
     /**
      * 根据条件查询产品ID集合（单表查询）
      * @param req

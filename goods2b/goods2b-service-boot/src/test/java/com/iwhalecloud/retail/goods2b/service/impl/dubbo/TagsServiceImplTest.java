@@ -28,11 +28,11 @@ public class TagsServiceImplTest {
     public void getTagsByGoodsId() {
     }
 
-    @Test
-    public void listProdTags() {
-        ResultVO resultVO = tagsService.listProdTags();
-        System.out.println(resultVO.getResultData());
-    }
+//    @Test
+//    public void listProdTags() {
+//        ResultVO resultVO = tagsService.listProdTags();
+//        System.out.println(resultVO.getResultData());
+//    }
 
     @Test
     public void addProdTags() {

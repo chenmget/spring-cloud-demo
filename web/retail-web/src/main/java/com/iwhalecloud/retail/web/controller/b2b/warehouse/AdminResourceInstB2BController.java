@@ -52,7 +52,7 @@ import java.util.List;
 @Slf4j
 public class AdminResourceInstB2BController {
 
-	@Reference
+	@Reference(timeout = 30000)
     private AdminResourceInstService resourceInstService;
 
     @Value("${fdfs.suffix.allowUpload}")

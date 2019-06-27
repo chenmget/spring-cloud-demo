@@ -72,6 +72,11 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     }
 
     @Override
+    public ResultVO<String> checkResRequestFinish(ResourceReqUpdateReq resourceReqUpdateReq) {
+        return adminResourceInstService.checkResRequestFinish(resourceReqUpdateReq);
+    }
+
+    @Override
     public ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String createStaff) {
         return adminResourceInstService.uploadNbrDetail(data,createStaff);
     }

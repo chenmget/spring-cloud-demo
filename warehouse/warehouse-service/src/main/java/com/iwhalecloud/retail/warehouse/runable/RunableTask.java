@@ -4,6 +4,7 @@ import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
@@ -16,6 +17,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
@@ -310,7 +312,7 @@ public class RunableTask {
      * * 串码轨迹表多线程处理
      * @param req
      */
-    public void exceutorAddNbrTrack(ResourceInstAddReq req) {
+    public boolean exceutorAddNbrTrack(ResourceInstAddReq req) {
         ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
         List<String> nbrList = req.getMktResInstNbrs();
         Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
@@ -330,6 +332,7 @@ public class RunableTask {
             addNbrFutureTask = executorService.submit(callable);
         }
         executorService.shutdown();
+        return true;
     }
 
     /**
@@ -927,7 +930,7 @@ public class RunableTask {
      * 串码审核通过
      * @param
      */
-    public String auditPassResDetail(List<ResourceReqDetailPageDTO> data) {
+    public String auditPassResDetail(List<ResourceReqDetailPageDTO> data,String updateStaff,String updateStaffName) {
         try {
             //初始化线程池
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
@@ -948,7 +951,15 @@ public class RunableTask {
                         public Boolean call() throws Exception {
                             String mktResReqId=entry.getKey();
                             List<ResourceReqDetailPageDTO> detailList=entry.getValue();
-                            List<String> mktResInstNbrs=detailList.stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
+//                            List<String> mktResInstNbrs=detailList.stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
+//                            List<String> mktResDetailIds=detailList.stream().map(ResourceReqDetailPageDTO::getMktResReqDetailId).collect(Collectors.toList());
+                            List<String> mktResInstNbrs = new ArrayList<>();
+                            List<String> mktResDetailIds = new ArrayList<>();
+
+                            for(ResourceReqDetailPageDTO dto : detailList){
+                                mktResInstNbrs.add(dto.getMktResInstNbr());
+                                mktResDetailIds.add(dto.getMktResReqDetailId());
+                            }
                             log.info("RunableTask.auditPassResDetail mktResInstNbrs={}", JSON.toJSONString(mktResInstNbrs));
                             Map<String, String> ctCodeMap = new HashMap<>();
                             Map<String, String> snCodeMap = new HashMap<>();
@@ -967,6 +978,7 @@ public class RunableTask {
                             });
                             //获取相关产品信息
                             ResourceReqDetailPageDTO detailDTO = detailList.get(0);
+                            Date createDate = detailDTO.getCreateDate();
                             ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
                             productGetByIdReq.setProductId(detailDTO.getMktResId());
                             ResultVO<ProductResp> productVO = productService.getProduct(productGetByIdReq);
@@ -991,32 +1003,46 @@ public class RunableTask {
                             addReq.setMacCodeMap(macCodeMap);
                             addReq.setCreateStaff(detailDTO.getCreateStaff());
                             addReq.setTypeId(typeId);
-                            ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
-                            String merchantId = null;
-                            if(null != resultVO && null != resultVO.getResultData()){
-                                MerchantDTO merchantDTO = resultVO.getResultData();
-                                merchantId = merchantDTO.getMerchantId();
-                                addReq.setLanId(merchantDTO.getLanId());
-                                addReq.setRegionId(merchantDTO.getCity());
-                                addReq.setMerchantId(merchantId);
-                                log.info("RunableTask.auditPassResDetail runableTask.exceutorAddNbr addReq={}", addReq);
-                                exceutorAddNbr(addReq);
+                            if (ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(detailDTO.getMktResInstType())) {
+                                StorePageReq storePageReq = new StorePageReq();
+                                storePageReq.setMktResStoreId(detailDTO.getDestStoreId());
+                                Page<ResouceStoreDTO> page = resouceStoreService.pageStore(storePageReq);
+                                log.info("RunableTask.auditPassResDetail resouceStoreService.pageStore storePageReq={}", JSON.toJSONString(page.getRecords()));
+                                ResouceStoreDTO storeDTO = page.getRecords().get(0);
+                                addReq.setLanId(storeDTO.getLanId());
+                                addReq.setRegionId(storeDTO.getRegionId());
+                                addReq.setMerchantId(storeDTO.getMerchantId());
+                            } else {
+                                ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
+                                String merchantId = null;
+                                if(null != resultVO || null != resultVO.getResultData()){
+                                    MerchantDTO merchantDTO = resultVO.getResultData();
+                                    merchantId = merchantDTO.getMerchantId();
+                                    addReq.setLanId(merchantDTO.getLanId());
+                                    addReq.setRegionId(merchantDTO.getCity());
+                                    addReq.setMerchantId(merchantId);
+                                }
                             }
-                            // step3 增加事件和批次
-                            Map<String, List<String>> mktResIdAndNbrMap = getMktResIdAndNbrMap(detailList);
-                            BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
-                            batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-                            batchAndEventAddReq.setLanId(detailDTO.getLanId());
-                            batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
-                            batchAndEventAddReq.setRegionId(detailDTO.getRegionId());
-                            batchAndEventAddReq.setDestStoreId(detailDTO.getMktResStoreId());
-                            batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-                            batchAndEventAddReq.setMerchantId(merchantId);
-                            batchAndEventAddReq.setCreateStaff(merchantId);
-                            resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-                            log.info("AdminResourceInstServiceImpl.auditPassResDetail resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
-                            exceutorAddNbrTrack(addReq);
-                            return true;
+                            exceutorAddNbr(addReq);
+                            log.info("RunableTask.auditPassResDetail resourceInstService.addResourceInst addReq={}", addReq);
+                            // step3 修改申请单状态变为审核通过
+                            ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
+                            Date now = new Date();
+                            detailUpdateReq.setUpdateStaff(updateStaff);
+                            detailUpdateReq.setUpdateDate(now);
+                            detailUpdateReq.setStatusDate(now);
+                            detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
+                            detailUpdateReq.setMktResReqDetailIds(mktResDetailIds);
+                            detailUpdateReq.setCreateDate(createDate);
+                            resourceReqDetailManager.updateDetailByNbrs(detailUpdateReq);
+                            log.info("RunableTask.run requestService.auditPassResDetail reqUpdate={}", JSON.toJSONString(detailUpdateReq));
+                            // step4 判断申请单是否已完成
+                            ResourceReqUpdateReq resourceReqUpdateReq = new ResourceReqUpdateReq();
+                            resourceReqUpdateReq.setMktResReqId(mktResReqId);
+                            resourceReqUpdateReq.setUpdateStaff(updateStaff);
+                            resourceReqUpdateReq.setUpdateStaffName(updateStaffName);
+                            adminResourceInstService.checkResRequestFinish(resourceReqUpdateReq);
+                            return exceutorAddNbrTrack(addReq);
                         }
                     };
                     Future<Boolean> validFutureTask = executorService.submit(callable);

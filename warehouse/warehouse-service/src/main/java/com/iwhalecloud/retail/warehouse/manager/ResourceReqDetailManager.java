@@ -111,9 +111,8 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
         detail.setRemark(req.getRemark());
         detail.setStatusDate(req.getStatusDate());
         UpdateWrapper updateWrapper = new UpdateWrapper();
-        updateWrapper.in(ResourceReqDetail.FieldNames.mktResInstNbr.getTableFieldName(), req.getMktResInstNbrs());
-        //updateWrapper.eq(ResourceReqDetail.FieldNames.createDate.getTableFieldName(), req.getCreateDate());
-
+        updateWrapper.in(ResourceReqDetail.FieldNames.mktResReqDetailId.getTableFieldName(), req.getMktResReqDetailIds());
+        updateWrapper.eq(ResourceReqDetail.FieldNames.createDate.getTableFieldName(), req.getCreateDate());
         return resourceReqDetailMapper.update(detail, updateWrapper) > 0;
     }
 
@@ -121,7 +120,7 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
      * 根据明细ID集合批量修改申请单明细
      * @param req
      */
-    public boolean updateDetailByNbrsByDetailIds(ResourceReqDetailUpdateReq req) {
+    public boolean updateDetailByDetailIds(ResourceReqDetailUpdateReq req) {
 
         List<ResourceReqDetail> details = Lists.newArrayList();
         ResourceReqDetail detail = new ResourceReqDetail();

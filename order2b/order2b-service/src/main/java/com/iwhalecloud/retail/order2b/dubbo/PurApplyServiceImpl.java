@@ -733,7 +733,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			List<String> productIdList = productService.getProductIdListForApply(productGetIdReq);
 			req.setProductIdList(productIdList);
 		}
-        if (req.getMerchantName()!=null || req.getMerchantName().length()>0) {
+        if (req.getMerchantName()!=null && req.getMerchantName().length()>0) {
 			List<String> merchantIdList = merchantService.getMerchantIdList(req.getMerchantName());
 			req.setMerchantIdList(merchantIdList);
 		}

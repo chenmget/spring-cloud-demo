@@ -162,6 +162,7 @@ public class ReportCodeStatementsController extends BaseController  {
 			req.setShangJiaId(UserContext.getUser().getRelCode());
 			log.info("************************************************* ");
 			req.setMktResStoreId(mktResStoreId);
+			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
 		} else {
 			return ;
 		}

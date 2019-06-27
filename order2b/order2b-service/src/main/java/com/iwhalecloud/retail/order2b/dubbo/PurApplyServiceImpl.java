@@ -735,7 +735,7 @@ public class PurApplyServiceImpl implements PurApplyService {
         if (req.getProductName()!=null && req.getProductName().length()>0) {
 			return true;
 		}
-		if (req.getProductCode()!=null && req.getProductCode().length()>0) {
+		if (req.getSn()!=null && req.getSn().length()>0) {
 			return true;
 		}
 		if (req.getUnitType()!=null && req.getUnitType().length()>0) {

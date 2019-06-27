@@ -17,7 +17,7 @@ public class ProductApplyInfoResp implements Serializable {
     private  String productName; // 产品名称
 
     private  String corporationPrice;// 政企价格
-    private  String productCode;// 产品25位编码
+    private  String sn;// 产品25位编码
 
 
     private String unitType;//产品型号

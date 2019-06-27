@@ -17,8 +17,8 @@ public class ProductGetIdReq extends AbstractRequest implements Serializable {
     @ApiModelProperty(value = "productName")
     private  String productName; // 产品名称
 
-    @ApiModelProperty(value = "productCode")
-    private  String productCode;// 产品25位编码
+    @ApiModelProperty(value = "sn")
+    private  String sn;// 产品25位编码
 
     @ApiModelProperty(value = "unitType")
     private String unitType;//产品型号

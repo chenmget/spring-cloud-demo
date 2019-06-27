@@ -98,6 +98,14 @@
 				#{item}
 			</foreach>
 		</if>
+
+		<if test="req.lanIdList != null and req.lanIdList.size() >0">
+			and a.lan_id in
+			<foreach item="item" index="index" open="(" separator="," close=")" collection="req.lanIdList">
+				#{item}
+			</foreach>
+		</if>
+
 		order by a.CREATE_DATE DESC
 
 	</select>

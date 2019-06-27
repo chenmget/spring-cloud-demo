@@ -39,7 +39,7 @@ public class PurApplyReportReq extends PageVO implements Serializable {
 	private  String productName; // 产品名称
 
 
-	private  String productCode;// 产品25位编码
+	private  String sn;// 产品25位编码
 
 
 	private String unitType;//产品型号
@@ -52,5 +52,8 @@ public class PurApplyReportReq extends PageVO implements Serializable {
 	private List<String> productIdList;//产品id 列表
 
 	private List<String> merchantIdList;//供应商id 列表
-	
+
+	private	List<String> lanIdList;	//地市集合
+
+
 }

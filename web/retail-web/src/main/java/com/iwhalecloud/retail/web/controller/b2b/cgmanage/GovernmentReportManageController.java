@@ -116,7 +116,7 @@ public class GovernmentReportManageController extends BaseController {
         orderMap.add(new ExcelTitleName("color", "颜色"));
         orderMap.add(new ExcelTitleName("memory", "内存"));
         orderMap.add(new ExcelTitleName("attrValue1", "容量"));
-        orderMap.add(new ExcelTitleName("productCode", "产品25位编码"));
+        orderMap.add(new ExcelTitleName("sn", "产品25位编码"));
         orderMap.add(new ExcelTitleName("purType", "采购类型"));
 
         orderMap.add(new ExcelTitleName("applyTime", "采购时间"));

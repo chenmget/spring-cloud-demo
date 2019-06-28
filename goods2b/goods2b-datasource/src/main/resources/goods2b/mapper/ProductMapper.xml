@@ -50,7 +50,8 @@
 
   <select id="getProducts" parameterType="java.lang.String"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductResp">
-    Select <include refid="allFields" />,ppb.unit_type_name AS unitTypeName,pb.name AS brandName,ppb.brand_id,ppb.is_ct_code,ppb.product_name,ppb.product_code,ppb.unit_type,ppb.type_id,pt.type_name
+    Select <include refid="allFields" />,ppb.unit_type_name AS unitTypeName,pb.name AS brandName,ppb.brand_id,ppb.is_ct_code,
+    ppb.product_name,ppb.product_code,ppb.unit_type,ppb.type_id,pt.type_name,ppb.IS_FIXED_LINE as isFixedLine
     FROM prod_product t
     left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
     left join prod_type pt on pt.type_id = ppb.type_id

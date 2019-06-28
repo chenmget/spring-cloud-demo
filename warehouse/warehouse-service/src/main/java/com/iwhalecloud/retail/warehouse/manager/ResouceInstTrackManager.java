@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.warehouse.manager;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
+import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackGetReq;
 import com.iwhalecloud.retail.warehouse.entity.ResouceInstTrack;
 import com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackMapper;
@@ -60,11 +61,11 @@ public class ResouceInstTrackManager{
 
     /**
      * 通过串码查仓库id
-     * @param nbr
+     * @param req
      * @return
      */
-    public String getStoreIdByNbr(String nbr){
-        return resouceInstTrackMapper.getStoreIdByNbr(nbr);
+    public List<String> getStoreIdByNbr(ResourceInstListPageReq req){
+        return resouceInstTrackMapper.getStoreIdByNbrs(req);
     }
 
     /**

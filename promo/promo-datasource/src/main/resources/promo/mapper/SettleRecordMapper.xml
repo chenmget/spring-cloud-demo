@@ -12,7 +12,7 @@
         where a.marketing_activity_id = b.ID
         and b.is_deleted='0'
         and b.activity_type='1002'
-        and date_format(a.gmt_create, '%Y%m') = date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y%m')
+        and date_format(a.gmt_create, '%Y%m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y%m')
     </select>
 
     <select id="getSupplementaryRecord" resultType="com.iwhalecloud.retail.promo.dto.SettleRecordDTO">
@@ -25,6 +25,6 @@
           and c.order_id=a.order_id
           and b.is_deleted='0'
           and b.activity_type='1002'
-          and date_format(d.gmt_create, '%Y%m') = date_format(DATE_SUB(curdate(), INTERVAL 1 MONTH),'%Y%m')
+          and date_format(d.gmt_create, '%Y%m') = date_format(DATE_SUB(curdate(), INTERVAL 0 MONTH),'%Y%m')
     </select>
 </mapper>

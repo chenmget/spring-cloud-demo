@@ -94,10 +94,9 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("MerchantResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
         if (CollectionUtils.isEmpty(req.getMktResStoreIds())) {
-            String mktResInstNbr = req.getMktResInstNbr();
-            String mktResStoreId = resouceInstTrackManager.getStoreIdByNbr(mktResInstNbr);
-            log.info("MerchantResourceInstServiceImpl.getResourceInstList resouceInstTrackManager.getStoreIdByNbr mktResInstNbr={}, mktResStoreId={}", mktResInstNbr, mktResStoreId);
-            req.setMktResStoreIds(Lists.newArrayList(mktResStoreId));
+            List<String> mktResStoreIds = resouceInstTrackManager.getStoreIdByNbr(req);
+            log.info("MerchantResourceInstServiceImpl.getResourceInstList resouceInstTrackManager.getStoreIdByNbr mktResInstNbr={}, mktResStoreId={}", JSON.toJSONString(req), mktResStoreIds);
+            req.setMktResStoreIds(mktResStoreIds);
         }
         return resourceInstService.getResourceInstList(req);
     }

@@ -230,7 +230,7 @@ public class CacheController extends BaseController {
     }
 
     @ApiOperation(value = "清空仓库工具类所有缓存", notes = "清空仓库工具类所有缓存")
-    @RequestMapping(value = "/cleanCacheNameWfService", method = RequestMethod.GET)
+    @RequestMapping(value = "/cleanCacheNameWarehouseCommonCahe", method = RequestMethod.GET)
     @CacheEvict(value = WAREHOUSE_COMMON_CACHE_KEY, allEntries = true, beforeInvocation = true)
     public ResultVO<Boolean> cleanCacheNameWarehouseCommonCahe() {
         log.info("CacheController.cleanCacheNameWarehouseCommonCahe clean warehouse_common_cache table cache success!!!");

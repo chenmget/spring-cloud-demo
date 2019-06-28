@@ -227,11 +227,12 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                     if (merchantDTO.getMerchantCode().equals(settleRecordDTO.getSupplierCode())) {
                         settleRecordDTO.setSupplierName(merchantDTO.getMerchantName());
                         settleRecordDTO.setSupplierId(merchantDTO.getMerchantId());
+                        settleRecordDTO.setSupplierCode(merchantDTO.getShopCode());
                         supplierIds.add(merchantDTO.getMerchantId());
                     }
                     if(merchantDTO.getMerchantCode().equals(settleRecordDTO.getMerchantCode())){
                         settleRecordDTO.setMerchantName(merchantDTO.getMerchantName());
-                        settleRecordDTO.setSupplierId(merchantDTO.getMerchantId());
+                        settleRecordDTO.setMerchantId(merchantDTO.getMerchantId());
                         supplierIds.add(merchantDTO.getMerchantId());
                     }
                 }

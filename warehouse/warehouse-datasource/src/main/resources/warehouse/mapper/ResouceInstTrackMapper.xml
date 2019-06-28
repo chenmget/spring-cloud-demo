@@ -40,8 +40,17 @@
          SELECT <include refid="nbrSource" /> from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr} and MERCHANT_ID = #{merchantId} LIMIT 1
     </select>
 
-    <select id="getStoreIdByNbr" resultType="java.lang.String">
-         SELECT MKT_RES_STORE_ID from mkt_res_inst_track t where MKT_RES_INST_NBR=#{nbr}
+    <select id="getStoreIdByNbrs" resultType="java.lang.String" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq">
+         SELECT MKT_RES_STORE_ID from mkt_res_inst_track t where 1=1
+        <if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">
+            and t.mkt_res_inst_nbr = #{req.mktResInstNbr}
+        </if>
+        <if test="null!=req.mktResInstNbrs and req.mktResInstNbrs.size>0">
+            and t.mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResInstNbrs">
+                #{item}
+            </foreach>
+        </if>
     </select>
 
     <select id="listResourceInstsTrack" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackGetReq"

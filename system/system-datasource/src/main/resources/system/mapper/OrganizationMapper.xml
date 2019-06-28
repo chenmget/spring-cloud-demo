@@ -73,6 +73,12 @@
                 #{item1}
             </foreach>
         </if>
+        <if test="req.parentOrgIdList != null and req.parentOrgIdList.size() > 0">
+            and PARENT_ORG_ID in
+            <foreach collection="req.parentOrgIdList" item="item1" index="index" open="(" close=")" separator=",">
+                #{item1}
+            </foreach>
+        </if>
         <if test="req.parentOrgId != null and req.parentOrgId != ''">
             and t.PARENT_ORG_ID = #{req.parentOrgId}
         </if>

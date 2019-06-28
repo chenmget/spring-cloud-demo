@@ -12,7 +12,6 @@
     <artifactId>oms-camera-service-boot</artifactId>
 
     <dependencies>
-
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>oms-camera-service</artifactId>
@@ -29,4 +28,25 @@
             <version>2.0.0</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <layout>ZIP</layout>
+                    <includes>
+                        <include>
+                            <!-- 排除所有Jar -->
+                            <groupId>nothing</groupId>
+                            <artifactId>nothing</artifactId>
+                        </include>
+                    </includes>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
 </project>

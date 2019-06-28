@@ -20,6 +20,9 @@ public class OrganizationListReq implements Serializable {
     @ApiModelProperty(value = "上级组织标识,直接记录组织的直接管理上级标识")
     private java.lang.String parentOrgId;
 
+    @ApiModelProperty(value = "parentOrgIdList 父级组织ID集合")
+    private List<String> parentOrgIdList;
+
     @ApiModelProperty(value = "lanId")
     private String lanId;
 

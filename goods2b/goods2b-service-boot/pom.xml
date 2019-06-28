@@ -40,7 +40,11 @@
             <artifactId>druid-spring-boot-starter</artifactId>
             <version>${druid-spring-boot-starter.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.5</version>
+        </dependency>
     </dependencies>
 	
 	<build>
@@ -50,6 +54,52 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<fork>true</fork>
+					<layout>ZIP</layout>
+					<includes>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>domain-object</artifactId>
+						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>goods2b-client</artifactId>
+						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>goods2b-datasource</artifactId>
+						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>goods2b-service</artifactId>
+						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>partner-client</artifactId>
+						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>order2b-client</artifactId>
+						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>promo-client</artifactId>
+						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>warehouse-client</artifactId>
+						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>system-client</artifactId>
+						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>workflow-client</artifactId>
+						</include>
+					</includes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

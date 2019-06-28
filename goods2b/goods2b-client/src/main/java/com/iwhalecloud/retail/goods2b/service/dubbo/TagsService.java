@@ -17,10 +17,10 @@ public interface TagsService {
     ResultVO<List<TagsDTO>> getTagsByGoodsId(TagGetByGoodsIdReq tagGetByGoodsIdReq);
 
     /**
-     * 查询标签列表 没有参数
+     * 查询标签列表
      * @return
      */
-    ResultVO<List<TagsDTO>> listProdTags();
+    ResultVO<List<TagsDTO>> listProdTags(ProdTagsListReq req);
 
     /**
      * 查询标签列表 没有参数

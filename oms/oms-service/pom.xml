@@ -43,7 +43,11 @@
             <artifactId>oms-datasource</artifactId>
             <version>${oms.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>com.iwhalecloud.retail</groupId>
+            <artifactId>goods2b-client</artifactId>
+            <version>${oms.version}</version>
+        </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.slf4j/log4j-over-slf4j -->
 
@@ -108,18 +112,7 @@
             </exclusions>
         </dependency>
 
-
         <!--定时任务-->
-        <dependency>
-	        <groupId>org.quartz</groupId>
-	        <artifactId>quartz-all</artifactId>
-            <version>2.1.7</version>
-        </dependency>
-        <dependency>
-            <groupId>org.quartz</groupId>
-            <artifactId>quartz-weblogic</artifactId>
-            <version>2.1.7</version>
-        </dependency>
         <dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
@@ -148,17 +141,10 @@
             <version>4.3.19.RELEASE</version>
         </dependency>
 
-
         <dependency>
             <groupId>fast-md5</groupId>
             <artifactId>fast-md5</artifactId>
             <version>2.5</version>
-        </dependency>
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>goods2b-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
 
     </dependencies>

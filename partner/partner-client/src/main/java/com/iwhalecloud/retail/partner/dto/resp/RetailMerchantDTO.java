@@ -38,6 +38,23 @@ public class RetailMerchantDTO implements Serializable {
     @ApiModelProperty(value = "标签组名")
     private String tagNames;
 
+
+    /* 市县、分局/县部门 合并为一个字段 经营单元（对应 组织表的 第3级组织部门）*/
+    @ApiModelProperty(value = "经营单元(3级组织部门)id")
+    private java.lang.String orgIdWithLevel3;
+
+    /* 营销中心/支局 字段 改为 查  组织表的 第4级组织部门 */
+    @ApiModelProperty(value = "营销中心/支局（4级组织部）id")
+    private java.lang.String orgIdWithLevel4;
+
+    /* 市县、分局/县部门 合并为一个字段 经营单元（对应 组织表的 第3级组织部门）*/
+    @ApiModelProperty(value = "经营单元(3级组织部门) 名称")
+    private java.lang.String orgNameWithLevel3;
+
+    /* 营销中心/支局 字段 改为 查  组织表的 第4级组织部门 */
+    @ApiModelProperty(value = "营销中心/支局（4级组织部）名称")
+    private java.lang.String orgNameWithLevel4;
+
  /*** 非当前表字段 ****/
 
 
@@ -68,7 +85,6 @@ public class RetailMerchantDTO implements Serializable {
      已归档 1300
      预退出 8922
      冻结 8923
-
      */
     @ApiModelProperty(value = "渠道状态:" +
             " 有效1000  主动暂停1001  异常暂停1002 无效1100 终止1101 退出1102 未生效1200" +
@@ -148,54 +164,6 @@ public class RetailMerchantDTO implements Serializable {
     @ApiModelProperty(value = "销售点名称")
     private java.lang.String shopName;
 
-//	/**
-//  	 * 销售点归属县级经营主体编码
-//  	 */
-//	@ApiModelProperty(value = "销售点归属县级经营主体编码	")
-//  	private java.lang.String shopCountyBusiEntityCode;
-//
-//	/**
-//  	 * 销售点归属县级经营主体名称
-//  	 */
-//	@ApiModelProperty(value = "销售点归属县级经营主体名称")
-//  	private java.lang.String shopCountyBusiEntityName;
-//
-//	/**
-//  	 * 销售点归属本地网经营主体编码
-//  	 */
-//	@ApiModelProperty(value = "销售点归属本地网经营主体编码	")
-//  	private java.lang.String shopCityBusiEntityCode;
-//
-//	/**
-//  	 * 销售点归属本地网经营主体名称
-//  	 */
-//	@ApiModelProperty(value = "销售点归属本地网经营主体名称")
-//  	private java.lang.String shopCityBusiEntityName;
-//
-//	/**
-//  	 * 销售点归属省级经营主体编码
-//  	 */
-//	@ApiModelProperty(value = "销售点归属省级经营主体编码	")
-//  	private java.lang.String shopProvBusiEntityCode;
-//
-//	/**
-//  	 * 销售点归属省级经营主体名称
-//  	 */
-//	@ApiModelProperty(value = "销售点归属省级经营主体名称")
-//  	private java.lang.String shopProvBusiEntityName;
-//
-//	/**
-//  	 * 销售点归属省全国级经营主体编码
-//  	 */
-//	@ApiModelProperty(value = "销售点归属省全国级经营主体编码	")
-//  	private java.lang.String shopCountryBusiEntityCode;
-//
-//	/**
-//  	 * 销售点归属省全国级经营主体名称
-//  	 */
-//	@ApiModelProperty(value = "销售点归属省全国级经营主体名称")
-//  	private java.lang.String shopCountryBusiEntityName;
-//
     /**
      * 自营厅级别
      */
@@ -255,6 +223,13 @@ public class RetailMerchantDTO implements Serializable {
      */
     @ApiModelProperty(value = "(商家)CRM组织编码")
     private java.lang.String parCrmOrgCode;
+
+   /**
+    * (商家)CRM组织路径编码
+    */
+   @ApiModelProperty(value = "(商家)CRM组织路径编码")
+   private java.lang.String parCrmOrgPathCode;
+
 //
 //	/**
 //  	 * 是否自有物业
@@ -273,97 +248,7 @@ public class RetailMerchantDTO implements Serializable {
      */
     @ApiModelProperty(value = "(商家)联系电话")
     private java.lang.String phoneNo;
-//
-//	/**
-//  	 * 核心商圈名称
-//  	 */
-//	@ApiModelProperty(value = "核心商圈名称	")
-//  	private java.lang.String busiCenterName;
-//
-//	/**
-//  	 * 商圈类型
-//  	 */
-//	@ApiModelProperty(value = "商圈类型	")
-//  	private java.lang.String busiCenterType;
-//
-//	/**
-//  	 * 是否校园网点
-//  	 */
-//	@ApiModelProperty(value = "是否校园网点	")
-//  	private java.lang.String isCampusShop;
-//
-//	/**
-//  	 * 是否为厂商专卖店
-//  	 */
-//	@ApiModelProperty(value = "是否为厂商专卖店	")
-//  	private java.lang.String isManufacturerShop;
-//
-//	/**
-//  	 * 厂商渠道标识
-//  	 */
-//	@ApiModelProperty(value = "厂商渠道标识	")
-//  	private java.lang.String manufacturerChannelId;
-//
-//	/**
-//  	 * 是否IPHONE授权店
-//  	 */
-//	@ApiModelProperty(value = "是否IPHONE授权店	")
-//  	private java.lang.String isIphoneAuthShop;
-//
-//	/**
-//  	 * 城乡属性
-//            县
-//            乡（农村）
-//  	 */
-//	@ApiModelProperty(value = "城乡属性 县 乡（农村）")
-//  	private java.lang.String cityAttr;
-//
-//	/**
-//  	 * CRM是否接入
-//  	 */
-//	@ApiModelProperty(value = "CRM是否接入	")
-//  	private java.lang.String isCrm;
-//
-//	/**
-//  	 * 商圈级别
-//  	 */
-//	@ApiModelProperty(value = "商圈级别	")
-//  	private java.lang.String busiCenterLevel;
-//
-//	/**
-//  	 * 销售点一级分类:  实体渠道 110000 直销渠道 100000 电子渠道 120000
-//            直销渠道 100000
-//            电子渠道 120000
-//
-//  	 */
-//	@ApiModelProperty(value = "销售点一级分类:" +
-//			"  实体渠道 110000 直销渠道 100000 电子渠道 120000 直销渠道 100000 电子渠道 120000 ")
-//  	private java.lang.String shopPriType;
-//
-//	/**
-//  	 * 销售点二级分类
-//  	 */
-//	@ApiModelProperty(value = "销售点二级分类	")
-//  	private java.lang.String shopSecondType;
-//
-//	/**
-//  	 * 销售点三级分类
-//  	 */
-//	@ApiModelProperty(value = "销售点三级分类	")
-//  	private java.lang.String shopThirdType;
-//
-//	/**
-//  	 * TOP10标识
-//  	 */
-//	@ApiModelProperty(value = "TOP10标识	")
-//  	private java.lang.String top10Id;
-//
-//	/**
-//  	 * 是否结佣
-//  	 */
-//	@ApiModelProperty(value = "是否结佣	")
-//  	private java.lang.String isCommission;
-//
+
     /**
      * 供应商名称
      */
@@ -375,85 +260,7 @@ public class RetailMerchantDTO implements Serializable {
      */
     @ApiModelProperty(value = "供应商编码	")
     private java.lang.String supplierCode;
-//
-//	/**
-//  	 * 供应商状态
-//  	 */
-//	@ApiModelProperty(value = "供应商状态	")
-//  	private java.lang.String supplierState;
-//
-//	/**
-//  	 * 供应商税号
-//  	 */
-//	@ApiModelProperty(value = "供应商税号	")
-//  	private java.lang.String supplierTaxCode;
-//
-//	/**
-//  	 * 商家归属县级经营主体编码
-//  	 */
-//	@ApiModelProperty(value = "商家归属县级经营主体编码")
-//  	private java.lang.String parCountyBusiEntityCode;
-//
-//	/**
-//  	 * 商家归属县级经营主体名称
-//  	 */
-//	@ApiModelProperty(value = "商家归属县级经营主体名称	")
-//  	private java.lang.String parCountyBusiEntityName;
-//
-//	/**
-//  	 * parCityBusiEntityName
-//  	 */
-//	@ApiModelProperty(value = "parCityBusiEntityName")
-//  	private java.lang.String parCityBusiEntityName;
-//
-//	/**
-//  	 * 商家归属本地网级经营主体编码
-//  	 */
-//	@ApiModelProperty(value = "商家归属本地网级经营主体编码")
-//  	private java.lang.String parCityBusiEntityCode;
-//
-//	/**
-//  	 * 商家归属省级经营主体名称
-//  	 */
-//	@ApiModelProperty(value = "商家归属省级经营主体名称")
-//  	private java.lang.String parProvBusiEntityName;
-//
-//	/**
-//  	 * 商家归属省级经营主体编码
-//  	 */
-//	@ApiModelProperty(value = "商家归属省级经营主体编码	")
-//  	private java.lang.String parProvBusiEntityCode;
-//
-//	/**
-//  	 * 商家归属全国级经营主体名称
-//  	 */
-//	@ApiModelProperty(value = "商家归属全国级经营主体名称	")
-//  	private java.lang.String parCountryBusiEntityName;
-//
-//	/**
-//  	 * 商家归属全国级经营主体编码
-//  	 */
-//	@ApiModelProperty(value = "商家归属全国级经营主体编码")
-//  	private java.lang.String parCountryBusiEntityCode;
-//
-//	/**
-//  	 * 所属版块
-//  	 */
-//	@ApiModelProperty(value = "所属版块	")
-//  	private java.lang.String block;
-//
-//	/**
-//  	 * TOP商简称
-//  	 */
-//	@ApiModelProperty(value = "TOP商简称	")
-//  	private java.lang.String topShortName;
-//
-//	/**
-//  	 * TOP商级别
-//  	 */
-//	@ApiModelProperty(value = "TOP商级别	")
-//  	private java.lang.String topLevel;
-//
+
     /**
      * (商家)生效时间
      */

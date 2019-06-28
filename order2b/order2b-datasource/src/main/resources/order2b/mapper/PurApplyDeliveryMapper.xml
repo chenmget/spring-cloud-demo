@@ -53,4 +53,11 @@
         WHERE  d.status_cd='5' and d.apply_id =#{applyId}
 
     </select>
+
+    <select id="getDeliveryListByApplyID"  parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.entity.PurApplyItemDetail">
+        SELECT d.product_id as productId ,d.mkt_res_inst_nbr as mktResInstNbr,d.batch_id as batchId,d.create_date as createDate,d.apply_item_Id as applyItemId
+        from pur_apply_item_detail d
+        WHERE  d.status_cd='5' and d.apply_id =#{applyId}
+
+    </select>
 </mapper>

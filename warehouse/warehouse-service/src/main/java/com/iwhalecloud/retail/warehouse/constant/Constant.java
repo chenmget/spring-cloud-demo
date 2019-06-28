@@ -217,4 +217,9 @@ public class Constant {
      */
     private String ctExists;
 
+    /**
+     * 产品类型不存在
+     */
+    private String typeNotExists;
+
 }

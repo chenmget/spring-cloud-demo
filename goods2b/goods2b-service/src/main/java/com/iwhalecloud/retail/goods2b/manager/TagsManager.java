@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.TagsDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProdTagsListReq;
 import com.iwhalecloud.retail.goods2b.entity.Tags;
 import com.iwhalecloud.retail.goods2b.mapper.TagsMapper;
 import org.springframework.stereotype.Component;
@@ -27,8 +28,8 @@ public class TagsManager {
         return tagsMapper.getTagsByGoodsId(goodsId);
     }
 
-    public List<TagsDTO> listProdTags(){
-        return tagsMapper.listProdTags();
+    public List<TagsDTO> listProdTags(ProdTagsListReq req){
+        return tagsMapper.listProdTags(req);
     }
 
     public List<TagsDTO> listProdTagsChannel(){

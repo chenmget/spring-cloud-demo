@@ -19,6 +19,7 @@ import com.iwhalecloud.retail.partner.entity.Merchant;
 import com.iwhalecloud.retail.partner.entity.MerchantAccount;
 import com.iwhalecloud.retail.partner.mapper.MerchantMapper;
 import com.iwhalecloud.retail.system.common.SysOrgConst;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.OrganizationChildListReq;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
@@ -401,7 +402,7 @@ public class MerchantManager {
             queryWrapper.eq(Merchant.FieldNames.channelSubType.getTableFieldName(), req.getChannelSubType());
         }
 
-        // 条件是in
+            // 条件是in
         if (!CollectionUtils.isEmpty(req.getLanIdList())) {
             queryWrapper.in(Merchant.FieldNames.lanId.getTableFieldName(), req.getLanIdList());
         }
@@ -425,6 +426,41 @@ public class MerchantManager {
         if (!StringUtils.isEmpty(req.getShopName())) { // 销售点名称
             queryWrapper.like(Merchant.FieldNames.shopName.getTableFieldName(), req.getShopName());
         }
+        if (!StringUtils.isEmpty(req.getOrgIdWithLevel3())) { // 经营单元(3级组织部门)
+            queryWrapper.like(Merchant.FieldNames.parCrmOrgPathCode.getTableFieldName(), req.getOrgIdWithLevel3());
+        }
+        if (!StringUtils.isEmpty(req.getOrgIdWithLevel4())) { // 营销中心/支局（4级组织部）
+            queryWrapper.like(Merchant.FieldNames.parCrmOrgPathCode.getTableFieldName(), req.getOrgIdWithLevel4());
+        }
+
+        // 逻辑 parCrmOrgPathCode包含列表组织ID
+        // 示例：3级ID集合：["1", "2", "3"]
+        // 转换成的sql体现: ... and ( PAR_CRM_ORG_PATH_CODE like '%1%' or PAR_CRM_ORG_PATH_CODE like '%2%' or PAR_CRM_ORG_PATH_CODE like '%3%') ...
+        if (!CollectionUtils.isEmpty(req.getOrgIdWithLevel3List())) {
+            queryWrapper.and(j -> {
+                for (int i = 0; i < req.getOrgIdWithLevel3List().size(); i++) {
+                    if (i == 0) {
+                        j.like(Merchant.FieldNames.parCrmOrgPathCode.getTableFieldName(), req.getOrgIdWithLevel3List().get(i));
+                    } else {
+                        j.or().like(Merchant.FieldNames.parCrmOrgPathCode.getTableFieldName(), req.getOrgIdWithLevel3List().get(i));
+                    }
+                }
+                return j;
+            });
+        }
+        // 4级组织ID集合 逻辑 同上  3级组织ID集合
+        if (!CollectionUtils.isEmpty(req.getOrgIdWithLevel4List())) {
+            queryWrapper.and(j -> {
+                for (int i = 0; i < req.getOrgIdWithLevel4List().size(); i++) {
+                    if (i == 0) {
+                        j.like(Merchant.FieldNames.parCrmOrgPathCode.getTableFieldName(), req.getOrgIdWithLevel4List().get(i));
+                    } else {
+                        j.or().like(Merchant.FieldNames.parCrmOrgPathCode.getTableFieldName(), req.getOrgIdWithLevel4List().get(i));
+                    }
+                }
+                return j;
+            });
+        }
 
 //        // 是否需要先获取userId集合（后面判空用） 查询条件有涉及到通过user_id字段关联的其他表字段且有值时 为true
 //        Boolean isNeedGetUserIdList = false;
@@ -432,8 +468,8 @@ public class MerchantManager {
 
         /** 判断是否有 3、4级组织ID   有：需要转换成 (商家)CRM组织ID：parCrmOrgId 再进行查询 **/
         // 是否需要先获取orgId集合（后面判空用） 查询条件有涉及到通过orgid字段关联的其他表字段且有值时 为true
-        Boolean isNeedGetOrgIdList = false;
-        List<String> orgIdList = Lists.newArrayList();
+//        Boolean isNeedGetOrgIdList = false;
+//        List<String> orgIdList = Lists.newArrayList();
 
         // 是否需要先获取merchantId集合（后面判空用） 查询条件有涉及到通过merchant_id字段关联的其他表字段且有值时 为true
         Boolean isNeedGetMerchantIdList = false;
@@ -493,26 +529,26 @@ public class MerchantManager {
         /** 判断是否有 3、4级组织ID   有：需要转换成 (商家)CRM组织ID：parCrmOrgId 再进行查询 **/
         // 非商家表字段：  3、4级组织部门ID  先转换成  orgId  集合 再作为条件  进行查询
         // 3、4级组织部门ID  转换成  orgId  集合
-        if (!StringUtils.isEmpty(req.getOrgIdWithLevel3())
-                || !StringUtils.isEmpty(req.getOrgIdWithLevel4())) {
+//        if (!StringUtils.isEmpty(req.getOrgIdWithLevel3())
+//                || !StringUtils.isEmpty(req.getOrgIdWithLevel4())) {
+//
+//            List<String> resultList = get6LevelOrgIdList(req.getOrgIdWithLevel3(), req.getOrgIdWithLevel4());
+//            if (isNeedGetOrgIdList) {
+//                // 取交集
+//                orgIdList.retainAll(resultList);
+//            } else {
+//                orgIdList = resultList;
+//            }
+//            isNeedGetOrgIdList = true; // 这个赋值要放到最后面
+//        }
 
-            List<String> resultList = get6LevelOrgIdList(req.getOrgIdWithLevel3(), req.getOrgIdWithLevel4());
-            if (isNeedGetOrgIdList) {
-                // 取交集
-                orgIdList.retainAll(resultList);
-            } else {
-                orgIdList = resultList;
-            }
-            isNeedGetOrgIdList = true; // 这个赋值要放到最后面
-        }
 
-
-        if (CollectionUtils.isEmpty(orgIdList)
-                && isNeedGetOrgIdList) {
-            // 筛选后 集合为空
-            // 添加一个空值 ID （使查询结果为空的）
-            orgIdList.add("");
-        }
+//        if (CollectionUtils.isEmpty(orgIdList)
+//                && isNeedGetOrgIdList) {
+//            // 筛选后 集合为空
+//            // 添加一个空值 ID （使查询结果为空的）
+//            orgIdList.add("");
+//        }
 
         if (CollectionUtils.isEmpty(merchantIdList)
                 && isNeedGetMerchantIdList) {
@@ -522,10 +558,10 @@ public class MerchantManager {
         }
 
         // 条件是：in(包含的）  的字段
-        if (!CollectionUtils.isEmpty(orgIdList)) {
-            // parCrmOrgId
-            queryWrapper.in(Merchant.FieldNames.parCrmOrgId.getTableFieldName(), orgIdList);
-        }
+//        if (!CollectionUtils.isEmpty(orgIdList)) {
+//            // parCrmOrgId
+//            queryWrapper.in(Merchant.FieldNames.parCrmOrgId.getTableFieldName(), orgIdList);
+//        }
         if (!CollectionUtils.isEmpty(merchantIdList)) {
             // merchant_id
             queryWrapper.in(Merchant.FieldNames.merchantId.getTableFieldName(), merchantIdList);
@@ -871,11 +907,17 @@ public class MerchantManager {
      * @return
      */
     public int insertMerchant(Merchant merchant) {
+        // 增加设置组织路径 逻辑 (组织ID不空  组织路径为空 就设置该字段）
+        if (!StringUtils.isEmpty(merchant.getParCrmOrgId())
+                && StringUtils.isEmpty(merchant.getParCrmOrgPathCode())) {
+            merchant.setParCrmOrgPathCode(getOrgPathCode(merchant.getParCrmOrgId()));
+        }
+
         return merchantMapper.insert(merchant);
     }
 
     /**
-     * 根据商家编码更新商家信息
+     * 根据商家编码更新商家信息(主要给同步商家信息用）
      * 调用这个更新要清除全部的缓存，因为没有根据code 做缓存
      *
      * @param merchantDetailDTO
@@ -883,6 +925,13 @@ public class MerchantManager {
      */
     @CacheEvict(value = PartnerConst.CACHE_NAME_PAR_MERCHANT, allEntries = true)
     public int updateMerchantByCode(MerchantDetailDTO merchantDetailDTO) {
+
+        // 增加更新组织路径 逻辑 (组织ID不空  组织路径为空 就更新该字段）
+        if (!StringUtils.isEmpty(merchantDetailDTO.getParCrmOrgId())
+                && StringUtils.isEmpty(merchantDetailDTO.getParCrmOrgPathCode())) {
+            merchantDetailDTO.setParCrmOrgPathCode(getOrgPathCode(merchantDetailDTO.getParCrmOrgId()));
+        }
+
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(Merchant.FieldNames.merchantCode.getTableFieldName(), merchantDetailDTO.getMerchantCode());
         Merchant merchant = new Merchant();
@@ -890,6 +939,21 @@ public class MerchantManager {
         merchant.setLastUpdateDate(new Date());
         return merchantMapper.update(merchant, queryWrapper);
     }
+
+    /**
+     * 根据组织ID 取组织路径
+     * @param orgId
+     * @return
+     */
+    private String getOrgPathCode(String orgId) {
+        OrganizationDTO organizationDTO = organizationService.getOrganization(orgId).getResultData();
+        if (Objects.isNull(organizationDTO)) {
+            // 没取到组织
+            return null;
+        }
+        return organizationDTO.getPathCode();
+    }
+
 
     /**
      * 根据地区集合查询商家
@@ -926,4 +990,16 @@ public class MerchantManager {
     public MerchantLigthResp getMerchantForOrder(MerchantGetReq req) {
         return merchantMapper.getMerchantForOrder(req);
     }
+
+
+
+    /**
+     * 根据条件获取商家id列表
+     * @param merchantName
+     * @return
+     */
+    public List<String> getMerchantIdList(String merchantName) {
+        return merchantMapper.getMerchantIdList(merchantName);
+    }
 }
+

@@ -4,10 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -307,5 +304,39 @@ public class CgSearchApplyController extends BaseController {
 		ResultVO v= purApplyService.updatePurTypeByApplyId(req);
 		return v;
 	}
-	
+
+
+	@ApiOperation(value = "查询政企省内代收报表", notes = "查询政企省内代收报表")
+	@ApiResponses({
+			@ApiResponse(code=400,message="请求参数没填好"),
+			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+	})
+	@PostMapping("/applySearchReport")
+	@UserLoginToken
+	public ResultVO<Page<PurApplyReportResp>> applySearchReport(@RequestBody PurApplyReportReq req) {
+		//采购单的时候点击查看采购申请单，传申请人ID，apply_code和apply_name项目名称查询
+		String userId = UserContext.getUserId();
+//		String userId = "100028487";
+//		PriCityManagerResp login = purApplyService.getLoginInfo(userId);
+//		Integer userFounder = UserContext.getUser().getUserFounder();
+		//传过来的APPLY_TYPE看
+
+//		String lanId = login.getLanId();
+//
+//		log.info("1查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
+//		if(userFounder!=null) {
+//			if(9==userFounder){//地市管理员
+//				log.info("2查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
+//				req.setLanId(lanId);
+//			}
+//		}
+//		Boolean isMerchant= UserContext.isMerchant();
+//		if(isMerchant==true) {
+//			req.setMerchantId(UserContext.getMerchantId());
+//			log.info("查询采购申请单报表*******************isMerchant = "+isMerchant +" **************UserContext.getMerchantId() = "+UserContext.getMerchantId());
+//		}
+
+//		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
+		return purApplyService.applySearchReport(req);
+	}
 }

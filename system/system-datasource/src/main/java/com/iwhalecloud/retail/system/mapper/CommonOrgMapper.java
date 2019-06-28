@@ -10,11 +10,11 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 /**
- * @Class: CommonOrgMapper
  * @author autoCreate
+ * @Class: CommonOrgMapper
  */
 @Mapper
-public interface CommonOrgMapper extends BaseMapper<CommonOrg>{
+public interface CommonOrgMapper extends BaseMapper<CommonOrg> {
 
-	public List<SysCommonOrgResp> getSysCommonOrg(@Param("req") SysCommonOrgRequest req);
+    public List<SysCommonOrgResp> getSysCommonOrg(@Param("req") SysCommonOrgRequest req);
 }

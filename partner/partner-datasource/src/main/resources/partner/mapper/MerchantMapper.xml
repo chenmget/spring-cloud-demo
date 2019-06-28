@@ -36,7 +36,8 @@
     ,t.SHOP_ADDRESS 
     ,t.PAR_CRM_ORG_ID 
     ,t.PAR_CRM_ORG_CODE 
-    ,t.IS_OWN_PROPERTY 
+    ,t.PAR_CRM_ORG_PATH_CODE
+    ,t.IS_OWN_PROPERTY
     ,t.LINKMAN 
     ,t.PHONE_NO 
     ,t.BUSI_CENTER_NAME 
@@ -91,6 +92,7 @@
     ,t.SHOP_ADDRESS
     ,t.PAR_CRM_ORG_ID
     ,t.PAR_CRM_ORG_CODE
+    ,t.PAR_CRM_ORG_PATH_CODE
     ,t.LINKMAN
     ,t.PHONE_NO
     ,t.EFF_DATE
@@ -191,5 +193,15 @@
         select t.MERCHANT_ID, t.MERCHANT_CODE, t.MERCHANT_NAME, t.BUSINESS_ENTITY_NAME
         from par_merchant t
         where t.MERCHANT_ID =  #{merchantId}
+    </select>
+
+    <select id="getMerchantIdList" resultType="java.lang.String"
+            parameterType="java.lang.String">
+        select t.MERCHANT_ID
+        from par_merchant t
+        where 1=1
+        <if test="merchantName != null and merchantName != ''">
+            and lower(t.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{merchantName }), '%'))
+        </if>
     </select>
 </mapper>

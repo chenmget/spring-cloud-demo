@@ -128,5 +128,37 @@ public class PurApplyExt implements Serializable {
      */
     @ApiModelProperty("updateDate")
     private Date updateDate;
+    /**
+     * 省份ID
+     */
+    @ApiModelProperty("provinceId")
+    private String provinceId;
+    /**
+     * 城市ID
+     */
+    @ApiModelProperty("cityId")
+    private String cityId;
+    /**
+     * 区域ID
+     */
+    @ApiModelProperty("regionId")
+    private String regionId;
+
+    /**
+     * 省份
+     */
+    @ApiModelProperty("province")
+    private String province;
+    /**
+     * 城市
+     */
+    @ApiModelProperty("city")
+    private String city;
+    /**
+     * 区域
+     */
+    @ApiModelProperty("region")
+    private String region;
+
 }
 

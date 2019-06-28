@@ -205,8 +205,8 @@ public class PurApplyManager {
 	 * @param mktResInstNbrList
 	 * @return
 	 */
-	public Integer updatePurApplyItemDetailStatusCd(List<String> mktResInstNbrList) {
-		return purApplyMapper.updatePurApplyItemDetailStatusCd(mktResInstNbrList);
+	public Integer updatePurApplyItemDetailStatusCd(List<String> mktResInstNbrList,String updateDate,String updateUserId) {
+		return purApplyMapper.updatePurApplyItemDetailStatusCd(mktResInstNbrList,updateDate,updateUserId);
 	}
 	/**
 	 * 更新采购类型
@@ -217,5 +217,9 @@ public class PurApplyManager {
 		return purApplyMapper.updatePurTypeByApplyId(req);
 	}
 
-	
+	public Page<PurApplyReportResp> applySearchReport(PurApplyReportReq req) {
+		Page<PurApplyReportResp> page=new Page<>(req.getPageNo(),req.getPageSize());
+		Page<PurApplyReportResp> pageReport =purApplyMapper.applySearchReport(page,req);
+		return pageReport;
+	}
 }

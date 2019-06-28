@@ -46,6 +46,16 @@ public class ProductServiceTest {
     private MerchantRulesService merchantRulesService;
 
     @Test
+    public void listProductId() {
+        ProductListReq req = new ProductListReq();
+//        req.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+//        req.setIsDeleted(ProductConst.IsDelete.NO.getCode());
+        req.setAttrValue10(ProductConst.attrValue10.EFFECTIVE.getCode());
+        ResultVO<List<String>> resultVO = productService.listProductId(req);
+        System.out.println("resultVO=" + JSON.toJSON(resultVO));
+    }
+
+    @Test
     public void getProductTest() {
         ProductGetByIdReq req = new ProductGetByIdReq();
         req.setProductId("1067695247957291009");

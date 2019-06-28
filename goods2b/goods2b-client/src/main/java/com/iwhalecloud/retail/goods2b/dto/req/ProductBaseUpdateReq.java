@@ -230,7 +230,7 @@ public class ProductBaseUpdateReq extends AbstractRequest implements Serializabl
      * 是否需要抽检
      */
     @ApiModelProperty(value = "是否需要抽检")
-    private String IsInspection;
+    private String isInspection;
     /**
      * 平均供货价
      */

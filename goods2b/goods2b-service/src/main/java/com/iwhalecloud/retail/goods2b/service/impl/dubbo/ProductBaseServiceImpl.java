@@ -740,7 +740,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
         for(int i = 0;i<newFileAddReqs.size();i++){
             FileAddReq newFile = newFileAddReqs.get(i);
-            FileAddReq oldFile = newFileAddReqs.get(i);
+            FileAddReq oldFile = oldFileAddReqs.get(i);
             if(StringUtils.isNotEmpty(newFile.getFileUrl()) && StringUtils.isNotEmpty(oldFile.getFileUrl()) &&
                     newFile.getFileUrl().equals(oldFile.getFileUrl())){
             }else if(StringUtils.isEmpty(newFile.getFileUrl()) && StringUtils.isEmpty(oldFile.getFileUrl())){

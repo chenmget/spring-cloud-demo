@@ -29,6 +29,7 @@ import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
+import com.iwhalecloud.retail.warehouse.util.WarehouseCacheUtils;
 import com.iwhalecloud.retail.warehouse.util.ZopClientUtil;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.RouteDTO;
@@ -104,11 +105,15 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Reference
     private RouteService routeService;
 
+    @Autowired
+    private WarehouseCacheUtils warehouseCacheUtils;
+
     @Value("${zop.secret}")
     private String zopSecret;
 
     @Value("${zop.url}")
     private String zopUrl;
+
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("AdminResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
@@ -253,6 +258,10 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Override
     public ResultVO<String> batchAuditNbr(ResourceInstCheckReq req) {
+        //判断是否存在正在执行的任务
+        if(null != warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST)){
+            return ResultVO.error("存在正在执行的串码入库操作，请稍后再试");
+        }
         //申请单明细主键集合
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         if (CollectionUtils.isEmpty(mktResInstNbrs)) {
@@ -270,10 +279,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
         //审核不通过
         if (ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode().equals(statusCd)) {
-
             doAuditResNbrUnPass(req, resDetailList);
         } else if (ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode().equals(statusCd)) {
-
+            //runableTask.setAuditPassNbrFutureTaskResult();
             runableTask.auditPassResDetail(resDetailList, req.getUpdateStaff(), req.getUpdateStaffName());
         }
         return ResultVO.success("审核成功");
@@ -391,8 +399,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         return ResultVO.success();
     }
 
-
-
     /**
      * 办结串码审核流程
      * @param
@@ -428,130 +434,11 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             if (WorkFlowConst.WF_NODE.NODE_END.getId().equals(route.getNextNodeId())) {
                 // 执行流程下一步
                 taskService.endProcess(resourceProcessUpdateReq.getUpdateStaff(), resourceProcessUpdateReq.getUpdateStaffName(), task.getTaskId(), route.getRouteId());
-//                RouteNextReq routeNextReq =new RouteNextReq();
-//                routeNextReq.setTaskItemId(taskItem.getTaskItemId());
-//                routeNextReq.setNextNodeId(route.getNextNodeId());
-//                routeNextReq.setRouteId(route.getRouteId());
-//                routeNextReq.setTaskId(task.getTaskId());
-//                routeNextReq.setHandlerUserId(resourceProcessUpdateReq.getUpdateStaff());
-//                routeNextReq.setHandlerUserName(resourceProcessUpdateReq.getUpdateStaffName());
-//                routeNextReq.setHandlerMsg("审核结束");
-//                taskService.nextRoute(routeNextReq);
+
             }
         }
 
     }
-
-    /**
-     * 处理审核通过明细
-     * @param
-     */
-   /* @Transactional(rollbackFor = Exception.class)
-    public ResultVO<Object> auditPassResDetail(List<ResourceReqDetailPageDTO> resDetailList) {
-        log.info("AdminResourceInstServiceImpl.auditPassResDetail.auditPassResDetail resDetailList={}", JSON.toJSONString(resDetailList));
-        //根据申请单id进行分组,同一个申请单下，产品商家等信息一致，减少请求服务次数
-        Map<String, List<ResourceReqDetailPageDTO>> map = resDetailList.stream().collect(Collectors.groupingBy(t -> t.getMktResReqId()));
-        for (Map.Entry<String, List<ResourceReqDetailPageDTO>> entry :map.entrySet()){
-            String mktResReqId=entry.getKey();
-            List<ResourceReqDetailPageDTO> detailList=entry.getValue();
-            //获取申请单下所有详情
-//            ResourceReqDetailQueryReq detailQueryReq = new ResourceReqDetailQueryReq();
-//            detailQueryReq.setMktResReqId(mktResReqId);
-//            List<ResourceReqDetailDTO> reqDetailDTOS = detailManager.listDetail(detailQueryReq);
-            List<String> mktResInstNbrs=detailList.stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
-            log.info("AdminResourceInstServiceImpl.auditPassResDetail mktResInstNbrs={}", JSON.toJSONString(mktResInstNbrs));
-            Map<String, String> ctCodeMap = new HashMap<>();
-            Map<String, String> snCodeMap = new HashMap<>();
-            Map<String, String> macCodeMap = new HashMap<>();
-            detailList.forEach(item->{
-                if(StringUtils.isNotBlank(item.getCtCode())){
-                    ctCodeMap.put(item.getMktResInstNbr(), item.getCtCode());
-                }
-                if(StringUtils.isNotBlank(item.getSnCode())){
-                    snCodeMap.put(item.getMktResInstNbr(), item.getSnCode());
-                }
-                if(StringUtils.isNotBlank(item.getMacCode())){
-                    macCodeMap.put(item.getMktResInstNbr(), item.getMacCode());
-                }
-
-            });
-            //获取相关产品信息
-            ResourceReqDetailPageDTO detailDTO = detailList.get(0);
-            ProductGetByIdReq productGetByIdReq = new ProductGetByIdReq();
-            productGetByIdReq.setProductId(detailDTO.getMktResId());
-            ResultVO<ProductResp> producttVO = productService.getProduct(productGetByIdReq);
-            log.info("AdminResourceInstServiceImpl.auditPassResDetail.getProduct mktResId={} resp={}", mktResReqId, JSON.toJSONString(producttVO));
-            String typeId = "";
-            if (producttVO.isSuccess() && null != producttVO.getResultData()) {
-                typeId = producttVO.getResultData().getTypeId();
-            }
-            // step2 根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
-            ResourceInstAddReq addReq = new ResourceInstAddReq();
-            addReq.setMktResInstNbrs(mktResInstNbrs);
-            addReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-            addReq.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
-            addReq.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());
-            addReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-            addReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-            addReq.setMktResInstType(detailDTO.getMktResInstType());
-            addReq.setDestStoreId(detailDTO.getDestStoreId());
-            addReq.setMktResId(detailDTO.getMktResId());
-            addReq.setCtCodeMap(ctCodeMap);
-            addReq.setSnCodeMap(snCodeMap);
-            addReq.setMacCodeMap(macCodeMap);
-            addReq.setCreateStaff(detailDTO.getCreateStaff());
-            addReq.setTypeId(typeId);
-            ResultVO<MerchantDTO> resultVO = resouceStoreService.getMerchantByStore(detailDTO.getDestStoreId());
-            String merchantId = null;
-            if(null == resultVO || null == resultVO.getResultData()){
-                log.warn("AdminResourceInstServiceImpl.auditPassResDetail resouceStoreService.getMerchantByStore resultVO is null");
-                return ResultVO.error("AdminResourceInstServiceImpl.auditPassResDetail resouceStoreService.getMerchantByStore resultVO is null");
-            } else {
-                MerchantDTO merchantDTO = resultVO.getResultData();
-                merchantId = merchantDTO.getMerchantId();
-                addReq.setLanId(merchantDTO.getLanId());
-                addReq.setRegionId(merchantDTO.getCity());
-                addReq.setMerchantId(merchantId);
-            }
-            runableTask.exceutorAddNbr(addReq);
-            log.info("AdminResourceInstServiceImpl.auditPassResDetail runableTask.exceutorAddNbr addReq={}", addReq);
-
-            // step3 增加事件和批次
-            Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(detailList);
-            BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
-            batchAndEventAddReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
-            batchAndEventAddReq.setLanId(detailDTO.getLanId());
-            batchAndEventAddReq.setMktResIdAndNbrMap(mktResIdAndNbrMap);
-            batchAndEventAddReq.setRegionId(detailDTO.getRegionId());
-            batchAndEventAddReq.setDestStoreId(detailDTO.getMktResStoreId());
-            batchAndEventAddReq.setMktResStoreId(ResourceConst.NULL_STORE_ID);
-            batchAndEventAddReq.setMerchantId(merchantId);
-            batchAndEventAddReq.setCreateStaff(merchantId);
-            resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-            log.info("AdminResourceInstServiceImpl.auditPassResDetail resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
-            runableTask.exceutorAddNbrTrack(addReq);
-
-        }
-
-        //runableTask.exceutorAddNbrTrack(addReq);
-        return ResultVO.success();
-    }*/
-
-    /*private Map<String, List<String>> getMktResIdAndNbrMap(List<ResourceReqDetailPageDTO> instList){
-        Map<String, List<String>> mktResIdAndNbrMap = new HashMap<>();
-        List<ResourceReqDetailPageDTO> detailList = instList;
-        for (ResourceReqDetailPageDTO resp : detailList){
-            if(mktResIdAndNbrMap.containsKey(resp.getMktResId())){
-                List<String> mktResIdList = mktResIdAndNbrMap.get(resp.getMktResId());
-                mktResIdList.add(resp.getMktResInstNbr());
-            }else{
-                List<String> mktResIdList = new ArrayList<>();
-                mktResIdList.add(resp.getMktResInstNbr());
-                mktResIdAndNbrMap.put(resp.getMktResId(), mktResIdList);
-            }
-        }
-        return mktResIdAndNbrMap;
-    }*/
 
     @Override
     public ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String userId) {
@@ -620,18 +507,11 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         } else{
             return ResultVO.success();
         }
-
-
-
     }
 
     @Override
     public ResultVO<Boolean> validBatchAuditNbr() {
-        if (runableTask.validBatchAuditNbr()) {
-            return ResultVO.success(true);
-        } else{
-            return ResultVO.success(false);
-        }
+        return ResultVO.success(runableTask.validBatchAuditNbr());
     }
 
 }

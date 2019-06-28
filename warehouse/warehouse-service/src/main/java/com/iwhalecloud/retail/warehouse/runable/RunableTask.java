@@ -4,6 +4,7 @@ import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
@@ -31,6 +32,7 @@ import com.iwhalecloud.retail.warehouse.manager.ResourceUploadTempManager;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceReqDetailMapper;
 import com.iwhalecloud.retail.warehouse.service.*;
 import com.iwhalecloud.retail.warehouse.util.ExcutorServiceUtils;
+import com.iwhalecloud.retail.warehouse.util.WarehouseCacheUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -77,6 +79,8 @@ public class RunableTask {
 
     private Future<Boolean> addNbrFutureTask;
 
+    private List<Future<Boolean>> addNbrFutureTaskResult;
+
     private Future<Boolean> addReqDetailtFutureTask;
 
     private Future<Integer> delNbrFutureTask;
@@ -96,8 +100,6 @@ public class RunableTask {
     private ResouceInstTrackService resouceInstTrackService;
 
     private List<Future<Boolean>> validNbrFutureTaskResult;
-
-    private List<Future<Boolean>> auditPassNbrFutureTaskResult;
 
     @Autowired
     private ResourceReqDetailManager resourceReqDetailManager;
@@ -125,6 +127,9 @@ public class RunableTask {
     @Autowired
     private Constant constant;
 
+    @Autowired
+    private WarehouseCacheUtils warehouseCacheUtils;
+
 
     /**
      * 串码入库插入多线程处理
@@ -148,6 +153,7 @@ public class RunableTask {
                 }
             };
             addNbrFutureTask = executorService.submit(callable);
+            addNbrFutureTaskResult.add(addNbrFutureTask);
         }
         executorService.shutdown();
     }
@@ -198,7 +204,6 @@ public class RunableTask {
         }
         executorService.shutdown();
     }
-
 
     public String excuetorAddReq(ResourceRequestAddReq req){
         ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
@@ -560,27 +565,7 @@ public class RunableTask {
         executorService.shutdown();
     }
 
-    public Boolean validBatchAuditNbr() {
-        try{
-            Boolean hasDone = true;
-            log.info("RunableTask.validBatchAuditNbr ={}", JSON.toJSONString(auditPassNbrFutureTaskResult));
-            if (CollectionUtils.isEmpty(auditPassNbrFutureTaskResult)) {
-                return false;
-            }
-            for (Future<Boolean> future : auditPassNbrFutureTaskResult) {
-                if (!future.isDone()) {
-                    return false;
-                }
-            }
-            return hasDone;
-        }catch (Throwable e) {
-            if (e instanceof ExecutionException) {
-                e = e.getCause();
-            }
-            log.error("error happen", e);
-        }
-        return true;
-    }
+
 
     class QueryNbrTask implements Callable<List<ResourceUploadTempListResp>> {
         private Integer pageNo;
@@ -670,72 +655,6 @@ public class RunableTask {
     }
 
     /**
-     * 批量修改
-     * @param req
-     * @param reqIds
-     */
-//    public void batchUpdateReqDetail(ResourceInstCheckReq req,List<String> reqIds) {
-//        log.info("RunableTask.batchUpdateReqDetail req={}",  JSON.toJSONString(req));
-//        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
-//        List<String> mktResReqDetailIds=req.getMktResReqDetailIds();
-//        for (String mktResReqDetailId : mktResReqDetailIds) {
-//            Callable callable = new Callable<Boolean>() {
-//                @Override
-//                public Boolean call() throws Exception {
-//                    ResourceReqDetail detail=resourceReqDetailMapper.selectById(mktResReqDetailId);
-//                    if (detail!=null){
-//                        ResourceReqDetailUpdateReq updateReq=new ResourceReqDetailUpdateReq();
-//                        updateReq.setMktResReqDetailId(mktResReqDetailId);
-//                        updateReq.setCreateDate(detail.getCreateDate());
-//                        updateReq.setStatusCd(req.getCheckStatusCd());
-//                        updateReq.setRemark(req.getRemark());
-//                        resourceReqDetailManager.updateDetailById(updateReq);
-//                    }
-//                    return true;
-//                }
-//            };
-//            executorService.submit(callable);
-//        }
-//        executorService.shutdown();
-//        while(true){
-//            if (executorService.isTerminated()){
-//                log.info("所有的子线程都结束了,处理申请单信息");
-//                dealResRequest(reqIds);
-//                break;
-//            }
-//        }
-//    }
-
-
-
-//    /**
-//     * 串码入库插入多线程并判断申请单明细是否都已处理
-//     * @param req
-//     */
-//    public void exceutorAddNbrAndDealRes(ResourceInstAddReq req,List<String> reqIds) {
-//        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
-//        List<String> nbrList = req.getMktResInstNbrs();
-//        Integer excutorNum = req.getMktResInstNbrs().size()%perNum == 0 ? req.getMktResInstNbrs().size()/perNum : (req.getMktResInstNbrs().size()/perNum + 1);
-//
-//        for (Integer i = 0; i < excutorNum; i++) {
-//            Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
-//            log.info("RunableTask.exceutorAddNbr maxNum={}", maxNum);
-//            List subList = nbrList.subList(perNum*i, maxNum);
-//            CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
-//            Callable callable = new Callable<Boolean>() {
-//                @Override
-//                public Boolean call() throws Exception {
-//                    Boolean addSuccess = resourceInstService.addResourceInstByMerchant(req, newList);
-//                    log.info("RunableTask.exceutorAddNbr resourceInstService.addResourceInstByMerchant req={}, resp={}", JSON.toJSONString(req), addSuccess);
-//                    return addSuccess;
-//                }
-//            };
-//            addNbrFutureTask = executorService.submit(callable);
-//        }
-//        executorService.shutdown();
-//    }
-
-    /**
      * 串码校验多线程处理
      * @param
      */
@@ -745,7 +664,7 @@ public class RunableTask {
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             String batchId = resourceInstService.getPrimaryKey();
             int length=data.size();
-            int pageSize=length/10+10;
+            int pageSize=5000;
             Integer excutorNum = length%pageSize == 0 ? length/pageSize : (length/pageSize + 1);
             validNbrFutureTaskResult = new ArrayList<>(excutorNum);
             //串码集合，用于判断串码是否重复
@@ -791,7 +710,7 @@ public class RunableTask {
         }
         @Override
         public Boolean call() throws Exception {
-            log.info("RunableTask.NbrValidCall.newList={}",JSON.toJSON(newList));
+            log.info("RunableTask.NbrValidCall.newList={}",JSON.toJSON(newList.size()));
             //存入临时表的数据
             List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(5000);
             //需要审核的串码集合
@@ -873,40 +792,15 @@ public class RunableTask {
             }
             //存在非合法的串码
             if (CollectionUtils.isNotEmpty(nbrList)) {
-                //判断是否重复审核的串码
-                ResourceReqDetailQueryReq  repatQuery=new ResourceReqDetailQueryReq();
-                repatQuery.setMktResInstNbrs(nbrList);
-                repatQuery.setPageNo(1);
-                repatQuery.setPageSize(10000);
-                repatQuery.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
-                repatQuery.setSearchCount(false);
-                Page<ResourceReqDetailPageDTO> repeatRespPage = resourceReqDetailManager.listResourceRequestPage(repatQuery);
-                List<String> repeatNbrList=repeatRespPage.getRecords().stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
-                for (String mktResInstNbr : repeatNbrList) {
-                    ResouceUploadTemp inst = new ResouceUploadTemp();
-                    inst.setMktResUploadBatch(batchId);
-                    inst.setMktResInstNbr(mktResInstNbr);
-                    inst.setResult(ResourceConst.CONSTANT_YES);
-                    inst.setUploadDate(now);
-                    inst.setCreateDate(now);
-                    inst.setResultDesc("该串码已被审批过，不能重复审批，请重新发起申请");
-                    inst.setCreateStaff(userId);
-                    Optional<ExcelResourceReqDetailDTO> optional=newList.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
-                    if (!optional.isPresent()){
-                        continue;
-                    }
-                    ExcelResourceReqDetailDTO dto=optional.get();
-                    inst.setStatusCd(ResourceConst.DetailStatusCd.getCodeByName(dto.getStatusCdName()));
-                    inst.setRemark(dto.getRemark());
-                    instList.add(inst);
-                }
-                //排除已审批过的串码，剩下的即不存在的串码
-                nbrList.removeAll(repeatNbrList);
-            }
-            //记录不存在的串码
-            if (CollectionUtils.isNotEmpty(nbrList)) {
                 for (String mktResInstNbr : nbrList) {
                     ResouceUploadTemp inst = new ResouceUploadTemp();
+                    inst.setMktResUploadBatch(batchId);
+                    inst.setMktResInstNbr(mktResInstNbr);
+                    inst.setResult(ResourceConst.CONSTANT_YES);
+                    inst.setUploadDate(now);
+                    inst.setCreateDate(now);
+                    inst.setResultDesc("该串码已被审批过，或不存在");
+                    inst.setCreateStaff(userId);
                     Optional<ExcelResourceReqDetailDTO> optional=newList.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
                     if (!optional.isPresent()){
                         continue;
@@ -914,22 +808,15 @@ public class RunableTask {
                     ExcelResourceReqDetailDTO dto=optional.get();
                     inst.setStatusCd(ResourceConst.DetailStatusCd.getCodeByName(dto.getStatusCdName()));
                     inst.setRemark(dto.getRemark());
-                    inst.setMktResUploadBatch(batchId);
-                    inst.setMktResInstNbr(mktResInstNbr);
-                    inst.setResult(ResourceConst.CONSTANT_YES);
-                    inst.setUploadDate(now);
-                    inst.setCreateDate(now);
-                    inst.setResultDesc("未找到该串码相关的申请记录");
-                    inst.setCreateStaff(userId);
                     instList.add(inst);
                 }
             }
+
             Boolean addResult = resourceUploadTempManager.saveBatch(instList);
-            log.info("RunableTask.exceutornbrValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
+            log.info("RunableTask.exceutornbrValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList.size()), addResult);
             return addResult;
         }
     }
-
 
     /**
      * 串码审核通过
@@ -939,26 +826,18 @@ public class RunableTask {
         try {
             //初始化线程池
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
-//            int length=data.size();
-//            int pageSize=length/10+10;
-//            Integer excutorNum = length%pageSize == 0 ? length/pageSize : (length/pageSize + 1);
-
-//            //分页处理
-//            for (Integer i = 0; i < excutorNum; i++) {
-//                Integer maxNum = pageSize * (i + 1) > length ? length : pageSize * (i + 1);
-//                List<ResourceReqDetailPageDTO> subList = data.subList(pageSize * i, maxNum);
-//                CopyOnWriteArrayList<ResourceReqDetailPageDTO> newList = new CopyOnWriteArrayList(subList);
+            addNbrFutureTaskResult=new ArrayList<>();
+            //设置后台异步执行入库操作开关
+            warehouseCacheUtils.put(ResourceConst.ADD_NBR_INST , "1");
+            log.info("start------------------------{}", warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST));
             //按照申请单进行分组，根据申请单号和串码作为查询条件
             Map<String, List<ResourceReqDetailPageDTO>> map = data.stream().collect(Collectors.groupingBy(t -> t.getMktResReqId()));
-            auditPassNbrFutureTaskResult = new ArrayList<>(map.size());
             for (Map.Entry<String,List<ResourceReqDetailPageDTO>> entry:map.entrySet()){
-                Callable<Boolean> callable = new Callable<Boolean>() {
+                Runnable runnable = new Runnable() {
                     @Override
-                    public Boolean call() throws Exception {
+                    public void run()  {
                         String mktResReqId=entry.getKey();
                         List<ResourceReqDetailPageDTO> detailList=entry.getValue();
-//                            List<String> mktResInstNbrs=detailList.stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
-//                            List<String> mktResDetailIds=detailList.stream().map(ResourceReqDetailPageDTO::getMktResReqDetailId).collect(Collectors.toList());
                         List<String> mktResInstNbrs = new ArrayList<>();
                         List<String> mktResDetailIds = new ArrayList<>();
 
@@ -1029,6 +908,7 @@ public class RunableTask {
                                 addReq.setMerchantId(merchantId);
                             }
                         }
+                        //串码入库
                         exceutorAddNbr(addReq);
                         //修改串码轨迹
                         exceutorAddNbrTrack(addReq);
@@ -1049,21 +929,62 @@ public class RunableTask {
                         resourceReqUpdateReq.setUpdateStaff(updateStaff);
                         resourceReqUpdateReq.setUpdateStaffName(updateStaffName);
                         adminResourceInstService.checkResRequestFinish(resourceReqUpdateReq);
-                        return true;
                     }
                 };
-                Future<Boolean> validFutureTask = executorService.submit(callable);
-                auditPassNbrFutureTaskResult.add(validFutureTask);
-//                }
+                executorService.submit(runnable);
             }
             executorService.shutdown();
+            //开启监听主线程池是否执行结束
+            ExecutorService monitor = ExcutorServiceUtils.initExecutorService();
+            monitor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    while (true) {
+                        if(validBatchAuditNbr()){
+                            //后台异步执行入库操作结束
+                            warehouseCacheUtils.evict( ResourceConst.ADD_NBR_INST );
+                            break;
+                        }
+                        try {
+                            Thread.sleep(2000);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    log.info("done---------------------------------------------------------------------" + System.currentTimeMillis());
+                }
+            });
+            monitor.shutdown();
         }catch (Throwable e) {
             if (e instanceof ExecutionException) {
                 e = e.getCause();
             }
             log.info("error happen", e);
         }
+        log.info("end------------------------{}", warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST));
         return null;
+    }
+
+    public Boolean validBatchAuditNbr() {
+        try{
+            Boolean hasDone = true;
+            log.info("RunableTask.validBatchAuditNbr ={}", JSON.toJSONString(addNbrFutureTaskResult));
+            if (CollectionUtils.isEmpty(addNbrFutureTaskResult)) {
+                return false;
+            }
+            for (Future<Boolean> future : addNbrFutureTaskResult) {
+                if (!future.isDone()) {
+                    return false;
+                }
+            }
+            return hasDone;
+        }catch (Throwable e) {
+            if (e instanceof ExecutionException) {
+                e = e.getCause();
+            }
+            log.error("error happen", e);
+        }
+        return true;
     }
 
     private Map<String, List<String>> getMktResIdAndNbrMap(List<ResourceReqDetailPageDTO> instList){

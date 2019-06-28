@@ -304,6 +304,7 @@ public class AdminResourceInstB2BController {
     @UserLoginToken
     public void exportNbrDetail(@RequestBody ResourceReqDetailQueryReq req, HttpServletResponse response) {
         req.setUserId(UserContext.getUser().getUserId());
+        req.setSearchCount(false);
         ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listResourceRequestDetailPage(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
         log.info("AdminResourceInstB2BController.exportNbrDetail resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));

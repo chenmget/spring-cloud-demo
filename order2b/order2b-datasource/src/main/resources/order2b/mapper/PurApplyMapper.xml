@@ -115,6 +115,10 @@
 		SELECT a.APPLY_NAME as applyName,a.APPLY_ID as applyId,a.APPLY_CODE as applyCode,a.LAN_ID as lanId,a.MERCHANT_ID as merchantId,
 		a.CREATE_DATE as applyTime,i.PRODUCT_ID as productId,
 		CASE
+		WHEN i.pur_type='1' THEN '集采'
+		WHEN i.pur_type='2' THEN '社采'
+		END   as purType,
+		CASE
 		WHEN a.STATUS_CD='10' THEN '待提交'
 		WHEN a.STATUS_CD='20' THEN '待审核'
 		WHEN a.STATUS_CD='21' THEN '待审核'
@@ -136,7 +140,7 @@
         <if test='req.applyName!=null and req.applyName!=""'>
             and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')
         </if>
-        <if test='req.applyName!=null and req.applyName!=""'>
+        <if test='req.statusCd!=null and req.statusCd!=""'>
             and a.STATUS_CD = #{req.statusCd}
         </if>
 

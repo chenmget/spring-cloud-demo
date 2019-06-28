@@ -41,7 +41,7 @@ public class PurApplyStatusReportReq extends PageVO implements Serializable {
 
 	private	List<String> lanIdList;	//地市集合
 
-	private	List<String> statusCdList;	//状态列表
+	private	String statusCd;	//状态
 
 
 

@@ -111,24 +111,35 @@
 
     <select id="applyStatuSearchReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyStatusReportReq"
             resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyStatusReportResp">
-        SELECT a.APPLY_NAME as applyName,a.APPLY_ID as applyId,a.APPLY_CODE as applyCode,a.LAN_ID as lanId,a.MERCHANT_ID as merchantId,
-        a.CREATE_DATE as applyTime,i.PRODUCT_ID as productId,a.STATUS_CD as statusCd,i.PUR_NUM as purNum,i.APPLY_ITEM_ID as applyItemId
-        from pur_apply a,pur_apply_item i WHERE
-        i.APPLY_ID = a.APPLY_ID
 
-        <if test='req.applyCode!=null and req.applyCode!=""'>
+		SELECT a.APPLY_NAME as applyName,a.APPLY_ID as applyId,a.APPLY_CODE as applyCode,a.LAN_ID as lanId,a.MERCHANT_ID as merchantId,
+		a.CREATE_DATE as applyTime,i.PRODUCT_ID as productId,
+		CASE
+		WHEN a.STATUS_CD='10' THEN '待提交'
+		WHEN a.STATUS_CD='20' THEN '待审核'
+		WHEN a.STATUS_CD='21' THEN '待审核'
+		WHEN a.STATUS_CD='40' THEN '待发货'
+		WHEN a.STATUS_CD='41' THEN '部分发货'
+		WHEN a.STATUS_CD='50' THEN '待收货'
+		WHEN a.STATUS_CD='60' THEN '已完成'
+		WHEN a.STATUS_CD='70' THEN '审核通过'
+		WHEN a.STATUS_CD='80' THEN '审核不通过'
+		WHEN a.STATUS_CD='1100' THEN '取消'
+		END   as statusCd,
+		i.PUR_NUM as purNum,i.APPLY_ITEM_ID as applyItemId
+		from pur_apply a,pur_apply_item i WHERE
+		i.APPLY_ID = a.APPLY_ID
+
+		<if test='req.applyCode!=null and req.applyCode!=""'>
             and a.APPLY_CODE = #{req.applyCode}
         </if>
         <if test='req.applyName!=null and req.applyName!=""'>
             and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')
         </if>
-
-        <if test="req.statusCdList != null and req.statusCdList.size() >0 ">
-            and  a.STATUS_CD in
-            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.statusCdList">
-                #{item}
-            </foreach>
+        <if test='req.applyName!=null and req.applyName!=""'>
+            and a.STATUS_CD = #{req.statusCd}
         </if>
+
 
         <if test="req.productIdList != null and req.productIdList.size() >0 ">
             and PRODUCT_ID in

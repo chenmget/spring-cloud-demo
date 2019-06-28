@@ -10,7 +10,8 @@ spring:
       name: warehouse-provider
     registry:
 #      address: zookeeper://10.45.47.87:2285
-      address: zookeeper://172.21.72.75:8121
+#      address: zookeeper://172.21.72.75:8121
+      address: zookeeper://localhost:2181
     protocol:
       name: dubbo
       port: 20886
@@ -126,3 +127,19 @@ addNbrService:
 # 能开接口用的测试环境和正式环境区分标识（测试环境加Test）
 zopServiceEnv: Test
 
+spring.redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    cluster:
+      nodes: 10.45.46.241:7001,10.45.46.242:7001,10.45.46.243:7001
+      timeout: 10000
+      max-redirects: 3
+    expireSeconds: 120
+    commandTimeout: 10000  #redis操作的超时时间
+    pool:
+      max-active: 6000
+      max-idle: 300
+      max-wait: 1000
+      min-idle: 5
+    password:

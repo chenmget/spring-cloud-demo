@@ -368,6 +368,10 @@ public class GoodsB2BController extends GoodsBaseController {
             } else if (userFounder == SystemConst.USER_FOUNDER_3) {
                 req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC_MERCHANT_TYPE_ASC.getValue());
 
+                String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType();
+                // 如果用户是零售商，只能查到地包商品
+                req.setMerchantType(merchantType);
+
                 // 设置零售商的组织路径编码 zhong.wenlong 2019.06.13
                 req.setOrgPathCode(getOrgPathCode(merchantId));
 

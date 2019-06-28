@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.iwhalecloud.retail.oms.mapper.CustTagMapper">
-
-  	<select id="queryCustTag"  resultType="com.iwhalecloud.retail.entity.CustTagEntity">
-    	  	select c.cust_phone,t.tag_text from t_cust_tag c,t_tag t where c.tag_id=t.tag_id and c.cust_phone=#{custPhone}
-  	</select>
-</mapper>

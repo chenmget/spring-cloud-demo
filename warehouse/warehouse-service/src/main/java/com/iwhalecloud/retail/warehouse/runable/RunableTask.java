@@ -941,7 +941,7 @@ public class RunableTask {
                 @Override
                 public void run() {
                     while ( maxNum < 100 ) {
-                        if(validBatchAuditNbr()){
+                        if(validAddNbr()){
                             //后台异步执行入库操作结束
                             warehouseCacheUtils.evict( ResourceConst.ADD_NBR_INST );
                             break;
@@ -969,6 +969,10 @@ public class RunableTask {
     }
 
     public Boolean validBatchAuditNbr() {
+        return warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST) == null;
+    }
+
+    public Boolean validAddNbr() {
         try{
             Boolean hasDone = true;
             log.info("RunableTask.validBatchAuditNbr ={}", JSON.toJSONString(addNbrFutureTaskResult));

@@ -48,7 +48,7 @@
 		
   </select>
 
-	<select id="applySearchReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+	<select id="applySearchReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReportReq"
 			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyReportResp">
 		SELECT a.APPLY_NAME as applyName,a.APPLY_ID as applyId,a.APPLY_CODE as applyCode,a.LAN_ID as lanId,a.MERCHANT_ID as merchantId,
 		a.CREATE_DATE as applyTime,d.UPDATE_DATE as revingDate,d.PRODUCT_ID as productId,
@@ -56,9 +56,7 @@
 		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),e.RECEIVE_ADDR) as receiveAddr,e.CITY as receiveCity
 		from pur_apply a,pur_apply_item_detail d,pur_apply_ext e WHERE
 		d.APPLY_ID = a.APPLY_ID   AND a.APPLY_ID=e.APPLY_ID
-		<if test='req.regionId!=null and req.regionId!=""'>
-			and a.LAN_ID= #{req.regionId}
-		</if>
+
 		<if test='req.applyCode!=null and req.applyCode!=""'>
 			and a.APPLY_CODE = #{req.applyCode}
 		</if>
@@ -86,7 +84,7 @@
 			and DATE_FORMAT(d.CREATE_DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.deliveryEndDate}, '%Y-%m-%d')
 		</if>
 		<if test="req.productIdList != null and req.productIdList.size() >0 ">
-			and PRODUCT_ID in
+			and a.PRODUCT_ID in
 			<foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">
 				#{item}
 			</foreach>
@@ -109,6 +107,53 @@
 		order by a.CREATE_DATE DESC
 
 	</select>
+
+
+    <select id="applyStatuSearchReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyStatusReportReq"
+            resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyStatusReportResp">
+        SELECT a.APPLY_NAME as applyName,a.APPLY_ID as applyId,a.APPLY_CODE as applyCode,a.LAN_ID as lanId,a.MERCHANT_ID as merchantId,
+        a.CREATE_DATE as applyTime,i.PRODUCT_ID as productId,a.STATUS_CD as statusCd,i.PUR_NUM as purNum,i.APPLY_ITEM_ID as applyItemId
+        from pur_apply a,pur_apply_item i WHERE
+        i.APPLY_ID = a.APPLY_ID
+
+        <if test='req.applyCode!=null and req.applyCode!=""'>
+            and a.APPLY_CODE = #{req.applyCode}
+        </if>
+        <if test='req.applyName!=null and req.applyName!=""'>
+            and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')
+        </if>
+
+        <if test="req.statusCdList != null and req.statusCdList.size() >0 ">
+            and  a.STATUS_CD in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.statusCdList">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="req.productIdList != null and req.productIdList.size() >0 ">
+            and PRODUCT_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="req.merchantIdList != null and req.merchantIdList.size() >0">
+            and a.MERCHANT_ID in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIdList">
+                #{item}
+            </foreach>
+        </if>
+
+        <if test="req.lanIdList != null and req.lanIdList.size() >0">
+            and a.lan_id in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.lanIdList">
+                #{item}
+            </foreach>
+        </if>
+
+        order by a.CREATE_DATE DESC
+
+    </select>
   
   <select id="cgSearchApplyLan" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
             resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">

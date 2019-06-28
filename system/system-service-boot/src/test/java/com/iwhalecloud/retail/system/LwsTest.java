@@ -3,6 +3,8 @@ package com.iwhalecloud.retail.system;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.iwhalecloud.retail.system.dto.LanDTO;
+import com.iwhalecloud.retail.system.service.LanService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,9 @@ public class LwsTest {
 	
 	@Autowired
 	private CommonOrgService commonOrgService;
-	
+	@Autowired
+	private LanService lanService;
+
 	@Test
 	public void test() {
 		SysCommonOrgRequest req = new SysCommonOrgRequest();
@@ -34,6 +38,13 @@ public class LwsTest {
 		System.out.println("111111111111111111");
 		
 		
+	}
+	@Test
+	public void testLan() {
+		LanDTO lanDTO=lanService.getLanInfoById("731");
+		System.out.println("111111111111111111"+lanDTO.getLanName());
+
+
 	}
 
 }

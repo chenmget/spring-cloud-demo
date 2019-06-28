@@ -307,7 +307,7 @@ public class ValidAndAddRunableTask {
                     inst.setResult(ResourceConst.CONSTANT_YES);
                     inst.setResultDesc(constant.getVaileNbr24());
                 }
-            }else if (TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode())) {
+            }else if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
                 Pattern pattern39= Pattern.compile(reg39);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches() || pattern39.matcher(mktResInstNbr).matches();
@@ -315,7 +315,7 @@ public class ValidAndAddRunableTask {
                     inst.setResult(ResourceConst.CONSTANT_YES);
                     inst.setResultDesc(constant.getVaileNbr32Or39());
                 }
-            }else if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(req.getDetailCode())) {
+            }else if (TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches();
                 if (!matchs) {

@@ -193,14 +193,14 @@ public class Constant {
     private String vaileNbr24;
 
     /**
-     * 融合终端的终端串码只能包含大写字母、数字和-，且必须为32位
-     */
-    private String vaileNbr32;
-
-    /**
-     * 机顶盒的终端串码只能包含大写字母、数字和-，且必须为32位或39位
+     * 融合终端的终端串码只能包含大写字母、数字和-，且必须为32位或39位
      */
     private String vaileNbr32Or39;
+
+    /**
+     * 机顶盒的终端串码只能包含大写字母、数字和-，且必须为32位
+     */
+    private String vaileNbr32;
 
     /**
      * MAC码库中已存在

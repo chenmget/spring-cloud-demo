@@ -258,10 +258,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Override
     public ResultVO<String> batchAuditNbr(ResourceInstCheckReq req) {
-        //判断是否存在正在执行的任务
-        if(null != warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST)){
-            return ResultVO.error("存在正在执行的串码入库操作，请稍后再试");
-        }
         //申请单明细主键集合
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         if (CollectionUtils.isEmpty(mktResInstNbrs)) {
@@ -451,6 +447,10 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Override
     public ResultVO<String> submitNbrAudit(ResourceUploadTempListPageReq req) {
+        //判断是否存在正在执行的任务
+        if(null != warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST)){
+            return ResultVO.error("存在正在执行的串码入库操作，请稍后再试");
+        }
         //查询审核成功的串码集合
         req.setResult(ResourceConst.CONSTANT_NO);
         req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
@@ -469,6 +469,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             checkPassReq.setCheckStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
             checkPassReq.setUpdateStaff(req.getUpdateStaff());
             batchAuditNbr(checkPassReq);
+        }else{
+            //不存在审核通过的串码，清空执行标识
+            warehouseCacheUtils.evict(ResourceConst.ADD_NBR_INST);
         }
         //审核失败的串码
         if(CollectionUtils.isNotEmpty(failList)){

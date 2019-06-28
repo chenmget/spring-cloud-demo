@@ -78,6 +78,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     /**
      * 根据条件 查询商家条数
+     *
      * @param req
      * @return
      */
@@ -379,7 +380,7 @@ public class MerchantServiceImpl implements MerchantService {
             }
 
         }
-        log.info("MerchantServiceImpl.listMerchant(), output: list={} ", list);
+        log.info("MerchantServiceImpl.listMerchant(), output: list.size()={} ", list.size());
         return ResultVO.success(list);
     }
 
@@ -414,12 +415,13 @@ public class MerchantServiceImpl implements MerchantService {
                 merchantDTO.setCityName(regionNamesMap.get(merchantDTO.getCity()));
             }
         }
-        log.info("MerchantServiceImpl.pageMerchant() output: list<MerchantPageResp>={} ", JSON.toJSONString(page.getRecords()));
+        log.info("MerchantServiceImpl.pageMerchant() output: list<MerchantPageResp>.siz()={} ", JSON.toJSONString(page.getRecords().size()));
         return ResultVO.success(page);
     }
 
     /**
      * 商家 绑定 用户
+     *
      * @param req
      * @return
      */
@@ -545,7 +547,7 @@ public class MerchantServiceImpl implements MerchantService {
                     dto.setTaxCode(invoice.getTaxCode());
                     dto.setRegisterBankAcct(invoice.getRegisterBankAcct());
                     // 不要用copyProperties  有可能两个表的数据不一样 覆盖商家名称
-    //                BeanUtils.copyProperties(invoice, dto);
+                    //                BeanUtils.copyProperties(invoice, dto);
                 }
                 // 设置标签
                 dto.setTagNames(tagNamesMap.get(dto.getMerchantId()));
@@ -554,14 +556,15 @@ public class MerchantServiceImpl implements MerchantService {
 
         targetPage.setRecords(targetList);
 
-        log.info("MerchantServiceImpl.pageRetailMerchant() output：list<RetailMerchantDTO>={}", JSON.toJSONString(targetPage.getRecords()));
+        log.info("MerchantServiceImpl.pageRetailMerchant() output：list<RetailMerchantDTO>.size()={}", JSON.toJSONString(targetPage.getRecords().size()));
         return ResultVO.success(targetPage);
     }
 
     /**
      * 根据pathCode 获取对应等级orgId
+     *
      * @param pathCode
-     * @param level 取第几级 （从0开始)
+     * @param level    取第几级 （从0开始)
      */
     private String getOrgIdByPathCode(String pathCode, int level) {
         // pathCode示例：1000000020.843000000000000.843073800000000.843073805020000.843073805021007
@@ -755,6 +758,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     /**
      * 根据regionId集合获取所有的  区域名称
+     *
      * @param orgIdHashSet
      * @return
      */
@@ -776,6 +780,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     /**
      * 根据regionId集合获取所有的  区域名称
+     *
      * @param regionIdHashSet
      * @return
      */
@@ -794,6 +799,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     /**
      * 根据商家ID集合获取所有的 发票信息
+     *
      * @param merchantIdHashSet
      * @return
      */
@@ -817,6 +823,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     /**
      * 根据商家ID集合获取所有的 发票信息
+     *
      * @param merchantIdHashSet
      * @return
      */
@@ -838,6 +845,7 @@ public class MerchantServiceImpl implements MerchantService {
 
     /**
      * 根据商家ID集合获取所有的 标签名称
+     *
      * @param merchantIdHashSet
      * @return
      */
@@ -882,9 +890,9 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public ResultVO<List<String>> listMerchantByLanCity(MerchantListLanCityReq req) {
-        log.info("MerchantServiceImpl.listMerchantByLanCity MerchantListReq={}",JSON.toJSON(req));
+        log.info("MerchantServiceImpl.listMerchantByLanCity MerchantListReq={}", JSON.toJSON(req));
         List<Merchant> merchants = merchantManager.listMerchantByLanCity(req);
-        log.info("MerchantServiceImpl.listMerchantByLanCity merchantManager.listMerchantByLanCity merchants={}",JSON.toJSON(merchants));
+        log.info("MerchantServiceImpl.listMerchantByLanCity merchantManager.listMerchantByLanCity merchants.size()={}", JSON.toJSON(merchants.size()));
         List<String> merchantIds = merchants.stream().distinct().map(Merchant::getMerchantId).collect(Collectors.toList());
         return ResultVO.success(merchantIds);
     }
@@ -912,12 +920,12 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public ResultVO<List<MerchantLigthResp>> listMerchantForOrder(MerchantLigthReq req){
+    public ResultVO<List<MerchantLigthResp>> listMerchantForOrder(MerchantLigthReq req) {
         return ResultVO.success(merchantManager.listMerchantForOrder(req));
     }
 
     @Override
-    public ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req){
+    public ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req) {
         return ResultVO.success(merchantManager.getMerchantForOrder(req));
     }
 

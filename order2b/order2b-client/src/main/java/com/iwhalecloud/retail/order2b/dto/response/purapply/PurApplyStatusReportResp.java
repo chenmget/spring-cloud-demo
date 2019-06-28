@@ -1,13 +1,12 @@
 package com.iwhalecloud.retail.order2b.dto.response.purapply;
 
 import com.iwhalecloud.retail.dto.PageVO;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
 
 @Data
-public class PurApplyReportResp extends PageVO implements Serializable {
+public class PurApplyStatusReportResp extends PageVO implements Serializable {
 
 	/**
 	 * 
@@ -16,20 +15,14 @@ public class PurApplyReportResp extends PageVO implements Serializable {
 	private String applyId;
 	private String applyCode;		//申请单号
 	private String applyName;		//项目名称
-	private String applyTime;	//采购时间
+	private  String merchantId;//供应商ID
 	private String merchantName;  //供应商名称
-	private String merchantId; //供应商id
-	private  String lanId; // 申请地市
-	private  String applyCity; // 申请地市名称
+ 	private  String lanId; // 申请地市
+	private  String applyCity; // 申请地市
 	private  String purType; // 采购类型
-	private  String mktResInstNbr; // 串码
-	private  String revingDate; // 收货时间
-	private  String deliveryDate; // 发货时间
-	private  String receiveName; // 收货人
-	private  String receiveAddr; // 收货地址
-	private  String receiveCity; // 收货地市
-
- 	//产品信息字段
+	private  String purNum; // 采购数量
+	private  String statusCd; // 采购申请单状态
+	//产品信息字段
 	private  String productId; // 产品Id
 	private  String productName; // 产品名称
 

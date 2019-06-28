@@ -17,7 +17,9 @@ import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.LanDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
+import com.iwhalecloud.retail.system.service.LanService;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.req.NextRouteAndReceiveTaskReq;
@@ -52,6 +54,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 	private ProductService productService;
 	@Reference
 	MerchantService merchantService;
+	@Reference
+	LanService lanService;
+
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
 		log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
@@ -716,6 +721,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		for (PurApplyReportResp purApplyReport: list) {
 			String productId= purApplyReport.getProductId();
 			String merchantId = purApplyReport.getMerchantId();
+			String lanId = purApplyReport.getLanId();
 			// 获取产品信息
 			if (productId !=null && productId.length()>0) {
 				ProductApplyInfoResp productApplyInfoResp= productService.getProductApplyInfo(productId);
@@ -728,11 +734,88 @@ public class PurApplyServiceImpl implements PurApplyService {
 				if(null != merchantDTO)
 				purApplyReport.setMerchantName(merchantDTO.getMerchantName());
 			}
+			// 获取申请地市名称
+			if (lanId !=null  && lanId.length()>0) {
+				LanDTO lanDTO = lanService.getLanInfoById(lanId);
+				if(lanDTO != null) {
+					purApplyReport.setApplyCity(lanDTO.getLanName());
+				}
+			}
 		}
 		return ResultVO.success(purApplyReportResp);
 	}
-    public boolean productParamCheck(PurApplyReportReq req) {
+
+	@Override
+	public ResultVO<Page<PurApplyStatusReportResp>> applyStatusSearchReport(PurApplyStatusReportReq req) {
+		log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
+
+		Boolean flag = productParamCheck(req);
+		if (flag == true) {
+			ProductGetIdReq productGetIdReq = new ProductGetIdReq();
+			BeanUtils.copyProperties(req,productGetIdReq);
+			List<String> productIdList = productService.getProductIdListForApply(productGetIdReq);
+			req.setProductIdList(productIdList);
+		}
+		if (req.getMerchantName()!=null && req.getMerchantName().length()>0) {
+			List<String> merchantIdList = merchantService.getMerchantIdList(req.getMerchantName());
+			req.setMerchantIdList(merchantIdList);
+		}
+
+		//req.setRegionId();
+		Page<PurApplyStatusReportResp> purApplyStatusReportResp = purApplyManager.applyStatusSearchReport(req);
+		List<PurApplyStatusReportResp>  list=purApplyStatusReportResp.getRecords();
+		if (list ==null || list.size()==0 ) {
+			return ResultVO.success(purApplyStatusReportResp);
+		}
+		for (PurApplyStatusReportResp purApplyStatusReport: list) {
+			String productId = purApplyStatusReport.getProductId();
+			String merchantId = purApplyStatusReport.getMerchantId();
+			String lanId = purApplyStatusReport.getLanId();
+			// 获取产品信息
+			if (productId !=null && productId.length()>0) {
+				ProductApplyInfoResp productApplyInfoResp= productService.getProductApplyInfo(productId);
+				if(null != productApplyInfoResp)
+					BeanUtils.copyProperties(productApplyInfoResp,purApplyStatusReport);
+			}
+			// 获取商家名称
+			if (merchantId !=null  && merchantId.length()>0) {
+				MerchantDTO merchantDTO = merchantService.getMerchantInfoById(merchantId);
+				if(null != merchantDTO)
+					purApplyStatusReport.setMerchantName(merchantDTO.getMerchantName());
+			}
+
+			// 获取申请地市名称
+			if (lanId !=null  && lanId.length()>0) {
+				LanDTO lanDTO = lanService.getLanInfoById(lanId);
+				if(lanDTO != null) {
+					purApplyStatusReport.setApplyCity(lanDTO.getLanName());
+				}
+			}
+		}
+		return ResultVO.success(purApplyStatusReportResp);
+	}
+
+	public boolean productParamCheck(PurApplyStatusReportReq req) {
         if (req.getProductName()!=null && req.getProductName().length()>0) {
+			return true;
+		}
+		if (req.getSn()!=null && req.getSn().length()>0) {
+			return true;
+		}
+		if (req.getUnitType()!=null && req.getUnitType().length()>0) {
+			return true;
+		}
+		if (req.getMemory()!=null && req.getMemory().length()>0) {
+			return true;
+		}
+		if (req.getColor()!=null && req.getColor().length()>0) {
+			return true;
+		}
+		return false;
+
+	}
+	public boolean productParamCheck(PurApplyReportReq req) {
+		if (req.getProductName()!=null && req.getProductName().length()>0) {
 			return true;
 		}
 		if (req.getSn()!=null && req.getSn().length()>0) {

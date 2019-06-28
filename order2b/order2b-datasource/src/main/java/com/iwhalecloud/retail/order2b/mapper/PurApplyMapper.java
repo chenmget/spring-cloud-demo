@@ -100,5 +100,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 
 	public Page<PurApplyReportResp> applySearchReport(Page<PurApplyReportResp> page,@Param("req") PurApplyReportReq req) ;
 
+	public Page<PurApplyStatusReportResp> applyStatuSearchReport(Page<PurApplyStatusReportResp> page,@Param("req") PurApplyStatusReportReq req) ;
+
 
 }

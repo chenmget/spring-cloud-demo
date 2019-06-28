@@ -222,4 +222,10 @@ public class PurApplyManager {
 		Page<PurApplyReportResp> pageReport =purApplyMapper.applySearchReport(page,req);
 		return pageReport;
 	}
+
+	public Page<PurApplyStatusReportResp> applyStatusSearchReport(PurApplyStatusReportReq req) {
+		Page<PurApplyStatusReportResp> page=new Page<>(req.getPageNo(),req.getPageSize());
+		Page<PurApplyStatusReportResp> pageReport =purApplyMapper.applyStatuSearchReport(page,req);
+		return pageReport;
+	}
 }

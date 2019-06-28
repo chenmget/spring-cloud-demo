@@ -7,7 +7,9 @@ import com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyReportResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyStatusReportResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReportReq;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyStatusReportReq;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -94,7 +96,7 @@ public class GovernmentReportManageController extends BaseController {
         req.setPageNo(1);
         //数据量控制在1万条
         req.setPageSize(60000);
-        Integer userFounder = UserContext.getUser().getUserFounder();
+//        Integer userFounder = UserContext.getUser().getUserFounder();
 
         // 管理员查看所有
         ResultVO<Page<PurApplyReportResp>> PurApplyReportRespPage = purApplyService.applySearchReport(req);
@@ -118,6 +120,8 @@ public class GovernmentReportManageController extends BaseController {
         orderMap.add(new ExcelTitleName("attrValue1", "容量"));
         orderMap.add(new ExcelTitleName("sn", "产品25位编码"));
         orderMap.add(new ExcelTitleName("purType", "采购类型"));
+        orderMap.add(new ExcelTitleName("corporationPrice", "政企销售价"));
+        orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
 
         orderMap.add(new ExcelTitleName("applyTime", "采购时间"));
 
@@ -126,6 +130,69 @@ public class GovernmentReportManageController extends BaseController {
         orderMap.add(new ExcelTitleName("receiveName", "收货人"));
         orderMap.add(new ExcelTitleName("receiveCity", "收货人"));
         orderMap.add(new ExcelTitleName("receiveAddr", "收货地址"));
+
+        //创建Excel
+        Workbook workbook = new HSSFWorkbook();
+//      //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+                orderMap, "政企价格管理");
+        deliveryGoodsResNberExcel.exportExcel("政企价格管理",workbook,response);
+
+    }
+
+    @ApiOperation(value = "政企省内代收项目状态报表", notes = "政企省内代收项目状态报表")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping("/applyStatusSearchReport")
+    @UserLoginToken
+    public ResultVO<Page<PurApplyStatusReportResp>> applyStatusSearchReport(@RequestBody PurApplyStatusReportReq req) {
+
+        return purApplyService.applyStatusSearchReport(req);
+    }
+
+    @ApiOperation(value = "政企省内代收项目状态报表EXCEL导出", notes = "政企省内代收项目状态报表EXCEL导出")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping("/applyStatusSearchReportExcel")
+    @UserLoginToken
+    public void applyStatusSearchReportExcel(@RequestBody PurApplyStatusReportReq req, HttpServletResponse response) {
+        req.setPageNo(1);
+        //数据量控制在1万条
+        req.setPageSize(60000);
+//        Integer userFounder = UserContext.getUser().getUserFounder();
+
+        // 管理员查看所有
+        ResultVO<Page<PurApplyStatusReportResp>> purApplyStatusReportResp = purApplyService.applyStatusSearchReport(req);
+
+        List<PurApplyStatusReportResp> data = purApplyStatusReportResp.getResultData().getRecords();
+
+        List<ExcelTitleName> orderMap = new ArrayList<>();
+
+        orderMap.add(new ExcelTitleName("applyCode", "申请单号"));
+        orderMap.add(new ExcelTitleName("applyName", "项目名称"));
+        orderMap.add(new ExcelTitleName("applyCity", "申请地市"));
+
+        orderMap.add(new ExcelTitleName("merchantName", "供应商名称"));
+
+        orderMap.add(new ExcelTitleName("brandName", "品牌"));
+        orderMap.add(new ExcelTitleName("productName", "产品名称"));
+        orderMap.add(new ExcelTitleName("unitType", "产品型号"));
+
+        orderMap.add(new ExcelTitleName("color", "颜色"));
+        orderMap.add(new ExcelTitleName("memory", "内存"));
+        orderMap.add(new ExcelTitleName("attrValue1", "容量"));
+        orderMap.add(new ExcelTitleName("sn", "产品25位编码"));
+        orderMap.add(new ExcelTitleName("purType", "采购类型"));
+
+        orderMap.add(new ExcelTitleName("purNum", "数量"));
+
+        orderMap.add(new ExcelTitleName("corporationPrice", "政企销售价"));
+        orderMap.add(new ExcelTitleName("statusCd", "项目状态"));
+
 
         //创建Excel
         Workbook workbook = new HSSFWorkbook();

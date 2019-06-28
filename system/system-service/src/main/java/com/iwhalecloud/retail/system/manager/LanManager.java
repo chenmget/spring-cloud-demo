@@ -35,4 +35,10 @@ public class LanManager {
         QueryWrapper<Lan> wrapper = new QueryWrapper<>();
         return lanMapper.selectList(wrapper);
     }
+    public LanDTO getLanInfoById(String lanId) {
+        Lan lan  = lanMapper.selectById(lanId);
+        LanDTO lanDTO =new LanDTO();
+        BeanUtils.copyProperties(lan, lanDTO);
+        return lanDTO;
+    }
 }

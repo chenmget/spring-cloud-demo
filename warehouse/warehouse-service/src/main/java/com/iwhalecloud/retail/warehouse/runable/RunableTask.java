@@ -954,6 +954,7 @@ public class RunableTask {
                         if (executorService.isTerminated()) {
                             warehouseCacheUtils.evict(ResourceConst.ADD_NBR_INST);
                             log.info("auditPassResDetail executorService threads is done");
+                            break;
                         }
 
                         try {

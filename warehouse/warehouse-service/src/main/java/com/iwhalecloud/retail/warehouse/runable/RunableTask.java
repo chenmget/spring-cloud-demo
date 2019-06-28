@@ -953,6 +953,7 @@ public class RunableTask {
                             e.printStackTrace();
                         }
                     }
+                    warehouseCacheUtils.evict( ResourceConst.ADD_NBR_INST );
                     log.info("done---------------------------------------------------------------------" + System.currentTimeMillis());
                 }
             });

@@ -507,8 +507,6 @@ public class MerchantServiceImpl implements MerchantService {
                 targetDTO.setOrgIdWithLevel3(orgIdWithLevel3);
                 targetDTO.setOrgIdWithLevel4(orgIdWithLevel4);
 
-                log.info("pathcode: {} orgIdWithLevel3:{}  orgIdWithLevel4:{} ", targetDTO.getParCrmOrgPathCode(), orgIdWithLevel3, orgIdWithLevel4);
-
                 targetList.add(targetDTO);
 
                 // 取组织  ID集合
@@ -572,7 +570,8 @@ public class MerchantServiceImpl implements MerchantService {
         if (StringUtils.isEmpty(pathCode) || level < 0) {
             return null;
         }
-        String[] orgIds = pathCode.split(".");
+        // 要用 \\.  转义分割符号
+        String[] orgIds = pathCode.split("\\.");
         if (orgIds.length < level + 1) {
             // 不够个数
             return null;

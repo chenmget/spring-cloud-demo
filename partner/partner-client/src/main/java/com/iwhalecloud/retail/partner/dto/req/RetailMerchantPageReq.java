@@ -4,6 +4,7 @@ import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 import java.util.List;

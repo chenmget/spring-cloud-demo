@@ -552,17 +552,21 @@ public class RunableTask {
 
 
     public static void main(String[] args) {
-        RunableTask task = new RunableTask();
-        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
-        Future<String> future = executorService.submit(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                //暂停1s
-                Thread.sleep(1000);
-                return null;
-            }
-        });
-        executorService.shutdown();
+
+        Integer excutorNum = 49973%1000 == 0 ? 49973/1000 : (49973/1000 + 1);
+        System.out.println(excutorNum);
+
+//        RunableTask task = new RunableTask();
+//        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
+//        Future<String> future = executorService.submit(new Callable<String>() {
+//            @Override
+//            public String call() throws Exception {
+//                //暂停1s
+//                Thread.sleep(1000);
+//                return null;
+//            }
+//        });
+//        executorService.shutdown();
     }
 
 
@@ -908,10 +912,16 @@ public class RunableTask {
                                 addReq.setMerchantId(merchantId);
                             }
                         }
+
+                        CopyOnWriteArrayList<String> resInstNbrList = new CopyOnWriteArrayList<>(addReq.getMktResInstNbrs());
                         //串码入库
-                        exceutorAddNbr(addReq);
+//                        exceutorAddNbr(addReq);
+                        resourceInstService.addResourceInstByMerchant(addReq, resInstNbrList);
+
                         //修改串码轨迹
-                        exceutorAddNbrTrack(addReq);
+                        //exceutorAddNbrTrack(addReq);
+                        resouceInstTrackService.asynSaveTrackForMerchant(addReq, ResultVO.success(), resInstNbrList);
+
                         log.info("RunableTask.auditPassResDetail resourceInstService.addResourceInst addReq={}", addReq);
                         // step3 修改申请单状态变为审核通过
                         ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
@@ -937,34 +947,47 @@ public class RunableTask {
             //开启监听主线程池是否执行结束
             ExecutorService monitor = ExcutorServiceUtils.initExecutorService();
             monitor.execute(new Runnable() {
-                int maxNum=0;
+//                int maxNum=0;
                 @Override
                 public void run() {
-                    while ( maxNum < 100 ) {
-                        if(validAddNbr()){
-                            //后台异步执行入库操作结束
-                            warehouseCacheUtils.evict( ResourceConst.ADD_NBR_INST );
-                            break;
+                    while (true) {
+                        if (executorService.isTerminated()) {
+                            warehouseCacheUtils.evict(ResourceConst.ADD_NBR_INST);
+                            log.info("auditPassResDetail executorService threads is done");
                         }
+
                         try {
-                            maxNum++;
-                            Thread.sleep(2000);
+                            log.info("auditPassResDetail executorService threads is executing");
+                            Thread.sleep(200);
                         } catch (InterruptedException e) {
-                            e.printStackTrace();
+                            log.error("auditPassResDetail executorService sleep error ", e);
                         }
                     }
-                    warehouseCacheUtils.evict( ResourceConst.ADD_NBR_INST );
-                    log.info("done---------------------------------------------------------------------" + System.currentTimeMillis());
+//                    while ( maxNum < 100 ) {
+//                        if(validAddNbr()){
+//                            //后台异步执行入库操作结束
+//                            warehouseCacheUtils.evict( ResourceConst.ADD_NBR_INST );
+//                            break;
+//                        }
+//                        try {
+//                            maxNum++;
+//                            Thread.sleep(2000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                    warehouseCacheUtils.evict( ResourceConst.ADD_NBR_INST );
+//                    log.info("done---------------------------------------------------------------------" + System.currentTimeMillis());
                 }
             });
             monitor.shutdown();
-        }catch (Throwable e) {
+        } catch (Throwable e) {
             if (e instanceof ExecutionException) {
                 e = e.getCause();
             }
             log.info("error happen", e);
         }
-        log.info("end------------------------{}", warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST));
+//        log.info("end------------------------{}", warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST));
         return null;
     }
 

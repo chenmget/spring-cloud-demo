@@ -309,7 +309,7 @@ public class ResourceInstServiceImpl implements ResourceInstService {
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public synchronized Boolean addResourceInstByMerchant(ResourceInstAddReq req, CopyOnWriteArrayList<String> mktResInstNbrs) {
-        log.info("ResourceInstServiceImpl.addResourceInst req={}, mktResInstNbrs={}", JSON.toJSONString(req), JSON.toJSONString(mktResInstNbrs));
+        log.info("ResourceInstServiceImpl.addResourceInst req={}, mktResInstNbrs size={}", JSON.toJSONString(req), JSON.toJSONString(mktResInstNbrs.size()));
         String batchId = resourceInstManager.getPrimaryKey();
         List<ResourceInst> resourceInsts = new ArrayList<ResourceInst>(mktResInstNbrs.size());
         Date now = new Date();

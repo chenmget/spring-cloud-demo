@@ -505,6 +505,8 @@ public class MerchantServiceImpl implements MerchantService {
                 targetDTO.setOrgIdWithLevel3(orgIdWithLevel3);
                 targetDTO.setOrgIdWithLevel4(orgIdWithLevel4);
 
+                log.info("pathcode: {} orgIdWithLevel3:{}  orgIdWithLevel4:{} ", targetDTO.getParCrmOrgPathCode(), orgIdWithLevel3, orgIdWithLevel4);
+
                 targetList.add(targetDTO);
 
                 // 取组织  ID集合
@@ -559,7 +561,7 @@ public class MerchantServiceImpl implements MerchantService {
     /**
      * 根据pathCode 获取对应等级orgId
      * @param pathCode
-     * @param level 取第几级 （从0开始
+     * @param level 取第几级 （从0开始)
      */
     private String getOrgIdByPathCode(String pathCode, int level) {
         // pathCode示例：1000000020.843000000000000.843073800000000.843073805020000.843073805021007

@@ -281,7 +281,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         if (ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode().equals(statusCd)) {
             doAuditResNbrUnPass(req, resDetailList);
         } else if (ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode().equals(statusCd)) {
-            //runableTask.setAuditPassNbrFutureTaskResult();
+            warehouseCacheUtils.put(ResourceConst.ADD_NBR_INST , ResourceConst.ADD_NBR_INST );
             runableTask.auditPassResDetail(resDetailList, req.getUpdateStaff(), req.getUpdateStaffName());
         }
         return ResultVO.success("审核成功");

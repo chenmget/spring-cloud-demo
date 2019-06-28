@@ -828,7 +828,7 @@ public class RunableTask {
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
             addNbrFutureTaskResult=new ArrayList<>();
             //设置后台异步执行入库操作开关
-            warehouseCacheUtils.put(ResourceConst.ADD_NBR_INST , "1");
+
             log.info("start------------------------{}", warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST));
             //按照申请单进行分组，根据申请单号和串码作为查询条件
             Map<String, List<ResourceReqDetailPageDTO>> map = data.stream().collect(Collectors.groupingBy(t -> t.getMktResReqId()));
@@ -937,15 +937,17 @@ public class RunableTask {
             //开启监听主线程池是否执行结束
             ExecutorService monitor = ExcutorServiceUtils.initExecutorService();
             monitor.execute(new Runnable() {
+                int maxNum=0;
                 @Override
                 public void run() {
-                    while (true) {
+                    while ( maxNum < 100 ) {
                         if(validBatchAuditNbr()){
                             //后台异步执行入库操作结束
                             warehouseCacheUtils.evict( ResourceConst.ADD_NBR_INST );
                             break;
                         }
                         try {
+                            maxNum++;
                             Thread.sleep(2000);
                         } catch (InterruptedException e) {
                             e.printStackTrace();

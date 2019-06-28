@@ -80,7 +80,9 @@ public class MerchantResourceInstB2BController {
     @PostMapping(value="getResourceInstList")
     @UserLoginToken
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(@RequestBody ResourceInstListPageReq req) {
-        if (StringUtils.isEmpty(req.getMktResStoreIds()) && null == req.getMktResInstNbr()) {
+        //入参校验，如果仓库id和串码id都不传，则不予查询
+        boolean flag = StringUtils.isEmpty(req.getMktResStoreIds()) && StringUtils.isEmpty(req.getMktResInstNbr()) && StringUtils.isEmpty(req.getMktResInstNbrs());
+        if (flag) {
             return ResultVO.error("仓库和串码不能同时为空");
         }
         return resourceInstService.getResourceInstList(req);

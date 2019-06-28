@@ -64,7 +64,7 @@ public class CommonOrgController {
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @GetMapping(value = "/list")
+    @PostMapping(value = "/list")
     public ResultVO<List<CommonOrgDTO>> list(@RequestBody @ApiParam(value = "查询通用组织列表参数", required = true) CommonOrgListReq req) {
         log.info("CommonOrgController.list()  input: req: {}", JSON.toJSONString(req));
         return commonOrgService.listCommonOrg(req, false);

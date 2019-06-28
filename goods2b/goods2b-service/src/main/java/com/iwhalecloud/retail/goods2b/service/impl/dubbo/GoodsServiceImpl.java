@@ -1806,11 +1806,13 @@ public class GoodsServiceImpl implements GoodsService {
         log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 地包商 supplierGoodsDTOs={}", supplierGoodsDTOs1);
         if (CollectionUtils.isNotEmpty(supplierGoodsDTOs1)) {
             String avgPriceStr = goodsManager.getAvgPrice(productId);
+            ProductResp productResp = productManager.getProductInfo(productId);
             GoodsDetailDTO goodsDetailDTO = goodsProductRelMapper.qryGoodsByProductIdAndGoodsId(productId,goodsId);
-            if(StringUtils.isNotEmpty(avgPriceStr) && null!=goodsDetailDTO){
+            if(StringUtils.isNotEmpty(avgPriceStr) && null!=goodsDetailDTO && null!=productResp){
                 Double deliveryPrice = goodsDetailDTO.getDeliveryPrice();
                 Double avgPrice = Double.valueOf(avgPriceStr);
-                if(deliveryPrice / avgPrice > 1.03){
+                String isFixedLine = productResp.getIsFixedLine();
+                if((StringUtils.isEmpty(isFixedLine) || "0".equals(isFixedLine)) && deliveryPrice / avgPrice > 1.03){
                     supplierGoodsDTOs = this.getSupplierGoods(productId);
                 }
             }

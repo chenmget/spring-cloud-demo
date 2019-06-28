@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import static com.iwhalecloud.retail.warehouse.common.ResourceConst.WAREHOUSE_COMMON_CACHE_KEY;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/cache")
@@ -224,6 +226,14 @@ public class CacheController extends BaseController {
     @CacheEvict(value = WorkFlowConst.CACHE_NAME_WF_SERVICE, allEntries = true, beforeInvocation = true)
     public ResultVO<Boolean> cleanCacheNameWfService() {
         log.info("CacheController.cleanCacheNameWfService clean wf_service table cache success!!!");
+        return ResultVO.success(true);
+    }
+
+    @ApiOperation(value = "清空仓库工具类所有缓存", notes = "清空仓库工具类所有缓存")
+    @RequestMapping(value = "/cleanCacheNameWfService", method = RequestMethod.GET)
+    @CacheEvict(value = WAREHOUSE_COMMON_CACHE_KEY, allEntries = true, beforeInvocation = true)
+    public ResultVO<Boolean> cleanCacheNameWarehouseCommonCahe() {
+        log.info("CacheController.cleanCacheNameWarehouseCommonCahe clean warehouse_common_cache table cache success!!!");
         return ResultVO.success(true);
     }
 }

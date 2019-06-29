@@ -30,7 +30,7 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	    List<ReportOrderResp> list = page.getRecords();
 	    
 	    for(ReportOrderResp dto : list) {
-	    	String orderId = dto.getOrderId();
+	    	String itemId = dto.getItemId();
 	    	String create_time = dto.getCreateTime();
 	    	String pay_time = dto.getPayTime();
 	    	String receive_time = dto.getReceiveTime();
@@ -77,7 +77,7 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 			dto.setCouponMoney(dto.getCouponMoney()/100);
 			dto.setTotalCouponMoney(dto.getTotalCouponMoney()/100);
 	    	// TODO 通过orderId查出串码
-	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(orderId);
+	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(itemId);
 	    	
 	    	 dto.setNbr(li);
 	    	
@@ -91,9 +91,9 @@ public class ReportOrderServiceImpl implements ReportOrderService {
 	public ResultVO<List<ReportOrderResp>> getReportOrderList1dc(ReportOrderDaoReq req) {
 		List<ReportOrderResp> list = (List<ReportOrderResp>) reportOrderManager.ListReportOrder1dc(req);
 	    for(ReportOrderResp dto : list) {
-	    	String orderId = dto.getOrderId();
+	    	String itemId = dto.getItemId();
 	    	// TODO 通过orderId查出串码
-	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(orderId);
+	    	List<ReportOrderNbrResp> li =reportOrderManager.listReportOrderNbr(itemId);
 	    	 dto.setNbr(li);
 	    	 dto.setShipNum(li.size());
 	    }

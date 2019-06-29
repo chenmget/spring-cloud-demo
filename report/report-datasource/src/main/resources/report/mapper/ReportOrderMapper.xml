@@ -19,7 +19,7 @@
 				 a.ORDER_TYPE AS orderType,
 				 a.PAYMENT_TYPE AS paymentType,
 				 b.sn AS sn,
-				 b.num AS num,
+				 sum(b.num) AS num,
 				 b.price AS price,
 				 (b.num*b.price) AS totalMoney,
 				 a.CREATE_TIME AS createTime,
@@ -27,8 +27,8 @@
 				 a.RECEIVE_TIME AS receiveTime,
 				 GROUP_CONCAT(l.name) AS activeName,
 				 k.PROMOTION_TYPE AS couponType,
-				 k.DISCOUNT AS couponMoney,
-				 (b.num*k.DISCOUNT) AS totalCouponMoney,
+				 (k.DISCOUNT/b.num) AS couponMoney,
+				 k.DISCOUNT AS totalCouponMoney,
 				 a.SUPPLIER_NAME AS supplierName,
 				 a.SUPPLIER_CODE AS supplierCode,
 				 par.MERCHANT_NAME AS merchantName,
@@ -147,8 +147,8 @@
             LEFT JOIN prod_product c ON c.product_id=b.product_id
             WHERE  
             	a.order_id=b.order_id
-		  <if test="orderId!=null and orderId!=''">
-			and a.order_id = #{orderId}
+		  <if test="itemId!=null and itemId!=''">
+			and b.item_id = #{itemId}
 		  </if>
 	 </select>
 	 

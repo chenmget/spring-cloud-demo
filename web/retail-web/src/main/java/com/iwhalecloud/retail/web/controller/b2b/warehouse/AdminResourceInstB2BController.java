@@ -435,9 +435,7 @@ public class AdminResourceInstB2BController {
         if (allowUploadSuffix.indexOf(suffix) <= -1) {
             return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
         }
-        InputStream is = null;
-        try {
-            is = file.getInputStream();
+        try(InputStream is = file.getInputStream()) {
             List<ExcelResourceReqDetailDTO> data = ExcelToNbrUtils.getNbrDetailData(is);
             String userId=UserContext.getUser().getUserId();
             return resourceInstService.uploadDelResourceInst(data,userId);

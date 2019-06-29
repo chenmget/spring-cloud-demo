@@ -54,6 +54,19 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
         return resp;
     }
 
+    /**
+     * 管理员根据batchId删除串码
+     * @param batchId 上一步导入时的批次号
+     * @param userId  操作人的id
+     * @return
+     */
+    @Override
+    public ResultVO delResourceInstByBatchId(String batchId,String userId){
+        log.info("AdminResourceInstOpenServiceImpl.delResourceInstByBatchId batchId={}", batchId);
+        ResultVO resp = adminResourceInstService.delResourceInstByBatchId(batchId,userId);
+        return resp; 
+    }
+
 	@Override
 	public ResultVO inventoryChange(InventoryChangeReq req) {
 		log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));

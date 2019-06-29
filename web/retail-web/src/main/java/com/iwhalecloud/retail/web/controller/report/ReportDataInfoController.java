@@ -5,9 +5,12 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.oms.OmsCommonConsts;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
+import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq;
 import com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq;
 import com.iwhalecloud.retail.report.service.IReportDataInfoService;
+import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.request.RegionsListReq;
 import com.iwhalecloud.retail.system.dto.response.RegionsGetResp;
 import com.iwhalecloud.retail.system.service.RegionsService;
@@ -27,14 +30,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
 /**
  * @author liweisong
  * @date 2019-02-18
- * 门店报表
+ * 门店进销存机型报表
  */
 @Slf4j
 @RestController
@@ -44,6 +52,9 @@ public class ReportDataInfoController extends BaseController {
 
     @Reference
     private IReportDataInfoService iReportDataInfoService;
+    
+    @Reference
+	private MerchantService merchantService;
     
     @Reference
     private RegionsService regionService;
@@ -59,59 +70,33 @@ public class ReportDataInfoController extends BaseController {
     @PostMapping("/getStorePurchaserReport")
 	@UserLoginToken
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(@RequestBody ReportStorePurchaserReq req) {
-		//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
-//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-//		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
-		String userType=req.getUserType();
-		//String userType = UserContext.getUser().getUserFounder()+"";
-//		if("2".equals(legacyAccount) && !"3".equals(userType)){
-//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-//			req.setRetailerCode(retailerCodes);
-//		}
-		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
-			String retailerCode=UserContext.getUser().getRelCode();
-			req.setRetailerCode(retailerCode);
+		log.info("****************************ReportStoreController getReportStSaleList    req={}",JSON.toJSONString(req));
+		//默认最大跨度查询三个月
+		String dateStart = req.getDateStart();
+		String dateEnd = req.getDateEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(dateStart==null && dateEnd==null){
+			dateStart = format3.format(date3);
+			dateEnd = df.format(date);
+			req.setDateStart(dateStart);
+			req.setDateEnd(dateEnd);
 		}
-		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
-			String regionId = UserContext.getUser().getLanId();
-			req.setLanId(regionId);
+		int userType=UserContext.getUser().getUserFounder();
+		List<String> list = new ArrayList<String>();
+		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
+		} else if (userType == SystemConst.USER_FOUNDER_9) { //地市管理员
+			list.add(UserContext.getUser().getLanId());
+			req.setLanIdList(list);
+		} else {
+			return ResultVO.error("当前用户 没有权限");
 		}
 		return iReportDataInfoService.getStorePurchaserReport(req);
-    }
-	
-	@ApiOperation(value = "区县查询", notes = "区县查询")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-	@GetMapping(value="/getRegionIdForCity")
-	@UserLoginToken
-	public ResultVO<List<RegionsGetResp>> getRegionIdForCity() {
-		RegionsListReq req = new RegionsListReq();
-		String regionId = UserContext.getUser().getRegionId();
-		//regionId = "430100";
-		//String lanId = UserContext.getUser().getLanId();//430100
-		if(StringUtils.isNotEmpty(regionId)){
-			req.setRegionParentId(regionId);	
-		}else{
-			req.setRegionParentId("430000");
-		}
-		return regionService.listRegions(req);
-    }
-	
-	
-	@ApiOperation(value = "查询用户角色", notes = "查询用户角色")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-	@GetMapping(value="/getUerRoleForView")
-	@UserLoginToken
-    public ResultVO<List<ReportStorePurchaserResq>> getUerRoleForView() {
-		ReportStorePurchaserReq req = new ReportStorePurchaserReq();
-		String userId = UserContext.getUserId();
-		req.setUserId(userId);
-		return iReportDataInfoService.getUerRoleForView(req);
     }
 	
 	 /**
@@ -125,28 +110,32 @@ public class ReportDataInfoController extends BaseController {
     @PostMapping(value="/StorePurchaserReportExport")
     @UserLoginToken
     public void StorePurchaserReportExport(@RequestBody ReportStorePurchaserReq req, HttpServletResponse response) {
-    	log.info("ReportDataInfoController.StorePurchaserReportExport() ", JSON.toJSONString(req));
-        //req.setPageNo(1);
-        //数据量控制在1万条
-        //req.setPageSize(10000);
-    	//1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
-//		String legacyAccount = req.getLegacyAccount();//判断是云货架还是原系统的零售商，默认云货架
-//		String retailerCodes = req.getRetailerCode();//是否输入了零售商账号
-		String userType=req.getUserType();
-		//String userType = UserContext.getUser().getUserFounder()+"";
-//		if("2".equals(legacyAccount) && !"3".equals(userType)){
-//			retailerCodes = iReportDataInfoService.retailerCodeBylegacy(retailerCodes);
-//			req.setRetailerCode(retailerCodes);
-//		}
-		if(userType!=null && !userType.equals("") && "3".equals(userType)){//零售商
-			String retailerCode=UserContext.getUser().getRelCode();
-			req.setRetailerCode(retailerCode);
+    	log.info("****************************ReportStoreController getReportStSaleList    req={}",JSON.toJSONString(req));
+		//默认最大跨度查询三个月
+		String dateStart = req.getDateStart();
+		String dateEnd = req.getDateEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(dateStart==null && dateEnd==null){
+			dateStart = format3.format(date3);
+			dateEnd = df.format(date);
+			req.setDateStart(dateStart);
+			req.setDateEnd(dateEnd);
 		}
-		if(userType!=null && !userType.equals("") && "2".equals(userType)){//地市管理员
-			String regionId = UserContext.getUser().getLanId();
-			req.setLanId(regionId);
+		int userType=UserContext.getUser().getUserFounder();
+		List<String> list = new ArrayList<String>();
+		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
+		} else if (userType == SystemConst.USER_FOUNDER_9) { //地市管理员
+			list.add(UserContext.getUser().getLanId());
+			req.setLanIdList(list);
+		} else {
+			return ;
 		}
-		
         ResultVO<List<ReportStorePurchaserResq>> resultVO = iReportDataInfoService.getStorePurchaserReportdc(req);
         ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {
@@ -161,60 +150,28 @@ public class ReportDataInfoController extends BaseController {
         Workbook workbook = new HSSFWorkbook();
         
         List<ExcelTitleName> orderMap = new ArrayList<>();
-        orderMap.add(new ExcelTitleName("productBaseName", "机型"));
-        orderMap.add(new ExcelTitleName("partnerName", "零售商名称"));
-        orderMap.add(new ExcelTitleName("partnerCode", "零售商编码"));
-        orderMap.add(new ExcelTitleName("businessEntityName", "所属经营主体"));
+        orderMap.add(new ExcelTitleName("productName", "产品名称"));
+        orderMap.add(new ExcelTitleName("productBaseName", "产品类型"));
+        orderMap.add(new ExcelTitleName("productType", "零售商编码"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
-        orderMap.add(new ExcelTitleName("typeId", "产品类型"));
-        orderMap.add(new ExcelTitleName("theTotalInventory", "入库总量"));
-        orderMap.add(new ExcelTitleName("theTotalOutbound", "出库总量"));
-        orderMap.add(new ExcelTitleName("stockTotalNum", "库存总量"));
+        orderMap.add(new ExcelTitleName("priceLevel", "机型档位"));
+        orderMap.add(new ExcelTitleName("lanIdName", "地市"));
+        orderMap.add(new ExcelTitleName("totalInNum", "入库总量"));
+        orderMap.add(new ExcelTitleName("totalOutNum", "出库总量"));
+        orderMap.add(new ExcelTitleName("stockNum", "库存总量"));
         orderMap.add(new ExcelTitleName("purchaseNum", "交易入库量"));
         orderMap.add(new ExcelTitleName("manualNum", "手工入库量"));
-        orderMap.add(new ExcelTitleName("totalSalesNum", "总销售量"));
-        orderMap.add(new ExcelTitleName("manualSalesNum", "手工销售量"));
-        orderMap.add(new ExcelTitleName("crmcontractNum", "CRM合约销量"));
+        orderMap.add(new ExcelTitleName("sellNum", "总销售量"));
+        orderMap.add(new ExcelTitleName("uncontractNum", "手工销售量"));
+        orderMap.add(new ExcelTitleName("contractNum", "CRM合约销量"));
         orderMap.add(new ExcelTitleName("registerNum", "自注册销量"));
         orderMap.add(new ExcelTitleName("returnNum", "退库量"));
-        orderMap.add(new ExcelTitleName("averageDailySales", "近7天日均销量"));
-        orderMap.add(new ExcelTitleName("stockNum", "库存量"));
-        orderMap.add(new ExcelTitleName("stockTurnover", "库存周转率"));
-        orderMap.add(new ExcelTitleName("inventoryWarning", "库存预警"));
+        orderMap.add(new ExcelTitleName("weekAvgSellNum", "近7天日均销量"));
 
 //      //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
         		orderMap, "门店进销存机型报表");
         deliveryGoodsResNberExcel.exportExcel("门店进销存机型报表",workbook,response);
-        
-//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
-//        OutputStream output = null;
-//        
-//        try{
-//            //创建Excel
-//            String fileName = "门店进销存机型报表";
-////            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
-//            output = response.getOutputStream();
-//            response.reset();
-//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-//            response.setContentType("application/msexcel;charset=UTF-8");
-//            response.setCharacterEncoding("UTF-8");
-//            workbook.write(output);
-////            output.close();
-//          
-//        }catch (Exception e){
-//            log.error("门店进销存机型报表导出失败",e);
-//        } finally {
-//            if (null != output){
-//                try {
-//                    output.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-
     }
     
 }

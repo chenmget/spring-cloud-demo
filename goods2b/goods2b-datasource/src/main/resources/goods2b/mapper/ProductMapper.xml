@@ -567,11 +567,11 @@
       and p.MEMORY =#{req.memory}
     </if>
     <if test="null!=req.color and ''!=req.color">
-      p.COLOR =#{req.color}
+      and p.COLOR =#{req.color}
     </if>
 
     <if test="null!=req.sn and ''!=req.sn">
-      p.SN=#{req.sn}
+      and p.SN=#{req.sn}
     </if>
     <if test="null!=req.unitType and ''!=req.unitType">
       and b.UNIT_TYPE =#{req.unitType}

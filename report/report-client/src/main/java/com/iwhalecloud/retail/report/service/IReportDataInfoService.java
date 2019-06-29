@@ -11,13 +11,9 @@ public interface IReportDataInfoService {
 	//供应商只能看自己的仓库
 	public String getMyMktResStoreId(String relCode);
 
-	public String getretailerCode(String Code);
-	
-	public String retailerCodeBylegacy(String legacyAccount);
 	//门店进销存机型报表
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(ReportStorePurchaserReq req);
     //导出
     public ResultVO<List<ReportStorePurchaserResq>> getStorePurchaserReportdc(ReportStorePurchaserReq req);
 
-    public ResultVO<List<ReportStorePurchaserResq>> getUerRoleForView(ReportStorePurchaserReq req);
 }

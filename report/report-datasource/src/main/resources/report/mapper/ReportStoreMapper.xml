@@ -36,7 +36,7 @@
 			FROM RPT_PARTNER_OPERATING_DAY a
 			LEFT JOIN par_merchant par ON par.merchant_code = a.PARTNER_CODE
 			LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
-			LEFT JOIN PROD_TYPE p ON a.TYPE_ID = p.TYPE_ID
+			LEFT JOIN PROD_TYPE p ON a.PRODUCT_TYPE = p.TYPE_ID
 	where 1=1
 	<if test="req.dateStart!=null and req.dateStart!=''">
 		and str_to_date(a.DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.dateStart}, '%Y-%m-%d')
@@ -60,7 +60,7 @@
 		and a.stock_warning=#{req.stockWarning}
 	</if>
 	<if test="req.productType!=null and req.productType!='' and req.productType!='-1'">  
-		and a.TYPE_ID=#{req.productType}
+		and a.PRODUCT_TYPE=#{req.productType}
 	</if>
 	<if test="req.brandName!=null and req.brandName!=''">
 		and a.brand_id=#{req.brandName}

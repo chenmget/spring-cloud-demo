@@ -26,19 +26,6 @@ public class ReportDataInfoManager {
 	        return pageReport;
 	}
 	
-	public List<ReportStorePurchaserResq> getUerRoleForView(ReportStorePurchaserReq req) {
-		List<ReportStorePurchaserResq> pageReport =reportDataInfoMapper.getUerRoleForView(req);
-	        return pageReport;
-	}
-	
-	public String retailerCodeBylegacy(String legacyAccount) {
-		return reportDataInfoMapper.retailerCodeBylegacy(legacyAccount);
-	}
-	
-	public String getretailerCode(String Code) {
-		return reportDataInfoMapper.getretailerCode(Code);
-	}
-	
 	public String getMyMktResStoreId(String relCode) {
 		return reportDataInfoMapper.getMyMktResStoreId(relCode);
 	}

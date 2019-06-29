@@ -23,10 +23,6 @@ public class ReportStInvCityServiceImpl implements ReportStInvCityService {
     @Override
     public ResultVO<Page<RptPartnerOperatingDay>> getReportStInvCityList(ReportStInvCityDaoReq req) {
         Page<RptPartnerOperatingDay> pageRptPartnerOperatingDay = reportStInvCityManager.listStInvCity(req);
-        List<RptPartnerOperatingDay> listRptPartnerOperatingDay = pageRptPartnerOperatingDay.getRecords();
-
-        handleResult(listRptPartnerOperatingDay);
-
         return ResultVO.success(pageRptPartnerOperatingDay);
 
     }
@@ -35,27 +31,9 @@ public class ReportStInvCityServiceImpl implements ReportStInvCityService {
     public ResultVO<List<RptPartnerOperatingDay>> getReportStInvCityListExport(ReportStInvCityDaoReq req) {
         
         List<RptPartnerOperatingDay> listRptPartnerOperatingDay = reportStInvCityManager.listStInvCityExport(req);
-
-        handleResult(listRptPartnerOperatingDay);
-
         return ResultVO.success(listRptPartnerOperatingDay);
     }
 
-    private void handleResult(List<RptPartnerOperatingDay> listRptPartnerOperatingDay){
-        for (RptPartnerOperatingDay rsic : listRptPartnerOperatingDay) {
-            if(rsic.getWarnStatus() == null){
-                rsic.setWarnStatus("严重缺货");
-                continue;
-            }
-            Double warnStatus = Double.valueOf(rsic.getWarnStatus());
-            if (warnStatus >= 10) {
-                rsic.setWarnStatus("充裕");
-            } else if (warnStatus <= 5) {
-                rsic.setWarnStatus("严重缺货");
-            } else {
-                rsic.setWarnStatus("缺货");
-            }
-        }
-    }
+    
 
 }

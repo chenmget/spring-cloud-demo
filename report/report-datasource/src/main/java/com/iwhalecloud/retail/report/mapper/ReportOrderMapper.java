@@ -19,7 +19,7 @@ public interface ReportOrderMapper extends BaseMapper<RptOrderOperatingDay> {
  
  public List<ReportOrderResp> ListReportOrder(@Param("req") ReportOrderDaoReq req);
  
- public List<ReportOrderNbrResp> ListReportOrderNbr(@Param("orderId")  String orderId);
+ public List<ReportOrderNbrResp> ListReportOrderNbr(@Param("itemId")  String itemId);
  
  public Page<ReportOrderNbrResp> ListReportOrderNbr3(Page<ReportOrderNbrResp> page,@Param("req")  ReportOrderNbrDaoReq req);
 

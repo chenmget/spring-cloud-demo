@@ -443,7 +443,34 @@ public class AdminResourceInstB2BController {
             log.error("excel解析失败",e);
             return ResultVO.error("excel解析失败");
         }
-
     }
 
+    @ApiOperation(value = "获取待删除的串码临时记录", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value="listDelResourceInstTemp")
+    public ResultVO<Page<ResourceInstListPageResp>> listDelResourceInstTemp(ResourceUploadTempListPageReq req) {
+        return resourceInstService.listDelResourceInstTemp(req);
+    }
+
+    @ApiOperation(value = "导出待删除的串码临时记录", notes = "导出串码数据")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="exportDelResourceInstTemp")
+    @UserLoginToken
+    public void exportDelResourceInstTemp(@RequestBody ResourceUploadTempListPageReq req, HttpServletResponse response) {
+        ResultVO<Page<ResourceInstListPageResp>> resultVO = resourceInstService.listDelResourceInstTemp(req);
+        List<ResourceInstListPageResp> data = resultVO.getResultData().getRecords();
+        log.info("AdminResourceInstB2BController.exportDelResourceInstTemp listDelResourceInstTemp req={}", JSON.toJSONString(req));
+        //创建Excel
+        Workbook workbook = new HSSFWorkbook();
+        //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+                OrderExportUtil.getResReqDetail(), "导入删除串码失败列表");
+        deliveryGoodsResNberExcel.exportExcel("导入删除串码失败列表",workbook,response);
+    }
 }

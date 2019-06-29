@@ -561,7 +561,7 @@
     LEFT JOIN prod_product_base b on b.PRODUCT_BASE_ID=p.PRODUCT_BASE_ID
     WHERE 1=1
     <if test="null!=req.productName and ''!=req.productName">
-      and upper(ppb.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
+      and upper(b.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
     </if>
     <if test="null!=req.memory and ''!=req.memory">
       and p.MEMORY =#{req.memory}
@@ -570,7 +570,7 @@
       p.COLOR =#{req.color}
     </if>
 
-    <if test="null!=req.productCode and ''!=req.productCode">
+    <if test="null!=req.sn and ''!=req.sn">
       p.SN=#{req.sn}
     </if>
     <if test="null!=req.unitType and ''!=req.unitType">

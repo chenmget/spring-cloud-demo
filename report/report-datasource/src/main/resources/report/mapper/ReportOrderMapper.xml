@@ -131,7 +131,7 @@
 	 		and d.type_id = #{req.typeName}
 		 </if>
 				GROUP BY b.item_id
-				ORDER BY a.create_time DESC        
+				ORDER BY a.create_time DESC         
     </select>
     
     <select id="ListReportOrderNbr" parameterType="java.lang.String"

@@ -93,8 +93,10 @@ public class SettleRecordServiceImpl implements SettleRecordService {
         }
         //结算周期记录
         List<SettleRecordDTO> settleRecords1 = settleRecordManager.getSettleRecord();
+        log.info("SettleRecordServiceImpl.getSettleRecord getSettleRecord settleRecords1={},lanId={}",settleRecords1,lanId);
         //结算周期补录记录
         List<SettleRecordDTO> settleRecords2 = settleRecordManager.getSupplementaryRecord();
+        log.info("SettleRecordServiceImpl.getSettleRecord getSupplementaryRecord settleRecords2={},lanId={}",settleRecords2,lanId);
         List<String> orderIds = new ArrayList<>();
         List<String> supplementaryOrderIds = new ArrayList<>();
         //结算周期的订单id List
@@ -107,6 +109,7 @@ public class SettleRecordServiceImpl implements SettleRecordService {
         List<SettleRecordOrderDTO> settleRecordOrderDTOs = new ArrayList<>();
         if(!CollectionUtils.isEmpty(orderIds)){
             settleRecordOrderDTOs = settleRecordOrderService.getSettleRecordOrder(orderIds,lanId);
+            log.info("SettleRecordServiceImpl.getSettleRecord getSettleRecordOrder1 settleRecordOrderDTOs={},lanId={}",settleRecordOrderDTOs,lanId);
         }
         //目标时间是否在起始时间和结束时间范围内的orders
         List<String> orderList = new ArrayList<>();
@@ -124,7 +127,9 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                         Integer lanid = settleRecordOrderDTO.getLanId();
                         if(DateUtil.compare(deliverStartTime, deliverEndTime, DeliveryTime)
                                 && lanId.equals(String.valueOf(lanid))){
+                            log.info("SettleRecordServiceImpl.getSettleRecord addList1 begin settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
                             this.addList(settleRecordDTOs,settleRecordDTO,settleRecordOrderDTO);
+                            log.info("SettleRecordServiceImpl.getSettleRecord addList1 end settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
                         }
                     }
                 }
@@ -142,6 +147,7 @@ public class SettleRecordServiceImpl implements SettleRecordService {
         List<SettleRecordOrderDTO> settleRecordOrderDTOs2 = new ArrayList<>();
         if(!CollectionUtils.isEmpty(supplementaryOrderIds)){
             settleRecordOrderDTOs2 = settleRecordOrderService.getSettleRecordOrder(supplementaryOrderIds,lanId);
+            log.info("SettleRecordServiceImpl.getSettleRecord getSettleRecordOrder2 settleRecordOrderDTOs2={},lanId={}",settleRecordOrderDTOs2,lanId);
         }
         if(!CollectionUtils.isEmpty(settleRecordOrderDTOs2) && !CollectionUtils.isEmpty(settleRecords2)){
             for(SettleRecordDTO settleRecordDTO:settleRecords2){
@@ -150,12 +156,15 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                     Integer lanid = settleRecordOrderDTO.getLanId();
                     if(StringUtils.isNotEmpty(orderId) && orderId.equals(settleRecordOrderDTO.getOrderId())
                             && lanId.equals(String.valueOf(lanid))){
+                        log.info("SettleRecordServiceImpl.getSettleRecord addList2 begin settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
                         this.addList(settleRecordDTOs,settleRecordDTO,settleRecordOrderDTO);
+                        log.info("SettleRecordServiceImpl.getSettleRecord addList2 end settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
                     }
                 }
 
             }
         }
+        log.info("SettleRecordServiceImpl.getSettleRecord settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
         if(!CollectionUtils.isEmpty(settleRecordDTOs)){
             this.setProductInfo(settleRecordDTOs);
             this.setSupplierInfo(settleRecordDTOs);

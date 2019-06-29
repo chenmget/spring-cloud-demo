@@ -755,7 +755,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 
 	@Override
 	public ResultVO<Page<PurApplyStatusReportResp>> applyStatusSearchReport(PurApplyStatusReportReq req) {
-		log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
+		log.info("applyStatusSearchReport参数   req={}"+JSON.toJSONString(req));
 
 		Boolean flag = productParamCheck(req);
 		if (flag == true) {

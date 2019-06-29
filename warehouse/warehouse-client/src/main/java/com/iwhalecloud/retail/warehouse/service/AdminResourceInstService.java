@@ -82,4 +82,12 @@ public interface AdminResourceInstService {
      * @return
      */
     ResultVO<ResourceUploadTempCountResp> countResourceUploadTemp(ResourceUploadTempDelReq req);
+
+    /**
+     * excel 导入待删除串码
+     * @param data
+     * @param userId
+     * @return
+     */
+    ResultVO<ResourceUploadTempCountResp> uploadDelResourceInst(List<ExcelResourceReqDetailDTO> data, String userId);
 }

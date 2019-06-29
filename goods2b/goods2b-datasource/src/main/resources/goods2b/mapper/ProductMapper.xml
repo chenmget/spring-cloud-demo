@@ -574,7 +574,8 @@
       and p.SN=#{req.sn}
     </if>
     <if test="null!=req.unitType and ''!=req.unitType">
-      and b.UNIT_TYPE =#{req.unitType}
+      and upper(b.unit_Type) like CONCAT(CONCAT('%',upper(#{req.unitType})),'%')
+
     </if>
   </select>
 

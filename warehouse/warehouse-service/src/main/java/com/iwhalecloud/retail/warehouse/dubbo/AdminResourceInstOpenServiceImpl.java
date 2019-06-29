@@ -86,5 +86,10 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
         return adminResourceInstService.countResourceUploadTemp(req);
     }
 
+    @Override
+    public ResultVO<ResourceUploadTempCountResp> uploadDelResourceInst(List<ExcelResourceReqDetailDTO> data, String userId) {
+        return adminResourceInstService.uploadDelResourceInst(data,userId);
+    }
+
 
 }

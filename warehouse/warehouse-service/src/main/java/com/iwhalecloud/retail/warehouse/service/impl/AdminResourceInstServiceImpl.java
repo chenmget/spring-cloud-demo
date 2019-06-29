@@ -5,7 +5,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
@@ -39,6 +38,7 @@ import com.iwhalecloud.retail.workflow.dto.req.RouteReq;
 import com.iwhalecloud.retail.workflow.service.RouteService;
 import com.iwhalecloud.retail.workflow.service.TaskItemService;
 import com.iwhalecloud.retail.workflow.service.TaskService;
+import jersey.repackaged.com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -587,6 +587,37 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             uploadTemp.setResultDesc(constant.getNoResInst());
         }
         return uploadTemp;
+    }
+
+    @Override
+    public ResultVO<Page<ResourceInstListPageResp>> listDelResourceInstTemp(ResourceUploadTempListPageReq req) {
+        //获取临时表记录
+        Page<ResourceUploadTempListResp> uploadTempPage = resourceUploadTempManager.listResourceUploadTemp(req);
+        List<ResourceUploadTempListResp> uploadTempList = uploadTempPage.getRecords();
+        List<String> mktResInstNbrList = uploadTempList.stream().map(t -> t.getMktResInstNbr()).collect(Collectors.toList());
+        //根据串码获取串码实例数据
+        ResourceInstsGetReq instsGetReq = new ResourceInstsGetReq();
+        instsGetReq.setMktResInstNbrs(mktResInstNbrList);
+        List<ResourceInstDTO> instDtoList = resourceInstManager.getResourceInsts(instsGetReq);
+        List<ResourceInstListPageResp> instRespList = new ArrayList<>(instDtoList.size());
+        for(ResourceInstDTO dto : instDtoList){
+            ResourceInstListPageResp resp = new ResourceInstListPageResp();
+            BeanUtils.copyProperties(dto, resp);
+            instRespList.add(resp);
+        }
+        //组装产品信息
+        resourceInstService.fillResourceInst(instRespList);
+        //组装审核结果
+        for(ResourceUploadTempListResp tempListResp : uploadTempList){
+            ResourceInstListPageResp resp = new ResourceInstListPageResp();
+            BeanUtils.copyProperties(tempListResp, resp);
+            for(ResourceInstListPageResp instResp : instRespList){
+                if(instResp.getMktResInstNbr().equals(tempListResp.getMktResInstNbr())){
+                    BeanUtils.copyProperties(instResp, resp);
+                }
+            }
+        }
+        return null;
     }
 
 }

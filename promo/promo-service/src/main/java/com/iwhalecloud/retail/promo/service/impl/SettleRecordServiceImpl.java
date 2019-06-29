@@ -113,12 +113,18 @@ public class SettleRecordServiceImpl implements SettleRecordService {
         }
         //目标时间是否在起始时间和结束时间范围内的orders
         List<String> orderList = new ArrayList<>();
+        List<String> orderMarketingActivityList = new ArrayList<>();
         if(!CollectionUtils.isEmpty(settleRecordOrderDTOs) && !CollectionUtils.isEmpty(settleRecords1)){
             for(SettleRecordDTO settleRecordDTO:settleRecords1){
                 String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
                 String deliverStartTime = DateUtil.formatDate(settleRecordDTO.getDeliverStartTime(), DATE_FORMAT);
                 String deliverEndTime = DateUtil.formatDate(settleRecordDTO.getDeliverEndTime(), DATE_FORMAT);
                 String orderId = settleRecordDTO.getOrderId();
+                if(orderMarketingActivityList.contains(orderId+settleRecordDTO.getMarketingActivityId())){
+                    continue;
+                }else{
+                    orderMarketingActivityList.add(orderId+settleRecordDTO.getMarketingActivityId());
+                }
                 orderList.add(orderId);
                 //校验目标时间是否在起始时间和结束时间范围内
                 for(SettleRecordOrderDTO settleRecordOrderDTO: settleRecordOrderDTOs){
@@ -149,9 +155,15 @@ public class SettleRecordServiceImpl implements SettleRecordService {
             settleRecordOrderDTOs2 = settleRecordOrderService.getSettleRecordOrder(supplementaryOrderIds,lanId);
             log.info("SettleRecordServiceImpl.getSettleRecord getSettleRecordOrder2 settleRecordOrderDTOs2={},lanId={}",settleRecordOrderDTOs2,lanId);
         }
+        List<String> orderMarketingActivityList2 = new ArrayList<>();
         if(!CollectionUtils.isEmpty(settleRecordOrderDTOs2) && !CollectionUtils.isEmpty(settleRecords2)){
             for(SettleRecordDTO settleRecordDTO:settleRecords2){
                 String orderId = settleRecordDTO.getOrderId();
+                if(orderMarketingActivityList2.contains(orderId+settleRecordDTO.getMarketingActivityId())){
+                    continue;
+                }else{
+                    orderMarketingActivityList2.add(orderId+settleRecordDTO.getMarketingActivityId());
+                }
                 for(SettleRecordOrderDTO settleRecordOrderDTO: settleRecordOrderDTOs2){
                     Integer lanid = settleRecordOrderDTO.getLanId();
                     if(StringUtils.isNotEmpty(orderId) && orderId.equals(settleRecordOrderDTO.getOrderId())

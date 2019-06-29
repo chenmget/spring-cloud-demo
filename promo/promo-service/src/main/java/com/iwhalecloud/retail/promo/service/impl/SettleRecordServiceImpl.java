@@ -18,6 +18,8 @@ import com.iwhalecloud.retail.partner.service.MerchantAccountService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.SettleRecordDTO;
+import com.iwhalecloud.retail.promo.entity.ActivityProduct;
+import com.iwhalecloud.retail.promo.manager.ActivityProductManager;
 import com.iwhalecloud.retail.promo.manager.SettleRecordManager;
 import com.iwhalecloud.retail.promo.service.SettleRecordService;
 import com.iwhalecloud.retail.promo.utils.DateUtil;
@@ -62,6 +64,9 @@ public class SettleRecordServiceImpl implements SettleRecordService {
 
     @Reference
     private ResouceStoreService resouceStoreService;
+
+    @Autowired
+    private ActivityProductManager activityProductManager;
 
 
     @Override
@@ -156,6 +161,7 @@ public class SettleRecordServiceImpl implements SettleRecordService {
             this.setSupplierInfo(settleRecordDTOs);
             this.setAccount(settleRecordDTOs);
             this.setResStoreId(settleRecordDTOs);
+            this.setCouponPrice(settleRecordDTOs);
         }
 
         return settleRecordDTOs;
@@ -308,6 +314,26 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                             settleRecordDTO.setTypeId(productDTO.getTypeId());
                             break;
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    private void setCouponPrice(List<SettleRecordDTO> settleRecordDTOs){
+        if(!CollectionUtils.isEmpty(settleRecordDTOs)){
+            List<String> marketingActivityIds = new ArrayList<>();
+
+            for(SettleRecordDTO settleRecordDTO:settleRecordDTOs){
+                marketingActivityIds.add(settleRecordDTO.getMarketingActivityId());
+            }
+
+            List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityIds);
+            for(SettleRecordDTO settleRecordDTO:settleRecordDTOs){
+                for(ActivityProduct activityProduct:activityProducts){
+                    if(settleRecordDTO.getProductId().equals(activityProduct.getProductId()) &&
+                            settleRecordDTO.getMarketingActivityId().equals(activityProduct.getMarketingActivityId())){
+                        settleRecordDTO.setSubsidyAmount(Double.valueOf(activityProduct.getDiscountAmount()));
                     }
                 }
             }

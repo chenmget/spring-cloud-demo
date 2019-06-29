@@ -27,17 +27,17 @@ public class SettleRecordOrderServiceImpl implements SettleRecordOrderService {
     @Override
     public List<SettleRecordOrderDTO> getSettleRecordOrder(List<String> orderIds,String lanId) {
         List<SettleRecordOrderDTO> settleRecordOrderDTOs = deliveryManager.getSettleRecordOrder(orderIds,lanId);
-        if(!CollectionUtils.isEmpty(settleRecordOrderDTOs)){
-            Map<String,Integer> orderIdNumMap = this.frequencyOfListElements(settleRecordOrderDTOs);
-            if(MapUtils.isNotEmpty(orderIdNumMap)){
-                for(SettleRecordOrderDTO settleRecordOrderDTO : settleRecordOrderDTOs){
-                    String orderId = settleRecordOrderDTO.getOrderId();
-                    if(orderIdNumMap.containsKey(orderId)){
-                        settleRecordOrderDTO.setCouponPrice(settleRecordOrderDTO.getCouponPrice()/orderIdNumMap.get(orderId));
-                    }
-                }
-            }
-        }
+//        if(!CollectionUtils.isEmpty(settleRecordOrderDTOs)){
+//            Map<String,Integer> orderIdNumMap = this.frequencyOfListElements(settleRecordOrderDTOs);
+//            if(MapUtils.isNotEmpty(orderIdNumMap)){
+//                for(SettleRecordOrderDTO settleRecordOrderDTO : settleRecordOrderDTOs){
+//                    String orderId = settleRecordOrderDTO.getOrderId();
+//                    if(orderIdNumMap.containsKey(orderId)){
+//                        settleRecordOrderDTO.setCouponPrice(settleRecordOrderDTO.getCouponPrice()/orderIdNumMap.get(orderId));
+//                    }
+//                }
+//            }
+//        }
 
         return settleRecordOrderDTOs;
     }

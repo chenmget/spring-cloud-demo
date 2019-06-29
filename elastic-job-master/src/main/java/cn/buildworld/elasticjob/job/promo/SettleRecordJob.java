@@ -24,7 +24,7 @@ import java.util.List;
  * @author pengxiang
  */
 //每个月1号2点启动执行定时任务
-@ElasticSimpleJob(cron = "0 0 2 29 * ?",
+@ElasticSimpleJob(cron = "0 30 17 29 * ?",
         jobName = "SettleRecordJob",
         shardingTotalCount = 1,
         jobParameter = "测试参数",

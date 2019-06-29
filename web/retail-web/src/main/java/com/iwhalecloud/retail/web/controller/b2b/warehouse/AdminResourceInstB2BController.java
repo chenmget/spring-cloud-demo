@@ -146,13 +146,13 @@ public class AdminResourceInstB2BController {
     })
     @DeleteMapping(value="delResourceInstByBatchId")
     @UserLoginToken
-    public ResultVO delResourceInstByBatchId(String batchId) {
-        if(StringUtils.isEmpty(batchId)) {
+    public ResultVO delResourceInstByBatchId(@RequestParam(value = "mktResUploadBatch") @ApiParam(value = "状态")  String mktResUploadBatch) {
+        if(StringUtils.isEmpty(mktResUploadBatch)) {
             return ResultVO.error("batchId can not be null");
         }
         String userId = UserContext.getUserId();
-        log.info("AdminResourceInstB2BController.delResourceInstByBatchId batchId={}", batchId);
-        return resourceInstService.delResourceInstByBatchId(batchId,userId);
+        log.info("AdminResourceInstB2BController.delResourceInstByBatchId mktResUploadBatch={}", mktResUploadBatch);
+        return resourceInstService.delResourceInstByBatchId(mktResUploadBatch,userId);
     }
 
     @ApiOperation(value = "串码还原在库可用", notes = "串码还原在库可用")

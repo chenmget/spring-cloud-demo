@@ -139,6 +139,22 @@ public class AdminResourceInstB2BController {
         return resourceInstService.updateResourceInstByIds(req);
     }
 
+    @ApiOperation(value = "根据batchId删除串码", notes = "根据batchId删除串码")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @DeleteMapping(value="delResourceInstByBatchId")
+    @UserLoginToken
+    public ResultVO delResourceInstByBatchId(String batchId) {
+        if(StringUtils.isEmpty(batchId)) {
+            return ResultVO.error("batchId can not be null");
+        }
+        String userId = UserContext.getUserId();
+        log.info("AdminResourceInstB2BController.delResourceInstByBatchId batchId={}", batchId);
+        return resourceInstService.delResourceInstByBatchId(batchId,userId);
+    }
+
     @ApiOperation(value = "串码还原在库可用", notes = "串码还原在库可用")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),

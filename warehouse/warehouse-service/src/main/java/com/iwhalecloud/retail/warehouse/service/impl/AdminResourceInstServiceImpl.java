@@ -5,11 +5,10 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
-import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -40,7 +39,6 @@ import com.iwhalecloud.retail.workflow.service.RouteService;
 import com.iwhalecloud.retail.workflow.service.TaskItemService;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -148,6 +146,53 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     public ResultVO updateResourceInstByIds(AdminResourceInstDelReq req) {
         log.info("AdminResourceInstServiceImpl.updateResourceInstByIds req={}", JSON.toJSONString(req));
         return resourceInstService.updateResourceInstByIds(req);
+    }
+
+    /**
+     * 管理员根据batchId删除串码
+     * @param batchId 上一步导入时的批次号
+     * @param userId  操作人的id
+     * @return
+     */
+    @Override
+    public ResultVO delResourceInstByBatchId(String batchId,String userId){
+        log.info("ResourceInstServiceImpl.delResourceInstByBatchId batchId={}", batchId);
+        // 1.根据batchId 查询临时表中有效数据信息
+        ResourceUploadTempListPageReq resourceInstTempListReq = new ResourceUploadTempListPageReq();
+        resourceInstTempListReq.setMktResUploadBatch(batchId);
+        resourceInstTempListReq.setResult(ResourceConst.CONSTANT_NO);
+        List<ResourceUploadTempListResp> resourceInstTempList = resourceUploadTempManager.listResourceUpload(resourceInstTempListReq);
+        // 2.过滤出有效数据串码id信息
+        List<String> mktResInstNbrs=resourceInstTempList.stream().map(ResourceUploadTempListResp::getMktResInstNbr).collect(Collectors.toList());
+        // 3.根据串码ids信息查询营销资源表，获取完整数据
+        ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
+        resourceInstsGetReq.setMktResInstNbrs(mktResInstNbrs);
+        List<ResourceInstDTO> resourceInsts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
+        // 4.将处理好的完整数据，根据仓库StoreId进行分组
+        Map<String, List<ResourceInstDTO>> groups = resourceInsts.stream().collect(Collectors.groupingBy(t -> t.getMktResStoreId()));
+        // 5.根据分组结果，调用原有的批量删除方法()进行批量删除处理
+        List<String> unDeleteNbrs = Lists.newArrayList();
+        for (Map.Entry<String,List<ResourceInstDTO>> group:groups.entrySet()){
+            AdminResourceInstDelReq resourceInstDelReq = new AdminResourceInstDelReq();
+            resourceInstDelReq.setUpdateStaff(userId);
+            resourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
+            resourceInstDelReq.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
+            // 只有可用状态的串码才能删除
+            List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
+                    ResourceConst.STATUSCD.AUDITING.getCode(),ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
+                    ResourceConst.STATUSCD.RESTORAGEING.getCode(),ResourceConst.STATUSCD.RESTORAGED.getCode(),
+                    ResourceConst.STATUSCD.SALED.getCode());
+            resourceInstDelReq.setCheckStatusCd(checkStatusCd);
+
+            resourceInstDelReq.setMktResStoreId(group.getKey());
+            List<ResourceInstDTO> resourceInstDTOList = group.getValue();
+            List<String> resInstNbrs=resourceInstDTOList.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
+            resourceInstDelReq.setMktResInstIdList(resInstNbrs);
+            ResultVO resultVO = updateResourceInstByIds(resourceInstDelReq);
+            List<String> unavailbaleNbrs = (List<String>)resultVO.getResultData();
+            unDeleteNbrs.addAll(unavailbaleNbrs);
+        }
+        return ResultVO.success(unDeleteNbrs);
     }
 
     @Override
@@ -324,8 +369,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
             int waitNum=resourceReqDetailManager.resourceRequestCount(req);
             //存在未审核的明细，暂不做处理
-            if (waitNum > 0)
-                break ;
+            if (waitNum > 0){
+                break;
+            }
             if (total > 0 && waitNum == 0){
                 //申请单下的明细已全部审核过，判断是否全成功
                 //获取该申请单审核成功的明细总数

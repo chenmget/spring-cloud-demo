@@ -38,6 +38,14 @@ public interface AdminResourceInstService {
     ResultVO updateResourceInstByIds(AdminResourceInstDelReq req);
 
     /**
+     * 管理员根据batchId删除串码
+     * @param batchId
+     * @param userId
+     * @return
+     */
+    ResultVO delResourceInstByBatchId(String batchId,String userId);
+
+    /**
      * 补录串码状态
      *
      * @param req
@@ -74,4 +82,12 @@ public interface AdminResourceInstService {
      * @return
      */
     ResultVO<ResourceUploadTempCountResp> countResourceUploadTemp(ResourceUploadTempDelReq req);
+
+    /**
+     * excel 导入待删除串码
+     * @param data
+     * @param userId
+     * @return
+     */
+    ResultVO<ResourceUploadTempCountResp> uploadDelResourceInst(List<ExcelResourceReqDetailDTO> data, String userId);
 }

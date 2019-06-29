@@ -1,79 +1,48 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.report.mapper.ReportStInvCityMapper">
-    <resultMap id="BaseResultMap" type="com.iwhalecloud.retail.report.dto.request.RptPartnerOperatingDay">
-        <result column="city_id" jdbcType="VARCHAR" property="cityId"/>
-        <result column="county_id" jdbcType="VARCHAR" property="countyId"/>
-        <result column="total_in_num" jdbcType="DECIMAL" property="totalInNum"/>
-        <result column="total_out_num" jdbcType="DECIMAL" property="totalOutNum"/>
-        <result column="purchase_num" jdbcType="DECIMAL" property="purchaseNum"/>
-        <result column="manual_num" jdbcType="DECIMAL" property="manualNum"/>
-        <result column="sell_num" jdbcType="DECIMAL" property="sellNum"/>
-        <result column="uncontract_num" jdbcType="DECIMAL" property="uncontractNum"/>
-        <result column="contract_num" jdbcType="DECIMAL" property="contractNum"/>
-        <result column="register_num" jdbcType="DECIMAL" property="registerNum"/>
-        <result column="trans_out_num" jdbcType="DECIMAL" property="transOutNum"/>
-        <result column="return_num" jdbcType="DECIMAL" property="returnNum"/>
-        <result column="avg7" jdbcType="DECIMAL" property="avg7"/>
-        <result column="stock_num" jdbcType="DECIMAL" property="stockNum"/>
-        <result column="turnover_rate" jdbcType="DECIMAL" property="turnoverRate"/>
-    </resultMap>
 
-    <select id="listStInvCity" resultMap="BaseResultMap">
-
-        select rst.* from (
-            select
-              (SELECT region_name FROM sys_common_region WHERE region_id = rpod.city_id) as city_id,
-              (SELECT region_name FROM sys_common_region WHERE region_id = rpod.county_id) as county_id,
-              rpod.total_in_num, rpod.total_out_num,
-              sum(rpod.purchase_num) as purchase_num,
-              sum(rpod.manual_num) as manual_num,
-              rpod.sell_num,
-              sum(rpod.uncontract_num) as uncontract_num,
-              sum(rpod.contract_num) as contract_num,
-              sum(rpod.register_num) as register_num,
-              sum(rpod.trans_out_num) as trans_out_num,
-              sum(rpod.return_num) as return_num,
-              (select sum(sell_num/7) from rpt_partner_operating_day WHERE date &gt;= date_sub(curdate(),interval 7 day)) as avg7,
-              sum(rpod.stock_num) as stock_num,
-              (select sum(stock_num/(sell_num/7)) from rpt_partner_operating_day WHERE date &gt;= date_sub(curdate(),interval 7 day)) as turnover_rate,
-              (select sum(stock_num/(sell_num/7)) from rpt_partner_operating_day WHERE date &gt;= date_sub(curdate(),interval 7 day)) as warnStatus
-            from
-              rpt_partner_operating_day as rpod
-            where 1 = 1
-            <if test="req.createTimeStart!=null and req.createTimeStart!=''">
-                and rpod.date &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
-            </if>
-            <if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
-                and rpod.date &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
-            </if>
-            <if test="req.outTimeStart!=null and req.outTimeStart!=''">
-                and rpod.date &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
-            </if>
-            <if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
-                and rpod.date &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
-            </if>
-            <if test="req.city!=null and req.city!=''">
-                and rpod.city_id = #{req.city}
-            </if>
-            <if test="req.lanId!=null and req.lanId!=''">
-                and rpod.county_id = #{req.lanId}
-            </if>
-            group by
-              rpod.city_id, rpod.county_id
-
-            ) as rst
-        where 1 = 1
-            <if test='req.warningStatus == "0"'>
-                and rst.turnover_rate &gt;= 10
-            </if>
-            <if test='req.warningStatus == "1"'>
-                and rst.turnover_rate &gt;=5 AND rst.turnover_rate &lt; 10
-            </if>
-            <if test='req.warningStatus == "2"'>
-                and rst.turnover_rate &lt; 5
-            </if>
-
-    </select>
-
+    <select id="listStInvCity" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStInvCityDaoReq"
+            resultType="com.iwhalecloud.retail.report.dto.request.RptPartnerOperatingDay">
+		SELECT
+			a.PRODUCT_NAME,
+			a.PRODUCT_BASE_NAME,
+			a.PRODUCT_TYPE,
+			a.BRAND_NAME,
+			a.PRICE_LEVEL,
+			a.TOTAL_IN_NUM,
+			a.TOTAL_OUT_NUM,
+			a.STOCK_NUM,
+			a.PURCHASE_NUM,
+			a.MANUAL_NUM,
+			a.SELL_NUM,
+			a.UNCONTRACT_NUM,
+			a.CONTRACT_NUM,
+			a.REGISTER_NUM,
+			a.RETURN_NUM,
+			a.WEEK_AVG_SELL_NUM
+		FROM RPT_PARTNER_OPERATING_DAY a
+		LEFT JOIN par_merchant par ON par.merchant_id = a.PARTNER_ID
+		WHERE 1=1
+		<if test="req.dateStart!=null and req.dateStart!=''">
+		and str_to_date(a.DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.dateStart}, '%Y-%m-%d')
+		</if>
+		<if test="req.dateStart!=null and req.dateStart!=''">
+				and str_to_date(a.DATE,'%Y-%m-%d') &lt;= str_to_date(#{req.dateEnd}, '%Y-%m-%d')
+		</if>
+		<if test="req.lanIdList !=null and req.lanIdList.size()>0">
+	          and a.CITY_ID in
+	          <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+	              #{item}
+	          </foreach>
+	    </if>
+	    <if test="req.orgName!=null and req.orgName.size()>0">
+		  	and 
+		  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
+		  		INSTR( par.PAR_CRM_ORG_PATH_CODE, #{item}) 
+		  	</foreach>
+		  </if> 
+		 group by a.CITY_ID,SUBSTRING_INDEX(par.PAR_CRM_ORG_PATH_CODE,'.',4)
+  </select> 
+            
 </mapper>

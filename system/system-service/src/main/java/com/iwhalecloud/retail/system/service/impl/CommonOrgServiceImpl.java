@@ -66,12 +66,18 @@ public class CommonOrgServiceImpl implements CommonOrgService {
     @Override
     public ResultVO<List<CommonOrgDTO>> listCommonOrg(CommonOrgListReq req, boolean isSelectAll) {
         log.info("CommonOrgServiceImpl.listCommonOrg(), input：req={} ", JSON.toJSONString(req));
-        if (StringUtils.isEmpty(req.getParentOrgId())
-                && CollectionUtils.isEmpty(req.getOrgIdList())
-                && StringUtils.isEmpty(req.getOrgName()) && !isSelectAll) {
-            // 三个条件都为空 默认查湖南的 第一级通用组织信息
-            req.setParentOrgId(SystemConst.HN_DEFAULT_PARENT_ORG_ID);
+//        if (StringUtils.isEmpty(req.getParentOrgId())
+//                && CollectionUtils.isEmpty(req.getOrgIdList())
+//                && StringUtils.isEmpty(req.getOrgName()) && !isSelectAll) {
+//            // 三个条件都为空 默认查湖南的 第一级通用组织信息
+//            req.setParentOrgId(SystemConst.HN_DEFAULT_PARENT_ORG_ID);
+//        }
+
+        if (isSelectAll) {
+            // 查全部 设空
+            req = new CommonOrgListReq();
         }
+
         List<CommonOrg> commonOrgList = commonOrgManager.listCommonOrg(req);
         //组装组织返回列表
         List<CommonOrgDTO> commonOrgDTOList = Lists.newArrayList();

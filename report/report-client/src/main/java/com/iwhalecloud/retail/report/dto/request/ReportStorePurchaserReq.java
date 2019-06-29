@@ -1,5 +1,7 @@
 package com.iwhalecloud.retail.report.dto.request;
 
+import java.util.List;
+
 import com.iwhalecloud.retail.dto.PageVO;
 import lombok.Data;
 
@@ -7,22 +9,12 @@ import lombok.Data;
 public class ReportStorePurchaserReq extends PageVO {
 
 	  private static final long serialVersionUID = 1L;
-	  private String brand;//品牌
-	  private String city;//市县
-	  private String createTimeEnd;//入库起止时间
-	  private String createTimeStart;
-	  private String businessEntityName;//经营主体名称
-	  private String lanId;//地市
-	  private String retailerCode;//零售商编号
-	  private String retailerName;//零售商名称
-	  private String outTimeEnd;//出库起止时间
-	  private String outTimeStart;
-	  private String productType;//机型
-	  private String userType;//零售商标识
-	  private String regionGrade; //地市标识
-	  private String warningStatus;//库存预警状态
-	  private String typeId;	//产品类型
- 	  private String userId;
- 	  private String legacyAccount;//零售商归属原系统还是云货架
+	  private String dateStart;//统计起始时间
+	  private String dateEnd;//统计结束时间
+	  private List<String> lanIdList; 		//地市
+	  private String productName;   //产品名称
+	  private String productType; 		//产品类型
+	  private String brandName; 		//品牌
+	  private String productBaseName; //产品型号
 
 }

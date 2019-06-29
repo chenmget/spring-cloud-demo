@@ -30,5 +30,7 @@ public class ProductApplyInfoResp implements Serializable {
 
     private  String attrValue1;//容量-规格1 字段
 
+    private  String purType;
+
 
 }

@@ -43,6 +43,8 @@ public class PurApplyStatusReportReq extends PageVO implements Serializable {
 
 	private	String statusCd;	//状态
 
+	private  String purType;
+
 
 
 }

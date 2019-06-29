@@ -405,5 +405,31 @@ public class AdminResourceInstB2BController {
         return resourceInstService.batchAuditNbr(req);
     }
 
+    @ApiOperation(value = "导入待删除的串码文件", notes = "支持xlsx、xls格式")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/uploadDelResourceInst",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
+    @UserLoginToken
+    public ResultVO<ResourceUploadTempCountResp> uploadDelResourceInst(@RequestParam("file") MultipartFile file) {
+
+        String suffix = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        //如果不在允许范围内的附件后缀直接抛出错误
+        if (allowUploadSuffix.indexOf(suffix) <= -1) {
+            return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
+        }
+        InputStream is = null;
+        try {
+            is = file.getInputStream();
+            List<ExcelResourceReqDetailDTO> data = ExcelToNbrUtils.getNbrDetailData(is);
+            String userId=UserContext.getUser().getUserId();
+            return resourceInstService.uploadDelResourceInst(data,userId);
+        } catch (Exception e) {
+            log.error("excel解析失败",e);
+            return ResultVO.error("excel解析失败");
+        }
+
+    }
 
 }

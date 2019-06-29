@@ -577,6 +577,10 @@
       and upper(b.unit_Type) like CONCAT(CONCAT('%',upper(#{req.unitType})),'%')
 
     </if>
+
+      <if test="null!=req.purType and ''!=req.purType">
+          and p.PURCHASE_TYPE=#{req.purType}
+      </if>
   </select>
 
 

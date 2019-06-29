@@ -827,6 +827,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		if (req.getColor()!=null && req.getColor().length()>0) {
 			return true;
 		}
+        if (req.getPurType()!=null && req.getPurType().length()>0) {
+            return true;
+        }
 		return false;
 
 	}
@@ -846,6 +849,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		if (req.getColor()!=null && req.getColor().length()>0) {
 			return true;
 		}
+        if (req.getPurType()!=null && req.getPurType().length()>0) {
+            return true;
+        }
 		return false;
 
 	}

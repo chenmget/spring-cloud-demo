@@ -28,4 +28,9 @@ public class ProductGetIdReq extends AbstractRequest implements Serializable {
     @ApiModelProperty(value = "memory")
     private  String memory;//内存
 
+    @ApiModelProperty(value = "purType")
+    private  String purType;//采购类型
+
+
+
 }

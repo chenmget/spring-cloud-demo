@@ -51,8 +51,8 @@
 	<select id="applySearchReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReportReq"
 			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyReportResp">
 		SELECT a.APPLY_NAME as applyName,a.APPLY_ID as applyId,a.APPLY_CODE as applyCode,a.LAN_ID as lanId,a.MERCHANT_ID as merchantId,
-		DATE_FORMAT(a.CREATE_DATE) as applyTime,DATE_FORMAT(d.UPDATE_DATE) as revingDate,d.PRODUCT_ID as productId,
-		d.MKT_RES_INST_NBR as mktResInstNbr,DATE_FORMAT(d.CREATE_DATE) as deliveryDate ,e.RECEIVE_NAME as receiveName,
+		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') as applyTime,DATE_FORMAT(d.UPDATE_DATE,'%Y-%m-%d %H:%i:%s') as revingDate,d.PRODUCT_ID as productId,
+		d.MKT_RES_INST_NBR as mktResInstNbr,DATE_FORMAT(d.CREATE_DATE,'%Y-%m-%d %H:%i:%s') as deliveryDate ,e.RECEIVE_NAME as receiveName,
 		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),e.RECEIVE_ADDR) as receiveAddr,e.CITY as receiveCity
 		from pur_apply a,pur_apply_item_detail d,pur_apply_ext e WHERE
 		d.APPLY_ID = a.APPLY_ID   AND a.APPLY_ID=e.APPLY_ID

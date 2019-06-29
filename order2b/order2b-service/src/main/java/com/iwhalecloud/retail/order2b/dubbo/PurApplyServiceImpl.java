@@ -706,7 +706,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			BeanUtils.copyProperties(req,productGetIdReq);
 			List<String> productIdList = productService.getProductIdListForApply(productGetIdReq);
 			req.setProductIdList(productIdList);
-			if(productIdList == null && productIdList.size()==0) {
+			if(productIdList == null || productIdList.size()==0) {
 				Page<PurApplyReportResp> purApplyReportResp = new Page<PurApplyReportResp>();
 				return ResultVO.success(purApplyReportResp);
 			}
@@ -714,7 +714,7 @@ public class PurApplyServiceImpl implements PurApplyService {
         if (req.getMerchantName()!=null && req.getMerchantName().length()>0) {
 			List<String> merchantIdList = merchantService.getMerchantIdList(req.getMerchantName());
 			req.setMerchantIdList(merchantIdList);
-			if(merchantIdList == null && merchantIdList.size()==0) {
+			if(merchantIdList == null || merchantIdList.size()==0) {
 				Page<PurApplyReportResp> purApplyReportResp = new Page<PurApplyReportResp>();
 				return ResultVO.success(purApplyReportResp);
 			}
@@ -763,7 +763,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 			BeanUtils.copyProperties(req,productGetIdReq);
 			List<String> productIdList = productService.getProductIdListForApply(productGetIdReq);
 			req.setProductIdList(productIdList);
-			if(productIdList == null && productIdList.size()==0) {
+			if(productIdList == null || productIdList.size()==0) {
 				Page<PurApplyStatusReportResp> purApplyStatusReportResp = new Page<PurApplyStatusReportResp>();
 				return ResultVO.success(purApplyStatusReportResp);
 			}
@@ -771,7 +771,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 		if (req.getMerchantName()!=null && req.getMerchantName().length()>0) {
 			List<String> merchantIdList = merchantService.getMerchantIdList(req.getMerchantName());
 			req.setMerchantIdList(merchantIdList);
-			if(merchantIdList == null && merchantIdList.size()==0) {
+			if(merchantIdList == null || merchantIdList.size()==0) {
 				Page<PurApplyStatusReportResp> purApplyStatusReportResp = new Page<PurApplyStatusReportResp>();
 				return ResultVO.success(purApplyStatusReportResp);
 			}

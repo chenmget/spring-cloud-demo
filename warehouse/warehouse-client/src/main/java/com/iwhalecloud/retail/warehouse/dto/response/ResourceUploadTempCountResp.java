@@ -21,12 +21,15 @@ public class ResourceUploadTempCountResp implements java.io.Serializable {
 	 * 上传成功条数
 	 */
 	@ApiModelProperty(value = "上传成功条数")
-	private int passNum;
+	private Integer passNum;
 
 	/**
 	 * 上传失败条数
 	 */
 	@ApiModelProperty(value = "上传失败条数")
-	private int failNum;
+	private Integer failNum;
+
+	@ApiModelProperty(value = "营销资源导入批次。")
+	private String mktResUploadBatch;
 
 }

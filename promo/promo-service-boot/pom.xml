@@ -74,12 +74,12 @@
                         </include>
                         <include>
                             <groupId>com.iwhalecloud.retail</groupId>
-                            <artifactId>promo-client</artifactId>
+                            <artifactId>workflow-client</artifactId>
                         </include>
                         <include>
                             <groupId>com.iwhalecloud.retail</groupId>
-                            <artifactId>workflow-client</artifactId>
-                        </include>
+                            <artifactId>partner-client</artifactId>
+                        </include>,
                     </includes>
                 </configuration>
             </plugin>

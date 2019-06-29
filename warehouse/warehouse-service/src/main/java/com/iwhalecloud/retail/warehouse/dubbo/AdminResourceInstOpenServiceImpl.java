@@ -64,7 +64,7 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     public ResultVO delResourceInstByBatchId(String batchId,String userId){
         log.info("AdminResourceInstOpenServiceImpl.delResourceInstByBatchId batchId={}", batchId);
         ResultVO resp = adminResourceInstService.delResourceInstByBatchId(batchId,userId);
-        return resp; 
+        return resp;
     }
 
 	@Override

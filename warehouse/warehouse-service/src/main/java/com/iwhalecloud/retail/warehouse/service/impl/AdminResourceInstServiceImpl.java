@@ -18,6 +18,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
@@ -47,6 +48,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -73,6 +75,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     
     @Autowired
     private ResourceInstManager resourceInstManager;
+
+    @Autowired
+    private ResouceInstTrackManager resouceInstTrackManager;
 
     @Reference
     private ResouceStoreService resouceStoreService;
@@ -531,15 +536,15 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         //获取串码集合
         List<String> mktResInstNbrList = data.stream().map(t -> t.getMktResInstNbr()).collect(Collectors.toList());
         //根据串码获取串码实例数据
-        ResourceInstsGetReq instsGetReq = new ResourceInstsGetReq();
-        instsGetReq.setMktResInstNbrs(mktResInstNbrList);
-        List<ResourceInstDTO> instList = resourceInstManager.getResourceInsts(instsGetReq);
+        ResourceInstsTrackGetReq req = new ResourceInstsTrackGetReq();
+        req.setMktResInstNbrList(new CopyOnWriteArrayList(mktResInstNbrList));
+        List<ResouceInstTrackDTO> instList = resouceInstTrackManager.listResourceInstsTrack(req);
         //临时表集合
         List<ResouceUploadTemp> tempList = new ArrayList<ResouceUploadTemp>(mktResInstNbrList.size());
         Date now = new Date();
         //遍历判断串码是否符合厂商或供应商在库可用串码
         for(String mktResInstNbr : mktResInstNbrList){
-            Optional<ResourceInstDTO> optional = instList.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
+            Optional<ResouceInstTrackDTO> optional = instList.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
             ResouceUploadTemp uploadTemp = getResourceTempByInstOptional(optional);
             uploadTemp.setMktResInstNbr(mktResInstNbr);
             uploadTemp.setMktResUploadBatch(batchId);
@@ -559,22 +564,22 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         return ResultVO.success(resp);
     }
 
-    private ResouceUploadTemp getResourceTempByInstOptional(Optional<ResourceInstDTO> optional) {
+    private ResouceUploadTemp getResourceTempByInstOptional(Optional<ResouceInstTrackDTO> optional) {
         ResouceUploadTemp uploadTemp = new ResouceUploadTemp();
         //默认有异常
         uploadTemp.setResult(ResourceConst.CONSTANT_YES);
         String resultDesc="";
         if(optional.isPresent()){
             //实例表存在数据
-            ResourceInstDTO resourceInstDTO = optional.get();
+            ResouceInstTrackDTO resouceInstTrackDTO = optional.get();
             //串码实例状态
-            String statusCd = resourceInstDTO.getStatusCd();
+            String statusCd = resouceInstTrackDTO.getStatusCd();
             //厂商类型
-            String merchantType = resourceInstDTO.getMerchantType();
-            if(ResourceConst.STATUSCD.AVAILABLE.getCode() != statusCd){
+            String sourceType = resouceInstTrackDTO.getSourceType();
+            if(!ResourceConst.STATUSCD.AVAILABLE.getCode().equals(statusCd)){
                 //串码非在库可用
                 resultDesc = constant.getPesInstInvalid();
-            }else if(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType() !=merchantType && PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType() !=merchantType && PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType() !=merchantType){
+            }else if(!ResourceConst.SOURCE_TYPE.MERCHANT.getCode().equals(sourceType) && !ResourceConst.SOURCE_TYPE.SUPPLIER.getCode().equals(sourceType)){
                 //串码厂商类型非法
                 resultDesc = "串码必须归属厂商或者供应商";
             }else{

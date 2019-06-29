@@ -70,6 +70,7 @@ public interface ResourceInstService {
      */
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req);
 
+
     /**
      * 查询机型
      * @param req
@@ -132,4 +133,6 @@ public interface ResourceInstService {
     List<ResourceInstListPageResp> getResourceInstListManual(ResourceInstListPageReq req);
 
     String selectMktResInstType(ResourceStoreIdResnbr req);
+
+    void fillResourceInst(List<ResourceInstListPageResp> list);
 }

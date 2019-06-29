@@ -104,5 +104,10 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
         return adminResourceInstService.uploadDelResourceInst(data,userId);
     }
 
+    @Override
+    public ResultVO<Page<ResourceInstListPageResp>> listDelResourceInstTemp(ResourceUploadTempListPageReq req) {
+        return adminResourceInstService.listDelResourceInstTemp(req);
+    }
+
 
 }

@@ -90,4 +90,11 @@ public interface AdminResourceInstService {
      * @return
      */
     ResultVO<ResourceUploadTempCountResp> uploadDelResourceInst(List<ExcelResourceReqDetailDTO> data, String userId);
+
+    /**
+     * 查询待删除串码导入结果
+     * @param req
+     * @return
+     */
+    ResultVO<Page<ResourceInstListPageResp>> listDelResourceInstTemp(ResourceUploadTempListPageReq req);
 }

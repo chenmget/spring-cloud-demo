@@ -332,4 +332,16 @@ public class ResourceInstListPageResp implements java.io.Serializable {
 	@ApiModelProperty(value = "内存规格")
 	private String memorySpec;
 
+	/**
+	 * 验证结果 1. 有异常; 0. 无异常
+	 */
+	@ApiModelProperty(value = "验证结果  1. 有异常; 0. 无异常")
+	private String result;
+
+	/**
+	 * 验证描述，记录出错的原因
+	 */
+	@ApiModelProperty(value = "验证描述，记录出错的原因")
+	private String resultDesc;
+
 }

@@ -118,12 +118,12 @@ public class OrderExportUtil {
 
     public static List<ExcelTitleName> getResReqDetail() {
         List<ExcelTitleName> orderMap = new ArrayList<>();
-        orderMap.add(new ExcelTitleName("mktResReqDetailId", "申请id"));
+        //orderMap.add(new ExcelTitleName("mktResReqDetailId", "申请id"));
         orderMap.add(new ExcelTitleName("reqCode", "申请单号"));
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
         orderMap.add(new ExcelTitleName("typeName", "产品类型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
-        orderMap.add(new ExcelTitleName("unitName", "产品名称"));
+        orderMap.add(new ExcelTitleName("productName", "产品名称"));
         orderMap.add(new ExcelTitleName("unitType", "产品型号"));
         orderMap.add(new ExcelTitleName("merchantName", "厂商名称"));
         orderMap.add(new ExcelTitleName("createDateStr", "申请时间"));
@@ -140,7 +140,7 @@ public class OrderExportUtil {
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
         orderMap.add(new ExcelTitleName("typeName", "产品类型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
-        orderMap.add(new ExcelTitleName("unitName", "产品名称"));
+        orderMap.add(new ExcelTitleName("productName", "产品名称"));
         orderMap.add(new ExcelTitleName("statusCdName", "审核结果"));
         orderMap.add(new ExcelTitleName("remark", "审核说明"));
         orderMap.add(new ExcelTitleName("resultDesc", "说明"));

@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Service
+@Service(parameters={"addActSup.timeout","30000"})
 @Slf4j
 public class AdminResourceInstOpenServiceImpl implements AdminResourceInstService {
 
@@ -72,6 +72,11 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     }
 
     @Override
+    public ResultVO<String> checkResRequestFinish(ResourceReqUpdateReq resourceReqUpdateReq) {
+        return adminResourceInstService.checkResRequestFinish(resourceReqUpdateReq);
+    }
+
+    @Override
     public ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String createStaff) {
         return adminResourceInstService.uploadNbrDetail(data,createStaff);
     }
@@ -84,6 +89,11 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     @Override
     public ResultVO<ResourceUploadTempCountResp> countResourceUploadTemp(ResourceUploadTempDelReq req) {
         return adminResourceInstService.countResourceUploadTemp(req);
+    }
+
+    @Override
+    public ResultVO<Boolean> validBatchAuditNbr() {
+        return adminResourceInstService.validBatchAuditNbr();
     }
 
 

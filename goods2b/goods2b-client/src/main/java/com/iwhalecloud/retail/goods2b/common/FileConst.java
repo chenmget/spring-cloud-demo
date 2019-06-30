@@ -87,9 +87,9 @@ public class FileConst {
         CAT_SUB("5","分类图片"),
         THUMBNAILS_SUB("6","缩略图"),
         MODEL_VIDIO_SUB("7","型号视频"),
-    	HD_THUMBNAILS_SUB("8","活动缩略图");//8 活动缩略图
-    	//9 活动详情第一张图
-    	//10 活动缩略图+活动详情第一张图
+    	HD_THUMBNAILS_SUB_8("8","活动缩略图"),//8 活动缩略图
+    	HD_THUMBNAILS_SUB_9("9","活动详情第一张图"),//9 活动详情第一张图
+    	HD_THUMBNAILS_SUB_10("10","活动缩略图+活动详情第一张图");//10 活动缩略图+活动详情第一张图
 
         private String type;
         private String name;

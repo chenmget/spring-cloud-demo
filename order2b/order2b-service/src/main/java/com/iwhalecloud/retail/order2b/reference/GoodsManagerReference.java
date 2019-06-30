@@ -126,7 +126,7 @@ public class GoodsManagerReference {
      1. 预售订单（预售不分货）
      2. 分货订单（分货不预售）
      3. 预售分货（既预售又分货）
-     4.定向分货（商品表TARGET_TYPE 按对象，普通订单的子项）
+     4.定向分货（商品表TARGET_TYPE 按对象，普通订单的子项 2019-06-25修改，说是暂时没有这一项）
      * @param request
      * @param req
      * @return
@@ -149,6 +149,7 @@ public class GoodsManagerReference {
         goodsProductRelEditReq.setProductId(req.getProductId());
         goodsProductRelEditReq.setGoodsId(req.getGoodsId());
         ResultVO<GoodsDetailDTO> resultVO = goodsProductRelService.qryGoodsByProductIdAndGoodsId(goodsProductRelEditReq);
+        log.info("GoodsManagerReference.builderCart()goodsProductRelService.qryGoodsByProductIdAndGoodsId req={},resp={}", JSON.toJSONString(goodsProductRelEditReq), JSON.toJSONString(resultVO));
         if (resultVO.getResultData() == null) {
             return null;
         }
@@ -172,7 +173,7 @@ public class GoodsManagerReference {
             // 前置补贴活动的统一货价(转换为Double)
             detail.setDeliveryPrice(activityProductDTO.getPrice() * 1D);
         }
-        String orderCat = null;
+        String orderCat = OrderManagerConsts.ORDER_CAT.ORDER_CAT_0.getCode();
         // 是否分货 1是 0否
         Integer isAllot = detail.getIsAllot();
         // 是否为预售商品
@@ -185,10 +186,6 @@ public class GoodsManagerReference {
             orderCat = OrderManagerConsts.ORDER_CAT.ORDER_CAT_1.getCode();
         }else if(GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(isAllot) && !GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(isAdvanceSale)) {
             orderCat = OrderManagerConsts.ORDER_CAT.ORDER_CAT_2.getCode();
-        }else if(!GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(isAllot) && !GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(isAdvanceSale)) {
-            if (GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
-                orderCat = OrderManagerConsts.ORDER_CAT.ORDER_CAT_4.getCode();
-            }
         }
         request.setOrderCatList(Lists.newArrayList(orderCat));
 

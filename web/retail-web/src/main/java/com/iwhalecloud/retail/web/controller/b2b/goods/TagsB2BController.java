@@ -7,10 +7,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.dto.TagTypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.TagsDTO;
-import com.iwhalecloud.retail.goods2b.dto.req.ProdTagDeleteReq;
-import com.iwhalecloud.retail.goods2b.dto.req.TagGetByGoodsIdReq;
-import com.iwhalecloud.retail.goods2b.dto.req.TagGetByIdReq;
-import com.iwhalecloud.retail.goods2b.dto.req.TagGetByTagReq;
+import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TagsService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -51,8 +48,8 @@ public class TagsB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value="/listProdTags")
-    public ResultVO<List<TagsDTO>> listProdTags(){
-        return tagsService.listProdTags();
+    public ResultVO<List<TagsDTO>> listProdTags(ProdTagsListReq req){
+        return tagsService.listProdTags(req);
     }
 
     @ApiOperation(value = "查询渠道标签列表", notes = "查询渠道标签列表")

@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.warehouse.dto.request;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -30,6 +31,7 @@ public class ResourceInstAddReq implements java.io.Serializable {
   	 */
 	@ApiModelProperty(value = "记录营销资源实例编码。")
 	@NotEmpty(message = "串码不能为空")
+	@JSONField(serialize = false)
   	private List<String> mktResInstNbrs;
 
 	/**

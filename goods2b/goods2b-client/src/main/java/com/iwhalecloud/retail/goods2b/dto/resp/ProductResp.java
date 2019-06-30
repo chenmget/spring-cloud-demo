@@ -264,5 +264,11 @@ public class ProductResp implements Serializable {
      */
     @ApiModelProperty(value = "型号名称")
     private String unitTypeName;
+
+    /**
+     * 型号名称
+     */
+    @ApiModelProperty(value = "是否固网产品")
+    private String isFixedLine;
     
 }

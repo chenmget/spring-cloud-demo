@@ -5,7 +5,7 @@
     <select id="ListReportOrder" parameterType="com.iwhalecloud.retail.report.dto.request.ReportOrderDaoReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportOrderResp">
             SELECT 
-				 b.product_name AS productName,
+				 d.product_name AS productName,
 				 d.UNIT_TYPE AS unitType,
 				 e.type_name AS typeName,
 				 b.brand_name AS brandName,
@@ -19,7 +19,7 @@
 				 a.ORDER_TYPE AS orderType,
 				 a.PAYMENT_TYPE AS paymentType,
 				 b.sn AS sn,
-				 b.num AS num,
+				 sum(b.num) AS num,
 				 b.price AS price,
 				 (b.num*b.price) AS totalMoney,
 				 a.CREATE_TIME AS createTime,
@@ -27,21 +27,22 @@
 				 a.RECEIVE_TIME AS receiveTime,
 				 GROUP_CONCAT(l.name) AS activeName,
 				 k.PROMOTION_TYPE AS couponType,
-				 k.DISCOUNT AS couponMoney,
-				 (b.num*k.DISCOUNT) AS totalCouponMoney,
+				 (k.DISCOUNT/b.num) AS couponMoney,
+				 k.DISCOUNT AS totalCouponMoney,
 				 a.SUPPLIER_NAME AS supplierName,
 				 a.SUPPLIER_CODE AS supplierCode,
 				 par.MERCHANT_NAME AS merchantName,
 				 par.MERCHANT_CODE AS merchantCode,
 				 par.BUSINESS_ENTITY_NAME AS businessEntityName,
 				 par.LAN_ID AS lanId,
-				 so.org_name as orgName,
+				 sco.org_name as orgName,
 				 a.create_time,
 				 b.item_id AS itemId
 			FROM 
 				 ord_order a
 				 LEFT JOIN par_merchant par ON par.merchant_id = a.user_id
 				 LEFT JOIN sys_organization so ON par.par_crm_org_id = so.org_id
+				 LEFT JOIN sys_common_org sco ON INSTR(so.path_code,sco.path_code) AND sco.org_level='3'
 				 ,ord_order_items b
 				 LEFT JOIN prod_product c ON b.PRODUCT_ID=c.PRODUCT_ID
 				 LEFT JOIN prod_product_base d ON c.product_base_id= d.product_base_id
@@ -130,7 +131,7 @@
 	 		and d.type_id = #{req.typeName}
 		 </if>
 				GROUP BY b.item_id
-				ORDER BY a.create_time DESC        
+				ORDER BY a.create_time DESC         
     </select>
     
     <select id="ListReportOrderNbr" parameterType="java.lang.String"
@@ -146,8 +147,8 @@
             LEFT JOIN prod_product c ON c.product_id=b.product_id
             WHERE  
             	a.order_id=b.order_id
-		  <if test="orderId!=null and orderId!=''">
-			and a.order_id = #{orderId}
+		  <if test="itemId!=null and itemId!=''">
+			and b.item_id = #{itemId}
 		  </if>
 	 </select>
 	 

@@ -101,6 +101,16 @@ public class ResourceConst {
     public static final String LOCALE_CODE = "Locale";
 
     /**
+     * 仓库redis工具类key
+     */
+    public static final String WAREHOUSE_COMMON_CACHE_KEY = "warehouse_common_cache";
+
+    /**
+     * 串码入库缓存key
+     */
+    public static final String ADD_NBR_INST = "add_nbr_inst";
+
+    /**
      * 串码实列状态
      */
     public enum STATUSCD {

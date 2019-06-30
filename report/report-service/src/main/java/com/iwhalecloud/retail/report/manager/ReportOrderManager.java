@@ -28,8 +28,8 @@ public class ReportOrderManager {
 	        return pageReport;
 	}
 	
-	public List<ReportOrderNbrResp> listReportOrderNbr(String orderId) {
-		List<ReportOrderNbrResp> pageReport =reportOrderMapper.ListReportOrderNbr(orderId);
+	public List<ReportOrderNbrResp> listReportOrderNbr(String itemId) {
+		List<ReportOrderNbrResp> pageReport =reportOrderMapper.ListReportOrderNbr(itemId);
 	        return pageReport;
 	}
     

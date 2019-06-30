@@ -17,7 +17,7 @@ import java.util.List;
  * @Author My
  * @Date 2019/1/10
  **/
-@Service
+@Service(parameters={"addActSup.timeout","30000"})
 @Slf4j
 public class ResourceRequestDetailOpenServiceImpl implements ResourceReqDetailService {
 

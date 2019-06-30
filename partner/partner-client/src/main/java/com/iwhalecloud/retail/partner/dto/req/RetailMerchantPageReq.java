@@ -12,11 +12,13 @@ import java.util.List;
 @ApiModel("根据条件查找 零售商类型的商家信息 分页列表")
 public class RetailMerchantPageReq extends PageVO {
 
-    //（par_merchant表字段）商家名称、店中商编码、店中商经营主体名称、渠道视图状态、
-    //  销售点名称、销售点编码、区域（分公司、市县、分局/县部门、营销中心/支局）、渠道大类、渠道小类、渠道子类。
-    //（sys_user表字段）系统账号、系统状态
-    //（par_invoice表字段）营业执照失效期
-    // (prod_merchant_tag_rel表字段）分组标签
+    /*
+    （par_merchant表字段）商家名称、店中商编码、店中商经营主体名称、渠道视图状态、
+      销售点名称、销售点编码、区域（分公司、市县、分局/县部门、营销中心/支局）、渠道大类、渠道小类、渠道子类。
+    （sys_user表字段）系统账号、系统状态
+    （par_invoice表字段）营业执照失效期
+     (prod_merchant_tag_rel表字段）分组标签
+     */
 
     @ApiModelProperty(value = "商家编码")
     private String merchantCode;
@@ -50,6 +52,15 @@ public class RetailMerchantPageReq extends PageVO {
 
     @ApiModelProperty(value = "营销中心/支局")
     private java.lang.String marketCenter;
+
+    /* 市县、分局/县部门 合并为一个字段 经营单元（对应 组织表的 第3级组织部门）*/
+    @ApiModelProperty(value = "经营单元(3级组织部门)")
+    private java.lang.String OrgIdWithLevel3;
+
+    /* 营销中心/支局 字段 改为 查  组织表的 第4级组织部门 */
+    @ApiModelProperty(value = "营销中心/支局（4级组织部）")
+    private java.lang.String OrgIdWithLevel4;
+
 
     @ApiModelProperty(value = "销售点编码")
     private java.lang.String shopCode;

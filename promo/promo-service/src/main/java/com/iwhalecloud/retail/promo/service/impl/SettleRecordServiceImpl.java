@@ -18,6 +18,8 @@ import com.iwhalecloud.retail.partner.service.MerchantAccountService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.SettleRecordDTO;
+import com.iwhalecloud.retail.promo.entity.ActivityProduct;
+import com.iwhalecloud.retail.promo.manager.ActivityProductManager;
 import com.iwhalecloud.retail.promo.manager.SettleRecordManager;
 import com.iwhalecloud.retail.promo.service.SettleRecordService;
 import com.iwhalecloud.retail.promo.utils.DateUtil;
@@ -63,6 +65,9 @@ public class SettleRecordServiceImpl implements SettleRecordService {
     @Reference
     private ResouceStoreService resouceStoreService;
 
+    @Autowired
+    private ActivityProductManager activityProductManager;
+
 
     @Override
     public Integer batchAddSettleRecord(List<SettleRecordDTO> settleRecordDTOs) {
@@ -88,8 +93,10 @@ public class SettleRecordServiceImpl implements SettleRecordService {
         }
         //结算周期记录
         List<SettleRecordDTO> settleRecords1 = settleRecordManager.getSettleRecord();
+        log.info("SettleRecordServiceImpl.getSettleRecord getSettleRecord settleRecords1={},lanId={}",settleRecords1,lanId);
         //结算周期补录记录
         List<SettleRecordDTO> settleRecords2 = settleRecordManager.getSupplementaryRecord();
+        log.info("SettleRecordServiceImpl.getSettleRecord getSupplementaryRecord settleRecords2={},lanId={}",settleRecords2,lanId);
         List<String> orderIds = new ArrayList<>();
         List<String> supplementaryOrderIds = new ArrayList<>();
         //结算周期的订单id List
@@ -102,15 +109,22 @@ public class SettleRecordServiceImpl implements SettleRecordService {
         List<SettleRecordOrderDTO> settleRecordOrderDTOs = new ArrayList<>();
         if(!CollectionUtils.isEmpty(orderIds)){
             settleRecordOrderDTOs = settleRecordOrderService.getSettleRecordOrder(orderIds,lanId);
+            log.info("SettleRecordServiceImpl.getSettleRecord getSettleRecordOrder1 settleRecordOrderDTOs={},lanId={}",settleRecordOrderDTOs,lanId);
         }
         //目标时间是否在起始时间和结束时间范围内的orders
         List<String> orderList = new ArrayList<>();
+        List<String> orderMarketingActivityList = new ArrayList<>();
         if(!CollectionUtils.isEmpty(settleRecordOrderDTOs) && !CollectionUtils.isEmpty(settleRecords1)){
             for(SettleRecordDTO settleRecordDTO:settleRecords1){
                 String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
                 String deliverStartTime = DateUtil.formatDate(settleRecordDTO.getDeliverStartTime(), DATE_FORMAT);
                 String deliverEndTime = DateUtil.formatDate(settleRecordDTO.getDeliverEndTime(), DATE_FORMAT);
                 String orderId = settleRecordDTO.getOrderId();
+                if(orderMarketingActivityList.contains(orderId+settleRecordDTO.getMarketingActivityId())){
+                    continue;
+                }else{
+                    orderMarketingActivityList.add(orderId+settleRecordDTO.getMarketingActivityId());
+                }
                 orderList.add(orderId);
                 //校验目标时间是否在起始时间和结束时间范围内
                 for(SettleRecordOrderDTO settleRecordOrderDTO: settleRecordOrderDTOs){
@@ -119,7 +133,9 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                         Integer lanid = settleRecordOrderDTO.getLanId();
                         if(DateUtil.compare(deliverStartTime, deliverEndTime, DeliveryTime)
                                 && lanId.equals(String.valueOf(lanid))){
+                            log.info("SettleRecordServiceImpl.getSettleRecord addList1 begin settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
                             this.addList(settleRecordDTOs,settleRecordDTO,settleRecordOrderDTO);
+                            log.info("SettleRecordServiceImpl.getSettleRecord addList1 end settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
                         }
                     }
                 }
@@ -137,25 +153,36 @@ public class SettleRecordServiceImpl implements SettleRecordService {
         List<SettleRecordOrderDTO> settleRecordOrderDTOs2 = new ArrayList<>();
         if(!CollectionUtils.isEmpty(supplementaryOrderIds)){
             settleRecordOrderDTOs2 = settleRecordOrderService.getSettleRecordOrder(supplementaryOrderIds,lanId);
+            log.info("SettleRecordServiceImpl.getSettleRecord getSettleRecordOrder2 settleRecordOrderDTOs2={},lanId={}",settleRecordOrderDTOs2,lanId);
         }
+        List<String> orderMarketingActivityList2 = new ArrayList<>();
         if(!CollectionUtils.isEmpty(settleRecordOrderDTOs2) && !CollectionUtils.isEmpty(settleRecords2)){
             for(SettleRecordDTO settleRecordDTO:settleRecords2){
                 String orderId = settleRecordDTO.getOrderId();
+                if(orderMarketingActivityList2.contains(orderId+settleRecordDTO.getMarketingActivityId())){
+                    continue;
+                }else{
+                    orderMarketingActivityList2.add(orderId+settleRecordDTO.getMarketingActivityId());
+                }
                 for(SettleRecordOrderDTO settleRecordOrderDTO: settleRecordOrderDTOs2){
                     Integer lanid = settleRecordOrderDTO.getLanId();
                     if(StringUtils.isNotEmpty(orderId) && orderId.equals(settleRecordOrderDTO.getOrderId())
                             && lanId.equals(String.valueOf(lanid))){
+                        log.info("SettleRecordServiceImpl.getSettleRecord addList2 begin settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
                         this.addList(settleRecordDTOs,settleRecordDTO,settleRecordOrderDTO);
+                        log.info("SettleRecordServiceImpl.getSettleRecord addList2 end settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
                     }
                 }
 
             }
         }
+        log.info("SettleRecordServiceImpl.getSettleRecord settleRecordDTOs={},lanId={}",settleRecordDTOs,lanId);
         if(!CollectionUtils.isEmpty(settleRecordDTOs)){
             this.setProductInfo(settleRecordDTOs);
             this.setSupplierInfo(settleRecordDTOs);
             this.setAccount(settleRecordDTOs);
             this.setResStoreId(settleRecordDTOs);
+            this.setCouponPrice(settleRecordDTOs);
         }
 
         return settleRecordDTOs;
@@ -227,11 +254,12 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                     if (merchantDTO.getMerchantCode().equals(settleRecordDTO.getSupplierCode())) {
                         settleRecordDTO.setSupplierName(merchantDTO.getMerchantName());
                         settleRecordDTO.setSupplierId(merchantDTO.getMerchantId());
+                        settleRecordDTO.setSupplierCode(merchantDTO.getShopCode());
                         supplierIds.add(merchantDTO.getMerchantId());
                     }
                     if(merchantDTO.getMerchantCode().equals(settleRecordDTO.getMerchantCode())){
                         settleRecordDTO.setMerchantName(merchantDTO.getMerchantName());
-                        settleRecordDTO.setSupplierId(merchantDTO.getMerchantId());
+                        settleRecordDTO.setMerchantId(merchantDTO.getMerchantId());
                         supplierIds.add(merchantDTO.getMerchantId());
                     }
                 }
@@ -307,6 +335,26 @@ public class SettleRecordServiceImpl implements SettleRecordService {
                             settleRecordDTO.setTypeId(productDTO.getTypeId());
                             break;
                         }
+                    }
+                }
+            }
+        }
+    }
+
+    private void setCouponPrice(List<SettleRecordDTO> settleRecordDTOs){
+        if(!CollectionUtils.isEmpty(settleRecordDTOs)){
+            List<String> marketingActivityIds = new ArrayList<>();
+
+            for(SettleRecordDTO settleRecordDTO:settleRecordDTOs){
+                marketingActivityIds.add(settleRecordDTO.getMarketingActivityId());
+            }
+
+            List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityIds);
+            for(SettleRecordDTO settleRecordDTO:settleRecordDTOs){
+                for(ActivityProduct activityProduct:activityProducts){
+                    if(settleRecordDTO.getProductId().equals(activityProduct.getProductId()) &&
+                            settleRecordDTO.getMarketingActivityId().equals(activityProduct.getMarketingActivityId())){
+                        settleRecordDTO.setSubsidyAmount(Double.valueOf(activityProduct.getDiscountAmount()));
                     }
                 }
             }

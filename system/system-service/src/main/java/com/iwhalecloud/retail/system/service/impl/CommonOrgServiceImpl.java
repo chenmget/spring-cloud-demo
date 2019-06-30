@@ -24,6 +24,7 @@ import java.util.List;
 
 /**
  * 通用组织信息服务接口实现类
+ *
  * @author lipeng
  */
 @Slf4j
@@ -35,6 +36,7 @@ public class CommonOrgServiceImpl implements CommonOrgService {
 
     /**
      * 跟orgId获取通用组织信息
+     *
      * @param orgId
      * @return
      */
@@ -54,20 +56,19 @@ public class CommonOrgServiceImpl implements CommonOrgService {
     }
 
 
-
-
     /**
      * 获取本地区域 列表
+     *
      * @param req
      * @param isSelectAll 是否查询全部
      * @return
      */
     @Override
-    public ResultVO<List<CommonOrgDTO>> listCommonOrg(CommonOrgListReq req,boolean isSelectAll) {
+    public ResultVO<List<CommonOrgDTO>> listCommonOrg(CommonOrgListReq req, boolean isSelectAll) {
         log.info("CommonOrgServiceImpl.listCommonOrg(), input：req={} ", JSON.toJSONString(req));
         if (StringUtils.isEmpty(req.getParentOrgId())
                 && CollectionUtils.isEmpty(req.getOrgIdList())
-                && StringUtils.isEmpty(req.getOrgName())&&!isSelectAll) {
+                && StringUtils.isEmpty(req.getOrgName()) && !isSelectAll) {
             // 三个条件都为空 默认查湖南的 第一级通用组织信息
             req.setParentOrgId(SystemConst.HN_DEFAULT_PARENT_ORG_ID);
         }
@@ -88,6 +89,7 @@ public class CommonOrgServiceImpl implements CommonOrgService {
 
     /**
      * 分页 获取本地区域 列表
+     *
      * @param req
      * @return
      */
@@ -98,15 +100,15 @@ public class CommonOrgServiceImpl implements CommonOrgService {
         log.info("CommonOrgServiceImpl.pageCommonOrg(), output：list={} ", JSON.toJSONString(respPage.getRecords()));
         return ResultVO.success(respPage);
     }
-    
+
     /**
      * 获取经营单元
      */
     @Override
     public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg(SysCommonOrgRequest req) {
-    	log.info("CommonOrgServiceImpl.getSysCommonOrg() start ******************************** ",JSON.toJSONString(req));
-    	List<SysCommonOrgResp>  respList = commonOrgManager.getSysCommonOrg(req);
-    	return ResultVO.success(respList);
+        log.info("CommonOrgServiceImpl.getSysCommonOrg() start ******************************** ", JSON.toJSONString(req));
+        List<SysCommonOrgResp> respList = commonOrgManager.getSysCommonOrg(req);
+        return ResultVO.success(respList);
     }
 
 }

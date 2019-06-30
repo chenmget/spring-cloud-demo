@@ -107,7 +107,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
     @Async
     @Override
     public void asynSaveTrackForMerchant(ResourceInstAddReq req, ResultVO resp, CopyOnWriteArrayList<String> newlist) {
-        log.info("ResouceInstTrackServiceImpl.asynSaveTrackForMerchant req={}", JSON.toJSONString(req));
+        log.info("ResouceInstTrackServiceImpl.asynSaveTrackForMerchant req={},mktResInstNbrs size={}", JSON.toJSONString(req), newlist.size());
         if (!resp.isSuccess()) {
             return;
         }

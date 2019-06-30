@@ -50,8 +50,8 @@ public class TagsServiceImpl implements TagsService {
     }
 
     @Override
-    public ResultVO<List<TagsDTO>> listProdTags() {
-        return ResultVO.success(tagsManager.listProdTags());
+    public ResultVO<List<TagsDTO>> listProdTags(ProdTagsListReq req) {
+        return ResultVO.success(tagsManager.listProdTags(req));
     }
 
     @Override

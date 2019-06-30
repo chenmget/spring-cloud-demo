@@ -147,4 +147,8 @@
 		DELETE FROM prod_file WHERE target_id = #{goodsId} AND sub_type IN ('8','9','10')
 	</select>
     
+    <select id="isBindingToPricture" parameterType="java.lang.String"  resultType="java.lang.String">
+		select count(*) as num FROM prod_file WHERE target_id = #{targetId} AND sub_type IN ('8','9','10')
+	</select>
+    
 </mapper>

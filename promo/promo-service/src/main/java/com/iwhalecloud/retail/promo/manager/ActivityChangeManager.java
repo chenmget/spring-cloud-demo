@@ -189,7 +189,7 @@ public class ActivityChangeManager{
                     for (ActivityParticipantDTO activityParticipantDTO : activityParticipantDTOS) {
                         ActivityParticipant activityParticipant = new ActivityParticipant();
                         activityParticipant.setId(activityParticipantDTO.getId());
-                        activityParticipant.setStatus(PromoConst.IsDelete.IS_DELETE_CD_1.getCode());
+                        activityParticipant.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_1.getCode());
                         activityParticipantList.add(activityParticipant);
                     }
                 }

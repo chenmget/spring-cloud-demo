@@ -10,7 +10,8 @@ spring:
       name: warehouse-provider
     registry:
 #      address: zookeeper://10.45.47.87:2285
-      address: zookeeper://172.21.72.75:8121
+#      address: zookeeper://172.21.72.75:8121
+      address: zookeeper://localhost:2181
     protocol:
       name: dubbo
       port: 20886
@@ -30,10 +31,11 @@ jmx:
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://134.176.110.182:8903/CLOUDS?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
-  username: yhj
-        #password: szxtest.2019
-  password: Yhj_20190118
+  url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  username: szxtest
+    #password: szxtest.2019
+  password: kw0KpgWfOpAVqO4sdMTlLIcXrbbZOIXl4gwhUZqqNehmasEh/58907TPY7kguZ91Ke7rGLUVEkX5YpOBemm18g==
+
 
   druid:
     #2.连接池配置
@@ -77,7 +79,7 @@ spring.datasource:
       allow: 127.0.0.1
     filters: config,stat,wall,log4j
     #设置public key
-   # connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJptiLaauFuYuwkmQ2S0NSsvjdka34BLnbG5zFcuRqFi7RJowXs7P/dSmQWmlrx5RekyriyBUzgAgSbTFt1NpMsCAwEAAQ==
+    connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJptiLaauFuYuwkmQ2S0NSsvjdka34BLnbG5zFcuRqFi7RJowXs7P/dSmQWmlrx5RekyriyBUzgAgSbTFt1NpMsCAwEAAQ==
 
 
 # 分布式文件系统FDFS配置
@@ -125,3 +127,19 @@ addNbrService:
 # 能开接口用的测试环境和正式环境区分标识（测试环境加Test）
 zopServiceEnv: Test
 
+spring.redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    cluster:
+      nodes: 10.45.46.241:7001,10.45.46.242:7001,10.45.46.243:7001
+      timeout: 10000
+      max-redirects: 3
+    expireSeconds: 120
+    commandTimeout: 10000  #redis操作的超时时间
+    pool:
+      max-active: 6000
+      max-idle: 300
+      max-wait: 1000
+      min-idle: 5
+    password:

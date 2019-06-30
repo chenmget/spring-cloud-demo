@@ -75,6 +75,12 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
             log.info("MerchantResourceInstOpenServiceImpl.addResourceInstForProvinceStore req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(req));
             return merchantResourceInstService.addResourceInstForProvinceStore(req);
         }else {
+            String merchantId = req.getMerchantId();
+            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
+            if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
+                return ResultVO.error(constant.getCannotGetMerchantMsg());
+            }
+            MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
             if (ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(req.getMktResInstType())) {
                 // 获取地市仓库
                 StorePageReq storePageReq = new StorePageReq();
@@ -83,7 +89,7 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
                 storePageReq.setMktResStoreId(req.getMktResStoreId());
                 storePageReq.setLanIdList(Lists.newArrayList(req.getLanId()));
                 Page<ResouceStoreDTO> pageStore = resouceStoreService.pageStore(storePageReq);
-                log.info("MerchantResourceInstOpenServiceImpl.addResourceInst resouceStoreService.pageStore storePageReq={}", JSON.toJSONString(storePageReq), JSON.toJSONString(pageStore.getRecords()));
+                log.info("MerchantResourceInstOpenServiceImpl.addResourceInst resouceStoreService.pageStore storePageReq={},resp={}", JSON.toJSONString(storePageReq), JSON.toJSONString(pageStore.getRecords()));
                 if (null == pageStore || CollectionUtils.isEmpty(pageStore.getRecords())) {
                     return ResultVO.error(constant.getCannotGetStoreMsg());
                 }
@@ -91,18 +97,12 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
                 String destStoreId = storeDTO.getMktResStoreId();
                 req.setMerchantId(storeDTO.getMerchantId());
                 req.setMerchantType(storeDTO.getMerchantType());
-                req.setMerchantName(storeDTO.getMerchantName());
+                req.setMerchantName(merchantDTO.getMerchantName());
                 req.setMerchantCode(storeDTO.getMerchantCode());
                 req.setLanId(storeDTO.getLanId());
                 req.setRegionId(storeDTO.getRegionId());
                 req.setDestStoreId(destStoreId);
             }else{
-                String merchantId = req.getMerchantId();
-                ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantId);
-                if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
-                    return ResultVO.error(constant.getCannotGetMerchantMsg());
-                }
-                MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
                 req.setMerchantId(merchantDTO.getMerchantId());
                 req.setMerchantType(merchantDTO.getMerchantType());
                 req.setMerchantName(merchantDTO.getMerchantName());

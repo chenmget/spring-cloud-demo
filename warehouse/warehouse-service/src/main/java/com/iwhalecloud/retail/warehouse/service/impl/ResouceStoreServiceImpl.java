@@ -19,6 +19,7 @@ import com.iwhalecloud.retail.system.dto.response.OrganizationRegionResp;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreObjRelDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.AllocateStorePageReq;
@@ -66,6 +67,9 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
 
     @Reference
     private OrganizationService organizationService;
+
+    @Autowired
+    private Constant constant;
 
     @Override
     public Page<ResouceStoreDTO> pageStore(StorePageReq req) {
@@ -126,7 +130,7 @@ public class ResouceStoreServiceImpl implements ResouceStoreService {
         if (null != resouceStoreObjRelDTO) {
             return merchantService.getMerchantById(resouceStoreObjRelDTO.getObjId());
         } else {
-            return ResultVO.error("仓库不存在");
+            return ResultVO.error(constant.getCannotGetStoreMsg());
         }
     }
 

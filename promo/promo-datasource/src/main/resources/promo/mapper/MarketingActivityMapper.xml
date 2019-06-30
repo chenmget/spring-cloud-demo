@@ -130,9 +130,11 @@
         <include refid="listMarketingActivityFieIds"></include>
         from act_marketing_activity t where 1=1
         and t.IS_DELETED = '0'
+        and t.status in ('20')
         <if test="req.name != null and req.name != '' ">
             AND t.NAME like CONCAT(CONCAT('%', #{req.name}), '%')
         </if>
+        order by t.gmt_create desc
     </select>
 
 

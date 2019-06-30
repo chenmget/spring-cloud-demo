@@ -32,7 +32,7 @@
 			(CASE WHEN a.stock_age &gt;=30 AND a.stock_age &lt;60 THEN '1' ELSE '0' END) as day30,
 			(CASE WHEN a.stock_age &gt;=60 AND a.stock_age &lt;90 THEN '1' ELSE '0' END) as day60,
 			(CASE WHEN a.stock_age &gt;=90  THEN '1' ELSE '0' END) as  day90,
-			a.DEST_MERCHANT_ID AS destMerchantId,
+			par.MERCHANT_NAME AS destMerchantId,
 			s3.region_name AS destCityId,
 			so.org_name AS destCountyOrgName,
 			a.CRM_STATUS AS crmStatus,
@@ -175,13 +175,13 @@
 			(CASE WHEN a.stock_age &gt;=30 AND a.stock_age &lt;60 THEN '1' ELSE '0' END) as day30,
 			(CASE WHEN a.stock_age &gt;=60 AND a.stock_age &lt;90 THEN '1' ELSE '0' END) as day60,
 			(CASE WHEN a.stock_age &gt;=90  THEN '1' ELSE '0' END) as  day90,
-			a.DEST_MERCHANT_ID AS destMerchantId,
+			par.MERCHANT_NAME AS destMerchantId,
 			s3.region_name AS destCityId,
 			so2.org_name AS destCountyOrgName,
 			a.CRM_STATUS AS crmStatus,
 			a.SELF_REG_STATUS AS selfRegStatus
 		FROM 
-			rpt_res_inst_detail_admin a
+			rpt_res_inst_detail_merchant a
 			LEFT JOIN prod_type b ON a.product_code = b.type_id
 			LEFT JOIN prod_product c ON a.product_id = c.product_id
 			LEFT JOIN prod_product_base d ON c.product_base_id = d.product_base_id

@@ -47,7 +47,7 @@ public class ValidAndAddRunableTask {
 
     private final Integer perNum = 5000;
 
-    private Map<String, List<Future<Boolean>>> validFutureTaskResult = new Hashtable();
+    private static Map<String, List<Future<Boolean>>> validFutureTaskResult = new Hashtable();
 
     String reg12 = "([A-Z]|[0-9]|[-]){12}$";
     String reg24 = "([A-Z]|[0-9]|[-]){24}$";
@@ -65,16 +65,17 @@ public class ValidAndAddRunableTask {
         String batchId = resourceInstService.getPrimaryKey();
         try {
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
+            List<Future<Boolean>> futures = new ArrayList<>();
             List<String> nbrList = req.getMktResInstNbrs();
             List<String> ctCodeList = req.getCtCodeList();
             List<String> snCodeList = req.getSnCodeList();
             List<String> macCodeList = req.getMacCodeList();
             Integer excutorNum = nbrList.size()%perNum == 0 ? nbrList.size()/perNum : (nbrList.size()/perNum + 1);
-            BlockingQueue<Callable<Boolean>> tasks = new LinkedBlockingQueue<>();
             for (Integer i = 0; i < excutorNum; i++) {
                 Integer maxNum = perNum * (i + 1) > nbrList.size() ? nbrList.size() : perNum * (i + 1);
                 List<String> subList = nbrList.subList(perNum * i, maxNum);
                 CopyOnWriteArrayList<String> newList = new CopyOnWriteArrayList(subList);
+                CopyOnWriteArrayList<String> newListTwo = new CopyOnWriteArrayList(subList);;
                 ResourceInstsTrackGetReq getReq = new ResourceInstsTrackGetReq();
                 getReq.setTypeId(req.getTypeId());
                 getReq.setMktResInstNbrList(newList);
@@ -93,12 +94,13 @@ public class ValidAndAddRunableTask {
                     CopyOnWriteArrayList<String> subMacCodeList = new CopyOnWriteArrayList(macCodeList.subList(perNum * i, macCodeMaxNum));
                     getReq.setMacCodeList(subMacCodeList);
                 }
+                Callable<Boolean> callable = new ValidNbr(req, getReq, newListTwo, batchId);
+                Future<Boolean> future = executorService.submit(callable);
+                futures.add(future);
                 log.info("ValidAndAddRunableTask.exceutorValid, getReq={},newList={}, batchId={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), batchId);
-                Callable<Boolean> callable = new ValidNbr(req, getReq, newList, batchId);
-                tasks.put(callable);
             }
-            List<Future<Boolean>> futures = executorService.invokeAll(tasks);
             validFutureTaskResult.put(batchId, futures);
+            log.info("ValidAndAddRunableTask.exceutorValid validFutureTaskResult={}, futures={}, batchId={}", JSON.toJSONString(validFutureTaskResult), JSON.toJSONString(futures), batchId);
             executorService.shutdown();
             return batchId;
         } catch (Exception e) {
@@ -121,7 +123,6 @@ public class ValidAndAddRunableTask {
             List<Future<Boolean>> futures = validFutureTaskResult.get(batchId);
             for (Future<Boolean> future : futures) {
                 if (!future.isDone()) {
-                    validFutureTaskResult.remove(batchId);
                     return future.isDone();
                 }
             }
@@ -142,6 +143,8 @@ public class ValidAndAddRunableTask {
      */
     public void exceutorDelNbr(ResourceUploadTempDelReq req) {
         ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
+        // 此时所有都执行成功了，去掉map的数据，减小开支
+        validFutureTaskResult.remove(req.getMktResUploadBatch());
         Callable callable = new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
@@ -172,21 +175,21 @@ public class ValidAndAddRunableTask {
             Date now = new Date();
             List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>();
             List<ResouceUploadTemp> snUploadTemp = this.validSnCode();
-            log.info("ValidAndAddRunableTask.exceutorValid snUploadTemp={}, newList={}", JSON.toJSONString(newList), JSON.toJSONString(snUploadTemp));
+            log.info("ValidAndAddRunableTask.exceutorValid snUploadTemp={}", JSON.toJSONString(snUploadTemp));
             instList.addAll(snUploadTemp);
             List<ResouceUploadTemp> macUploadTemp = this.validMacCode();
-            log.info("ValidAndAddRunableTask.exceutorValid macUploadTemp={}, newList={}", JSON.toJSONString(newList), JSON.toJSONString(macUploadTemp));
+            log.info("ValidAndAddRunableTask.exceutorValid macUploadTemp={}", JSON.toJSONString(macUploadTemp));
             instList.addAll(macUploadTemp);
             List<ResouceUploadTemp> ctUploadTemp = this.validCtCode();
             instList.addAll(ctUploadTemp);
-            log.info("ValidAndAddRunableTask.exceutorValid, ctUploadTemp={}, newList={}", JSON.toJSONString(newList), JSON.toJSONString(ctUploadTemp));
+            log.info("ValidAndAddRunableTask.exceutorValid, ctUploadTemp={}", JSON.toJSONString(ctUploadTemp));
 
             if (CollectionUtils.isNotEmpty(newList)) {
                 ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
                 trackGetReq.setMktResInstNbrList(newList);
                 trackGetReq.setTypeId(req.getTypeId());
                 ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
-                log.info("ValidAndAddRunableTask.exceutorValid resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(instsTrackvO));
+                log.info("ValidAndAddRunableTask.exceutorValid resouceInstTrackService.listResourceInstsTrack nbrNum={}, respSize={}", newList.size(), instsTrackvO.getResultData().size());
                 if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                     List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                     // 删除的串码可再次导入
@@ -262,7 +265,7 @@ public class ValidAndAddRunableTask {
                 }
             }
             Boolean addResult = resourceUploadTempManager.saveBatch(instList);
-            log.info("ValidAndAddRunableTask.exceutorValid resourceUploadTempManager.saveBatch req={}, resp={}", JSON.toJSONString(instList), addResult);
+            log.info("ValidAndAddRunableTask.exceutorValid resourceUploadTempManager.saveBatch instListSize={}, resp={}", instList.size(), addResult);
             return addResult;
         }
 
@@ -304,7 +307,7 @@ public class ValidAndAddRunableTask {
                     inst.setResult(ResourceConst.CONSTANT_YES);
                     inst.setResultDesc(constant.getVaileNbr24());
                 }
-            }else if (TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode())) {
+            }else if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
                 Pattern pattern39= Pattern.compile(reg39);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches() || pattern39.matcher(mktResInstNbr).matches();
@@ -312,7 +315,7 @@ public class ValidAndAddRunableTask {
                     inst.setResult(ResourceConst.CONSTANT_YES);
                     inst.setResultDesc(constant.getVaileNbr32Or39());
                 }
-            }else if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(req.getDetailCode())) {
+            }else if (TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches();
                 if (!matchs) {
@@ -349,7 +352,7 @@ public class ValidAndAddRunableTask {
             ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
             trackGetReq.setSnCodeList(getReq.getSnCodeList());
             ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
-            log.info("ValidAndAddRunableTask.validSnCode resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(instsTrackvO));
+            log.info("ValidAndAddRunableTask.validSnCode resouceInstTrackService.listResourceInstsTrack reqSize={}, respSize={}", getReq.getSnCodeList().size(), instsTrackvO.getResultData().size());
             if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                 List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                 // 删除的串码可再次导入
@@ -414,7 +417,7 @@ public class ValidAndAddRunableTask {
             ResourceInstsTrackGetReq trackGetReq = new ResourceInstsTrackGetReq();
             trackGetReq.setMacCodeList(getReq.getMacCodeList());
             ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
-            log.info("ValidAndAddRunableTask.validMacCode resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(instsTrackvO));
+            log.info("ValidAndAddRunableTask.validMacCode resouceInstTrackService.listResourceInstsTrack reqSize={}, respSize={}", getReq.getMacCodeList().size(), instsTrackvO.getResultData().size());
             if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                 List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                 // 删除的串码可再次导入
@@ -479,7 +482,7 @@ public class ValidAndAddRunableTask {
             CopyOnWriteArrayList<String> ctCodeList = new CopyOnWriteArrayList<String>(notNullCtCodeList);
             trackGetReq.setCtCodeList(ctCodeList);
             ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(trackGetReq);
-            log.info("ValidAndAddRunableTask.validCtCode resouceInstTrackService.listResourceInstsTrack getReq={}, resp={}", JSON.toJSONString(trackGetReq), JSON.toJSONString(instsTrackvO));
+            log.info("ValidAndAddRunableTask.validCtCode resouceInstTrackService.listResourceInstsTrack reqSize={}, respSize={}", ctCodeList.size(), instsTrackvO.getResultData().size());
             if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                 List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                 // 删除的串码可再次导入
@@ -522,12 +525,5 @@ public class ValidAndAddRunableTask {
         }
     }
 
-    public static void main(String[] args) {
-        String reg = "([A-Z]|[0-9]|[-]){12}$";
-        Pattern pattern39= Pattern.compile(reg);
-        String test = "203911110190";
-        Boolean matchs = pattern39.matcher(test).matches();
-        System.out.print(matchs);
-    }
 }
 

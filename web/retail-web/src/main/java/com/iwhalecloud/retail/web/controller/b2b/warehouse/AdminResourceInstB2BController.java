@@ -52,7 +52,7 @@ import java.util.List;
 @Slf4j
 public class AdminResourceInstB2BController {
 
-	@Reference
+	@Reference(timeout = 30000)
     private AdminResourceInstService resourceInstService;
 
     @Value("${fdfs.suffix.allowUpload}")
@@ -304,6 +304,7 @@ public class AdminResourceInstB2BController {
     @UserLoginToken
     public void exportNbrDetail(@RequestBody ResourceReqDetailQueryReq req, HttpServletResponse response) {
         req.setUserId(UserContext.getUser().getUserId());
+        req.setSearchCount(false);
         ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listResourceRequestDetailPage(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
         log.info("AdminResourceInstB2BController.exportNbrDetail resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
@@ -403,6 +404,16 @@ public class AdminResourceInstB2BController {
         req.setUpdateStaff(UserContext.getUserId());
         req.setUpdateStaffName(UserContext.getUser().getUserName());
         return resourceInstService.batchAuditNbr(req);
+    }
+
+    @ApiOperation(value = "验证提交串码审核是否执行完毕", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value="validBatchAuditNbr")
+    public ResultVO<Boolean> validBatchAuditNbr() {
+        return resourceInstService.validBatchAuditNbr();
     }
 
 

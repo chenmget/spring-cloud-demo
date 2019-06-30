@@ -21,6 +21,7 @@ import com.iwhalecloud.retail.goods2b.entity.*;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 import com.iwhalecloud.retail.goods2b.helper.AttrSpecHelper;
 import com.iwhalecloud.retail.goods2b.manager.*;
+import com.iwhalecloud.retail.goods2b.mapper.GoodsProductRelMapper;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.CurrencyUtil;
 import com.iwhalecloud.retail.goods2b.utils.ResultVOUtils;
@@ -164,6 +165,9 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Autowired
     private TypeManager typeManager;
+
+    @Autowired
+    private GoodsProductRelMapper goodsProductRelMapper;
 
     /**
      * 首字母转小写
@@ -684,7 +688,12 @@ public class GoodsServiceImpl implements GoodsService {
         Page<GoodsForPageQueryResp> goodsForPageQueryRespPage = goodsManager.queryGoodsForPage(req);
         // 按照零售商商品展示规则过滤
         long start = System.currentTimeMillis();
-        filterGoods(req, goodsForPageQueryRespPage);
+
+        // 新逻辑(如果用户是零售商，只能查到地包商品, 用户是地包商，只查省包商的商品 在controller层加这条件)：
+        // 去掉商品过滤逻辑 zhongwenlong2019.06.28
+//        filterGoods(req, goodsForPageQueryRespPage);
+
+
         long end = System.currentTimeMillis();
         log.info("filterGoods costTime={}:", end - start);
         List<GoodsForPageQueryResp> goodsDTOList = goodsForPageQueryRespPage.getRecords();
@@ -1801,9 +1810,38 @@ public class GoodsServiceImpl implements GoodsService {
         List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsManager.listSupplierGoodsByType(productId, "2");
         log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 地包商 supplierGoodsDTOs={}", supplierGoodsDTOs1);
         if (CollectionUtils.isNotEmpty(supplierGoodsDTOs1)) {
-            return supplierGoodsDTOs;
+            String avgPriceStr = goodsManager.getAvgPrice(productId);
+            ProductResp productResp = productManager.getProductInfo(productId);
+            GoodsDetailDTO goodsDetailDTO = goodsProductRelMapper.qryGoodsByProductIdAndGoodsId(productId,goodsId);
+            if(StringUtils.isNotEmpty(avgPriceStr) && null!=goodsDetailDTO && null!=productResp){
+                Double deliveryPrice = goodsDetailDTO.getDeliveryPrice();
+                Double avgPrice = Double.valueOf(avgPriceStr);
+                String isFixedLine = productResp.getIsFixedLine();
+                if((StringUtils.isEmpty(isFixedLine) || "0".equals(isFixedLine)) && deliveryPrice / avgPrice > 1.03){
+                    supplierGoodsDTOs = this.getSupplierGoods(productId);
+                }
+            }
+//            return supplierGoodsDTOs;
+        }else{
+            supplierGoodsDTOs = this.getSupplierGoods(productId);
+            //先根据商家类型查询省包商是否有货
+//            List<SupplierGoodsDTO> supplierGoodsDTOs2 = goodsManager.listSupplierGoodsByType(productId, "3");
+//            log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 省包商 supplierGoodsDTOs={}", supplierGoodsDTOs2);
+//            if (CollectionUtils.isNotEmpty(supplierGoodsDTOs2)) {
+//                for (SupplierGoodsDTO supplierGoodsDTO : supplierGoodsDTOs2) {
+//                    List<ProdFileDTO> prodFileDTOs = fileManager.getFile(supplierGoodsDTO.getGoodsId(), FileConst.TargetType.GOODS_TARGET.getType(), FileConst.SubType.THUMBNAILS_SUB.getType());
+//                    if (CollectionUtils.isNotEmpty(prodFileDTOs)) {
+//                        supplierGoodsDTO.setImageUrl(prodFileDTOs.get(0).getFileUrl());
+//                    }
+//                }
+//                supplierGoodsDTOs = supplierGoodsDTOs2;
+//            }
         }
-        //先根据商家类型查询省包商是否有货
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType  resp={}", supplierGoodsDTOs);
+        return supplierGoodsDTOs;
+    }
+
+    private List<SupplierGoodsDTO> getSupplierGoods(String productId){
         List<SupplierGoodsDTO> supplierGoodsDTOs2 = goodsManager.listSupplierGoodsByType(productId, "3");
         log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 省包商 supplierGoodsDTOs={}", supplierGoodsDTOs2);
         if (CollectionUtils.isNotEmpty(supplierGoodsDTOs2)) {
@@ -1813,9 +1851,7 @@ public class GoodsServiceImpl implements GoodsService {
                     supplierGoodsDTO.setImageUrl(prodFileDTOs.get(0).getFileUrl());
                 }
             }
-            supplierGoodsDTOs = supplierGoodsDTOs2;
         }
-        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType  resp={}", supplierGoodsDTOs);
-        return supplierGoodsDTOs;
+        return supplierGoodsDTOs2;
     }
 }

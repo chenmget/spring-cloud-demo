@@ -111,8 +111,8 @@
 
     <select id="listResourceRequestPage" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailPageDTO">
-        select rest.REQ_CODE,detail.MKT_RES_INST_NBR,rest.MKT_RES_REQ_ID,detail.CREATE_DATE,item.MKT_RES_ID,detail.status_cd,detail.STATUS_DATE,
-        rest.MERCHANT_ID,detail.CT_CODE,detail.sn_code,detail.mac_code,detail.remark,detail.MKT_RES_REQ_DETAIL_ID,rest.DEST_STORE_ID,item.MKT_RES_REQ_ITEM_ID,rest.MKT_RES_STORE_ID,rest.LAN_ID,rest.REGION_ID
+        select rest.REQ_CODE,rest.MKT_RES_REQ_ID,item.MKT_RES_ID,rest.mkt_res_inst_type,rest.MERCHANT_ID,
+        rest.DEST_STORE_ID,item.MKT_RES_REQ_ITEM_ID,rest.MKT_RES_STORE_ID,rest.LAN_ID,rest.REGION_ID,rest.MKT_RES_STORE_ID,detail.*
         from MKT_RES_REQUEST rest,MKT_RES_REQ_ITEM item,MKT_RES_REQ_DETAIL detail
         where  rest.MKT_RES_REQ_ID = item.MKT_RES_REQ_ID and  item.MKT_RES_REQ_ITEM_ID = detail.MKT_RES_REQ_ITEM_ID
         <if test = "null != req.mktResInstNbrs and req.mktResInstNbrs.size()>0">
@@ -132,6 +132,9 @@
             <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResReqDetailIds">
                 #{item}
             </foreach>
+        </if>
+        <if test = "null != req.reqType and '' != req.reqType">
+            and rest.req_type = #{req.reqType}
         </if>
         <if test = "null != req.reqCode and '' != req.reqCode">
             and rest.REQ_CODE = #{req.reqCode}
@@ -166,7 +169,7 @@
         <if test = "null != req.updateStaff and '' != req.updateStaff">
             and detail.UPDATE_STAFF = #{req.updateStaff}
         </if>
-        order by detail.CREATE_DATE DESC
+        order by detail.CREATE_DATE DESC,detail.MKT_RES_REQ_DETAIL_ID
     </select>
 
     <select id="listDistinctResourceRequestByUser" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceReqDetailQueryReq"

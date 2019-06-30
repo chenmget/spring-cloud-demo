@@ -53,6 +53,11 @@ public interface AdminResourceInstService {
      */
     ResultVO<String> batchAuditNbr(ResourceInstCheckReq req);
 
+    /**
+     * 验证申请单明细是否全部处理
+     * @param resourceReqUpdateReq
+     */
+    ResultVO<String> checkResRequestFinish(ResourceReqUpdateReq resourceReqUpdateReq);
 
     /**
      * 导入审核串码excel
@@ -74,4 +79,10 @@ public interface AdminResourceInstService {
      * @return
      */
     ResultVO<ResourceUploadTempCountResp> countResourceUploadTemp(ResourceUploadTempDelReq req);
+
+    /**
+     * 验证提交串码审核是否执行完成
+     * @return
+     */
+    ResultVO<Boolean> validBatchAuditNbr();
 }

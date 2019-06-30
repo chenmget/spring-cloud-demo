@@ -42,4 +42,7 @@ public class ResourceReqDetailUpdateReq implements Serializable {
 
     @ApiModelProperty(value = "记录首次创建的时间。")
     private java.util.Date createDate;
+
+    @ApiModelProperty(value = "营销资源申请单明细标识集合")
+    private List<String> mktResReqDetailIds;
 }

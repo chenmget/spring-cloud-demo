@@ -412,6 +412,11 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
     }
 
     @Override
+    public String isBindingToPricture(String targetId) {
+    	return goodsProductRelManager.isBindingToPricture(targetId);
+    }
+    
+    @Override
     public void delProdFileByTargetId(String goodsId) {
         goodsProductRelManager.delProdFileByTargetId(goodsId);
     }

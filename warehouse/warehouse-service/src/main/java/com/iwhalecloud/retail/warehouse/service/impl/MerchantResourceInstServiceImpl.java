@@ -94,10 +94,9 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
         log.info("MerchantResourceInstServiceImpl.getResourceInstList req={}", JSON.toJSONString(req));
         if (CollectionUtils.isEmpty(req.getMktResStoreIds())) {
-            String mktResInstNbr = req.getMktResInstNbr();
-            String mktResStoreId = resouceInstTrackManager.getStoreIdByNbr(mktResInstNbr);
-            log.info("MerchantResourceInstServiceImpl.getResourceInstList resouceInstTrackManager.getStoreIdByNbr mktResInstNbr={}, mktResStoreId={}", mktResInstNbr, mktResStoreId);
-            req.setMktResStoreIds(Lists.newArrayList(mktResStoreId));
+            List<String> mktResStoreIds = resouceInstTrackManager.getStoreIdByNbr(req);
+            log.info("MerchantResourceInstServiceImpl.getResourceInstList resouceInstTrackManager.getStoreIdByNbr mktResInstNbr={}, mktResStoreId={}", JSON.toJSONString(req), mktResStoreIds);
+            req.setMktResStoreIds(mktResStoreIds);
         }
         return resourceInstService.getResourceInstList(req);
     }
@@ -172,7 +171,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         BeanUtils.copyProperties(req, resourceRequestAddReq);
         resourceRequestAddReq.setInstList(instDTOList);
         resourceRequestAddReq.setReqCode(reqCode);
-        resourceRequestAddReq.setReqName("串码入库申请单");
+        resourceRequestAddReq.setReqName(constant.getAddNbrRequestItem());
         resourceRequestAddReq.setChngType(ResourceConst.PUT_IN_STOAGE);
         resourceRequestAddReq.setLanId(req.getLanId());
         resourceRequestAddReq.setRegionId(req.getRegionId());
@@ -184,7 +183,7 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         log.info("MerchantResourceInstServiceImpl.addResourceInst requestService.insertResourceRequest req={}, resp={}", JSON.toJSONString(resourceRequestAddReq), mktResReqId);
         // step3 启动工作流
         ProcessStartReq processStartDTO = new ProcessStartReq();
-        processStartDTO.setTitle("串码入库审批流程");
+        processStartDTO.setTitle(constant.getAddNbrWorkFlow());
         processStartDTO.setApplyUserId(req.getCreateStaff());
         processStartDTO.setProcessId(selectProcessResp.getProcessId());
         processStartDTO.setTaskSubType(selectProcessResp.getTaskSubType());
@@ -193,12 +192,12 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         ResultVO startResultVO = taskService.startProcess(processStartDTO);
         log.info("MerchantResourceInstServiceImpl.addResourceInst taskService.startProcess req={}, resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(startResultVO));
         if (null != startResultVO && !startResultVO.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "启动工作流失败");
+            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
         }
         ResourceUploadTempDelReq resourceUploadTempDelReq = new ResourceUploadTempDelReq();
         resourceUploadTempDelReq.setMktResUploadBatch(req.getMktResUploadBatch());
         validAndAddRunableTask.exceutorDelNbr(resourceUploadTempDelReq);
-        return ResultVO.success("串码入库提交申请单");
+        return ResultVO.success();
     }
 
     @Override
@@ -269,15 +268,15 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         resourceInstAddResp.setExistNbrs(existNbrs);
         mktResInstNbrs.removeAll(existNbrs);
         if(CollectionUtils.isEmpty(mktResInstNbrs)){
-            return ResultVO.error("该产品串码已在库，请不要重复录入！");
+            return ResultVO.error(constant.getMktResInstExists());
         }
-        req.setSourceType(merchantDTOResultVO.getResultData().getMerchantType());
+        req.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         CopyOnWriteArrayList<String> list = new CopyOnWriteArrayList<String>(mktResInstNbrs);
         Boolean addNum = resourceInstService.addResourceInstByMerchant(req, list);
         if (!addNum) {
-            return ResultVO.error("串码入库失败");
+            return ResultVO.error(constant.getAddNbrFail());
         }
-        return ResultVO.success("串码入库完成", resourceInstAddResp);
+        return ResultVO.success(constant.getAddNbrSucess(), resourceInstAddResp);
     }
 
     @Override
@@ -326,7 +325,6 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
         req.setLanId(provinceStoreLanId);
         req.setRegionId(provinceStoreRegionId);
-        req.setSourceType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
         req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
         req.setStorageType(ResourceConst.STORAGETYPE.VENDOR_INPUT.getCode());

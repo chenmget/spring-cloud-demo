@@ -118,7 +118,12 @@ public class ResourceInstServiceImpl implements ResourceInstService {
         if (null == list || list.isEmpty()) {
             return ResultVO.success(page);
         }
+        fillResourceInst(list);
+        return ResultVO.success(page);
+    }
 
+    @Override
+    public void fillResourceInst(List<ResourceInstListPageResp> list) {
         // 按产品维度组装数据
         Map<String, List<ResourceInstListPageResp>> map = list.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
         for (Map.Entry<String, List<ResourceInstListPageResp>> entry : map.entrySet()) {
@@ -152,7 +157,6 @@ public class ResourceInstServiceImpl implements ResourceInstService {
                 }
             }
         }
-        return ResultVO.success(page);
     }
 
     @Override

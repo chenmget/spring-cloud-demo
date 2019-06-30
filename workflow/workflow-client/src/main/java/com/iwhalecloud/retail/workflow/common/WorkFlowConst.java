@@ -389,7 +389,8 @@ public class WorkFlowConst {
         PROCESS_13("13","移动串码审核流程"),
         PROCESS_14("14","厂商录入固网、泛智能终端串码审核流程（两步审核）"),
         PROCESS_15("15","厂商串码入库集采流程实例（固网）（一步审核）"),
-        PROCESS_16("16","厂商录入固网社采(仅指机顶盒、三合一终端）串码审核流程（三步审核）");
+        PROCESS_16("16","厂商录入固网社采(仅指机顶盒、三合一终端）串码审核流程（三步审核）"),
+        PROCESS_201917("201917","厂商录入泛智能串码审核流程（一步审核）");
 
         private String typeCode;
         private String typeName;

@@ -131,4 +131,12 @@ public interface MerchantService{
      * @return
      */
     ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req);
+
+    /**
+     * 获取商家ID列表
+     * @param
+     * @return
+     */
+    List<String> getMerchantIdList(String merchantName);
+
 }

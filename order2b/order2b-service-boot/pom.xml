@@ -29,10 +29,64 @@
 		<finalName>order2b-service</finalName>
 		
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <layout>ZIP</layout>
+                    <includes>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>domain-object</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>order2b-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>order2b-datasource</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>order2b-service</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>system-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>goods2b-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>member-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>rights-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>partner-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>promo-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>warehouse-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>workflow-client</artifactId>
+                        </include>
+                    </includes>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 	

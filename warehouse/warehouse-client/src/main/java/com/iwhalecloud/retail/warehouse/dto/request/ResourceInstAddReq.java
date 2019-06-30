@@ -297,4 +297,11 @@ public class ResourceInstAddReq implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "事件状态")
 	private java.lang.String eventStatusCd;
+
+	/**
+	 * 抽检泛智能串码列表
+	 */
+	@ApiModelProperty(value = "抽检泛智能串码列表")
+	private List<String> twoCheckMktResInstNbrs;
+
 }

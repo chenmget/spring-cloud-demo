@@ -4,6 +4,7 @@ import com.iwhalecloud.retail.dto.PageVO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Date;
 import java.util.List;
@@ -55,12 +56,17 @@ public class RetailMerchantPageReq extends PageVO {
 
     /* 市县、分局/县部门 合并为一个字段 经营单元（对应 组织表的 第3级组织部门）*/
     @ApiModelProperty(value = "经营单元(3级组织部门)")
-    private java.lang.String OrgIdWithLevel3;
+    private java.lang.String orgIdWithLevel3;
 
     /* 营销中心/支局 字段 改为 查  组织表的 第4级组织部门 */
     @ApiModelProperty(value = "营销中心/支局（4级组织部）")
-    private java.lang.String OrgIdWithLevel4;
+    private java.lang.String orgIdWithLevel4;
 
+    @ApiModelProperty(value = "经营单元(3级组织部门)id集合")
+    private List<String> orgIdWithLevel3List;
+
+    @ApiModelProperty(value = "营销中心/支局（4级组织部)id集合")
+    private List<String> orgIdWithLevel4List;
 
     @ApiModelProperty(value = "销售点编码")
     private java.lang.String shopCode;

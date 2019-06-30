@@ -30,4 +30,9 @@ public class LanServiceImpl implements LanService {
         }
         return ResultVO.success(lanDTOS);
     }
+
+    @Override
+    public LanDTO getLanInfoById(String lanId) {
+        return lanManager.getLanInfoById(lanId);
+    }
 }

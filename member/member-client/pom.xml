@@ -37,6 +37,12 @@
 		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-validator</artifactId>
 		</dependency>
+
+        <dependency>
+            <groupId>com.iwhalecloud.retail</groupId>
+            <artifactId>domain-object</artifactId>
+            <version>${member.version}</version>
+        </dependency>
     </dependencies>
 
     <distributionManagement>

@@ -29,10 +29,36 @@
 		<finalName>report-service</finalName>
 		
 		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <layout>ZIP</layout>
+                    <includes>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>domain-object</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>report-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>report-datasource</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>report-service</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>system-client</artifactId>
+                        </include>
+                    </includes>
+                </configuration>
+            </plugin>
 		</plugins>
 	</build>
 </project>

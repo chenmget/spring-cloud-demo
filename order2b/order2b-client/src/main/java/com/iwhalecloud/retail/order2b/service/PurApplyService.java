@@ -3,10 +3,7 @@ package com.iwhalecloud.retail.order2b.service;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp;
-import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp;
+import com.iwhalecloud.retail.order2b.dto.response.purapply.*;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 
 import java.util.List;
@@ -75,4 +72,10 @@ public interface PurApplyService {
 
 
 	public ResultVO updatePurTypeByApplyId(ProcureApplyReq req);
+
+	//政企省内代收报表
+	public ResultVO<Page<PurApplyReportResp>> applySearchReport(PurApplyReportReq req);
+
+	//政企省内代收项目状态报表
+	public ResultVO<Page<PurApplyStatusReportResp>> applyStatusSearchReport(PurApplyStatusReportReq req);
 }

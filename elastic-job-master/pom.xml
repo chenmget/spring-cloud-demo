@@ -22,7 +22,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <java.version>1.8</java.version>
-        <order.version>2.0.0-SNAPSHOT</order.version>
+        <job.version>2.0.0-SNAPSHOT</job.version>
         <commons-lang3.version>3.6</commons-lang3.version>
         <commons-httpclient.version>3.1</commons-httpclient.version>
         <fastjson.version>1.2.49</fastjson.version>
@@ -203,52 +203,55 @@
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>order-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${job.version}</version>
         </dependency>
 
 		<dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>report-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${job.version}</version>
         </dependency>
         
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>order2b-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${job.version}</version>
         </dependency>
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>goods2b-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>goods2b-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${job.version}</version>
         </dependency>
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>partner-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${job.version}</version>
         </dependency>
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>warehouse-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${job.version}</version>
         </dependency>
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>system-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
+            <version>${job.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.iwhalecloud.retail</groupId>
+            <artifactId>promo-client</artifactId>
+            <version>${job.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.iwhalecloud.retail</groupId>
+            <artifactId>rights-client</artifactId>
+            <version>${job.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-aop</artifactId>
         </dependency>
-
 
         <dependency>
             <groupId>org.aspectj</groupId>
@@ -258,17 +261,6 @@
         <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjweaver</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>promo-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>rights-client</artifactId>
-            <version>2.0.0-SNAPSHOT</version>
         </dependency>
 
         <!--end-->
@@ -281,6 +273,48 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <fork>true</fork>
+                    <layout>ZIP</layout>
+                    <includes>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>domain-object</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>order-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>report-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>order2b-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>goods2b-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>promo-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>partner-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>warehouse-client</artifactId>
+                        </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>system-client</artifactId>
+                        </include>
+                    </includes>
+                </configuration>
             </plugin>
         </plugins>
     </build>

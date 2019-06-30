@@ -52,7 +52,7 @@ import java.util.List;
 @Slf4j
 public class AdminResourceInstB2BController {
 
-	@Reference(timeout = 30000)
+	@Reference
     private AdminResourceInstService resourceInstService;
 
     @Value("${fdfs.suffix.allowUpload}")
@@ -137,6 +137,22 @@ public class AdminResourceInstB2BController {
         req.setCheckStatusCd(checkStatusCd);
         log.info("AdminResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
         return resourceInstService.updateResourceInstByIds(req);
+    }
+
+    @ApiOperation(value = "根据batchId删除串码", notes = "根据batchId删除串码")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @DeleteMapping(value="delResourceInstByBatchId")
+    @UserLoginToken
+    public ResultVO delResourceInstByBatchId(@RequestParam(value = "mktResUploadBatch") @ApiParam(value = "状态")  String mktResUploadBatch) {
+        if(StringUtils.isEmpty(mktResUploadBatch)) {
+            return ResultVO.error("batchId can not be null");
+        }
+        String userId = UserContext.getUserId();
+        log.info("AdminResourceInstB2BController.delResourceInstByBatchId mktResUploadBatch={}", mktResUploadBatch);
+        return resourceInstService.delResourceInstByBatchId(mktResUploadBatch,userId);
     }
 
     @ApiOperation(value = "串码还原在库可用", notes = "串码还原在库可用")
@@ -304,7 +320,6 @@ public class AdminResourceInstB2BController {
     @UserLoginToken
     public void exportNbrDetail(@RequestBody ResourceReqDetailQueryReq req, HttpServletResponse response) {
         req.setUserId(UserContext.getUser().getUserId());
-        req.setSearchCount(false);
         ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listResourceRequestDetailPage(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
         log.info("AdminResourceInstB2BController.exportNbrDetail resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
@@ -406,15 +421,56 @@ public class AdminResourceInstB2BController {
         return resourceInstService.batchAuditNbr(req);
     }
 
-    @ApiOperation(value = "验证提交串码审核是否执行完毕", notes = "查询操作")
+    @ApiOperation(value = "导入待删除的串码文件", notes = "支持xlsx、xls格式")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @GetMapping(value="validBatchAuditNbr")
-    public ResultVO<Boolean> validBatchAuditNbr() {
-        return resourceInstService.validBatchAuditNbr();
+    @RequestMapping(value = "/uploadDelResourceInst",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
+    @UserLoginToken
+    public ResultVO<ResourceUploadTempCountResp> uploadDelResourceInst(@RequestParam("file") MultipartFile file) {
+
+        String suffix = StringUtils.getFilenameExtension(file.getOriginalFilename());
+        //如果不在允许范围内的附件后缀直接抛出错误
+        if (allowUploadSuffix.indexOf(suffix) <= -1) {
+            return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
+        }
+        try(InputStream is = file.getInputStream()) {
+            List<ExcelResourceReqDetailDTO> data = ExcelToNbrUtils.getNbrDetailData(is);
+            String userId=UserContext.getUser().getUserId();
+            return resourceInstService.uploadDelResourceInst(data,userId);
+        } catch (Exception e) {
+            log.error("excel解析失败",e);
+            return ResultVO.error("excel解析失败");
+        }
     }
 
+    @ApiOperation(value = "获取待删除的串码临时记录", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value="listDelResourceInstTemp")
+    public ResultVO<Page<ResourceInstListPageResp>> listDelResourceInstTemp(ResourceUploadTempListPageReq req) {
+        return resourceInstService.listDelResourceInstTemp(req);
+    }
 
+    @ApiOperation(value = "导出待删除的串码临时记录", notes = "导出串码数据")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="exportDelResourceInstTemp")
+    @UserLoginToken
+    public void exportDelResourceInstTemp(@RequestBody ResourceUploadTempListPageReq req, HttpServletResponse response) {
+        ResultVO<Page<ResourceInstListPageResp>> resultVO = resourceInstService.listDelResourceInstTemp(req);
+        List<ResourceInstListPageResp> data = resultVO.getResultData().getRecords();
+        log.info("AdminResourceInstB2BController.exportDelResourceInstTemp listDelResourceInstTemp req={}", JSON.toJSONString(req));
+        //创建Excel
+        Workbook workbook = new HSSFWorkbook();
+        //创建orderItemDetail
+        deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
+                OrderExportUtil.getResReqDetail(), "导入删除串码失败列表");
+        deliveryGoodsResNberExcel.exportExcel("导入删除串码失败列表",workbook,response);
+    }
 }

@@ -293,4 +293,13 @@
 		</if>
   </select>
   
+  <select id="getMktResStoreId" resultType="java.lang.String"
+            parameterType="com.iwhalecloud.retail.report.dto.request.MktResStoreIdReq">
+        SELECT s.MKT_RES_STORE_ID
+        FROM mkt_res_store s,mkt_res_store_obj_rel r WHERE 1 = 1
+        and s.MKT_RES_STORE_ID = r.MKT_RES_STORE_ID
+        and r.OBJ_ID = #{req.merchantId}
+        and s.STORE_SUB_TYPE = #{req.storeSubType}
+    </select>
+    
 </mapper>

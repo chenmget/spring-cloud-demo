@@ -30,9 +30,9 @@ public class ResourceUploadTempListResp implements java.io.Serializable {
 	private String mktResInstNbr;
 
 	/**
-	 * 验证结果 1. 通过; 0. 不通过
+	 * 验证结果 1. 有异常; 0. 无异常
 	 */
-	@ApiModelProperty(value = "验证结果 1. 通过; 0. 不通过")
+	@ApiModelProperty(value = "验证结果  1. 有异常; 0. 无异常")
 	private String result;
 
 	/**

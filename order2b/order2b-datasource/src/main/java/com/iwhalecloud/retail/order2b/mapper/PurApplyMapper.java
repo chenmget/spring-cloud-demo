@@ -91,11 +91,16 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public List<String> countPurApplyItemDetail(@Param("req") PurApplyItemReq req);
 	public int countPurApplyItemDetailReving(@Param("req") PurApplyItemReq req);
 
-	public Integer updatePurApplyItemDetailStatusCd(@Param("mktResInstNbrList") List<String> mktResInstNbrList);
+	public Integer updatePurApplyItemDetailStatusCd(@Param("mktResInstNbrList") List<String> mktResInstNbrList,@Param("updateDate")String updateDate,@Param("updateUserId")String updateUserId);
 
 
 	public PurApply getPurApplyByAppId(@Param("applyId") String applyId);
 
 	public Integer updatePurTypeByApplyId(@Param("req")AddProductReq req);
+
+	public Page<PurApplyReportResp> applySearchReport(Page<PurApplyReportResp> page,@Param("req") PurApplyReportReq req) ;
+
+	public Page<PurApplyStatusReportResp> applyStatuSearchReport(Page<PurApplyStatusReportResp> page,@Param("req") PurApplyStatusReportReq req) ;
+
 
 }

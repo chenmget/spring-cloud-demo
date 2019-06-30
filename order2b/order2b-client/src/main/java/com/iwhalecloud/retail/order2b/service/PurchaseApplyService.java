@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.entity.PurApplyItemDetail;
 
 import java.util.List;
 
@@ -57,6 +58,11 @@ public interface PurchaseApplyService {
      */
     ResultVO<Page<PurApplyDeliveryResp>> getDeliveryInfoByApplyID(PurApplyReq req);
 
-   public  Integer updatePurApplyItemDetailStatusCd(List<String> list);
+   public Integer updatePurApplyItemDetailStatusCd(List<String> list,String updateDate,String updateUserId);
+
+    List<PurApplyItemDetail>  getDeliveryListByApplyID(String applyId);
+
+
+
 
 }

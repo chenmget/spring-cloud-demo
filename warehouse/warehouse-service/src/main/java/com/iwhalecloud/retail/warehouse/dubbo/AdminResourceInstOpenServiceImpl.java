@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Service(parameters={"addActSup.timeout","30000"})
+@Service
 @Slf4j
 public class AdminResourceInstOpenServiceImpl implements AdminResourceInstService {
 
@@ -54,6 +54,19 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
         return resp;
     }
 
+    /**
+     * 管理员根据batchId删除串码
+     * @param batchId 上一步导入时的批次号
+     * @param userId  操作人的id
+     * @return
+     */
+    @Override
+    public ResultVO delResourceInstByBatchId(String batchId,String userId){
+        log.info("AdminResourceInstOpenServiceImpl.delResourceInstByBatchId batchId={}", batchId);
+        ResultVO resp = adminResourceInstService.delResourceInstByBatchId(batchId,userId);
+        return resp;
+    }
+
 	@Override
 	public ResultVO inventoryChange(InventoryChangeReq req) {
 		log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));
@@ -72,11 +85,6 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     }
 
     @Override
-    public ResultVO<String> checkResRequestFinish(ResourceReqUpdateReq resourceReqUpdateReq) {
-        return adminResourceInstService.checkResRequestFinish(resourceReqUpdateReq);
-    }
-
-    @Override
     public ResultVO<String> uploadNbrDetail(List<ExcelResourceReqDetailDTO> data, String createStaff) {
         return adminResourceInstService.uploadNbrDetail(data,createStaff);
     }
@@ -92,8 +100,13 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     }
 
     @Override
-    public ResultVO<Boolean> validBatchAuditNbr() {
-        return adminResourceInstService.validBatchAuditNbr();
+    public ResultVO<ResourceUploadTempCountResp> uploadDelResourceInst(List<ExcelResourceReqDetailDTO> data, String userId) {
+        return adminResourceInstService.uploadDelResourceInst(data,userId);
+    }
+
+    @Override
+    public ResultVO<Page<ResourceInstListPageResp>> listDelResourceInstTemp(ResourceUploadTempListPageReq req) {
+        return adminResourceInstService.listDelResourceInstTemp(req);
     }
 
 

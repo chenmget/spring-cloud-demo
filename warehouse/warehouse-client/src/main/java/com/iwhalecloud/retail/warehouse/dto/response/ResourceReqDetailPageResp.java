@@ -92,4 +92,9 @@ public class ResourceReqDetailPageResp implements Serializable {
     @ApiModelProperty(value = "产品名称")
     private String productName;
 
+    @ApiModelProperty(value = "sn码")
+    private String snCode;
+
+    @ApiModelProperty(value = "mac码")
+    private String macCode;
 }

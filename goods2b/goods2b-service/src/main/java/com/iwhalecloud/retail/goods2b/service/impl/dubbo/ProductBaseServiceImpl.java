@@ -701,10 +701,10 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     //流程1
                     if( ProductConst.IsDelete.NO.getCode().equals(newUpdateReq.getIsDeleted()) &&
                             ((null!=newUpdateReq.getCost() && null!=oldUpdateReq.getCost() && newUpdateReq.getCost() - oldUpdateReq.getCost() !=0) ||
-                                    (null!=newUpdateReq.getLocalSupplyFeeLower() && null!=oldUpdateReq.getLocalSupplyFeeLower() && newUpdateReq.getLocalSupplyFeeLower() - oldUpdateReq.getLocalSupplyFeeLower() != 0) ||
-                                    (null!=newUpdateReq.getLocalSupplyFeeUpper() && null!=oldUpdateReq.getLocalSupplyFeeUpper() && newUpdateReq.getLocalSupplyFeeUpper() - oldUpdateReq.getLocalSupplyFeeUpper() != 0) ||
-                                    (null!=newUpdateReq.getSupplyFeeLower() && null!=oldUpdateReq.getSupplyFeeLower() && newUpdateReq.getSupplyFeeLower() - oldUpdateReq.getSupplyFeeLower() !=0) ||
-                                    (null!=newUpdateReq.getSupplyFeeUpper() && null!=oldUpdateReq.getSupplyFeeUpper() && newUpdateReq.getSupplyFeeUpper() - oldUpdateReq.getSupplyFeeUpper() !=0))){
+                            (null!=newUpdateReq.getLocalSupplyFeeLower() && null!=oldUpdateReq.getLocalSupplyFeeLower() && newUpdateReq.getLocalSupplyFeeLower() - oldUpdateReq.getLocalSupplyFeeLower() != 0) ||
+                            (null!=newUpdateReq.getLocalSupplyFeeUpper() && null!=oldUpdateReq.getLocalSupplyFeeUpper() && newUpdateReq.getLocalSupplyFeeUpper() - oldUpdateReq.getLocalSupplyFeeUpper() != 0) ||
+                            (null!=newUpdateReq.getSupplyFeeLower() && null!=oldUpdateReq.getSupplyFeeLower() && newUpdateReq.getSupplyFeeLower() - oldUpdateReq.getSupplyFeeLower() !=0) ||
+                            (null!=newUpdateReq.getSupplyFeeUpper() && null!=oldUpdateReq.getSupplyFeeUpper() && newUpdateReq.getSupplyFeeUpper() - oldUpdateReq.getSupplyFeeUpper() !=0))){
                         if(ProductConst.OPEREDIT_PRODUCT_FLOW_PROCESS_ID.equals(updateProductFlow)){
                             updateProductFlow = ProductConst.EDIT_PRODUCT_FLOW_PROCESS_ID;
                         }else{
@@ -824,6 +824,16 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 tagList.addAll(listTagRelId);
             }
         }
+
+        //去重
+//        List<String> listTemp = new ArrayList();
+//        List<String> taglist = productDetail.getTagList();
+//        for(int i=0;i<taglist.size();i++){
+//            if(!listTemp.contains(taglist.get(i))){
+//                listTemp.add(taglist.get(i));
+//            }
+//        }
+//        productDetail.setTagList(listTemp);
 
         ProductExtGetReq productExtGetReq = new ProductExtGetReq();
         productExtGetReq.setProductBaseId(req.getProductBaseId());

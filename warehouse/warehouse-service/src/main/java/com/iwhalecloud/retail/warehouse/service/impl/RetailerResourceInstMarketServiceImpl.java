@@ -832,10 +832,10 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             ProductResourceInstGetReq productResourceInstGetReq = new ProductResourceInstGetReq();
             String sn = StringUtils.isBlank(resp.getMktResNbr()) ? "" : resp.getMktResNbr();
             productResourceInstGetReq.setSn(sn);
-            ResultVO<List<ProductResourceResp>> ProductResourceRespVO = productService.getProductResource(productResourceInstGetReq);
-            log.info("RetailerResourceInstMarketServiceImpl.translateNbrInst productService.getProductResource req={}, resp={}", JSON.toJSONString(productResourceInstGetReq), JSON.toJSONString(ProductResourceRespVO));
-            if (ProductResourceRespVO.isSuccess() && !CollectionUtils.isEmpty(ProductResourceRespVO.getResultData())) {
-                List<ProductResourceResp> list = ProductResourceRespVO.getResultData();
+            ResultVO<List<ProductResourceResp>> productResourceRespVO = productService.getProductResource(productResourceInstGetReq);
+            log.info("RetailerResourceInstMarketServiceImpl.translateNbrInst productService.getProductResource req={}, resp={}", JSON.toJSONString(productResourceInstGetReq), JSON.toJSONString(productResourceRespVO));
+            if (productResourceRespVO.isSuccess() && !CollectionUtils.isEmpty(productResourceRespVO.getResultData())) {
+                List<ProductResourceResp> list = productResourceRespVO.getResultData();
                 dto.setBrandName(list.get(0).getBrandName());
                 dto.setTypeName(list.get(0).getTypeName());
             }

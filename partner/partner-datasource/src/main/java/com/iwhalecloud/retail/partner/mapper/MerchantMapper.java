@@ -37,4 +37,11 @@ public interface MerchantMapper extends BaseMapper<Merchant> {
      */
     MerchantLigthResp getMerchantForOrder(MerchantGetReq req);
 
+    /**
+     * 根据条件获取商家id列表
+     * @param merchantName
+     * @return
+     */
+    List<String> getMerchantIdList(@Param("merchantName")String merchantName);
+
 }

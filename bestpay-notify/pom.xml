@@ -116,6 +116,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<fork>true</fork>
+					<layout>ZIP</layout>
+					<includes>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>domain-object</artifactId>
+						</include>
+					</includes>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

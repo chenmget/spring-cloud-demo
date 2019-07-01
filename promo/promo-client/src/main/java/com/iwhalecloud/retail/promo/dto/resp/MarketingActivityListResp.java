@@ -119,4 +119,15 @@ public class MarketingActivityListResp implements Serializable {
      */
     @ApiModelProperty(value="修改标识，是否修改审批中：0否/1是 is_modifying")
     private String isModifying;
+
+    /**
+     * 活动的优惠规则描述.promotion_desc
+     *    如前置补贴为:
+     *    省级前置补贴xx元
+     *    市级前置补贴xx元
+     *	  满减活动为:
+     *    满XX元减YY元'
+     */
+    @ApiModelProperty(value="活动的优惠规则描述 promotion_desc")
+    private String promotionDesc;
 }

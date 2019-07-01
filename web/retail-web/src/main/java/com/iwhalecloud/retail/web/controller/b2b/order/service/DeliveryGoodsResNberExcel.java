@@ -5,13 +5,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.github.tobato.fastdfs.proto.storage.DownloadCallback;
 import com.github.tobato.fastdfs.service.FastFileStorageClient;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.oms.OmsCommonConsts;
-import com.iwhalecloud.retail.oms.dto.response.CommonResultResp;
-import com.iwhalecloud.retail.oms.dto.response.FileManagerRespDTO;
-import com.iwhalecloud.retail.oms.dto.resquest.FileManagerDTO;
-import com.iwhalecloud.retail.oms.service.FileManagerService;
+import com.iwhalecloud.retail.order2b.consts.OmsCommonConsts;
+import com.iwhalecloud.retail.web.controller.b2b.fdfs.FileManagerService;
+import com.iwhalecloud.retail.web.controller.b2b.fdfs.dto.FileManagerDTO;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
+import com.iwhalecloud.retail.web.controller.b2b.order.dto.FileManagerRespDTO;
 import com.iwhalecloud.retail.web.office.base.ReadExcel;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
@@ -120,12 +120,12 @@ public class DeliveryGoodsResNberExcel extends ReadExcel<String> {
         try {
             fileManagerDTO.setFileSize((long) inputStream.available());
             fileManagerDTO.setImage(inputStream);
-            CommonResultResp  resp = fileManagerService.uploadImage(fileManagerDTO);
+            ResultVO  resp = fileManagerService.uploadImage(fileManagerDTO);
             resultVO.setResultCode(resp.getResultCode());
             resultVO.setResultMsg(resp.getResultMsg());
             resultVO.setResultData(resp.getResultData());
         } catch (Exception e) {
-            resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
             resultVO.setResultMsg("生成Excel文件失败");
             e.printStackTrace();
         }
@@ -145,7 +145,7 @@ public class DeliveryGoodsResNberExcel extends ReadExcel<String> {
         } catch (IOException e) {
             e.printStackTrace();
             ResultVO resultVO=new ResultVO();
-            resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
             resultVO.setResultMsg("导出异常");
             outputResponse(response,resultVO);
         } finally {

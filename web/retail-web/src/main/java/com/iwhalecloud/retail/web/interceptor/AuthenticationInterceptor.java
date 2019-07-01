@@ -19,7 +19,7 @@ import com.iwhalecloud.retail.web.annotation.PassToken;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.consts.UserType;
 import com.iwhalecloud.retail.web.consts.WebConst;
-import com.iwhalecloud.retail.web.controller.cache.RedisCacheUtils;
+import com.iwhalecloud.retail.web.controller.b2b.cache.RedisCacheUtils;
 import com.iwhalecloud.retail.web.dto.UserOtherMsgDTO;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
 import com.iwhalecloud.retail.web.utils.JWTTokenUtil;

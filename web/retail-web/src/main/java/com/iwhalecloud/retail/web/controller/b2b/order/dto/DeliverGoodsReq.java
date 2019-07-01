@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.web.controller.b2b.order.dto;
 
-import com.iwhalecloud.retail.oms.dto.response.FileManagerRespDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 

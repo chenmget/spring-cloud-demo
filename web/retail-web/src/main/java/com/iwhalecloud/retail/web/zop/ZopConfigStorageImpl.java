@@ -1,7 +1,5 @@
 package com.iwhalecloud.retail.web.zop;
 
-import com.iwhalecloud.retail.oms.service.zop.ZopConfigStorage;
-
 /**
  * @author Z
  * @date 2018/11/21

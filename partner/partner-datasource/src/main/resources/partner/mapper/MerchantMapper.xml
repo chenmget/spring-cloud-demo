@@ -167,6 +167,22 @@
                 and t.CHANNEL_TYPE =  #{req.channelType}
             </if>
 
+--  parentOrgIdListWithAnd=["123","234"] 转换sql：... and t.PAR_CRM_ORG_PATH_CODE like "%123%" and t.PAR_CRM_ORG_PATH_CODE like "%234%" ...
+--  注意 open="" separator="" close="" 的值
+            <if test="req.parentOrgIdListWithAnd != null and req.parentOrgIdListWithAnd.size() >0 ">
+                <foreach item="item" index="index" open="" separator="" close="" collection="req.parentOrgIdListWithAnd">
+                    and t.PAR_CRM_ORG_PATH_CODE like CONCAT(CONCAT('%', #{item}), '%')
+                </foreach>
+            </if>
+--  parentOrgIdListWithOr=["123","234"] 转换sql：... and t.PAR_CRM_ORG_PATH_CODE like "%123%" and t.PAR_CRM_ORG_PATH_CODE like "%234%" ...
+--  注意 open="(" separator="or" close=")" 的值
+            <if test="req.parentOrgIdListWithOr != null and req.parentOrgIdListWithOr.size() >0 ">
+                and
+                <foreach item="item" index="index" open="(" separator="or" close=")" collection="req.parentOrgIdListWithOr">
+                    t.PAR_CRM_ORG_PATH_CODE like CONCAT(CONCAT('%', #{item}), '%')
+                </foreach>
+            </if>
+
         order by t.MERCHANT_ID desc
     </select>
 

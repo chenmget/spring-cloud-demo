@@ -66,10 +66,6 @@
                         </include>
                         <include>
                             <groupId>com.iwhalecloud.retail</groupId>
-                            <artifactId>goods2b-client</artifactId>
-                        </include>
-                        <include>
-                            <groupId>com.iwhalecloud.retail</groupId>
                             <artifactId>rights-client</artifactId>
                         </include>
                         <include>
@@ -89,9 +85,9 @@
                             <artifactId>workflow-client</artifactId>
                         </include>
                         <include>
-                            <groupId>com.iwhalecloud.retail</groupId>
-                            <artifactId>goods2b-client</artifactId>
-                        </include>
+                        <groupId>com.iwhalecloud.retail</groupId>
+                        <artifactId>goods2b-client</artifactId>
+                    </include>
                         <include>
                             <groupId>com.iwhalecloud.retail</groupId>
                             <artifactId>promo-client</artifactId>

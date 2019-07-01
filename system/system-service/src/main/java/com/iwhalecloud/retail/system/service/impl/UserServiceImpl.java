@@ -8,6 +8,8 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.common.DateUtils;
+import com.iwhalecloud.retail.system.common.SysUserLoginConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
@@ -20,6 +22,7 @@ import com.iwhalecloud.retail.system.manager.CommonRegionManager;
 import com.iwhalecloud.retail.system.manager.OrganizationManager;
 import com.iwhalecloud.retail.system.manager.UserManager;
 import com.iwhalecloud.retail.system.service.UserService;
+import com.iwhalecloud.retail.system.utils.SysUserCacheUtils;
 import com.twmacinta.util.MD5;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -44,8 +47,12 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private OrganizationManager organizationManager;
 
+    @Autowired
+    private SysUserCacheUtils sysUserCacheUtils;
+
     @Reference
     private MerchantService merchantService;
+
 
     @Value("${retailer.login}")
     private String retailerLogin;
@@ -128,12 +135,32 @@ public class UserServiceImpl implements UserService {
                 return resp;
             }
         }
-
+        MerchantDTO merchantDTO = null;
+        if(StringUtils.isNotBlank(user.getRelCode())){
+          ResultVO merchantRt = merchantService.getMerchantById(user.getRelNo());
+          if(merchantRt.isSuccess()) merchantDTO = (MerchantDTO) merchantRt.getResultData();
+        }
+    /*    //6 管理平台账户超过90天未登入强制要求修改密码
+        if(req.getPlatformFlag().equals(SysUserLoginConst.platformFlag.MANAGEMENT_PLATFORM.getPlaformCode())){
+            int intervalDate = DateUtils.differentDays(user.getLastLoginTime(),user.getCurLoginTime());
+            if(intervalDate >= 90 ){
+                resp.setFailCode(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getCode());
+                resp.setErrorMessage(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getMsg());
+                return resp;
+            }
+        }*/
+        //超过九十天强制修改密码
+        int intervalDate = DateUtils.differentDays(user.getLastLoginTime(),user.getCurLoginTime());
+        if(intervalDate >= 90 ){
+            resp.setFailCode(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getCode());
+            resp.setErrorMessage(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getMsg());
+            return resp;
+        }
         //操作成功后的逻辑，修改当前登录时间，和上次登录时间 ，登录次数1+  将 failLoginCnt 清零
         user.setFailLoginCnt(0);
         Integer successCnt = user.getSuccessLoginCnt() != null ? user.getSuccessLoginCnt() : 0;
         // 登录失败次数大于0 才更新  不用每次成功都更新
-        if (Objects.nonNull(user.getFailLoginCnt()) && user.getFailLoginCnt() > 0) {
+/*        if (Objects.nonNull(user.getFailLoginCnt()) && user.getFailLoginCnt() > 0) {
             User updateUser = new User();
             updateUser.setUserId(user.getUserId());
             updateUser.setSuccessLoginCnt(successCnt + 1);
@@ -141,9 +168,19 @@ public class UserServiceImpl implements UserService {
             updateUser.setLastLoginTime(user.getCurLoginTime());
             updateUser.setCurLoginTime(new Date());
             userManager.updateUser(updateUser);
-        }
+        }*/
+        //先更新user表的登入时间在删除缓存
+        User updateUser = new User();
+        updateUser.setUserId(user.getUserId());
+        updateUser.setSuccessLoginCnt(successCnt + 1);
+        updateUser.setFailLoginCnt(0);
+        updateUser.setLastLoginTime(user.getCurLoginTime());
+        updateUser.setCurLoginTime(new Date());
+        userManager.updateUser(updateUser);
+        sysUserCacheUtils.put(user.getUserId(),user);
 
         resp.setErrorMessage("登录成功");
+        resp.setFailCode(0);
         resp.setIsLoginSuccess(true);
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(user, userDTO);
@@ -207,7 +244,7 @@ public class UserServiceImpl implements UserService {
             updateUser.setStatusCd(SystemConst.USER_STATUS_LOCK);
             updateUser.setFailLoginCnt(0);
             userManager.updateUser(updateUser);
-
+            sysUserCacheUtils.put(user.getUserId(),user);
             return resp;
         }
 
@@ -404,7 +441,18 @@ public class UserServiceImpl implements UserService {
         if (result <= 0) {
             return ResultVO.error("修改密码失败");
         }
+        updateLoginTime(user);
         return ResultVO.success(result);
+    }
+
+    private void updateLoginTime(User user) {
+        User updateUser = new User();
+        updateUser.setUserId(user.getUserId());
+        updateUser.setFailLoginCnt(0);
+        updateUser.setLastLoginTime(user.getCurLoginTime());
+        updateUser.setCurLoginTime(new Date());
+        userManager.updateUser(updateUser);
+        sysUserCacheUtils.put(user.getUserId(),user);
     }
 
     /**

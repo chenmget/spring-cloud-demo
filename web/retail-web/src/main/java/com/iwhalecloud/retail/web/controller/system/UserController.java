@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.req.BusinessEntityGetReq;
 import com.iwhalecloud.retail.partner.service.*;
+import com.iwhalecloud.retail.system.common.SysUserLoginConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.*;
 import com.iwhalecloud.retail.system.dto.request.*;
@@ -98,7 +99,7 @@ public class UserController extends BaseController {
 
     @Reference
     ConfigInfoService configInfoService;
-    
+
     @Reference
     LoginLogService loginLogService;
 
@@ -186,7 +187,6 @@ public class UserController extends BaseController {
             }
         }
             UserLoginResp resp = userService.login(req);
-
             UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
             // 登录日志记录
             if(StringUtils.isNotBlank(user.getUserId())){
@@ -207,12 +207,16 @@ public class UserController extends BaseController {
 
         // 失败 返回错误信息
         if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
-            return failResultVO(resp.getErrorMessage());
+           // return ResultVO.error(String.valueOf(resp.getFailCode()),resp.getErrorMessage());
+            LoginResp loginResp = new LoginResp();
+            loginResp.setFailCode(resp.getFailCode());
+            loginResp.setFailMsg(resp.getErrorMessage());
+            return successResultVO(loginResp);
         }
         request.getSession().invalidate();//清空session
         Cookie[] cookies = request.getCookies();
         if (Objects.nonNull(cookies) && cookies.length > 0) {
-            Cookie cookie = request.getCookies()[0];//获取cookie
+            Cookie cookie = request.getCookies()[0] ;//获取cookie
             cookie.setMaxAge(0);//让cookie过期
         }
 

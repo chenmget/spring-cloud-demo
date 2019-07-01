@@ -313,6 +313,10 @@
                             <groupId>com.iwhalecloud.retail</groupId>
                             <artifactId>system-client</artifactId>
                         </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>rights-client</artifactId>
+                        </include>
                     </includes>
                 </configuration>
             </plugin>

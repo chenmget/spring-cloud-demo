@@ -40,6 +40,7 @@
     ,t.TAIL_PAY_END_TIME
     ,t.IS_DELETED
     ,is_modifying
+    ,promotion_desc
 </sql>
 
     <sql id="listMarketingActivityFieIds">
@@ -72,6 +73,7 @@
         ,t.TAIL_PAY_START_TIME
         ,t.TAIL_PAY_END_TIME
         ,is_modifying
+        ,promotion_desc
     </sql>
     <!--com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp-->
     <select id="listMarketingActivity" resultType="com.iwhalecloud.retail.promo.dto.resp.MarketingActivityListResp" parameterType="com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq">

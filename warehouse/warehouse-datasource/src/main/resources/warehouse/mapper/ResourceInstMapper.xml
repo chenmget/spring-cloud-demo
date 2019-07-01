@@ -436,10 +436,12 @@
                 #{item}
             </foreach>
         </if>
-        and t.mkt_res_store_id in
-        <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
-            #{item}
-        </foreach>
+        <if test="null!=req.mktResStoreIds and req.mktResStoreIds.size>0">
+            and t.mkt_res_store_id in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResStoreIds">
+                #{item}
+            </foreach>
+        </if>
         <if test="null!=req.typeId and ''!=req.typeId">
             and t.type_id = #{req.typeId}
         </if>

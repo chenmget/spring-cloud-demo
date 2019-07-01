@@ -317,6 +317,10 @@
                             <groupId>com.iwhalecloud.retail</groupId>
                             <artifactId>rights-client</artifactId>
                         </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>workflow-client</artifactId>
+                        </include>
                     </includes>
                 </configuration>
             </plugin>

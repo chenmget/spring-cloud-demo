@@ -57,14 +57,14 @@ public class Constant {
     private String noResInst;
 
     /**
-     * 串码校验:串码与产品不匹配
+     * 串码校验:厂商库该机型串码不存在！
      */
-    private String pesInstMismatch;
+    private String noResInstInMerchant;
 
     /**
-     * 串码校验:校验成功
+     * 串码校验:该产品串码已在库，请不要重复录入！
      */
-    private String pesInstCheckSuc;
+    private String mktResInstExists;
 
     /**
      * 串码校验:串码状态错误,非在库可用
@@ -72,9 +72,19 @@ public class Constant {
     private String pesInstInvalid;
 
     /**
-     * 串码校验:错误信息明细前缀
+     * 串码入库失败
      */
-    private String pesInstErrorsPre;
+    private String addNbrFail;
+
+    /**
+     * 串码入库成功
+     */
+    private String addNbrSucess;
+
+    /**
+     * 更新串码失败
+     */
+    private String updateNbrFail;
 
     /**
      * 请求不合法
@@ -89,9 +99,9 @@ public class Constant {
      */
     private String allocateRequestItem;
     /**
-     * 串码id不正确
+     * 发货出库失败
      */
-    private String mktResInstIdError;
+    private String deliveryOutFail;
     /**
      * 发起工作流异常
      */
@@ -193,14 +203,14 @@ public class Constant {
     private String vaileNbr24;
 
     /**
-     * 融合终端的终端串码只能包含大写字母、数字和-，且必须为32位
-     */
-    private String vaileNbr32;
-
-    /**
-     * 机顶盒的终端串码只能包含大写字母、数字和-，且必须为32位或39位
+     * 融合终端的终端串码只能包含大写字母、数字和-，且必须为32位或39位
      */
     private String vaileNbr32Or39;
+
+    /**
+     * 机顶盒的终端串码只能包含大写字母、数字和-，且必须为32位
+     */
+    private String vaileNbr32;
 
     /**
      * MAC码库中已存在
@@ -218,8 +228,39 @@ public class Constant {
     private String ctExists;
 
     /**
+     * 库存更新失败
+     */
+    private String updateInstStoreFail;
+
+    /**
+     * 串码入库申请单
+     */
+    private String addNbrRequestItem;
+
+    /**
+     * 串码入库审批流程
+     */
+    private String addNbrWorkFlow;
+
+    /**
+     * 串码入库审批流程
+     */
+    private String canNotAllocate;
+
+    /**
+     * 地市仓库中不存在输入串码
+     */
+    private String notExistsNbrInCity;
+
+    /**
+     * 失败串码数据
+     */
+    private String failNbr;
+
+    /**
      * 产品类型不存在
      */
     private String typeNotExists;
+
 
 }

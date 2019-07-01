@@ -31,6 +31,7 @@ import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
+import com.iwhalecloud.retail.warehouse.util.WarehouseCacheUtils;
 import com.iwhalecloud.retail.warehouse.util.ZopClientUtil;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.RouteDTO;
@@ -112,12 +113,14 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Reference
     private RouteService routeService;
 
+    @Autowired
+    private WarehouseCacheUtils warehouseCacheUtils;
+
     @Value("${zop.secret}")
     private String zopSecret;
 
     @Value("${zop.url}")
     private String zopUrl;
-
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -308,111 +311,145 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         }
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public ResultVO<String> batchAuditNbr(ResourceInstCheckReq req) {
-        //申请单明细主键集合
-        List<String> mktResInstNbrs=req.getMktResInstNbrs();
-        log.info("AdminResourceInstServiceImpl.batchAuditNbr mktResReqDetailIds={}", JSON.toJSONString(mktResInstNbrs));
-        if(CollectionUtils.isEmpty(mktResInstNbrs)){
-            return ResultVO.error("请选择要审核的内容");
-        }
-        //根据mktResReqDetailIds获取到待审核的申请详情
-        Date now = new Date();
-        ResourceReqDetailQueryReq resourceReqDetailQueryReq=new ResourceReqDetailQueryReq();
-        resourceReqDetailQueryReq.setMktResInstNbrs(mktResInstNbrs);
-        resourceReqDetailQueryReq.setPageNo(1);
-        resourceReqDetailQueryReq.setPageSize(mktResInstNbrs.size());
-        resourceReqDetailQueryReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());//状态为待审核
-        resourceReqDetailQueryReq.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
-        Page<ResourceReqDetailPageDTO> respPage = resourceReqDetailManager.listResourceRequestPage(resourceReqDetailQueryReq);
-        List<ResourceReqDetailPageDTO> resDetailList=respPage.getRecords();
-        if(CollectionUtils.isEmpty(resDetailList)){
-            return ResultVO.error("没有待审批的内容");
-        }
-        //申请单id,用于判断申请单下的明细是否都已被处理，处理后了修改申请单状态
-        List<String> reqIds = resDetailList.stream().map(ResourceReqDetailPageDTO::getMktResReqId).collect(Collectors.toList());
-        //修改申请单明细需要带上申请时间，所以根据申请时间进行分组
-        Map<Date, List<ResourceReqDetailPageDTO>> map = resDetailList.stream().collect(Collectors.groupingBy(t -> t.getCreateDate()));
-        for (Map.Entry<Date,List<ResourceReqDetailPageDTO>> entry:map.entrySet()){
-            ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
-            List<String> mktResInstNbrList = entry.getValue().stream().map(ResourceReqDetailPageDTO::getMktResInstNbr).collect(Collectors.toList());
-            detailUpdateReq.setMktResInstNbrs(mktResInstNbrList);
-            detailUpdateReq.setUpdateStaff(req.getUpdateStaff());
-            detailUpdateReq.setUpdateDate(now);
-            detailUpdateReq.setStatusDate(now);
-            detailUpdateReq.setCreateDate(entry.getKey());
-            detailUpdateReq.setRemark(req.getRemark());
-            detailUpdateReq.setStatusCd(req.getCheckStatusCd());
-            //修改明细状态
-            resourceReqDetailManager.updateDetailByNbrs(detailUpdateReq);
-            //审核通过，多线程处理新增串码
-            if (req.getCheckStatusCd().equals(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode())) {
-                //执行串码审核通过流程
-                runableTask.auditPassResDetail(resDetailList);
-
-            }
-        }
-        //验证明细是否已经全都完成
-        ResourceReqUpdateReq resourceReqUpdateReq=new ResourceReqUpdateReq();
-        resourceReqUpdateReq.setMktResReqIdList(reqIds);
-        resourceReqUpdateReq.setUpdateStaff(req.getUpdateStaff());
-        resourceReqUpdateReq.setUpdateStaffName(req.getUpdateStaffName());
-        dealResRequest(resourceReqUpdateReq);
-        return ResultVO.success("审核成功");
-    }
 
     /**
      * 判断申请单下的申请明细是否都已完成，完成了修改申请单状态
      * @param
      */
-    public ResultVO<String> dealResRequest(ResourceReqUpdateReq resourceReqUpdateReq) {
-        List<String> reqIds = resourceReqUpdateReq.getMktResReqIdList();
-        for(String resReqId : reqIds){
-            //获取该申请单明细总数
-            ResourceReqDetailReq req=new ResourceReqDetailReq();
-            req.setMktResReqId(resReqId);
-            int total=resourceReqDetailManager.resourceRequestCount(req);
-            //获取该申请单审核中的明细总数
-            req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
-            int waitNum=resourceReqDetailManager.resourceRequestCount(req);
-            //存在未审核的明细，暂不做处理
-            if (waitNum > 0){
-                break;
-            }
-            if (total > 0 && waitNum == 0){
-                //申请单下的明细已全部审核过，判断是否全成功
-                //获取该申请单审核成功的明细总数
-                req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
-                int valdNum=resourceReqDetailManager.resourceRequestCount(req);
-                //获取申请单详情
-                ResourceRequestItemQueryReq resourceRequestItemQueryReq=new ResourceRequestItemQueryReq();
-                resourceRequestItemQueryReq.setMktResReqId(resReqId);
-                ResourceRequest resourceRequest=resourceRequestManager.queryResourceRequest(resourceRequestItemQueryReq);
-                if(resourceRequest==null){
-                    log.info("AdminResourceInstServiceImpl.dealResRequest 根据resReqId未找到对应申请单，resReqId={}",resReqId);
-                    continue;
-                }
-                ResourceRequestUpdateReq updateReq=new ResourceRequestUpdateReq();
-                updateReq.setMktResReqId(resReqId);
-                updateReq.setCreateDate(resourceRequest.getCreateDate());
-                if (valdNum == total){
-                    //审核状态改为成功
-                    updateReq.setStatusCd(ResourceConst.MKTRESSTATE.REVIEWED.getCode());
-                }else{
-                    //审核状态改为完成
-                    updateReq.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
-                }
-                resourceRequestManager.updateResourceRequestStatus(updateReq);
-                //将流程办结
-                ResourceProcessUpdateReq resourceProcessUpdateReq = new ResourceProcessUpdateReq();
-                BeanUtils.copyProperties(resourceReqUpdateReq, resourceProcessUpdateReq);
-                resourceProcessUpdateReq.setFormId(resReqId);
-                finishProcess(resourceProcessUpdateReq);
-            }
+    @Override
+    public ResultVO<String> checkResRequestFinish(ResourceReqUpdateReq resourceReqUpdateReq) {
+        String resReqId = resourceReqUpdateReq.getMktResReqId();
+        //获取该申请单明细总数
+        ResourceReqDetailReq req = new ResourceReqDetailReq();
+        req.setMktResReqId(resReqId);
 
+        //获取该申请单审核中的明细总数
+        req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
+        int waitNum = resourceReqDetailManager.resourceRequestCount(req);
+        //存在未审核的明细，暂不做处理
+        if (waitNum > 0) {
+            return ResultVO.success();
+        }
+
+        if (waitNum == 0) {
+            //申请单下的明细已全部审核过，判断是否全成功
+            //获取该申请单审核成功的明细总数
+            req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
+
+            //获取申请单详情
+            ResourceRequestItemQueryReq resourceRequestItemQueryReq = new ResourceRequestItemQueryReq();
+            resourceRequestItemQueryReq.setMktResReqId(resReqId);
+            ResourceRequest resourceRequest = resourceRequestManager.queryResourceRequest(resourceRequestItemQueryReq);
+            if (resourceRequest == null) {
+                log.info("AdminResourceInstServiceImpl.dealResRequest 根据resReqId未找到对应申请单，resReqId={}", resReqId);
+                return ResultVO.success();
+            }
+            ResourceRequestUpdateReq updateReq = new ResourceRequestUpdateReq();
+            updateReq.setMktResReqId(resReqId);
+            updateReq.setCreateDate(resourceRequest.getCreateDate());
+            //审核状态改为完成
+            updateReq.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
+
+            resourceRequestManager.updateResourceRequestStatus(updateReq);
+
+            //将流程办结
+            ResourceProcessUpdateReq resourceProcessUpdateReq = new ResourceProcessUpdateReq();
+            BeanUtils.copyProperties(resourceReqUpdateReq, resourceProcessUpdateReq);
+            resourceProcessUpdateReq.setFormId(resReqId);
+            finishProcess(resourceProcessUpdateReq);
         }
         return ResultVO.success();
+    }
+
+
+    @Override
+    public ResultVO<String> batchAuditNbr(ResourceInstCheckReq req) {
+        //申请单明细主键集合
+        List<String> mktResInstNbrs = req.getMktResInstNbrs();
+        if (CollectionUtils.isEmpty(mktResInstNbrs)) {
+            return ResultVO.error("请选择要审核的内容");
+        }
+        log.info("AdminResourceInstServiceImpl.batchAuditNbr mktResInstNbrSize={}", JSON.toJSONString(mktResInstNbrs.size()));
+
+        //根据串码获取到待审核的申请详情
+        List<ResourceReqDetailPageDTO> resDetailList = getResourceReqDetailPageDTOS(mktResInstNbrs);
+        if (CollectionUtils.isEmpty(resDetailList)) {
+            return ResultVO.error("没有待审批的内容");
+        }
+
+        String statusCd = req.getCheckStatusCd();
+
+        //审核不通过
+        if (ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode().equals(statusCd)) {
+            doAuditResNbrUnPass(req, resDetailList);
+        } else if (ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode().equals(statusCd)) {
+            warehouseCacheUtils.put(ResourceConst.ADD_NBR_INST , ResourceConst.ADD_NBR_INST );
+            runableTask.auditPassResDetail(resDetailList, req.getUpdateStaff(), req.getUpdateStaffName());
+        }
+        return ResultVO.success("审核成功");
+    }
+
+    /**
+     * 审核串码不通过
+     * @param req
+     * @param resDetailList
+     */
+    private void doAuditResNbrUnPass(ResourceInstCheckReq req, List<ResourceReqDetailPageDTO> resDetailList) {
+        final Date now = new Date();
+        //按照申请单号进行分组
+        Map<String, List<ResourceReqDetailPageDTO>> mktResReqMap = resDetailList.stream().collect(Collectors.groupingBy(t -> t.getMktResReqId()));
+        ResourceReqDetailUpdateReq detailUpdateReq = new ResourceReqDetailUpdateReq();
+        detailUpdateReq.setUpdateStaff(req.getUpdateStaff());
+        detailUpdateReq.setUpdateDate(now);
+        detailUpdateReq.setStatusDate(now);
+        detailUpdateReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode());
+
+        long statTime = System.currentTimeMillis();
+        log.info("AdminResourceInstServiceImpl.doAuditResNbrUnPass startTime={}", statTime);
+        for (Map.Entry<String, List<ResourceReqDetailPageDTO>> entry : mktResReqMap.entrySet()) {
+            long updateDetailByDetailIdsStatTime = System.currentTimeMillis();
+            log.info("AdminResourceInstServiceImpl.doAuditResNbrUnPass updateDetailByDetailIds reqId={} startTime={}", entry.getKey(), updateDetailByDetailIdsStatTime);
+            //获取申请单中的详情ID集合
+            List<String> mktResReqDetailIdList = entry.getValue().stream().map(ResourceReqDetailPageDTO::getMktResReqDetailId).collect(Collectors.toList());
+            detailUpdateReq.setMktResReqDetailIds(mktResReqDetailIdList);
+            //修改明细状态
+            resourceReqDetailManager.updateDetailByNbrs(detailUpdateReq);
+            long updateDetailByDetailIdsEndTime = System.currentTimeMillis();
+            long updateDetailByDetailIdsConsuming = updateDetailByDetailIdsEndTime - updateDetailByDetailIdsStatTime;
+            log.info("AdminResourceInstServiceImpl.doAuditResNbrUnPass updateDetailByDetailIds reqId={} endTime={} consumeTime={}", entry.getKey(), statTime, updateDetailByDetailIdsConsuming);
+
+            //验证明细是否全部处理，修改申请单状态
+            long checkResRequestFinishStatTime = System.currentTimeMillis();
+            log.info("AdminResourceInstServiceImpl.doAuditResNbrUnPass checkResRequestFinish reqId={} startTime={}", entry.getKey(), checkResRequestFinishStatTime);
+            ResourceReqUpdateReq resourceReqUpdateReq = new ResourceReqUpdateReq();
+            resourceReqUpdateReq.setMktResReqId(entry.getKey());
+            resourceReqUpdateReq.setUpdateStaff(req.getUpdateStaff());
+            resourceReqUpdateReq.setUpdateStaffName(req.getUpdateStaffName());
+            checkResRequestFinish(resourceReqUpdateReq);
+            long checkResRequestFinishEndTime = System.currentTimeMillis();
+            long checkResRequestFinishConsuming = updateDetailByDetailIdsEndTime - updateDetailByDetailIdsStatTime;
+            log.info("AdminResourceInstServiceImpl.doAuditResNbrUnPass checkResRequestFinish reqId={} endTime={} consumeTime={}", entry.getKey(), checkResRequestFinishEndTime, checkResRequestFinishConsuming);
+        }
+        long endTime = System.currentTimeMillis();
+        long timeConsuming = endTime - statTime;
+        log.info("AdminResourceInstServiceImpl.doAuditResNbrUnPass endTime={},timeConsuming={}", endTime, timeConsuming);
+    }
+
+    /**
+     * 根据串码获取到待审核的申请详情
+     * @param mktResInstNbrs 串码列表
+     * @return
+     */
+    private List<ResourceReqDetailPageDTO> getResourceReqDetailPageDTOS(List<String> mktResInstNbrs) {
+        ResourceReqDetailQueryReq resourceReqDetailQueryReq = new ResourceReqDetailQueryReq();
+        resourceReqDetailQueryReq.setMktResInstNbrs(mktResInstNbrs);
+        resourceReqDetailQueryReq.setPageNo(1);
+        resourceReqDetailQueryReq.setPageSize(mktResInstNbrs.size() * 2);
+        resourceReqDetailQueryReq.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode());
+        resourceReqDetailQueryReq.setReqType(ResourceConst.REQTYPE.PUTSTORAGE_APPLYFOR.getCode());
+        resourceReqDetailQueryReq.setSearchCount(false);
+        Page<ResourceReqDetailPageDTO> respPage = resourceReqDetailManager.listResourceRequestPage(resourceReqDetailQueryReq);
+        return respPage.getRecords();
     }
 
     /**
@@ -421,9 +458,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
      */
     private void finishProcess(ResourceProcessUpdateReq resourceProcessUpdateReq) {
         //根据formId找到task
-        String formId=resourceProcessUpdateReq.getFormId();
-        ResultVO<List<TaskDTO>> taskResult=this.taskService.getTaskByFormId(formId);
-        if(!taskResult.isSuccess()||CollectionUtils.isEmpty(taskResult.getResultData())||taskResult.getResultData().size()>1){
+        String formId = resourceProcessUpdateReq.getFormId();
+        ResultVO<List<TaskDTO>> taskResult = this.taskService.getTaskByFormId(formId);
+        if (!taskResult.isSuccess() || CollectionUtils.isEmpty(taskResult.getResultData()) || taskResult.getResultData().size() > 1) {
             log.info("AdminResourceInstServiceImpl.finishProcess.getTaskByFormId formId ={},taskList={}", formId, JSON.toJSONString(taskResult.getResultData()));
             return;
         }
@@ -450,15 +487,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             if (WorkFlowConst.WF_NODE.NODE_END.getId().equals(route.getNextNodeId())) {
                 // 执行流程下一步
                 taskService.endProcess(resourceProcessUpdateReq.getUpdateStaff(), resourceProcessUpdateReq.getUpdateStaffName(), task.getTaskId(), route.getRouteId());
-//                RouteNextReq routeNextReq =new RouteNextReq();
-//                routeNextReq.setTaskItemId(taskItem.getTaskItemId());
-//                routeNextReq.setNextNodeId(route.getNextNodeId());
-//                routeNextReq.setRouteId(route.getRouteId());
-//                routeNextReq.setTaskId(task.getTaskId());
-//                routeNextReq.setHandlerUserId(resourceProcessUpdateReq.getUpdateStaff());
-//                routeNextReq.setHandlerUserName(resourceProcessUpdateReq.getUpdateStaffName());
-//                routeNextReq.setHandlerMsg("审核结束");
-//                taskService.nextRoute(routeNextReq);
+
             }
         }
 
@@ -475,13 +504,21 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Override
     public ResultVO<String> submitNbrAudit(ResourceUploadTempListPageReq req) {
+        //判断是否存在正在执行的任务
+        if(null != warehouseCacheUtils.get(ResourceConst.ADD_NBR_INST)){
+            return ResultVO.error("存在正在执行的串码入库操作，请稍后再试");
+        }
         //查询审核成功的串码集合
         req.setResult(ResourceConst.CONSTANT_NO);
         req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
-        List<ResourceUploadTempListResp> passList=resourceUploadTempManager.listResourceUpload(req);
+        req.setPageSize(100000);
+        req.setPageNo(1);
+        Page<ResourceUploadTempListResp> pagePass=resourceUploadTempManager.listResourceUploadTemp(req);
+        List<ResourceUploadTempListResp> passList=pagePass.getRecords();
         //查询审核失败的串码集合
         req.setStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode());
-        List<ResourceUploadTempListResp> failList=resourceUploadTempManager.listResourceUpload(req);
+        Page<ResourceUploadTempListResp> pageFail=resourceUploadTempManager.listResourceUploadTemp(req);
+        List<ResourceUploadTempListResp> failList=pageFail.getRecords();
         //审核通过的串码
         if(CollectionUtils.isNotEmpty(passList)){
             ResourceInstCheckReq checkPassReq=new ResourceInstCheckReq();
@@ -489,14 +526,22 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             checkPassReq.setCheckStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode());
             checkPassReq.setUpdateStaff(req.getUpdateStaff());
             batchAuditNbr(checkPassReq);
+        }else{
+            //不存在审核通过的串码，清空执行标识
+            warehouseCacheUtils.evict(ResourceConst.ADD_NBR_INST);
         }
         //审核失败的串码
         if(CollectionUtils.isNotEmpty(failList)){
+            //根据审核说明进行分组
+            Map<String, List<ResourceUploadTempListResp>> map = failList.stream().collect(Collectors.groupingBy(t -> t.getRemark()));
             ResourceInstCheckReq checkFailReq=new ResourceInstCheckReq();
-            checkFailReq.setMktResInstNbrs(failList.stream().map(ResourceUploadTempListResp::getMktResInstNbr).collect(Collectors.toList()));
             checkFailReq.setCheckStatusCd(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode());
             checkFailReq.setUpdateStaff(req.getUpdateStaff());
-            batchAuditNbr(checkFailReq);
+            for(Map.Entry<String,List<ResourceUploadTempListResp>> entry : map.entrySet()){
+                checkFailReq.setMktResInstNbrs(entry.getValue().stream().map(ResourceUploadTempListResp::getMktResInstNbr).collect(Collectors.toList()));
+                checkFailReq.setRemark(entry.getKey());
+                batchAuditNbr(checkFailReq);
+            }
         }
         //删除临时记录
         ResourceUploadTempDelReq resourceUploadTempDelReq = new ResourceUploadTempDelReq();
@@ -525,6 +570,12 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
 
 
+    }
+
+
+    @Override
+    public ResultVO<Boolean> validBatchAuditNbr() {
+        return ResultVO.success(runableTask.validBatchAuditNbr());
     }
 
     @Override

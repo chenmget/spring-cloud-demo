@@ -12,6 +12,9 @@ public class ResourceReqUpdateReq implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "记录营销资源申请单标识")
+    private List<String> mktResReqIdList;
+
+    @ApiModelProperty(value = "记录营销资源申请单标识")
     private String mktResReqId;
 
     @ApiModelProperty(value = "审核对象id")

@@ -74,6 +74,11 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
 	}
 
     @Override
+    public ResultVO<String> checkResRequestFinish(ResourceReqUpdateReq resourceReqUpdateReq) {
+        return adminResourceInstService.checkResRequestFinish(resourceReqUpdateReq);
+    }
+
+    @Override
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
         log.info("AdminResourceInstOpenServiceImpl.listResourceUploadTemp req={}", JSON.toJSONString(req));
         return	adminResourceInstService.listResourceUploadTemp(req);
@@ -107,6 +112,11 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> listDelResourceInstTemp(ResourceUploadTempListPageReq req) {
         return adminResourceInstService.listDelResourceInstTemp(req);
+    }
+
+    @Override
+    public ResultVO<Boolean> validBatchAuditNbr() {
+        return adminResourceInstService.validBatchAuditNbr();
     }
 
 

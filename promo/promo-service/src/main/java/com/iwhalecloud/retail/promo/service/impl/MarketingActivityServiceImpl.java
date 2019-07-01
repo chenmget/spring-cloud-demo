@@ -2019,9 +2019,11 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     public void notifyMerchantActivityOrderDelivery() {
         // 从数据字典取提前预警天数
         ConfigInfoDTO configInfoDTO = configInfoService.getConfigInfoById(SysUserMessageConst.DELIVER_END_TIME_NOTIFY_DAYS);
+        log.info("gs_10010_notifyMerchantActivityOrderDelivery,configInfoDTO{}",JSON.toJSONString(configInfoDTO));
         String earlyWarningDays = configInfoDTO.getCfValue();
         // 查询发货时间临近的活动
         List<MarketingActivity> marketingActivityList = marketingActivityManager.queryActivityOrderDeliveryClose(earlyWarningDays);
+        log.info("gs_10010_notifyMerchantActivityOrderDelivery,marketingActivityList{}",JSON.toJSONString(marketingActivityList));
         if (CollectionUtils.isEmpty(marketingActivityList)) {
             return;
         }
@@ -2034,6 +2036,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
         // 根据活动ID查询活动购买记录
         List<HistoryPurchase> historyPurchaseList = historyPurchaseManager.queryHistoryPurchaseByMarketingActivityId(Lists.newArrayList(activityIdAndDeliverEndTimeMap.keySet()));
+        log.info("gs_10010_notifyMerchantActivityOrderDelivery,historyPurchaseList{}",JSON.toJSONString(historyPurchaseList));
         if (CollectionUtils.isEmpty(historyPurchaseList)) {
             return;
         }
@@ -2062,13 +2065,18 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                     sysUserMessageDTO.setEndTime(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).deliverEndItme);
                     sysUserMessageDTO.setTitle(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).title + SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_TITLE);
                     sysUserMessageDTO.setContent(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).content);
+
+
                     if (!Objects.isNull(orderDTO.getMerchantId())) {
-                        MerchantDTO merchantDTO = merchantService.getMerchantInfoById(orderDTO.getMerchantId());
-                        if (!Objects.isNull(merchantDTO)) {
-                            sysUserMessageDTO.setUserId(merchantDTO.getUserId());
+                        UserGetReq userGetReq = new UserGetReq();
+                        userGetReq.setRelCode(orderDTO.getMerchantId());
+                        UserDTO user = userService.getUser(userGetReq);
+                        if (!Objects.isNull(user)) {
+                            sysUserMessageDTO.setUserId(user.getUserId());
+                            sysUserMessageService.addSysUserMessage(sysUserMessageDTO);
                         }
                     }
-                    sysUserMessageService.addSysUserMessage(sysUserMessageDTO);
+                    log.info("gs_10010_notifyMerchantActivityOrderDelivery,sysUserMessageDTO{}",JSON.toJSONString(sysUserMessageDTO));
                 }
             }
         }

@@ -135,8 +135,8 @@ public class GovernmentReportManageController extends BaseController {
         Workbook workbook = new HSSFWorkbook();
 //      //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-                orderMap, "政企价格管理");
-        deliveryGoodsResNberExcel.exportExcel("政企价格管理",workbook,response);
+                orderMap, "政企省内代收报表");
+        deliveryGoodsResNberExcel.exportExcel("政企省内代收报表",workbook,response);
 
     }
 
@@ -198,8 +198,8 @@ public class GovernmentReportManageController extends BaseController {
         Workbook workbook = new HSSFWorkbook();
 //      //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-                orderMap, "政企价格管理");
-        deliveryGoodsResNberExcel.exportExcel("政企价格管理",workbook,response);
+                orderMap, "政企省内代收项目状态报表");
+        deliveryGoodsResNberExcel.exportExcel("政企省内代收项目状态报表",workbook,response);
 
     }
 }

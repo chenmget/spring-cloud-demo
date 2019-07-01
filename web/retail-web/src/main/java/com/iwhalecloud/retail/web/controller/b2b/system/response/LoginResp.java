@@ -40,4 +40,9 @@ public class LoginResp implements Serializable {
     @ApiModelProperty(value = "changePwdCount")
     private Integer changePwdCount;
 
+    @ApiModelProperty(value = "错误码")
+    private Integer failCode = 0;
+
+    @ApiModelProperty(value = "错误码")
+    private String failMsg;
 }

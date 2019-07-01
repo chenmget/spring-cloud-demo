@@ -61,13 +61,13 @@ public class ResourceUploadTempManager  extends ServiceImpl<ResourceUploadTempMa
         return resourceUploadTempMapper.executorlistResourceUploadTemp(req);
     }
 
-//    /**
-//     * 查询校验串码不分页
-//     * @param req
-//     * @return
-//     */
-//    public List<ResourceUploadTempListResp> listResourceUpload(ResourceUploadTempListPageReq req){
-//        return resourceUploadTempMapper.listResourceUploadTemp(req);
-//    }
+    /**
+     * 查询校验串码不分页
+     * @param req
+     * @return
+     */
+    public List<ResourceUploadTempListResp> listResourceUpload(ResourceUploadTempListPageReq req){
+        return resourceUploadTempMapper.listResourceUploadTemp(req);
+    }
 
 }

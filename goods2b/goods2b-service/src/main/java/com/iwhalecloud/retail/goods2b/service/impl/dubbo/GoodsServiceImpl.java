@@ -1787,13 +1787,13 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Override
     public List<SupplierGoodsDTO> querySupplierGoods(String goodsId, String productId) {
-        log.info("GoodsServiceImpl.querySupplierGoods req goodsId={},goodsId={}", goodsId, productId);
+        log.info("GoodsServiceImpl.querySupplierGoods req goodsId={},productId={}", goodsId, productId);
         List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
         Goods goods = goodsManager.queryGoods(goodsId);
         if (null == goods) {
             return supplierGoodsDTOs;
         } else {
-            Double mktprice = goods.getMktprice();
+            Double mktprice = goods.getMktprice() == null ? 0 : goods.getMktprice();
             Integer isSubsidy = 0;
             if (null != goods.getIsSubsidy()) {
                 isSubsidy = goods.getIsSubsidy();

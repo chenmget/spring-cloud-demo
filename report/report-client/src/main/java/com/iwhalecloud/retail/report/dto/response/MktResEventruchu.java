@@ -4,7 +4,8 @@ import com.iwhalecloud.retail.dto.PageVO;
 import lombok.Data;
 
 @Data
-public class MktResEventruchu extends PageVO {/**
+public class MktResEventruchu extends PageVO {
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;

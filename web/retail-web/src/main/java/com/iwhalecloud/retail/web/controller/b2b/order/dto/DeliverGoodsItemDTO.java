@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.web.controller.b2b.order.dto;
 
-import com.iwhalecloud.retail.oms.dto.response.FileManagerRespDTO;
 import lombok.Data;
 
 import java.io.Serializable;

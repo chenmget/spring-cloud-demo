@@ -6,6 +6,8 @@ import com.iwhalecloud.retail.report.dto.request.RptSupplierOperatingDayReq;
 import com.iwhalecloud.retail.report.dto.response.MktResEventruchu;
 import com.iwhalecloud.retail.report.dto.response.MktResInstResq;
 import com.iwhalecloud.retail.report.dto.response.ParMerchantResp;
+import com.iwhalecloud.retail.report.dto.response.PurchaseAmountResp;
+
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,19 +16,26 @@ import java.util.List;
 @Mapper
 public interface RptSupplierOperatingDayMapper extends BaseMapper<RptSupplierOperatingDayReq> {
 
-	public String hqmaxItemId();
+	String hqmaxItemId();
 
-	public void getDataForRptSupplierOperatingDay(@Param("req") RptSupplierOperatingDayReq rptSupplierOperatingDayReq);
-
-	public List<ParMerchantResp> hqParMerchant();
+	List<ParMerchantResp> hqParMerchantInfo();
 	
-	//第二步：通过商家ID获取供应商仓库
-	public String hqMktResStore(@Param("req") MktResInstEventReq req);
-	//当前库存
-	public List<MktResInstResq> hqMktResInst(@Param("req") MktResInstEventReq req);
-	//入库
-	public List<MktResEventruchu> hqmktResEventru(@Param("req") MktResInstEventReq req);
-	//出库
-	public List<MktResEventruchu> hqmktResEventchu(@Param("req") MktResInstEventReq req);
+	List<MktResInstResq> hqMktResInstInfo(@Param("mktResStoreId") String mktResStoreId) ;
+	
+	List<MktResEventruchu> hqmktResEventInfoRu(@Param("req") MktResInstEventReq req);
+	
+	List<MktResEventruchu> hqmktResEventInfoChu (@Param("req") MktResInstEventReq req);
+	//获取变动事件的数量
+    String hqEventTypeNum (@Param("mktResEventId") String mktResEventId);
+    
+    PurchaseAmountResp hqPurchaseAmount(@Param("orderId") String orderId) ;
+    
+    String hqIsHaveRecord(@Param("req") MktResInstEventReq req);
+    
+    void getDataForRptSupplierOperatingDay(@Param("req") RptSupplierOperatingDayReq req);
+  //更新入库
+  	void updateRptSupplierRu(RptSupplierOperatingDayReq req) ;
+  	//更新出库
+  	void updateRptSupplierChu(RptSupplierOperatingDayReq req) ;
 }
 

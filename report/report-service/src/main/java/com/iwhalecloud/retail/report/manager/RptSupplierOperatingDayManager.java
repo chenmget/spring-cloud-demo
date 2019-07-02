@@ -5,7 +5,9 @@ import com.iwhalecloud.retail.report.dto.request.RptSupplierOperatingDayReq;
 import com.iwhalecloud.retail.report.dto.response.MktResEventruchu;
 import com.iwhalecloud.retail.report.dto.response.MktResInstResq;
 import com.iwhalecloud.retail.report.dto.response.ParMerchantResp;
+import com.iwhalecloud.retail.report.dto.response.PurchaseAmountResp;
 import com.iwhalecloud.retail.report.mapper.RptSupplierOperatingDayMapper;
+
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -21,32 +23,47 @@ public class RptSupplierOperatingDayManager {
         return rptSupplierOperatingDayMapper.hqmaxItemId();
     }
 
-    public void getDataForRptSupplierOperatingDay(RptSupplierOperatingDayReq req) {
-        rptSupplierOperatingDayMapper.getDataForRptSupplierOperatingDay(req);
+    //-----------------------------------------------------------------------------
+    public List<ParMerchantResp> hqParMerchantInfo(){
+    	return rptSupplierOperatingDayMapper.hqParMerchantInfo();
     }
-
-    public List<ParMerchantResp> hqParMerchant() {
-        return rptSupplierOperatingDayMapper.hqParMerchant();
+    
+  //库存的
+    public List<MktResInstResq> hqMktResInstInfo(String mktResStoreId) {
+        return rptSupplierOperatingDayMapper.hqMktResInstInfo(mktResStoreId);
     }
-
-    //第二步：通过商家ID获取供应商仓库
-    public String hqMktResStore(MktResInstEventReq req) {
-        return rptSupplierOperatingDayMapper.hqMktResStore(req);
-
+    
+  //入库的
+    public List<MktResEventruchu> hqmktResEventInfoRu(MktResInstEventReq req) {
+        return rptSupplierOperatingDayMapper.hqmktResEventInfoRu(req);
     }
-
-    //库存的
-    public List<MktResInstResq> hqMktResInst(MktResInstEventReq req) {
-        return rptSupplierOperatingDayMapper.hqMktResInst(req);
-    }
-
-    //入库的
-    public List<MktResEventruchu> hqmktResEventru(MktResInstEventReq req) {
-        return rptSupplierOperatingDayMapper.hqmktResEventru(req);
-    }
-
     //出库的
-    public List<MktResEventruchu> hqmktResEventchu(MktResInstEventReq req) {
-        return rptSupplierOperatingDayMapper.hqmktResEventchu(req);
+    public List<MktResEventruchu> hqmktResEventInfoChu (MktResInstEventReq req) {
+		return rptSupplierOperatingDayMapper.hqmktResEventInfoChu(req);
+	}
+  //获取变动事件的数量
+    public String hqEventTypeNum (String mktResEventId) {
+		return rptSupplierOperatingDayMapper.hqEventTypeNum(mktResEventId);
+	}
+  //获取进货金额
+    public PurchaseAmountResp hqPurchaseAmount(String orderId) {
+		return rptSupplierOperatingDayMapper.hqPurchaseAmount(orderId);
+	}
+  //看入库的机型在库存里面有没有记录
+    public String hqIsHaveRecord(MktResInstEventReq req) {
+		return rptSupplierOperatingDayMapper.hqIsHaveRecord(req);
+	}
+    //插表
+    public void getDataForRptSupplierOperatingDay(RptSupplierOperatingDayReq req) {
+    	rptSupplierOperatingDayMapper.getDataForRptSupplierOperatingDay(req);
     }
+  //更新入库
+  	public void updateRptSupplierRu(RptSupplierOperatingDayReq req) {
+  		rptSupplierOperatingDayMapper.updateRptSupplierRu(req);
+  	}
+  	//更新出库
+  	public void updateRptSupplierChu(RptSupplierOperatingDayReq req) {
+  		rptSupplierOperatingDayMapper.updateRptSupplierChu(req);
+  	}
+    
 }

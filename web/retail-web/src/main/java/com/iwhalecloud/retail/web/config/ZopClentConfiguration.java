@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.web.config;
 
-import com.iwhalecloud.retail.oms.service.zop.ZopClientService;
-import com.iwhalecloud.retail.oms.service.zop.ZopConfigStorage;
+import com.iwhalecloud.retail.web.zop.ZopClientService;
 import com.iwhalecloud.retail.web.zop.ZopClientServiceImpl;
+import com.iwhalecloud.retail.web.zop.ZopConfigStorage;
 import com.iwhalecloud.retail.web.zop.ZopConfigStorageImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;

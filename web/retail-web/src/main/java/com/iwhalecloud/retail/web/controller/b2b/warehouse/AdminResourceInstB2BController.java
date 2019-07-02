@@ -22,7 +22,6 @@ import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAn
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAndMacResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
-import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExportCSVUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -421,6 +420,17 @@ public class AdminResourceInstB2BController {
         req.setUpdateStaffName(UserContext.getUser().getUserName());
         return resourceInstService.batchAuditNbr(req);
     }
+
+    @ApiOperation(value = "验证提交串码审核是否执行完毕", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value="validBatchAuditNbr")
+    public ResultVO<Boolean> validBatchAuditNbr() {
+        return resourceInstService.validBatchAuditNbr();
+    }
+
 
     @ApiOperation(value = "导入待删除的串码文件", notes = "支持xlsx、xls格式")
     @ApiResponses({

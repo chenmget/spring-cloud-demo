@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Created by Administrator on 2019/6/18.
  */
-@ElasticSimpleJob(cron = "0 30 15 * * ?",
+@ElasticSimpleJob(cron = "0 40 16 * * ?",
         jobName = "AutoAddProdJob",
         shardingTotalCount = 1,
         jobParameter = "测试参数",
@@ -59,23 +59,8 @@ public class AutoAddProdJob implements SimpleJob {
             List<MerchantDTO> merchantDTOList = resultVO.getResultData();
             if (CollectionUtils.isNotEmpty(merchantDTOList)) {
                 for (MerchantDTO merchantDTO : merchantDTOList) {
-                    //旧逻辑
-//                    MerchantRulesDeleteReq merchantRulesDeleteReq = new MerchantRulesDeleteReq();
-//                    merchantRulesDeleteReq.setMerchantId(merchantDTO.getMerchantId());
-//                    merchantRulesDeleteReq.setRuleType("1");
-//                    merchantRulesDeleteReq.setTargetType("2");
-//                    merchantRulesService.deleteMerchantRules(merchantRulesDeleteReq);
-
-//                    LSSAddControlReq req = new LSSAddControlReq();
-//                    req.setMerchantId(merchantDTO.getMerchantId());
-//                    req.setRuleType("1");
-//                    req.setTargetType("2");
-//                    List<String> targetIdList = getProductIdList();
-//                    req.setTargetIdList(targetIdList);
-//                    newParMerchAddProdService.addProd(req);
 
                     // 新逻辑  zhongwenlong2019.06.27
-                    deleteMerchantRules(merchantDTO.getMerchantId());
                     newParMerchAddProdService.addRetailerDefaultRule(merchantDTO.getMerchantId());
 
                     MerchantUpdateReq merchantUpdateReq = new MerchantUpdateReq();
@@ -86,43 +71,6 @@ public class AutoAddProdJob implements SimpleJob {
                 }
             }
         }
-    }
-
-    /**
-     * 添加权限之前  清除需要清除的权限
-     *
-     * @param merchantId
-     */
-    private void deleteMerchantRules(String merchantId) {
-        MerchantRulesDeleteReq merchantRulesDeleteReq = new MerchantRulesDeleteReq();
-        merchantRulesDeleteReq.setMerchantId(merchantId);
-        // 经营权限--机型权限
-        merchantRulesDeleteReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
-        merchantRulesDeleteReq.setTargetType(PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType());
-        merchantRulesService.deleteMerchantRules(merchantRulesDeleteReq);
-
-        // 调拨权限--机型权限
-        merchantRulesDeleteReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType());
-        merchantRulesDeleteReq.setTargetType(PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType());
-        merchantRulesService.deleteMerchantRules(merchantRulesDeleteReq);
-
-        // 调拨权限--区域权限
-        merchantRulesDeleteReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType());
-        merchantRulesDeleteReq.setTargetType(PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType());
-        merchantRulesService.deleteMerchantRules(merchantRulesDeleteReq);
-
-    }
-
-    /**
-     * 获取一定条件下的产品ID集合
-     *
-     * @return
-     */
-    private List<String> getProductIdList() {
-        ProductListReq productListReq = new ProductListReq();
-        productListReq.setIsDeleted(ProductConst.IsDelete.NO.getCode());
-        productListReq.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
-        return productService.listProductId(productListReq).getResultData();
     }
 
 }

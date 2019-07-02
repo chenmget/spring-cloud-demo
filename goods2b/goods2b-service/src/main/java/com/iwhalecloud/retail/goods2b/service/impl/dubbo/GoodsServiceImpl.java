@@ -5,7 +5,6 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
@@ -57,6 +56,7 @@ import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.map.HashedMap;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1785,6 +1785,18 @@ public class GoodsServiceImpl implements GoodsService {
         return ResultVO.success(updateFlag);
     }
 
+
+    /**
+     * 推荐逻辑：
+     * 1、 零售价1599以上机型（未参与省集约前置补贴）：
+     * 点击地包商品详情后，同一个规格地包价格高于省包同一规格供货价平均价的的3%时，地包商品下方推荐省包同规格商品（省包商品列表增加字段信息显示：比同商品优惠xx元），
+     * 零售商只能买省包同一个规格商品，其他规格则显示灰色，无法选择购买。
+     * 2、 零售价1599及以下机型（未参与省集约前置补贴）：
+     * 如果地包商品某个规格无货时，点击进入地包商品详情时，选中某个无货规格商品，下方推荐栏推荐其他地包同规格商品，价格由低往高排序，
+     * 其他地包也无货，推荐省包同规格商品，价格由低往高排序，点击推荐的省包商品计入商品详情页时，将限制买家点击其他规格，只能购买地包缺货规格商品。
+     * 3、 有省集约前置补贴的机型 （有前置补贴活动的机型不推荐商品）
+     * 优先地包供货，即使地包无库存，也不展示省包商品。
+     */
     @Override
     public List<SupplierGoodsDTO> querySupplierGoods(String goodsId, String productId) {
         log.info("GoodsServiceImpl.querySupplierGoods req goodsId={},productId={}", goodsId, productId);
@@ -1824,23 +1836,12 @@ public class GoodsServiceImpl implements GoodsService {
 //            return supplierGoodsDTOs;
         }else{
             supplierGoodsDTOs = this.getSupplierGoods(productId);
-            //先根据商家类型查询省包商是否有货
-//            List<SupplierGoodsDTO> supplierGoodsDTOs2 = goodsManager.listSupplierGoodsByType(productId, "3");
-//            log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 省包商 supplierGoodsDTOs={}", supplierGoodsDTOs2);
-//            if (CollectionUtils.isNotEmpty(supplierGoodsDTOs2)) {
-//                for (SupplierGoodsDTO supplierGoodsDTO : supplierGoodsDTOs2) {
-//                    List<ProdFileDTO> prodFileDTOs = fileManager.getFile(supplierGoodsDTO.getGoodsId(), FileConst.TargetType.GOODS_TARGET.getType(), FileConst.SubType.THUMBNAILS_SUB.getType());
-//                    if (CollectionUtils.isNotEmpty(prodFileDTOs)) {
-//                        supplierGoodsDTO.setImageUrl(prodFileDTOs.get(0).getFileUrl());
-//                    }
-//                }
-//                supplierGoodsDTOs = supplierGoodsDTOs2;
-//            }
         }
         log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType  resp={}", supplierGoodsDTOs);
         return supplierGoodsDTOs;
     }
 
+    // 先根据商家类型查询省包商是否有货
     private List<SupplierGoodsDTO> getSupplierGoods(String productId){
         List<SupplierGoodsDTO> supplierGoodsDTOs2 = goodsManager.listSupplierGoodsByType(productId, "3");
         log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 省包商 supplierGoodsDTOs={}", supplierGoodsDTOs2);

@@ -178,7 +178,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         log.info("MerchantRulesServiceImpl.deleteMerchantRules(), input: MerchantRulesDeleteReq={} ", req);
         int result = merchantRulesManager.deleteMerchantRules(req);
         log.info("MerchantRulesServiceImpl.deleteMerchantRules(), output: delete effect row num = {} ", result);
-        if (result <= 0) {
+        if (result < 0) {
             return ResultVO.error("删除商家经营权限规则信息失败");
         }
         return ResultVO.success("删除商家权限规则信息 条数：" + result, result);

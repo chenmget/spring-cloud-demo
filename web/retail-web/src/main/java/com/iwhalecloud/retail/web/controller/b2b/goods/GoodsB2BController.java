@@ -435,8 +435,11 @@ public class GoodsB2BController extends GoodsBaseController {
         MerchantDTO merchantDTO = merchantService.getMerchantById(merchantId).getResultData();
         log.info("GoodsB2BController.getOrgPathCode() merchantService.getMerchantById() input: merchantId={}, output: merchantDTO ={}", merchantId, JSON.toJSONString(merchantDTO));
         if (Objects.nonNull(merchantDTO)) {
-            // 判断 组织ID 是否为空
-            if (StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
+            // 判断 商家表中的组织路径 是否为空
+            if (StringUtils.isNotEmpty(merchantDTO.getParCrmOrgPathCode())) {
+                orgPathCode = merchantDTO.getParCrmOrgPathCode();
+            } else if (StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
+                // 判断 组织ID 是否为空
                 OrganizationDTO organizationDTO = organizationService.getOrganization(merchantDTO.getParCrmOrgId()).getResultData();
                 log.info("GoodsB2BController.getOrgPathCode() organizationService.getOrganization() input: orgId={}, output: CommonOrgDTO ={}", merchantDTO.getParCrmOrgId(), JSON.toJSONString(organizationDTO));
                 if (Objects.nonNull(organizationDTO) && StringUtils.isNotEmpty(organizationDTO.getPathCode())) {

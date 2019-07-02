@@ -66,6 +66,8 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.io.Serializable;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -607,6 +609,10 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 // 返回活动列表
                 if (marketingActivitieList.size() > 0) {
                     marketingActivitieList.forEach(item -> {
+                        if(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode().equals(item.getActivityType())){
+                            //如果是前置补贴营销活动，需将产品补贴金额替换到营销活动优惠描述中
+                            convertPromotionDesc(req.getProductId(),item);
+                        }
                         MarketingGoodsActivityQueryResp marketingGoodsActivityQueryResp = new MarketingGoodsActivityQueryResp();
                         BeanUtils.copyProperties(item, marketingGoodsActivityQueryResp);
                         marketingGoodsActivityQueryRespList.add(marketingGoodsActivityQueryResp);
@@ -616,6 +622,44 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         }
         log.info("MarketingActivityServiceImpl.listGoodsMarketingActivitys resp={}", JSON.toJSONString(marketingGoodsActivityQueryRespList));
         return ResultVO.success(marketingGoodsActivityQueryRespList);
+    }
+
+    /**
+     * 将产品补贴金额替换到营销活动优惠描述中
+     * @param productId
+     * @param activity
+     * @return
+     */
+    private MarketingActivity convertPromotionDesc(String productId,MarketingActivity activity){
+        // 1.查看“活动的优惠规则描述”字段，如果为空，直接返回
+        String promotionDesc = activity.getPromotionDesc();
+        if(StringUtils.isEmpty(promotionDesc)){
+            return activity;
+        }
+        // 2.根据产品id和活动id获取活动产品信息
+        ActivityProductDTO activityProductDTO = null;
+        ActivityProductListReq activityProductListReq = new ActivityProductListReq();
+        activityProductListReq.setProductId(productId);
+        activityProductListReq.setMarketingActivityIds(Lists.newArrayList(activity.getId()));
+        ResultVO<List<ActivityProductDTO>> activityProductResultVO = activityProductService.queryActivityProducts(activityProductListReq);
+        if (activityProductResultVO.isSuccess() && !CollectionUtils.isEmpty(activityProductResultVO.getResultData())) {
+            // 取第一个
+            activityProductDTO = activityProductResultVO.getResultData().get(0);
+        }
+        // 3.提取活动产品的优惠金额
+        Long discountAmount = activityProductDTO.getDiscountAmount();
+        // 4.替换营销活动中“活动优惠占位符${}”为产品的优惠活动金额。例：省级前置补贴${前置补贴金额}元
+        // 匹配用的正则表达式
+        String regex = "\\$\\{(.*?)\\}";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(promotionDesc);
+        // 如果能匹配到就进行替换
+        while (matcher.find()) {
+            String tag = matcher.group();
+            promotionDesc = promotionDesc.replace(tag,discountAmount+"");
+        }
+        activity.setPromotionDesc(promotionDesc);
+        return activity;
     }
 
     /**
@@ -1132,8 +1176,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     private List<ActivityChangeDetail> calculateActivityChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity) {
         List<ActivityChangeDetail> activityChangeDetails = new ArrayList<>();
 
-        // 1.计算活动名称、概述、描述信息,获取变更数据
-        calculateActivityNameAndBriefAndDescriptionChangeDetail(originalActivity, changedActivity, activityChangeDetails);
+        // 1.计算活动名称、概述、描述、优惠描述信息,获取变更数据
+        calculateActivityNameAndBriefAndDescriptionAndPromotionDescChangeDetail(originalActivity, changedActivity, activityChangeDetails);
 
         // 2.计算活动时间信息,获取变更数据
         calculateActivityTimeChangeDetail(originalActivity, changedActivity, activityChangeDetails);
@@ -1159,12 +1203,12 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     }
 
     /**
-     * 计算活动名称、概述、描述信息,获取变更数据
+     * 计算活动名称、概述、描述、优惠描述信息,获取变更数据
      * @param originalActivity  原活动信息
      * @param changedActivity   变更后的活动信息
      * @param activityChangeDetails 活动变更数据集合
      */
-    private void calculateActivityNameAndBriefAndDescriptionChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
+    private void calculateActivityNameAndBriefAndDescriptionAndPromotionDescChangeDetail(MarketingActivityDTO originalActivity, MarketingActivityAddReq changedActivity,List<ActivityChangeDetail> activityChangeDetails) {
         //1.比较活动基本信息
         //1.1 比较活动名称
         if(StringUtils.isNotEmpty(changedActivity.getName())&&!changedActivity.getName().equals(originalActivity.getName())){
@@ -1200,6 +1244,19 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetail.setTableName(MarketingActivity.TNAME);
             activityChangeDetail.setChangeField(MarketingActivity.FieldNames.description.getTableFieldName());
             activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.description.getTableFieldComment());
+            activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_1.getCode());
+            activityChangeDetail.setOldValue(originalActivity.getDescription());
+            activityChangeDetail.setNewValue(changedActivity.getDescription());
+            activityChangeDetail.setKeyValue(originalActivity.getId());
+            activityChangeDetails.add(activityChangeDetail);
+        }
+        //1.4 比较活动优惠规则描述
+        if(StringUtils.isNotEmpty(changedActivity.getPromotionDesc())&&!changedActivity.getPromotionDesc().equals(originalActivity.getPromotionDesc())) {
+            ActivityChangeDetail activityChangeDetail = new ActivityChangeDetail();
+            activityChangeDetail.setOperType(PromoConst.OperType.MOD.getCode());
+            activityChangeDetail.setTableName(MarketingActivity.TNAME);
+            activityChangeDetail.setChangeField(MarketingActivity.FieldNames.promotionDesc.getTableFieldName());
+            activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.promotionDesc.getTableFieldComment());
             activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_1.getCode());
             activityChangeDetail.setOldValue(originalActivity.getDescription());
             activityChangeDetail.setNewValue(changedActivity.getDescription());

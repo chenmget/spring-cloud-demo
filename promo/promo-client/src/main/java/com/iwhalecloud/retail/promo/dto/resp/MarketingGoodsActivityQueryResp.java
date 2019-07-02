@@ -35,6 +35,18 @@ public class MarketingGoodsActivityQueryResp implements Serializable {
     private java.lang.String name;
 
     /**
+     * 营销活动概述
+     */
+    @ApiModelProperty(value = "营销活动概述")
+    private java.lang.String brief;
+
+    /**
+     * 营销活动描述
+     */
+    @ApiModelProperty(value = "营销活动描述")
+    private java.lang.String description;
+
+    /**
      * 支付定金开始时间
      */
     @ApiModelProperty(value = "支付定金开始时间")
@@ -85,5 +97,16 @@ public class MarketingGoodsActivityQueryResp implements Serializable {
      */
     @ApiModelProperty(value = "优惠方式为直减时，保存减免的金额")
     private java.lang.Long discountAmount;
+
+    /**
+     * 活动的优惠规则描述.promotion_desc
+     *    如前置补贴为:
+     *    省级前置补贴xx元
+     *    市级前置补贴xx元
+     *	  满减活动为:
+     *    满XX元减YY元'
+     */
+    @ApiModelProperty(value="活动的优惠规则描述 promotion_desc")
+    private String promotionDesc;
 
 }

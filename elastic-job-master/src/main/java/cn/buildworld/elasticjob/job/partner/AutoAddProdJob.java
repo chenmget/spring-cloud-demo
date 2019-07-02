@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Created by Administrator on 2019/6/18.
  */
-@ElasticSimpleJob(cron = "0 30 15 * * ?",
+@ElasticSimpleJob(cron = "0 40 16 * * ?",
         jobName = "AutoAddProdJob",
         shardingTotalCount = 1,
         jobParameter = "测试参数",

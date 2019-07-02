@@ -13,7 +13,5 @@ public interface ReportService {
     //地包进销存明细报表
     public ResultVO<Page<ReportDeSaleDaoResq>> getReportDeSaleList(ReportDeSaleDaoReq req);
 
-    public ResultVO<List<ProductListAllResp>> listProductAll(String brandId);
-
 	public ResultVO<List<ReportDeSaleDaoResq>> reportDeSaleExport(ReportDeSaleDaoReq req);
 }

@@ -21,10 +21,7 @@ public class ReportManager {
 		Page<ReportDeSaleDaoResq> pageReport =reportMapper.ListReportDeSale(page,req);
 	        return pageReport;
 	}
-	public List<ProductListAllResp> listProductAll(String brandId) {
-	List<ProductListAllResp> pageReport =reportMapper.listProductAll(brandId);
-	        return pageReport;
-	}
+
 	public List<ReportDeSaleDaoResq> reportDeSaleExport(ReportDeSaleDaoReq req) {
 		List<ReportDeSaleDaoResq> pageReport =reportMapper.reportDeSaleExport(req);
 	        return pageReport;

@@ -30,6 +30,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -150,10 +151,15 @@ public class UserServiceImpl implements UserService {
             }
         }*/
         //超过九十天强制修改密码
+        if(user.getLastLoginTime() == null)  user.setLastLoginTime(new Date());
+        if(user.getCurLoginTime() == null)  user.setCurLoginTime(new Date());
         int intervalDate = DateUtils.differentDays(user.getLastLoginTime(),user.getCurLoginTime());
         if(intervalDate >= 90 ){
             resp.setFailCode(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getCode());
             resp.setErrorMessage(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getMsg());
+            UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+            resp.setUserDTO(userDTO);
             return resp;
         }
         //操作成功后的逻辑，修改当前登录时间，和上次登录时间 ，登录次数1+  将 failLoginCnt 清零
@@ -169,7 +175,7 @@ public class UserServiceImpl implements UserService {
             updateUser.setCurLoginTime(new Date());
             userManager.updateUser(updateUser);
         }*/
-        //先更新user表的登入时间在删除缓存
+        //先更新user表的登入时间在更新缓存
         User updateUser = new User();
         updateUser.setUserId(user.getUserId());
         updateUser.setSuccessLoginCnt(successCnt + 1);

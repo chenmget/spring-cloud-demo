@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.goods2b.dto.req.ProductListReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.req.LSSAddControlReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantRulesDeleteReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantRulesSaveReq;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import com.iwhalecloud.retail.partner.manager.MerchantRulesManager;
@@ -45,45 +46,15 @@ public class NewParMerchAddProdServiceImpl implements NewParMerchAddProdService 
 
     /**
      * 编辑选择零售商时设置默认赋权：a、所有机型经营权限； b、所有地市和所有机型的调拨权限
-     * @param req
-     * @return
-     */
-    @Override
-	@Transactional
-	public ResultVO<Integer> addProd(LSSAddControlReq req) {
-		log.info("NewParMerchAddProdServiceImpl.addProd(), 入参LSSAddControlReq={} ", req);
-        int resultInt = 0;
-
-        if (!CollectionUtils.isEmpty(req.getTargetIdList())) {
-            // 批量插入
-            List<MerchantRules> merchantRulesList = Lists.newArrayList();
-            for (String targetId : req.getTargetIdList()) {
-                MerchantRules merchantRules = new MerchantRules();
-                BeanUtils.copyProperties(req, merchantRules);
-                merchantRules.setTargetId(targetId);
-                merchantRulesList.add(merchantRules);
-            }
-            if (merchantRulesManager.saveBatch(merchantRulesList)) {
-                // 保存成功
-                resultInt = 1;
-            }
-        }
-        log.info("NewParMerchAddProdServiceImpl.addProd(), 出参resultInt={} ", resultInt);
-        if (resultInt <= 0) {
-            return ResultVO.error("新增的零售商赋权失败");
-        }
-        return ResultVO.success(resultInt);
-	}
-
-
-    /**
-     * 编辑选择零售商时设置默认赋权：a、所有机型经营权限； b、所有地市和所有机型的调拨权限
      * @param merchantId
      * @return
      */
     @Override
     public ResultVO<Integer> addRetailerDefaultRule(String merchantId) {
         log.info("NewParMerchAddProdServiceImpl.addMerchantDefaultRule(), 入参merchantId={} ", merchantId);
+
+        // 先清除权限
+        deleteRetailerDefaultRule(merchantId);
 
         // 所有有效的机型ID集合
         List<String> productIdList = getProductIdList();
@@ -100,14 +71,39 @@ public class NewParMerchAddProdServiceImpl implements NewParMerchAddProdService 
         if (!addTransferModeRules(merchantId, productIdList)) {
             return ResultVO.error("新增的零售商 所有机型的调拨权限 赋权失败");
         }
-
-        if (!addTransferModeRules(merchantId, lanIdList)) {
+        if (!addTransferRegionRules(merchantId, lanIdList)) {
             return ResultVO.error("新增的零售商 所有地市的调拨权限 赋权失败");
         }
 
         log.info("NewParMerchAddProdServiceImpl.addMerchantDefaultRule(), 零售商时设置默认赋权：a、所有机型经营权限； b、所有地市和所有机型的调拨权限  成功 ");
         return ResultVO.success(1);
 
+    }
+
+    /**
+     * 添加权限之前  清除需要清除的权限
+     * 清除商家的 默认权权限：a、所有机型经营权限； b、所有地市和所有机型的调拨权限
+     * @param merchantId
+     */
+    private void deleteRetailerDefaultRule(String merchantId) {
+        log.info("NewParMerchAddProdServiceImpl.deleteRetailerDefaultRule(), 清除商家：{} 的默认权权限 ", merchantId);
+
+        MerchantRulesDeleteReq merchantRulesDeleteReq = new MerchantRulesDeleteReq();
+        merchantRulesDeleteReq.setMerchantId(merchantId);
+        // 经营权限--机型权限
+        merchantRulesDeleteReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType());
+        merchantRulesDeleteReq.setTargetType(PartnerConst.MerchantBusinessTargetTypeEnum.MODEL.getType());
+        merchantRulesManager.deleteMerchantRules(merchantRulesDeleteReq);
+
+        // 调拨权限--机型权限
+        merchantRulesDeleteReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType());
+        merchantRulesDeleteReq.setTargetType(PartnerConst.MerchantTransferTargetTypeEnum.MODEL.getType());
+        merchantRulesManager.deleteMerchantRules(merchantRulesDeleteReq);
+
+        // 调拨权限--区域权限
+        merchantRulesDeleteReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.TRANSFER.getType());
+        merchantRulesDeleteReq.setTargetType(PartnerConst.MerchantTransferTargetTypeEnum.REGION.getType());
+        merchantRulesManager.deleteMerchantRules(merchantRulesDeleteReq);
     }
 
     /**

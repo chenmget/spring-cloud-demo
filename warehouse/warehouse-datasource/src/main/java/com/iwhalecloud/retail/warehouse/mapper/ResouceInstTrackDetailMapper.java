@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackDetailGetR
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp;
 import com.iwhalecloud.retail.warehouse.entity.ResouceInstTrackDetail;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -22,4 +23,11 @@ public interface ResouceInstTrackDetailMapper extends BaseMapper<ResouceInstTrac
      * @return
      */
     List<ResourceInstTrackDetailListResp> getResourceInstTrackDetailByNbr(ResourceInstsTrackDetailGetReq req);
+
+    /**
+     * 通过串码查轨厂商仓库ID（第一条明细数据是厂商录入串码）
+     * @param mktResInstNbr
+     * @return
+     */
+    String getMerchantStoreId(@Param("mktResInstNbr") String mktResInstNbr);
 }

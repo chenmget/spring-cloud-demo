@@ -104,6 +104,12 @@ public class ResouceUploadTemp implements Serializable {
 	@ApiModelProperty(value = "备注")
 	private String remark;
 
+	/**
+	 * 产品ID
+	 */
+	@ApiModelProperty(value = "产品ID")
+	private String mktResId;
+
 
   	//属性 end
 	

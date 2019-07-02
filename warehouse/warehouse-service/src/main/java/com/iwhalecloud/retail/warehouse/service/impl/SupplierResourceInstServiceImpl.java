@@ -31,7 +31,7 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceRequestResp;
 import com.iwhalecloud.retail.warehouse.manager.*;
 import com.iwhalecloud.retail.warehouse.runable.QueryResourceInstRunableTask;
-import com.iwhalecloud.retail.warehouse.runable.RunableTask;
+import com.iwhalecloud.retail.warehouse.runable.SupplierRunableTask;
 import com.iwhalecloud.retail.warehouse.service.*;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
@@ -118,7 +118,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     private ResourceInstCheckService resourceInstCheckService;
 
     @Autowired
-    private RunableTask runableTask;
+    private SupplierRunableTask runableTask;
 
     @Autowired
     private ResourceUploadTempManager resourceUploadTempManager;
@@ -128,6 +128,9 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Autowired
     private ResourceBatchRecService resourceBatchRecService;
+
+    @Autowired
+    private ResouceInstTrackDetailManager resouceInstTrackDetailManager;
 
 
     @Override
@@ -179,7 +182,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         resourceInstUpdateReq.setDestStoreId(destStoreId);
         resourceInstUpdateReq.setMktResInstNbrs(req.getMktResInstNbrs());
         resourceInstUpdateReq.setMktResStoreId(mktResStoreId);
-        resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());
+        resourceInstUpdateReq.setEventType(ResourceConst.EVENTTYPE.PUT_STORAGE.getCode());
         resourceInstUpdateReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         resourceInstUpdateReq.setCheckStatusCd(Lists.newArrayList(
                 ResourceConst.STATUSCD.AUDITING.getCode(),
@@ -794,7 +797,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     public ResultVO listResourceUploadTemp(ResourceUploadTempListPageReq req) {
         // 多线程没跑完，返回空
         if (runableTask.validForSupplierHasDone()) {
-            return ResultVO.success(resourceUploadTempManager.listResourceUploadTemp(req));
+            return ResultVO.success(runableTask.exceutorListResourceUploadTemp(req));
         } else{
             return ResultVO.success();
         }
@@ -845,7 +848,6 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (!sourceMerchantResultVO.isSuccess() || null == sourceMerchantResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
-        MerchantDTO sourceMerchantDTO = sourceMerchantResultVO.getResultData();
         ResourceInstAddResp resourceInstAddResp = new ResourceInstAddResp();
         ResourceInstValidReq resourceInstValidReq = new ResourceInstValidReq();
         BeanUtils.copyProperties(req, resourceInstValidReq);
@@ -917,5 +919,48 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
     @Override
     public ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req) {
         return resourceInstManager.getMktResInstNbrForCheck(req);
+    }
+
+
+    @Override
+    public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
+        log.info("AdminResourceInstServiceImpl.resetResourceInst req={}", JSON.toJSONString(req));
+        ResourceInstsGetByIdListAndStoreIdReq queryReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        queryReq.setMktResInstIdList(req.getMktResInstIdList());
+        queryReq.setMktResStoreId(req.getDestStoreId());
+        List<ResourceInstDTO> instListResps = resourceInstManager.selectByIds(queryReq);
+        log.info("AdminResourceInstServiceImpl.resetResourceInst resourceInstManager.selectByIds req={}", JSON.toJSONString(req), JSON.toJSONString(instListResps));
+        if (CollectionUtils.isEmpty(instListResps)) {
+            return ResultVO.error(constant.getNoResInst());
+        }
+        for (ResourceInstDTO resp : instListResps) {
+            if (StringUtils.isNotEmpty(resp.getOrderId())) {
+                return ResultVO.error(resp.getMktResInstNbr()+constant.getTradeNbrCanNotReset());
+            }
+        }
+
+        String mktResStoreId = resouceInstTrackDetailManager.getMerchantStoreId(instListResps.get(0).getMktResInstNbr());
+        log.info("AdminResourceInstServiceImpl.resetResourceInst resouceInstTrackDetailManager.getMerchantStoreId req={}", instListResps.get(0).getMktResInstNbr(), mktResStoreId);
+        if (StringUtils.isEmpty(mktResStoreId)) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+
+        req.setMktResStoreId(mktResStoreId);
+        ResultVO resultVO = resourceInstService.updateResourceInstByIds(req);
+        if (!resultVO.isSuccess()) {
+            return resultVO;
+        }
+        // 更新厂家对应的串码
+        AdminResourceInstDelReq delReq = new AdminResourceInstDelReq();
+        delReq.setUpdateStaff(req.getUpdateStaff());
+        delReq.setMktResInstIdList(req.getMktResInstIdList());
+        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        delReq.setEventType(ResourceConst.EVENTTYPE.NO_RECORD.getCode());
+        delReq.setMktResStoreId(req.getDestStoreId());
+        delReq.setDestStoreId(mktResStoreId);
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode());
+        delReq.setCheckStatusCd(checkStatusCd);
+
+        return resourceInstService.updateResourceInstByIds(delReq);
     }
 }

@@ -167,4 +167,11 @@ public interface SupplierResourceInstService {
 
 
     public ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req);
+
+    /**
+     * 供应商串码退库
+     * @param req
+     * @return
+     */
+    ResultVO resetResourceInst(AdminResourceInstDelReq req);
 }

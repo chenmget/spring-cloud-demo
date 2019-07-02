@@ -13,8 +13,6 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
-import com.iwhalecloud.retail.partner.service.MerchantService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
@@ -42,6 +40,7 @@ import com.iwhalecloud.retail.workflow.service.RouteService;
 import com.iwhalecloud.retail.workflow.service.TaskItemService;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -59,9 +58,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     private ResourceInstService resourceInstService;
 
     @Reference
-    private MerchantService merchantService;
-
-    @Reference
     private SupplierResourceInstService supplierResourceInstService;
 
     @Reference
@@ -69,9 +65,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Autowired
     private Constant constant;
-    
-    @Autowired
-    private CallService callService;
     
     @Autowired
     private ResourceInstManager resourceInstManager;
@@ -89,9 +82,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     private ResourceUploadTempManager resourceUploadTempManager;
 
     @Autowired
-    private ResourceBatchRecService resourceBatchRecService;
-
-    @Autowired
     private ResourceReqDetailManager resourceReqDetailManager;
 
     @Autowired
@@ -99,9 +89,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Reference
     private ProductService productService;
-
-    @Autowired
-    private ResourceReqDetailManager detailManager;
 
     @Reference
     private TaskService taskService;
@@ -120,6 +107,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Value("${zop.url}")
     private String zopUrl;
+
+    @Autowired
+    private ResouceInstTrackDetailManager resouceInstTrackDetailManager;
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -675,4 +665,45 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         return null;
     }
 
+    @Override
+    public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
+        log.info("AdminResourceInstServiceImpl.resetResourceInst req={}", JSON.toJSONString(req));
+        ResourceInstsGetByIdListAndStoreIdReq queryReq = new ResourceInstsGetByIdListAndStoreIdReq();
+        queryReq.setMktResInstIdList(req.getMktResInstIdList());
+        queryReq.setMktResStoreId(req.getDestStoreId());
+        List<ResourceInstDTO> instListResps = resourceInstManager.selectByIds(queryReq);
+        log.info("AdminResourceInstServiceImpl.resetResourceInst resourceInstManager.selectByIds req={}", JSON.toJSONString(req), JSON.toJSONString(instListResps));
+        if (CollectionUtils.isEmpty(instListResps)) {
+            return ResultVO.error(constant.getNoResInst());
+        }
+        for (ResourceInstDTO resp : instListResps) {
+            if (StringUtils.isNotEmpty(resp.getOrderId())) {
+                return ResultVO.error(resp.getMktResInstNbr()+constant.getTradeNbrCanNotReset());
+            }
+        }
+
+        String mktResStoreId = resouceInstTrackDetailManager.getMerchantStoreId(instListResps.get(0).getMktResInstNbr());
+        log.info("AdminResourceInstServiceImpl.resetResourceInst resouceInstTrackDetailManager.getMerchantStoreId req={}", instListResps.get(0).getMktResInstNbr(), mktResStoreId);
+        if (StringUtils.isEmpty(mktResStoreId)) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+
+        req.setMktResStoreId(mktResStoreId);
+        ResultVO resultVO = resourceInstService.updateResourceInstByIds(req);
+        if (!resultVO.isSuccess()) {
+            return resultVO;
+        }
+        // 更新厂家对应的串码
+        AdminResourceInstDelReq delReq = new AdminResourceInstDelReq();
+        delReq.setUpdateStaff(req.getUpdateStaff());
+        delReq.setMktResInstIdList(req.getMktResInstIdList());
+        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        delReq.setEventType(ResourceConst.EVENTTYPE.NO_RECORD.getCode());
+        delReq.setMktResStoreId(req.getDestStoreId());
+        delReq.setDestStoreId(mktResStoreId);
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode());
+        delReq.setCheckStatusCd(checkStatusCd);
+
+        return resourceInstService.updateResourceInstByIds(delReq);
+    }
 }

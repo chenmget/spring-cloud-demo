@@ -264,7 +264,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         instPutInReq.setInsts(map);
         instPutInReq.setCreateStaff(req.getUpdateStaff());
         instPutInReq.setStorageType(ResourceConst.STORAGETYPE.ALLOCATION_AND_WAREHOUSING.getCode());
-        instPutInReq.setEventType(ResourceConst.EVENTTYPE.SALE_TO_ORDER.getCode());
+        instPutInReq.setEventType(ResourceConst.EVENTTYPE.ALLOT.getCode());
         instPutInReq.setDestStoreId(resourceRequestResp.getDestStoreId());
         instPutInReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
         ResultVO resultResourceInstPutIn = resourceInstService.resourceInstPutIn(instPutInReq);

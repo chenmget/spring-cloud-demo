@@ -131,7 +131,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResultVO<LoginResp> userLogin(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginReq req) throws Exception {
 
-        // 先密码还原成普通字符串
+            // 先密码还原成普通字符串
         req.setLoginPwd(decodePassword(req.getLoginPwd()));
 
         ResultVO resultVO = new ResultVO();
@@ -187,6 +187,7 @@ public class UserController extends BaseController {
             }
         }
             UserLoginResp resp = userService.login(req);
+            log.info("用户登入返回RESP {}",resp);
             UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
             // 登录日志记录
             if(StringUtils.isNotBlank(user.getUserId())){
@@ -208,6 +209,7 @@ public class UserController extends BaseController {
         // 失败 返回错误信息
         if ((!resp.getIsLoginSuccess() || resp.getUserDTO() == null) && resp.getFailCode() != SysUserLoginConst.NEED_RESETPASSWDCODE) {
             // return ResultVO.error(String.valueOf(resp.getFailCode()),resp.getErrorMessage());
+            log.info("账户名密码错误" );
             return failResultVO(resp.getErrorMessage());
         }
         request.getSession().invalidate();//清空session

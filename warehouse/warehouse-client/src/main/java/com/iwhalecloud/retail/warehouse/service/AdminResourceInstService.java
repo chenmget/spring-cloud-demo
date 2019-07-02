@@ -108,4 +108,11 @@ public interface AdminResourceInstService {
      * @return
      */
     ResultVO<Boolean> validBatchAuditNbr();
+
+    /**
+     * 供应商串码退库
+     * @param req
+     * @return
+     */
+    ResultVO resetResourceInst(AdminResourceInstDelReq req);
 }

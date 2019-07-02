@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author wenlong.zhong
@@ -26,7 +27,7 @@ public class SummarySaleBySupplierPageReq extends PageVO implements Serializable
     private String supplierName;
 
     @ApiModelProperty(value = "本地网地市")
-    private String lanId;
+    private List<String> lanIdList;
 
     @ApiModelProperty(value = "区县")
     private String regionId;

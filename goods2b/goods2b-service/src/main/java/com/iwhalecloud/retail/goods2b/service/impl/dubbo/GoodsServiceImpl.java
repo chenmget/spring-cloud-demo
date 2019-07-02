@@ -689,8 +689,8 @@ public class GoodsServiceImpl implements GoodsService {
         // 按照零售商商品展示规则过滤
         long start = System.currentTimeMillis();
 
-        // 新逻辑(如果用户是零售商，只能查到地包商品, 用户是地包商，只查省包商的商品 在controller层加这条件)：
-        // 去掉商品过滤逻辑 zhongwenlong2019.06.28
+        // 新逻辑(如果用户是零售商，能查到地包和省包的商品, 用户是地包商，只查省包商的商品 在controller层加这条件)：
+        // 去掉代码层面的 商品过滤逻辑（过滤逻辑放在 sql里面 啦） zhongwenlong2019.06.28
 //        filterGoods(req, goodsForPageQueryRespPage);
 
 

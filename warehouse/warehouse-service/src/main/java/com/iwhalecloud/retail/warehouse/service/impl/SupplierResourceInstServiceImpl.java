@@ -907,7 +907,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         batchAndEventAddReq.setCreateStaff(req.getCreateStaff());
         batchAndEventAddReq.setStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
-        log.info("MerchantResourceInstServiceImpl.addResourceInstForProvinceStore resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
+        log.info("SupplierResourceInstServiceImpl.addResourceInstForProvinceStore resourceBatchRecService.saveEventAndBatch req={},resp={}", JSON.toJSONString(batchAndEventAddReq));
         return ResultVO.success(constant.getAddNbrSucess(), resourceInstAddResp);
     }
 
@@ -924,12 +924,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
-        log.info("AdminResourceInstServiceImpl.resetResourceInst req={}", JSON.toJSONString(req));
+        log.info("SupplierResourceInstServiceImpl.resetResourceInst req={}", JSON.toJSONString(req));
         ResourceInstsGetByIdListAndStoreIdReq queryReq = new ResourceInstsGetByIdListAndStoreIdReq();
         queryReq.setMktResInstIdList(req.getMktResInstIdList());
         queryReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> instListResps = resourceInstManager.selectByIds(queryReq);
-        log.info("AdminResourceInstServiceImpl.resetResourceInst resourceInstManager.selectByIds req={}", JSON.toJSONString(req), JSON.toJSONString(instListResps));
+        log.info("SupplierResourceInstServiceImpl.resetResourceInst resourceInstManager.selectByIds req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(instListResps));
         if (CollectionUtils.isEmpty(instListResps)) {
             return ResultVO.error(constant.getNoResInst());
         }
@@ -940,7 +940,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         }
 
         String mktResStoreId = resouceInstTrackDetailManager.getMerchantStoreId(instListResps.get(0).getMktResInstNbr());
-        log.info("AdminResourceInstServiceImpl.resetResourceInst resouceInstTrackDetailManager.getMerchantStoreId req={}", instListResps.get(0).getMktResInstNbr(), mktResStoreId);
+        log.info("SupplierResourceInstServiceImpl.resetResourceInst resouceInstTrackDetailManager.getMerchantStoreId req={}", instListResps.get(0).getMktResInstNbr(), mktResStoreId);
         if (StringUtils.isEmpty(mktResStoreId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }

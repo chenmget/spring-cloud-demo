@@ -295,7 +295,7 @@ public class SupplierResourceInstB2BController {
         req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
         List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setCheckStatusCd(checkStatusCd);
-        log.info("AdminResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
+        log.info("SupplierResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
         return supplierResourceInstService.resetResourceInst(req);
     }
 }

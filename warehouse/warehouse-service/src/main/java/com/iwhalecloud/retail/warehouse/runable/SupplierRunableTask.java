@@ -102,7 +102,7 @@ public class SupplierRunableTask {
                         Date now = new Date();
                         List<ResouceUploadTemp> instList = new ArrayList<ResouceUploadTemp>(perNum);
                         ResultVO<List<ResouceInstTrackDTO>> instsTrackvO = resouceInstTrackService.listResourceInstsTrack(getReq);
-                        log.info("RunableTask.exceutorValidForSupplier resouceInstTrackService.listResourceInstsTrack req={}, newList={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(newList),  JSON.toJSONString(newList));
+                        log.info("RunableTask.exceutorValidForSupplier resouceInstTrackService.listResourceInstsTrack req={}, newListSize={}, respSize={}", JSON.toJSONString(getReq), newList.size(), instsTrackvO.getResultData().size());
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
                             String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
@@ -327,8 +327,9 @@ public class SupplierRunableTask {
         public Page<ResourceUploadTempListResp> call() throws Exception {
             Page<ResourceUploadTempListResp> page = resourceUploadTempManager.listResourceUploadTemp(req);
             List<ResourceUploadTempListResp> tempListResps = page.getRecords();
-            if (CollectionUtils.isNotEmpty(tempListResps)) {
-                Map<String, List<ResourceUploadTempListResp>> map = tempListResps.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
+            List<ResourceUploadTempListResp> hasMktResId = tempListResps.stream().filter(t -> StringUtils.isNotBlank(t.getMktResId())).collect(Collectors.toList());
+            if (CollectionUtils.isNotEmpty(hasMktResId)) {
+                Map<String, List<ResourceUploadTempListResp>> map = hasMktResId.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
                 for (Map.Entry<String, List<ResourceUploadTempListResp>> entry : map.entrySet()) {
                     List<ResourceUploadTempListResp> dtoList = entry.getValue();
                     String mktResId = entry.getKey();

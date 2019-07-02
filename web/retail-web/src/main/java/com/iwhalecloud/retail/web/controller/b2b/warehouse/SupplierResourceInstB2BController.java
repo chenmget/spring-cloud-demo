@@ -26,7 +26,6 @@ import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExportCSVUtils;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ResourceInstColum;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -281,23 +280,19 @@ public class SupplierResourceInstB2BController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PutMapping(value="resetResourceInst")
+    @PostMapping(value="resetResourceInst")
     @UserLoginToken
-    public ResultVO resetResourceInst(@RequestParam(value = "idList") @ApiParam(value = "id列表") List<String> idList,
-                                      @RequestParam(value = "mktResStoreId") @ApiParam(value = "仓库ID") String mktResStoreId) {
-        if(CollectionUtils.isEmpty(idList)) {
+    public ResultVO resetResourceInst(@RequestBody AdminResourceInstDelReq req) {
+        if(CollectionUtils.isEmpty(req.getMktResInstIdList())) {
             return ResultVO.error("id can not be null");
         }
-        if(StringUtils.isEmpty(mktResStoreId)) {
+        if(StringUtils.isEmpty(req.getDestStoreId())) {
             return ResultVO.error("mktResStoreId can not be null");
         }
         String userId = UserContext.getUserId();
-        AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         req.setUpdateStaff(userId);
-        req.setMktResInstIdList(idList);
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
-        req.setDestStoreId(mktResStoreId);
         List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setCheckStatusCd(checkStatusCd);
         log.info("AdminResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));

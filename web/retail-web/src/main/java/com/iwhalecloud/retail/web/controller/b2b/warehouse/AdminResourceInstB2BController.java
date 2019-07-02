@@ -165,21 +165,17 @@ public class AdminResourceInstB2BController {
     })
     @PutMapping(value="resetResourceInst")
     @UserLoginToken
-    public ResultVO resetResourceInst(@RequestParam(value = "idList") @ApiParam(value = "id列表") List<String> idList,
-                @RequestParam(value = "mktResStoreId") @ApiParam(value = "仓库ID") String mktResStoreId) {
-        if(CollectionUtils.isEmpty(idList)) {
+    public ResultVO resetResourceInst(@RequestBody AdminResourceInstDelReq req) {
+        if(CollectionUtils.isEmpty(req.getMktResInstIdList())) {
             return ResultVO.error("id can not be null");
         }
-        if(StringUtils.isEmpty(mktResStoreId)) {
+        if(StringUtils.isEmpty(req.getDestStoreId())) {
             return ResultVO.error("mktResStoreId can not be null");
         }
         String userId = UserContext.getUserId();
-        AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         req.setUpdateStaff(userId);
-        req.setMktResInstIdList(idList);
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
-        req.setDestStoreId(mktResStoreId);
         List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setCheckStatusCd(checkStatusCd);
         log.info("AdminResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));

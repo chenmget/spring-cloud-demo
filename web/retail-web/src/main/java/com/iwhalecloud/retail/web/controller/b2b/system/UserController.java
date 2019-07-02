@@ -206,11 +206,12 @@ public class UserController extends BaseController {
 //        }
 
         // 失败 返回错误信息
-        if (!resp.getIsLoginSuccess() || resp.getUserDTO() == null) {
-           // return ResultVO.error(String.valueOf(resp.getFailCode()),resp.getErrorMessage());
+        if ((!resp.getIsLoginSuccess() || resp.getUserDTO() == null) && resp.getFailCode() != SysUserLoginConst.NEED_RESETPASSWDCODE) {
+            // return ResultVO.error(String.valueOf(resp.getFailCode()),resp.getErrorMessage());
             LoginResp loginResp = new LoginResp();
             loginResp.setFailCode(resp.getFailCode());
             loginResp.setFailMsg(resp.getErrorMessage());
+            loginResp.setAdminUser(user);
             return successResultVO(loginResp);
         }
         request.getSession().invalidate();//清空session
@@ -233,6 +234,11 @@ public class UserController extends BaseController {
         loginResp.setLoginStatusCode(WebConst.loginStatusEnum.HAVE_LOGIN.getCode());
         loginResp.setLoginStatusMsg(WebConst.loginStatusEnum.HAVE_LOGIN.getValue());
         loginResp.setChangePwdCount(resp.getUserDTO().getChangePwdCount());
+        if(resp.getFailCode() == SysUserLoginConst.NEED_RESETPASSWDCODE){
+            loginResp.setFailCode(resp.getFailCode());
+            loginResp.setFailMsg(resp.getErrorMessage());
+            return successResultVO(loginResp);
+        }
         return successResultVO(loginResp);
     }
 

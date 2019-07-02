@@ -1,6 +1,5 @@
 package com.iwhalecloud.retail.report.service.impl;
 
-import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.report.dto.request.MktResInstEventReq;
 import com.iwhalecloud.retail.report.dto.request.RptSupplierOperatingDayReq;
@@ -8,43 +7,49 @@ import com.iwhalecloud.retail.report.dto.response.MktResEventruchu;
 import com.iwhalecloud.retail.report.dto.response.MktResInstResq;
 import com.iwhalecloud.retail.report.dto.response.ParMerchantResp;
 import com.iwhalecloud.retail.report.dto.response.PurchaseAmountResp;
+import com.iwhalecloud.retail.report.manager.ReportDataInfoManager;
 import com.iwhalecloud.retail.report.manager.RptSupplierOperatingDayManager;
-import com.iwhalecloud.retail.report.service.IReportDataInfoService;
 import com.iwhalecloud.retail.report.service.RptSupplierOperatingDayService;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 
 @Service
 public class DataForSuDayImpl implements RptSupplierOperatingDayService {
 	
-	@Reference
-	private IReportDataInfoService iReportDataInfoService;
-	
-	@Reference
-	private RptSupplierOperatingDayService rptSupplierOperatingDayService;
-	
 	@Autowired
 	private RptSupplierOperatingDayManager rptSupplierOperatingDayManager;
+	
+	@Autowired
+	private ReportDataInfoManager reportDataInfoManager;
 	
 	//获取供应商经营日报表数据
 	@Override
 	public void hqRptSupplierOperatingDayData() {
 		//第一步：获取供应商列表,循环处理每一个商家ID
-		List<ParMerchantResp> parMerchantlist = rptSupplierOperatingDayService.hqParMerchantInfo();
+		Date d=new Date(System.currentTimeMillis()-1000*60*60*24);
+		 SimpleDateFormat sp=new SimpleDateFormat("yyyy-MM-dd");
+		String itemDate=sp.format(d);//获取昨天日期
+		List<ParMerchantResp> parMerchantlist = rptSupplierOperatingDayManager.hqParMerchantInfo();
 		for(ParMerchantResp parMerchant : parMerchantlist) {
 			String supplierId = parMerchant.getMerchantId();//供应商id
 			String supplierCode = parMerchant.getMerchantCode();//供应商编码
 			String supplierName = parMerchant.getMerchantName();//供应商名称
 			String cityId = parMerchant.getLanId();//地市
 			String countyId = parMerchant.getCity();//区县 
-			String mktResStoreId = iReportDataInfoService.getMyMktResStoreId(supplierId);
+			String mktResStoreId = reportDataInfoManager.getMyMktResStoreId(supplierId);
+			if(mktResStoreId == null) {
+				continue ;
+			}
 			//通过仓库ID查库存
-			List<MktResInstResq> listMkt = rptSupplierOperatingDayService.hqMktResInstInfo(mktResStoreId);
+			List<MktResInstResq> listMkt = rptSupplierOperatingDayManager.hqMktResInstInfo(mktResStoreId);
 			for(MktResInstResq mktResInst : listMkt) {
 				//写表
 				RptSupplierOperatingDayReq req = new RptSupplierOperatingDayReq();
+				req.setItemDate(itemDate);
 				req.setSupplierId(supplierId);//供应商id
 				req.setSupplierCode(supplierCode);//供应商编码
 				req.setSupplierName(supplierName);//供应商名称
@@ -70,7 +75,7 @@ public class DataForSuDayImpl implements RptSupplierOperatingDayService {
 				req.setStockAmount(mktResInst.getStockAmount());//库存金额
 				req.setCreateDate(mktResInst.getCreateDate());//创建时间
 				req.setTypeId(mktResInst.getTypeId());
-				rptSupplierOperatingDayService.getDataForRptSupplierOperatingDay(req);
+				rptSupplierOperatingDayManager.getDataForRptSupplierOperatingDay(req);
 					
 				}
 				
@@ -78,7 +83,7 @@ public class DataForSuDayImpl implements RptSupplierOperatingDayService {
 			mktResInstEventReq.setMktResStoreId(mktResStoreId);
 			mktResInstEventReq.setMerchantId(supplierId);
 			//通过仓库ID查入库记录
-			List<MktResEventruchu> listRu = rptSupplierOperatingDayService.hqmktResEventInfoRu(mktResInstEventReq);
+			List<MktResEventruchu> listRu = rptSupplierOperatingDayManager.hqmktResEventInfoRu(mktResInstEventReq);
 			for(MktResEventruchu mktResEventruRu : listRu) {
 				int manualNum = 0;
 				int transInNum = 0;
@@ -89,20 +94,20 @@ public class DataForSuDayImpl implements RptSupplierOperatingDayService {
 				String mktResEventId = mktResEventruRu.getMktResEventId();
 				String orderId = mktResEventruRu.getObjId();
 				String productId = mktResEventruRu.getProductId();//获取（mkt_res_id）产品ID
-				String num = rptSupplierOperatingDayService.hqEventTypeNum(mktResEventId);
+				String num = rptSupplierOperatingDayManager.hqEventTypeNum(mktResEventId);
 				if("1001".equals(eventType)) {//手工录入量
 					manualNum += Integer.parseInt(num) ;
 				}else if ("1002".equals(eventType)) {//调入量
 					transInNum += Integer.parseInt(num) ;
 				}else if ("1003".equals(eventType)) {//交易进货量
 					purchaseNum += Integer.parseInt(num) ;
-					PurchaseAmountResp purchaseAmountResp = rptSupplierOperatingDayService.hqPurchaseAmount(orderId);//进货金额
+					PurchaseAmountResp purchaseAmountResp = rptSupplierOperatingDayManager.hqPurchaseAmount(orderId);//进货金额
 					purchaseAmount = purchaseAmountResp.getPurchaseAmount();//进货金额
 					goodsId = purchaseAmountResp.getGoodsId();//获取商品ID
 				}
 				//判断入库的机型库存是否有记录
 				mktResInstEventReq.setProductId(productId);
-				String itemId = rptSupplierOperatingDayService.hqIsHaveRecord(mktResInstEventReq);
+				String itemId = rptSupplierOperatingDayManager.hqIsHaveRecord(mktResInstEventReq);
 				RptSupplierOperatingDayReq updateRu = new RptSupplierOperatingDayReq();
 				updateRu.setItemId(itemId);
 				updateRu.setGoodsId(goodsId);
@@ -110,11 +115,11 @@ public class DataForSuDayImpl implements RptSupplierOperatingDayService {
 				updateRu.setTransInNum(Integer.toString(transInNum));
 				updateRu.setPurchaseNum(Integer.toString(purchaseNum));
 				updateRu.setPurchaseAmount(purchaseAmount);
-				rptSupplierOperatingDayService.updateRptSupplierRu(updateRu);
+				rptSupplierOperatingDayManager.updateRptSupplierRu(updateRu);
 			}
 			
 			//通过仓库ID查出库记录
-			List<MktResEventruchu> listChu = rptSupplierOperatingDayService.hqmktResEventInfoChu(mktResInstEventReq);
+			List<MktResEventruchu> listChu = rptSupplierOperatingDayManager.hqmktResEventInfoChu(mktResInstEventReq);
 			for(MktResEventruchu mktResEventruchu : listChu) {
 				int transOutNum = 0;
 				int returnNum = 0;
@@ -125,19 +130,19 @@ public class DataForSuDayImpl implements RptSupplierOperatingDayService {
 				String mktResEventId = mktResEventruchu.getMktResEventId();
 				String orderId = mktResEventruchu.getObjId();
 				String productId = mktResEventruchu.getProductId();//获取（mkt_res_id）产品ID,先看产品在表中有没有记录，
-				String num = rptSupplierOperatingDayService.hqEventTypeNum(mktResEventId);
+				String num = rptSupplierOperatingDayManager.hqEventTypeNum(mktResEventId);
 				if("1002".equals(eventType)) {//调出量
 					transOutNum += Integer.parseInt(num) ;
 				}else if ("1009".equals(eventType)) {//退库量
 					returnNum += Integer.parseInt(num) ;
 				}else if ("1003".equals(eventType)) {//订单销售
 					sellNum += Integer.parseInt(num) ;
-					PurchaseAmountResp purchaseAmountResp = rptSupplierOperatingDayService.hqPurchaseAmount(orderId);//销售金额
+					PurchaseAmountResp purchaseAmountResp = rptSupplierOperatingDayManager.hqPurchaseAmount(orderId);//销售金额
 					sellAmount = purchaseAmountResp.getPurchaseAmount();
 					goodsId = purchaseAmountResp.getGoodsId();
 				}
 				mktResInstEventReq.setProductId(productId);
-				String itemId = rptSupplierOperatingDayService.hqIsHaveRecord(mktResInstEventReq);
+				String itemId = rptSupplierOperatingDayManager.hqIsHaveRecord(mktResInstEventReq);
 				RptSupplierOperatingDayReq updateChu = new RptSupplierOperatingDayReq();
 				updateChu.setItemId(itemId);
 				updateChu.setTransOutNum(Integer.toString(transOutNum));
@@ -145,65 +150,10 @@ public class DataForSuDayImpl implements RptSupplierOperatingDayService {
 				updateChu.setSellNum(Integer.toString(sellNum));
 				updateChu.setSellAmount(sellAmount);
 				updateChu.setGoodsId(goodsId);
-				rptSupplierOperatingDayService.updateRptSupplierChu(updateChu);
+				rptSupplierOperatingDayManager.updateRptSupplierChu(updateChu);
 			}
 		}
 		
 	}
 	
-	//获取供应商列表
-	@Override
-	public List<ParMerchantResp> hqParMerchantInfo(){
-		return rptSupplierOperatingDayManager.hqParMerchantInfo();
-	}
-	
-	//获取当前库存
-	@Override
-	public List<MktResInstResq> hqMktResInstInfo(String mktResStoreId) {
-        return rptSupplierOperatingDayManager.hqMktResInstInfo(mktResStoreId);
-    }
-	
-	//获取入库记录信息
-	@Override
-	public List<MktResEventruchu> hqmktResEventInfoRu (MktResInstEventReq req) {
-		return rptSupplierOperatingDayManager.hqmktResEventInfoRu(req);
-	}
-	
-	//获取入库记录信息
-	@Override
-	public List<MktResEventruchu> hqmktResEventInfoChu (MktResInstEventReq req) {
-		return rptSupplierOperatingDayManager.hqmktResEventInfoChu(req);
-	}
-	
-	//获取变动事件的数量
-	@Override
-	public String hqEventTypeNum (String mktResEventId) {
-		return rptSupplierOperatingDayManager.hqEventTypeNum(mktResEventId);
-	}
-	
-	//获取进货金额
-	@Override
-	public PurchaseAmountResp hqPurchaseAmount(String orderId) {
-		return rptSupplierOperatingDayManager.hqPurchaseAmount(orderId);
-	}
-	//看入库的机型在库存里面有没有记录
-	@Override
-	public String hqIsHaveRecord(MktResInstEventReq req) {
-		return rptSupplierOperatingDayManager.hqIsHaveRecord(req);
-	}
-	//插表
-	@Override
-	public void getDataForRptSupplierOperatingDay(RptSupplierOperatingDayReq req) {
-		rptSupplierOperatingDayManager.getDataForRptSupplierOperatingDay(req);
-    }
-	//更新入库
-	@Override
-	public void updateRptSupplierRu(RptSupplierOperatingDayReq req) {
-		rptSupplierOperatingDayManager.updateRptSupplierRu(req);
-	}
-	//更新出库
-	@Override
-	public void updateRptSupplierChu(RptSupplierOperatingDayReq req) {
-		rptSupplierOperatingDayManager.updateRptSupplierChu(req);
-	}
 }

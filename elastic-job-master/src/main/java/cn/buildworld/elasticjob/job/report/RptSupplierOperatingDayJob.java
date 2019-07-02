@@ -11,7 +11,7 @@ import com.iwhalecloud.retail.report.service.RptSupplierOperatingDayService;
 import lombok.extern.slf4j.Slf4j;
 
 //每天凌晨两点执行定时任务0 0 2 * * ?	每天上午的10点15分执行  0 15 10 ? * *
-@ElasticSimpleJob(cron = "0 0 1 * * ?",
+@ElasticSimpleJob(cron = "0 0 2 * * ?",
       jobName = "firstJob",
       shardingTotalCount = 1,
       jobParameter = "测试参数",
@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RptSupplierOperatingDayJob implements SimpleJob  {
 	
-	@Reference
+	@Reference 
     RptSupplierOperatingDayService reportJob;
 	
 	@Override

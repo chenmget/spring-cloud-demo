@@ -529,6 +529,7 @@
         AND t1.MERCHANT_TYPE = #{merchantType}
         AND t1.GOODS_ID = t2.GOODS_ID
         AND t2.PRODUCT_ID = #{productId}
+        ORDER BY t2.DELIVERY_PRICE ASC
     </select>
 
     <select id="getAvgPrice" parameterType="java.lang.String" resultType="java.lang.String">

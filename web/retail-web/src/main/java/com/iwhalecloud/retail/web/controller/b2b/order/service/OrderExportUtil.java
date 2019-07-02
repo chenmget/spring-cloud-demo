@@ -150,14 +150,14 @@ public class OrderExportUtil {
     public static List<ExcelTitleName> getDelResourceInstTemp() {
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
-        orderMap.add(new ExcelTitleName("statusCd", "在库状态"));
+        orderMap.add(new ExcelTitleName("statusCdName", "在库状态"));
         orderMap.add(new ExcelTitleName("merchantName", "归属商家"));
-        orderMap.add(new ExcelTitleName("", "商家类型"));
+        orderMap.add(new ExcelTitleName("merchantTypeName", "商家类型"));
         orderMap.add(new ExcelTitleName("typeName", "产品类型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
         orderMap.add(new ExcelTitleName("productName", "产品名称"));
         orderMap.add(new ExcelTitleName("sn", "营销资源编码"));
-        orderMap.add(new ExcelTitleName("result", "导入结果"));
+        orderMap.add(new ExcelTitleName("resultName", "导入结果"));
         orderMap.add(new ExcelTitleName("resultDesc", "说明"));
         return orderMap;
     }

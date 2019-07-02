@@ -754,7 +754,7 @@ public class GoodsB2BController extends GoodsBaseController {
         return ResultVO.success(list);
     }
 
-    @ApiOperation(value = "根据商品ID和产品id省包推荐商品", notes = "根据商品ID和产品id省包推荐商品")
+    @ApiOperation(value = "根据商品ID和产品id查询推荐商品", notes = "根据商品ID和产品id查询推荐商品")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")

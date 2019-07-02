@@ -237,6 +237,7 @@ public class ProductBaseManager {
     }
 
     /**
+     * (估计已废弃）
      * 根据产品基本信息id查询省包平均供货价
      * @param productBaseId
      * @return

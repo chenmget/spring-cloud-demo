@@ -30,8 +30,9 @@ public class DataForSuDayImpl implements RptSupplierOperatingDayService {
 	@Override
 	public void hqRptSupplierOperatingDayData() {
 		//第一步：获取供应商列表,循环处理每一个商家ID
-		Date d=new Date(System.currentTimeMillis()-1000*60*60*24);
-		 SimpleDateFormat sp=new SimpleDateFormat("yyyy-MM-dd");
+//		Date d=new Date(System.currentTimeMillis()-1000*60*60*24);
+		Date d=new Date(System.currentTimeMillis());
+		SimpleDateFormat sp=new SimpleDateFormat("yyyy-MM-dd");
 		String itemDate=sp.format(d);//获取昨天日期
 		List<ParMerchantResp> parMerchantlist = rptSupplierOperatingDayManager.hqParMerchantInfo();
 		for(ParMerchantResp parMerchant : parMerchantlist) {

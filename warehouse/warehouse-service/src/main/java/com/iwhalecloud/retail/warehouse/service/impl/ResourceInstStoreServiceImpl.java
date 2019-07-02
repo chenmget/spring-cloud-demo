@@ -17,6 +17,7 @@ import com.iwhalecloud.retail.warehouse.entity.MktResItmsReturnRec;
 import com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec;
 import com.iwhalecloud.retail.warehouse.entity.ResouceEvent;
 import com.iwhalecloud.retail.warehouse.manager.ResourceChngEvtDetailManager;
+import com.iwhalecloud.retail.warehouse.manager.ResourceInstManager;
 import com.iwhalecloud.retail.warehouse.manager.ResourceInstStoreManager;
 import com.iwhalecloud.retail.warehouse.mapper.MktResItmsReturnRecMapper;
 import com.iwhalecloud.retail.warehouse.mapper.MktResItmsSyncRecMapper;
@@ -103,6 +104,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
     private ResourceInstStoreManager resourceInstStoreManager;
 
     @Autowired
+    private ResourceInstManager resourceInstManager;
+    @Autowired
     private ResourceInstMapper resourceInstMapper;
 
     @Reference
@@ -131,10 +134,8 @@ public class ResourceInstStoreServiceImpl implements ResourceInstStoreService {
 
     @Override
     public ResultVO<Integer> getQuantityByMerchantId(String merchantId) {
-        List<String> statusList = new ArrayList<>();
-        statusList.add(ResourceConst.StatusCdEnum.STATUS_CD_VALD.getCode());
-        Integer amount = resourceInstStoreManager.getQuantityByMerchantId(merchantId, statusList);
-        log.info("ResourceInstStoreServiceImpl.getQuantityByMerchantId esourceInstStoreManager.getQuantityByMerchantId req.merchantId={}, req.statusList={}, resp={}", merchantId, JSON.toJSONString(statusList), amount);
+        Integer amount = resourceInstManager.getNbrCountByMerchantId(merchantId, ResourceConst.STATUSCD.AVAILABLE.getCode());
+//        log.info("ResourceInstStoreServiceImpl.getQuantityByMerchantId esourceInstStoreManager.getQuantityByMerchantId req.merchantId={}, req.statusList={}, resp={}", merchantId, JSON.toJSONString(statusList), amount);
         return ResultVO.success(amount);
     }
 

@@ -255,4 +255,10 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
     public ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req) {
         return resourceInstMapper.getMktResInstNbrForCheck(req);
     }
+
+    public Integer getNbrCountByMerchantId(String merchantId, String statusCd){
+//        ResouceStoreDTO resouceStoreDTO = resouceStoreMapper.getStore(merchantId, ResourceConst.STORE_SUB_TYPE.STORE_TYPE_TERMINAL.getCode());
+        return resourceInstMapper.getNbrCountByMerchantId(merchantId, statusCd);
+    }
+
 }

@@ -155,4 +155,12 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst> {
 
     public ResourceInstCheckResp getMktResInstNbrForCheck(@Param("req") ResourceStoreIdResnbr req);
 
+
+    /**
+     * 查询商家的串码
+     * @param merchantId
+     * @param statusCd 串码状态 如果为空查出全部状态的串码
+     * @return
+     */
+    Integer getNbrCountByMerchantId( @Param("merchantId")String merchantId, @Param("statusCd")String statusCd);
 }

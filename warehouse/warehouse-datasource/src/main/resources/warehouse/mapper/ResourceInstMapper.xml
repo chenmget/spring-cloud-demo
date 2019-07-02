@@ -462,4 +462,16 @@
         ORDER BY m.create_date DESC LIMIT 1
     </select>
 
+    <select id="getNbrCountByMerchantId" resultType="java.lang.Integer">
+        select count(*) from mkt_res_inst
+        <where>
+            <if test="null!=merchantId and ''!=merchantId">
+                MKT_RES_STORE_ID in (select MKT_RES_STORE_ID from MKT_RES_STORE_OBJ_REL where OBJ_ID = #{merchantId})
+            </if>
+            <if test="null!=statusCd and ''!=statusCd">
+                and STATUS_CD = #{statusCd}
+            </if>
+        </where>
+    </select>
+
 </mapper>

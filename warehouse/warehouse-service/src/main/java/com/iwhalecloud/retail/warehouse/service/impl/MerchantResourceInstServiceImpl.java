@@ -4,7 +4,6 @@ import com.alibaba.dubbo.common.utils.CollectionUtils;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
@@ -96,6 +95,9 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
         if (CollectionUtils.isEmpty(req.getMktResStoreIds())) {
             List<String> mktResStoreIds = resouceInstTrackManager.getStoreIdByNbr(req);
             log.info("MerchantResourceInstServiceImpl.getResourceInstList resouceInstTrackManager.getStoreIdByNbr mktResInstNbr={}, mktResStoreId={}", JSON.toJSONString(req), mktResStoreIds);
+            if (CollectionUtils.isEmpty(mktResStoreIds)) {
+                return ResultVO.success(new Page<ResourceInstListPageResp>());
+            }
             req.setMktResStoreIds(mktResStoreIds);
         }
         return resourceInstService.getResourceInstList(req);

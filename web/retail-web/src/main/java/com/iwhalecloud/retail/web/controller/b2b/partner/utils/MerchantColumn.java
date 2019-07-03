@@ -30,12 +30,10 @@ public class MerchantColumn {
         orderMap.add(new ExcelTitleName("businessEntityName", "商家所属经营主体名称"));
         orderMap.add(new ExcelTitleName("businessEntityCode", "商家所属经营主体编码"));
         orderMap.add(new ExcelTitleName("customerCode", "客户编码"));
-        orderMap.add(new ExcelTitleName("lanId", "地市"));
-        orderMap.add(new ExcelTitleName("city", "市县"));
-        orderMap.add(new ExcelTitleName("lanName", "本地网"));
+        orderMap.add(new ExcelTitleName("lanName", "地市"));
         orderMap.add(new ExcelTitleName("cityName", "市县"));
-        orderMap.add(new ExcelTitleName("subBureau", "分局/县部门"));
-        orderMap.add(new ExcelTitleName("marketCenter", "营销中心/支局"));
+//        orderMap.add(new ExcelTitleName("subBureau", "分局/县部门"));
+//        orderMap.add(new ExcelTitleName("marketCenter", "营销中心/支局"));
         orderMap.add(new ExcelTitleName("shopCode", "销售点编码"));
         orderMap.add(new ExcelTitleName("shopName", "销售点名称"));
         orderMap.add(new ExcelTitleName("selfShopLevel", "自营厅级别"));
@@ -65,6 +63,8 @@ public class MerchantColumn {
         orderMap.add(new ExcelTitleName("busiLicenceExpDate","营业执照到期日期"));
         orderMap.add(new ExcelTitleName("registerBankAcct","银行账号"));
         orderMap.add(new ExcelTitleName("tagNames","标签组名"));
+        orderMap.add(new ExcelTitleName("orgNameWithLevel3","经营单元"));
+        orderMap.add(new ExcelTitleName("orgNameWithLevel4","营销中心/支局"));
         return orderMap;
     }
 

@@ -271,7 +271,15 @@ public class CgSearchApplyController extends BaseController {
 		//获取添加的产品信息
 		List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
 		List<AddFileReq> procureApplyReq3 = purApplyService.ckApplyData3(req);
-		
+		// 发货串码
+		List<String> deliverMktResInstNbrList = purApplyService.countDelivery(req.getApplyId());
+		if ( deliverMktResInstNbrList !=null && deliverMktResInstNbrList.size()>0 ) {
+			procureApplyReq1.setDeliveryTotal(String.valueOf(deliverMktResInstNbrList.size()));
+			procureApplyReq1.setDeliverMktResInstNbrList(deliverMktResInstNbrList);
+		}else {
+			procureApplyReq1.setDeliveryTotal("0");
+		}
+
 		//如果是采购单，则查看收货地址
 		List<PurApplyExtReq> procureApplyReq4 = purApplyService.ckApplyData4(req);
 		procureApplyReq1.setPurApplyExtReq(procureApplyReq4);

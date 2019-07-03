@@ -233,4 +233,15 @@ public class PurApplyManager {
 	public List<PurApplyItemResp> getDeliveryInfoByAppId(String applyId) {
 		return purApplyMapper.getDeliveryInfoByAppId(applyId);
 	}
+
+
+	/**
+	 * 查询已发货的串码总数
+	 * @param applyId
+	 * @return
+	 */
+	public List<String> countDelivery(String applyId) {
+		return purApplyMapper.countDelivery(applyId);
+	}
+
 }

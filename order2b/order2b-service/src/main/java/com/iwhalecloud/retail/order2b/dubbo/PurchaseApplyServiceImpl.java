@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 
-import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
@@ -31,7 +30,7 @@ import com.iwhalecloud.retail.warehouse.service.TradeResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,7 +82,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO delivery(PurApplyDeliveryReq req) {
+    public ResultVO deliveryEdit(PurApplyDeliveryReq req) {// 最开始的
         List<String> mktResInstNbr = Lists.newArrayList();
         mktResInstNbr = req.getMktResInstNbr(); //串码列表
         int total = mktResInstNbr.size();//串码总数
@@ -334,12 +333,14 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO deliveryEdit(PurApplyDeliveryReq req) {
+    public ResultVO delivery(PurApplyDeliveryReq req) {
         Map<String,Integer> listMap = new HashMap<String,Integer>();//申请清单
 
         Map<String,Integer> deliveryMap = new HashMap<String,Integer>();//已发货
 
         Map<String,Integer> deliveryingMap = new HashMap<String,Integer>();//待发货
+
+        // Map<String,List<String>> mktResInstNbrMap = new HashMap<String,List<String>>();//
         List<String> mktResInstNbr = Lists.newArrayList();
         mktResInstNbr = req.getMktResInstNbr(); //串码列表
         int total = mktResInstNbr.size();//串码总数
@@ -435,8 +436,9 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 //         List<String> currList = new ArrayList<String>();
         List<String> errorList = new ArrayList<String>();// 查集
 
-
+        log.info("5.getMktResInstNbrForCheckInTrack 参数" + JSON.toJSONString(resourceStoreIdResnbr));
         List<ResourceInstCheckResp> resourceInstList = supplierResourceInstService.getMktResInstNbrForCheckInTrack(resourceStoreIdResnbr);
+        log.info("6.supplierResourceInstService 结果 " + JSON.toJSONString(resourceInstList));
        if ( resourceInstList != null && resourceInstList.size()>0) {
 
             if ( mktResInstNbr.size() > resourceInstList.size()) {
@@ -722,7 +724,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO receiving(PurApplyReceivingReq req) {
+    public ResultVO receivingEdit(PurApplyReceivingReq req) {// 最开始的版本
         //串码入库
         //     List<PurApplyItemDetail> purApplyItemDetailList = purApplyItemDetailManager.getPurApplyItemDetail(req.getApplyId());
         List<PurApplyItemDetail> purApplyItemDetailList =   purApplyDeliveryManager.getDeliveryListByApplyID(req.getApplyId());
@@ -821,7 +823,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO receivingEdit(PurApplyReceivingReq req) {
+    public ResultVO receiving(PurApplyReceivingReq req) {
         //串码入库
         //     List<PurApplyItemDetail> purApplyItemDetailList = purApplyItemDetailManager.getPurApplyItemDetail(req.getApplyId());
         List<PurApplyItemDetail> purApplyItemDetailList =   purApplyDeliveryManager.getDeliveryListByApplyID(req.getApplyId());

@@ -219,20 +219,22 @@ public class ValidAndAddRunableTask {
                     }
                     newList.removeAll(mktResInstNbrList);
                 }
-                List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
-                if (CollectionUtils.isNotEmpty(detailExitstNbr)) {
-                    for (String mktResInstNbr : detailExitstNbr) {
-                        ResouceUploadTemp inst = new ResouceUploadTemp();
-                        inst.setMktResUploadBatch(batchId);
-                        inst.setMktResInstNbr(mktResInstNbr);
-                        inst.setResult(ResourceConst.CONSTANT_YES);
-                        inst.setUploadDate(now);
-                        inst.setCreateDate(now);
-                        inst.setResultDesc(constant.getReqDetailNbrExists());
-                        inst.setCreateStaff(req.getCreateStaff());
-                        instList.add(inst);
+                if (CollectionUtils.isNotEmpty(newList)) {
+                    List<String> detailExitstNbr = detailManager.getProcessingNbrList(newList);
+                    if (CollectionUtils.isNotEmpty(detailExitstNbr)) {
+                        for (String mktResInstNbr : detailExitstNbr) {
+                            ResouceUploadTemp inst = new ResouceUploadTemp();
+                            inst.setMktResUploadBatch(batchId);
+                            inst.setMktResInstNbr(mktResInstNbr);
+                            inst.setResult(ResourceConst.CONSTANT_YES);
+                            inst.setUploadDate(now);
+                            inst.setCreateDate(now);
+                            inst.setResultDesc(constant.getReqDetailNbrExists());
+                            inst.setCreateStaff(req.getCreateStaff());
+                            instList.add(inst);
+                        }
+                        newList.removeAll(detailExitstNbr);
                     }
-                    newList.removeAll(detailExitstNbr);
                 }
             }
 

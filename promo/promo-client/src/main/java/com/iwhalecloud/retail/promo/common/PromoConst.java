@@ -615,4 +615,39 @@ public class PromoConst {
         }
     }
 
+    /**
+     * 营销活动级别，记录活动发起的对象级别
+     */
+    public enum ActivityLevel {
+        LEVEL_1("1","省级活动"),
+        LEVEL_2("2","地市级活动"),
+        LEVEL_3("3","厂商活动"),
+        LEVEL_4("4","国省包商活动"),
+        LEVEL_5("5","地包商活动");
+
+        private String code;
+        private String name;
+
+        ActivityLevel(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+    }
+
 }

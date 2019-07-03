@@ -39,6 +39,7 @@ import com.iwhalecloud.retail.rights.dto.response.CouponApplyObjectRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponRuleAndTypeQueryResp;
 import com.iwhalecloud.retail.rights.service.*;
 import com.iwhalecloud.retail.system.common.SysUserMessageConst;
+import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.ConfigInfoDTO;
 import com.iwhalecloud.retail.system.dto.SysUserMessageDTO;
@@ -168,6 +169,11 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         log.info("MarketingActivityServiceImpl.addMarketingActivity req={}", JSON.toJSONString(req));
         MarketingActivity marketingActivity = new MarketingActivity();
         BeanUtils.copyProperties(req, marketingActivity);
+        //根据发起人(userFounder)类型，转换成活动级别activityLevel，并设置
+        if(req.getUserFounder()!=null){
+            String activityLevel = convertToActivityLevel(req.getUserFounder());
+            req.setActivityLevel(activityLevel);
+        }
         // 添加营销活动
         marketingActivityManager.addMarketingActivity(marketingActivity);
         String marketingActivityId = marketingActivity.getId();
@@ -239,6 +245,32 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         marketingActivityAddResp.setId(marketingActivityId);
         marketingActivityAddResp.setMarketingActivityModifyId(marketingActivityModifyId);
         return ResultVO.success(marketingActivityAddResp);
+    }
+
+    /**
+     * 根据发起人(userFounder)类型，转换成活动级别activityLevel
+     * @param userFounder
+     * @return
+     */
+    private String convertToActivityLevel(Integer userFounder){
+        String activityLevel = PromoConst.ActivityLevel.LEVEL_1.getCode();
+        switch (userFounder) {
+            case SystemConst.USER_FOUNDER_9:
+                activityLevel = PromoConst.ActivityLevel.LEVEL_2.getCode();
+                break;
+            case SystemConst.USER_FOUNDER_8:
+                activityLevel = PromoConst.ActivityLevel.LEVEL_3.getCode();
+                break;
+            case SystemConst.USER_FOUNDER_4:
+                activityLevel = PromoConst.ActivityLevel.LEVEL_4.getCode();
+                break;
+            case SystemConst.USER_FOUNDER_5:
+                activityLevel = PromoConst.ActivityLevel.LEVEL_5.getCode();
+                break;
+            default:
+                break;
+        }
+        return activityLevel;
     }
 
     @Override

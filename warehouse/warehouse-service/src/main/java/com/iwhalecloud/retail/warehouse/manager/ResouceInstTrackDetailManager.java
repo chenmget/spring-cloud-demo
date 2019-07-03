@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.warehouse.manager;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackDetailGetReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstTrackDetailListResp;
@@ -13,12 +14,12 @@ import java.util.List;
 
 
 @Component
-public class ResouceInstTrackDetailManager {
+public class ResouceInstTrackDetailManager extends ServiceImpl<ResouceInstTrackDetailMapper, ResouceInstTrackDetail> {
 
     @Resource
     private ResouceInstTrackDetailMapper resouceInstTrackDetailMapper;
 
-    public int saveResouceInstTrackDetail(ResouceInstTrackDetailDTO resouceInstTrackDTO){
+    public int saveResouceInstTrackDetail(ResouceInstTrackDetailDTO resouceInstTrackDTO) {
         ResouceInstTrackDetail resouceInstTrackDetail = new ResouceInstTrackDetail();
         BeanUtils.copyProperties(resouceInstTrackDTO, resouceInstTrackDetail);
         return resouceInstTrackDetailMapper.insert(resouceInstTrackDetail);
@@ -29,7 +30,7 @@ public class ResouceInstTrackDetailManager {
      * @param req
      * @return
      */
-    public List<ResourceInstTrackDetailListResp> getResourceInstTrackDetailByNbr(ResourceInstsTrackDetailGetReq req){
+    public List<ResourceInstTrackDetailListResp> getResourceInstTrackDetailByNbr(ResourceInstsTrackDetailGetReq req) {
         return resouceInstTrackDetailMapper.getResourceInstTrackDetailByNbr(req);
     }
 

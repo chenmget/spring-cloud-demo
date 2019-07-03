@@ -43,7 +43,7 @@ public interface AdminResourceInstService {
      * @param userId
      * @return
      */
-    ResultVO delResourceInstByBatchId(String batchId,String userId);
+    ResultVO delResourceInstByBatchId(String batchId, String userId);
 
     /**
      * 补录串码状态
@@ -53,6 +53,11 @@ public interface AdminResourceInstService {
      */
     ResultVO inventoryChange(InventoryChangeReq req);
 
+    /**
+     * 串码审核临时表数据
+     * @param req
+     * @return
+     */
     ResultVO<Page<ResourceReqDetailPageResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req);
 
     /**

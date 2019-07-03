@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -30,6 +31,7 @@ import com.iwhalecloud.retail.warehouse.service.TradeResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -442,6 +444,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 errorList = mktResInstNbr.stream().filter(item -> !currList.contains(item)).collect(toList());
 
             }
+       } else {
+           return ResultVO.error("该商家仓库找不到这些串码");
        }
        if (errorList!=null && errorList.size()>0) {
            return ResultVO.error("这些串码不可用"+ JSON.toJSONString(errorList));

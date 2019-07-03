@@ -1,9 +1,13 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.TestBase;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
@@ -66,4 +70,19 @@ public class PurchaseApplyServiceImplTest extends TestBase {
         //Integer i = purchaseApplyService.updatePurApplyItemDetailStatusCd(l);
         //System.out.println(i);
     }
+    @Test
+    public void deliveryEdit() {
+//        PurApplyDeliveryReq req = new PurApplyDeliveryReq();
+        String json = "{\"applyId\":\"5000\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"324234\",\"mktResInstNbr\":[\"2434234243\",\"2434324\"]}";
+        Gson gson = new Gson();
+        PurApplyDeliveryReq req = gson.fromJson(json, new TypeToken<PurApplyDeliveryReq>(){}.getType());
+        req.setRegionId("73101");
+        req.setCityId("731");
+        req.setUserId("10000655");
+        ResultVO resultVO = purchaseApplyService.deliveryEdit(req);
+
+        System.out.println( JSON.toJSONString(resultVO));
+    }
+
+
 }

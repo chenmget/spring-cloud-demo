@@ -274,4 +274,28 @@ public class SupplierResourceInstB2BController {
     public ResultVO<Page<ResourceUploadTempListResp>> listResourceUploadTemp(@RequestBody ResourceUploadTempListPageReq req) {
         return supplierResourceInstService.listResourceUploadTemp(req);
     }
+
+    @ApiOperation(value = "(供应商)串码退库", notes = "串码还原在库可用")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="resetResourceInst")
+    @UserLoginToken
+    public ResultVO resetResourceInst(@RequestBody AdminResourceInstDelReq req) {
+        if(CollectionUtils.isEmpty(req.getMktResInstIdList())) {
+            return ResultVO.error("id can not be null");
+        }
+        if(StringUtils.isEmpty(req.getDestStoreId())) {
+            return ResultVO.error("mktResStoreId can not be null");
+        }
+        String userId = UserContext.getUserId();
+        req.setUpdateStaff(userId);
+        req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
+        req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        req.setCheckStatusCd(checkStatusCd);
+        log.info("SupplierResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
+        return supplierResourceInstService.resetResourceInst(req);
+    }
 }

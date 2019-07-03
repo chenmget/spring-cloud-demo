@@ -62,17 +62,17 @@
                     and lower(t.SUPPLIER_NAME) like lower(CONCAT(CONCAT('%', #{req.supplierName }), '%'))
                 </if>
                 <if test="req.supplierCode != null and req.supplierCode != ''">
-                    and lower(t.SUPPLIER_CODE) like lower(CONCAT(CONCAT('%', #{req.supplierCode }), '%'))
+                    and lower(t.SUPPLIER_CODE) = lower( #{req.supplierCode } )
                 </if>
                 <if test="req.supplierId != null and req.supplierId != ''">
-                    and t.SUPPLIER_ID =  #{req.supplierId}
+                    and t.SUPPLIER_ID = #{req.supplierId}
                 </if>
-                <if test="req.lanId != null and req.lanId != ''">
-                    and t.CITY_ID =  #{req.lanId}
-                </if>
-                <if test="req.regionID != null and req.regionID != ''">
-                    and t.COUNTY_ID =  #{req.regionID}
-                </if>
+                <if test="req.lanIdList !=null and req.lanIdList.size()>0">
+			          and t.city_id in
+			          <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+			              #{item}
+			          </foreach>
+			    </if>
             group by t.supplier_id
         ) a
         left join (
@@ -107,10 +107,10 @@
                     and t.BRAND_ID =  #{req.brandId}
                 </if>
                 <if test="req.startDate != null and req.startDate != ''">
-                    and t.item_date &gt;= #{req.startDate}
+                	and str_to_date(t.item_date,'%Y-%m-%d') &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
                 </if>
                 <if test="req.endDate != null and req.endDate != ''">
-                    and t.item_date &lt;= #{req.endDate}
+                	and str_to_date(t.item_date,'%Y-%m-%d') &lt;= str_to_date(#{req.endDate}, '%Y-%m-%d')
                 </if>
             group by t.SUPPLIER_ID
         ) b on a.supplier_id = b.supplier_id
@@ -196,7 +196,7 @@
                     and d.suppliername like CONCAT(CONCAT('%',#{req.merchantName}),'%')
                 </if>
                 <if test="req.merchantCode!=null and req.merchantCode!=''">
-                    and d.suppliercode  like CONCAT(CONCAT('%',#{req.merchantCode}),'%')
+                    and d.suppliercode =#{req.merchantCode}
                 </if>
 
                 <if test="req.gear!=null and req.gear!=''">

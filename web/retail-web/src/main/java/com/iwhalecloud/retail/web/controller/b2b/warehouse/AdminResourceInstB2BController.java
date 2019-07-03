@@ -64,6 +64,9 @@ public class AdminResourceInstB2BController {
 
     @Autowired
     private DeliveryGoodsResNberExcel deliveryGoodsResNberExcel;
+
+    @Reference
+    private AdminResourceInstService adminResourceInstService;
     
     @ApiOperation(value = "管理员串码管理页面", notes = "条件分页查询")
     @ApiResponses({
@@ -156,31 +159,28 @@ public class AdminResourceInstB2BController {
         return resourceInstService.delResourceInstByBatchId(mktResUploadBatch,userId);
     }
 
-    @ApiOperation(value = "串码还原在库可用", notes = "串码还原在库可用")
+    @ApiOperation(value = "(供应商)串码退库", notes = "串码还原在库可用")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PutMapping(value="resetResourceInst")
     @UserLoginToken
-    public ResultVO resetResourceInst(@RequestParam(value = "idList") @ApiParam(value = "id列表") List<String> idList
-    , @RequestParam(value = "statusCd") @ApiParam(value = "状态") String statusCd) {
-        if(CollectionUtils.isEmpty(idList)) {
+    public ResultVO resetResourceInst(@RequestBody AdminResourceInstDelReq req) {
+        if(CollectionUtils.isEmpty(req.getMktResInstIdList())) {
             return ResultVO.error("id can not be null");
         }
-        if(!ResourceConst.STATUSCD.AVAILABLE.getCode().equals(statusCd) && !ResourceConst.STATUSCD.DELETED.getCode().equals(statusCd)) {
-            return ResultVO.error("statusCd not rigth");
+        if(StringUtils.isEmpty(req.getDestStoreId())) {
+            return ResultVO.error("mktResStoreId can not be null");
         }
         String userId = UserContext.getUserId();
-        AdminResourceInstDelReq req = new AdminResourceInstDelReq();
         req.setUpdateStaff(userId);
-        req.setMktResInstIdList(idList);
-        req.setStatusCd(statusCd);
-        req.setEventType(ResourceConst.EVENTTYPE.RECYCLE.getCode());
+        req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
+        req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
         List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setCheckStatusCd(checkStatusCd);
         log.info("AdminResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
-        return resourceInstService.updateResourceInstByIds(req);
+        return adminResourceInstService.resetResourceInst(req);
     }
 
     @ApiOperation(value = "上传串码文件", notes = "支持xlsx、xls格式")

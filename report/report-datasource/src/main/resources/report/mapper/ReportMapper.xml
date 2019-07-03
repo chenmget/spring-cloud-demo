@@ -15,103 +15,82 @@
   
     
   <sql id="reportDeSale_prefix" >
-    select * from (
-		select*from ( select d.*,d.sumStockDay/d.daySale sevenDayLv ,
-	CASE WHEN (d.sumStockDay/d.daySale)&gt;= 10 THEN 1
-	WHEN (d.sumStockDay/d.daySale) &gt;= 5 &amp;&amp; (d.sumStockDay/d.daySale)&lt;10 THEN 2
-	ELSE 3 END AS redStatus
-	from( select a.*,(select ROUND(sum(b.SELL_NUM)/7 ,2) from
-	rpt_supplier_operating_day b
-	where a.supplierName=b.supplier_name 
-	and a.supplierCode=b.SUPPLIER_CODE 
-	and a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID
-	and a.BRAND_ID=b.BRAND_ID 
-	and a.priceLevel=b.PRICE_LEVEL 
-	and b.CREATE_DATE&gt;=DATE_SUB(CURDATE(), INTERVAL 7 DAY) ) daySale
-	,(select sum(b.STOCK_NUM) 
-	from rpt_supplier_operating_day b
-	where a.supplierName=b.supplier_name 
-	and a.supplierCode=b.SUPPLIER_CODE 
-	and a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID
-	and a.BRAND_ID=b.BRAND_ID 
-	and a.priceLevel=b.PRICE_LEVEL and
-	to_days(b.CREATE_DATE) = to_days(now()) ) sumStockDay,
-	(select sum(b.STOCK_AMOUNT) from rpt_supplier_operating_day b
-	where a.supplierName=b.supplier_name 
-	and a.supplierCode=b.SUPPLIER_CODE 
-	and a.PRODUCT_BASE_ID=b.PRODUCT_BASE_ID
-	and a.BRAND_ID=b.BRAND_ID 
-	and a.priceLevel=b.PRICE_LEVEL 
-	and to_days(b.CREATE_DATE) = to_days(now()) ) sumStockAmoutDay
-	from (select
-	PRODUCT_BASE_ID,BRAND_ID, COUNTY_ID,city_id,
-	supplier_name supplierName ,SUPPLIER_CODE supplierCode,
-	PRODUCT_BASE_NAME productName,
-	BRAND_NAME brandName,PRICE_LEVEL priceLevel,
-	(sum(TRANS_IN_NUM)+sum(MANUAL_NUM)+sum(PURCHASE_NUM)) totalInnum ,
-	(sum(TRANS_OUT_NUM)+sum(RETURN_NUM)+sum(SELL_NUM)) totalOutNum,
-	sum(PURCHASE_NUM) sumPurchase,
-	sum(PURCHASE_AMOUNT) amoutPurcchase,sum(MANUAL_NUM) sumMANUAL,
-	sum(TRANS_IN_NUM) sumTransIn,sum(SELL_NUM) sumSellNum,
-	sum(SELL_AMOUNT) sumSellAmout,sum(TRANS_OUT_NUM)
-	sumTransOut,sum(RETURN_NUM) sumReturn,type_id typeId
-	from rpt_supplier_operating_day
+    SELECT temp2.*,
+		CASE WHEN (temp2.turnover_rate)&gt;= 10 THEN '充裕'
+		WHEN (temp2.turnover_rate) &gt;= 5 &amp;&amp; (temp2.turnover_rate)&lt;10 THEN '缺货'
+		ELSE '严重缺货' END AS stock_warning 
+	FROM (
+		SELECT temp1.*,
+			temp1.stock_num/temp1.week_avg_sell_num AS turnover_rate 
+		FROM (
+			SELECT a.supplier_id,a.product_base_id,
+			    a.supplier_name,
+			    a.supplier_code,
+			    a.product_name,
+			    a.product_base_name,
+			    b.type_name,
+			    a.brand_name,
+			    a.price_level,
+			    SUM(a.purchase_num+a.trans_in_num+a.manual_num) AS totalru,
+			    SUM(a.sell_num+a.trans_out_num) AS totalchu,
+			    a.stock_num,
+			    a.purchase_num,
+			    a.purchase_amount,
+			    a.manual_num,
+			    a.trans_in_num,
+			    a.sell_num,
+			    a.sell_amount,
+			    a.trans_out_num,
+			    a.return_num,
+			    SUM(c.sell_num)/7 AS week_avg_sell_num,
+			    a.stock_amount ,
+			    a.city_id ,
+			    a.type_id ,
+			    a.brand_id
+			FROM 
+			rpt_supplier_operating_day a
+				LEFT JOIN prod_type b ON a.type_id = b.type_id
+			LEFT JOIN rpt_supplier_operating_day c ON a.supplier_id=c.supplier_id AND a.product_base_id=c.product_base_id AND c.item_date &gt;=DATE_SUB(CURDATE(), INTERVAL 7 DAY) 
+			GROUP BY a.supplier_id,a.product_base_id
+			) temp1 
+		)temp2
 	where 1=1
-	<if test="req.createTimeStart!=null and req.createTimeStart!=''">
-		and item_date &gt;= str_to_date(#{req.createTimeStart}, '%Y-%m-%d')
+	<if test="req.itemDateStart!=null and req.itemDateStart!=''">
+		and str_to_date(temp2.item_date,'%Y-%m-%d')  &gt;= str_to_date(#{req.itemDateStart}, '%Y-%m-%d')
 	</if>
-	<if test="req.createTimeEnd!=null and req.createTimeEnd!=''">
-			and item_date &lt;= str_to_date(#{req.createTimeEnd}, '%Y-%m-%d')
+	<if test="req.itemDateEnd!=null and req.itemDateEnd!=''">
+		and str_to_date(temp2.item_date,'%Y-%m-%d') &lt;= str_to_date(#{req.itemDateEnd}, '%Y-%m-%d')
 	</if>
-	<if test="req.outTimeStart!=null and req.outTimeStart!=''">
-		and item_date &gt;= str_to_date(#{req.outTimeStart}, '%Y-%m-%d')
+	<if test="req.lanIdList !=null and req.lanIdList.size()>0">
+          and temp2.city_id in
+          <foreach collection="req.lanIdList" open="(" item="item" index="index" separator="," close=")">
+              #{item}
+          </foreach>
+    </if>
+    <if test="req.productName!=null and req.productName!=''">
+		and temp2.product_name like CONCAT(CONCAT('%',#{req.productName}),'%')
+	</if>      
+	<if test="req.typeId!=null and req.typeId!='' and req.typeId!='-1'">
+		and temp2.type_id = #{req.typeId}
 	</if>
-	<if test="req.outTimeEnd!=null and req.outTimeEnd!=''">
-			and item_date &lt;= str_to_date(#{req.outTimeEnd}, '%Y-%m-%d')
+	<if test="req.brandId!=null and req.brandId!=''">
+		and temp2.brand_id = #{req.brandId}
 	</if>
-	<if test="req.typeId!=null and req.typeId!=''">
-			and type_id = #{req.typeId}
+	<if test="req.productBaseName!=null and req.productBaseName!=''">
+		and temp2.product_base_name like CONCAT(CONCAT('%',#{req.productBaseName}),'%')
 	</if>
-	group by supplier_name,
-	SUPPLIER_CODE,PRODUCT_BASE_ID ,BRAND_ID,PRICE_LEVEL)
-	a) d where 1=1 
-	<if test="req.brand!=null and req.brand!=''">
-		and d.brand_id = #{req.brand}
+	<if test="req.supplierName!=null and req.supplierName!=''">
+		and temp2.supplier_name like CONCAT(CONCAT('%',#{req.supplierName}),'%')
 	</if>
-	<if test="req.productType!=null and req.productType!=''">
-		and d.product_base_id = #{req.productType}
+	<if test="req.supplierCode!=null and req.supplierCode!=''">
+		and temp2.supplier_code = #{req.supplierCode}
 	</if>
-		<if test="req.merchantName!=null and req.merchantName!=''">
-		and d.suppliername like CONCAT(CONCAT('%',#{req.merchantName}),'%')
+	<if test="req.priceLevel!=null and req.priceLevel!=''">
+		and temp2.price_level = #{req.priceLevel}
 	</if>
-	<if test="req.merchantCode!=null and req.merchantCode!=''">
-		and d.suppliercode  like CONCAT(CONCAT('%',#{req.merchantCode}),'%')
+	<if test="req.stockWarning!=null and req.stockWarning!=''">
+		and temp2.stock_warning = #{req.stockWarning}
 	</if>
-	
-	<if test="req.gear!=null and req.gear!=''">
-		and d.pricelevel=#{req.gear}
-	</if>
-		<if test="req.lanId!=null and req.lanId!=''">
-		and d.city_id  =#{req.lanId}
-	</if>
-	<if test="req.city!=null and req.city!=''">
-		and d.COUNTY_ID=#{req.city}
-	</if>
-	) x where 1=1
-	<if test="req.warningStatus!=null and req.warningStatus!=''">
- 	and	redStatus=#{req.warningStatus}
-	</if>
-	limit 60000) z
 	</sql>
-  
-     <select id="listProductAll" parameterType="String"
-            resultType="com.iwhalecloud.retail.report.dto.response.ProductListAllResp">
-	select product_base_id productId,product_name productName from prod_product_base   
-	where 1=1
-		<if test="brandId!=null and brandId!=''">
-		and brand_id = #{brandId}
-	</if>
-  </select>
-  
   
 </mapper>

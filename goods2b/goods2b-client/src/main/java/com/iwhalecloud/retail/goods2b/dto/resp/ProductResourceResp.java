@@ -116,4 +116,7 @@ public class ProductResourceResp implements Serializable {
 
     @ApiModelProperty(value = "内存规格")
     private String memorySpec;
+
+    @ApiModelProperty(value = "采购类型")
+    private String purchaseType;
 }

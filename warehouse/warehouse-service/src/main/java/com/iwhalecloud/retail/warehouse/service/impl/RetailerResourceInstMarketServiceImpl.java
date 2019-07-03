@@ -592,6 +592,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         String auditType = validAllocateNbr(sourceMerchantDTO, destMerchantDTO, mktResInstNbrs);
+        log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst validAllocateNbr req={}", JSON.toJSONString(auditType));
         String reqCode = resourceInstManager.getPrimaryKey();
         if (ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_0.getCode().equals(auditType)) {
             return ResultVO.error(constant.getCanNotAllocate());

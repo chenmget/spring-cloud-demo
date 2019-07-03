@@ -24,6 +24,6 @@ spring.datasource:
 #  url: jdbc:mysql://134.176.110.182:8903/CLOUDS?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
 #  username: yhj
 #  password: Yhj_20190118
-  url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  url: jdbc:mysql://10.45.46.67:8866/YHJDB_TEST?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
   username: szxtest
   password: szxtest.2019

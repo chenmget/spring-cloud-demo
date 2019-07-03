@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAn
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAndMacResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExportCSVUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -149,9 +150,9 @@ public class AdminResourceInstB2BController {
     })
     @DeleteMapping(value="delResourceInstByBatchId")
     @UserLoginToken
-    public ResultVO delResourceInstByBatchId(@RequestParam(value = "mktResUploadBatch") @ApiParam(value = "状态")  String mktResUploadBatch) {
+    public ResultVO delResourceInstByBatchId(@RequestParam(value="mktResUploadBatch") String mktResUploadBatch) {
         if(StringUtils.isEmpty(mktResUploadBatch)) {
-            return ResultVO.error("batchId can not be null");
+            return ResultVO.error("mktResUploadBatch can not be null");
         }
         String userId = UserContext.getUserId();
         log.info("AdminResourceInstB2BController.delResourceInstByBatchId mktResUploadBatch={}", mktResUploadBatch);
@@ -469,6 +470,8 @@ public class AdminResourceInstB2BController {
     @PostMapping(value="exportDelResourceInstTemp")
     @UserLoginToken
     public void exportDelResourceInstTemp(@RequestBody ResourceUploadTempListPageReq req, HttpServletResponse response) {
+        //导出有异常数据
+        req.setResult(ResourceConst.CONSTANT_YES);
         ResultVO<Page<ResourceInstListPageResp>> resultVO = resourceInstService.listDelResourceInstTemp(req);
         List<ResourceInstListPageResp> data = resultVO.getResultData().getRecords();
         log.info("AdminResourceInstB2BController.exportDelResourceInstTemp listDelResourceInstTemp req={}", JSON.toJSONString(req));
@@ -476,7 +479,7 @@ public class AdminResourceInstB2BController {
         Workbook workbook = new HSSFWorkbook();
         //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-                OrderExportUtil.getResReqDetail(), "导入删除串码失败列表");
+                OrderExportUtil.getDelResourceInstTemp(), "导入删除串码失败列表");
         deliveryGoodsResNberExcel.exportExcel("导入删除串码失败列表",workbook,response);
     }
 }

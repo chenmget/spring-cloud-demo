@@ -107,6 +107,8 @@ public class ResourceInstListPageResp implements java.io.Serializable {
 	@ApiModelProperty(value = "记录状态。LOVB=RES-0008")
   	private String statusCd;
 
+	@ApiModelProperty(value = "记录状态名称。LOVB=RES-0008")
+	private String statusCdName;
 	/**
   	 * 记录首次创建的员工标识。
   	 */
@@ -339,9 +341,21 @@ public class ResourceInstListPageResp implements java.io.Serializable {
 	private String result;
 
 	/**
+	 * 验证结果
+	 */
+	@ApiModelProperty(value = "验证结果")
+	private String resultName;
+
+	/**
 	 * 验证描述，记录出错的原因
 	 */
 	@ApiModelProperty(value = "验证描述，记录出错的原因")
 	private String resultDesc;
+
+	/**
+	 * 厂商类型
+	 */
+	@ApiModelProperty(value = "厂商类型名称")
+	private String merchantTypeName;
 
 }

@@ -13,6 +13,9 @@ import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
+import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
@@ -65,7 +68,11 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Autowired
     private Constant constant;
-    
+
+
+    @Autowired
+    private CallService callService;
+
     @Autowired
     private ResourceInstManager resourceInstManager;
 
@@ -110,6 +117,13 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Autowired
     private ResouceInstTrackDetailManager resouceInstTrackDetailManager;
+
+    @Autowired
+    private ResouceInstTrackService resouceInstTrackService;
+
+    @Autowired
+    private MerchantService merchantService;
+
 
     @Override
     public ResultVO<Page<ResourceInstListPageResp>> getResourceInstList(ResourceInstListPageReq req) {
@@ -164,15 +178,16 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         List<ResourceUploadTempListResp> resourceInstTempList = resourceUploadTempManager.listResourceUpload(resourceInstTempListReq);
         // 2.过滤出有效数据串码id信息
         List<String> mktResInstNbrs=resourceInstTempList.stream().map(ResourceUploadTempListResp::getMktResInstNbr).collect(Collectors.toList());
-        // 3.根据串码ids信息查询营销资源表，获取完整数据
-        ResourceInstsGetReq resourceInstsGetReq = new ResourceInstsGetReq();
-        resourceInstsGetReq.setMktResInstNbrs(mktResInstNbrs);
-        List<ResourceInstDTO> resourceInsts = resourceInstManager.getResourceInsts(resourceInstsGetReq);
+        // 3.根据串码ids信息查询营销资源轨迹表，获取完整数据
+        ResourceInstsTrackGetReq instsTrackGetReq = new ResourceInstsTrackGetReq();
+        instsTrackGetReq.setMktResInstNbrList(new CopyOnWriteArrayList(mktResInstNbrs));
+        List<ResouceInstTrackDTO> instTrackList = resouceInstTrackManager.listResourceInstsTrack(instsTrackGetReq);
         // 4.将处理好的完整数据，根据仓库StoreId进行分组
-        Map<String, List<ResourceInstDTO>> groups = resourceInsts.stream().collect(Collectors.groupingBy(t -> t.getMktResStoreId()));
+        Map<String, List<ResouceInstTrackDTO>> groups = instTrackList.stream().collect(Collectors.groupingBy(t -> t.getMktResStoreId()));
         // 5.根据分组结果，调用原有的批量删除方法()进行批量删除处理
         List<String> unDeleteNbrs = Lists.newArrayList();
-        for (Map.Entry<String,List<ResourceInstDTO>> group:groups.entrySet()){
+        for (Map.Entry<String,List<ResouceInstTrackDTO>> group:groups.entrySet()){
+            String storeId = group.getKey();
             AdminResourceInstDelReq resourceInstDelReq = new AdminResourceInstDelReq();
             resourceInstDelReq.setUpdateStaff(userId);
             resourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
@@ -185,26 +200,39 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             resourceInstDelReq.setCheckStatusCd(checkStatusCd);
 
             resourceInstDelReq.setMktResStoreId(group.getKey());
-            List<ResourceInstDTO> resourceInstDTOList = group.getValue();
-            List<String> resInstNbrs=resourceInstDTOList.stream().map(ResourceInstDTO::getMktResInstNbr).collect(Collectors.toList());
-            resourceInstDelReq.setMktResInstIdList(resInstNbrs);
+            List<ResouceInstTrackDTO> resourceInstDTOList = group.getValue();
+            List<String> resInstNbrs=resourceInstDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
+            //根据串码和仓库获取串码实例
+            ResourceInstsGetReq instsGetReq = new ResourceInstsGetReq();
+            instsGetReq.setMktResInstNbrs(resInstNbrs);
+            instsGetReq.setMktResStoreId(storeId);
+            List<ResourceInstDTO> instList = resourceInstManager.getResourceInsts(instsGetReq);
+            List<String> resInstId = instList.stream().map(ResourceInstDTO::getMktResInstId).collect(Collectors.toList());
+            resourceInstDelReq.setMktResInstIdList(resInstId);
+            resourceInstDelReq.setDestStoreId(storeId);
             ResultVO resultVO = updateResourceInstByIds(resourceInstDelReq);
             List<String> unavailbaleNbrs = (List<String>)resultVO.getResultData();
             unDeleteNbrs.addAll(unavailbaleNbrs);
+            //删除轨迹表数据
+            AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
+            adminResourceInstDelReq.setMktResStoreId(storeId);
+            adminResourceInstDelReq.setMktResInstIdList(resInstId);
+            adminResourceInstDelReq.setDestStoreId(storeId);
+            resouceInstTrackService.asynUpdateTrackForAddmin(adminResourceInstDelReq, ResultVO.success(unavailbaleNbrs));
         }
         return ResultVO.success(unDeleteNbrs);
     }
 
     @Override
-	public ResultVO inventoryChange(InventoryChangeReq req) {
-		log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));
-		
+    public ResultVO inventoryChange(InventoryChangeReq req) {
+        log.info("AdminResourceInstOpenServiceImpl.inventoryChange req={}", JSON.toJSONString(req));
+
 //		InventoryChangeResp inventoryChangeResp = new InventoryChangeResp();
-		String result = "";
-		List<ResourceInstDTO> resourceInstList = resourceInstManager.listInstsByNbr(req.getDeviceId());
-		if(resourceInstList.size()<=0 || null == resourceInstList){
-			return ResultVO.error("串码不在库中");
-		}
+        String result = "";
+        List<ResourceInstDTO> resourceInstList = resourceInstManager.listInstsByNbr(req.getDeviceId());
+        if(resourceInstList.size()<=0 || null == resourceInstList){
+            return ResultVO.error("串码不在库中");
+        }
         String b = "";
         Map request = new HashMap<>();
         request.put("deviceId",req.getDeviceId());
@@ -212,7 +240,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         request.put("code",req.getCode());
         request.put("params",req.getParams());
         String callUrl = "ord.operres.OrdInventoryChange";
-		try {
+        try {
             b = ZopClientUtil.zopService(callUrl, zopUrl, request, zopSecret);
             Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
             String body = String.valueOf(parseObject.get("Body"));
@@ -234,12 +262,12 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
 //			result = callService.postInvenChangeToWebService(req);
 //			inventoryChangeResp.setResult(result);
-		} catch (Exception e) {
-			log.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed req={}", JSON.toJSONString(req));
-			return ResultVO.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed");
-		}
+        } catch (Exception e) {
+            log.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed req={}", JSON.toJSONString(req));
+            return ResultVO.error("AdminResourceInstOpenServiceImpl.inventoryChange postWebServiceFailed");
+        }
 //		return ResultVO.success(result);
-	}
+    }
 
     @Override
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
@@ -574,18 +602,26 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         }
         String batchId = resourceInstService.getPrimaryKey();
         //获取串码集合
-        List<String> mktResInstNbrList = data.stream().map(t -> t.getMktResInstNbr()).collect(Collectors.toList());
-        //根据串码获取串码实例数据
+        List<String> mktResInstNbrList = data.stream().map(t -> t.getMktResInstNbr().trim()).distinct().collect(Collectors.toList());
+        //根据串码获取串码轨迹数据
         ResourceInstsTrackGetReq req = new ResourceInstsTrackGetReq();
         req.setMktResInstNbrList(new CopyOnWriteArrayList(mktResInstNbrList));
-        List<ResouceInstTrackDTO> instList = resouceInstTrackManager.listResourceInstsTrack(req);
+        List<ResouceInstTrackDTO> instTrackList = resouceInstTrackManager.listResourceInstsTrack(req);
         //临时表集合
         List<ResouceUploadTemp> tempList = new ArrayList<ResouceUploadTemp>(mktResInstNbrList.size());
         Date now = new Date();
+        //获取厂家id集合
+        List<String> merchantIdList = instTrackList.stream().map(t -> t.getMerchantId()).distinct().collect(Collectors.toList());
+        //获取厂家id集合
+        List<MerchantDTO> merchantDTOList = getMerchantByMerchantIdList(merchantIdList);
+
+        //厂家列表转换为Map<merchantId,merchantType>
+        Map<String,String> merchantMap = merchantDTOList.stream().collect(Collectors.toMap(MerchantDTO::getMerchantId, MerchantDTO::getMerchantType));
+
         //遍历判断串码是否符合厂商或供应商在库可用串码
         for(String mktResInstNbr : mktResInstNbrList){
-            Optional<ResouceInstTrackDTO> optional = instList.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
-            ResouceUploadTemp uploadTemp = getResourceTempByInstOptional(optional);
+            Optional<ResouceInstTrackDTO> optional = instTrackList.stream().filter(t->t.getMktResInstNbr().equals(mktResInstNbr)).findFirst();
+            ResouceUploadTemp uploadTemp = getResourceTempByInstOptional(optional,merchantMap);
             uploadTemp.setMktResInstNbr(mktResInstNbr);
             uploadTemp.setMktResUploadBatch(batchId);
             uploadTemp.setUploadDate(now);
@@ -604,7 +640,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         return ResultVO.success(resp);
     }
 
-    private ResouceUploadTemp getResourceTempByInstOptional(Optional<ResouceInstTrackDTO> optional) {
+    private ResouceUploadTemp getResourceTempByInstOptional(Optional<ResouceInstTrackDTO> optional , Map<String,String> merchantMap) {
         ResouceUploadTemp uploadTemp = new ResouceUploadTemp();
         //默认有异常
         uploadTemp.setResult(ResourceConst.CONSTANT_YES);
@@ -615,11 +651,14 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             //串码实例状态
             String statusCd = resouceInstTrackDTO.getStatusCd();
             //厂商类型
-            String sourceType = resouceInstTrackDTO.getSourceType();
+            String merchantType = "";
+            if(merchantMap != null && !merchantMap.isEmpty()){
+                merchantType = merchantMap.get(resouceInstTrackDTO.getMerchantId());
+            }
             if(!ResourceConst.STATUSCD.AVAILABLE.getCode().equals(statusCd)){
                 //串码非在库可用
                 resultDesc = constant.getPesInstInvalid();
-            }else if(!ResourceConst.SOURCE_TYPE.MERCHANT.getCode().equals(sourceType) && !ResourceConst.SOURCE_TYPE.SUPPLIER.getCode().equals(sourceType)){
+            }else if(!PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(merchantType) && !PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchantType) && !PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(merchantType)){
                 //串码厂商类型非法
                 resultDesc = "串码必须归属厂商或者供应商";
             }else{
@@ -640,12 +679,19 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         Page<ResourceUploadTempListResp> uploadTempPage = resourceUploadTempManager.listResourceUploadTemp(req);
         List<ResourceUploadTempListResp> uploadTempList = uploadTempPage.getRecords();
         List<String> mktResInstNbrList = uploadTempList.stream().map(t -> t.getMktResInstNbr()).collect(Collectors.toList());
-        //根据串码获取串码实例数据
-        ResourceInstsGetReq instsGetReq = new ResourceInstsGetReq();
-        instsGetReq.setMktResInstNbrs(mktResInstNbrList);
-        List<ResourceInstDTO> instDtoList = resourceInstManager.getResourceInsts(instsGetReq);
-        List<ResourceInstListPageResp> instRespList = new ArrayList<>(instDtoList.size());
-        for(ResourceInstDTO dto : instDtoList){
+        //根据串码获取串码轨迹数据
+        ResourceInstsTrackGetReq instsTrackGetReq = new ResourceInstsTrackGetReq();
+        instsTrackGetReq.setMktResInstNbrList(new CopyOnWriteArrayList(mktResInstNbrList));
+        List<ResouceInstTrackDTO> instTrackList = resouceInstTrackManager.listResourceInstsTrack(instsTrackGetReq);
+
+        //获取厂家id集合
+        List<String> merchantIdList = instTrackList.stream().map(t -> t.getMerchantId()).distinct().collect(Collectors.toList());
+        List<MerchantDTO> merchantDTOList = getMerchantByMerchantIdList(merchantIdList);
+        //厂家列表转换为Map<merchantId,merchantType>
+        Map<String,String> merchantMap = merchantDTOList.stream().collect(Collectors.toMap(MerchantDTO::getMerchantId, MerchantDTO::getMerchantType));
+
+        List<ResourceInstListPageResp> instRespList = new ArrayList<>(instTrackList.size());
+        for(ResouceInstTrackDTO dto : instTrackList){
             ResourceInstListPageResp resp = new ResourceInstListPageResp();
             BeanUtils.copyProperties(dto, resp);
             instRespList.add(resp);
@@ -653,17 +699,43 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         //组装产品信息
         resourceInstService.fillResourceInst(instRespList);
         //组装审核结果
+        List<ResourceInstListPageResp> resultList = new ArrayList<>(uploadTempList.size());
         for(ResourceUploadTempListResp tempListResp : uploadTempList){
             ResourceInstListPageResp resp = new ResourceInstListPageResp();
             BeanUtils.copyProperties(tempListResp, resp);
             for(ResourceInstListPageResp instResp : instRespList){
                 if(instResp.getMktResInstNbr().equals(tempListResp.getMktResInstNbr())){
                     BeanUtils.copyProperties(instResp, resp);
+                    //组装厂商信息
+                    if(merchantMap !=null && !merchantMap.isEmpty()){
+                        resp.setMerchantTypeName(PartnerConst.MerchantTypeEnum.getNameByType(merchantMap.get(instResp.getMerchantId())));
+                    }
+                    //组装在库状态
+                    resp.setStatusCdName(ResourceConst.STATUSCD.getName(instResp.getStatusCd()));
+                    resp.setResultName(ResourceConst.CONSTANT_YES.equals(instResp.getResult()) ? "失败" : "成功");
                 }
             }
+            resultList.add(resp);
         }
-        return null;
+
+        Page<ResourceInstListPageResp> instListPageRespPage = new Page<ResourceInstListPageResp>();
+        BeanUtils.copyProperties(uploadTempPage, instListPageRespPage);
+        instListPageRespPage.setRecords(resultList);
+        return ResultVO.success(instListPageRespPage);
     }
+
+    private List<MerchantDTO> getMerchantByMerchantIdList(List<String> merchantIdList) {
+        //获取厂家信息
+        MerchantListReq merchantListReq = new MerchantListReq();
+        merchantListReq.setMerchantIdList(merchantIdList);
+        ResultVO<List<MerchantDTO>> merchantResult = this.merchantService.listMerchant(merchantListReq);
+        List<MerchantDTO> merchantDTOList =new ArrayList<>();
+        if(merchantResult.isSuccess()){
+            merchantDTOList = merchantResult.getResultData();
+        }
+        return merchantDTOList;
+    }
+
 
     @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {

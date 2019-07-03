@@ -227,20 +227,24 @@ public class SupplierRunableTask {
                             // 按串码归属维度组装数据
                             Map<String, List<ResouceInstTrackDTO>> map = trackListSafe.stream().collect(Collectors.groupingBy(t -> t.getMktResStoreId()));
                             for (Map.Entry<String, List<ResouceInstTrackDTO>> entry : map.entrySet()) {
-                                List<ResouceInstTrackDTO> dtoList = entry.getValue();
-                                ResouceInstTrackDTO dto = dtoList.get(0);
-                                List<String> addNbrList = dtoList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
-                                req.setMktResInstNbrs(addNbrList);
-                                req.setSourcemerchantId(dtoList.get(0).getMerchantId());
-                                req.setCtCode(dto.getCtCode());
-                                req.setSnCode(dto.getSnCode());
-                                req.setMacCode(dto.getMacCode());
-                                req.setMktResId(dto.getMktResId());
-                                // 同一次如果供应商从不同厂商交易过来会有问题（暂时默认从同一个厂商过来）
-                                req.setDestStoreId(dto.getMktResStoreId());
-                                ResultVO resultVO = supplierResourceInstService.addResourceInst(req);
-                                if (!resultVO.isSuccess()) {
-                                    return false;
+                                // 按产品归属维度组装数据
+                                Map<String, List<ResouceInstTrackDTO>> sameMktResIdInst = trackListSafe.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
+                                for (Map.Entry<String, List<ResouceInstTrackDTO>> entry2 : sameMktResIdInst.entrySet()) {
+                                    List<ResouceInstTrackDTO> sameDtoList = entry2.getValue();
+                                    ResouceInstTrackDTO dto = sameDtoList.get(0);
+                                    List<String> addNbrList = sameDtoList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
+                                    req.setMktResInstNbrs(addNbrList);
+                                    req.setSourcemerchantId(dto.getMerchantId());
+                                    req.setCtCode(dto.getCtCode());
+                                    req.setSnCode(dto.getSnCode());
+                                    req.setMacCode(dto.getMacCode());
+                                    req.setMktResId(dto.getMktResId());
+                                    // 同一次如果供应商从不同厂商交易过来会有问题（暂时默认从同一个厂商过来）
+                                    req.setDestStoreId(dto.getMktResStoreId());
+                                    ResultVO resultVO = supplierResourceInstService.addResourceInst(req);
+                                    if (!resultVO.isSuccess()) {
+                                        return false;
+                                    }
                                 }
                             }
                         }

@@ -166,7 +166,9 @@ public interface SupplierResourceInstService {
     ResultVO<List<ResourceInstListPageResp>> queryForExport(ResourceInstListPageReq req);
 
 
-    public ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req);
+    ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req);
+
+    List<ResourceInstCheckResp>getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req);
 
     /**
      * 供应商串码退库

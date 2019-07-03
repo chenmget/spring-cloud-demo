@@ -680,6 +680,11 @@ public class ProductServiceImpl implements ProductService {
         return productManager.getProductIdListForApply(req);
     }
 
+    @Override
+    public List<ProductApplyInfoResp> getDeliveryInfo(List<String> productIds) {
+        return productManager.getDeliveryInfo(productIds);
+    }
+
     /**
      * 根据条件查询产品ID集合（单表查询）
      * @param req

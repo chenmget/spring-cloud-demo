@@ -324,6 +324,9 @@ public class ProductManager {
         return productMapper.getProductIdListForApply(req);
     }
 
+    public List<ProductApplyInfoResp> getDeliveryInfo(List<String> productIds) {
+        return productMapper.getDeliveryInfo(productIds);
+    }
 
 
 

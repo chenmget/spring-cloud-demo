@@ -22,6 +22,7 @@ import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAn
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ExcelToNbrAndMacResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleImportResp;
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
+import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExportCSVUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -65,7 +66,7 @@ public class AdminResourceInstB2BController {
 
     @Reference
     private AdminResourceInstService adminResourceInstService;
-    
+
     @ApiOperation(value = "管理员串码管理页面", notes = "条件分页查询")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
@@ -162,7 +163,7 @@ public class AdminResourceInstB2BController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="resetResourceInst")
+    @PutMapping(value="resetResourceInst")
     @UserLoginToken
     public ResultVO resetResourceInst(@RequestBody AdminResourceInstDelReq req) {
         if(CollectionUtils.isEmpty(req.getMktResInstIdList())) {
@@ -176,13 +177,7 @@ public class AdminResourceInstB2BController {
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
-        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
-                ResourceConst.STATUSCD.SALED.getCode(),
-                ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
-                ResourceConst.STATUSCD.RESTORAGEING.getCode(),
-                ResourceConst.STATUSCD.EXCHANGEING.getCode(),
-                ResourceConst.STATUSCD.RESTORAGED.getCode());
-        req.setCheckStatusCd(checkStatusCd);
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setCheckStatusCd(checkStatusCd);
         log.info("AdminResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
         return adminResourceInstService.resetResourceInst(req);
@@ -319,31 +314,30 @@ public class AdminResourceInstB2BController {
 
     @ApiOperation(value = "导出串码明细", notes = "导出串码数据")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value = "exportNbrDetail")
+    @PostMapping(value="exportNbrDetail")
     @UserLoginToken
     public void exportNbrDetail(@RequestBody ResourceReqDetailQueryReq req, HttpServletResponse response) {
         req.setUserId(UserContext.getUser().getUserId());
-        req.setSearchCount(false);
         ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceReqDetailService.listResourceRequestDetailPage(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
-        log.info("AdminResourceInstB2BController.exportNbrDetail resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data.size()));
+        log.info("AdminResourceInstB2BController.exportNbrDetail resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
         //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
                 OrderExportUtil.getResReqDetail(), "串码明细");
-        deliveryGoodsResNberExcel.exportExcel("导出串码明细", workbook, response);
+        deliveryGoodsResNberExcel.exportExcel("导出串码明细",workbook,response);
     }
 
     @ApiOperation(value = "导入审核的串码文件", notes = "支持xlsx、xls格式")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value = "/uploadNbrDetail", headers = "content-type=multipart/form-data", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadNbrDetail",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<String> uploadNbrDetail(@RequestParam("file") MultipartFile file) {
 
@@ -357,52 +351,41 @@ public class AdminResourceInstB2BController {
             is = file.getInputStream();
             List<ExcelResourceReqDetailDTO> data = ExcelToNbrUtils.getNbrDetailData(is);
             UserDTO userDTO = UserContext.getUser();
-            String userId = userDTO.getUserId();
-            return resourceInstService.uploadNbrDetail(data, userId);
-       }
-        catch (Exception e) {
-            log.error("excel解析失败", e);
+            String userId=userDTO.getUserId();
+            return resourceInstService.uploadNbrDetail(data,userId);
+       } catch (Exception e) {
+            log.error("excel解析失败",e);
             return ResultVO.error("excel解析失败");
-        }
-        finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
         }
 
     }
 
     @ApiOperation(value = "获取串码审核临时记录", notes = "查询操作")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @GetMapping(value = "listResourceUploadTemp")
+    @GetMapping(value="listResourceUploadTemp")
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceUploadTemp(ResourceUploadTempListPageReq req) {
         return resourceInstService.listResourceUploadTemp(req);
     }
 
     @ApiOperation(value = "查询串码审核临时记录的成功失败次数", notes = "查询操作")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @GetMapping(value = "countResourceUploadTemp")
+    @GetMapping(value="countResourceUploadTemp")
     public ResultVO<ResourceUploadTempCountResp> countResourceUploadTemp(ResourceUploadTempDelReq req) {
         return resourceInstService.countResourceUploadTemp(req);
     }
 
     @ApiOperation(value = "导出串码明细", notes = "导出串码数据")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value = "exportResourceUploadTemp")
+    @PostMapping(value="exportResourceUploadTemp")
     public void exportResourceUploadTemp(@RequestBody ResourceUploadTempListPageReq req, HttpServletResponse response) {
         ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceInstService.listResourceUploadTemp(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
@@ -411,15 +394,15 @@ public class AdminResourceInstB2BController {
         Workbook workbook = new HSSFWorkbook();
         //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data, OrderExportUtil.getResourceUploadTemp(), "串码");
-        deliveryGoodsResNberExcel.exportExcel("导入失败的串码", workbook, response);
+        deliveryGoodsResNberExcel.exportExcel("导入失败的串码",workbook,response);
     }
 
     @ApiOperation(value = "提交导入excel的审批", notes = "提交串码审核的excel")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value = "/submitNbrAudit", method = RequestMethod.POST)
+    @RequestMapping(value = "/submitNbrAudit",method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<String> submitNbrAudit(@RequestBody ResourceUploadTempListPageReq req) {
         req.setUpdateStaff(UserContext.getUserId());
@@ -428,10 +411,10 @@ public class AdminResourceInstB2BController {
 
     @ApiOperation(value = "批量审核串码", notes = "批量审核串码")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value = "/batchAuditNbr", method = RequestMethod.POST)
+    @RequestMapping(value = "/batchAuditNbr",method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<String> batchAuditNbr(@RequestBody ResourceInstCheckReq req) {
         req.setUpdateStaff(UserContext.getUserId());
@@ -439,22 +422,12 @@ public class AdminResourceInstB2BController {
         return resourceInstService.batchAuditNbr(req);
     }
 
-    @ApiOperation(value = "验证提交串码审核是否执行完毕", notes = "查询操作")
-    @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
-    })
-    @GetMapping(value = "validBatchAuditNbr")
-    public ResultVO<Boolean> validBatchAuditNbr() {
-        return resourceInstService.validBatchAuditNbr();
-    }
-
     @ApiOperation(value = "导入待删除的串码文件", notes = "支持xlsx、xls格式")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value = "/uploadDelResourceInst", headers = "content-type=multipart/form-data", method = RequestMethod.POST)
+    @RequestMapping(value = "/uploadDelResourceInst",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<ResourceUploadTempCountResp> uploadDelResourceInst(@RequestParam("file") MultipartFile file) {
 
@@ -463,36 +436,34 @@ public class AdminResourceInstB2BController {
         if (allowUploadSuffix.indexOf(suffix) <= -1) {
             return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
         }
-        try (InputStream is = file.getInputStream()) {
+        try(InputStream is = file.getInputStream()) {
             List<ExcelResourceReqDetailDTO> data = ExcelToNbrUtils.getNbrDetailData(is);
-            String userId = UserContext.getUser().getUserId();
-            return resourceInstService.uploadDelResourceInst(data, userId);
+            String userId=UserContext.getUser().getUserId();
+            return resourceInstService.uploadDelResourceInst(data,userId);
         } catch (Exception e) {
-            log.error("excel解析失败", e);
+            log.error("excel解析失败",e);
             return ResultVO.error("excel解析失败");
         }
     }
 
     @ApiOperation(value = "获取待删除的串码临时记录", notes = "查询操作")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @GetMapping(value = "listDelResourceInstTemp")
+    @GetMapping(value="listDelResourceInstTemp")
     public ResultVO<Page<ResourceInstListPageResp>> listDelResourceInstTemp(ResourceUploadTempListPageReq req) {
         return resourceInstService.listDelResourceInstTemp(req);
     }
 
     @ApiOperation(value = "导出待删除的串码临时记录", notes = "导出串码数据")
     @ApiResponses({
-            @ApiResponse(code = 400, message = "请求参数没填好"),
-            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value = "exportDelResourceInstTemp")
+    @PostMapping(value="exportDelResourceInstTemp")
     @UserLoginToken
     public void exportDelResourceInstTemp(@RequestBody ResourceUploadTempListPageReq req, HttpServletResponse response) {
-        //导出有异常数据
-        req.setResult(ResourceConst.CONSTANT_YES);
         ResultVO<Page<ResourceInstListPageResp>> resultVO = resourceInstService.listDelResourceInstTemp(req);
         List<ResourceInstListPageResp> data = resultVO.getResultData().getRecords();
         log.info("AdminResourceInstB2BController.exportDelResourceInstTemp listDelResourceInstTemp req={}", JSON.toJSONString(req));
@@ -500,7 +471,7 @@ public class AdminResourceInstB2BController {
         Workbook workbook = new HSSFWorkbook();
         //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
-                OrderExportUtil.getDelResourceInstTemp(), "导入删除串码失败列表");
-        deliveryGoodsResNberExcel.exportExcel("导入删除串码失败列表", workbook, response);
+                OrderExportUtil.getResReqDetail(), "导入删除串码失败列表");
+        deliveryGoodsResNberExcel.exportExcel("导入删除串码失败列表",workbook,response);
     }
 }

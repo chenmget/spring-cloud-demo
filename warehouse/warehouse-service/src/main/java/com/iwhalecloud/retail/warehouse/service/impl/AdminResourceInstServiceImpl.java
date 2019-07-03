@@ -61,9 +61,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     private ResourceInstService resourceInstService;
 
     @Reference
-    private MerchantService merchantService;
-
-    @Reference
     private SupplierResourceInstService supplierResourceInstService;
 
     @Reference
@@ -122,6 +119,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Autowired
     private ResouceInstTrackDetailManager resouceInstTrackDetailManager;
+
+    @Reference
+    private MerchantService merchantService;
 
 
     @Override

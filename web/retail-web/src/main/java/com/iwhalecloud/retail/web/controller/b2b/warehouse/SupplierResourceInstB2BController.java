@@ -293,6 +293,7 @@ public class SupplierResourceInstB2BController {
         req.setUpdateStaff(userId);
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
+        req.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
                 ResourceConst.STATUSCD.SALED.getCode(),
                 ResourceConst.STATUSCD.ALLOCATIONING.getCode(),

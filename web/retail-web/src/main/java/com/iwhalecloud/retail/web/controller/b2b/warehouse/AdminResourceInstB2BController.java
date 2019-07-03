@@ -24,7 +24,6 @@ import com.iwhalecloud.retail.web.controller.b2b.warehouse.response.ResInsExcleI
 import com.iwhalecloud.retail.web.controller.b2b.warehouse.utils.ExcelToNbrUtils;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
@@ -175,6 +174,7 @@ public class AdminResourceInstB2BController {
         String userId = UserContext.getUserId();
         req.setUpdateStaff(userId);
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
+        req.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
         List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
                 ResourceConst.STATUSCD.SALED.getCode(),

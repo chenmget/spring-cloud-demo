@@ -2,7 +2,7 @@ package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 
-import com.alibaba.dubbo.config.annotation.Service;
+
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -416,7 +417,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 String baseId =  productApplyInfoResp.getProductBaseId();
                 String memory = productApplyInfoResp.getMemory();
                 String AttrValue1 = productApplyInfoResp.getAttrValue1();
-                String purType = productApplyInfoResp.getPurType();
+                String purType = productApplyInfoResp.getPurchaseType();
                 if (deliveryMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType) ==null) {
                     deliveryMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,Integer.valueOf(productIdNum));
                 }else {
@@ -496,7 +497,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
            String baseId =  p.getProductBaseId();
            String memory = p.getMemory();
            String AttrValue1 = p.getAttrValue1();
-           String purType = p.getPurType();
+           String purType = p.getPurchaseType();
            if (deliveryingMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType) ==null) {
                deliveryingMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,Integer.valueOf(p.getNum()));
            }else {
@@ -526,8 +527,14 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         Integer deliveryFlag = 0; // 完全发货，修改申请单状态
         for (String key : listMap.keySet()) {
             Integer totalNum =  listMap.get(key);
-            Integer deliveryNum =  deliveryMap.get(key); // 已发货
-            Integer deliveryingNum =  deliveryMap.get(key); // 发货中
+            Integer deliveryNum =  0; // 已发货
+            if (deliveryMap.get(key) == null) {
+                deliveryNum =  deliveryMap.get(key);
+            }
+            Integer deliveryingNum = 0; // 发货中
+            if (deliveryingMap.get(key) == null) {
+                deliveryingNum =  deliveryingMap.get(key);
+            }
             if (totalNum < (deliveryNum+ deliveryingNum)) {
                 numFlag = 1;
                 break;

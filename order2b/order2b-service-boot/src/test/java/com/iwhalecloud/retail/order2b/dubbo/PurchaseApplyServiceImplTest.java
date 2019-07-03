@@ -74,13 +74,13 @@ public class PurchaseApplyServiceImplTest extends TestBase {
     public void deliveryEdit() {
 //        PurApplyDeliveryReq req = new PurApplyDeliveryReq();
 //        String json = "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"324234\",\"mktResInstNbr\":[\"1230600000103\",\"3378888453\"]}";
-        String json =  "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"2344234\",\"mktResInstNbr\":[\"1230600000103\",\"3378888453\"]}";
+        String json =  "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"2344234\",\"mktResInstNbr\":[\"201907031007\",\"201907031002\"]}";
         Gson gson = new Gson();
         PurApplyDeliveryReq req = gson.fromJson(json, new TypeToken<PurApplyDeliveryReq>(){}.getType());
         req.setRegionId("73101");
         req.setCityId("731");
         req.setUserId("10000655");
-        ResultVO resultVO = purchaseApplyService.deliveryEdit(req);
+        ResultVO resultVO = purchaseApplyService.delivery(req);
 
         System.out.println( JSON.toJSONString(resultVO));
     }

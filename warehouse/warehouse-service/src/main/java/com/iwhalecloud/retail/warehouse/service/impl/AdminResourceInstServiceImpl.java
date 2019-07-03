@@ -760,13 +760,14 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         if (StringUtils.isEmpty(mktResStoreId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
-        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(mktResStoreId);
-        if (merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
+        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(req.getDestStoreId());
+        log.info("AdminResourceInstServiceImpl.resetResourceInst resouceStoreService.getMerchantByStore req={}, resp={}",req.getDestStoreId(), JSON.toJSONString(merchantResultVO));
+        if (!merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
         String merchantType = merchantResultVO.getResultData().getMerchantType();
         if (!PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchantType) && !PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(merchantType)) {
-            return ResultVO.error(constant.getCannotGetMerchantMsg());
+            return ResultVO.error(constant.getNotSupplierCanNotReset());
         }
         req.setMktResStoreId(mktResStoreId);
         ResultVO resultVO = resourceInstService.updateResourceInstByIds(req);

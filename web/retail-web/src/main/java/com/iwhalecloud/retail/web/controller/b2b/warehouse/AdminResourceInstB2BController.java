@@ -154,7 +154,7 @@ public class AdminResourceInstB2BController {
         }
         String userId = UserContext.getUserId();
         log.info("AdminResourceInstB2BController.delResourceInstByBatchId mktResUploadBatch={}", mktResUploadBatch);
-        return resourceInstService.delResourceInstByBatchId(mktResUploadBatch,userId);
+        return resourceInstService.delResourceInstByBatchId(mktResUploadBatch, userId);
     }
 
     @ApiOperation(value = "(供应商)串码退库", notes = "串码还原在库可用")
@@ -176,7 +176,12 @@ public class AdminResourceInstB2BController {
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
-        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
+                ResourceConst.STATUSCD.SALED.getCode(),
+                ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
+                ResourceConst.STATUSCD.RESTORAGEING.getCode(),
+                ResourceConst.STATUSCD.EXCHANGEING.getCode(),
+                ResourceConst.STATUSCD.RESTORAGED.getCode());
         req.setCheckStatusCd(checkStatusCd);
         log.info("AdminResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
         return adminResourceInstService.resetResourceInst(req);
@@ -388,7 +393,7 @@ public class AdminResourceInstB2BController {
     public void exportResourceUploadTemp(@RequestBody ResourceUploadTempListPageReq req, HttpServletResponse response) {
         ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceInstService.listResourceUploadTemp(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
-        log.info("ResourceReqDetailB2BController.nbrDetailExport resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
+        log.info("ResourceReqDetailB2BController.nbrDetailExport resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(data));
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
         //创建orderItemDetail
@@ -413,7 +418,7 @@ public class AdminResourceInstB2BController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @RequestMapping(value = "/batchAuditNbr",method = RequestMethod.POST)
+    @RequestMapping(value = "/batchAuditNbr", method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<String> batchAuditNbr(@RequestBody ResourceInstCheckReq req) {
         req.setUpdateStaff(UserContext.getUserId());

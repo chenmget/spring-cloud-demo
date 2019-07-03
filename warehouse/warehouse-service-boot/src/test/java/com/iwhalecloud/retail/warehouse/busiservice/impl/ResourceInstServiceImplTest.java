@@ -66,7 +66,7 @@ public class ResourceInstServiceImplTest {
 
     @Test
     public void exceutorValidForSupplier() {
-        String json = "{\"typeId\":\"201903142030001\",\"mktResStoreId\":\"10425103\",\"mktResInstNbrs\":[\"BBBB0yy003\"]}";
+        String json = "{\"typeId\":\"201903142030001\",\"mktResStoreId\":\"10425103\",\"mktResInstNbrs\":[\"1230600000103\"]}";
         Gson gson = new Gson();
         ResourceInstValidReq req  = gson.fromJson(json, new TypeToken<ResourceInstValidReq>(){}.getType());
         supplierRunableTask.exceutorValidForSupplier(req);

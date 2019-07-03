@@ -20,7 +20,6 @@ import com.iwhalecloud.retail.partner.dto.resp.SupplyMerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.request.UserGetReq;
 import com.iwhalecloud.retail.system.dto.request.UserPageReq;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
@@ -40,7 +39,6 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
 
 @Slf4j
 @RestController
@@ -77,17 +75,13 @@ public class MerchantController {
     @RequestMapping(value = "/page", method = RequestMethod.POST)
     public ResultVO<Page<MerchantPageResp>> pageMerchant(@RequestBody MerchantPageReq req) {
         log.info("MerchantController.pageMerchant() input: MerchantPageReq={}", JSON.toJSONString(req));
-        ResultVO<Page<MerchantPageResp>> pageResultVO = merchantService.pageMerchant(req);
-        // 追加用户登录帐号
-        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
-            List<MerchantPageResp> merchantDTOS = pageResultVO.getResultData().getRecords();
 
-            if (!CollectionUtils.isEmpty(merchantDTOS)) {
-                merchantDTOS.forEach(merchantDTO -> {
-                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
-                });
-            }
+        // 判断是否是地市管理员 是：默认设置lanId值为当前用户的lanId
+        if (UserContext.isCityAdminType()) {
+            req.setLanId(UserContext.getUser().getLanId());
         }
+
+        ResultVO<Page<MerchantPageResp>> pageResultVO = merchantService.pageMerchant(req);
         return pageResultVO;
     }
 
@@ -127,16 +121,6 @@ public class MerchantController {
         }
         log.info("MerchantController.pageMerchantWithRule() input: MerchantPageReq={}", JSON.toJSONString(req));
         ResultVO<Page<MerchantPageResp>> pageResultVO = merchantService.pageMerchant(req);
-        // 追加用户登录帐号
-        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
-            List<MerchantPageResp> merchantDTOS = pageResultVO.getResultData().getRecords();
-
-            if (!CollectionUtils.isEmpty(merchantDTOS)) {
-                merchantDTOS.forEach(merchantDTO -> {
-                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
-                });
-            }
-        }
         return pageResultVO;
     }
 
@@ -147,23 +131,20 @@ public class MerchantController {
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
-    })//lws
+    })
     @RequestMapping(value = "/exportMerchantList", method = RequestMethod.POST)
     public void exportMerchantList(@RequestBody MerchantPageReq req, HttpServletResponse response) {
         log.info("MerchantController.exportMerchantList() input: MerchantPageReq={}", JSON.toJSONString(req));
         req.setPageNo(EXPORT_PAGE_NO);
         //数据量控制在1万条
         req.setPageSize(EXPORT_PAGE_SIZE);
-        ResultVO<Page<MerchantPageResp>> resultVO = merchantService.pageMerchant(req);
-        if (null != resultVO && resultVO.isSuccess() && null != resultVO.getResultData()) {
-            List<MerchantPageResp> merchantDTOS = resultVO.getResultData().getRecords();
 
-            if (!CollectionUtils.isEmpty(merchantDTOS)) {
-                merchantDTOS.forEach(merchantDTO -> {
-                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
-                });
-            }
+        // 判断是否是地市管理员 是：默认设置lanId值为当前用户的lanId
+        if (UserContext.isCityAdminType()) {
+            req.setLanId(UserContext.getUser().getLanId());
         }
+
+        ResultVO<Page<MerchantPageResp>> resultVO = merchantService.pageMerchant(req);
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         OutputStream output = null;
         try {
@@ -198,19 +179,13 @@ public class MerchantController {
     @RequestMapping(value = "/pageRetailMerchant", method = RequestMethod.POST)
     public ResultVO<Page<RetailMerchantDTO>> pageRetailMerchant(@RequestBody @ApiParam(value = "分页参数", required = true) RetailMerchantPageReq req) {
         log.info("MerchantController.pageRetailMerchant() input: RetailMerchantPageReq={}", JSON.toJSONString(req));
-        ResultVO<Page<RetailMerchantDTO>> pageResultVO = merchantService.pageRetailMerchant(req);
 
-        // 追加用户登录帐号
-        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
-            List<RetailMerchantDTO> retailDTOS = pageResultVO.getResultData().getRecords();
-
-            if (!CollectionUtils.isEmpty(retailDTOS)) {
-                retailDTOS.forEach(retailDTO -> {
-                    retailDTO.setLoginName(getLoginName(retailDTO.getMerchantId()));
-                });
-            }
+        // 判断是否是地市管理员 是：默认设置lanId值为当前用户的lanId
+        if (UserContext.isCityAdminType()) {
+            req.setLanId(UserContext.getUser().getLanId());
         }
 
+        ResultVO<Page<RetailMerchantDTO>> pageResultVO = merchantService.pageRetailMerchant(req);
         return pageResultVO;
     }
 
@@ -218,21 +193,21 @@ public class MerchantController {
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
-    })//lws
+    })
     @RequestMapping(value = "/exportRetailMerchantList", method = RequestMethod.POST)
     public void exportRetailMerchantList(@RequestBody RetailMerchantPageReq req, HttpServletResponse response) {
         log.info("MerchantController.exportMerchantList() input: MerchantPageReq={}", JSON.toJSONString(req));
         req.setPageNo(EXPORT_PAGE_NO);
         // 数据量控制在1万条
         req.setPageSize(EXPORT_PAGE_SIZE);
-        ResultVO<Page<RetailMerchantDTO>> resultVO = merchantService.pageRetailMerchant(req);
-        List<RetailMerchantDTO> merchantDTOS = resultVO.getResultData().getRecords();
 
-        if (!CollectionUtils.isEmpty(merchantDTOS)) {
-            merchantDTOS.forEach(merchantDTO -> {
-                merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
-            });
+        // 判断是否是地市管理员 是：默认设置lanId值为当前用户的lanId
+        if (UserContext.isCityAdminType()) {
+            req.setLanId(UserContext.getUser().getLanId());
         }
+
+        ResultVO<Page<RetailMerchantDTO>> resultVO = merchantService.pageRetailMerchant(req);
+
         List<ExcelTitleName> excelTitleNames = MerchantColumn.retailMerchantFields();
         OutputStream output = null;
         try {
@@ -268,40 +243,15 @@ public class MerchantController {
     @RequestMapping(value = "/pageSupplyMerchant", method = RequestMethod.POST)
     public ResultVO<Page<SupplyMerchantDTO>> pageSupplyMerchant(@RequestBody @ApiParam(value = "分页参数", required = true) SupplyMerchantPageReq req) {
         log.info("MerchantController.pageSupplyMerchant() input: SupplyMerchantPageReq={}", JSON.toJSONString(req));
+
+        // 判断是否是地市管理员 是：默认设置lanId值为当前用户的lanId
+        if (UserContext.isCityAdminType()) {
+            req.setLanId(UserContext.getUser().getLanId());
+        }
+
         ResultVO<Page<SupplyMerchantDTO>> pageResultVO = merchantService.pageSupplyMerchant(req);
 
-        // 追加用户登录帐号
-        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
-            List<SupplyMerchantDTO> supplyDTOS = pageResultVO.getResultData().getRecords();
-
-            if (!CollectionUtils.isEmpty(supplyDTOS)) {
-                supplyDTOS.forEach(supplyDTO -> {
-                    supplyDTO.setLoginName(getLoginName(supplyDTO.getMerchantId()));
-                });
-            }
-        }
-
         return pageResultVO;
-    }
-
-
-    /**
-     * 获取用户登录名称
-     *
-     * @param merchantId 商家ID
-     * @return
-     */
-    private String getLoginName(String merchantId) {
-        if (StringUtils.isEmpty(merchantId)) {
-            return "";
-        }
-        UserGetReq userGetReq = new UserGetReq();
-        userGetReq.setRelCode(merchantId);
-        UserDTO user = userService.getUser(userGetReq);
-        if (!Objects.isNull(user)) {
-            return user.getLoginName();
-        }
-        return "";
     }
 
     @ApiOperation(value = "供应商列表导出", notes = "供应商列表导出")
@@ -314,15 +264,13 @@ public class MerchantController {
         log.info("MerchantController.exportSupplyMerchantList() input: req={}", JSON.toJSONString(req));
         req.setPageNo(EXPORT_PAGE_NO);
         req.setPageSize(EXPORT_PAGE_SIZE);
-        ResultVO<Page<SupplyMerchantDTO>> resultVO = merchantService.pageSupplyMerchant(req);
-        if (null != resultVO && resultVO.isSuccess() && null != resultVO.getResultData()) {
-            List<SupplyMerchantDTO> merchantDTOS = resultVO.getResultData().getRecords();
-            if (!CollectionUtils.isEmpty(merchantDTOS)) {
-                merchantDTOS.forEach(merchantDTO -> {
-                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
-                });
-            }
+
+        // 判断是否是地市管理员 是：默认设置lanId值为当前用户的lanId
+        if (UserContext.isCityAdminType()) {
+            req.setLanId(UserContext.getUser().getLanId());
         }
+
+        ResultVO<Page<SupplyMerchantDTO>> resultVO = merchantService.pageSupplyMerchant(req);
 
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         excelTitleNames = MerchantColumn.complementSupplyMerchantFileds(excelTitleNames);
@@ -360,16 +308,6 @@ public class MerchantController {
     public ResultVO<Page<FactoryMerchantDTO>> pageFactoryMerchant(@RequestBody @ApiParam(value = "分页参数", required = true) FactoryMerchantPageReq req) {
         log.info("MerchantController.pageFactoryMerchant() input: FactoryMerchantPageReq={}", JSON.toJSONString(req));
         ResultVO<Page<FactoryMerchantDTO>> pageResultVO = merchantService.pageFactoryMerchant(req);
-        // 追加用户登录帐号
-        if (null != pageResultVO && pageResultVO.isSuccess() && null != pageResultVO.getResultData()) {
-            List<FactoryMerchantDTO> factoryDTOS = pageResultVO.getResultData().getRecords();
-
-            if (!CollectionUtils.isEmpty(factoryDTOS)) {
-                factoryDTOS.forEach(factoryDTO -> {
-                    factoryDTO.setLoginName(getLoginName(factoryDTO.getMerchantId()));
-                });
-            }
-        }
 
         return pageResultVO;
     }
@@ -386,14 +324,6 @@ public class MerchantController {
         req.setPageNo(EXPORT_PAGE_NO);
         req.setPageSize(EXPORT_PAGE_SIZE);
         ResultVO<Page<FactoryMerchantDTO>> resultVO = merchantService.pageFactoryMerchant(req);
-        if (null != resultVO && resultVO.isSuccess() && null != resultVO.getResultData()) {
-            List<FactoryMerchantDTO> merchantDTOS = resultVO.getResultData().getRecords();
-            if (!CollectionUtils.isEmpty(merchantDTOS)) {
-                merchantDTOS.forEach(merchantDTO -> {
-                    merchantDTO.setLoginName(getLoginName(merchantDTO.getMerchantId()));
-                });
-            }
-        }
         List<ExcelTitleName> excelTitleNames = MerchantColumn.merchantColumn();
         OutputStream output = null;
         try {

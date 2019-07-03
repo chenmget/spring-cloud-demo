@@ -595,6 +595,9 @@ public class MerchantManager {
         if (!StringUtils.isEmpty(req.getMerchantType())) { // 商家类型
             queryWrapper.eq(Merchant.FieldNames.merchantType.getTableFieldName(), req.getMerchantType());
         }
+        if (!StringUtils.isEmpty(req.getLanId())) { // 本地网地市
+            queryWrapper.eq(Merchant.FieldNames.lanId.getTableFieldName(), req.getLanId());
+        }
 
         // 条件是：like(模糊查询的）  的字段
         if (!StringUtils.isEmpty(req.getMerchantCode())) { // 商家编码

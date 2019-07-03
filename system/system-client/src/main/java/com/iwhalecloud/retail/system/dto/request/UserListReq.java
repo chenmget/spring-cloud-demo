@@ -68,8 +68,14 @@ public class UserListReq implements Serializable {
     /**
      * 关联ID
      */
-    @ApiModelProperty(value = "关联分销商ID 或 供应商ID")
+    @ApiModelProperty(value = "关联商家ID集合")
     private String relCode;
+
+    /**
+     * 关联商家ID集合
+     */
+    @ApiModelProperty(value = "关联商家ID集合")
+    private List<String> relCodeList;
 
     /**
      *角色ID

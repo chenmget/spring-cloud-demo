@@ -601,7 +601,7 @@
     LEFT JOIN prod_brand br ON b.BRAND_ID = br.BRAND_ID
     WHERE
     <if test="null!=productIds">
-      and PRODUCT_ID in
+       p.PRODUCT_ID in
       <foreach item="item" index="index" open="(" separator="," close=")" collection="productIds">
         #{item}
       </foreach>

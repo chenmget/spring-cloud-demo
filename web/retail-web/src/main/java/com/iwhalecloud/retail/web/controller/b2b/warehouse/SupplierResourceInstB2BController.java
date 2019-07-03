@@ -293,12 +293,7 @@ public class SupplierResourceInstB2BController {
         req.setUpdateStaff(userId);
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
-        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
-                ResourceConst.STATUSCD.SALED.getCode(),
-                ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
-                ResourceConst.STATUSCD.RESTORAGEING.getCode(),
-                ResourceConst.STATUSCD.EXCHANGEING.getCode(),
-                ResourceConst.STATUSCD.RESTORAGED.getCode());
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
         req.setCheckStatusCd(checkStatusCd);
         log.info("SupplierResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
         return supplierResourceInstService.resetResourceInst(req);

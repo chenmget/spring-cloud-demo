@@ -150,9 +150,12 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst> {
      * 根据查询条件串码实列(手动分页，插件自带的线程不安全)
      * @return
      */
-    public List<ResourceInstListPageResp> getResourceInstListManual(@Param("req") ResourceInstListPageReq req);
+     List<ResourceInstListPageResp> getResourceInstListManual(@Param("req") ResourceInstListPageReq req);
 
 
-    public ResourceInstCheckResp getMktResInstNbrForCheck(@Param("req") ResourceStoreIdResnbr req);
+     ResourceInstCheckResp getMktResInstNbrForCheck(@Param("req") ResourceStoreIdResnbr req);
+
+     List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(@Param("req") ResourceStoreIdResnbr req);
+
 
 }

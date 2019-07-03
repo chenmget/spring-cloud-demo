@@ -15,6 +15,8 @@ public class ProductApplyInfoResp implements Serializable {
     //产品信息字段
     private  String productId; // 产品Id
     private  String productName; // 产品名称
+    private  String productBaseId; // 产品基础Id
+
 
     private  String corporationPrice;// 政企价格
     private  String sn;// 产品25位编码
@@ -31,6 +33,10 @@ public class ProductApplyInfoResp implements Serializable {
     private  String attrValue1;//容量-规格1 字段
 
     private  String purType;
+
+    private  String purchaseType;
+
+    private  String num;
 
 
 }

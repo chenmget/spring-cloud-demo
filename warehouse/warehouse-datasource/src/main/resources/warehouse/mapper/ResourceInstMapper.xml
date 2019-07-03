@@ -462,4 +462,20 @@
         ORDER BY m.create_date DESC LIMIT 1
     </select>
 
+    <select id="getMktResInstNbrForCheckInTrack" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResourceStoreIdResnbr"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResourceInstCheckResp">
+
+        SELECT MKT_RES_INST_NBR as mktResInstNbr,MKT_RES_ID as mktResId  FROM mkt_res_inst_track
+        WHERE
+         STATUS_CD='1202'
+        <if test="null!=req.mktResInstNbrs and req.mktResInstNbrs.size>0">
+            and mkt_res_inst_nbr in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.mktResInstNbrs">
+                #{item}
+            </foreach>
+        </if>
+        and
+        MKT_RES_STORE_ID=#{req.mktResStoreId}
+    </select>
+
 </mapper>

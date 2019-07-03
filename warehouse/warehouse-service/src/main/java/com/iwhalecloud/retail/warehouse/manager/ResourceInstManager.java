@@ -255,4 +255,7 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
     public ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req) {
         return resourceInstMapper.getMktResInstNbrForCheck(req);
     }
+    public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
+        return resourceInstMapper.getMktResInstNbrForCheckInTrack(req);
+    }
 }

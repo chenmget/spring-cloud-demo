@@ -547,7 +547,8 @@
     CASE
     WHEN p.PURCHASE_TYPE ='1' THEN '集采'
     WHEN p.PURCHASE_TYPE ='2' THEN '社采'
-    END   as purType
+    END   as purType,
+    p.PURCHASE_TYPE as purchaseType
     from prod_product p
     LEFT JOIN prod_product_base b on b.PRODUCT_BASE_ID=p.PRODUCT_BASE_ID
     LEFT JOIN prod_brand br ON b.BRAND_ID = br.BRAND_ID
@@ -600,6 +601,31 @@
       <if test = "null != req.attrValue10 and '' != req.attrValue10">
         and attr_value10 = #{req.attrValue10}
       </if>
+  </select>
+
+
+  <select id="getDeliveryInfo" parameterType="java.lang.String"
+          resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductApplyInfoResp">
+    SELECT p.product_id as productId,p.PRODUCT_BASE_ID as productBaseId,p.ATTR_VALUE1 as attrValue1,
+    p.MEMORY as memory,p.COLOR as color,p.CORPORATION_PRICE as corporationPrice,br.`NAME` as brandName,
+    b.UNIT_TYPE_NAME as unitTypeName,b.UNIT_TYPE as unitType ,p.SN as sn,b.PRODUCT_NAME as productName,
+    CASE
+    WHEN p.PURCHASE_TYPE ='1' THEN '集采'
+    WHEN p.PURCHASE_TYPE ='2' THEN '社采'
+    END   as purType,
+    p.PURCHASE_TYPE as purchaseType
+    from prod_product p
+    LEFT JOIN prod_product_base b on b.PRODUCT_BASE_ID=p.PRODUCT_BASE_ID
+    LEFT JOIN prod_brand br ON b.BRAND_ID = br.BRAND_ID
+    WHERE
+    <if test="null!=productIds">
+      and PRODUCT_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="productIds">
+        #{item}
+      </foreach>
+    </if>
+
+
   </select>
 
 </mapper>

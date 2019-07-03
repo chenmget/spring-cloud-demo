@@ -154,7 +154,7 @@ public class AdminResourceInstB2BController {
         }
         String userId = UserContext.getUserId();
         log.info("AdminResourceInstB2BController.delResourceInstByBatchId mktResUploadBatch={}", mktResUploadBatch);
-        return resourceInstService.delResourceInstByBatchId(mktResUploadBatch,userId);
+        return resourceInstService.delResourceInstByBatchId(mktResUploadBatch, userId);
     }
 
     @ApiOperation(value = "(供应商)串码退库", notes = "串码还原在库可用")
@@ -182,7 +182,6 @@ public class AdminResourceInstB2BController {
                 ResourceConst.STATUSCD.RESTORAGEING.getCode(),
                 ResourceConst.STATUSCD.EXCHANGEING.getCode(),
                 ResourceConst.STATUSCD.RESTORAGED.getCode());
-        req.setCheckStatusCd(checkStatusCd);
         req.setCheckStatusCd(checkStatusCd);
         log.info("AdminResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
         return adminResourceInstService.resetResourceInst(req);
@@ -387,7 +386,7 @@ public class AdminResourceInstB2BController {
     public void exportResourceUploadTemp(@RequestBody ResourceUploadTempListPageReq req, HttpServletResponse response) {
         ResultVO<Page<ResourceReqDetailPageResp>> resultVO = resourceInstService.listResourceUploadTemp(req);
         List<ResourceReqDetailPageResp> data = resultVO.getResultData().getRecords();
-        log.info("ResourceReqDetailB2BController.nbrDetailExport resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req),JSON.toJSONString(data));
+        log.info("ResourceReqDetailB2BController.nbrDetailExport resourceReqDetailService.listResourceRequestDetailPage req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(data));
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
         //创建orderItemDetail

@@ -267,5 +267,9 @@ public class Constant {
      */
     private String tradeNbrCanNotReset;
 
+    /**
+     * 非供应商不允许退库
+     */
+    private String notSupplierCanNotReset;
 
 }

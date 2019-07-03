@@ -70,7 +70,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Autowired
     private Constant constant;
 
-
     @Autowired
     private CallService callService;
 

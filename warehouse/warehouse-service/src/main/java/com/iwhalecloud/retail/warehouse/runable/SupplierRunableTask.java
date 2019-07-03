@@ -327,6 +327,7 @@ public class SupplierRunableTask {
         public Page<ResourceUploadTempListResp> call() throws Exception {
             Page<ResourceUploadTempListResp> page = resourceUploadTempManager.listResourceUploadTemp(req);
             List<ResourceUploadTempListResp> tempListResps = page.getRecords();
+            log.info("SupplierRunableTask.QueryTempNbrTask productService.getProductResource resp={}",  JSON.toJSONString(tempListResps));
             List<ResourceUploadTempListResp> hasMktResId = tempListResps.stream().filter(t -> StringUtils.isNotBlank(t.getMktResId())).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(hasMktResId)) {
                 Map<String, List<ResourceUploadTempListResp>> map = hasMktResId.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));

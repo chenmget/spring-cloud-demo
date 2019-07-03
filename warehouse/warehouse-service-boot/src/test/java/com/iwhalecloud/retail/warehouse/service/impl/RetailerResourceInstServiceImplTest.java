@@ -10,7 +10,9 @@ import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempListResp;
 import com.iwhalecloud.retail.warehouse.mapper.ResourceReqDetailMapper;
+import com.iwhalecloud.retail.warehouse.runable.SupplierRunableTask;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import lombok.extern.slf4j.Slf4j;
@@ -32,6 +34,9 @@ public class RetailerResourceInstServiceImplTest {
     private RetailerResourceInstService retailerResourceInstService;
     @Reference
     private AdminResourceInstService adminResourceInstService;
+
+    @Autowired
+    private SupplierRunableTask supplierRunableTask;
 
     @Autowired
     private ResourceReqDetailMapper resourceReqDetailMapper;
@@ -105,5 +110,24 @@ public class RetailerResourceInstServiceImplTest {
         List<String> nbrList = resourceReqDetailMapper.getProcessingNbrList(list);
         System.out.print(nbrList.toString());
 
+    }
+
+    @Test
+    public void allocateResourceInst() {
+        String json = "{\"createStaff\":\"1082191485979451394\",\"ctCode\":{\"201901211609003\":\"9003\"},\"merchantId\":\"4300001063072\",\"mktResId\":\"1085440543258468353\",\"mktResInstNbrs\":[\"201901211609003\"],\"regionId\":\"0731\",\"sourceType\":\"2\",\"statusCd\":\"1302\"}";
+        json = "{\"mktResStoreId\":\"203652056\",\"destStoreId\":\"102026024\",\"mktResInstIds\":[\"362541386\",\"362541389\",\"362541392\",\"362541395\",\"362541398\"],\"mktResInstNbrs\":[\"1232111222\",\"1232111223\",\"1232111224\",\"1232111225\",\"1232111226\"],\"lanId\":\"731\"}";
+
+        Gson gson = new Gson();
+        RetailerResourceInstAllocateReq req =  gson.fromJson(json, new TypeToken<RetailerResourceInstAllocateReq>(){}.getType());
+        ResultVO resultVO = retailerResourceInstService.allocateResourceInst(req);
+        log.info("RetailerResourceInstServiceImplTest.addResourceInstByGreenChannel result:{}", JSON.toJSONString(resultVO));
+    }
+
+    @Test
+    public void exceutorListResourceUploadTemp() {
+        ResourceUploadTempListPageReq req = new ResourceUploadTempListPageReq();
+        req.setMktResUploadBatch("23337440");
+        Page<ResourceUploadTempListResp> resultVO = supplierRunableTask.exceutorListResourceUploadTemp(req);
+        log.info("RetailerResourceInstServiceImplTest.addResourceInstByGreenChannel result:{}", JSON.toJSONString(resultVO));
     }
 }

@@ -233,10 +233,13 @@
             resultType="com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO">
         select <include refid="allFields" />
         from mkt_res_inst t
-        where t.mkt_res_inst_id in
-        <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstIdList">
-            #{item}
-        </foreach>
+        where 1 = 1
+        <if test="null!=mktResInstIdList and mktResInstIdList.size>0">
+        and t.mkt_res_inst_id in
+            <foreach item="item" index="index" open="(" separator="," close=")" collection="mktResInstIdList">
+                #{item}
+            </foreach>
+        </if>
         and t.mkt_res_store_id = #{mktResStoreId}
     </select>
 

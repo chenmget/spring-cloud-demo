@@ -33,7 +33,7 @@
 	`TYPE_ID`
 	) VALUES(
 	SEQ_RPT_SUPPLIER_OPER_ID.nextVal,
-	DATE_SUB(CURDATE(),INTERVAL 1 DAY),
+	#{req.itemDate},
 	#{req.supplierId},
 	#{req.supplierCode},
 	#{req.supplierName},
@@ -58,7 +58,8 @@
 	#{req.stockNum},
 	#{req.stockAmount},
 	#{req.createDate},
-	#{req.typeId})
+	#{req.typeId}
+	)
    
   </select>
   
@@ -73,7 +74,6 @@
 		 FROM par_merchant 
 		 WHERE 1=1 AND STATUS='1000' 
 		 AND merchant_type = '2' 
-		# AND DATE_FORMAT(LAST_UPDATE_DATE,'%Y-%m-%d')=DATE_SUB(CURDATE(),INTERVAL 1 DAY)
 	 </select>
   
   <select  id="hqMktResInstInfo" parameterType="java.lang.String" 
@@ -171,7 +171,7 @@
   			rpt_supplier_operating_day
   		set goods_id = #{req.goodsId},
   			manual_num = #{req.manualNum},
-  			trans_in_num #{req.transInNum},
+  			trans_in_num = #{req.transInNum},
   			purchase_num = #{req.purchaseNum},
   			purchase_amount = #{req.purchaseAmount}
   		where
@@ -183,7 +183,7 @@
   			rpt_supplier_operating_day
   		set goods_id = #{req.goodsId},
   			trans_out_num = #{req.transOutNum},
-  			return_num #{req.returnNum},
+  			return_num = #{req.returnNum},
   			sell_num = #{req.sellNum},
   			sell_amount = #{req.sellAmount}
   		where

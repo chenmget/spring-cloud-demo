@@ -638,6 +638,11 @@ public class GoodsB2BController extends GoodsBaseController {
                 supplierIds.add(merchantId);
             }
             req.setSupplierIds(supplierIds);
+        } else {
+            // 判断是否是地市管理员 是：默认设置supplierLanId值为当前用户的lanId
+            if (UserContext.isCityAdminType()) {
+                req.setSupplierLanId(UserContext.getUser().getLanId());
+            }
         }
 
         return goodsService.queryPageByConditionAdmin(req);
@@ -761,11 +766,18 @@ public class GoodsB2BController extends GoodsBaseController {
     })
     @GetMapping(value = "/querySupplierGoods")
     ResultVO<List<SupplierGoodsDTO>> querySupplierGoods(@RequestParam(value = "goodsId") String goodsId, @RequestParam(value = "productId") String productId) {
-        log.info("GoodsController querySupplierGoods goodsId={},productId={}", goodsId, productId);
+        log.info("GoodsController querySupplierGoods goodsId={}, productId={}", goodsId, productId);
+//        List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
+//        List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsService.querySupplierGoods(goodsId, productId);
+//        if (!CollectionUtils.isEmpty(supplierGoodsDTOs1)) {
+//            supplierGoodsDTOs = supplierGoodsDTOs1;
+//        }
+//        return ResultVO.success(supplierGoodsDTOs);
+
         List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
-        List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsService.querySupplierGoods(goodsId, productId);
-        if (!CollectionUtils.isEmpty(supplierGoodsDTOs1)) {
-            supplierGoodsDTOs = supplierGoodsDTOs1;
+        String merchantId = UserContext.getMerchantId();
+        if (StringUtils.isNotEmpty(merchantId)) {
+            return goodsService.queryRecommendGoods(goodsId, productId, merchantId);
         }
         return ResultVO.success(supplierGoodsDTOs);
 

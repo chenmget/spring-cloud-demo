@@ -9,10 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.common.AttrSpecConst;
-import com.iwhalecloud.retail.goods2b.common.FileConst;
-import com.iwhalecloud.retail.goods2b.common.GoodsConst;
-import com.iwhalecloud.retail.goods2b.common.GoodsResultCodeEnum;
+import com.iwhalecloud.retail.goods2b.common.*;
 import com.iwhalecloud.retail.goods2b.dto.*;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
@@ -33,6 +30,7 @@ import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityProductDTO;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityQueryByGoodsReq;
+import com.iwhalecloud.retail.promo.dto.resp.MarketingGoodsActivityQueryResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingReliefActivityQueryResp;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
@@ -833,9 +831,18 @@ public class GoodsServiceImpl implements GoodsService {
         }
     }
 
+    /**
+     * 判断一个数是否大于另一数的 103%
+     * @param deliveryPrice
+     * @param avgSupplyPrice
+     * @return
+     */
     private boolean isAbove3Per(Double deliveryPrice, Double avgSupplyPrice) {
-        return avgSupplyPrice != null && deliveryPrice > avgSupplyPrice && (deliveryPrice - avgSupplyPrice) / avgSupplyPrice >
-                AVG_SUPPLY_PRICE;
+        log.info("GoodsServiceImpl.isAbove3Per  deliveryPrice={}, avgSupplyPrice={}", deliveryPrice, avgSupplyPrice);
+        return deliveryPrice != null
+                && avgSupplyPrice != null
+                && deliveryPrice > avgSupplyPrice
+                && (deliveryPrice - avgSupplyPrice) / avgSupplyPrice > AVG_SUPPLY_PRICE;
     }
 
     private boolean filterPresubsidyGoods(List<String> productIdList) {
@@ -1788,14 +1795,14 @@ public class GoodsServiceImpl implements GoodsService {
 
     /**
      * 推荐逻辑：
-     * 1、 零售价1599以上机型（未参与省集约前置补贴）：
+     * 1、 有省集约前置补贴的机型 （有前置补贴活动的机型不推荐商品）
+     * 优先地包供货，即使地包无库存，也不展示省包商品。
+     * 2、 零售价1599以上机型（未参与省集约前置补贴）：
      * 点击地包商品详情后，同一个规格地包价格高于省包同一规格供货价平均价的的3%时，地包商品下方推荐省包同规格商品（省包商品列表增加字段信息显示：比同商品优惠xx元），
      * 零售商只能买省包同一个规格商品，其他规格则显示灰色，无法选择购买。
-     * 2、 零售价1599及以下机型（未参与省集约前置补贴）：
+     * 3、 零售价1599及以下机型（未参与省集约前置补贴）：
      * 如果地包商品某个规格无货时，点击进入地包商品详情时，选中某个无货规格商品，下方推荐栏推荐其他地包同规格商品，价格由低往高排序，
      * 其他地包也无货，推荐省包同规格商品，价格由低往高排序，点击推荐的省包商品计入商品详情页时，将限制买家点击其他规格，只能购买地包缺货规格商品。
-     * 3、 有省集约前置补贴的机型 （有前置补贴活动的机型不推荐商品）
-     * 优先地包供货，即使地包无库存，也不展示省包商品。
      */
     @Override
     public List<SupplierGoodsDTO> querySupplierGoods(String goodsId, String productId) {
@@ -1830,20 +1837,20 @@ public class GoodsServiceImpl implements GoodsService {
                 Double avgPrice = Double.valueOf(avgPriceStr);
                 String isFixedLine = productResp.getIsFixedLine();
                 if((StringUtils.isEmpty(isFixedLine) || "0".equals(isFixedLine)) && deliveryPrice / avgPrice > 1.03){
-                    supplierGoodsDTOs = this.getSupplierGoods(productId);
+                    supplierGoodsDTOs = this.getSupplierGoods(productId, "3");
                 }
             }
 //            return supplierGoodsDTOs;
         }else{
-            supplierGoodsDTOs = this.getSupplierGoods(productId);
+            supplierGoodsDTOs = this.getSupplierGoods(productId, "3");
         }
         log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType  resp={}", supplierGoodsDTOs);
         return supplierGoodsDTOs;
     }
 
     // 先根据商家类型查询省包商是否有货
-    private List<SupplierGoodsDTO> getSupplierGoods(String productId){
-        List<SupplierGoodsDTO> supplierGoodsDTOs2 = goodsManager.listSupplierGoodsByType(productId, "3");
+    private List<SupplierGoodsDTO> getSupplierGoods(String productId, String merchantType) {
+        List<SupplierGoodsDTO> supplierGoodsDTOs2 = goodsManager.listSupplierGoodsByType(productId, merchantType);
         log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType 省包商 supplierGoodsDTOs={}", supplierGoodsDTOs2);
         if (CollectionUtils.isNotEmpty(supplierGoodsDTOs2)) {
             for (SupplierGoodsDTO supplierGoodsDTO : supplierGoodsDTOs2) {
@@ -1855,4 +1862,98 @@ public class GoodsServiceImpl implements GoodsService {
         }
         return supplierGoodsDTOs2;
     }
+
+    /**
+     * 根据产品id查询推荐商品
+     * @param goodsId 商品ID
+     * @param productId  产品ID
+     * @param merchantId  登录用户的商家ID
+     * @return
+     */
+    @Override
+    public ResultVO<List<SupplierGoodsDTO>> queryRecommendGoods(String goodsId, String productId, String merchantId) {
+        log.info("GoodsServiceImpl.queryRecommendGoods req goodsId={}, productId={}, merchantId={}", goodsId, productId, merchantId);
+
+        List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
+        String msg = "SUCCESS";
+
+        // 查询商品数据
+        Goods goods = goodsManager.queryGoods(goodsId);
+        if (Objects.isNull(goods)) {
+            log.info("GoodsServiceImpl.queryRecommendGoods 商品数据为空，推荐数据为空");
+            return ResultVO.success("商品数据为空，推荐数据为空", new ArrayList<>());
+        }
+        // 判断是否是省包商品
+        if (StringUtils.equals(goods.getMerchantType(), PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType())) {
+            log.info("GoodsServiceImpl.queryRecommendGoods 省包商品，不推荐商品");
+            return ResultVO.success("省包商品，不推荐商品", new ArrayList<>());
+        }
+        // 查询产品信息
+        ProductResp product = productManager.getProduct(productId);
+        if (Objects.isNull(product)) {
+            log.info("GoodsServiceImpl.queryRecommendGoods 产品数据为空，推荐数据为空");
+            return ResultVO.success("产品数据为空，推荐数据为空", new ArrayList<>());
+        }
+
+        // 逻辑： 1  2  3  顺序不能换
+        // 逻辑：1、判断产品有没参加前置补贴活动
+        MarketingActivityQueryByGoodsReq marketingActivityQueryByGoodsReq = new MarketingActivityQueryByGoodsReq();
+        marketingActivityQueryByGoodsReq.setProductId(productId);
+        marketingActivityQueryByGoodsReq.setMerchantCode(merchantId);
+        marketingActivityQueryByGoodsReq.setSupplierCode(goods.getSupplierId());
+        marketingActivityQueryByGoodsReq.setActivityType(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
+        List<MarketingGoodsActivityQueryResp> activityList = marketingActivityService.listGoodsMarketingActivitys(marketingActivityQueryByGoodsReq).getResultData();
+        if (CollectionUtils.isNotEmpty(activityList)) {
+            // 有前置补贴活动
+            log.info("GoodsServiceImpl.queryRecommendGoods 产品有参加前置补贴活动，不推荐商品");
+            return ResultVO.success("产品有参加前置补贴活动，不推荐商品", new ArrayList<>());
+        }
+
+        // 没有参加 前置补贴活动
+
+        // 产品销售价格
+        Long productCost = product.getCost() == null ? 0 : product.getCost();
+
+        // 逻辑：2、 零售价1599以上机型（未参与省集约前置补贴）：
+        //     * 点击地包商品详情后，同一个规格地包价格高于省包同一规格供货价平均价的的3%时，地包商品下方推荐省包同规格商品（省包商品列表增加字段信息显示：比同商品优惠xx元），
+        //     * 零售商只能买省包同一个规格商品，其他规格则显示灰色，无法选择购买。
+        if (productCost > GOODS_MKT_PRICE) {
+
+            // 取该机型 的省包供货价 平均价
+            String avgPriceStr = goodsManager.getAvgPrice(productId);
+            GoodsDetailDTO goodsDetailDTO = goodsProductRelMapper.qryGoodsByProductIdAndGoodsId(productId, goodsId);
+            if (StringUtils.isNotEmpty(avgPriceStr) && Objects.nonNull(goodsDetailDTO)) {
+                Double deliveryPrice = goodsDetailDTO.getDeliveryPrice();
+                Double avgPrice = Double.valueOf(avgPriceStr);
+                if (isAbove3Per(deliveryPrice, avgPrice)) {
+                    // 同一个规格地包价格高于省包同一规格供货价平均价的的3%时
+                    // 查询省包同规格商品
+                    supplierGoodsDTOs = getSupplierGoods(productId, PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+                    msg = "零售价1599以上 并且 同一个规格地包价格 高于 省包同一规格供货价平均价的的3%，推荐省包同规格商品";
+                } else {
+                    msg = "零售价1599以上 并且 同一个规格地包价格 不高于 省包同一规格供货价平均价的的3%，不推荐商品";
+                }
+            }
+        }
+
+        // 逻辑：3、 零售价1599及以下机型（未参与省集约前置补贴）：
+        //     * 如果地包商品某个规格无货时，点击进入地包商品详情时，选中某个无货规格商品，下方推荐栏推荐其他地包同规格商品，价格由低往高排序，
+        //     * 其他地包也无货，推荐省包同规格商品，价格由低往高排序，点击推荐的省包商品计入商品详情页时，将限制买家点击其他规格，只能购买地包缺货规格商品。
+        if (productCost <= GOODS_MKT_PRICE) {
+            // 先根据商家类型查询 地包商是否有货
+            supplierGoodsDTOs = getSupplierGoods(productId, PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
+            log.info("GoodsServiceImpl.querySupplierGoods 零售价1599及以下机型:{} 查询其他地包商是否有货记录 size={}", productId, supplierGoodsDTOs.size());
+            if (CollectionUtils.isNotEmpty(supplierGoodsDTOs)) {
+                msg = "零售价1599及以下 并且 其他地包同规格商品 有货  推荐其他地包同规格商品";
+             } else {
+                // 其他地包商没有货  查省包的
+                supplierGoodsDTOs = getSupplierGoods(productId, PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+                msg = "零售价1599及以下 并且 其他地包同规格商品 没有货  推荐省包同规格商品";
+            }
+        }
+
+        log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType msg:{}, supplierGoodsDTOs={}", msg, JSON.toJSONString(supplierGoodsDTOs));
+        return ResultVO.success(msg, supplierGoodsDTOs);
+    }
+
 }

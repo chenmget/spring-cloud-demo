@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.web.controller.b2b.report;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
@@ -8,6 +9,7 @@ import com.iwhalecloud.retail.report.dto.request.ReportDeSaleDaoReq;
 import com.iwhalecloud.retail.report.dto.response.ProductListAllResp;
 import com.iwhalecloud.retail.report.dto.response.ReportDeSaleDaoResq;
 import com.iwhalecloud.retail.report.service.ReportService;
+import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.BaseController;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -24,14 +26,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 
 /**
  * @author zwl
  * @date 2018-11-09
- * 报表
+ * 地包进销存明细报表
  */
 @Slf4j
 @RestController
@@ -53,32 +60,33 @@ public class ReportDataController extends BaseController {
     @PostMapping("/getReportDeSaleList")
 	@UserLoginToken
     public ResultVO<Page<ReportDeSaleDaoResq>> getReportDeSaleList(@RequestBody ReportDeSaleDaoReq req) {
-		String userType=req.getUserType();
-		//String userType = UserContext.getUser().getUserFounder()+"";
-		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
-			String MerchantCode=UserContext.getUser().getRelCode();
-			req.setMerchantCode(MerchantCode);
+		log.info("****************ReportOrderController getReportDeSaleList()  ************start param={}",JSON.toJSONString(req));
+		//最大跨度查询三个月createTimeStart   createTimeEnd
+		String itemDateStart = req.getItemDateStart();
+		String itemDateEnd = req.getItemDateEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(itemDateStart==null && itemDateEnd==null){
+			itemDateStart = format3.format(date3);
+			itemDateEnd = df.format(date);
+			req.setItemDateStart(itemDateStart);
+			req.setItemDateEnd(itemDateEnd);
 		}
-		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
-			String lanId=UserContext.getUser().getRegionId();
-			req.setLanId(lanId);
+		int userType = UserContext.getUser().getUserFounder();
+		List<String> list = new ArrayList<String>();
+		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
+		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+			list.add(UserContext.getUser().getLanId());
+			req.setLanIdList(list);
+		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5) {//省供应商，地市供应商
+			req.setSupplierId(UserContext.getUser().getRelCode());
 		}
         return reportService.getReportDeSaleList(req);
-    }
-	
-	@ApiOperation(value = "根据品牌查机型", notes = "根据品牌查机型")
-	@ApiImplicitParam(name = "brandId", value = "brandId", paramType = "query", required = false, dataType = "String")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数不全"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-	@GetMapping(value="/listProducts")
-    public ResultVO<List<ProductListAllResp>> listPorducts(@RequestParam String brandId) {
-		if(brandId==null){
-			brandId="";
-		}
-        return reportService.listProductAll(brandId);
-
     }
 	
 	  /**
@@ -92,16 +100,30 @@ public class ReportDataController extends BaseController {
     @PostMapping(value="/reportDeSaleExport")
     @UserLoginToken
     public void reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req, HttpServletResponse response) {
-		String userType=req.getUserType();
-    	////1超级管理员 2普通管理员 3零售商(门店、店中商) 4省包供应商 5地包供应商 6 代理商店员 7经营主体 8厂商 \n12 终端公司管理人员 24 省公司市场部管理人员',
-    	//String userType = UserContext.getUser().getUserFounder()+"";
-		if(userType!=null&&!userType.equals("")&&userType.equals("3")){
-			String MerchantCode=UserContext.getUser().getRelCode();
-			req.setMerchantCode(MerchantCode);
+    	//最大跨度查询三个月createTimeStart   createTimeEnd
+		String itemDateStart = req.getItemDateStart();
+		String itemDateEnd = req.getItemDateEnd();
+		Date date = new Date();
+		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.MONTH, -3);
+		Date date3 = cal.getTime();
+		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
+		if(itemDateStart==null && itemDateEnd==null){
+			itemDateStart = format3.format(date3);
+			itemDateEnd = df.format(date);
+			req.setItemDateStart(itemDateStart);
+			req.setItemDateEnd(itemDateEnd);
 		}
-		if(userType!=null&&!userType.equals("")&&userType.equals("2")){
-			String lanId=UserContext.getUser().getRegionId();
-			req.setLanId(lanId);
+		int userType = UserContext.getUser().getUserFounder();
+		List<String> list = new ArrayList<String>();
+		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
+		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+			list.add(UserContext.getUser().getLanId());
+			req.setLanIdList(list);
+		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5) {//省供应商，地市供应商
+			req.setSupplierId(UserContext.getUser().getRelCode());
 		}
 		
         ResultVO<List<ReportDeSaleDaoResq>> resultVO = reportService.reportDeSaleExport(req);
@@ -121,56 +143,31 @@ public class ReportDataController extends BaseController {
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("supplierName", "地包商名称"));
         orderMap.add(new ExcelTitleName("supplierCode", "地包商编码"));
-        orderMap.add(new ExcelTitleName("productName", "机型"));
+        orderMap.add(new ExcelTitleName("productName", "产品名称"));
+        orderMap.add(new ExcelTitleName("productBaseName", "产品型号"));
+        orderMap.add(new ExcelTitleName("typeName", "产品类型"));
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
         orderMap.add(new ExcelTitleName("priceLevel", "机型档位"));
-        orderMap.add(new ExcelTitleName("totalInnum", "入库总量"));
-        orderMap.add(new ExcelTitleName("typeId", "产品类型"));
-        orderMap.add(new ExcelTitleName("totalOutNum", "出库总量"));
-        orderMap.add(new ExcelTitleName("sumPurchase", "交易进货量"));
-        orderMap.add(new ExcelTitleName("amoutPurcchase", "进货金额"));
-        orderMap.add(new ExcelTitleName("sumMANUAL", "手工入库量"));
-        orderMap.add(new ExcelTitleName("sumTransIn", "调拨入库量"));
-        orderMap.add(new ExcelTitleName("sumSellNum", "总销售量"));
-        orderMap.add(new ExcelTitleName("sumSellAmout", "总销售额"));
-        orderMap.add(new ExcelTitleName("sumTransOut", "调拨出库量"));
-        orderMap.add(new ExcelTitleName("sumReturn", "退库量"));
-        orderMap.add(new ExcelTitleName("daySale", "近7天的发货出库量/7天"));
-        orderMap.add(new ExcelTitleName("sumStockDay", "库存总量"));
-        orderMap.add(new ExcelTitleName("sumStockAmoutDay", "库存金额"));
-        orderMap.add(new ExcelTitleName("sevenDayLv", "库存周转率"));
-        orderMap.add(new ExcelTitleName("redStatus", "库存预警"));
+        orderMap.add(new ExcelTitleName("totalRu", "入库总量"));
+        orderMap.add(new ExcelTitleName("totalChu", "出库总量"));
+        orderMap.add(new ExcelTitleName("stockNum", "库存总量"));
+        orderMap.add(new ExcelTitleName("purchaseNum", "交易进货量"));
+        orderMap.add(new ExcelTitleName("purchaseAmount", "进货金额"));
+        orderMap.add(new ExcelTitleName("manualNum", "手工入库量"));
+        orderMap.add(new ExcelTitleName("transInNum", "调拨入库量"));
+        orderMap.add(new ExcelTitleName("sellNum", "总销售量"));
+        orderMap.add(new ExcelTitleName("sellAmount", "总销售额"));
+        orderMap.add(new ExcelTitleName("transOutNum", "调拨出库量"));
+        orderMap.add(new ExcelTitleName("returnNum", "退库量"));
+        orderMap.add(new ExcelTitleName("weekAvgSellNum", "近7天的发货出库量/7天"));
+        orderMap.add(new ExcelTitleName("stockAmount", "库存金额"));
+        orderMap.add(new ExcelTitleName("turnoverRate", "库存周转率"));
+        orderMap.add(new ExcelTitleName("stockWarning", "库存预警"));
         
       //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
         		orderMap, "地包进销存明细报表");
         deliveryGoodsResNberExcel.exportExcel("地包进销存明细报表",workbook,response);
-        
-//        return deliveryGoodsResNberExcel.uploadExcel(workbook);
-//        OutputStream output = null ;
-//        try{
-//            //创建Excel
-//            String fileName = "地包进销存明细报表";
-////            ExcelToNbrUtils.builderOrderExcel(workbook, data, orderMap, false);
-//            ExcelToMerchantListUtils.builderOrderExcel(workbook, data, orderMap);
-//            output = response.getOutputStream();
-//            response.reset();
-//            response.setHeader("Content-disposition", "attachment; filename=" + fileName + ".xls");
-//            response.setContentType("application/msexcel;charset=UTF-8");
-//            response.setCharacterEncoding("UTF-8");
-//            workbook.write(output);
-////            output.close();
-//        }catch (Exception e){
-//            log.error("地包进销存明细报表导出失败",e);
-//        } finally {
-//            if (null != output){
-//                try {
-//                    output.close();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
        
     }
 	

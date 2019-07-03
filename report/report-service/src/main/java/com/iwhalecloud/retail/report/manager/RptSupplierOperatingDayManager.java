@@ -19,11 +19,6 @@ public class RptSupplierOperatingDayManager {
     @Resource
     private RptSupplierOperatingDayMapper rptSupplierOperatingDayMapper;
 
-    public String hqmaxItemId() {
-        return rptSupplierOperatingDayMapper.hqmaxItemId();
-    }
-
-    //-----------------------------------------------------------------------------
     public List<ParMerchantResp> hqParMerchantInfo(){
     	return rptSupplierOperatingDayMapper.hqParMerchantInfo();
     }

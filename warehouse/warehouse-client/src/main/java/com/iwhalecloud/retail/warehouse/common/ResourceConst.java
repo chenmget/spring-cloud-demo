@@ -156,9 +156,9 @@ public class ResourceConst {
             this.code = code;
         }
 
-        public static String getName(String name){
+        public static String getName(String code){
             for (STATUSCD statusCd : STATUSCD.values()){
-                if(statusCd.code.equals(name)){
+                if(statusCd.code.equals(code)){
                     return statusCd.name;
                 }
             }

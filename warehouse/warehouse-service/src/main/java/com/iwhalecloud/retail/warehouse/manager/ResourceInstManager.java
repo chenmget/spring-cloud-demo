@@ -153,7 +153,7 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
      * @param req
      * @return
      */
-    public int batchUpdateInstState(ResourceInstUpdateReq req) {
+    public Integer batchUpdateInstState(ResourceInstUpdateReq req) {
         Date now = new Date();
         req.setUpdateDate(now);
         req.setStatusDate(now);

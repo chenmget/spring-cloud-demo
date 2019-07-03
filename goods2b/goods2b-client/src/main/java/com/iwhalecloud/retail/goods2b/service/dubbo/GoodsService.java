@@ -134,4 +134,13 @@ public interface GoodsService {
      * @return
      */
     List<SupplierGoodsDTO> querySupplierGoods(String goodsId, String productId);
+
+    /**
+     * 根据产品id查询推荐商品
+     * @param goodsId 商品ID
+     * @param productId  产品ID
+     * @param merchantId  登录用户的商家ID
+     * @return
+     */
+    ResultVO<List<SupplierGoodsDTO>> queryRecommendGoods(String goodsId, String productId, String merchantId);
 }

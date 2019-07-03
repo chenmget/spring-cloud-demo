@@ -169,4 +169,11 @@ public interface SupplierResourceInstService {
     ResourceInstCheckResp getMktResInstNbrForCheck(ResourceStoreIdResnbr req);
 
     List<ResourceInstCheckResp>getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req);
+
+    /**
+     * 供应商串码退库
+     * @param req
+     * @return
+     */
+    ResultVO resetResourceInst(AdminResourceInstDelReq req);
 }

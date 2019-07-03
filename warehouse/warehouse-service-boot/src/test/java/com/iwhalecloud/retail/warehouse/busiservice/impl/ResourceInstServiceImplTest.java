@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.PageProductReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstValidReq;
+import com.iwhalecloud.retail.warehouse.runable.SupplierRunableTask;
 import com.iwhalecloud.retail.warehouse.runable.ValidAndAddRunableTask;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -28,6 +29,9 @@ public class ResourceInstServiceImplTest {
 
     @Autowired
     private ValidAndAddRunableTask validAndAddRunableTask;
+
+    @Autowired
+    private SupplierRunableTask supplierRunableTask;
 
     /**
      * 间接验证constant常量值
@@ -58,5 +62,13 @@ public class ResourceInstServiceImplTest {
         resourceInstValidReq.setSnCodeList(Lists.newArrayList("122"));
         resourceInstValidReq.setTypeId("440001");
         validAndAddRunableTask.exceutorValid(req);
+    }
+
+    @Test
+    public void exceutorValidForSupplier() {
+        String json = "{\"typeId\":\"201903142030001\",\"mktResStoreId\":\"10425103\",\"mktResInstNbrs\":[\"BBBB0yy003\"]}";
+        Gson gson = new Gson();
+        ResourceInstValidReq req  = gson.fromJson(json, new TypeToken<ResourceInstValidReq>(){}.getType());
+        supplierRunableTask.exceutorValidForSupplier(req);
     }
 }

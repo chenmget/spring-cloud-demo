@@ -7,7 +7,6 @@ import com.iwhalecloud.retail.report.dto.response.MktResEventruchu;
 import com.iwhalecloud.retail.report.dto.response.MktResInstResq;
 import com.iwhalecloud.retail.report.dto.response.ParMerchantResp;
 import com.iwhalecloud.retail.report.dto.response.PurchaseAmountResp;
-
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,8 +14,6 @@ import java.util.List;
 
 @Mapper
 public interface RptSupplierOperatingDayMapper extends BaseMapper<RptSupplierOperatingDayReq> {
-
-	String hqmaxItemId();
 
 	List<ParMerchantResp> hqParMerchantInfo();
 	
@@ -33,9 +30,9 @@ public interface RptSupplierOperatingDayMapper extends BaseMapper<RptSupplierOpe
     String hqIsHaveRecord(@Param("req") MktResInstEventReq req);
     
     void getDataForRptSupplierOperatingDay(@Param("req") RptSupplierOperatingDayReq req);
-  //更新入库
-  	void updateRptSupplierRu(RptSupplierOperatingDayReq req) ;
+    //更新入库
+  	void updateRptSupplierRu(@Param("req") RptSupplierOperatingDayReq req) ;
   	//更新出库
-  	void updateRptSupplierChu(RptSupplierOperatingDayReq req) ;
+  	void updateRptSupplierChu(@Param("req") RptSupplierOperatingDayReq req) ;
 }
 

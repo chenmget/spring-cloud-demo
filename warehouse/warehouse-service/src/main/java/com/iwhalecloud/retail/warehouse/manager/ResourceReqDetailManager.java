@@ -96,7 +96,7 @@ public class ResourceReqDetailManager extends ServiceImpl<ResourceReqDetailMappe
     public Page<ResourceReqDetailPageDTO> listResourceRequestPage(ResourceReqDetailQueryReq req) {
         Page<ResourceReqDetailPageDTO> page = new Page<ResourceReqDetailPageDTO>(req.getPageNo(), req.getPageSize());
         page.setSearchCount(req.getSearchCount());
-        return resourceReqDetailMapper.listResourceRequestPage(page,req);
+        return resourceReqDetailMapper.listResourceRequestPage(page, req);
     }
 
     /**

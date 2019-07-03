@@ -16,7 +16,6 @@ import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
-import com.iwhalecloud.retail.warehouse.busiservice.ResourceBatchRecService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
@@ -52,7 +51,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -122,6 +120,9 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
 
     @Autowired
     private ResouceInstTrackService resouceInstTrackService;
+
+    @Autowired
+    private MerchantService merchantService;
 
 
     @Override
@@ -735,7 +736,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         return merchantDTOList;
     }
 
-}
 
     @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {

@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.system.constant;
+package com.iwhalecloud.retail.member.constant;
 
 import com.iwhalecloud.retail.annotation.ErrorCodeAnnotation;
 import com.iwhalecloud.retail.dto.ResultCode;
@@ -11,10 +11,10 @@ import org.springframework.stereotype.Service;
  */
 @ErrorCodeAnnotation
 @Service
-public class SystemErrorCode {
+public class MemberErrorCode {
 
     /**
-     * 取消收藏请求对象不能为空
+     * 第一位编码
      */
-    public static ResultCode ERROR_100000;
+    public static ResultCode ERROR_1400000;
 }

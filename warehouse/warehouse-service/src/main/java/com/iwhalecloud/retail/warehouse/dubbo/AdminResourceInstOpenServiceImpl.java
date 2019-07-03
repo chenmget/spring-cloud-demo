@@ -120,4 +120,12 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     }
 
 
+    @Override
+    public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
+        ResultVO resp = adminResourceInstService.resetResourceInst(req);
+        resouceInstTrackService.asynResetResourceInst(req, resp);
+        return resp;
+    }
+
+
 }

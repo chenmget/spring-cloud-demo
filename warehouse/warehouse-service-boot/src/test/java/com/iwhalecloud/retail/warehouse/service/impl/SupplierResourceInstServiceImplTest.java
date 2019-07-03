@@ -244,4 +244,18 @@ public class SupplierResourceInstServiceImplTest {
         TradeResourceInstReq req = gson.fromJson(json, new TypeToken<TradeResourceInstReq>(){}.getType());
         tradeResourceInstService.tradeInResourceInst(req);
     }
+
+    @Test
+    public void resetResourceInst() {
+        AdminResourceInstDelReq req = new AdminResourceInstDelReq();
+        req.setDestStoreId("10425103");
+        req.setMktResInstIdList(Lists.newArrayList("26721497"));
+        req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
+        req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        req.setCheckStatusCd(checkStatusCd);
+        ResultVO<Boolean> resultVO = supplierResourceInstService.resetResourceInst(req);
+        log.info("resultVO={}", JSON.toJSONString(resultVO));
+    }
+
 }

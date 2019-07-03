@@ -262,5 +262,10 @@ public class Constant {
      */
     private String typeNotExists;
 
+    /**
+     * 交易过来的串码不允许退库
+     */
+    private String tradeNbrCanNotReset;
+
 
 }

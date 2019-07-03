@@ -33,4 +33,13 @@ public class ResouceInstTrackDetailManager extends ServiceImpl<ResouceInstTrackD
     public List<ResourceInstTrackDetailListResp> getResourceInstTrackDetailByNbr(ResourceInstsTrackDetailGetReq req) {
         return resouceInstTrackDetailMapper.getResourceInstTrackDetailByNbr(req);
     }
+
+    /**
+     * 通过串码查轨厂商仓库ID（第一条明细数据是厂商录入串码）
+     * @param mktResInstNbr
+     * @return
+     */
+    public String getMerchantStoreId(String mktResInstNbr){
+        return resouceInstTrackDetailMapper.getMerchantStoreId(mktResInstNbr);
+    }
 }

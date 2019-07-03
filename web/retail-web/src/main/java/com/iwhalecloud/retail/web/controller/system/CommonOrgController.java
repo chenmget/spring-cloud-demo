@@ -56,7 +56,7 @@ public class CommonOrgController {
             req.setLanId(lanId);
         }
 
-        return commonOrgService.listCommonOrg(req, false);
+        return commonOrgService.listCommonOrg(req);
     }
 
     @ApiOperation(value = "查询通用组织信息列表", notes = "不传参数，默认查湖南 通用组织信息第一级 列表")
@@ -67,7 +67,7 @@ public class CommonOrgController {
     @PostMapping(value = "/list")
     public ResultVO<List<CommonOrgDTO>> list(@RequestBody @ApiParam(value = "查询通用组织列表参数", required = true) CommonOrgListReq req) {
         log.info("CommonOrgController.list()  input: req: {}", JSON.toJSONString(req));
-        return commonOrgService.listCommonOrg(req, false);
+        return commonOrgService.listCommonOrg(req);
     }
 
     @ApiOperation(value = "查询通用组织信息全部列表", notes = "不传参数，默认查湖南 通用组织信息全部 列表")
@@ -75,7 +75,7 @@ public class CommonOrgController {
     @GetMapping(value = "/listAllCommonOrg")
     public ResultVO<List<CommonOrgDTO>> listAllCommonOrg() {
         CommonOrgListReq req = new CommonOrgListReq();
-        return commonOrgService.listCommonOrg(req, true);
+        return commonOrgService.listCommonOrg(req);
     }
 
 }

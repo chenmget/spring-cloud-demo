@@ -156,4 +156,11 @@ public interface ResouceInstTrackService {
      * @param resp
      */
     void asynTradeInResourceInst(TradeResourceInstReq req, ResultVO resp);
+
+    /**
+     * 串码退库
+     * @param req
+     * @param resp
+     */
+    void asynResetResourceInst(AdminResourceInstDelReq req, ResultVO resp);
 }

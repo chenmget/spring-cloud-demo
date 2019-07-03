@@ -233,9 +233,12 @@ public interface ProductService {
      * @return
      */
     ResultVO<List<String>> listProductId(ProductListReq req);
-    public ProductApplyInfoResp getProductApplyInfo(String productId);
+     ProductApplyInfoResp getProductApplyInfo(String productId);
 
-    public List<String> getProductIdListForApply(ProductGetIdReq req);
+     List<String> getProductIdListForApply(ProductGetIdReq req);
+
+
+     List<ProductApplyInfoResp> getDeliveryInfo(List<String> productIds);
 
 
 }

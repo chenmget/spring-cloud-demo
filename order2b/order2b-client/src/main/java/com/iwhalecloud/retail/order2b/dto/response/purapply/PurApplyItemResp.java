@@ -15,5 +15,7 @@ public class PurApplyItemResp   implements Serializable {
 	private String purPrice;
 	private String productId;
 
+	private String num;
+
 
 }

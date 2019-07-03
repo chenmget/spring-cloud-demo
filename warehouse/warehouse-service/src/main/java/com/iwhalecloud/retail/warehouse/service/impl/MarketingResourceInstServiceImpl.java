@@ -325,4 +325,9 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
         return null;
     }
+
+    @Override
+    public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
+        return null;
+    }
 }

@@ -7,11 +7,13 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.consts.PurApplyConsts;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
+import com.iwhalecloud.retail.order2b.manager.PurApplyDeliveryManager;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import com.iwhalecloud.retail.order2b.service.workflow.PurApplyAuditPassService;
 import com.iwhalecloud.retail.workflow.config.InvokeRouteServiceRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * @auther lin.wenhui@iwhalecloud.com
@@ -23,9 +25,9 @@ import org.apache.commons.lang3.StringUtils;
 @Service
 public class PurApplyAuditPassServiceImpl implements PurApplyAuditPassService {
 
-    @Reference
-    private PurchaseApplyService purchaseApplyService;
 
+    @Autowired
+    private PurApplyDeliveryManager purApplyDeliveryManager;
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
         log.info("PurApplyAuditPassServiceImpl.run params={}", JSON.toJSONString(params));
@@ -36,7 +38,13 @@ public class PurApplyAuditPassServiceImpl implements PurApplyAuditPassService {
         req.setApplyId(params.getBusinessId());
         //审核通过
         req.setStatusCd(PurApplyConsts.PUR_APPLY_STATUS_PASS);
-        return purchaseApplyService.updatePurApplyStatus(req);
+//        purchaseApplyService.updatePurApplyStatus(req);
+        int i = purApplyDeliveryManager.updatePurApplyStatus(req);
+        log.info("PurApplyAuditPassServiceImpl.run Resp = {}", i);
+        if (i < 1) {
+            return ResultVO.error("更新采购申请单状态失败");
+        }
+        return ResultVO.success();
     }
 }
 

@@ -163,7 +163,7 @@ public class AdminResourceInstB2BController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PutMapping(value="resetResourceInst")
+    @PostMapping(value="resetResourceInst")
     @UserLoginToken
     public ResultVO resetResourceInst(@RequestBody AdminResourceInstDelReq req) {
         if(CollectionUtils.isEmpty(req.getMktResInstIdList())) {

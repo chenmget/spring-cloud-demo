@@ -640,7 +640,7 @@ public class GoodsB2BController extends GoodsBaseController {
             req.setSupplierIds(supplierIds);
         } else {
             // 判断是否是地市管理员 是：默认设置supplierLanId值为当前用户的lanId
-            if (SystemConst.USER_FOUNDER_9 == UserContext.getUser().getUserFounder()) {
+            if (UserContext.isCityAdminType()) {
                 req.setSupplierLanId(UserContext.getUser().getLanId());
             }
         }

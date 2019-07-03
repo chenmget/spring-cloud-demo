@@ -169,7 +169,7 @@ public class UserContext implements Serializable {
      * @param userOtherMsgDTO 登录用户的其他信息
      * @author zwl 2018-11-5
      */
-    public static final void setUserOtherMsg(UserOtherMsgDTO userOtherMsgDTO) {
+    public static final void setUserOtherMsg(UserOtherMsgDTO userOtherMsgDTO){
         HttpSession session = getSession();
         if (session == null) {
             return;

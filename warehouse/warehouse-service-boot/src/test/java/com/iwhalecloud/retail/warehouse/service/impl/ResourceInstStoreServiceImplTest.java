@@ -75,9 +75,9 @@ public class ResourceInstStoreServiceImplTest {
     @Test
     public void updateResourceInstStore(){
         ResourceInstStoreDTO req = new ResourceInstStoreDTO();
-        req.setMerchantId("4301811022885");
-        req.setMktResId("1101089045995012097");
-        req.setMktResStoreId("31");
+        req.setMerchantId("4301811025392");
+        req.setMktResId("10412537");
+        req.setMktResStoreId("11");
         req.setQuantity(1L);
         req.setQuantityAddFlag(false);
         req.setStatusCd("1302");

@@ -108,63 +108,6 @@ public class AutoAddMerchantRulesJob implements SimpleJob {
                 log.info("AutoAddMerchantRulesJob updateAttrValue10={}", productAuditStateUpdateReq);
             }
 
-/*          // 旧逻辑
-
-            ProductGetReq req = new ProductGetReq();
-            req.setAttrValue10(ProductConst.attrValue10.EFFECTIVE.getCode());
-            ResultVO<Page<ProductDTO>> resultVO = productService.selectProduct(req);
-            log.info("AutoAddMerchantRulesJob selectProduct={}", resultVO.getResultData().getRecords().size());
-            List<String> productIds = new ArrayList<>();
-            if (resultVO.isSuccess() && null != resultVO.getResultData()) {
-                List<ProductDTO> productDTOs = resultVO.getResultData().getRecords();
-                if (!CollectionUtils.isEmpty(productDTOs)) {
-                    for (ProductDTO productDTO : productDTOs) {
-                        productIds.add(productDTO.getProductId());
-                    }
-                }
-            }
-
-            MerchantListReq merchantListReq = new MerchantListReq();
-            merchantListReq.setMerchantType(PartnerConst.MerchantTypeEnum.PARTNER.getType());
-            ResultVO<List<MerchantDTO>> merchantResultVo = merchantService.listMerchant(merchantListReq);
-            log.info("AutoAddMerchantRulesJob merchantService.listMerchant()零售商数量：{} ", merchantResultVo.getResultData().size());
-//            MerchantListReq merchantListReq1 = new MerchantListReq();
-//            merchantListReq1.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
-//            merchantListReq1.setAssignedFlg(PartnerConst.AssignedFlgEnum.YES.getType());
-//            ResultVO<List<MerchantDTO>>  supplierGroundResultVo = merchantService.listMerchant(merchantListReq);
-//            log.info("AutoAddMerchantRulesJob supplierGround_listMerchant={}", supplierGroundResultVo.getResultData().size());
-            List<MerchantDTO> merchantDTOs = new ArrayList<>();
-            if (merchantResultVo.isSuccess() && null != merchantResultVo) {
-                merchantDTOs = merchantResultVo.getResultData();
-            }
-            //地包的 并且有赋权的
-//            if(supplierGroundResultVo.isSuccess()&& null!=supplierGroundResultVo){
-//                merchantDTOs.addAll(supplierGroundResultVo.getResultData());
-//            }
-            if (!CollectionUtils.isEmpty(merchantDTOs) && !CollectionUtils.isEmpty(productIds)) {
-                for (MerchantDTO merchantDTO : merchantDTOs) {
-                    MerchantRulesSaveReq merchantRulesSaveReq = new MerchantRulesSaveReq();
-                    merchantRulesSaveReq.setMerchantId(merchantDTO.getMerchantId());
-                    merchantRulesSaveReq.setRuleType("1");
-                    merchantRulesSaveReq.setTargetType("2");
-                    int listSize = productIds.size();
-                    int toIndex = 200;
-                    for (int i = 0; i < listSize; i += 200) {
-                        if (i + 200 > listSize) {
-                            toIndex = listSize - i;
-                        }
-                        List newlist = productIds.subList(i, i + toIndex);
-                        merchantRulesSaveReq.setTargetIdList(newlist);
-                        merchantRulesService.saveMerchantRules(merchantRulesSaveReq);
-                        ProductAuditStateUpdateReq productAuditStateUpdateReq = new ProductAuditStateUpdateReq();
-                        productAuditStateUpdateReq.setProductIds(newlist);
-                        productAuditStateUpdateReq.setAttrValue10(ProductConst.attrValue10.SUCCESS.getCode());
-                        productService.updateAttrValue10(productAuditStateUpdateReq);
-                        log.info("AutoAddMerchantRulesJob updateAttrValue10={}", productAuditStateUpdateReq);
-                    }
-                }
-            }
-*/
         } catch (Exception e) {
             log.error("AutoAddMerchantRulesJob exceute exception", e);
         }

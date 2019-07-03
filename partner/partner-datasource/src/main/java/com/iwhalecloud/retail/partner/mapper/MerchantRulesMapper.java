@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantRuleGetReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantRulesDetailPageReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantRulesListReq;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import org.apache.ibatis.annotations.Mapper;
@@ -35,4 +36,5 @@ public interface MerchantRulesMapper extends BaseMapper<MerchantRules> {
      */
      Page<MerchantRulesDetailPageResp> pageMerchantRules(Page<MerchantRulesDetailPageResp> page, @Param("req") MerchantRulesDetailPageReq req);
 
+    public Page<MerchantRulesDTO> pageMerchantRulesDetail(Page<MerchantRulesDTO> page, @Param("req") MerchantRulesListReq req);
 }

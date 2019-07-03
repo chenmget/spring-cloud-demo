@@ -163,7 +163,7 @@ public class AdminResourceInstB2BController {
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
-    @PutMapping(value="resetResourceInst")
+    @PostMapping(value="resetResourceInst")
     @UserLoginToken
     public ResultVO resetResourceInst(@RequestBody AdminResourceInstDelReq req) {
         if(CollectionUtils.isEmpty(req.getMktResInstIdList())) {
@@ -176,7 +176,13 @@ public class AdminResourceInstB2BController {
         req.setUpdateStaff(userId);
         req.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
         req.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
-        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
+                ResourceConst.STATUSCD.SALED.getCode(),
+                ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
+                ResourceConst.STATUSCD.RESTORAGEING.getCode(),
+                ResourceConst.STATUSCD.EXCHANGEING.getCode(),
+                ResourceConst.STATUSCD.RESTORAGED.getCode());
+        req.setCheckStatusCd(checkStatusCd);
         req.setCheckStatusCd(checkStatusCd);
         log.info("AdminResourceInstB2BController.delResourceInst req={}", JSON.toJSONString(req));
         return adminResourceInstService.resetResourceInst(req);

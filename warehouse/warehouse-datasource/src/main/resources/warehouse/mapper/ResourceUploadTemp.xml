@@ -15,6 +15,7 @@
     ,t.MKT_RES_REQ_DETAIL_ID
     ,t.STATUS_CD
     ,t.remark
+    ,t.mkt_res_id
 </sql>
 
 

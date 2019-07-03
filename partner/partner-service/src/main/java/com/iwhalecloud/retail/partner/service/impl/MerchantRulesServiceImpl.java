@@ -581,7 +581,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     private List getCommonOrgList(MerchantRulesDetailListReq req, List<String> targetIdList) {
         CommonOrgListReq commonOrgListReq = new CommonOrgListReq();
         commonOrgListReq.setOrgIdList(targetIdList);
-        return commonOrgService.listCommonOrg(commonOrgListReq, false).getResultData();
+        return commonOrgService.listCommonOrg(commonOrgListReq).getResultData();
     }
 
     /**

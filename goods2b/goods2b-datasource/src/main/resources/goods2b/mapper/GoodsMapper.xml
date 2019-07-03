@@ -352,7 +352,7 @@
                 and g.PAYMENTS like CONCAT(CONCAT('%', #{req.payments}), '%')
             </if>
 
-            <if test="null!=req.supplierIds">
+            <if test="null!=req.supplierIds and req.supplierIds.size() > 0">
                 and SUPPLIER_ID in
                 <foreach item="item" index="index" open="(" separator="," close=")" collection="req.supplierIds">
                     #{item}
@@ -389,7 +389,7 @@
             <if test="null!=req.unitType and req.unitType!=''">
                 and g.GOODS_ID in (select GOODS_ID from prod_goods_product_rel t1,prod_product_base t2 where t1.PRODUCT_BASE_ID=t2.PRODUCT_BASE_ID and t2.UNIT_TYPE like CONCAT(CONCAT('%', #{req.unitType}), '%'))
             </if>
-            <if test="null!=req.brandIdList">
+            <if test="null!=req.brandIdList and req.brandIdList.size() > 0">
                 and g.BRAND_ID in
                 <foreach item="item" index="index" open="(" separator="," close=")" collection="req.brandIdList">
                     #{item}

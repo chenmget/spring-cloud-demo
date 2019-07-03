@@ -638,6 +638,11 @@ public class GoodsB2BController extends GoodsBaseController {
                 supplierIds.add(merchantId);
             }
             req.setSupplierIds(supplierIds);
+        } else {
+            // 判断是否是地市管理员 是：默认设置supplierLanId值为当前用户的lanId
+            if (SystemConst.USER_FOUNDER_9 == UserContext.getUser().getUserFounder()) {
+                req.setSupplierLanId(UserContext.getUser().getLanId());
+            }
         }
 
         return goodsService.queryPageByConditionAdmin(req);

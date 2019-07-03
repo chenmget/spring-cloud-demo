@@ -574,7 +574,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         //删除临时记录
         ResourceUploadTempDelReq resourceUploadTempDelReq = new ResourceUploadTempDelReq();
         resourceUploadTempDelReq.setMktResUploadBatch(req.getMktResUploadBatch());
-        //resourceUploadTempManager.delResourceUploadTemp(resourceUploadTempDelReq);
+        resourceUploadTempManager.delResourceUploadTemp(resourceUploadTempDelReq);
         return  ResultVO.success("批量审核串码成功");
     }
 
@@ -716,13 +716,15 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             ResourceInstListPageResp resp = new ResourceInstListPageResp();
             BeanUtils.copyProperties(tempListResp, resp);
             for (ResourceInstListPageResp instResp : instRespList) {
-                if (instResp.getMktResInstNbr().equals(tempListResp.getMktResInstNbr())) {
+                if (instResp.getMktResInstNbr().equals(resp.getMktResInstNbr())) {
                     BeanUtils.copyProperties(instResp, resp);
                     //组装厂商信息
                     if (merchantMap != null && !merchantMap.isEmpty()) {
                         resp.setMerchantTypeName(PartnerConst.MerchantTypeEnum.getNameByType(merchantMap.get(instResp.getMerchantId())));
                     }
                     //组装在库状态
+                    resp.setResult(tempListResp.getResult());
+                    resp.setResultDesc(tempListResp.getResultDesc());
                     resp.setStatusCdName(ResourceConst.STATUSCD.getName(instResp.getStatusCd()));
                     resp.setResultName(ResourceConst.CONSTANT_YES.equals(instResp.getResult()) ? "失败" : "成功");
                 }

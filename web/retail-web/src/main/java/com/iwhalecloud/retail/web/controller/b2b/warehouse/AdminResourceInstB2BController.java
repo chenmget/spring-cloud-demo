@@ -397,7 +397,7 @@ public class AdminResourceInstB2BController {
         return resourceInstService.countResourceUploadTemp(req);
     }
 
-    @ApiOperation(value = "导出串码明细", notes = "导出串码数据")
+    @ApiOperation(value = "导出串码校验失败明细", notes = "导出串码数据")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
@@ -411,7 +411,7 @@ public class AdminResourceInstB2BController {
         Workbook workbook = new HSSFWorkbook();
         //创建orderItemDetail
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data, OrderExportUtil.getResourceUploadTemp(), "串码");
-        deliveryGoodsResNberExcel.exportExcel("导入失败的串码", workbook, response);
+        deliveryGoodsResNberExcel.exportExcel("导出串码校验失败明细", workbook, response);
     }
 
     @ApiOperation(value = "提交导入excel的审批", notes = "提交串码审核的excel")

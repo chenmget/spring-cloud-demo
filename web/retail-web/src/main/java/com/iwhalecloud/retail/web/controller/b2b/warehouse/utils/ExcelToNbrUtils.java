@@ -19,6 +19,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @Component
@@ -54,7 +56,7 @@ public class ExcelToNbrUtils {
 				//获得当前行的列数
 				int lastCellNum = row.getPhysicalNumberOfCells();
 				ResInsExcleImportResp resp = new ResInsExcleImportResp();
-				resp.setMktResInstNbr(getCellValue(row.getCell(firstCellNum)));
+				resp.setMktResInstNbr(replaceBlank(getCellValue(row.getCell(firstCellNum))));
 				// 2种模板
 				if(lastCellNum > firstCellNum) {
 					resp.setCtCode(getCellValue(row.getCell(firstCellNum + 1)));
@@ -361,5 +363,21 @@ public class ExcelToNbrUtils {
 		}
 		return data;
 	}
+
+	/**
+	 * 删除文件中的空格，换行，制表符
+	 * @param str
+	 * @return
+	 */
+	private static String replaceBlank(String str) {
+		String dest = "";
+		if (str != null) {
+			Pattern p = Pattern.compile("\\s*|\t|\r|\n");
+			Matcher m = p.matcher(str);
+			dest = m.replaceAll("");
+		}
+		return dest;
+	}
+
 }
 

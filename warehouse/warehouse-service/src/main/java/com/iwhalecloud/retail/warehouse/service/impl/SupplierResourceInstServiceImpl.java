@@ -933,10 +933,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (CollectionUtils.isEmpty(instListResps)) {
             return ResultVO.error(constant.getNoResInst());
         }
+        List<String> mktResInstNbrList = new ArrayList<>(instListResps.size());
         for (ResourceInstDTO resp : instListResps) {
             if (StringUtils.isNotEmpty(resp.getOrderId())) {
                 return ResultVO.error(resp.getMktResInstNbr()+constant.getTradeNbrCanNotReset());
             }
+            mktResInstNbrList.add(resp.getMktResInstNbr());
         }
 
         String mktResStoreId = resouceInstTrackDetailManager.getMerchantStoreId(instListResps.get(0).getMktResInstNbr());
@@ -950,17 +952,21 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (!resultVO.isSuccess()) {
             return resultVO;
         }
+        if (CollectionUtils.isEmpty(mktResInstNbrList)) {
+            return resultVO;
+        }
         // 更新厂家对应的串码
-        AdminResourceInstDelReq delReq = new AdminResourceInstDelReq();
-        delReq.setUpdateStaff(req.getUpdateStaff());
-        delReq.setMktResInstIdList(req.getMktResInstIdList());
-        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        delReq.setEventType(ResourceConst.EVENTTYPE.NO_RECORD.getCode());
-        delReq.setMktResStoreId(req.getDestStoreId());
-        delReq.setDestStoreId(mktResStoreId);
+        ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
+        updateReq.setUpdateStaff(req.getUpdateStaff());
+        updateReq.setMktResInstNbrs(mktResInstNbrList);
+        updateReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        updateReq.setMktResStoreId(req.getMktResStoreId());
+        updateReq.setDestStoreId(mktResStoreId);
         List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode());
-        delReq.setCheckStatusCd(checkStatusCd);
+        updateReq.setCheckStatusCd(checkStatusCd);
 
-        return resourceInstService.updateResourceInstByIds(delReq);
+        Integer sucessNum = resourceInstManager.batchUpdateInstState(updateReq);
+        log.info("SupplierResourceInstServiceImpl.resetResourceInst resourceInstManager.batchUpdateInstState req={}, resp={}", JSON.toJSONString(updateReq), sucessNum);
+        return resultVO;
     }
 }

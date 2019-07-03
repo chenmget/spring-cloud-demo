@@ -154,6 +154,12 @@ public class OrderSelectB2BController {
     @RequestMapping(value = "/managerOrderList", method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<IPage<OrderSelectSwapResp>> managerOrderList(@RequestBody SelectOrderReq request) {
+
+        // zhongwenlong 判断是否是地市管理员 是：默认设置lanId值为当前用户的lanId
+        if (UserContext.isCityAdminType()) {
+            request.setLanId(UserContext.getUser().getLanId());
+        }
+
         if (StringUtils.isNotBlank(request.getOrderCat())) {
             String orderCat = request.getOrderCat();
             request.setOrderCatList(Arrays.asList(orderCat.split(",")));

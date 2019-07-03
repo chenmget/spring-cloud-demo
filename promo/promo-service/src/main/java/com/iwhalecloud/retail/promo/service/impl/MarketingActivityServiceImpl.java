@@ -646,8 +646,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             // 取第一个
             activityProductDTO = activityProductResultVO.getResultData().get(0);
         }
-        // 3.提取活动产品的优惠金额
-        Long discountAmount = activityProductDTO.getDiscountAmount();
+        // 3.提取活动产品的优惠金额，/100得元单位
+        Long discountAmount = activityProductDTO.getDiscountAmount()/100;
         // 4.替换营销活动中“活动优惠占位符${}”为产品的优惠活动金额。例：省级前置补贴${前置补贴金额}元
         // 匹配用的正则表达式
         String regex = "\\$\\{(.*?)\\}";

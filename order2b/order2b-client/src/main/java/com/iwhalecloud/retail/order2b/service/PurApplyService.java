@@ -78,4 +78,6 @@ public interface PurApplyService {
 
 	//政企省内代收项目状态报表
 	public ResultVO<Page<PurApplyStatusReportResp>> applyStatusSearchReport(PurApplyStatusReportReq req);
+
+	List<String>  countDelivery(String applyId);
 }

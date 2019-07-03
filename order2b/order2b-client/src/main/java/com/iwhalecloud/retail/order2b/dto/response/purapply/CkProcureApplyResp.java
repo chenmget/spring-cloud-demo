@@ -38,7 +38,8 @@ public class CkProcureApplyResp extends PageVO implements Serializable {
 	private String applyMerchantName;//申请人名称
 	private String supplierCode;//供应商编码
 	private String supplierId;//供应商ID
-	
+	private String deliveryTotal;//发货总数
+	private List<String> deliverMktResInstNbrList; // 发货串码列表
 	private List<AddProductReq> addProductReq;
 	
 	private List<AddFileReq> addFileReq;

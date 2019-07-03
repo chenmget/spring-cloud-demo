@@ -33,6 +33,17 @@ public class MarketingActivityListReq extends AbstractPageReq implements Seriali
     private String activityType;
 
     /**
+     * 活动级别，记录活动发起的对象级别 activity_level
+     *  1. 省级活动（运营商省级管理员发起）
+     *  2. 地市级活动（运营商地制级管理员发起）
+     *  3. 厂商活动（厂商自行发起）
+     *  4. 国省包商活动（国省包供应商自行发起）
+     *  5. 地包商活动（地包供应商自行发起）',
+     */
+    @ApiModelProperty(value="活动级别，记录活动发起的对象级别 activity_level")
+    private String activityLevel;
+
+    /**
      * 营销活动发起人
      */
     @ApiModelProperty(value = "营销活动发起人")
@@ -73,6 +84,12 @@ public class MarketingActivityListReq extends AbstractPageReq implements Seriali
      */
     @ApiModelProperty(value = "创建人")
     private String creator;
+
+    /**
+     * 创建人id列表
+     */
+    @ApiModelProperty(value = "创建人id列表")
+    private String creatorIdList;
     
     /**
      * 活动发货开始时间起

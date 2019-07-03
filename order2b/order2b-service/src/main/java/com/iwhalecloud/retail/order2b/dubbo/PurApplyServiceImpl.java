@@ -353,13 +353,13 @@ public class PurApplyServiceImpl implements PurApplyService {
 			PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
 			PurApplyItemReq.setApplyItem(p.getApplyItemId());
 			PurApplyItemReq.setProductId(p.getProductId());
-			List<String> deliverMktResInstNbrList =  purApplyManager.countPurApplyItemDetail(PurApplyItemReq);
-			log.info("ckApplyData2 data deliverMktResInstNbrList="+JSON.toJSONString(deliverMktResInstNbrList));
-			Integer count = deliverMktResInstNbrList.size();//查询发货的条数
-			if (count !=null) {
-				p.setDeliverCount(String.valueOf(count));
-			}
-			p.setDeliverMktResInstNbrList(deliverMktResInstNbrList);
+//			List<String> deliverMktResInstNbrList =  purApplyManager.countPurApplyItemDetail(PurApplyItemReq);
+//			log.info("ckApplyData2 data deliverMktResInstNbrList="+JSON.toJSONString(deliverMktResInstNbrList));
+//			Integer count = deliverMktResInstNbrList.size();//查询发货的条数
+//			if (count !=null) {
+//				p.setDeliverCount(String.valueOf(count));
+//			}
+//			p.setDeliverMktResInstNbrList(deliverMktResInstNbrList);
 		}
 		return result;
 	}
@@ -808,6 +808,11 @@ public class PurApplyServiceImpl implements PurApplyService {
 			}
 		}
 		return ResultVO.success(purApplyStatusReportResp);
+	}
+
+	@Override
+	public List<String> countDelivery(String applyId) {
+		return purApplyManager.countDelivery(applyId);
 	}
 
 	public boolean productParamCheck(PurApplyStatusReportReq req) {

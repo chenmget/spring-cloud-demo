@@ -103,5 +103,7 @@ public interface PurApplyMapper extends BaseMapper<PurApply>  {
 	public Page<PurApplyStatusReportResp> applyStatuSearchReport(Page<PurApplyStatusReportResp> page,@Param("req") PurApplyStatusReportReq req) ;
 
 	List<PurApplyItemResp>getDeliveryInfoByAppId(@Param("applyId") String applyId);
+	public List<String> countDelivery(@Param("applyId") String applyId);
+
 
 }

@@ -85,6 +85,7 @@ public class MarketingActivityB2BController {
             req.setUserName(userDTO.getUserName());
             req.setSysPostName(userDTO.getUserName());
             req.setOrgId(userDTO.getOrgId());
+            req.setUserFounder(userDTO.getUserFounder());
         }
         if (!StringUtils.isEmpty(req.getPageImgUrl())) {
             req.setPageImgUrl(req.getPageImgUrl().replaceAll(dfsShowIp, ""));

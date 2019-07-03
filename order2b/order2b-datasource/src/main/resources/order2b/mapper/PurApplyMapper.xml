@@ -829,7 +829,10 @@
 		SELECT COUNT(PRODUCT_ID) as num,PRODUCT_ID as productId FROM pur_apply_item_detail WHERE APPLY_ID=#{applyId} GROUP BY PRODUCT_ID
 	</select>
 
+	<select id="countDelivery" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT MKT_RES_INST_NBR FROM pur_apply_item_detail WHERE  APPLY_ID=#{applyId}
 
+	</select>
 
 </mapper>
 

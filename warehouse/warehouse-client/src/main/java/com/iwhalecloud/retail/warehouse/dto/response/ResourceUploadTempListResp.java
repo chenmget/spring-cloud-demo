@@ -113,4 +113,7 @@ public class ResourceUploadTempListResp implements java.io.Serializable {
 	@ApiModelProperty(value = "规格10")
 	private String attrValue10;
 
+	@ApiModelProperty(value = "typeId")
+	private String typeId;
+
 }

@@ -316,7 +316,7 @@
   <select id="getProductResource" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp">
     select t.product_id, t.sn,t.unit_name, t.source_from, t.color, t.memory, ppb.product_name,
-    ppb.unit_type_name, ppb.unit_type, pc.cat_name, pt.type_name, pb.name as brandName,
+    ppb.unit_type_name, ppb.unit_type, pc.cat_name, pt.type_name, pb.name as brandName,pt.type_id,
     t.color, t.memory, t.inch, t.attr_value1, t.attr_value2,t.attr_value3, t.attr_value4,
     t.attr_value5, t.attr_value6, t.attr_value7, t.attr_value8, t.attr_value9, t.attr_value10,
     t.purchase_type

@@ -69,7 +69,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Autowired
     private Constant constant;
 
-
     @Autowired
     private CallService callService;
 
@@ -121,7 +120,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     @Autowired
     private ResouceInstTrackService resouceInstTrackService;
 
-    @Autowired
+    @Reference
     private MerchantService merchantService;
 
 

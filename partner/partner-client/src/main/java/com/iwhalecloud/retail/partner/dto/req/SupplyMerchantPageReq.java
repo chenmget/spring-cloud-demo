@@ -35,6 +35,8 @@ public class SupplyMerchantPageReq extends PageVO {
     @ApiModelProperty(value = "商家所属经营主体	")
     private String businessEntityName;
 
+    @ApiModelProperty(value = "地市")
+    private String lanId;
 
     /**  下面的是 非 par_merchant 表字段  **/
 

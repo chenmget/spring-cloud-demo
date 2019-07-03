@@ -462,15 +462,6 @@ public class MerchantManager {
             });
         }
 
-//        // 是否需要先获取userId集合（后面判空用） 查询条件有涉及到通过user_id字段关联的其他表字段且有值时 为true
-//        Boolean isNeedGetUserIdList = false;
-//        List<String> userIdList = Lists.newArrayList();
-
-        /** 判断是否有 3、4级组织ID   有：需要转换成 (商家)CRM组织ID：parCrmOrgId 再进行查询 **/
-        // 是否需要先获取orgId集合（后面判空用） 查询条件有涉及到通过orgid字段关联的其他表字段且有值时 为true
-//        Boolean isNeedGetOrgIdList = false;
-//        List<String> orgIdList = Lists.newArrayList();
-
         // 是否需要先获取merchantId集合（后面判空用） 查询条件有涉及到通过merchant_id字段关联的其他表字段且有值时 为true
         Boolean isNeedGetMerchantIdList = false;
         List<String> merchantIdList = Lists.newArrayList();
@@ -526,29 +517,6 @@ public class MerchantManager {
             isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
         }
 
-        /** 判断是否有 3、4级组织ID   有：需要转换成 (商家)CRM组织ID：parCrmOrgId 再进行查询 **/
-        // 非商家表字段：  3、4级组织部门ID  先转换成  orgId  集合 再作为条件  进行查询
-        // 3、4级组织部门ID  转换成  orgId  集合
-//        if (!StringUtils.isEmpty(req.getOrgIdWithLevel3())
-//                || !StringUtils.isEmpty(req.getOrgIdWithLevel4())) {
-//
-//            List<String> resultList = get6LevelOrgIdList(req.getOrgIdWithLevel3(), req.getOrgIdWithLevel4());
-//            if (isNeedGetOrgIdList) {
-//                // 取交集
-//                orgIdList.retainAll(resultList);
-//            } else {
-//                orgIdList = resultList;
-//            }
-//            isNeedGetOrgIdList = true; // 这个赋值要放到最后面
-//        }
-
-
-//        if (CollectionUtils.isEmpty(orgIdList)
-//                && isNeedGetOrgIdList) {
-//            // 筛选后 集合为空
-//            // 添加一个空值 ID （使查询结果为空的）
-//            orgIdList.add("");
-//        }
 
         if (CollectionUtils.isEmpty(merchantIdList)
                 && isNeedGetMerchantIdList) {
@@ -558,10 +526,6 @@ public class MerchantManager {
         }
 
         // 条件是：in(包含的）  的字段
-//        if (!CollectionUtils.isEmpty(orgIdList)) {
-//            // parCrmOrgId
-//            queryWrapper.in(Merchant.FieldNames.parCrmOrgId.getTableFieldName(), orgIdList);
-//        }
         if (!CollectionUtils.isEmpty(merchantIdList)) {
             // merchant_id
             queryWrapper.in(Merchant.FieldNames.merchantId.getTableFieldName(), merchantIdList);
@@ -595,8 +559,19 @@ public class MerchantManager {
         if (!StringUtils.isEmpty(req.getMerchantType())) { // 商家类型
             queryWrapper.eq(Merchant.FieldNames.merchantType.getTableFieldName(), req.getMerchantType());
         }
-        if (!StringUtils.isEmpty(req.getLanId())) { // 本地网地市
+        if (!StringUtils.isEmpty(req.getLanId())) { // 地市
             queryWrapper.eq(Merchant.FieldNames.lanId.getTableFieldName(), req.getLanId());
+        }
+        if (!StringUtils.isEmpty(req.getCity())) { // 市县
+            queryWrapper.eq(Merchant.FieldNames.city.getTableFieldName(), req.getCity());
+        }
+
+        // 条件是in
+        if (!CollectionUtils.isEmpty(req.getLanIdList())) {
+            queryWrapper.in(Merchant.FieldNames.lanId.getTableFieldName(), req.getLanIdList());
+        }
+        if (!CollectionUtils.isEmpty(req.getCityList())) {
+            queryWrapper.in(Merchant.FieldNames.city.getTableFieldName(), req.getCityList());
         }
 
         // 条件是：like(模糊查询的）  的字段

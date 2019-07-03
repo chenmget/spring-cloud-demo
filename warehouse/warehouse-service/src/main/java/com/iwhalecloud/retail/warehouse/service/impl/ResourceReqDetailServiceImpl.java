@@ -5,7 +5,6 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
-import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductRebateReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
@@ -123,40 +122,42 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestDetailPage(ResourceReqDetailQueryReq req) {
         //根据搜索条件组装参数
         packageResourceReqDetailQueryReq(req);
-        Page<ResourceReqDetailPageDTO> respPage=new Page();
-        if(ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode().equals(req.getStatusCd())||ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode().equals(req.getStatusCd())){
+        Page<ResourceReqDetailPageDTO> respPage = new Page();
+        if (ResourceConst.DetailStatusCd.STATUS_CD_1004.getCode().equals(req.getStatusCd()) || ResourceConst.DetailStatusCd.STATUS_CD_1005.getCode().equals(req.getStatusCd())) {
             //查询状态为审核通过或审核不通过，查询用户审核过的明细
             req.setUpdateStaff(req.getUserId());
             respPage = resourceReqDetailManager.listResourceRequestPage(req);
-        }else if(ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode().equals(req.getStatusCd())){
+        }
+        else if (ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode().equals(req.getStatusCd())) {
             //查询状态为待审核
             //如果审核时间查询条件不为空，直接返回空数据
-            if(StringUtils.isNotEmpty(req.getStatusEndDate())||StringUtils.isNotEmpty(req.getStatusStartDate())){
+            if (StringUtils.isNotEmpty(req.getStatusEndDate()) || StringUtils.isNotEmpty(req.getStatusStartDate())) {
                 return ResultVO.success(new Page());
             }
             //获取用户当前待处理的流程表单id，即串码申请单id
-            List<String> formIdList=getUserHandleFormId(req.getUserId());
-            if(CollectionUtils.isEmpty(formIdList)){
+            List<String> formIdList = getUserHandleFormId(req.getUserId());
+            if (CollectionUtils.isEmpty(formIdList)) {
                 return ResultVO.success(new Page());
             }
             req.setMktResReqIdList(formIdList);
             //查询当前处理人待审核的串码明细
-            respPage=resourceReqDetailManager.listResourceRequestPage(req);
-        }else{
+            respPage = resourceReqDetailManager.listResourceRequestPage(req);
+        }
+        else {
             //查询状态为全部
             //获取用户当前待处理的流程表单id，即串码申请单id
-            List<String> formIdList=getUserHandleFormId(req.getUserId());
+            List<String> formIdList = getUserHandleFormId(req.getUserId());
             //获取用户处理过的申请单id
             req.setUpdateStaff(req.getUserId());
-            List<ResourceReqDetailPageDTO> resourceReqDetailList=resourceReqDetailManager.listDistinctResourceRequestByUser(req);
-            List<String> reqId=resourceReqDetailList.stream().map(ResourceReqDetailPageDTO ::getMktResReqId).collect(Collectors.toList());
+            List<ResourceReqDetailPageDTO> resourceReqDetailList = resourceReqDetailManager.listDistinctResourceRequestByUser(req);
+            List<String> reqId = resourceReqDetailList.stream().map(ResourceReqDetailPageDTO ::getMktResReqId).collect(Collectors.toList());
             formIdList.addAll(reqId);
             req.setMktResReqIdList(formIdList);
             req.setUpdateStaff(null);
-            respPage=resourceReqDetailManager.listResourceRequestPage(req);
+            respPage = resourceReqDetailManager.listResourceRequestPage(req);
         }
         //组装返回值
-        Page<ResourceReqDetailPageResp> result=fillResourceRequestDetailPage(respPage);
+        Page<ResourceReqDetailPageResp> result = fillResourceRequestDetailPage(respPage);
         return ResultVO.success(result);
     }
 
@@ -328,7 +329,8 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
             log.info("ResourceReqDetailServiceImpl.packageResourceReqDetailQueryReq.listMerchant req={} resp={}",JSON.toJSONString(merchantGetReq),JSON.toJSONString(merchantResult));
             if(merchantResult.isSuccess()&&merchantResult.getResultData()!=null){
                 List<MerchantDTO> merchantList=merchantResult.getResultData();
-                List<String> merchantIds=merchantList.stream().distinct().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
+                List<String> merchantIds=merchantList.stream().map(MerchantDTO::getMerchantId).collect(Collectors.toList());
+                //如果输入的厂商名找不到对应id，默认写死厂商id为0，过滤所有数据
                 req.setMerchantId(merchantIds.size() > 0 ? merchantIds : Lists.newArrayList("0"));
             }
         }
@@ -342,7 +344,8 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
             log.info("ResourceReqDetailServiceImpl.packageResourceReqDetailQueryReq.getProductForRebate req={} resp={}",JSON.toJSONString(productRebateReq),JSON.toJSONString(prodctResult));
             if(prodctResult.isSuccess()&&prodctResult.getResultData()!=null){
                 List<ProductResp> productList=prodctResult.getResultData();
-                List<String> productIds=productList.stream().distinct().map(ProductResp::getProductId).collect(Collectors.toList());
+                List<String> productIds=productList.stream().map(ProductResp::getProductId).collect(Collectors.toList());
+                //如果输入的产品相关信息找不到对应id，默认写死产品id为0，过滤所有数据
                 req.setProductId(productIds.size() > 0 ? productIds : Lists.newArrayList("0"));
             }
         }

@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.warehouse.manager;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.warehouse.dto.ResouceInstTrackDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstListPageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResourceInstsTrackGetReq;
@@ -15,10 +16,11 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 @Component
 @Slf4j
-public class ResouceInstTrackManager{
+public class ResouceInstTrackManager extends ServiceImpl<ResouceInstTrackMapper, ResouceInstTrack> {
 
     @Resource
     private ResouceInstTrackMapper resouceInstTrackMapper;
@@ -81,5 +83,29 @@ public class ResouceInstTrackManager{
         ResouceInstTrack resouceInstTrack = new ResouceInstTrack();
         BeanUtils.copyProperties(resouceInstTrackDTO, resouceInstTrack);
         return resouceInstTrackMapper.updateById(resouceInstTrack);
+    }
+
+    /**
+     * 判断是否在串码轨迹表存在记录
+     * @param resouceInstTrackDTO
+     * @return
+     */
+    public boolean existResouceInstTrack(ResouceInstTrackDTO resouceInstTrackDTO) {
+        log.info("ResouceInstTrackManager.genarateResouceInstTrack req={}", JSON.toJSONString(resouceInstTrackDTO));
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq(ResouceInstTrack.FieldNames.mktResInstNbr.getTableFieldName(), resouceInstTrackDTO.getMktResInstNbr());
+        if (StringUtils.isEmpty(resouceInstTrackDTO.getMktResId()) && StringUtils.isEmpty(resouceInstTrackDTO.getTypeId())) {
+            return false;
+        }
+        if (StringUtils.isNotEmpty(resouceInstTrackDTO.getMktResId())) {
+            queryWrapper.eq(ResouceInstTrack.FieldNames.mktResId.getTableFieldName(), resouceInstTrackDTO.getMktResId());
+        }
+        if (StringUtils.isNotEmpty(resouceInstTrackDTO.getTypeId())) {
+            queryWrapper.eq(ResouceInstTrack.FieldNames.typeId.getTableFieldName(), resouceInstTrackDTO.getTypeId());
+        }
+
+        ResouceInstTrack qryResouceInstTrack = resouceInstTrackMapper.selectOne(queryWrapper);
+
+        return Objects.nonNull(qryResouceInstTrack);
     }
 }

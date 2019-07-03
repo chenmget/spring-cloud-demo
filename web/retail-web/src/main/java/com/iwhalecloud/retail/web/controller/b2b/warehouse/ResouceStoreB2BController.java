@@ -8,6 +8,7 @@ import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.AllocateStorePageReq;
 import com.iwhalecloud.retail.warehouse.dto.request.StorePageReq;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
+import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
@@ -50,6 +51,12 @@ public class ResouceStoreB2BController {
         storePageReq.setPageNo(pageNo);
         storePageReq.setPageSize(pageSize);
         storePageReq.setStoreGrade(storeGrade);
+
+        // zhongwenlong 判断是否是地市管理员 是：默认设置lanId值为当前用户的lanId
+        if (UserContext.isCityAdminType()) {
+            storePageReq.setLanId(UserContext.getUser().getLanId());
+        }
+
         Page<ResouceStoreDTO> resouceStoreDTOPage = resouceStoreService.pageStore(storePageReq);
         return ResultVO.success(resouceStoreDTOPage);
     }

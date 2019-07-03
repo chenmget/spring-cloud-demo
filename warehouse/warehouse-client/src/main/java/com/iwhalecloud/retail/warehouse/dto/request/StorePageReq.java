@@ -47,6 +47,12 @@ public class StorePageReq extends PageVO {
     private String storeSubType;
 
     /**
+     * 本地网标识
+     */
+    @ApiModelProperty(value = "本地网标识")
+    private String lanId;
+
+    /**
      * 本地网标识集合
      */
     @ApiModelProperty(value = "本地网标识集合")

@@ -104,6 +104,9 @@
         <if test="null!=req.regionId and ''!=req.regionId">
             and s.REGION_ID = #{req.regionId}
         </if>
+        <if test="null!=req.lanId and ''!=req.lanId">
+            and s.LAN_ID = #{req.lanId}
+        </if>
         <if test="null!=req.lanIdList and req.lanIdList.size >0">
             and s.LAN_ID in
             <foreach item="item" index="index" open="(" separator="," close=")" collection="req.lanIdList">

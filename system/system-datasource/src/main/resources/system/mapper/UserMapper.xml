@@ -92,19 +92,19 @@
             <if test="req.relNo != null and req.relNo != ''">
                 and a.REL_NO = #{req.relNo}
             </if>
-            <!--<if test="req.statusList != null">-->
-                <!--and a.STATUS_CD in-->
-                <!--<foreach collection="req.statusList" open="(" index="index" item="item" separator="," close=")">-->
-                    <!--#{item}-->
-                <!--</foreach>-->
-            <!--</if>-->
-            <if test="req.userFounderList != null">
+            <if test="req.relCodeList != null and req.relCodeList.size() > 0">
+                and a.REL_CODE in
+                <foreach collection="req.relCodeList" open="(" index="index" item="item" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="req.userFounderList != null and req.userFounderList.size() > 0">
                 and a.USER_FOUNDER in
                 <foreach collection="req.userFounderList" open="(" index="index" item="item" separator="," close=")">
                     #{item}
                 </foreach>
             </if>
-            <if test="req.userIdList != null">
+            <if test="req.userIdList != null and req.userIdList.size() > 0">
                 and a.USER_ID in
                 <foreach collection="req.userIdList" open="(" index="index" item="item" separator="," close=")">
                     #{item}

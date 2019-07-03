@@ -177,9 +177,7 @@ public class MerchantResourceInstB2BController {
             return ResultVO.errorEnum(com.iwhalecloud.retail.oms.common.ResultCodeEnum.FORBID_UPLOAD_ERROR);
         }
         ResultVO resultVO = new ResultVO();
-        InputStream is = null;
-        try {
-            is = file.getInputStream();
+        try (InputStream is = file.getInputStream()){
             List<ResInsExcleImportResp> data = ExcelToNbrUtils.getData(is);
             resultVO.setResultCode(com.iwhalecloud.retail.oms.common.ResultCodeEnum.SUCCESS.getCode());
             resultVO.setResultData(data);

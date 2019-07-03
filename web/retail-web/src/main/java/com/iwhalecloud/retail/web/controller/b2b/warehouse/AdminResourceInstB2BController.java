@@ -203,9 +203,7 @@ public class AdminResourceInstB2BController {
         }
 
         ResultVO resultVO = new ResultVO();
-        InputStream is = null;
-        try {
-            is = file.getInputStream();
+        try (InputStream is = file.getInputStream()){
             List<ResInsExcleImportResp> data = ExcelToNbrUtils.getData(is);
             resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
             resultVO.setResultData(data);
@@ -261,9 +259,7 @@ public class AdminResourceInstB2BController {
         }
 
         ResultVO resultVO = new ResultVO();
-        InputStream is = null;
-        try {
-            is = file.getInputStream();
+        try (InputStream is = file.getInputStream()){
             List<ExcelToNbrAndMacResp> data = ExcelToNbrUtils.getNbrAndMac(is);
             resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
             resultVO.setResultData(data);
@@ -290,9 +286,7 @@ public class AdminResourceInstB2BController {
         }
 
         ResultVO resultVO = new ResultVO();
-        InputStream is = null;
-        try {
-            is = file.getInputStream();
+        try (InputStream is = file.getInputStream()){
             List<ExcelToNbrAndCteiResp> data = ExcelToNbrUtils.getNbrAndCtei(is);
             resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
             resultVO.setResultData(data);
@@ -352,9 +346,7 @@ public class AdminResourceInstB2BController {
         if (allowUploadSuffix.indexOf(suffix) <= -1) {
             return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
         }
-        InputStream is = null;
-        try {
-            is = file.getInputStream();
+        try (InputStream is = file.getInputStream()){
             List<ExcelResourceReqDetailDTO> data = ExcelToNbrUtils.getNbrDetailData(is);
             UserDTO userDTO = UserContext.getUser();
             String userId = userDTO.getUserId();
@@ -364,17 +356,6 @@ public class AdminResourceInstB2BController {
             log.error("excel解析失败", e);
             return ResultVO.error("excel解析失败");
         }
-        finally {
-            try {
-                if (is != null) {
-                    is.close();
-                }
-            }
-            catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
     }
 
     @ApiOperation(value = "获取串码审核临时记录", notes = "查询操作")

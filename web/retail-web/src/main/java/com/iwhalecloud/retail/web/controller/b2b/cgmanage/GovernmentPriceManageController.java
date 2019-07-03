@@ -137,9 +137,7 @@ public class GovernmentPriceManageController extends BaseController {
         }
 
         ResultVO resultVO = new ResultVO();
-        InputStream is = null;
-        try {
-            is = file.getInputStream();
+        try (InputStream is = file.getInputStream()){
 //            List<ResInsExcleImportResp> data = ExcelToNbrUtils.getData(is);
             List<UpdateCorporationPriceReq> data = ExcelToNbrUtils.getPriceData(is);
             resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());

@@ -194,9 +194,7 @@ public class MerchantRulesController {
         }
 
         ResultVO resultVO = new ResultVO();
-        InputStream is = null;
-        try {
-            is = file.getInputStream();
+        try (InputStream is = file.getInputStream()){
             List<MerchantRulesImportResp> data = ExcelToMerchantRulesUtils.getData(is);
             for (int i = 0; i < data.size(); i++) {
                 MerchantRulesImportResp merchantRulesImportResp = data.get(i);

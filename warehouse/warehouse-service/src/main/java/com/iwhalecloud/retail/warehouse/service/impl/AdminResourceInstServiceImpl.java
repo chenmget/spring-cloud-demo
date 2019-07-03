@@ -47,7 +47,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -748,10 +747,12 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         if (CollectionUtils.isEmpty(instListResps)) {
             return ResultVO.error(constant.getNoResInst());
         }
+        List<String> mktResInstNbrList = new ArrayList<>(instListResps.size());
         for (ResourceInstDTO resp : instListResps) {
             if (StringUtils.isNotEmpty(resp.getOrderId())) {
                 return ResultVO.error(resp.getMktResInstNbr()+constant.getTradeNbrCanNotReset());
             }
+            mktResInstNbrList.add(resp.getMktResInstNbr());
         }
 
         String mktResStoreId = resouceInstTrackDetailManager.getMerchantStoreId(instListResps.get(0).getMktResInstNbr());
@@ -759,23 +760,34 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         if (StringUtils.isEmpty(mktResStoreId)) {
             return ResultVO.error(constant.getCannotGetStoreMsg());
         }
-
+        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(mktResStoreId);
+        if (merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
+        }
+        String merchantType = merchantResultVO.getResultData().getMerchantType();
+        if (!PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchantType) && !PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(merchantType)) {
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
+        }
         req.setMktResStoreId(mktResStoreId);
         ResultVO resultVO = resourceInstService.updateResourceInstByIds(req);
         if (!resultVO.isSuccess()) {
             return resultVO;
         }
+        if (CollectionUtils.isEmpty(mktResInstNbrList)) {
+            return resultVO;
+        }
         // 更新厂家对应的串码
-        AdminResourceInstDelReq delReq = new AdminResourceInstDelReq();
-        delReq.setUpdateStaff(req.getUpdateStaff());
-        delReq.setMktResInstIdList(req.getMktResInstIdList());
-        req.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        delReq.setEventType(ResourceConst.EVENTTYPE.NO_RECORD.getCode());
-        delReq.setMktResStoreId(req.getDestStoreId());
-        delReq.setDestStoreId(mktResStoreId);
+        ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
+        updateReq.setUpdateStaff(req.getUpdateStaff());
+        updateReq.setMktResInstNbrs(mktResInstNbrList);
+        updateReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+        updateReq.setMktResStoreId(req.getMktResStoreId());
+        updateReq.setDestStoreId(mktResStoreId);
         List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode());
-        delReq.setCheckStatusCd(checkStatusCd);
+        updateReq.setCheckStatusCd(checkStatusCd);
 
-        return resourceInstService.updateResourceInstByIds(delReq);
+        Integer sucessNum = resourceInstManager.batchUpdateInstState(updateReq);
+        log.info("AdminResourceInstServiceImpl.resetResourceInst resourceInstManager.batchUpdateInstState req={}, resp={}", JSON.toJSONString(updateReq), sucessNum);
+        return resultVO;
     }
 }

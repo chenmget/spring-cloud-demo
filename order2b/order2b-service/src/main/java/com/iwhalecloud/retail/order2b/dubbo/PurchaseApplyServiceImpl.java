@@ -508,6 +508,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 Integer num = deliveryingMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType);
                 Integer totalNum = Integer.valueOf(num)+Integer.valueOf( p.getNum() );
                 deliveryingMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,totalNum);
+                List<String>errorMkt = tradeMap.get(productId);
+                errorMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,errorMkt);
 
             }
         }
@@ -516,15 +518,18 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
         Integer errorFlag = 0;
         String mgs="";
+        List<String> errorMktList = new ArrayList<String>();
         for (String key : deliveryingMap.keySet()) {
             if (listMap.get(key) == null) {
                 mgs=mgs+key+",";
+                List<String> mkt =tradeMap.get(key);
+                errorMktList.addAll(mkt);
                 errorFlag=1;
             }
         }
-        log.info("8.串码机型不符合申请单规格，请检查！" +mgs);
+        log.info("8.串码机型不符合申请单规格，请检查！" +mgs+ " errorMktList={} "+JSON.toJSONString(errorMktList));
         if (errorFlag ==1) {
-            return ResultVO.error("串码机型不符合申请单规格，请检查！");
+            return ResultVO.error("串码机型不符合申请单规格，请检查！"+JSON.toJSONString(errorMktList));
         }
 
 //       判断 发货的数量是否 有超过

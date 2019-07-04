@@ -7,7 +7,6 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
-import com.iwhalecloud.retail.partner.comm.MerchantConst;
 import com.iwhalecloud.retail.partner.common.ParInvoiceConst;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -19,6 +18,7 @@ import com.iwhalecloud.retail.partner.entity.Invoice;
 import com.iwhalecloud.retail.partner.entity.Merchant;
 import com.iwhalecloud.retail.partner.entity.MerchantAccount;
 import com.iwhalecloud.retail.partner.mapper.MerchantMapper;
+import com.iwhalecloud.retail.partner.utils.ZookeeperTool;
 import com.iwhalecloud.retail.system.common.SysOrgConst;
 import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.PublicDictDTO;
@@ -30,6 +30,7 @@ import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.system.service.PublicDictService;
 import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
@@ -1003,7 +1004,7 @@ public class MerchantManager {
     public String addMerchan( Merchant merchant){
         List<PublicDictDTO> publicDictDTOList = publicDictService.queryPublicDictListByType("ZK");
         String connectStr = publicDictDTOList.get(0).getPname();
-        //InterProcessLock lock = ZookeeperTool.getInstance(connectStr).getLock();
+        InterProcessLock lock = ZookeeperTool.getInstance(connectStr).getLock();
         try {
             //lock.acquire();
             String merchantCode = getMerchantCode(merchant.getMerchantType());
@@ -1013,7 +1014,7 @@ public class MerchantManager {
             log.info(e.getMessage());
         }finally {
             try {
-               // lock.release();
+                lock.release();
             } catch (Exception e) {
                 log.info(e.getMessage());
             }

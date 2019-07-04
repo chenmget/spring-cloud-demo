@@ -86,4 +86,6 @@ public class UserFactoryMerchantReq  implements Serializable {
     @ApiModelProperty(value = "用户Id")
     private String userId;
 
+    @ApiModelProperty(value = "厂商Id")
+    private String merchantId;
 }

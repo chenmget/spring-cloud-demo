@@ -602,13 +602,16 @@ public class MerchantController {
      * @param req
      * @return
      */
-    @ApiOperation(value = "新建厂商", notes = "新增厂商信息，同时生成user数据，生成审核工作流")
+    @ApiOperation(value = "管理平台新建厂商", notes = "新增厂商信息，同时生成user数据，生成审核工作流")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @RequestMapping(value = "/saveFactoryMerchant", method = RequestMethod.POST)
-    public ResultVO saveFactoryMerchant(@RequestBody @ApiParam(value = "保存参数", required = true) FactoryMerchantSaveReq req) {
+    @UserLoginToken
+    public ResultVO<String> saveFactoryMerchant(@RequestBody @ApiParam(value = "保存参数", required = true) FactoryMerchantSaveReq req) {
+        req.setCreateStaff(UserContext.getUserId());
+        req.setCreateStaffName(UserContext.getUser().getUserName());
         log.info("MerchantController.saveFactoryMerchant() input: req={}", JSON.toJSONString(req));
         return merchantService.saveFactoryMerchant(req);
     }

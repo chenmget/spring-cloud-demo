@@ -15,7 +15,6 @@ import com.iwhalecloud.retail.system.dto.CommonFileDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.CommonFileService;
 import com.iwhalecloud.retail.system.service.UserService;
-import com.iwhalecloud.retail.system.service.VerifyCodeService;
 import com.iwhalecloud.retail.system.service.ZopMessageService;
 import com.iwhalecloud.retail.workflow.aop.NoticeMsg;
 import com.iwhalecloud.retail.workflow.bizservice.RunRouteService;

@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.*;
+import com.iwhalecloud.retail.system.dto.request.UserFactoryMerchantReq;
 
 import java.util.List;
 
@@ -133,14 +134,20 @@ public interface MerchantService{
     ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req);
 
     /**
-     * 新增厂商
+     * 获取商家ID列表
+     * @param
+     * @return
+     */
+    List<String> getMerchantIdList(String merchantName);
+
+
+    /**
+     * 管理平台新增厂商
      * @param req
      * @return
      */
-    ResultVO<FactoryMerchantSaveReq> saveFactoryMerchant(FactoryMerchantSaveReq req);
+    ResultVO<String> saveFactoryMerchant(FactoryMerchantSaveReq req);
 
-
-    void startProcess(String title, String userId, String userName, String processId, String formId, String extends1, String taskType);
 
     /**
      * 注册地包商
@@ -205,12 +212,4 @@ public interface MerchantService{
      * @return
      */
     ResultVO<SupplierResistResp> getSupplierInfo(String merchantId);
-
-    /*
-     * 获取商家ID列表
-     * @param
-     * @return
-     */
-    List<String> getMerchantIdList(String merchantName);
-
 }

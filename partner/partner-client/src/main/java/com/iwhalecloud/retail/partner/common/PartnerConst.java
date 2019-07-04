@@ -478,34 +478,35 @@ public class PartnerConst {
     }
 
     /**
-     *  商家流程配置
+     * 商家流程配置
      */
     public enum MerchantProcessEnum {
 
-        PROCESS_DBGL("3040301","地包商管理"),
-        PROCESS_ADMIN_DBGL("3040401","地市管理员账号管理"),
-        PROCESS_SBGL("3040601","国/省包管理"),
-        PROCESS_ADMIN_SBGL("3040602","后台管理员国/省包管理"),
-        PROCESS_3040501("3040501","厂商管理（自注册）"),
-        PROCESS_3040601("3040601","国/省包管理"),
-        PROCESS_11("11","商家权限申请审核流程"),
-        PROCESS_3010101("3010101","厂商经营权限（串码录入停用申请）"),
-        PROCESS_3040301("3040301","地包商管理"),
-        PROCESS_3040701("3040701","厂商管理(管理平台注册)");
+        PROCESS_DBGL("3040301", "地包商管理"),
+        PROCESS_ADMIN_DBGL("3040401", "地市管理员账号管理"),
+        PROCESS_SBGL("3040601", "国/省包管理"),
+        PROCESS_ADMIN_SBGL("3040602", "后台管理员国/省包管理"),
+        PROCESS_3040501("3040501", "厂商管理（自注册）"),
+        PROCESS_3040601("3040601", "国/省包管理"),
+        PROCESS_11("11", "商家权限申请审核流程"),
+        PROCESS_3010101("3010101", "厂商经营权限（串码录入停用申请）"),
+        PROCESS_3040301("3040301", "地包商管理"),
+        PROCESS_3040701("3040701", "厂商管理(管理平台注册)");
 
         private String processId;
         private String processTitle;
-        MerchantProcessEnum(String processId, String processTitle){
+
+        MerchantProcessEnum(String processId, String processTitle) {
             this.processId = processId;
             this.processTitle = processTitle;
         }
+
         public String getProcessId() {
             return processId;
         }
+
         public String getProcessTitle() {
             return processTitle;
         }
     }
-
-
 }

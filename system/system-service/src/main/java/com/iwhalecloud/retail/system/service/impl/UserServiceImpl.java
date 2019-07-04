@@ -711,8 +711,8 @@ public class UserServiceImpl implements UserService {
         req.setUserId(userDTO.getUserId());
         FactoryMerchantSaveReq factoryMerchantSaveReq=new FactoryMerchantSaveReq();
         BeanUtils.copyProperties(req, factoryMerchantSaveReq);
-        factoryMerchantSaveReq.setApplyId(userDTO.getUserId());
-        factoryMerchantSaveReq.setApplyName(userDTO.getUserName());
+        factoryMerchantSaveReq.setCreateStaff(userDTO.getUserId());
+        factoryMerchantSaveReq.setCreateStaffName(userDTO.getUserName());
         //调用自注册服务
         ResultVO<String> vo=merchantService.registerFactoryMerchant(factoryMerchantSaveReq);
         if(!vo.isSuccess()||null==vo.getResultData()){

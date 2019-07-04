@@ -8,15 +8,13 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.TagsConst;
 import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.PageVO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
-import com.iwhalecloud.retail.partner.dto.resp.FactoryMerchantDTO;
-import com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp;
-import com.iwhalecloud.retail.partner.dto.resp.RetailMerchantDTO;
-import com.iwhalecloud.retail.partner.dto.resp.SupplyMerchantDTO;
+import com.iwhalecloud.retail.partner.dto.resp.*;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
@@ -597,6 +595,38 @@ public class MerchantController {
             }
         }
         return merchantService.pageMerchant(req);
+    }
+
+    /**
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "新建厂商", notes = "新增厂商信息，同时生成user数据，生成审核工作流")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/saveFactoryMerchant", method = RequestMethod.POST)
+    public ResultVO saveFactoryMerchant(@RequestBody @ApiParam(value = "保存参数", required = true) FactoryMerchantSaveReq req) {
+        log.info("MerchantController.saveFactoryMerchant() input: req={}", JSON.toJSONString(req));
+        return merchantService.saveFactoryMerchant(req);
+    }
+
+    /**
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "修改商户信息", notes = "修改商户信息")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/editMerchant", method = RequestMethod.POST)
+    public ResultVO editMerchant(@RequestBody @ApiParam(value = "保存参数", required = true) MerchantEditReq req) {
+        log.info("MerchantController.editMerchant() input: req={}", JSON.toJSONString(req));
+        return merchantService.editMerchant(req);
     }
 
 

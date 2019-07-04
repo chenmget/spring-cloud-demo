@@ -7,7 +7,6 @@ import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.UserLoginResp;
-
 import java.util.List;
 
 public interface UserService {
@@ -123,7 +122,20 @@ public interface UserService {
      */
     ResultVO<List<UserDTO>> listUserByCondition(String roleId, String orgId);
 
-
     /**  对外提供的服务 end  **/
 
+    /**
+     * 商家自注册厂商
+     * @param req
+     * @return
+     */
+    ResultVO registerFactoryMerchant(UserFactoryMerchantReq req);
+
+    /**
+     * 新建系统用户
+     * @param loginUser
+     * @param req
+     * @return
+     */
+    ResultVO<UserDTO> addSysUser(UserDTO loginUser,UserSaveReq req);
 }

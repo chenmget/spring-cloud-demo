@@ -6,8 +6,10 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantImeiRulesResp;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 
 import java.util.List;
 
@@ -26,6 +28,8 @@ public interface MerchantRulesService {
      * @return
      */
     ResultVO<Integer> deleteMerchantRules(MerchantRulesDeleteReq req);
+
+
 
 //    /**
 //     * 商家 权限规则 信息 列表查询
@@ -85,6 +89,13 @@ public interface MerchantRulesService {
      */
     ResultVO<List<String>> getGreenChannelPermission(String merchantId);
 
+    /**
+     * 获取串码权限--机型
+     * @param merchantId
+     * @return
+     */
+    ResultVO<List<String>> getImeiPermission(String merchantId);
+
 
     /**
      * 通过查询对象获取targetId的集合
@@ -130,6 +141,27 @@ public interface MerchantRulesService {
     ResultVO<String> checkMerchantRules(MerchantRulesCheckReq req);
 
     /**
+     * 增加厂商串码录入权限
+     * @param req
+     * @return
+     */
+    ResultVO saveFactoryMerchantImeiRule(MerchantRulesSaveReq req);
+
+    /**
+     * 取消厂商串码录入权限
+     * @param req
+     * @return
+     */
+    ResultVO delFactoryMerchantImeiRule(MerchantRulesSaveReq req, UserDTO userDTO);
+
+    /**
+     * 商家串码录入权限
+     * @param merchantId
+     * @return
+     */
+    ResultVO<List<MerchantImeiRulesResp>> listFactoryMerchantImeiRule(String merchantId);
+
+    /**
      * 商家权限规则校验 商家是否有经营权限进行提示
      *
      * @param merchantId 规则校验入参
@@ -137,5 +169,6 @@ public interface MerchantRulesService {
      * @return ResultVO
      */
     ResultVO<Boolean> checkProdListRule(String merchantId,String productBaseId);
+
 
 }

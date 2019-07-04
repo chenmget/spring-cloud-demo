@@ -1119,4 +1119,20 @@ public class UserController extends BaseController {
         }
         return userService.resetPassword(userResetPasswordReq);
     }
+
+    /**
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "用户自注册为产商", notes = "注册用户，同时生成厂商信息，配置产商权限，生成厂商审核流程")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/registerFactoryMerchant", method = RequestMethod.POST)
+    public ResultVO registerFactoryMerchant(@RequestBody @ApiParam(value = "保存参数", required = true) UserFactoryMerchantReq req) {
+        return userService.registerFactoryMerchant(req);
+    }
+
 }

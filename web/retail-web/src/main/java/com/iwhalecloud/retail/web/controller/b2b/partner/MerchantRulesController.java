@@ -13,13 +13,16 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantImeiRulesResp;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.web.controller.b2b.partner.response.MerchantRulesImportResp;
 import com.iwhalecloud.retail.web.controller.b2b.partner.utils.ExcelToMerchantRulesUtils;
+import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -264,5 +267,41 @@ public class MerchantRulesController {
     public ResultVO<Boolean> checkProdListRule(@RequestParam(value = "merchantId") String merchantId, @RequestParam(value = "productBaseId") String productBaseId) {
 
         return merchantRulesService.checkProdListRule(merchantId, productBaseId);
+    }
+
+    @ApiOperation(value = "获取厂商的串码录入权限", notes = "获取厂商的串码录入权限")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/pageFactoryMerchantImeiRule", method = RequestMethod.GET)
+    public ResultVO<List<MerchantImeiRulesResp>> listFactoryMerchantImeiRule(@RequestBody @ApiParam(value = "分页参数", required = true) String  merchantId) {
+        // log.info("MerchantController.pageFactoryMerchantImeiRule() input: req={}", JSON.toJSONString(req));
+
+        return merchantRulesService.listFactoryMerchantImeiRule(merchantId);
+
+    }
+
+    @ApiOperation(value = "新增厂商串码录入权限", notes = "新增厂商串码录入权限")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/saveFactoryMerchantImeiRule", method = RequestMethod.POST)
+    public ResultVO saveFactoryMerchantImeiRule(@RequestBody @ApiParam(value = "建立厂商录入串码权限", required = true) MerchantRulesSaveReq req) {
+        return merchantRulesService.saveFactoryMerchantImeiRule(req);
+
+    }
+
+    @ApiOperation(value = "取消厂商串码录入权限", notes = "取消厂商串码录入权限")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/delFactoryMerchantImeiRule", method = RequestMethod.POST)
+    public ResultVO delFactoryMerchantImeiRule(@RequestBody @ApiParam(value = "取消厂商录入串码权限", required = true) MerchantRulesSaveReq req) {
+        UserDTO userDTO = UserContext.getUser();
+        return merchantRulesService.delFactoryMerchantImeiRule(req,userDTO);
+
     }
 }

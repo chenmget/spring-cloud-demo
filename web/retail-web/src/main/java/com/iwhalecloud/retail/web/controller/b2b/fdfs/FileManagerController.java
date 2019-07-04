@@ -73,7 +73,7 @@ public class FileManagerController extends BaseController {
         return resultVO;
     }
 
-    @UserLoginToken
+    //@UserLoginToken
     @RequestMapping(value = "/uploadImageByFile",headers = "content-type=multipart/form-data" ,method = RequestMethod.POST)
     public ResultVO uploadImageByFile(@RequestParam("file") MultipartFile file) {
 

@@ -20,11 +20,13 @@ import com.iwhalecloud.retail.partner.entity.MerchantAccount;
 import com.iwhalecloud.retail.partner.mapper.MerchantMapper;
 import com.iwhalecloud.retail.system.common.SysOrgConst;
 import com.iwhalecloud.retail.system.dto.OrganizationDTO;
+import com.iwhalecloud.retail.system.dto.PublicDictDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.OrganizationChildListReq;
 import com.iwhalecloud.retail.system.dto.request.UserListReq;
 import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
 import com.iwhalecloud.retail.system.service.OrganizationService;
+import com.iwhalecloud.retail.system.service.PublicDictService;
 import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -34,7 +36,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
-
+//import com.iwhalecloud.retail.partner.utils.ZookeeperTool;
 import javax.annotation.Resource;
 import java.util.Date;
 import java.util.List;
@@ -61,6 +63,9 @@ public class MerchantManager {
 
     @Autowired
     private MerchantAccountManager merchantAccountManager;
+
+    @Reference
+    private PublicDictService publicDictService;
 
 
     /**
@@ -979,5 +984,68 @@ public class MerchantManager {
     public List<String> getMerchantIdList(String merchantName) {
         return merchantMapper.getMerchantIdList(merchantName);
     }
+
+    /**
+     * 获取主键
+     * @return
+     */
+    public String getPrimaryKey(){
+        return merchantMapper.getPrimaryKey();
+    }
+
+    /**
+     * 添加商户信息
+     * @param merchant
+     * @return
+     */
+
+    public String addMerchan( Merchant merchant){
+        List<PublicDictDTO> publicDictDTOList = publicDictService.queryPublicDictListByType("ZK");
+        String connectStr = publicDictDTOList.get(0).getPname();
+        //InterProcessLock lock = ZookeeperTool.getInstance(connectStr).getLock();
+        try {
+            //lock.acquire();
+            String merchantCode = getMerchantCode(merchant.getMerchantType());
+            merchant.setMerchantCode(merchantCode);
+            merchantMapper.insert(merchant);
+        } catch (Exception e) {
+            log.info(e.getMessage());
+        }finally {
+            try {
+               // lock.release();
+            } catch (Exception e) {
+                log.info(e.getMessage());
+            }
+            return  merchant.getMerchantId();
+        }
+    }
+
+    /**
+     *  加锁使用
+     * @param merchatType
+     * @return
+     */
+    public String getMerchantCode(String merchatType) {
+        String merchantCode = merchantMapper.getMaxMerchantCode(merchatType);
+        String num = merchantCode.substring(merchantCode.lastIndexOf("S") + 1);
+        int key = Integer.parseInt(merchantCode.substring(merchantCode.lastIndexOf("S") + 1)) + 1;
+        String keyStr = String.valueOf(key);
+        int count = num.length() - keyStr.length();
+        while (count > 0) {
+            count--;
+            keyStr = "0" + keyStr;
+        }
+        if (merchatType.equals(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType())) {
+            keyStr = PartnerConst.MerchantTypeEnum.MANUFACTURER.getCodePrefix() + keyStr;
+        }
+        if (merchatType.equals(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType())) {
+            keyStr = PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getCodePrefix() + keyStr;
+        }
+        if (merchatType.equals(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType())) {
+            keyStr = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getCodePrefix() + keyStr;
+        }
+        return keyStr;
+    }
+
 }
 

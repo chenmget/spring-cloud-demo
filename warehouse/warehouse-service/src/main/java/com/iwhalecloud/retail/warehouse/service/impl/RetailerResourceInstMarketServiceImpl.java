@@ -171,7 +171,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             if (null != startResultVO && startResultVO.getResultCode().equals(ResultCodeEnum.ERROR.getCode())) {
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
             }
-            return ResultVO.error(ResourceConst.SUCESS_MSG + reqCode);
+            return ResultVO.error(constant.getGreenChannelAudit());
         }else{
             req.setMktResStoreId(mktResStoreId);
             ResultVO syncTerminalResultVO = resourceInstService.syncTerminal(req);
@@ -589,7 +589,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         }
         String requestStatusCd = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
         String detailStatusCd = ResourceConst.DetailStatusCd.STATUS_CD_1002.getCode();
-        String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
+        String successMessage = constant.getAllocateSubmit();
         List<String> mktResInstNbrs = req.getMktResInstNbrs();
         String auditType = validAllocateNbr(sourceMerchantDTO, destMerchantDTO, mktResInstNbrs);
         log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst validAllocateNbr req={}", JSON.toJSONString(auditType));
@@ -598,7 +598,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             return ResultVO.error(constant.getCanNotAllocate());
         }else if(ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode().equals(auditType)){
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
-            successMessage = ResourceConst.ALLOCATE_AUDITING_MSG + reqCode;
+            successMessage = constant.getAllocateAudit();
             detailStatusCd = ResourceConst.DetailStatusCd.STATUS_CD_1009.getCode();
         }
         // 此处应该调用BSS3.0接口查

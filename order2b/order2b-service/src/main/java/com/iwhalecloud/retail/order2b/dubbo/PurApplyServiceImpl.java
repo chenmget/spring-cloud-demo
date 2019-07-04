@@ -556,14 +556,14 @@ public class PurApplyServiceImpl implements PurApplyService {
 				}
 			}
 		} else if("200012864664".equals(applyUserId)) {//移动终端
-			isFixedLine = "0";
+//			isFixedLine = "0";
 			List<String> listProductPrice = req.getProductPrice();
 			if(listProductPrice!= null && listProductPrice.size() > 0) {
 				//判断所有产品ID是同一类型
 				for(int i=0;i<listProductPrice.size();i++) {
 					String sn = listProductPrice.get(i).split("\\|")[0];
 					String isFixedLineMa = productService.selectisFixedLineByBatchId(sn);
-					if(!isFixedLine.equals(isFixedLineMa)) {
+					if(isFixedLine.equals(isFixedLineMa)) {
 						listProd.add(sn);
 					}
 				}

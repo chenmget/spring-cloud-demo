@@ -509,4 +509,26 @@ public class SystemConst {
             return type;
         }
     }
+
+    public enum SysUserStatusCdEnum{
+        STATUS_CD_INVALD(0,"禁用"),
+        STATUS_CD_VALD(1,"有效"),
+        STATUS_CD_DELETE(2,"删除"),
+        STATUS_CD_LOCK(3,"锁住");
+
+        private int code;
+        private String value;
+
+        SysUserStatusCdEnum(int code, String value){
+            this.code = code;
+            this.value = value;
+        }
+        public int getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+    }
 }

@@ -220,4 +220,35 @@
             and lower(t.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{merchantName }), '%'))
         </if>
     </select>
+
+    <select id="getPrimaryKey" resultType="java.lang.String">
+        select seq_retail_all_tables.nextval
+    </select>
+
+    <select id="getMaxMerchantCode" resultType="java.lang.String" parameterType="java.lang.String">
+        select max(MERCHANT_CODE) from par_merchant  WHERE MERCHANT_TYPE = #{MERCHANT_TYPE}
+    </select>
+
+    <select id="getMerchantIdListForPayment" resultType="java.lang.String"
+            parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantListReq">
+        select
+        t.MERCHANT_ID
+        from
+        par_merchant t
+        where
+        1=1
+        <if test="merchantType != null and merchantType != ''">
+            and t.MERCHANT_TYPE = #{merchantType}
+        </if>
+        <if test="merchantName != null and merchantName != ''">
+            and lower(t.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{merchantName}), '%'))
+        </if>
+        <if test="merchantIdList != null and merchantIdList.size > 0">
+            and t.MERCHANT_ID in
+            <foreach collection="merchantIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        limit 100000;
+    </select>
 </mapper>

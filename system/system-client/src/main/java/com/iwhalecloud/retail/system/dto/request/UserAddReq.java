@@ -162,5 +162,8 @@ public class UserAddReq implements Serializable {
 
     @ApiModelProperty(value = "用户来源")
     private java.lang.Integer userSource;
+
+    @ApiModelProperty(value = "用户Id")
+    private String userId;
 }
 

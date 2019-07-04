@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.web.controller.b2b.system.request;
+package com.iwhalecloud.retail.system.dto.request;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -8,8 +8,7 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-@Deprecated
-public class AddUserReq implements Serializable {
+public class UserSaveReq implements Serializable {
     private static final long serialVersionUID = 8663110644827091891L;
 
     //属性 begin

@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.*;
+import com.iwhalecloud.retail.system.dto.request.UserFactoryMerchantReq;
 
 import java.util.List;
 
@@ -138,5 +139,42 @@ public interface MerchantService{
      * @return
      */
     List<String> getMerchantIdList(String merchantName);
+
+
+    /**
+     * 新增厂商
+     * @param req
+     * @return
+     */
+    ResultVO<FactoryMerchantSaveReq> saveFactoryMerchant(FactoryMerchantSaveReq req);
+
+
+    /**
+     * 省/地包商注册
+     * @param req
+     * @return
+     */
+    //ResultVO<String> resistSupplier(SupplierResistReq req);
+
+    /**
+     * 厂商注册
+     * @param req
+     * @return
+     */
+    ResultVO<String> resistManufacturer(ManufacturerResistReq req);
+
+    /**
+     * 修改厂商信息
+     * @param req
+     * @return
+     */
+    ResultVO editMerchant(MerchantEditReq req);
+
+    /**
+     * 厂商自注册
+     * @param req
+     * @return
+     */
+    ResultVO  registerFactoryMerchant(UserFactoryMerchantReq req);
 
 }

@@ -11,9 +11,7 @@ import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.DateUtils;
 import com.iwhalecloud.retail.system.common.SysUserLoginConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
-import com.iwhalecloud.retail.system.dto.OrganizationDTO;
-import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.UserDetailDTO;
+import com.iwhalecloud.retail.system.dto.*;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.UserLoginResp;
 import com.iwhalecloud.retail.system.entity.CommonRegion;
@@ -21,6 +19,8 @@ import com.iwhalecloud.retail.system.entity.User;
 import com.iwhalecloud.retail.system.manager.CommonRegionManager;
 import com.iwhalecloud.retail.system.manager.OrganizationManager;
 import com.iwhalecloud.retail.system.manager.UserManager;
+import com.iwhalecloud.retail.system.service.RoleService;
+import com.iwhalecloud.retail.system.service.UserRoleService;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.system.utils.SysUserCacheUtils;
 import com.twmacinta.util.MD5;
@@ -29,6 +29,9 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -57,6 +60,12 @@ public class UserServiceImpl implements UserService {
 
     @Value("${retailer.login}")
     private String retailerLogin;
+
+    @Reference
+    UserRoleService userRoleService;
+
+    @Reference
+    RoleService roleService;
 
 
     @Override
@@ -301,19 +310,26 @@ public class UserServiceImpl implements UserService {
         log.info("UserServiceImpl.addUser(), 入参UserAddReq={} ", req);
         User user = new User();
         BeanUtils.copyProperties(req, user);
-        // 设置一些默认值
 
-        // 密码格式校验
-        if (!checkPassword(req.getLoginPwd())) {
-            return ResultVO.error("密码格式不对，密码应为包含大小写字母、数字、特殊字符的8到20位字符串");
+        // 检查是否存在同名账号
+        UserGetReq userGetReq = new UserGetReq();
+        userGetReq.setLoginName(req.getLoginName());
+        UserDTO userDTO = getUser(userGetReq);
+        if (userDTO != null) {
+            return ResultVO.error("该账号已经存在，请换一个账号名");
         }
 
-        user.setLoginPwd(new MD5(user.getLoginPwd()).asHex());
+        // 密码格式校验(改成前端验证密码合法性)
+//        if (!checkPassword(req.getLoginPwd())) {
+//            return ResultVO.error("密码格式不对，密码应为包含大小写字母、数字、特殊字符的8到20位字符串");
+//        }
+        /**前端加密后传给后台**/
+//        user.setLoginPwd(new MD5(user.getLoginPwd()).asHex());
 //        user.setStatusCd(SystemConst.USER_STATUS_VALID); //状态
         user.setCreateDate(new Date());
         user.setFailLoginCnt(0);
         user.setSuccessLoginCnt(0);
-        UserDTO userDTO = userManager.addAdminUser(user);
+        userDTO = userManager.addAdminUser(user);
         if (userDTO == null) {
             return ResultVO.error("新增用户失败");
         }
@@ -574,6 +590,8 @@ public class UserServiceImpl implements UserService {
     }
 
 
+
+
     /**  对外提供的服务 end  **/
 
 
@@ -591,5 +609,87 @@ public class UserServiceImpl implements UserService {
                 SystemConst.USER_FOUNDER_9
         );
         return list.contains(userFounder);
+    }
+
+    /**
+     * 自建厂商
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVO registerFactoryMerchant(UserFactoryMerchantReq req) {
+        //TODO 验证短信
+
+        //生成用户主键
+        //String userId=userManager.getPrimaryKey();
+        //req.setUserId(userId);
+        ResultVO<UserDTO> addUserResultVO=initUser(req);
+        UserDTO userDTO = addUserResultVO.getResultData();
+        if (!addUserResultVO.isSuccess() || userDTO == null) {
+            return addUserResultVO;
+        }
+        //新建厂商信息
+        req.setUserId(userDTO.getUserId());
+        ResultVO vo=merchantService.registerFactoryMerchant(req);
+        if(!vo.isSuccess()){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error(vo.getResultMsg());
+        }
+        return ResultVO.success();
+    }
+
+
+    @Override
+    public ResultVO<UserDTO> addSysUser(UserDTO loginUser,UserSaveReq req) {
+        // 添加账号信息
+        ResultVO<UserDTO> addUserResultVO=initUser(req);
+        UserDTO userDTO = addUserResultVO.getResultData();
+        if (!addUserResultVO.isSuccess() || userDTO == null) {
+            return addUserResultVO;
+        }
+        // 判断是否需要增加角色关联
+        addUserRole(req,userDTO,loginUser);
+        return ResultVO.success(userDTO);
+    }
+
+    /**
+     * 初始化用户信息
+     * @param req
+     * @return
+     */
+    private  ResultVO<UserDTO> initUser(Object req){
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req, userAddReq);
+        ResultVO<UserDTO> addUserResultVO = addUser(userAddReq);
+        return addUserResultVO;
+    }
+
+    /**
+     *  是否新增权限
+     * @param req
+     * @param userDTO
+     * @param loginUser
+     */
+    private void addUserRole(UserSaveReq req,UserDTO userDTO,UserDTO loginUser) {
+        if (!CollectionUtils.isEmpty(req.getRoleIdList())) {
+            for (String roleId : req.getRoleIdList()) {
+                // 获取角色
+                RoleGetReq roleGetReq = new RoleGetReq();
+                roleGetReq.setRoleId(roleId);
+                RoleDTO roleDTO = roleService.getRole(roleGetReq);
+                if (roleDTO == null) {
+                    continue;
+                }
+                // 增加关联关系
+                UserRoleDTO userRoleDTO = new UserRoleDTO();
+                userRoleDTO.setRoleId(roleId);
+                userRoleDTO.setRoleName(roleDTO.getRoleName());
+                userRoleDTO.setUserId(userDTO.getUserId());
+                userRoleDTO.setUserName(userDTO.getLoginName());
+                userRoleDTO.setCreateStaff(loginUser.getUserId());
+                userRoleService.saveUserRole(userRoleDTO);
+            }
+        }
     }
 }

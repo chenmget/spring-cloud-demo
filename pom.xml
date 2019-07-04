@@ -30,6 +30,8 @@
         <module>warehouse</module>
         <module>report</module>
         <module>promo</module>
+        <module>bestpay</module>
+        <module>bestpay-notify</module>
         <module>elastic-job-master</module>
     </modules>
     <packaging>pom</packaging>

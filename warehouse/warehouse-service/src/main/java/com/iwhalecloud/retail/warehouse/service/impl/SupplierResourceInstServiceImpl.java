@@ -938,12 +938,12 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (CollectionUtils.isEmpty(instListResps)) {
             return ResultVO.error(constant.getNoResInst());
         }
-        List<String> mktResInstNbrList = new ArrayList<>(instListResps.size());
+        Map<String, String> mktResInstNbrMap = new HashMap<>(instListResps.size());
         for (ResourceInstDTO resp : instListResps) {
             if (StringUtils.isNotEmpty(resp.getOrderId())) {
                 return ResultVO.error(resp.getMktResInstNbr()+constant.getTradeNbrCanNotReset());
             }
-            mktResInstNbrList.add(resp.getMktResInstNbr());
+            mktResInstNbrMap.put(resp.getMktResInstId(), resp.getMktResInstNbr());
         }
 
         String mktResStoreId = resouceInstTrackDetailManager.getMerchantStoreId(instListResps.get(0).getMktResInstNbr());
@@ -957,6 +957,15 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         if (!resultVO.isSuccess()) {
             return resultVO;
         }
+        List<String> failMktResInstIdList = (List<String>)resultVO.getResultData();
+        if (CollectionUtils.isNotEmpty(failMktResInstIdList)) {
+            for (String mktResInstId : failMktResInstIdList) {
+                if (mktResInstNbrMap.containsKey(mktResInstId)) {
+                    mktResInstNbrMap.remove(mktResInstId);
+                }
+            }
+        }
+        List<String> mktResInstNbrList = new ArrayList<String>(mktResInstNbrMap.values());
         if (CollectionUtils.isEmpty(mktResInstNbrList)) {
             return resultVO;
         }

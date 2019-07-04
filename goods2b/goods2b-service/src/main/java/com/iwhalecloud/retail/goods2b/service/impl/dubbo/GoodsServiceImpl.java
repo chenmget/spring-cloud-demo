@@ -165,7 +165,7 @@ public class GoodsServiceImpl implements GoodsService {
     private TypeManager typeManager;
 
     @Autowired
-    private GoodsProductRelMapper goodsProductRelMapper;
+    GoodsProductRelMapper goodsProductRelMapper;
 
     /**
      * 首字母转小写
@@ -1393,14 +1393,14 @@ public class GoodsServiceImpl implements GoodsService {
         resp.setGoodActRelResps(relResps);
 
         //查询活动的图片
-        List<ProdFileDTO> prodFileDTOListHD = prodFileManager.queryGoodsImageHDdetail(goodsId);//查出是活的的图片
+        List<ProdFileDTO> prodFileDTOListHD = prodFileManager.queryGoodsImageHDdetail(goodsId);
         if (prodFileDTOListHD == null) {
             prodFileDTOListHD = new ArrayList<ProdFileDTO>();
         }
         // 查询商品图片和视频
-        List<ProdFileDTO> prodFileDTOList = prodFileManager.queryGoodsImage(goodsId);//查询不是活动的图片
-
-        for (int i = 0; i < prodFileDTOList.size(); i++) {//为了活动图片展示在普通的图片前面
+        List<ProdFileDTO> prodFileDTOList = prodFileManager.queryGoodsImage(goodsId);
+        //为了活动图片展示在普通的图片前面
+        for (int i = 0; i < prodFileDTOList.size(); i++) {
             prodFileDTOListHD.add(prodFileDTOList.get(i));
         }
 
@@ -1411,7 +1411,6 @@ public class GoodsServiceImpl implements GoodsService {
         String productBaseId = goodsProductRel.getProductBaseId();
         ProductBaseGetResp productBaseGetResp = productBaseManager.getProductBase(productBaseId);
         //查询产品列表
-//        List<ProductResp> productResps = getProductResps(list, req.getIsLogin());
         List<ProductResp> productResps = getProductResps(list, req, goods);
 
         if (productBaseGetResp != null && !CollectionUtils.isEmpty(productResps)) {
@@ -1579,43 +1578,31 @@ public class GoodsServiceImpl implements GoodsService {
 
     /**
      * 查询产品列表
-     * 增加逻辑： 判断商品是不是参加啦前置补贴活动，是：要查出产品是否符合活动，符合要查出强制的统一供货价
+     * 增加逻辑： 判断商品是不是参加了前置补贴活动，是：要查出产品是否符合活动，符合要查出强制的统一供货价
      *
      * @param list
      * @return
      */
     private List<ProductResp> getProductResps(List<GoodsProductRel> list, GoodsQueryReq req, Goods goods) {
-//        private List<ProductResp> getProductResps(List<GoodsProductRel> list, boolean isLogin) {
         List<ProductResp> productResps = Lists.newLinkedList();
+        // 查询出商家id备用
+        UserDTO userDTO = userService.getUserByUserId(req.getUserId());
+        String merchantId  = (userDTO!=null)?null:userDTO.getRelCode();
 
-        // 判断商品是否是 参加前置补贴
-        MarketingActivityQueryByGoodsReq activityQueryByGoodsReq = new MarketingActivityQueryByGoodsReq();
-        if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode().equals(goods.getIsSubsidy())) {
-            // 构造请求判断 当前用户是否参加
-
-            // 前置补贴活动类型
-            activityQueryByGoodsReq.setActivityType(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
-            activityQueryByGoodsReq.setSupplierCode(goods.getSupplierId());
-            // 买家的商家ID
-            UserDTO userDTO = userService.getUserByUserId(req.getUserId());
-            if (Objects.nonNull(userDTO) && !StringUtils.isEmpty(userDTO.getRelCode())) {
-                activityQueryByGoodsReq.setMerchantCode(userDTO.getRelCode());
-            } else {
-                log.info("GoodsServiceImpl.getProductResps() 根据userid 获取merchantid失败");
-            }
-        }
-
+        // 遍历商品产品关联表，获取产品规格信息列表，并补充其他信息
         for (GoodsProductRel goodsProductRel : list) {
-            ProductResp dto = productManager.getProduct(goodsProductRel.getProductId());
-            if (dto == null) {
+            // 1.校验对应产品是否存在，不存在则直接返回null
+            ProductResp resp = productManager.getProduct(goodsProductRel.getProductId());
+            if (resp == null) {
                 return null;
             }
-            ProductResp resp = new ProductResp();
-            BeanUtils.copyProperties(dto, resp);
-            List<ProdFileDTO> files = prodFileManager.getFile(dto.getProductId(), FileConst.TargetType.PRODUCT_TARGET.getType(), FileConst.SubType.THUMBNAILS_SUB.getType());
+            // 2.产品信息存在，则继续查找和补充其他信息
+            // 2.1查找产品图片信息
+            List<ProdFileDTO> files = prodFileManager.getFile(resp.getProductId(), FileConst.TargetType.PRODUCT_TARGET.getType(), FileConst.SubType.THUMBNAILS_SUB.getType());
             if (!CollectionUtils.isEmpty(files)) {
                 resp.setImg(files.get(0).getFileUrl());
             }
+            // 2.2 从goods里获取信息并填充
             resp.setMaxNum(goodsProductRel.getMaxNum());
             resp.setMinNum(goodsProductRel.getMinNum());
             resp.setSupplyNum(goodsProductRel.getSupplyNum());
@@ -1625,22 +1612,37 @@ public class GoodsServiceImpl implements GoodsService {
             if (req.getIsLogin()) {
                 resp.setDeliveryPrice(goodsProductRel.getDeliveryPrice());
             }
-
-            // 判断商品是否是 参加前置补贴
+            // 2.2判断商品是否参加前置补贴活动
             if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode().equals(goods.getIsSubsidy())) {
-                // 构造请求判断 当前用户是否参加 前置补贴活动
+                // 如果是前置补贴类型商品，则构造请求体activityQueryByGoodsReq,查询活动商品信息
+                MarketingActivityQueryByGoodsReq activityQueryByGoodsReq = new MarketingActivityQueryByGoodsReq();
+                activityQueryByGoodsReq.setActivityType(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
+                activityQueryByGoodsReq.setSupplierCode(goods.getSupplierId());
+                activityQueryByGoodsReq.setMerchantCode(merchantId);
                 activityQueryByGoodsReq.setProductId(goodsProductRel.getProductId());
                 ResultVO<ActivityProductDTO> resultVO = marketingActivityService.getActivityProduct(activityQueryByGoodsReq);
-                if (resultVO.isSuccess() && Objects.nonNull(resultVO.getResultData())) {
-                    ActivityProductDTO activityProductDTO = resultVO.getResultData();
-                    // 设置需要的值
-                    // 前置补贴活动的统一货价(转换为Double)
-                    resp.setDeliveryPrice(activityProductDTO.getPrice() * 1D);
-                } else {
-                    log.info("GoodsServiceImpl.getProductResps() 调用服务 marketingActivityService.getActivityProduct 返回结果为空");
+                ActivityProductDTO activityProductDTO = resultVO.getResultData();
+                if(activityProductDTO!=null){
+                    // 使用前置补贴活动商品的统一货价
+                    resp.setDeliveryPrice(activityProductDTO.getPrice());
                 }
             }
-
+            // 2.3判断商品是否参加预售活动
+            if (GoodsConst.IsAdvanceSale.IS_ADVANCE_SALE.getCode().equals(goods.getIsAdvanceSale())) {
+                // 如果是预售活动类型商品，则构造请求体activityQueryByGoodsReq,查询活动商品信息
+                MarketingActivityQueryByGoodsReq activityQueryByGoodsReq = new MarketingActivityQueryByGoodsReq();
+                activityQueryByGoodsReq.setActivityType(PromoConst.ACTIVITYTYPE.BOOKING.getCode());
+                activityQueryByGoodsReq.setSupplierCode(goods.getSupplierId());
+                activityQueryByGoodsReq.setMerchantCode(merchantId);
+                activityQueryByGoodsReq.setProductId(goodsProductRel.getProductId());
+                ResultVO<ActivityProductDTO> resultVO = marketingActivityService.getActivityProduct(activityQueryByGoodsReq);
+                ActivityProductDTO activityProductDTO = resultVO.getResultData();
+                if(activityProductDTO!=null){
+                    // 设定预售活动商品的预付款值
+                    resp.setAdvancePayAmount(activityProductDTO.getPrePrice());
+                }
+            }
+            // 2.4将组装好的数据放入返回列表中
             productResps.add(resp);
         }
         return productResps;

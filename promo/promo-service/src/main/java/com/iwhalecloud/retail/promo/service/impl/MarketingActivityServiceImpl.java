@@ -8,10 +8,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.GoodsActRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.GoodsActRelListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsActRelService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
@@ -71,6 +76,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * 营销活动服务接口实现类
+ * @author xx
+ */
+
 @Slf4j
 @Component("marketingActivityService")
 @Service
@@ -94,9 +104,6 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     private ActivityProductManager activityProductManager;
 
     @Autowired
-    private ActivityGoodsManager activityGoodsManager;
-
-    @Autowired
     private PromotionManager promotionManager;
 
     @Autowired
@@ -105,14 +112,29 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Autowired
     private ActivityRuleManager activityRuleManager;
 
+    @Autowired
+    private AccountBalanceTypeManager accountBalanceTypeManager;
+
+    @Autowired
+    private AccountBalanceRuleManager accountBalanceRuleManager;
+
+    @Autowired
+    private ActivityProductService activityProductService;
+
+    @Autowired
+    private Constant constant;
+
     @Reference
     private MktResCouponService mktResCouponService;
 
     @Reference
     private PreSubsidyCouponService preSubsidyCouponService;
 
-    @Autowired
-    private ActivityProductService activityProductService;
+    @Reference
+    private GoodsActRelService goodsActRelService;
+
+    @Reference
+    private GoodsProductRelService goodsProductRelService;
 
     @Reference
     private TaskService taskService;
@@ -144,23 +166,14 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Reference
     private UserService userService;
 
-    @Autowired
-    private Constant constant;
-
     @Reference
     private MktResCouponTaskService mktResCouponTaskService;
 
     @Reference
     private ProductService productService;
+
     @Reference
     private MerchantTagRelService merchantTagRelService;
-
-    @Autowired
-    private AccountBalanceTypeManager accountBalanceTypeManager;
-
-    @Autowired
-    private AccountBalanceRuleManager accountBalanceRuleManager;
-    private List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryRespList;
 
 
     @Override
@@ -2233,5 +2246,58 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 根据商品id查看预售活动列表，实际有且只有一个预售活动
+     * @param goodsId
+     */
+    @Override
+    public ResultVO listGoodsAdvanceActivity(String goodsId){
+        //校验入参
+        if (StringUtils.isEmpty(goodsId)){
+            return ResultVO.error("商品id为空");
+        }
+        //1.查询商品和活动关联信息，有且只能有一个活动
+        GoodsActRelListReq goodsActRelListReq = new GoodsActRelListReq();
+        goodsActRelListReq.setGoodsId(goodsId);
+        goodsActRelListReq.setActType(PromoConst.ACTIVITYTYPE.BOOKING.getCode());
+        ResultVO<List<GoodsActRelDTO>> goodsActRelListResultVo = goodsActRelService.queryGoodsActRel(goodsActRelListReq);
+        List<GoodsActRelDTO> goodsActRelDTOs = goodsActRelListResultVo.getResultData();
+        if (CollectionUtils.isEmpty(goodsActRelDTOs) || goodsActRelDTOs.size() > 1) {
+            log.error("MarketingActivityServiceImpl.listGoodsAdvanceActivity-->goodsActRelDTOs={}", JSON.toJSONString(goodsActRelDTOs));
+            return ResultVO.error("预售商品配置异常，商品有且只能配置一个预售活动");
+        }
+
+        //2.获取活动id，并查询活动详情信息
+        String activityId = goodsActRelDTOs.get(0).getActId();
+        ResultVO<MarketingGoodsActivityQueryResp> respResultVO = this.getMarketingActivity(activityId);
+        if (!respResultVO.isSuccess()) {
+            log.error("MarketingActivityServiceImpl.listGoodsAdvanceActivity-->respResultVO={}", JSON.toJSONString(respResultVO));
+            return ResultVO.error(respResultVO.getResultMsg());
+        }
+
+        //3.根据商品id查询商品和产品关联表，预售商品有且只能有一个关联商品
+        ResultVO<List<GoodsProductRelDTO>> listResultVO = goodsProductRelService.listGoodsProductRel(goodsId);
+        List<GoodsProductRelDTO> goodsProductRelDTOs = listResultVO.getResultData();
+        if (org.apache.commons.collections.CollectionUtils.isEmpty(goodsProductRelDTOs) || goodsProductRelDTOs.size() > 1) {
+            log.error("MarketingActivityServiceImpl.listGoodsAdvanceActivity-->goodsProductRelDTOs={}", JSON.toJSONString(goodsProductRelDTOs));
+            return ResultVO.error("预售商品配置异常，商品有且只能配置一个产品规格");
+        }
+        MarketingGoodsActivityQueryResp goodsActivityQueryResp = respResultVO.getResultData();
+//        String productId = goodsProductRelDTOs.get(0).getProductId();
+//        ActivityProductListReq activityProductListReq = new ActivityProductListReq();
+//        activityProductListReq.setMarketingActivityIds(Arrays.asList(activityId));
+//        activityProductListReq.setProductId(productId);
+//        ResultVO<List<ActivityProductDTO>> activityProductsVO = activityProductService.queryActivityProducts(activityProductListReq);
+//        List<ActivityProductDTO> activityProducts = activityProductsVO.getResultData();
+//        if (org.apache.commons.collections.CollectionUtils.isEmpty(activityProducts) || activityProducts.size() > 1) {
+//            log.error("MarketingActivityServiceImpl.listGoodsAdvanceActivity-->goodsProductRelDTOs={}", JSON.toJSONString(goodsProductRelDTOs));
+//            return ResultVO.error("预售活动配置异常，相同产品id规格有且只能配置一个");
+//        }
+//        Long prePrice = activityProducts.get(0).getPrePrice();
+//        goodsActivityQueryResp.setPrePrice(prePrice);
+        List<MarketingGoodsActivityQueryResp> resp = Arrays.asList(goodsActivityQueryResp);
+        return ResultVO.success(resp);
     }
 }

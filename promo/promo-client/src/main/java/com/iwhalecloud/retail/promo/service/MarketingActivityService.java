@@ -198,4 +198,11 @@ public interface MarketingActivityService{
      */
     void auitMarketingActivityMoify(AuitMarketingActivityReq req);
 
+
+    /**
+     * 根据商品id查看预售活动列表，实际有且只有一个预售活动
+     * @param goodsId
+     */
+    ResultVO listGoodsAdvanceActivity(String goodsId);
+
 }

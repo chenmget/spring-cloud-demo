@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author mzl
@@ -89,7 +90,7 @@ public class MarketingActivityListReq extends AbstractPageReq implements Seriali
      * 创建人id列表
      */
     @ApiModelProperty(value = "创建人id列表")
-    private String creatorIdList;
+    private List<String> creatorIdList;
     
     /**
      * 活动发货开始时间起

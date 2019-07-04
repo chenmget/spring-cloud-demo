@@ -921,6 +921,11 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
         return resourceInstManager.getMktResInstNbrForCheck(req);
     }
 
+    @Override
+    public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
+        return resourceInstManager.getMktResInstNbrForCheckInTrack(req);
+    }
+
 
     @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {

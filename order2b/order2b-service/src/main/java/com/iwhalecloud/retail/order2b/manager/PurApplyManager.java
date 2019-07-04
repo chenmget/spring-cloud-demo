@@ -228,4 +228,9 @@ public class PurApplyManager {
 		Page<PurApplyStatusReportResp> pageReport =purApplyMapper.applyStatuSearchReport(page,req);
 		return pageReport;
 	}
+
+
+	public List<PurApplyItemResp> getDeliveryInfoByAppId(String applyId) {
+		return purApplyMapper.getDeliveryInfoByAppId(applyId);
+	}
 }

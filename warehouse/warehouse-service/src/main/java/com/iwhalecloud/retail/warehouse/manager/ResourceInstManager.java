@@ -261,4 +261,7 @@ public class ResourceInstManager extends ServiceImpl<ResourceInstMapper, Resourc
         return resourceInstMapper.getNbrCountByMerchantId(merchantId, statusCd);
     }
 
+    public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
+        return resourceInstMapper.getMktResInstNbrForCheckInTrack(req);
+    }
 }

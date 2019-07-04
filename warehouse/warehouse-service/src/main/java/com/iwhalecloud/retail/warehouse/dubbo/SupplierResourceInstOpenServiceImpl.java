@@ -222,4 +222,9 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
         return supplierResourceInstService.resetResourceInst(req);
     }
+
+    @Override
+    public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
+        return null;
+    }
 }

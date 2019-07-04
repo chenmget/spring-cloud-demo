@@ -64,7 +64,7 @@ public class GoodsProductRel implements Serializable {
      * 提货价
      */
     @ApiModelProperty(value = "提货价")
-    private Double deliveryPrice;
+    private Long deliveryPrice;
 
     /**
      * 最小起批量
@@ -100,7 +100,7 @@ public class GoodsProductRel implements Serializable {
      * 初始提货价
      */
     @ApiModelProperty(value = "初始提货价")
-    private Double initialPrice;
+    private Long initialPrice;
 
 
     //属性 end

@@ -251,7 +251,7 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
             MarketingActivityDTO activityDTO = activityManagerReference.validActivityEndTimeByProductId(productIdList, PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
             if (null != activityDTO) {
                 resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-                resp.setResultMsg("该订单参加的"+activityDTO.getName()+"营销活动已结束，无法进行串码上传，未发货的商品请线下协调退款重新下单发货");
+                resp.setResultMsg("该订单参加的\""+activityDTO.getName()+"\"营销活动已结束，无法进行串码上传，未发货的商品请线下协调退款重新下单发货");
                 return resp;
             }
         }

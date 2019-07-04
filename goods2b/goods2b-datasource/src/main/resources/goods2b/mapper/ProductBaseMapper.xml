@@ -246,4 +246,11 @@
     <select id="getSeq" resultType="java.lang.String">
         SELECT seq_fixed_line_sn.nextval
     </select>
+
+    <select id="getDistinctUnitType" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT DISTINCT UNIT_TYPE from prod_product_base WHERE 1 = 1
+        AND type_id = #{typeId}
+        AND brand_id = #{brandId}
+    </select>
 </mapper>

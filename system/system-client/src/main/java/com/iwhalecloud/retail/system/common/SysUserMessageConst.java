@@ -17,7 +17,7 @@ public class SysUserMessageConst {
 
     public static  final String NOTIFY_ACTIVITY_ORDER_DELIVERY_TITLE = "发货预警";
     public static  final String NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT = ",离发货日期还有%s天,您有订单没有发货,请尽快完成订单发货处理。";
-    public static  final String NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT_NEW = "您还有《%s》营销活动订单未完成发货，本次活动将于%s结束，请在活动结束前完成串码上传，逾期将不能上传串码 。";
+    public static  final String NOTIFY_ACTIVITY_ORDER_DELIVERY_CONTENT_NEW = "您还有\"%s\"营销活动订单未完成发货，本次活动将于%s结束，请在活动结束前完成串码上传，逾期将不能上传串码 。";
     // 营销活动发货预警提前天数
     public static  final String DELIVER_END_TIME_NOTIFY_DAYS = "DELIVER_END_TIME_NOTIFY_DAYS";
 

@@ -388,4 +388,17 @@ public class GoodsProductBaseB2BController {
         return ResultVO.success(prodProductBaseService.isSaleByProductId(productId));
 
     }
+
+    @ApiOperation(value = "获取不重复的unit_type数组", notes = "获取不重复的unit_type数组")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/getDistinctUnitType")
+    ResultVO<List<String>> getDistinctUnitType(@RequestParam(value = "typeId") String typeId,
+                                               @RequestParam(value = "brandId") String brandId) {
+        log.info("GoodsController isSaleByProductId typeId={} brandId={}", typeId, brandId);
+        return prodProductBaseService.getDistinctUnitType(typeId, brandId);
+
+    }
 }

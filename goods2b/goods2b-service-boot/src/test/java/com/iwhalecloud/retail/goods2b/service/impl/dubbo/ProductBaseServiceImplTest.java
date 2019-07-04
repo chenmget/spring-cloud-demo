@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.goods2b.dto.req.FileAddReq;
 import com.iwhalecloud.retail.goods2b.dto.req.OldProductBaseUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductUpdateReq;
+import com.iwhalecloud.retail.goods2b.manager.ProductBaseManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,6 +23,9 @@ public class ProductBaseServiceImplTest {
 
     @Autowired
     private ProductBaseService productBaseService;
+
+    @Autowired
+    private ProductBaseManager productBaseManager;
 
     @Test
     public void updateAvgApplyPrice() {
@@ -80,6 +84,12 @@ public class ProductBaseServiceImplTest {
     public void updatetest() {
 
        List<String> list = productBaseService.getSeq(5).getResultData();
+        System.out.println(list);
+    }
+
+    @Test
+    public void getDistinctUnitType() {
+        List<String> list = productBaseManager.getDistinctUnitType("201903142030001", "1105424939502649346");
         System.out.println(list);
     }
 }

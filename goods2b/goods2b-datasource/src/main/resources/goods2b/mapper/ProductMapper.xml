@@ -118,6 +118,17 @@
     left join prod_type t on t.TYPE_ID = b.TYPE_ID
     left join prod_brand pb on pb.BRAND_ID = b.BRAND_ID
     where p.IS_DELETED = '0' and b.IS_DELETED = '0' and pb.is_deleted = '0'
+
+    <!--zhongwenlong 增加 标签ID集合 查询条件-->
+    <if test="null!= pageReq.tagIdList and pageReq.tagIdList.size() > 0">
+      and exists (
+        select 1 from prod_tag_rel ptr where ptr.product_id = p.product_id and ptr.tag_id in
+          <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.tagIdList">
+            #{item}
+          </foreach>
+      )
+    </if>
+
     <if test="null!=pageReq.sn and ''!=pageReq.sn">
       and p.SN = #{pageReq.sn}
     </if>

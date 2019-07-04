@@ -115,5 +115,10 @@ public class ProductsPageReq extends PageVO {
      */
     @ApiModelProperty(value = "价格档位")
     private String priceLevel;
-    
+
+    /**
+     * 标签ID集合
+     */
+    @ApiModelProperty(value = "标签ID集合")
+    private List<String> tagIdList;
 }

@@ -254,7 +254,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
         Boolean sameLanId = sourceMerchantDTO.getLanId() != null && destMerchantDTO.getLanId() != null && sourceMerchantDTO.getLanId().equals(destMerchantDTO.getLanId());
         // step1 判断是否跨地市跨地市
-        String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
+        String successMessage = constant.getAllocateAudit();
         String reqCode = resourceInstManager.getPrimaryKey();
 
         String processId = WorkFlowConst.PROCESS_ID.PROCESS_07.getTypeCode();

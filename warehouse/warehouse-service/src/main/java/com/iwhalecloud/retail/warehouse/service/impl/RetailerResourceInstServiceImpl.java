@@ -19,6 +19,7 @@ import com.iwhalecloud.retail.warehouse.busiservice.ResouceEventService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceChngEvtDetailService;
 import com.iwhalecloud.retail.warehouse.busiservice.ResourceInstService;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceInstDTO;
 import com.iwhalecloud.retail.warehouse.dto.ResourceReqDetailDTO;
@@ -93,6 +94,9 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
 
     @Reference
     private CommonRegionService commonRegionService;
+
+    @Autowired
+    private Constant constant;
 
     @Override
     @Deprecated
@@ -174,7 +178,7 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
             ResourceRequestItemQueryReq queryReq = new ResourceRequestItemQueryReq();
             queryReq.setMktResReqId(resultVO.getResultData());
             ResultVO<ResourceRequestResp> respResultVO = resourceRequestService.queryResourceRequest(queryReq);
-            return ResultVO.error(ResourceConst.SUCESS_MSG);
+            return ResultVO.error(constant.getAllocateSubmit());
         } else {
             return ResultVO.success();
         }
@@ -416,10 +420,10 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
         Boolean isNotSameMerchant = !destMerchantDTO.getBusinessEntityCode().equals(sourceMerchantDTO.getBusinessEntityCode());
         // step3 如果跨地市或不属于同一个商家实体需要审核，申请单状态为处理中
         String requestStatusCd = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
-        String successMessage = ResourceConst.ALLOCATE_SUCESS_MSG;
+        String successMessage = constant.getAllocateAudit();
         if (isTransRegional || isNotSameMerchant) {
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
-            successMessage = ResourceConst.ALLOCATE_AUDITING_MSG;
+            successMessage = constant.getAllocateAudit();
         }
         //新增申请单
         ResourceInstsGetByIdListAndStoreIdReq selectReq = new ResourceInstsGetByIdListAndStoreIdReq();

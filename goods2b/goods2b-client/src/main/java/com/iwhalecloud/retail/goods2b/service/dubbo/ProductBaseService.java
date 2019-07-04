@@ -84,4 +84,12 @@ public interface ProductBaseService {
     public ResultVO<List<String>> getSeq(int i);
 
     public Boolean isSaleByProductId(String productId);
+
+    /**
+     * 获取不重复的unit_type数组
+     * @param typeId
+     * @param brandId
+     * @return
+     */
+    ResultVO<List<String>> getDistinctUnitType(String typeId, String brandId);
 }

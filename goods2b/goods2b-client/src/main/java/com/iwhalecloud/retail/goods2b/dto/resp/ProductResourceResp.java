@@ -122,4 +122,7 @@ public class ProductResourceResp implements Serializable {
 
     @ApiModelProperty(value = "typeId")
     private String typeId;
+
+    @ApiModelProperty(value = "brandId")
+    private String brandId;
 }

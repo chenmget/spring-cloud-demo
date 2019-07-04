@@ -1,0 +1,12 @@
+project:
+  name: 翼支付接受通知
+
+#
+server:
+  port: 8008
+
+
+#异步通知修改订单状态
+asynNotify:
+  URL: http://134.176.97.44:8530/api/b2b/order/pay/asynNotify
+  forwardUrl: http://134.176.97.43:8080/order/purchase

@@ -10,6 +10,8 @@ import com.iwhalecloud.retail.goods2b.entity.ProductBase;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
+
 /**
  * @Class: ProdProductBaseMapper
  * @author autoCreate
@@ -56,4 +58,12 @@ public interface ProductBaseMapper extends BaseMapper<ProductBase>{
     public String selectisFixedLineByBatchId(@Param("batchId") String batchId) ;
 
     public String getSeq();
+
+    /**
+     * 获取不重复的unit_type数组
+     * @param typeId
+     * @param brandId
+     * @return
+     */
+    List<String> getDistinctUnitType(@Param("typeId") String typeId, @Param("brandId") String brandId);
 }

@@ -2163,7 +2163,7 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                     sysUserMessageDTO.setTaskId(taskDTO.getTaskId());
                     sysUserMessageDTO.setEndTime(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).deliverEndItme);
                     sysUserMessageDTO.setTitle(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).title + SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_TITLE);
-                    sysUserMessageDTO.setContent(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).content);
+                    sysUserMessageDTO.setContent(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).title);
                     if (!Objects.isNull(orderDTO.getMerchantId())) {
                         MerchantDTO merchantDTO = merchantService.getMerchantInfoById(orderDTO.getMerchantId());
                         if (!Objects.isNull(merchantDTO)) {

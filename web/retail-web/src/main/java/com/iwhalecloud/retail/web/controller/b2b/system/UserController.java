@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.req.BusinessEntityGetReq;
+import com.iwhalecloud.retail.partner.dto.req.SupplierResistReq;
 import com.iwhalecloud.retail.partner.service.*;
 import com.iwhalecloud.retail.system.common.SysUserLoginConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
@@ -103,6 +104,9 @@ public class UserController extends BaseController {
     @Reference
     LoginLogService loginLogService;
 
+    @Reference
+    ZopMessageService zopMessageService;
+
     /**
      * 云货架
      */
@@ -131,7 +135,7 @@ public class UserController extends BaseController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     public ResultVO<LoginResp> userLogin(HttpServletRequest request, @RequestBody @ApiParam(value = "UserLoginReq", required = true) UserLoginReq req) throws Exception {
 
-            // 先密码还原成普通字符串
+        // 先密码还原成普通字符串
         req.setLoginPwd(decodePassword(req.getLoginPwd()));
 
         ResultVO resultVO = new ResultVO();
@@ -186,30 +190,27 @@ public class UserController extends BaseController {
                 return resultVO;
             }
         }
-            UserLoginResp resp = userService.login(req);
-            log.info("用户登入返回RESP {}",resp);
-            UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
-            // 登录日志记录
-            if(StringUtils.isNotBlank(user.getUserId())){
-                LoginLogDTO loginLogDTO = new LoginLogDTO();
-                loginLogDTO.setUserId(user.getUserId());
-                Date nowDate = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                loginLogDTO.setLoginTime(sdf.format(nowDate));
-                loginLogDTO.setLoginType("3");
-                loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
-                String sourceIp = getUserLoginIp(request);
-                loginLogDTO.setSourceIp(sourceIp);
-                loginLogDTO.setLoginDesc(resp.getErrorMessage());
-                loginLogService.saveLoginLog(loginLogDTO);
+        UserLoginResp resp = userService.login(req);
+        UserDTO user = loginLogService.getUserByLoginName(req.getLoginName());
+        // 登录日志记录
+        if(StringUtils.isNotBlank(user.getUserId())){
+            LoginLogDTO loginLogDTO = new LoginLogDTO();
+            loginLogDTO.setUserId(user.getUserId());
+            Date nowDate = new Date();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            loginLogDTO.setLoginTime(sdf.format(nowDate));
+            loginLogDTO.setLoginType("3");
+            loginLogDTO.setLoginStatus(resp.getIsLoginSuccess()? "1":"0");
+            String sourceIp = getUserLoginIp(request);
+            loginLogDTO.setSourceIp(sourceIp);
+            loginLogDTO.setLoginDesc(resp.getErrorMessage());
+            loginLogService.saveLoginLog(loginLogDTO);
 
-            }
+        }
 //        }
 
         // 失败 返回错误信息
         if ((!resp.getIsLoginSuccess() || resp.getUserDTO() == null) && resp.getFailCode() != SysUserLoginConst.NEED_RESETPASSWDCODE) {
-            // return ResultVO.error(String.valueOf(resp.getFailCode()),resp.getErrorMessage());
-            log.info("账户名密码错误" );
             return failResultVO(resp.getErrorMessage());
         }
         request.getSession().invalidate();//清空session
@@ -323,10 +324,10 @@ public class UserController extends BaseController {
     })
     @RequestMapping(value = "/logout", method = RequestMethod.POST)
     public ResultVO userLogout(HttpServletRequest request) {
-    	String userId = UserContext.getUserId();
+        String userId = UserContext.getUserId();
         Date nowDate = new Date();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    	loginLogService.updatelogoutTimeByUserId(userId, sdf.format(nowDate));
+        loginLogService.updatelogoutTimeByUserId(userId, sdf.format(nowDate));
 
         //清空session里面的用户信息
         request.getSession().removeAttribute(WebConst.SESSION_TOKEN);
@@ -584,8 +585,8 @@ public class UserController extends BaseController {
         UserContext.setUser(userDTO);
         return userOtherMsgDTO;
     }
-    
-    
+
+
     /**
      * 取用户登录的地址来源
      *
@@ -593,28 +594,28 @@ public class UserController extends BaseController {
      * @return
      */
     private String getUserLoginIp(HttpServletRequest request) {
-    	String ip = request.getHeader("x-forwarded-for");
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getHeader("Proxy-Client-IP");
-    	}
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getHeader("WL-Proxy-Client-IP");
-    	}
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getHeader("HTTP_CLIENT_IP");
-    	}
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getHeader("HTTP_X_FORWARDED_FOR");
-    	}
-    	if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
-    		ip = request.getRemoteAddr();
-    	}
-    	// 因为有些有些登录是通过代理，所以取第一个（第一个为真是ip）
-    	int index = ip.indexOf(',');
-    	if (index != -1) {
-    		ip = ip.substring(0, index);
-    	}
-    	return ip;
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        // 因为有些有些登录是通过代理，所以取第一个（第一个为真是ip）
+        int index = ip.indexOf(',');
+        if (index != -1) {
+            ip = ip.substring(0, index);
+        }
+        return ip;
     }
 
 
@@ -794,7 +795,7 @@ public class UserController extends BaseController {
                 && req.getStatusCd() != SystemConst.USER_STATUS_VALID
                 && req.getStatusCd() != SystemConst.USER_STATUS_DELETE
                 && req.getStatusCd() != SystemConst.USER_STATUS_LOCK
-                ) {
+        ) {
             return failResultVO("状态值有误，请确认");
         }
         int result = userService.setUserStatus(req);
@@ -1125,7 +1126,7 @@ public class UserController extends BaseController {
      * @param req
      * @return
      */
-    @ApiOperation(value = "用户自注册为产商", notes = "注册用户，同时生成厂商信息，配置产商权限，生成厂商审核流程")
+    @ApiOperation(value = "用户自注册为厂商", notes = "注册用户，同时生成厂商信息，配置产商权限，生成厂商审核流程")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
@@ -1135,4 +1136,32 @@ public class UserController extends BaseController {
         return userService.registerFactoryMerchant(req);
     }
 
+
+    @ApiOperation(value = "省包商自注册", notes = "省包商自注册")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/registProvinceSupplier", method = RequestMethod.POST)
+    public ResultVO registProvinceSupplier(@RequestBody SupplierResistReq req){
+        UserRegisterReq userRegisterReq = new UserRegisterReq();
+        BeanUtils.copyProperties(req,userRegisterReq);
+        return userService.registProvinceSupplier(userRegisterReq);
+    }
+
+    @ApiOperation(value = "地包商自注册", notes = "地包商自注册")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/registLandSupplier", method = RequestMethod.POST)
+    public ResultVO registLandSupplier(@RequestBody SupplierResistReq req){
+        UserRegisterReq userRegisterReq = new UserRegisterReq();
+        BeanUtils.copyProperties(req,userRegisterReq);
+        return userService.registLandSupplier(userRegisterReq);
+    }
+    @RequestMapping(value = "/getVerifyCode", method = RequestMethod.POST)
+    public ResultVO getVerifyCode(@RequestBody VerifyCodeGetReq req){
+        return zopMessageService.sendRegistVerifyCode(req);
+    }
 }

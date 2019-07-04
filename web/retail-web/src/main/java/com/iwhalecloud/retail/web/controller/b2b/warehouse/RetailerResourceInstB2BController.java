@@ -147,8 +147,11 @@ public class RetailerResourceInstB2BController {
             // 没有登陆，直接返回不能查到数据
             return ResultVO.success(resourceAllocateResp);
         }
-
         String  merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
+        Boolean isAdminType = UserContext.isAdminType();
+        if (isAdminType) {
+            merchantId = req.getMerchantId();
+        }
         ResultVO<TransferPermissionGetResp> transferPermissionVO = merchantRulesService.getTransferPermission(merchantId);
         log.info("RetailerResourceInstB2BController.getBatch merchantRulesService.getTransferPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
         if (null == transferPermissionVO || !transferPermissionVO.isSuccess() || null == transferPermissionVO.getResultData()) {

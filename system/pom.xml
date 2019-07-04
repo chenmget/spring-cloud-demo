@@ -118,6 +118,13 @@
 			<version>3.4.0</version>
 		</dependency>
 
+		<!-- 能开sdk -->
+		<dependency>
+			<groupId>com.iwhalecloud.retail</groupId>
+			<artifactId>zop-sdk</artifactId>
+			<version>1.0.0</version>
+		</dependency>
+
 	</dependencies>
 
 

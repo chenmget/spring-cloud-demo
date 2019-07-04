@@ -7,7 +7,6 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.*;
-import com.iwhalecloud.retail.system.dto.request.UserFactoryMerchantReq;
 
 import java.util.List;
 
@@ -134,14 +133,6 @@ public interface MerchantService{
     ResultVO<MerchantLigthResp> getMerchantForOrder(MerchantGetReq req);
 
     /**
-     * 获取商家ID列表
-     * @param
-     * @return
-     */
-    List<String> getMerchantIdList(String merchantName);
-
-
-    /**
      * 新增厂商
      * @param req
      * @return
@@ -149,32 +140,77 @@ public interface MerchantService{
     ResultVO<FactoryMerchantSaveReq> saveFactoryMerchant(FactoryMerchantSaveReq req);
 
 
+    void startProcess(String title, String userId, String userName, String processId, String formId, String extends1, String taskType);
+
     /**
-     * 省/地包商注册
+     * 注册地包商
      * @param req
      * @return
      */
-    //ResultVO<String> resistSupplier(SupplierResistReq req);
+    ResultVO registLandSupplier(SupplierResistReq req);
+
 
     /**
-     * 厂商注册
+     * 注册省包商
      * @param req
      * @return
      */
-    ResultVO<String> resistManufacturer(ManufacturerResistReq req);
+    ResultVO registProvinceSupplier(SupplierResistReq req);
 
     /**
-     * 修改厂商信息
+     * 根据商家表字段筛选条件获取商家id列表
+     * @param req
+     * @return
+     */
+
+//    List<String> getMerchantIdListForPayment(MerchantIdListForPaymentReq req);
+
+
+    /**
+     * 地市管理员注册地包商
+     * @param req
+     * @return
+     */
+    ResultVO registLandSupplierForAdmin(SupplierResistReq req);
+
+    /**
+     * 修改商户信息
      * @param req
      * @return
      */
     ResultVO editMerchant(MerchantEditReq req);
+    /**
+     * 管理员注册省包商
+     * @param req
+     * @return
+     */
+    ResultVO registProvinceSupplierForAdmin(SupplierResistReq req);
 
     /**
      * 厂商自注册
      * @param req
      * @return
      */
-    ResultVO  registerFactoryMerchant(UserFactoryMerchantReq req);
+    ResultVO<String>  registerFactoryMerchant(FactoryMerchantSaveReq req);
+
+    /**
+     * 获取厂商详情
+     * @param merchantId
+     * @return
+     */
+    ResultVO<FactoryMerchantResp> getFactoryMerchant(String merchantId);
+    /**
+     * 获取供应商信息
+     * @param merchantId
+     * @return
+     */
+    ResultVO<SupplierResistResp> getSupplierInfo(String merchantId);
+
+    /*
+     * 获取商家ID列表
+     * @param
+     * @return
+     */
+    List<String> getMerchantIdList(String merchantName);
 
 }

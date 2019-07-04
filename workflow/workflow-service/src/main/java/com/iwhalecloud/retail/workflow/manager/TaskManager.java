@@ -15,6 +15,9 @@ import com.iwhalecloud.retail.system.dto.CommonFileDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.service.CommonFileService;
 import com.iwhalecloud.retail.system.service.UserService;
+import com.iwhalecloud.retail.system.service.VerifyCodeService;
+import com.iwhalecloud.retail.system.service.ZopMessageService;
+import com.iwhalecloud.retail.workflow.aop.NoticeMsg;
 import com.iwhalecloud.retail.workflow.bizservice.RunRouteService;
 import com.iwhalecloud.retail.workflow.common.ResultCodeEnum;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -41,6 +44,8 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
+import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,12 +107,16 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
     @Reference
     private CommonFileService commonFileService;
 
+    @Reference
+    private ZopMessageService verifyCodeService;
+
     /**
      * 启动工作流
      *
      * @param processStartDTO
      * @return
      */
+    @NoticeMsg
     public ResultVO startProcess(ProcessStartReq processStartDTO) {
 
 
@@ -173,9 +182,10 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
 
         log.info("8、添加下个环节处理");
         addNextTaskItem(nextRoute, task, handlerUserList);
-
-        return ResultVO.success();
+        return ResultVO.success(handlerUserList);
     }
+
+
 
     /**
      * 添加任务项
@@ -379,6 +389,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
      *
      * @return
      */
+    @NoticeMsg
     public ResultVO nextRoute(RouteNextReq routeNextDTO) {
         log.info("nextRoute routeNextDTO={}", JSON.toJSONString(routeNextDTO));
         String taskItemId = routeNextDTO.getTaskItemId();
@@ -436,6 +447,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
             return ResultVO.success();
         }
 
+
         /**
          * 找出任务中是否带有参数
          */
@@ -457,7 +469,7 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
         List<HandlerUser> handlerUserList = getHandlerUsers(task, nextRoute.getNextNodeId(), routeNextDTO.getNextHandlerUser(), checkedRule);
         log.info("7、添加下个环节处理");
         addNextTaskItem(nextRoute, task, handlerUserList);
-        return ResultVO.success();
+        return ResultVO.success(handlerUserList);
     }
 
     private void saveAppendix(RouteNextReq req) {

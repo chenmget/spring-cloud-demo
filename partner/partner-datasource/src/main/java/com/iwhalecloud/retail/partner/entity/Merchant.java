@@ -458,6 +458,9 @@ public class Merchant implements Serializable {
     private java.lang.String assignedFlg;
 
 
+    @ApiModelProperty(value = "身份证")
+    private java.lang.String certNumber;
+
     //属性 end
 
     /**

@@ -25,7 +25,7 @@ public class FactoryMerchantSaveReq  implements Serializable {
 
     @NotEmpty(message = "经营品牌不能为空")
     @ApiModelProperty(value = "经营品牌")
-    private String managementBrand;
+    private String manageBrand;
 
     @NotEmpty(message = "法人姓名不能为空")
     @ApiModelProperty(value = "法人姓名")
@@ -56,9 +56,6 @@ public class FactoryMerchantSaveReq  implements Serializable {
     @ApiModelProperty(value = "联系电话")
     private String phoneNo;
 
-//    @NotEmpty(message = "验证码不能为空")
-//    @ApiModelProperty(value = "验证码")
-//    private String code;
 
 
 
@@ -81,4 +78,19 @@ public class FactoryMerchantSaveReq  implements Serializable {
 
     @ApiModelProperty(value = "合同")
     private String contract;
+
+    @ApiModelProperty(value = "用户ID")
+    private String userId;
+
+    /**
+     * 用户ID
+     */
+    @ApiModelProperty(value = "申请人ID")
+    private String applyId;
+
+    /**
+     * 用户昵称
+     */
+    @ApiModelProperty(value = "申请人昵称")
+    private String applyName;
 }

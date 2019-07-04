@@ -251,4 +251,14 @@ public class ProductBaseManager {
 	}
 
     public String getSeq(){return productBaseMapper.getSeq(); }
+
+    /**
+     * 获取不重复的unit_type数组
+     * @param typeId
+     * @param brandId
+     * @return
+     */
+    public List<String> getDistinctUnitType(String typeId, String brandId){
+        return productBaseMapper.getDistinctUnitType(typeId, brandId);
+    }
 }

@@ -151,6 +151,10 @@ public class SupplierResourceInstB2BController {
         }
 
         String  merchantId = UserContext.getUserOtherMsg().getMerchant().getMerchantId();
+        Boolean isAdminType = UserContext.isAdminType();
+        if (isAdminType) {
+            merchantId = req.getMerchantId();
+        }
         ResultVO<TransferPermissionGetResp> transferPermissionVO = merchantRulesService.getTransferPermission(merchantId);
         log.info("SupplierResourceInstB2BController.getBatch merchantRulesService.getTransferPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
         if (null == transferPermissionVO || !transferPermissionVO.isSuccess() || null == transferPermissionVO.getResultData()) {

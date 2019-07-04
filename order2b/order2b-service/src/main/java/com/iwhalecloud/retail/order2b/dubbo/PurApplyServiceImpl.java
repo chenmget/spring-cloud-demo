@@ -538,9 +538,8 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req){
 		String applyUserId = req.getApplyUserId();//移动终端 余玲 200012864664           固网终端  胡亚玲  200012829198
 		List<String> listProd = new ArrayList<String>();
-		String isFixedLine = null;
+		String isFixedLine = "1";
 		if("200012829198".equals(applyUserId)) {//固网终端
-			isFixedLine = "1";
 			List<String> listProductPrice = req.getProductPrice();
 			if(listProductPrice!= null && listProductPrice.size() > 0) {
 				//判断所有产品ID是同一类型

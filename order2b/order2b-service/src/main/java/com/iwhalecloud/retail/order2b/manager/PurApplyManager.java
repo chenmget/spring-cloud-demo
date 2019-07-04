@@ -12,16 +12,16 @@ import java.util.List;
 
 @Component
 public class PurApplyManager {
-	
+
 	@Resource
-    private PurApplyMapper purApplyMapper;
-	
+	private PurApplyMapper purApplyMapper;
+
 	public Page<PurApplyResp> cgSearchApply(PurApplyReq req) {
 		Page<PurApplyResp> page=new Page<>(req.getPageNo(),req.getPageSize());
 		Page<PurApplyResp> pageReport =purApplyMapper.cgSearchApply(page,req);
 		return pageReport;
 	}
-	
+
 	public WfTaskResp getTaskItemId(String applyId){
 		return purApplyMapper.getTaskItemId(applyId);
 	}
@@ -34,114 +34,114 @@ public class PurApplyManager {
 	public void tcProcureApply(ProcureApplyReq req){
 		purApplyMapper.tcProcureApply(req);
 	}
-	
+
 	public List<ProdProductChangeDetail> searchCommitPriceInfo(UpdateCorporationPriceReq req){
 		return purApplyMapper.searchCommitPriceInfo(req);
 	}
-	
+
 	public void crPurApplyFile(AddFileReq req){
 		purApplyMapper.crPurApplyFile(req);
 	}
-	
+
 	public void crPurApplyItem(AddProductReq req){
 		purApplyMapper.crPurApplyItem(req);
 	}
-	
+
 	public PriCityManagerResp getLoginInfo(String userId){
 		return purApplyMapper.getLoginInfo(userId);
 	}
-	
+
 	public void delSearchApply(PurApplyReq req){
 		purApplyMapper.delSearchApply(req);
 	}
-	
+
 	public ApplyHeadResp hqShenQingDaoHao() {
 		return purApplyMapper.hqShenQingDaoHao();
 	}
-	
+
 	public String hqDiShiBuMen(String dsbm) {
 		return purApplyMapper.hqDiShiBuMen(dsbm);
 	}
-	
+
 	public CkProcureApplyResp ckApplyData1(PurApplyReq req) {
 		return purApplyMapper.ckApplyData1(req);
 	}
-	
+
 	public List<AddProductReq> ckApplyData2(PurApplyReq req) {
 		return purApplyMapper.ckApplyData2(req);
 	}
-	
+
 	public List<AddFileReq> ckApplyData3(PurApplyReq req) {
 		return purApplyMapper.ckApplyData3(req);
 	}
-	
+
 	public List<PurApplyExtReq> ckApplyData4(PurApplyReq req) {
 		return purApplyMapper.ckApplyData4(req);
 	}
-	
+
 	public int isHaveSave(String applyId){
 		return purApplyMapper.isHaveSave(applyId);
 	}
-	
+
 	public void updatePurApply(ProcureApplyReq state){
 		purApplyMapper.updatePurApply(state);
 	}
-	
+
 	public void delApplyItem(ProcureApplyReq req){
 		purApplyMapper.delApplyItem(req);
 	}
-	
+
 	public void delApplyFile(ProcureApplyReq req){
 		purApplyMapper.delApplyFile(req);
-	}	
-	
+	}
+
 	public void delPurApplyExt(ProcureApplyReq req){
 		purApplyMapper.delPurApplyExt(req);
 	}
-	
+
 	public MemMemberAddressReq selectMemMeneberAddr(ProcureApplyReq req){
 		return purApplyMapper.selectMemMeneberAddr(req);
 	}
-	
+
 	public void insertPurApplyExt(MemMemberAddressReq req){
 		purApplyMapper.insertPurApplyExt(req);
 	}
-	
+
 	public String getMerchantCode(String merchantCode){
 		return purApplyMapper.getMerchantCode(merchantCode);
 	}
-	
+
 	public String hqSeqFileId(){
 		return purApplyMapper.hqSeqFileId();
 	}
-	
+
 	public String hqSeqItemId(){
 		return purApplyMapper.hqSeqItemId();
 	}
-	
+
 	public void addShippingAddress(MemMemberAddressReq req){
 		purApplyMapper.addShippingAddress(req);
 	}
-	
+
 	public void insertProdChangePrice(ProdProductChangeReq req){
 		purApplyMapper.insertProdChangePrice(req);
 	}
-	
+
 	public void updateProdProduct(ProdProductChangeReq req){
 		purApplyMapper.updateProdProduct(req);
 	}
-	
+
 	public String getProductBaseIdByProductId(String sn) {
 		return purApplyMapper.getProductBaseIdByProductId(sn);
 	}
 	public void insertProdProductChangeDetail(ProdProductChangeDetail req){
 		purApplyMapper.insertProdProductChangeDetail(req);
 	}
-	
+
 	public String selectOldValue(String sn) {
 		return purApplyMapper.selectOldValue(sn);
 	}
-	
+
 	public void commitPriceExcel(UpdateCorporationPriceReq req){
 		purApplyMapper.commitPriceExcel(req);
 	}
@@ -152,23 +152,23 @@ public class PurApplyManager {
 	public void updatePurApplyStatusCd(ProcureApplyReq req){
 		purApplyMapper.updatePurApplyStatusCd(req);
 	}
-	
+
 	public void updateProductChange(ProdProductChangeReq req) {
 		purApplyMapper.updateProductChange(req);
 	}
-	
+
 	public void updateProductCorpPrice(ProdProductChangeDetail req) {
 		purApplyMapper.updateProductCorpPrice(req);
 	}
-	
+
 	public String selectProductIdByChangeId(String changeId) {
 		return purApplyMapper.selectProductIdByChangeId(changeId);
 	}
-	
+
 	public void updateProdNoPassPrice(ProdProductChangeDetail req) {
 		purApplyMapper.updateProdNoPassPrice(req);
 	}
-	
+
 	public List<ProdProductChangeDetail> selectProdProductChangeDetail(String keyValue) {
 		return purApplyMapper.selectProdProductChangeDetail(keyValue);
 	}
@@ -233,4 +233,15 @@ public class PurApplyManager {
 	public List<PurApplyItemResp> getDeliveryInfoByAppId(String applyId) {
 		return purApplyMapper.getDeliveryInfoByAppId(applyId);
 	}
+
+
+	/**
+	 * 查询已发货的串码总数
+	 * @param applyId
+	 * @return
+	 */
+	public List<String> countDelivery(String applyId) {
+		return purApplyMapper.countDelivery(applyId);
+	}
+
 }

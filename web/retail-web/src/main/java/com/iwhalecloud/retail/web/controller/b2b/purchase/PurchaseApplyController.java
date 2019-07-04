@@ -48,6 +48,7 @@ public class PurchaseApplyController extends BaseController {
             req.setCityId(UserContext.getUser().getLanId());
         }
         req.setUserId(UserContext.getUserId());
+        req.setCreateStaff(UserContext.getUserId());
         ResultVO resultVO = purchaseApplyService.delivery(req);
         if (resultVO.isSuccess()) {
             return ResultVO.successMessage("发货成功");

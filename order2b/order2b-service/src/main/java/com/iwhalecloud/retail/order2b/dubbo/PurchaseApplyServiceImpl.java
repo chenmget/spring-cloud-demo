@@ -1,6 +1,8 @@
 package com.iwhalecloud.retail.order2b.dubbo;
-
 import com.alibaba.dubbo.config.annotation.Reference;
+
+
+import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
@@ -29,13 +31,13 @@ import com.iwhalecloud.retail.warehouse.service.TradeResourceInstService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+
+
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -82,7 +84,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO delivery(PurApplyDeliveryReq req) {
+    public ResultVO deliveryEdit(PurApplyDeliveryReq req) {// 最开始的
         List<String> mktResInstNbr = Lists.newArrayList();
         mktResInstNbr = req.getMktResInstNbr(); //串码列表
         int total = mktResInstNbr.size();//串码总数
@@ -218,8 +220,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             return ResultVO.error(othersProductId+"这些机型不在申请单中,请检查！");
         }
         //串码出库前 -- 开始验证串码发货数量是否超过申请单数量，并验证产品是否属于申请单的产品
-            Integer flagCount=0;//判断是否发货数量大于申请数量
-            Integer flag=0;// 判断 是否完全发货
+        Integer flagCount=0;//判断是否发货数量大于申请数量
+        Integer flag=0;// 判断 是否完全发货
         for (PurApplyItem PurApplyItemTemp : purApplyItem) {
             String num = PurApplyItemTemp.getPurNum();//数量
             PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
@@ -227,7 +229,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             PurApplyItemReq.setProductId(PurApplyItemTemp.getProductId());
             log.info("6._串码出库前 -- 开始验证串码发货数量是否超过申请单数量"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail =" +JSON.toJSONString(PurApplyItemReq));
             List<String> mktList =purApplyManager.countPurApplyItemDetail(PurApplyItemReq);//查询发货的条数
-             Integer count = mktList.size();
+            Integer count = mktList.size();
             log.info("7._串码出库前 -- 开始验证串码发货数量是否超过申请单数量"+PurApplyItemTemp.getProductId()+" countPurApplyItemDetail = count ="+count+" = "+JSON.toJSONString(PurApplyItemReq));
             List<String> mktForProductId = map.get(PurApplyItemTemp.getProductId());
             Integer countNow=0;
@@ -243,15 +245,15 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 break;
             }else{
                 if (Integer.valueOf(num)!=sumCount)
-                flag=1;
+                    flag=1;
             }
         }
         if (flagCount==1) {
             return ResultVO.error("发货数量超过申请单的数量，请确认！");
         }
 
-       // 开始调用串码出库
-       // ResultVO deliveryOutResourceInst(DeliveryResourceInstReq req);
+        // 开始调用串码出库
+        // ResultVO deliveryOutResourceInst(DeliveryResourceInstReq req);
         TradeResourceInstReq tradeResourceInstReq = new TradeResourceInstReq();
         tradeResourceInstReq.setOrderId(req.getApplyId());
         tradeResourceInstReq.setLanId(lanId);//申请者地市ID
@@ -333,12 +335,14 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO deliveryEdit(PurApplyDeliveryReq req) {
+    public ResultVO delivery(PurApplyDeliveryReq req) {
         Map<String,Integer> listMap = new HashMap<String,Integer>();//申请清单
 
         Map<String,Integer> deliveryMap = new HashMap<String,Integer>();//已发货
 
         Map<String,Integer> deliveryingMap = new HashMap<String,Integer>();//待发货
+
+        // Map<String,List<String>> mktResInstNbrMap = new HashMap<String,List<String>>();//
         List<String> mktResInstNbr = Lists.newArrayList();
         mktResInstNbr = req.getMktResInstNbr(); //串码列表
         int total = mktResInstNbr.size();//串码总数
@@ -378,7 +382,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         List<PurApplyItemAndProductBaseInfoResp> purApplyItemProductBaseInfoList = new ArrayList<PurApplyItemAndProductBaseInfoResp>();
         for (PurApplyItem pItem:purApplyItem) {
             PurApplyItemAndProductBaseInfoResp purApplyItemAndProductBaseInfoResp = new PurApplyItemAndProductBaseInfoResp();
-           BeanUtils.copyProperties(pItem,purApplyItemAndProductBaseInfoResp);
+            BeanUtils.copyProperties(pItem,purApplyItemAndProductBaseInfoResp);
             String productId=pItem.getProductId();
             // 这个地方 ，还可以优化，
             ProductApplyInfoResp productApplyInfoResp = productService.getProductApplyInfo(productId);
@@ -413,7 +417,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 String baseId =  productApplyInfoResp.getProductBaseId();
                 String memory = productApplyInfoResp.getMemory();
                 String AttrValue1 = productApplyInfoResp.getAttrValue1();
-                String purType = productApplyInfoResp.getPurType();
+                String purType = productApplyInfoResp.getPurchaseType();
                 if (deliveryMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType) ==null) {
                     deliveryMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,Integer.valueOf(productIdNum));
                 }else {
@@ -434,77 +438,80 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 //         List<String> currList = new ArrayList<String>();
         List<String> errorList = new ArrayList<String>();// 查集
 
-
+        log.info("5.getMktResInstNbrForCheckInTrack 参数" + JSON.toJSONString(resourceStoreIdResnbr));
         List<ResourceInstCheckResp> resourceInstList = supplierResourceInstService.getMktResInstNbrForCheckInTrack(resourceStoreIdResnbr);
-       if ( resourceInstList != null && resourceInstList.size()>0) {
+        log.info("6.supplierResourceInstService 结果 " + JSON.toJSONString(resourceInstList));
+        if ( resourceInstList != null && resourceInstList.size()>0) {
 
             if ( mktResInstNbr.size() > resourceInstList.size()) {
                 List<String>  currList = resourceInstList.stream().map(t->t.getMktResInstNbr()).collect(toList());
                 errorList = mktResInstNbr.stream().filter(item -> !currList.contains(item)).collect(toList());
 
             }
-       }
-       if (errorList!=null && errorList.size()>0) {
-           return ResultVO.error("这些串码不可用"+ JSON.toJSONString(errorList));
-       }
+        } else {
+            return ResultVO.error("该商家仓库找不到这些串码");
+        }
+        if (errorList!=null && errorList.size()>0) {
+            return ResultVO.error("这些串码不可用"+ JSON.toJSONString(errorList));
+        }
         log.info("5.错误串码errorList={} " + JSON.toJSONString(errorList));
 //     相同产品，数量
         Map<String,Integer> productMap = new HashMap<String,Integer>();
 //      整理调用发货接口的数据
         Map<String,List<String>> tradeMap = new HashMap<String,List<String>>();
 
-       List<String> proIds = new ArrayList<String>();
-       for( ResourceInstCheckResp resourceInstCheckResp:resourceInstList) {
-           String proId = resourceInstCheckResp.getMktResId();
-           String mktResIntNbr = resourceInstCheckResp.getMktResInstNbr();
+        List<String> proIds = new ArrayList<String>();
+        for( ResourceInstCheckResp resourceInstCheckResp:resourceInstList) {
+            String proId = resourceInstCheckResp.getMktResId();
+            String mktResIntNbr = resourceInstCheckResp.getMktResInstNbr();
 
-           if (productMap.get(proId) == null) {
-               productMap.put(proId,1);
-               proIds.add(proId);
-           } else {
-               Integer n =  productMap.get(proId);
-               productMap.put(proId,n+1);
-           }
-           if (tradeMap.get(proId) == null) {
-               List<String> mktResInstNbrList = new ArrayList<String>();
-               mktResInstNbrList.add(proId);
-               tradeMap.put(proId,mktResInstNbrList);
-           } else {
-               List<String> mktResInstNbrList =  tradeMap.get(proId);
-               mktResInstNbrList.add(proId);
-               tradeMap.put(proId,mktResInstNbrList);
-           }
+            if (productMap.get(proId) == null) {
+                productMap.put(proId,1);
+                proIds.add(proId);
+            } else {
+                Integer n =  productMap.get(proId);
+                productMap.put(proId,n+1);
+            }
+            if (tradeMap.get(proId) == null) {
+                List<String> mktResInstNbrList = new ArrayList<String>();
+                mktResInstNbrList.add(mktResIntNbr);
+                tradeMap.put(proId,mktResInstNbrList);
+            } else {
+                List<String> mktResInstNbrList =  tradeMap.get(proId);
+                mktResInstNbrList.add(mktResIntNbr);
+                tradeMap.put(proId,mktResInstNbrList);
+            }
 
-       }
-       log.info("6.整理调用发货接口的数据tradeMap={} " + JSON.toJSONString(errorList));
-       List<ProductApplyInfoResp>  productInfoList = productService.getDeliveryInfo(proIds);
+        }
+        log.info("6.整理调用发货接口的数据tradeMap={} " + JSON.toJSONString(errorList));
+        List<ProductApplyInfoResp>  productInfoList = productService.getDeliveryInfo(proIds);
 
-       // 把产品的数量填进去
+        // 把产品的数量填进去
         for (ProductApplyInfoResp productInfo : productInfoList) {
             String productId = productInfo.getProductId();
             Integer num = productMap.get(productId);
             productInfo.setNum(String.valueOf(num));
         }
 
-       for ( ProductApplyInfoResp p : productInfoList) {
-           String baseId =  p.getProductBaseId();
-           String memory = p.getMemory();
-           String AttrValue1 = p.getAttrValue1();
-           String purType = p.getPurType();
-           if (deliveryingMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType) ==null) {
-               deliveryingMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,Integer.valueOf(p.getNum()));
-           }else {
-               Integer num = deliveryingMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType);
-               Integer totalNum = Integer.valueOf(num)+Integer.valueOf( p.getNum() );
-               deliveryingMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,totalNum);
+        for ( ProductApplyInfoResp p : productInfoList) {
+            String baseId =  p.getProductBaseId();
+            String memory = p.getMemory();
+            String AttrValue1 = p.getAttrValue1();
+            String purType = p.getPurchaseType();
+            if (deliveryingMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType) ==null) {
+                deliveryingMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,Integer.valueOf(p.getNum()));
+            }else {
+                Integer num = deliveryingMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType);
+                Integer totalNum = Integer.valueOf(num)+Integer.valueOf( p.getNum() );
+                deliveryingMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,totalNum);
 
-           }
-       }
-        log.info("7.正在发货deliveryingMap={} " + JSON.toJSONString(errorList));
-       // 开始 校验 是否是 符合申请单的
+            }
+        }
+        log.info("7.正在发货deliveryingMap={} " + JSON.toJSONString(deliveryingMap));
+        // 开始 校验 是否是 符合申请单的
 
         Integer errorFlag = 0;
-       String mgs="";
+        String mgs="";
         for (String key : deliveryingMap.keySet()) {
             if (listMap.get(key) == null) {
                 mgs=mgs+key+",";
@@ -520,8 +527,14 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         Integer deliveryFlag = 0; // 完全发货，修改申请单状态
         for (String key : listMap.keySet()) {
             Integer totalNum =  listMap.get(key);
-            Integer deliveryNum =  deliveryMap.get(key); // 已发货
-            Integer deliveryingNum =  deliveryMap.get(key); // 发货中
+            Integer deliveryNum =  0; // 已发货
+            if (deliveryMap.get(key) != null) {
+                deliveryNum =  deliveryMap.get(key);
+            }
+            Integer deliveryingNum = 0; // 发货中
+            if (deliveryingMap.get(key) != null) {
+                deliveryingNum =  deliveryingMap.get(key);
+            }
             if (totalNum < (deliveryNum+ deliveryingNum)) {
                 numFlag = 1;
                 break;
@@ -719,7 +732,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO receiving(PurApplyReceivingReq req) {
+    public ResultVO receivingEdit(PurApplyReceivingReq req) {// 最开始的版本
         //串码入库
         //     List<PurApplyItemDetail> purApplyItemDetailList = purApplyItemDetailManager.getPurApplyItemDetail(req.getApplyId());
         List<PurApplyItemDetail> purApplyItemDetailList =   purApplyDeliveryManager.getDeliveryListByApplyID(req.getApplyId());
@@ -775,7 +788,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String updateDate = formatter.format(date);
             String updateUserId=req.getCreateStaff();
-           Integer r = purApplyManager.updatePurApplyItemDetailStatusCd(allMktResInstNbrList,updateDate,updateUserId);
+            Integer r = purApplyManager.updatePurApplyItemDetailStatusCd(allMktResInstNbrList,updateDate,updateUserId);
             log.info("5.更新确认收货成功数量"+ r);
 
         }
@@ -818,7 +831,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public ResultVO receivingEdit(PurApplyReceivingReq req) {
+    public ResultVO receiving(PurApplyReceivingReq req) {
         //串码入库
         //     List<PurApplyItemDetail> purApplyItemDetailList = purApplyItemDetailManager.getPurApplyItemDetail(req.getApplyId());
         List<PurApplyItemDetail> purApplyItemDetailList =   purApplyDeliveryManager.getDeliveryListByApplyID(req.getApplyId());
@@ -881,7 +894,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         }
         // 判断是否全部收货完,首先 获取条目表 记录 中的数量  和 详情记录的 已确认收货的数量 作比较 一致则表示完成收完
         // 通过采购申请单查询采购申请单项
-        List<PurApplyItemResp> deliveryList = purApplyManager.getDeliveryInfoByAppId(req.getApplyId());
+//        List<PurApplyItemResp> deliveryList = purApplyManager.getDeliveryInfoByAppId(req.getApplyId());
+        List<String> deliveryList =purApplyManager.countDelivery(req.getApplyId());//总发货数量
         List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
         Integer total = 0;
         int flag = 0; //定义是否完全收货标识
@@ -889,7 +903,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             String num = PurApplyItemTemp.getPurNum();//数量
             total = total+Integer.valueOf(num);
         }
-        Integer deliveryCount = deliveryList.size();
+        Integer deliveryCount =  deliveryList.size();
         log.info("6.tatal ="+ total +" deliveryCount="+deliveryCount);
         //更新采购申请单状态
         if (total==deliveryCount) {
@@ -956,7 +970,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             }
         }
 
-       List<ProductInfoResp>  proTemp=productService.getProductInfoByIds(prodIds);
+        List<ProductInfoResp>  proTemp=productService.getProductInfoByIds(prodIds);
         //获取产品名称 设置到list的结果集中
         int k = deliveryInfo.size();
         for (int i=0;i<k;i++) {

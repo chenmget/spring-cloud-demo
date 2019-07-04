@@ -74,7 +74,7 @@ public class PurchaseApplyServiceImplTest extends TestBase {
     public void deliveryEdit() {
 //        PurApplyDeliveryReq req = new PurApplyDeliveryReq();
 //        String json = "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"324234\",\"mktResInstNbr\":[\"1230600000103\",\"3378888453\"]}";
-        String json =  "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"2344234\",\"mktResInstNbr\":[\"201907031007\",\"201907031002\"]}";
+        String json =  "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"2344234\",\"mktResInstNbr\":[\"3378888467\"]}";
         Gson gson = new Gson();
         PurApplyDeliveryReq req = gson.fromJson(json, new TypeToken<PurApplyDeliveryReq>(){}.getType());
         req.setRegionId("73101");
@@ -84,6 +84,21 @@ public class PurchaseApplyServiceImplTest extends TestBase {
 
         System.out.println( JSON.toJSONString(resultVO));
     }
+    @Test
+    public void receivingEdit() {
+//        PurApplyDeliveryReq req = new PurApplyDeliveryReq();
+//        String json = "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"324234\",\"mktResInstNbr\":[\"1230600000103\",\"3378888453\"]}";
+        String json =  "{\"applyId\":\"5001\",\"merchantId\":\"10000659\"}";
+        Gson gson = new Gson();
+        PurApplyReceivingReq req = gson.fromJson(json, new TypeToken<PurApplyReceivingReq>(){}.getType());
+        req.setRegionId("73101");
+        req.setLanId("731");
+        req.setCreateStaff("2476");
+        req.getMerchantId();
 
+        ResultVO resultVO = purchaseApplyService.receiving(req);
+
+        System.out.println( JSON.toJSONString(resultVO));
+    }
 
 }

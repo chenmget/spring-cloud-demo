@@ -474,11 +474,11 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
            }
            if (tradeMap.get(proId) == null) {
                List<String> mktResInstNbrList = new ArrayList<String>();
-               mktResInstNbrList.add(proId);
+               mktResInstNbrList.add(mktResIntNbr);
                tradeMap.put(proId,mktResInstNbrList);
            } else {
                List<String> mktResInstNbrList =  tradeMap.get(proId);
-               mktResInstNbrList.add(proId);
+               mktResInstNbrList.add(mktResIntNbr);
                tradeMap.put(proId,mktResInstNbrList);
            }
 
@@ -507,7 +507,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
            }
        }
-        log.info("7.正在发货deliveryingMap={} " + JSON.toJSONString(errorList));
+        log.info("7.正在发货deliveryingMap={} " + JSON.toJSONString(deliveryingMap));
        // 开始 校验 是否是 符合申请单的
 
         Integer errorFlag = 0;
@@ -528,11 +528,11 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         for (String key : listMap.keySet()) {
             Integer totalNum =  listMap.get(key);
             Integer deliveryNum =  0; // 已发货
-            if (deliveryMap.get(key) == null) {
+            if (deliveryMap.get(key) != null) {
                 deliveryNum =  deliveryMap.get(key);
             }
             Integer deliveryingNum = 0; // 发货中
-            if (deliveryingMap.get(key) == null) {
+            if (deliveryingMap.get(key) != null) {
                 deliveryingNum =  deliveryingMap.get(key);
             }
             if (totalNum < (deliveryNum+ deliveryingNum)) {
@@ -894,7 +894,8 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         }
         // 判断是否全部收货完,首先 获取条目表 记录 中的数量  和 详情记录的 已确认收货的数量 作比较 一致则表示完成收完
         // 通过采购申请单查询采购申请单项
-        List<PurApplyItemResp> deliveryList = purApplyManager.getDeliveryInfoByAppId(req.getApplyId());
+//        List<PurApplyItemResp> deliveryList = purApplyManager.getDeliveryInfoByAppId(req.getApplyId());
+        List<String> deliveryList =purApplyManager.countDelivery(req.getApplyId());//总发货数量
         List<PurApplyItem> purApplyItem = purApplyItemManager.getPurApplyItem(req.getApplyId());
         Integer total = 0;
         int flag = 0; //定义是否完全收货标识
@@ -902,7 +903,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             String num = PurApplyItemTemp.getPurNum();//数量
             total = total+Integer.valueOf(num);
         }
-        Integer deliveryCount = deliveryList.size();
+        Integer deliveryCount =  deliveryList.size();
         log.info("6.tatal ="+ total +" deliveryCount="+deliveryCount);
         //更新采购申请单状态
         if (total==deliveryCount) {

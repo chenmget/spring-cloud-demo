@@ -449,7 +449,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
 
             }
         } else {
-            return ResultVO.error("该商家仓库找不到这些串码");
+            return ResultVO.error("这些串码不可用！");
         }
         if (errorList!=null && errorList.size()>0) {
             return ResultVO.error("这些串码不可用"+ JSON.toJSONString(errorList));
@@ -492,14 +492,18 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
             Integer num = productMap.get(productId);
             productInfo.setNum(String.valueOf(num));
         }
-
+//      机型不合适，串码提示
+        Map<String,List<String>> errorMap = new HashMap<String,List<String>>();
         for ( ProductApplyInfoResp p : productInfoList) {
+            String productId = p.getProductId();
             String baseId =  p.getProductBaseId();
             String memory = p.getMemory();
             String AttrValue1 = p.getAttrValue1();
             String purType = p.getPurchaseType();
             if (deliveryingMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType) ==null) {
                 deliveryingMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,Integer.valueOf(p.getNum()));
+                List<String>errorMkt = tradeMap.get(productId);
+                errorMap.put(baseId+"_"+memory+"_"+AttrValue1+"_"+purType,errorMkt);
             }else {
                 Integer num = deliveryingMap.get(baseId+"_"+memory+"_"+AttrValue1+"_"+purType);
                 Integer totalNum = Integer.valueOf(num)+Integer.valueOf( p.getNum() );
@@ -518,8 +522,9 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
                 errorFlag=1;
             }
         }
+        log.info("8.串码机型不符合申请单规格，请检查！" +mgs);
         if (errorFlag ==1) {
-            return ResultVO.error("不符合申请单规格，请检查！"+mgs);
+            return ResultVO.error("串码机型不符合申请单规格，请检查！");
         }
 
 //       判断 发货的数量是否 有超过

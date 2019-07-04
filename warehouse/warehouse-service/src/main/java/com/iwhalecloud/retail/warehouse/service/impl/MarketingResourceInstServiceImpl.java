@@ -328,6 +328,6 @@ public class MarketingResourceInstServiceImpl implements SupplierResourceInstSer
 
     @Override
     public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
-        return null;
+        return resourceInstManager.getMktResInstNbrForCheckInTrack(req);
     }
 }

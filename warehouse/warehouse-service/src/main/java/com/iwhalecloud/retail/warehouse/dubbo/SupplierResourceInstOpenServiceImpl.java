@@ -225,6 +225,6 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
 
     @Override
     public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
-        return null;
+        return supplierResourceInstService.getMktResInstNbrForCheckInTrack(req);
     }
 }

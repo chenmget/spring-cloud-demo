@@ -13,7 +13,7 @@ import java.io.Serializable;
 public class FactoryMerchantSaveReq  implements Serializable {
 
     private static final long serialVersionUID = -1473978323038437354L;
-    //（par_merchant表字段）
+
     //企业信息
     @NotEmpty(message = "公司名称不能为空")
     @ApiModelProperty(value = "公司名称")
@@ -25,7 +25,7 @@ public class FactoryMerchantSaveReq  implements Serializable {
 
     @NotEmpty(message = "经营品牌不能为空")
     @ApiModelProperty(value = "经营品牌")
-    private String manageBrand;
+    private String managementBrand;
 
     @NotEmpty(message = "法人姓名不能为空")
     @ApiModelProperty(value = "法人姓名")
@@ -79,18 +79,12 @@ public class FactoryMerchantSaveReq  implements Serializable {
     @ApiModelProperty(value = "合同")
     private String contract;
 
-    @ApiModelProperty(value = "用户ID")
-    private String userId;
+    @ApiModelProperty(value = "创建人")
+    private String createStaff;
 
-    /**
-     * 用户ID
-     */
-    @ApiModelProperty(value = "申请人ID")
-    private String applyId;
+    @ApiModelProperty(value = "创建人")
+    private String createStaffName;
 
-    /**
-     * 用户昵称
-     */
-    @ApiModelProperty(value = "申请人昵称")
-    private String applyName;
+    @ApiModelProperty(value = "厂商Id")
+    private String merchantId;
 }

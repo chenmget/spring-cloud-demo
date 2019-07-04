@@ -5,9 +5,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsActRelDTO;
-import com.iwhalecloud.retail.goods2b.dto.req.GoodsActRelListReq;
-import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsActRelService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityChangeDetailDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
@@ -39,7 +36,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
@@ -57,9 +57,6 @@ public class MarketingActivityB2BController {
 
     @Reference
     private CouponInstService couponInstService;
-
-    @Reference
-    private GoodsActRelService goodsActRelService;
 
     @Reference
     ActivityChangeService activityChangeService;
@@ -335,32 +332,8 @@ public class MarketingActivityB2BController {
     public ResultVO<List<MarketingGoodsActivityQueryResp>> listGoodsAdvanceActivity
             (@RequestParam(value = "goodsId") @ApiParam("商品ID") String goodsId) {
         log.info(MarketingActivityB2BController.class.getName() + " listGoodsAdvanceActivity goodsId={}", goodsId);
-        MarketingActivityQueryByGoodsReq req = new MarketingActivityQueryByGoodsReq();
 
-        GoodsActRelListReq goodsActRelListReq = new GoodsActRelListReq();
-        goodsActRelListReq.setGoodsId(goodsId);
-        goodsActRelListReq.setActType(PromoConst.ACTIVITYTYPE.BOOKING.getCode());
-        ResultVO<List<GoodsActRelDTO>> goodsActRelListResultVo = goodsActRelService.queryGoodsActRel(goodsActRelListReq);
-        if (!goodsActRelListResultVo.isSuccess()) {
-            log.error("MarketingActivityB2BController.listGoodsAdvanceActivity-->goodsActRelListResultVo={}", JSON.toJSONString(goodsActRelListResultVo));
-            return ResultVO.error("查询商品关联的预售活动失败");
-        }
-
-        List<GoodsActRelDTO> goodsActRelDTOs = goodsActRelListResultVo.getResultData();
-        if (CollectionUtils.isEmpty(goodsActRelDTOs) || goodsActRelDTOs.size() > 1) {
-            log.error("MarketingActivityB2BController.goodsActRelDTOs-->goodsActRelDTOs={}", JSON.toJSONString(goodsActRelDTOs));
-            return ResultVO.error("预售商品配置异常，商品有且只能配置一个预售活动");
-        }
-
-        final String activityId = goodsActRelDTOs.get(0).getActId();
-        ResultVO<MarketingGoodsActivityQueryResp> respResultVO = marketingActivityService.getMarketingActivity(activityId);
-        if (!respResultVO.isSuccess()) {
-            log.error("MarketingActivityB2BController.goodsActRelDTOs-->respResultVO={}", JSON.toJSONString(respResultVO));
-            return ResultVO.error(respResultVO.getResultMsg());
-        }
-
-        List<MarketingGoodsActivityQueryResp> resp = Arrays.asList(respResultVO.getResultData());
-        return ResultVO.success(resp);
+        return marketingActivityService.listGoodsAdvanceActivity(goodsId);
     }
 
     @ApiOperation(value = "商品适用卡券", notes = "商品可领券的优惠券信息")

@@ -38,6 +38,21 @@ public class MerchantDetailDTO implements Serializable {
     @ApiModelProperty(value = "商家对应系统状态:   1有效、 0 禁用   2：失效(删除)  3:锁住（密码错误次数超限 等等）")
     private String userStatus;
 
+    /* 市县、分局/县部门 合并为一个字段 经营单元（对应 组织表的 第3级组织部门）*/
+    @ApiModelProperty(value = "经营单元(3级组织部门)id")
+    private java.lang.String orgIdWithLevel3;
+
+    /* 营销中心/支局 字段 改为 查  组织表的 第4级组织部门 */
+    @ApiModelProperty(value = "营销中心/支局（4级组织部）id")
+    private java.lang.String orgIdWithLevel4;
+
+    /* 市县、分局/县部门 合并为一个字段 经营单元（对应 组织表的 第3级组织部门）*/
+    @ApiModelProperty(value = "经营单元(3级组织部门) 名称")
+    private java.lang.String orgNameWithLevel3;
+
+    /* 营销中心/支局 字段 改为 查  组织表的 第4级组织部门 */
+    @ApiModelProperty(value = "营销中心/支局（4级组织部）名称")
+    private java.lang.String orgNameWithLevel4;
 
     /*** 非当前表字段 ****/
 

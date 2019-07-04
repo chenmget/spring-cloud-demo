@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.iwhalecloud.retail.order2b.mapper.PurApplyMapper">
-  
-    <select id="cgSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
-            resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">
-		SELECT 
-			a.APPLY_ID AS applyId,
-			a.APPLY_CODE AS applyCode,
-			a.APPLY_NAME AS applyName,
-		    DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
-		    a.MERCHANT_ID As merchantId,
-			a.APPLY_MERCHANT_ID As applyMerchantId,
-			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
-			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
-		    (SELECT b.user_name FROM sys_user b WHERE b.user_id=a.CREATE_STAFF) AS applyMerchantName,
-<!--			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.APPLY_MERCHANT_ID) AS applyMerchantName,-->
-			a.STATUS_CD AS STATUS,
-			'' AS `option`
-			 FROM PUR_APPLY a
-			 WHERE 1=1 
-			 and a.STATUS_CD != '1100'
+
+	<select id="cgSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">
+		SELECT
+		a.APPLY_ID AS applyId,
+		a.APPLY_CODE AS applyCode,
+		a.APPLY_NAME AS applyName,
+		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
+		a.MERCHANT_ID As merchantId,
+		a.APPLY_MERCHANT_ID As applyMerchantId,
+		(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
+		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
+		(SELECT b.user_name FROM sys_user b WHERE b.user_id=a.CREATE_STAFF) AS applyMerchantName,
+		<!--			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.APPLY_MERCHANT_ID) AS applyMerchantName,-->
+		a.STATUS_CD AS STATUS,
+		'' AS `option`
+		FROM PUR_APPLY a
+		WHERE 1=1
+		and a.STATUS_CD != '1100'
 		<if test='req.regionId!=null and req.regionId!=""'>
 			and a.LAN_ID= #{req.regionId}
 		</if>
-		<if test='req.applyCode!=null and req.applyCode!=""'>  
-			and a.APPLY_CODE = #{req.applyCode} 
+		<if test='req.applyCode!=null and req.applyCode!=""'>
+			and a.APPLY_CODE = #{req.applyCode}
 		</if>
-		<if test='req.applyName!=null and req.applyName!=""'>  
-			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')	
+		<if test='req.applyName!=null and req.applyName!=""'>
+			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')
 		</if>
 		<if test='req.startDate!=null and req.startDate!=""'>
 			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
@@ -41,12 +41,12 @@
 		<if test='req.applyMerchantName!=null and req.applyMerchantName!=""'>
 			and b.merchant_name like  CONCAT(CONCAT('%',#{req.applyMerchantName}),'%')
 		</if>
-        <if test='req.merchantId!=null and req.merchantId!=""'>
-            and a.merchant_id= #{req.merchantId}
-        </if>
+		<if test='req.merchantId!=null and req.merchantId!=""'>
+			and a.merchant_id= #{req.merchantId}
+		</if>
 		order by a.CREATE_DATE DESC
-		
-  </select>
+
+	</select>
 
 	<select id="applySearchReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReportReq"
 			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyReportResp">
@@ -112,8 +112,8 @@
 	</select>
 
 
-    <select id="applyStatuSearchReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyStatusReportReq"
-            resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyStatusReportResp">
+	<select id="applyStatuSearchReport" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyStatusReportReq"
+			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyStatusReportResp">
 
 		SELECT a.APPLY_NAME as applyName,a.APPLY_ID as applyId,a.APPLY_CODE as applyCode,a.LAN_ID as lanId,a.MERCHANT_ID as merchantId,
 		a.CREATE_DATE as applyTime,i.PRODUCT_ID as productId,
@@ -138,61 +138,61 @@
 		i.APPLY_ID = a.APPLY_ID
 
 		<if test='req.applyCode!=null and req.applyCode!=""'>
-            and a.APPLY_CODE = #{req.applyCode}
-        </if>
-        <if test='req.applyName!=null and req.applyName!=""'>
-            and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')
-        </if>
-        <if test='req.statusCd!=null and req.statusCd!=""'>
-            and a.STATUS_CD = #{req.statusCd}
-        </if>
-
-
-        <if test="req.productIdList != null and req.productIdList.size() >0 ">
-            and i.PRODUCT_ID in
-            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">
-                #{item}
-            </foreach>
-        </if>
-
-        <if test="req.merchantIdList != null and req.merchantIdList.size() >0">
-            and a.MERCHANT_ID in
-            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIdList">
-                #{item}
-            </foreach>
-        </if>
-
-        <if test="req.lanIdList != null and req.lanIdList.size() >0">
-            and a.lan_id in
-            <foreach item="item" index="index" open="(" separator="," close=")" collection="req.lanIdList">
-                #{item}
-            </foreach>
-        </if>
-
-        order by a.CREATE_DATE DESC
-
-    </select>
-  
-  <select id="cgSearchApplyLan" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
-            resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">
-		SELECT 
-			a.APPLY_ID AS applyId,
-			a.APPLY_CODE AS applyCode,
-			a.APPLY_NAME AS projectName,
-	        DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
-			(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
-			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
-			a.STATUS_CD AS STATUS,
-			'' AS `option`
-			 FROM PUR_APPLY a
-			 WHERE 1=1
-			 and a.STATUS_CD != '1100'
-            and a.LAN_ID = #{req.lanId}
-		<if test='req.applyCode!=null and req.applyCode!=""'>  
-			and a.APPLY_CODE = #{req.applyCode} 
+			and a.APPLY_CODE = #{req.applyCode}
 		</if>
-		<if test='req.applyName!=null and req.applyName!=""'>  
-			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')	
+		<if test='req.applyName!=null and req.applyName!=""'>
+			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')
+		</if>
+		<if test='req.statusCd!=null and req.statusCd!=""'>
+			and a.STATUS_CD = #{req.statusCd}
+		</if>
+
+
+		<if test="req.productIdList != null and req.productIdList.size() >0 ">
+			and i.PRODUCT_ID in
+			<foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">
+				#{item}
+			</foreach>
+		</if>
+
+		<if test="req.merchantIdList != null and req.merchantIdList.size() >0">
+			and a.MERCHANT_ID in
+			<foreach item="item" index="index" open="(" separator="," close=")" collection="req.merchantIdList">
+				#{item}
+			</foreach>
+		</if>
+
+		<if test="req.lanIdList != null and req.lanIdList.size() >0">
+			and a.lan_id in
+			<foreach item="item" index="index" open="(" separator="," close=")" collection="req.lanIdList">
+				#{item}
+			</foreach>
+		</if>
+
+		order by a.CREATE_DATE DESC
+
+	</select>
+
+	<select id="cgSearchApplyLan" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyResp">
+		SELECT
+		a.APPLY_ID AS applyId,
+		a.APPLY_CODE AS applyCode,
+		a.APPLY_NAME AS projectName,
+		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
+		(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
+		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
+		a.STATUS_CD AS STATUS,
+		'' AS `option`
+		FROM PUR_APPLY a
+		WHERE 1=1
+		and a.STATUS_CD != '1100'
+		and a.LAN_ID = #{req.lanId}
+		<if test='req.applyCode!=null and req.applyCode!=""'>
+			and a.APPLY_CODE = #{req.applyCode}
+		</if>
+		<if test='req.applyName!=null and req.applyName!=""'>
+			and a.APPLY_NAME like CONCAT(CONCAT('%',#{req.applyName}),'%')
 		</if>
 		<if test='req.startDate!=null and req.startDate!=""'>
 			and DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.startDate}, '%Y-%m-%d')
@@ -203,11 +203,11 @@
 		<if test='req.applyMerchantId!=null and req.applyMerchantId!=""'>
 			and a.apply_merchant_id= #{req.applyMerchantId}
 		</if>
-		
-  </select>
-  
-  <select id="crPurApplyFile" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq">
-	insert into PUR_APPLY_FILE(
+
+	</select>
+
+	<select id="crPurApplyFile" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddFileReq">
+		insert into PUR_APPLY_FILE(
 		FILE_ID,
 		APPLY_ID,
 		FILE_TYPE,
@@ -218,7 +218,7 @@
 		UPDATE_DATE,
 		FILE_NAME,
 		UID
-	) values (
+		) values (
 		#{req.fileId},
 		#{req.applyId},
 		#{req.fileType},
@@ -229,43 +229,43 @@
 		#{req.updateDate},
 		#{req.name},
 		#{req.uid}
-	)
-  </select>
-  
-  <select id="crPurApplyItem" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq">
-	insert into PUR_APPLY_ITEM(
+		)
+	</select>
+
+	<select id="crPurApplyItem" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq">
+		insert into PUR_APPLY_ITEM(
 		APPLY_ITEM_ID,
 		APPLY_ID,
 		PRODUCT_ID,
 		PUR_NUM,
 		PUR_PRICE,
 		PUR_TYPE,
-        ORINGIN_PUR_TYPE,
+		ORINGIN_PUR_TYPE,
 		STATUS_CD,
 		CREATE_STAFF,
 		CREATE_DATE,
 		UPDATE_STAFF,
 		UPDATE_DATE,
 		STATUS_DATE
-	) values (
+		) values (
 		#{req.applyItemId},
 		#{req.applyId},
 		#{req.productId},
 		#{req.snCount},
 		#{req.priceInStore},
 		#{req.purchaseType},
-        #{req.purchaseType},
+		#{req.purchaseType},
 		#{req.statusCd},
 		#{req.createStaff},
 		#{req.createDate},
 		#{req.updateStaff},
 		#{req.updateDate},
 		#{req.statusDate}
-	)
-  </select>
-  
-  <select id="tcProcureApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
-	insert into PUR_APPLY(
+		)
+	</select>
+
+	<select id="tcProcureApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
+		insert into PUR_APPLY(
 		APPLY_ID,
 		APPLY_CODE,
 		APPLY_NAME,
@@ -284,7 +284,7 @@
 		UPDATE_STAFF,
 		UPDATE_DATE,
 		STATUS_DATE
-	) values (
+		) values (
 		#{req.applyId},
 		#{req.applyCode},
 		#{req.applyName},
@@ -303,30 +303,30 @@
 		#{req.updateStaff},
 		#{req.updateDate},
 		#{req.statusDate}
-	)
-  </select>
-  
-  <select id="delSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq">
-  	update pur_apply set status_cd='1100' where 1=1 and apply_id = #{req.applyId}
-  </select>
-  
-  <select id="hqShenQingDaoHao"  resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp">
-  	select seq_pur_apply_id.nextval as applyId
-  </select>
-  
-  <select id="hqDiShiBuMen" parameterType="String" resultType="String">
-  	SELECT region_name FROM sys_common_region WHERE region_id = #{dsbm}
-  </select>
-  
-  <select id="ckApplyData1" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq" 
-  		resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp">
-  	SELECT 
-  		a.apply_id as applyId,
+		)
+	</select>
+
+	<select id="delSearchApply" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq">
+		update pur_apply set status_cd='1100' where 1=1 and apply_id = #{req.applyId}
+	</select>
+
+	<select id="hqShenQingDaoHao"  resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.ApplyHeadResp">
+		select seq_pur_apply_id.nextval as applyId
+	</select>
+
+	<select id="hqDiShiBuMen" parameterType="String" resultType="String">
+		SELECT region_name FROM sys_common_region WHERE region_id = #{dsbm}
+	</select>
+
+	<select id="ckApplyData1" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.CkProcureApplyResp">
+		SELECT
+		a.apply_id as applyId,
 		a.apply_code as applyCode,
 		a.content AS content,
 		a.apply_merchant_code  AS applyMerchantCode,
 		a.apply_merchant_id AS applyMerchantId,
-       (SELECT b.user_name FROM sys_user b WHERE b.user_id=a.CREATE_STAFF) AS applyMerchantName,
+		(SELECT b.user_name FROM sys_user b WHERE b.user_id=a.CREATE_STAFF) AS applyMerchantName,
 		a.LAN_ID as lanId,
 		(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
 		a.region_id as regionId,
@@ -337,66 +337,66 @@
 		a.merchant_id as supplierId,
 		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_CODE=a.merchant_code) AS supplierName,
 		a.status_cd as statusCd,
-	    DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS createDate
-	FROM 
+		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS createDate
+		FROM
 		pur_apply a
 		where 1=1 and a.apply_id = #{req.applyId}
- 
-  </select>
-  
-  <select id="ckApplyData2" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq" 
-  		resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq">
-  	SELECT e.*,
-  		f.name AS brandName ,
-  		h.type_name AS typeName
-  	FROM (
+
+	</select>
+
+	<select id="ckApplyData2" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+			resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq">
+		SELECT e.*,
+		f.name AS brandName ,
+		h.type_name AS typeName
+		FROM (
 		SELECT c.*,
-			d.PRODUCT_NAME AS productName,
-			d.BRAND_ID,
-			d.UNIT_TYPE AS unitType,
-			d.IS_FIXED_LINE AS isFixedLine,
-			d.TYPE_ID
-			FROM	
-				(SELECT 
-				a.PRODUCT_ID AS productId,
-				a.APPLY_ID AS applyId,
-				a.APPLY_ITEM_ID AS applyItemId,
-				a.STATUS_CD AS statusCd,
-				b.product_base_id,
-				b.attr_value3 AS attrValue3,	
-				b.attr_value2 AS attrValue2,	
-				b.COST AS cost,
-				b.SN AS sn,		
-				a.PUR_NUM AS snCount,	
-				a.PUR_PRICE AS priceInStore,	
-				a.PUR_TYPE AS purchaseType
-				FROM 
-				pur_apply_item a
-				LEFT JOIN prod_product b ON a.product_id=b.product_id
-				WHERE 1=1 AND a.apply_id = #{req.applyId}
-				) c
-			LEFT JOIN prod_product_base d ON c.product_base_id=d.product_base_id
-			) e 
-	LEFT JOIN prod_brand f ON e.brand_id=f.brand_id
-	LEFT JOIN prod_type h ON e.type_id = h.type_id
- 
- 
-  </select>
-  
-  <select id="ckApplyData3" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq" 
-  		resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyFileResp">
-  	select 
-  		a.file_url as url ,
-  		a.uid as uid,
-  		a.file_type as fileType,
-  		a.file_name as name
-  		from pur_apply_file a 
-  		where 1=1 and a.apply_id =#{req.applyId}
-  </select>
-  
-  <select id="isHaveSave" parameterType="String" resultType="Integer">
-	SELECT COUNT(*) AS isHaveSave FROM PUR_APPLY WHERE 1=1 and apply_id =#{applyId}
-  </select>
+		d.PRODUCT_NAME AS productName,
+		d.BRAND_ID,
+		d.UNIT_TYPE AS unitType,
+		d.IS_FIXED_LINE AS isFixedLine,
+		d.TYPE_ID
+		FROM
+		(SELECT
+		a.PRODUCT_ID AS productId,
+		a.APPLY_ID AS applyId,
+		a.APPLY_ITEM_ID AS applyItemId,
+		a.STATUS_CD AS statusCd,
+		b.product_base_id,
+		b.attr_value3 AS attrValue3,
+		b.attr_value2 AS attrValue2,
+		b.COST AS cost,
+		b.SN AS sn,
+		a.PUR_NUM AS snCount,
+		a.PUR_PRICE AS priceInStore,
+		a.PUR_TYPE AS purchaseType
+		FROM
+		pur_apply_item a
+		LEFT JOIN prod_product b ON a.product_id=b.product_id
+		WHERE 1=1 AND a.apply_id = #{req.applyId}
+		) c
+		LEFT JOIN prod_product_base d ON c.product_base_id=d.product_base_id
+		) e
+		LEFT JOIN prod_brand f ON e.brand_id=f.brand_id
+		LEFT JOIN prod_type h ON e.type_id = h.type_id
+
+
+	</select>
+
+	<select id="ckApplyData3" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyFileResp">
+		select
+		a.file_url as url ,
+		a.uid as uid,
+		a.file_type as fileType,
+		a.file_name as name
+		from pur_apply_file a
+		where 1=1 and a.apply_id =#{req.applyId}
+	</select>
+
+	<select id="isHaveSave" parameterType="String" resultType="Integer">
+		SELECT COUNT(*) AS isHaveSave FROM PUR_APPLY WHERE 1=1 and apply_id =#{applyId}
+	</select>
 
 	<select id="comparePrice" parameterType="String" resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyItemResp">
 		SELECT i.PRODUCT_ID as productId,i.PUR_PRICE as purPrice  FROM PUR_APPLY_ITEM i
@@ -404,294 +404,294 @@
 
 	</select>
 
-  <select id="updatePurApply"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
-	UPDATE 
-	PUR_APPLY SET status_cd= #{req.statusCd},
-	apply_name=#{req.applyName},
-	phone=#{req.applyContact},
-	content=#{req.content},
-	merchant_code=#{req.supplierCode},
-	merchant_id=#{req.supplierId},
-	update_date=#{req.updateDate},
-	update_staff=#{req.updateStaff},
-	status_date=#{req.statusDate} 
-	WHERE 1=1 and apply_id=#{req.applyId}
-  </select>
+	<select id="updatePurApply"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
+		UPDATE
+		PUR_APPLY SET status_cd= #{req.statusCd},
+		apply_name=#{req.applyName},
+		phone=#{req.applyContact},
+		content=#{req.content},
+		merchant_code=#{req.supplierCode},
+		merchant_id=#{req.supplierId},
+		update_date=#{req.updateDate},
+		update_staff=#{req.updateStaff},
+		status_date=#{req.statusDate}
+		WHERE 1=1 and apply_id=#{req.applyId}
+	</select>
 
 	<select id="updatePurApplyStatusCd"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
 		UPDATE
 		PUR_APPLY SET status_cd= 21
 		WHERE  apply_id=#{req.applyId}
 	</select>
-  
-  <select id="getMerchantCode"  parameterType="String"  resultType="String">
-	SELECT merchant_code FROM par_merchant WHERE 1=1 AND merchant_id=#{merchantId}
-  </select>
-  
-  <select id="hqSeqFileId"  resultType="String">
-  	select seq_pur_apply_file_id.nextval as fileId
-  </select>
-  
-  <select id="hqSeqItemId"  resultType="String">
-  	select seq_pur_apply_item_id.nextval as itemId
-  </select>
-  
-  <select id="getLoginInfo"  parameterType="String" 
-  		resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp">
-  	
-  	SELECT b.lan_id lanId,(
-	 CASE WHEN a.role_id IN ('1087891202715070466','1087891300077449217') THEN '1' 	
-	 WHEN a.role_id IN ('10000002') THEN '2' 	
-	 WHEN a.role_id IN ('1087891525680672770') THEN '3'			
-	 WHEN a.role_id IN ('1068415942698213378','1087890525473386497','1087890602434670594') THEN '4'		
-	 WHEN a.role_id IN ('1085091905942462465') THEN '5' 
-	 ELSE '6' END) userType
-	FROM sys_user_role a,sys_user b WHERE 1=1 AND a.user_id = b.user_id AND a.user_id = #{userId}
-	ORDER BY userType LIMIT 1   
-	
-  </select>
-  
-  <select id="delApplyItem"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
-  		delete from pur_apply_item where  apply_id = #{req.applyId}
-  </select>
-  
-  <select id="delApplyFile"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
-  		delete from pur_apply_file where  apply_id = #{req.applyId}
-  </select>
-  
-  <select id="addShippingAddress"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq">
-  		insert into mem_member_address(
-  			ADDR_ID,
-  			MEMBER_ID,
-  			COUNTRY,
-  			PROVINCE_ID,
-  			CITY_ID,
-  			REGION_ID,
-  			REGION,
-  			CITY,
-  			PROVINCE,
-  			ADDR,
-  			ZIP,
-  			EMAIL,
-  			IS_EFFECT,
-  			IS_DEFAULT,
-  			CONSIGEE_NAME,
-  			CONSIGEE_MOBILE,
-  			LAST_UPDATE
-  		) values(
-  			#{req.addrId},
-  			#{req.memberId},
-  			#{req.country},
-  			#{req.provinceId},
-  			#{req.cityId},
-  			#{req.regionId},
-  			#{req.region},
-  			#{req.city},
-  			#{req.province},
-  			#{req.addr},
-  			#{req.zip},
-  			#{req.emall},
-  			#{req.isEffect},
-  			#{req.isDefault},
-  			#{req.consigeeName},
-  			#{req.consigeeMobile},
-  			#{req.lastUpdate}
-  		)
-  </select>
-  
-  <select id="ckApplyData4" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq" 
-  		resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq">
-  		SELECT 
-			a.RECEIVE_NAME receiveName,
-			a.RECEIVE_ADDR receiveAddr,
-			a.RECEIVE_ZIP receiveZip,
-			a.RECEIVE_MOBILE receiveMobile,
-			a.RECEIVE_TIME receiveTime,
-			a.INVOICE_TYPE invoiceType,
-			a.INVOICE_TITLE invoiceTitle,
-			a.TAX_PAYER_ID taxPayerId,
-			a.REGISTER_ADDRESS registerAddress,
-			a.REGISTER_PHONE registerPhone,
-			a.REGISTER_BANK registerBank,
-			a.REGISTER_BANK_ACCT registerBankAcct,
-			a.CREATE_STAFF createStaff,
-			a.CREATE_DATE createDate,
-			a.UPDATE_STAFF updateStaff,
-			a.UPDATE_DATE updateDate
-			FROM PUR_APPLY_EXT a
-			WHERE a.apply_id = #{req.applyId}
-  </select>
-  
-  <select id="delPurApplyExt" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq" >
-  		delete from PUR_APPLY_EXT where apply_id = #{req.applyId}
-  </select>
-  
-  <select id="selectMemMeneberAddr" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq" 
-  	resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq">
-  		SELECT a.addr_id as addrId,
-        a.member_id as memberId,
-	      a.country as country,
-	      a.province_id as provinceId,
-	      a.city_id as cityId,
-	      a.region_id as regionId,
-	      a.region as region,
-	      a.city as city,
-	      a.province as province,
-	      a.addr as addr,
-	      a.zip as zip,
-	      a.email as email,
-	      a.is_effect as isEffect,
-	      a.is_default as isDefault,
-	      a.consigee_name as consigeeName,
-	      a.consigee_mobile as consigeeMobile,
-	      a.last_update as lastUpdate 
-	    FROM mem_member_address a 
-	    where a.addr_id=#{req.addrId}
-  </select>
-  
-  <select id="insertPurApplyExt" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq" >
-  		INSERT INTO PUR_APPLY_EXT(
-  			APPLY_ID,
-  			RECEIVE_NAME,
-  			RECEIVE_ADDR,
-  			RECEIVE_ZIP,
-  			RECEIVE_MOBILE,
-  			CREATE_STAFF,
-  			CREATE_DATE,
-  			UPDATE_STAFF,
-  			UPDATE_DATE,
-	        PROVINCE_ID,
-	        CITY_ID,
-	        REGION_ID,
-	        REGION,
-	        CITY,
-	        PROVINCE
-  		) VALUES (
-  			#{req.applyId},
-  			#{req.consigeeName},
-  			#{req.addr},
-  			#{req.zip},
-  			#{req.consigeeMobile},
-  			#{req.createStaff},
-  			#{req.createDate},
-  			#{req.updateStaff},
-  			#{req.updateDate},
-	       #{req.provinceId},
-	       #{req.cityId},
-	       #{req.regionId},
-	       #{req.region},
-	       #{req.city},
-	       #{req.province}
-  		)
-  </select>
-  
-  <select id="commitPriceExcel" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq" >
- 		update 
- 			prod_product 
- 		set 
- 			corporation_price = 
+
+	<select id="getMerchantCode"  parameterType="String"  resultType="String">
+		SELECT merchant_code FROM par_merchant WHERE 1=1 AND merchant_id=#{merchantId}
+	</select>
+
+	<select id="hqSeqFileId"  resultType="String">
+		select seq_pur_apply_file_id.nextval as fileId
+	</select>
+
+	<select id="hqSeqItemId"  resultType="String">
+		select seq_pur_apply_item_id.nextval as itemId
+	</select>
+
+	<select id="getLoginInfo"  parameterType="String"
+			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PriCityManagerResp">
+
+		SELECT b.lan_id lanId,(
+		CASE WHEN a.role_id IN ('1087891202715070466','1087891300077449217') THEN '1'
+		WHEN a.role_id IN ('10000002') THEN '2'
+		WHEN a.role_id IN ('1087891525680672770') THEN '3'
+		WHEN a.role_id IN ('1068415942698213378','1087890525473386497','1087890602434670594') THEN '4'
+		WHEN a.role_id IN ('1085091905942462465') THEN '5'
+		ELSE '6' END) userType
+		FROM sys_user_role a,sys_user b WHERE 1=1 AND a.user_id = b.user_id AND a.user_id = #{userId}
+		ORDER BY userType LIMIT 1
+
+	</select>
+
+	<select id="delApplyItem"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
+		delete from pur_apply_item where  apply_id = #{req.applyId}
+	</select>
+
+	<select id="delApplyFile"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq">
+		delete from pur_apply_file where  apply_id = #{req.applyId}
+	</select>
+
+	<select id="addShippingAddress"  parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq">
+		insert into mem_member_address(
+		ADDR_ID,
+		MEMBER_ID,
+		COUNTRY,
+		PROVINCE_ID,
+		CITY_ID,
+		REGION_ID,
+		REGION,
+		CITY,
+		PROVINCE,
+		ADDR,
+		ZIP,
+		EMAIL,
+		IS_EFFECT,
+		IS_DEFAULT,
+		CONSIGEE_NAME,
+		CONSIGEE_MOBILE,
+		LAST_UPDATE
+		) values(
+		#{req.addrId},
+		#{req.memberId},
+		#{req.country},
+		#{req.provinceId},
+		#{req.cityId},
+		#{req.regionId},
+		#{req.region},
+		#{req.city},
+		#{req.province},
+		#{req.addr},
+		#{req.zip},
+		#{req.emall},
+		#{req.isEffect},
+		#{req.isDefault},
+		#{req.consigeeName},
+		#{req.consigeeMobile},
+		#{req.lastUpdate}
+		)
+	</select>
+
+	<select id="ckApplyData4" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
+			resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq">
+		SELECT
+		a.RECEIVE_NAME receiveName,
+		a.RECEIVE_ADDR receiveAddr,
+		a.RECEIVE_ZIP receiveZip,
+		a.RECEIVE_MOBILE receiveMobile,
+		a.RECEIVE_TIME receiveTime,
+		a.INVOICE_TYPE invoiceType,
+		a.INVOICE_TITLE invoiceTitle,
+		a.TAX_PAYER_ID taxPayerId,
+		a.REGISTER_ADDRESS registerAddress,
+		a.REGISTER_PHONE registerPhone,
+		a.REGISTER_BANK registerBank,
+		a.REGISTER_BANK_ACCT registerBankAcct,
+		a.CREATE_STAFF createStaff,
+		a.CREATE_DATE createDate,
+		a.UPDATE_STAFF updateStaff,
+		a.UPDATE_DATE updateDate
+		FROM PUR_APPLY_EXT a
+		WHERE a.apply_id = #{req.applyId}
+	</select>
+
+	<select id="delPurApplyExt" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq" >
+		delete from PUR_APPLY_EXT where apply_id = #{req.applyId}
+	</select>
+
+	<select id="selectMemMeneberAddr" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProcureApplyReq"
+			resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq">
+		SELECT a.addr_id as addrId,
+		a.member_id as memberId,
+		a.country as country,
+		a.province_id as provinceId,
+		a.city_id as cityId,
+		a.region_id as regionId,
+		a.region as region,
+		a.city as city,
+		a.province as province,
+		a.addr as addr,
+		a.zip as zip,
+		a.email as email,
+		a.is_effect as isEffect,
+		a.is_default as isDefault,
+		a.consigee_name as consigeeName,
+		a.consigee_mobile as consigeeMobile,
+		a.last_update as lastUpdate
+		FROM mem_member_address a
+		where a.addr_id=#{req.addrId}
+	</select>
+
+	<select id="insertPurApplyExt" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.MemMemberAddressReq" >
+		INSERT INTO PUR_APPLY_EXT(
+		APPLY_ID,
+		RECEIVE_NAME,
+		RECEIVE_ADDR,
+		RECEIVE_ZIP,
+		RECEIVE_MOBILE,
+		CREATE_STAFF,
+		CREATE_DATE,
+		UPDATE_STAFF,
+		UPDATE_DATE,
+		PROVINCE_ID,
+		CITY_ID,
+		REGION_ID,
+		REGION,
+		CITY,
+		PROVINCE
+		) VALUES (
+		#{req.applyId},
+		#{req.consigeeName},
+		#{req.addr},
+		#{req.zip},
+		#{req.consigeeMobile},
+		#{req.createStaff},
+		#{req.createDate},
+		#{req.updateStaff},
+		#{req.updateDate},
+		#{req.provinceId},
+		#{req.cityId},
+		#{req.regionId},
+		#{req.region},
+		#{req.city},
+		#{req.province}
+		)
+	</select>
+
+	<select id="commitPriceExcel" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq" >
+		update
+		prod_product
+		set
+		corporation_price =
 		<foreach item="snItem" index="index"  collection="req.snList">
-			#{snItem} 
-		</foreach>	
- 		where 
- 			sn = 
+			#{snItem}
+		</foreach>
+		where
+		sn =
 		<foreach item="priceItem" index="index"  collection="req.priceList">
 			#{priceItem}
-		</foreach>	
-  </select>
-  
-  <select id="getTaskItemId" parameterType="String"
-            resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp">
- 	 SELECT a.task_id AS taskId,
-	 	 b.task_item_id AS taskItemId
-	 	  FROM wf_task a,wf_task_item b 
-	 	  WHERE a.process_id = '528' 
-	 	  AND a.task_id = b.task_id 
-	 	  AND a.form_id=#{applyId} ORDER BY b.task_item_id DESC LIMIT 1
-  	</select>
-  
-  <select id="insertProdChangePrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq" >
- 	 insert into PROD_PRODUCT_CHANGE(
-	 	 CHANGE_ID,
-	 	 VER_NUM,
-	 	 PRODUCT_BASE_ID,
-	 	 AUDIT_STATE,
-	 	 CREATE_DATE,
-	 	 CREATE_STAFF,
-	 	 BATCH_ID,
-	 	 SN
- 	 ) value (
- 	 	#{req.changeId},
- 	 	#{req.verNum},
- 	 	#{req.productBaseId},
- 	 	#{req.auditState},
- 	 	#{req.createDate},
- 	 	#{req.createStaff},
- 	 	#{req.batchId},
- 	 	#{req.sn}
- 	 )
-  </select>
-  
-  <select id="selectOldValue" parameterType="java.lang.String" resultType="java.lang.String" >
- 	 SELECT 
- 	 	CORPORATION_PRICE 
- 	 FROM 
- 	 	prod_product 
- 	 WHERE 
- 	 	sn = #{sn}
-  </select>
-  
-  <select id="insertProdProductChangeDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" >
- 	 insert into PROD_PRODUCT_CHANGE_DETAIL(
- 	 	 CHANGE_DETAIL_ID,
-	 	 CHANGE_ID,
-	 	 OPER_TYPE,
-	 	 VER_NUM,
-	 	 TABLE_NAME,
-	 	 CHANGE_FIELD,
-	 	 CHANGE_FIELD_NAME,
-	 	 OLD_VALUE,
-	 	 NEW_VALUE,
-	 	 KEY_VALUE,
-	 	 CREATE_DATE,
-	 	 CREATE_STAFF
- 	 ) value (
- 	 	#{req.changeDetailId},
- 	 	#{req.changeId},
- 	 	#{req.operType},
- 	 	#{req.verNum},
- 	 	#{req.tableName},
- 	 	#{req.changeField},
- 	 	#{req.changeFieldName},
- 	 	#{req.oldValue},
- 	 	#{req.newValue},
- 	 	#{req.keyValue},
- 	 	#{req.createDate},
- 	 	#{req.createStaff}
- 	 )
-  </select>
-  
-  <select id="updateProductChange" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq">
- 	 UPDATE 
- 	 	PROD_PRODUCT_CHANGE 
- 	 SET 
- 	 	audit_state=#{req.auditState} 
- 	 WHERE 
- 	 	change_id = #{req.changeId}
-  </select>
-  
-  <select id="updateProdProduct" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq">
- 	 UPDATE
- 	 	PROD_PRODUCT
- 	 SET
- 	 	price_status=#{req.auditState}
- 	 WHERE
- 	 	sn = #{req.sn}
-  </select>
+		</foreach>
+	</select>
 
-  <select id="selectProdProductChangeDetail" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail"  >
-	  SELECT 
-	  	a.CHANGE_DETAIL_ID AS changeDetailId,
+	<select id="getTaskItemId" parameterType="String"
+			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.WfTaskResp">
+		SELECT a.task_id AS taskId,
+		b.task_item_id AS taskItemId
+		FROM wf_task a,wf_task_item b
+		WHERE a.process_id = '528'
+		AND a.task_id = b.task_id
+		AND a.form_id=#{applyId} ORDER BY b.task_item_id DESC LIMIT 1
+	</select>
+
+	<select id="insertProdChangePrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq" >
+		insert into PROD_PRODUCT_CHANGE(
+		CHANGE_ID,
+		VER_NUM,
+		PRODUCT_BASE_ID,
+		AUDIT_STATE,
+		CREATE_DATE,
+		CREATE_STAFF,
+		BATCH_ID,
+		SN
+		) value (
+		#{req.changeId},
+		#{req.verNum},
+		#{req.productBaseId},
+		#{req.auditState},
+		#{req.createDate},
+		#{req.createStaff},
+		#{req.batchId},
+		#{req.sn}
+		)
+	</select>
+
+	<select id="selectOldValue" parameterType="java.lang.String" resultType="java.lang.String" >
+		SELECT
+		CORPORATION_PRICE
+		FROM
+		prod_product
+		WHERE
+		sn = #{sn}
+	</select>
+
+	<select id="insertProdProductChangeDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" >
+		insert into PROD_PRODUCT_CHANGE_DETAIL(
+		CHANGE_DETAIL_ID,
+		CHANGE_ID,
+		OPER_TYPE,
+		VER_NUM,
+		TABLE_NAME,
+		CHANGE_FIELD,
+		CHANGE_FIELD_NAME,
+		OLD_VALUE,
+		NEW_VALUE,
+		KEY_VALUE,
+		CREATE_DATE,
+		CREATE_STAFF
+		) value (
+		#{req.changeDetailId},
+		#{req.changeId},
+		#{req.operType},
+		#{req.verNum},
+		#{req.tableName},
+		#{req.changeField},
+		#{req.changeFieldName},
+		#{req.oldValue},
+		#{req.newValue},
+		#{req.keyValue},
+		#{req.createDate},
+		#{req.createStaff}
+		)
+	</select>
+
+	<select id="updateProductChange" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq">
+		UPDATE
+		PROD_PRODUCT_CHANGE
+		SET
+		audit_state=#{req.auditState}
+		WHERE
+		change_id = #{req.changeId}
+	</select>
+
+	<select id="updateProdProduct" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeReq">
+		UPDATE
+		PROD_PRODUCT
+		SET
+		price_status=#{req.auditState}
+		WHERE
+		sn = #{req.sn}
+	</select>
+
+	<select id="selectProdProductChangeDetail" parameterType="java.lang.String" resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail"  >
+		SELECT
+		a.CHANGE_DETAIL_ID AS changeDetailId,
 		a.CHANGE_ID AS changeId,
 		a.OPER_TYPE AS operType,
 		a.VER_NUM AS verNum,
@@ -703,88 +703,88 @@
 		a.KEY_VALUE AS keyValue,
 		a.CREATE_DATE AS createDate,
 		a.CREATE_STAFF AS createStaff
-	FROM 
+		FROM
 		PROD_PRODUCT_CHANGE_DETAIL a,PROD_PRODUCT_CHANGE b
-	WHERE 
+		WHERE
 		a.CHANGE_ID = b.CHANGE_ID
-	AND
+		AND
 		b.BATCH_ID=#{keyValue}
 
-  </select>
-  
-  <select id="updateProductCorpPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail">
-	UPDATE 
-		prod_product 
-	SET 
+	</select>
+
+	<select id="updateProductCorpPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail">
+		UPDATE
+		prod_product
+		SET
 		CORPORATION_PRICE=#{req.newValue},PRICE_STATUS=#{req.priceStatus}
-	WHERE
-		sn = #{req.sn}
-  </select>
-
-  <select id="updateProdNoPassPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail">
-	UPDATE
-		prod_product
-	SET
-		PRICE_STATUS=#{req.priceStatus}
-	WHERE 
-		sn = #{req.sn}	
-  </select>
-  
-  <select id="getProductBaseIdByProductId" parameterType="java.lang.String" resultType="java.lang.String" >
-	select 
-		product_base_id 
-	from 
-		prod_product
-	WHERE 
-		sn = #{sn}	
-  </select>
-
-  <select id="searchCommitPriceInfo" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq"
-  	resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" >
-		SELECT
-			b.CHANGE_DETAIL_ID as changeDetailId,
-			b.CHANGE_ID as changeId,
-			b.OPER_TYPE as operType,
-			b.VER_NUM as verNum,
-			b.TABLE_NAME as tableName,
-			b.CHANGE_FIELD as changeField,
-			b.CHANGE_FIELD_NAME as changeFieldName,
-			b.OLD_VALUE as oldValue,
-			b.NEW_VALUE as newValue,
-			b.KEY_VALUE as keyValue,
-			b.CREATE_DATE as createDate,
-			b.CREATE_STAFF as createStaff,
-			ppb.PRODUCT_NAME as productName,
-			ppb.UNIT_TYPE as unitType,
-			ppb.UNIT_TYPE_NAME as unitTypeName,
-			pp.SN as sn,
-			pt.TYPE_NAME as typeName,
-			pb.NAME as brandName
-		FROM
-			prod_product_change a,
-			prod_product_change_detail b ,
-			PROD_PRODUCT_BASE ppb,
-			PROD_PRODUCT pp,
-			PROD_TYPE pt,
-			PROD_BRAND pb
 		WHERE
-			a.change_id = b.change_id
-		AND
-			ppb.product_base_id = pp.product_base_id
-		AND
-			ppb.type_id = pt.type_id
-		AND
-			ppb.BRAND_ID = pb.BRAND_ID
-		AND
-			a.product_id = pp.product_id
-		AND
-			a.batch_id = #{req.batchId}
-  </select>
+		sn = #{req.sn}
+	</select>
 
-  <select id="selectProductIdByChangeId" parameterType="java.lang.String"
-  	resultType="java.lang.String" >
+	<select id="updateProdNoPassPrice" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail">
+		UPDATE
+		prod_product
+		SET
+		PRICE_STATUS=#{req.priceStatus}
+		WHERE
+		sn = #{req.sn}
+	</select>
+
+	<select id="getProductBaseIdByProductId" parameterType="java.lang.String" resultType="java.lang.String" >
+		select
+		product_base_id
+		from
+		prod_product
+		WHERE
+		sn = #{sn}
+	</select>
+
+	<select id="searchCommitPriceInfo" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.UpdateCorporationPriceReq"
+			resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.ProdProductChangeDetail" >
+		SELECT
+		b.CHANGE_DETAIL_ID as changeDetailId,
+		b.CHANGE_ID as changeId,
+		b.OPER_TYPE as operType,
+		b.VER_NUM as verNum,
+		b.TABLE_NAME as tableName,
+		b.CHANGE_FIELD as changeField,
+		b.CHANGE_FIELD_NAME as changeFieldName,
+		b.OLD_VALUE as oldValue,
+		b.NEW_VALUE as newValue,
+		b.KEY_VALUE as keyValue,
+		b.CREATE_DATE as createDate,
+		b.CREATE_STAFF as createStaff,
+		ppb.PRODUCT_NAME as productName,
+		ppb.UNIT_TYPE as unitType,
+		ppb.UNIT_TYPE_NAME as unitTypeName,
+		pp.SN as sn,
+		pt.TYPE_NAME as typeName,
+		pb.NAME as brandName
+		FROM
+		prod_product_change a,
+		prod_product_change_detail b ,
+		PROD_PRODUCT_BASE ppb,
+		PROD_PRODUCT pp,
+		PROD_TYPE pt,
+		PROD_BRAND pb
+		WHERE
+		a.change_id = b.change_id
+		AND
+		ppb.product_base_id = pp.product_base_id
+		AND
+		ppb.type_id = pt.type_id
+		AND
+		ppb.BRAND_ID = pb.BRAND_ID
+		AND
+		a.product_id = pp.product_id
+		AND
+		a.batch_id = #{req.batchId}
+	</select>
+
+	<select id="selectProductIdByChangeId" parameterType="java.lang.String"
+			resultType="java.lang.String" >
 		select sn from PROD_PRODUCT_CHANGE where change_id = #{changeId}
-  </select>
+	</select>
 
 	<select id="countPurApplyItemDetail" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyItemReq" resultType="java.lang.String">
 		SELECT mkt_res_inst_nbr FROM pur_apply_item_detail WHERE apply_item_id=#{req.applyItem} AND product_id=#{req.productId};
@@ -820,11 +820,19 @@
 		region_id as regionId,rel_apply_id as relApplyId,status_cd as statusCd,create_staff as createStaff,
 		create_date as createDate,update_staff as updateStaff,update_date as updateDate FROM PUR_APPLY WHERE apply_id=#{applyId}
 	</select>
-    <update id="updatePurTypeByApplyId" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq">
+	<update id="updatePurTypeByApplyId" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq">
 		UPDATE pur_apply_item SET PUR_TYPE=#{req.purchaseType} WHERE APPLY_ITEM_ID=#{req.applyItemId}
 
 	</update>
+	<select id="getDeliveryInfoByAppId" parameterType="String"
+			resultType="com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyItemResp">
+		SELECT COUNT(PRODUCT_ID) as num,PRODUCT_ID as productId FROM pur_apply_item_detail WHERE APPLY_ID=#{applyId} GROUP BY PRODUCT_ID
+	</select>
 
+	<select id="countDelivery" parameterType="java.lang.String" resultType="java.lang.String">
+		SELECT MKT_RES_INST_NBR FROM pur_apply_item_detail WHERE  APPLY_ID=#{applyId}
+
+	</select>
 
 </mapper>
 

@@ -35,29 +35,29 @@ import java.util.List;
 @RequestMapping("/api/cgmanage")
 public class CgSearchApplyController extends BaseController {
 
-    @Reference
-    private PurApplyService purApplyService;
-    
-    @Reference
-    private MerchantService merchantService;
-    
+	@Reference
+	private PurApplyService purApplyService;
+
+	@Reference
+	private MerchantService merchantService;
+
 	@ApiOperation(value = "查询采购申请单和采购单报表", notes = "查询采购申请单和采购单")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping("/cgSearchApply")
+	@ApiResponses({
+			@ApiResponse(code=400,message="请求参数没填好"),
+			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+	})
+	@PostMapping("/cgSearchApply")
 	@UserLoginToken
-    public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
+	public ResultVO<Page<PurApplyResp>> cgSearchApply(@RequestBody PurApplyReq req) {
 		//采购单的时候点击查看采购申请单，传申请人ID，apply_code和apply_name项目名称查询
 		String userId = UserContext.getUserId();
 //		String userId = "100028487";
 		PriCityManagerResp login = purApplyService.getLoginInfo(userId);
 		Integer userFounder = UserContext.getUser().getUserFounder();
 		//传过来的APPLY_TYPE看
-		
+
 		String lanId = login.getLanId();
-		
+
 		log.info("1查询采购申请单报表*******************lanId = "+lanId +" **************userFounder = "+userFounder);
 		if(userFounder!=null) {
 			if(9==userFounder){//地市管理员
@@ -68,21 +68,21 @@ public class CgSearchApplyController extends BaseController {
 		Boolean isMerchant= UserContext.isMerchant();
 		if(isMerchant==true) {
 			req.setMerchantId(UserContext.getMerchantId());
-            log.info("查询采购申请单报表*******************isMerchant = "+isMerchant +" **************UserContext.getMerchantId() = "+UserContext.getMerchantId());
+			log.info("查询采购申请单报表*******************isMerchant = "+isMerchant +" **************UserContext.getMerchantId() = "+UserContext.getMerchantId());
 		}
-		
+
 		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
 		return purApplyService.cgSearchApply(req);
-    }
-	
+	}
+
 	@ApiOperation(value = "提出采购申请单头", notes = "提出采购申请单头")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
+	@ApiResponses({
+			@ApiResponse(code=400,message="请求参数没填好"),
+			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+	})
 	@GetMapping(value="/tcProcureApplybefore")
 	@UserLoginToken
-    public ResultVO<ApplyHeadResp> tcProcureApplybefore() {
+	public ResultVO<ApplyHeadResp> tcProcureApplybefore() {
 		UserDTO user = UserContext.getUser();
 		log.info("*********************提出申请需要生成的参数。。。。。。。。。。。。。"+JSON.toJSON(user));
 
@@ -110,18 +110,18 @@ public class CgSearchApplyController extends BaseController {
 		applyHeadResp.setLanId(lanId);
 		applyHeadResp.setRegionId(regionId);
 		applyHeadResp.setApplyCode(applyCode);
-		
+
 		return ResultVO.success(applyHeadResp);
-    }
-	
+	}
+
 	@ApiOperation(value = "提出采购申请单", notes = "提出采购申请单")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping("/tcProcureApply")
+	@ApiResponses({
+			@ApiResponse(code=400,message="请求参数没填好"),
+			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+	})
+	@PostMapping("/tcProcureApply")
 	@UserLoginToken
-    public ResultVO tcProcureApply(@RequestBody ProcureApplyReq req) {
+	public ResultVO tcProcureApply(@RequestBody ProcureApplyReq req) {
 		String isSave = req.getIsSave();
 		String statusCd = null ;
 		if("1".equals(isSave)){//保存
@@ -132,7 +132,7 @@ public class CgSearchApplyController extends BaseController {
 		if(req.getAddrId()==null) {
 			ResultVO.error("请选择收货地址！");
 		}
-		
+
 		Date date = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		String dateString = formatter.format(date);
@@ -143,15 +143,15 @@ public class CgSearchApplyController extends BaseController {
 		//情况二，如果是提交，状态就是20，待审核(分表里面是否有记录)
 		String applyId = req.getApplyId();
 		String createStaff = UserContext.getUserId();
-		
+
 		//获取供应商ID和申请商家ID
 		String supplierId = req.getSupplierId();
 		String applyMerchantId = req.getApplyMerchantId();//申请商家ID
 		String supplierCode = purApplyService.getMerchantCode(supplierId);
 		String applyMerchantCode = purApplyService.getMerchantCode(applyMerchantId);
-		
+
 		String createDate = dateString;//创建时间
-		
+
 		req.setStatusCd(statusCd);
 		req.setCreateStaff(createStaff);
 		req.setCreateDate(createDate);
@@ -247,48 +247,56 @@ public class CgSearchApplyController extends BaseController {
 			purApplyService.tcProcureApply(req);
 		}
 		return ResultVO.success();
-    }
-	
+	}
+
 	@ApiOperation(value = "查询采购申请单报表的删除操作", notes = "查询采购申请单报表的删除操作")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping("/delSearchApply")
-    public ResultVO delSearchApply(@RequestBody PurApplyReq req) {
+	@ApiResponses({
+			@ApiResponse(code=400,message="请求参数没填好"),
+			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+	})
+	@PostMapping("/delSearchApply")
+	public ResultVO delSearchApply(@RequestBody PurApplyReq req) {
 		return purApplyService.delSearchApply(req);
-    }
-	
+	}
+
 	@ApiOperation(value = "查询采购申请单报表的查看操作", notes = "查询采购申请单报表的查看操作")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping("/ckApplyData")
+	@ApiResponses({
+			@ApiResponse(code=400,message="请求参数没填好"),
+			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+	})
+	@PostMapping("/ckApplyData")
 	public ResultVO<CkProcureApplyResp> ckApplyData(@RequestBody PurApplyReq req){
 		//获取申请单
 		CkProcureApplyResp procureApplyReq1 = purApplyService.ckApplyData1(req);
 		//获取添加的产品信息
 		List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
 		List<AddFileReq> procureApplyReq3 = purApplyService.ckApplyData3(req);
-		
+		// 发货串码
+		List<String> deliverMktResInstNbrList = purApplyService.countDelivery(req.getApplyId());
+		if ( deliverMktResInstNbrList !=null && deliverMktResInstNbrList.size()>0 ) {
+			procureApplyReq1.setDeliveryTotal(String.valueOf(deliverMktResInstNbrList.size()));
+			procureApplyReq1.setDeliverMktResInstNbrList(deliverMktResInstNbrList);
+		}else {
+			procureApplyReq1.setDeliveryTotal("0");
+		}
+
 		//如果是采购单，则查看收货地址
 		List<PurApplyExtReq> procureApplyReq4 = purApplyService.ckApplyData4(req);
 		procureApplyReq1.setPurApplyExtReq(procureApplyReq4);
-		
+
 		procureApplyReq1.setAddProductReq(procureApplyReq2);
 		procureApplyReq1.setAddFileReq(procureApplyReq3);
 		return ResultVO.success(procureApplyReq1);
 	}
-	
-	
+
+
 	//添加收货地址
 	@ApiOperation(value = "添加收货地址操作", notes = "添加收货地址操作")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping("/addShippingAddress")
+	@ApiResponses({
+			@ApiResponse(code=400,message="请求参数没填好"),
+			@ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+	})
+	@PostMapping("/addShippingAddress")
 	public ResultVO addShippingAddress(MemMemberAddressReq req){
 		purApplyService.addShippingAddress(req);
 		return ResultVO.success();

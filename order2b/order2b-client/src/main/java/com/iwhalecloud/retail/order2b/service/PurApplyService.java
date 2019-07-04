@@ -9,7 +9,7 @@ import com.iwhalecloud.retail.order2b.dto.resquest.purapply.*;
 import java.util.List;
 
 /**
- * 
+ *
  * @author lws
  * @date 2019-04-15
  */
@@ -29,45 +29,45 @@ public interface PurApplyService {
 	public void crPurApplyFile(AddFileReq req);
 	//采购申请查询的删除操作
 	public ResultVO delSearchApply(PurApplyReq req);
-	
+
 	public CkProcureApplyResp ckApplyData1(PurApplyReq req);
 	public List<AddProductReq> ckApplyData2(PurApplyReq req);
 	public List<AddFileReq> ckApplyData3(PurApplyReq req);
 	public List<PurApplyExtReq> ckApplyData4(PurApplyReq req);
 
 	public ApplyHeadResp hqShenQingDaoHao();
-	
+
 	public String hqDiShiBuMen(String dsbm);
-	
+
 	public int isHaveSave(String applyId);
-	
+
 	public void updatePurApply(ProcureApplyReq state);
-	
+
 	public void delApplyItem(ProcureApplyReq req);
 	public void delApplyFile(ProcureApplyReq req);
 	public void delPurApplyExt(ProcureApplyReq req);
-	
+
 	public MemMemberAddressReq selectMemMeneberAddr(ProcureApplyReq req);
-	
+
 	public void insertPurApplyExt(MemMemberAddressReq req);
-	
+
 	public String getMerchantCode(String merchantCode);
-	
+
 	public String hqSeqFileId();
-	
+
 	public String hqSeqItemId();
 	//添加收货地址
 	public void addShippingAddress(MemMemberAddressReq req);
-	
+
 	public ResultVO updatePrice(UpdateCorporationPriceReq req);
 
 	public ResultVO commitPriceExcel(UpdateCorporationPriceReq req);
 
 	public ResultVO<List<ProdProductChangeDetail>> searchCommitPriceInfo(UpdateCorporationPriceReq req);
 	public void insertTcProcureApply(ProcureApplyReq req);
-/*
-*  采购申请
-* */
+	/*
+	 *  采购申请
+	 * */
 	public ResultVO applyPurchase(ProcureApplyReq req);
 
 
@@ -78,4 +78,6 @@ public interface PurApplyService {
 
 	//政企省内代收项目状态报表
 	public ResultVO<Page<PurApplyStatusReportResp>> applyStatusSearchReport(PurApplyStatusReportReq req);
+
+	List<String>  countDelivery(String applyId);
 }

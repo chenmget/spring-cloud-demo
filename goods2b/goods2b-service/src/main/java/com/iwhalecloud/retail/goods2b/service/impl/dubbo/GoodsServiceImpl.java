@@ -219,7 +219,15 @@ public class GoodsServiceImpl implements GoodsService {
         if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot()) &&
                 CollectionUtils.isNotEmpty(req.getEntityList())) {
             ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
-            prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
+//            prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
+
+            // zhongwenlong 分货规则 列表项 塞goodsId字段
+            List<GoodsRulesDTO> goodsRulesDTOList = req.getEntityList();
+            goodsRulesDTOList.forEach(goodsRulesDTO -> {
+                goodsRulesDTO.setGoodsId(goods.getGoodsId());
+            });
+            prodGoodsRuleEditReq.setGoodsRulesDTOList(goodsRulesDTOList);
+
             ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());
             log.info("GoodsServiceImpl.addGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {

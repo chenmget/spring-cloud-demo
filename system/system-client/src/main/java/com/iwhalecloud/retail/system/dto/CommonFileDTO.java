@@ -84,8 +84,6 @@ public class CommonFileDTO implements java.io.Serializable {
 	@ApiModelProperty(value = "记录每次修改的员工标识。")
 	private java.lang.String updateStaff;
 
-	public CommonFileDTO() {
-	}
 	/**
 	 * 记录每次修改的时间
 	 */

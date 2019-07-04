@@ -11,6 +11,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -64,6 +65,12 @@ public class ExcelToMerchantListUtils {
 
 
     private static String transferValue(String filedName, String value) {
+
+        // 判空
+        if (StringUtils.isEmpty(value) || "null".equals(value)) {
+            return "";
+        }
+
         final String MERCHANT_TYPE = "merchantType";
         final String STATUS = "status";
         final String EFF_DATE = "effDate";

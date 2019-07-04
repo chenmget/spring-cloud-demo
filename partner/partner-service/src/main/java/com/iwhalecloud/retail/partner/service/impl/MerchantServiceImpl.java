@@ -26,6 +26,7 @@ import com.iwhalecloud.retail.partner.manager.MerchantManager;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
@@ -207,8 +208,6 @@ public class MerchantServiceImpl implements MerchantService {
             }
 
             // “系统账号”、“系统状态”
-//            if (!StringUtils.isEmpty(merchantDetailDTO.getUserId())) {
-//                UserDTO userDTO = userService.getUserByUserId(merchantDetailDTO.getUserId());
             if (!StringUtils.isEmpty(merchantDetailDTO.getMerchantId())) {
                 UserGetReq userGetReq = new UserGetReq();
                 userGetReq.setRelCode(merchantDetailDTO.getMerchantId());
@@ -218,6 +217,26 @@ public class MerchantServiceImpl implements MerchantService {
                     merchantDetailDTO.setUserStatus(userDTO.getStatusCd().toString());
                 }
             }
+
+            // 取经营单元（三级组织） 、 营销支局（四级组织）
+            // 根据parCrmOrgPathCode取3、4级组织ID （如果有）
+            String orgIdWithLevel3 = getOrgIdByPathCode(merchantDetailDTO.getParCrmOrgPathCode(), 3);
+            String orgIdWithLevel4 = getOrgIdByPathCode(merchantDetailDTO.getParCrmOrgPathCode(), 4);
+            merchantDetailDTO.setOrgIdWithLevel3(orgIdWithLevel3);
+            merchantDetailDTO.setOrgIdWithLevel4(orgIdWithLevel4);
+            if (StringUtils.isNotEmpty(orgIdWithLevel3)) {
+                OrganizationDTO dto = organizationService.getOrganization(orgIdWithLevel3).getResultData();
+                if (Objects.nonNull(dto)) {
+                    merchantDetailDTO.setOrgNameWithLevel3(dto.getOrgName());
+                }
+            }
+            if (StringUtils.isNotEmpty(orgIdWithLevel4)) {
+                OrganizationDTO dto = organizationService.getOrganization(orgIdWithLevel4).getResultData();
+                if (Objects.nonNull(dto)) {
+                    merchantDetailDTO.setOrgNameWithLevel4(dto.getOrgName());
+                }
+            }
+
 
         }
         log.info("MerchantServiceImpl.getMerchantDetail(), output: merchantDetailDTO={} ", JSON.toJSONString(merchantDetailDTO));

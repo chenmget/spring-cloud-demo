@@ -732,8 +732,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         for (ResourceInstListResp resp : merchantNbrInstVO.getResultData()) {
             String mktResInstType = resp.getMktResInstType();
             //政企只能领取省内代收的串码类型，集采只能领取备机的串码类型
-            Boolean match = (ResourceConst.IS_GOVORJC.IS_GOVORJC_1.equals(isGovOrJC) && ResourceConst.MKTResInstType.COLLECTION_BY_PROVINCE.getCode().equals(mktResInstType)) ||
-                            (ResourceConst.IS_GOVORJC.IS_GOVORJC_2.equals(isGovOrJC) && ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(mktResInstType));
+            Boolean match = (ResourceConst.IS_GOVORJC.IS_GOVORJC_1.getCode().equals(isGovOrJC) && ResourceConst.MKTResInstType.COLLECTION_BY_PROVINCE.getCode().equals(mktResInstType)) ||
+                            (ResourceConst.IS_GOVORJC.IS_GOVORJC_2.getCode().equals(isGovOrJC) && ResourceConst.MKTResInstType.NONTRANSACTION.getCode().equals(mktResInstType));
             if (match) {
                 matchNbrInstList.add(resp);
             } else {

@@ -33,10 +33,10 @@ public class GoodsBingActivityJob implements SimpleJob {
         }
         long startTime = System.currentTimeMillis();
         log.info("GoodsBingActivityJob start-->startTime={}", startTime);
-        // 绑定在途活动
-        goodsBindingActivityService.goodsBingActivity();
         // 解绑失效活动
         goodsBindingActivityService.goodsUnBundlingActivity();
+        // 绑定在途活动
+        goodsBindingActivityService.goodsBingActivity();
         long endTime = System.currentTimeMillis();
         log.info("GoodsBingActivityJob end-->endTime={}",endTime);
     }

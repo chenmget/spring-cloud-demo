@@ -6,6 +6,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ExchangeObjectGetResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseLightResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductDetailResp;
 
 import java.util.List;
@@ -92,4 +93,11 @@ public interface ProductBaseService {
      * @return
      */
     ResultVO<List<String>> getDistinctUnitType(String typeId, String brandId);
+
+    /**
+     * 查询产品基本表的基本信息
+     * @param productId
+     * @return
+     */
+    ResultVO<ProductBaseLightResp> getProductBaseByProductId(String productId);
 }

@@ -62,7 +62,7 @@ public class Constant {
     private String noResInstInMerchant;
 
     /**
-     * 串码校验:该产品串码已在库，请不要重复录入！
+     * 串码校验:该产品串码已不在厂商库
      */
     private String mktResInstExists;
 
@@ -272,5 +272,19 @@ public class Constant {
      */
     private String notSupplierCanNotReset;
 
+    /**
+     * 您本月绿色通道免审核额度已用完，本次串码已提交至串码管理员审核，审核通过后方可入库
+     */
+    private String greenChannelAudit;
+
+    /**
+     * 串码调拨审核中
+     */
+    private String allocateAudit;
+
+    /**
+     * 串码调拨已提交
+     */
+    private String allocateSubmit;
 
 }

@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iwhalecloud.retail.warehouse.mapper.ResouceInstItmsManualSyncRecMapper">
+
+    <sql id="allFields">
+        t.MKT_RES_ITMS_SYNC_REC_ID
+        ,t.MKT_RES_INST_NBR
+        ,t.PRODUCT_TYPE
+        ,t.BRAND_ID
+        ,t.UNIT_TYPE
+        ,t.PRODUCT_ID
+        ,t.PRODUCT_NAME
+        ,t.ORIG_LAN_ID
+        ,t.DEST_LAN_ID
+        ,t.SYNC_DATE
+        ,t.STATUS_CD
+        ,t.STATUS_DATE
+        ,t.REMARK
+        ,t.CREATE_STAFF
+        ,t.CREATE_DATE
+    </sql>
+
+    <select id="listResourceItemsManualSyncRec" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecPageReq"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResouceInstItmsManualSyncRecListResp">
+        SELECT <include refid="allFields"/>  FROM mkt_res_itms_sync_rec t WHERE 1 = 1
+        <if test="null!=req.createDateStart and ''!=req.createDateStart">
+            and t.CREATE_DATE &gt;= #{req.createDateStart}
+        </if>
+        <if test="null!=req.createDateStart and ''!=req.createTimeEnd">
+            and t.CREATE_DATE &lt;= #{req.createDateEnd}
+        </if>
+        <if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">
+            and t.mkt_res_inst_nbr = #{mktResInstNbr}
+        </if>
+        <if test="null!=req.destLanId and ''!=req.destLanId">
+            and t.dest_lan_id = #{destLanId}
+        </if>
+        <if test="null!=req.destLanId and ''!=req.destLanId">
+            and t.dest_lan_id = #{destLanId}
+        </if>
+        <if test="null!=req.productType and ''!=req.productType">
+            and t.product_type = #{productType}
+        </if>
+        <if test="null!=req.brandId and ''!=req.brandId">
+            and t.brand_id = #{brandId}
+        </if>
+        <if test="null!=req.unitType and ''!=req.unitType">
+            and t.unit_type = #{unitType}
+        </if>
+        <if test="null!=req.productName and ''!=req.productName">
+            and upper(t.product_name) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
+        </if>
+        <choose>
+            <when test="optionType !=null and ''!= optionType">
+                and trim(orig_lan_id)!=''
+            </when >
+            <otherwise>
+                and t.orig_lan_id is null or trim(COMMENTS)=''
+            </otherwise>
+        </choose>
+        <if test="null!=req.statusCd and ''!=req.statusCd">
+            and t.status_cd = #{statusCd}
+        </if>
+
+    </select>
+
+
+</mapper>

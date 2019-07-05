@@ -111,4 +111,35 @@ public final class MarketingResConst {
         }
 
     }
+
+    public static enum ITME_METHOD {
+        ADD("ITMS_ADD", "新增"),
+        UPDATE("ITMS_XG", "修改"),
+        DELETE("ITMS_DELL", "删除");
+
+        private String code;
+        private String name;
+
+        ITME_METHOD(String code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+    }
 }

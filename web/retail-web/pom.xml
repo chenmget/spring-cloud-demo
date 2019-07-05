@@ -105,11 +105,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>oms-client</artifactId>
-            <version>${web.version}</version>
-        </dependency>
+        
 		<dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>report-client</artifactId>
@@ -120,11 +116,7 @@
             <artifactId>partner-client</artifactId>
             <version>${web.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>order-client</artifactId>
-            <version>${web.version}</version>
-        </dependency>
+        
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>order2b-client</artifactId>
@@ -132,19 +124,10 @@
         </dependency>
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>goods-client</artifactId>
-            <version>${web.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>goods2b-client</artifactId>
             <version>${web.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>oms-camera-client</artifactId>
-            <version>${web.version}</version>
-        </dependency>
+        
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>rights-client</artifactId>
@@ -170,16 +153,7 @@
             <artifactId>workflow-client</artifactId>
             <version>${web.version}</version>
         </dependency>
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>oms-client</artifactId>
-            <version>${web.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.iwhalecloud.retail</groupId>
-            <artifactId>goods-client</artifactId>
-            <version>${web.version}</version>
-        </dependency>
+        
         <dependency>
             <groupId>com.iwhalecloud.retail</groupId>
             <artifactId>goods2b-client</artifactId>

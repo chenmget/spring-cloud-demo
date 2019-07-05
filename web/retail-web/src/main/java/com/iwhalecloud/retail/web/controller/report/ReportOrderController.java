@@ -144,6 +144,8 @@ public class ReportOrderController extends BaseController {
 	@RequestMapping(value = "/orderReportDataExport", method = RequestMethod.POST)
 	@UserLoginToken
 	public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
+		req.setPageNo(1);
+		req.setPageSize(60000);
 		String CreateTimeStart = req.getCreateTimeStart();
 		String CreateTimeEnd = req.getCreateTimeEnd();
 		Date date = new Date();
@@ -160,8 +162,6 @@ public class ReportOrderController extends BaseController {
 			req.setCreateTimeEnd(CreateTimeEnd);
 		}
 		int userType = UserContext.getUser().getUserFounder();
-		req.setPageNo(1);
-		req.setPageSize(60000);
 		List<String> list = new ArrayList<String>();
 //		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
 //		} else 

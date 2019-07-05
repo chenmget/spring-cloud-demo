@@ -88,6 +88,8 @@ public class ReportStoreController extends BaseController {
     @PostMapping(value="/cjStorePurchaserReportExport")
     @UserLoginToken
     public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
+    	req.setPageNo(1);
+		req.setPageSize(50000);
     	int userType=UserContext.getUser().getUserFounder();
     	List<String> list = new ArrayList<String>();
 		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员

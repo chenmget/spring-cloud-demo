@@ -79,7 +79,9 @@ public class ReportStoreInvoicingCityController extends BaseController {
     })
     @PostMapping(value = "/storeInvoicingCityReportExport")
     public void storeInvoicingCityReportExport(@RequestBody ReportStInvCityDaoReq req, HttpServletResponse response) {
-		int userType=UserContext.getUser().getUserFounder();
+    	req.setPageNo(1);
+		req.setPageSize(50000);
+    	int userType=UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
 		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());

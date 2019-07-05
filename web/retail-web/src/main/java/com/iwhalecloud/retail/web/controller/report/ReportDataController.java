@@ -101,6 +101,8 @@ public class ReportDataController extends BaseController {
     @UserLoginToken
     public void reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req, HttpServletResponse response) {
     	//最大跨度查询三个月createTimeStart   createTimeEnd
+    	req.setPageNo(1);
+		req.setPageSize(50000);
 		String itemDateStart = req.getItemDateStart();
 		String itemDateEnd = req.getItemDateEnd();
 		Date date = new Date();

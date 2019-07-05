@@ -5,24 +5,25 @@
     <select id="listStInvCity" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStInvCityDaoReq"
             resultType="com.iwhalecloud.retail.report.dto.request.RptPartnerOperatingDay">
 		SELECT
-			a.PRODUCT_NAME,
-			a.PRODUCT_BASE_NAME,
-			a.PRODUCT_TYPE,
-			a.BRAND_NAME,
-			a.PRICE_LEVEL,
-			a.TOTAL_IN_NUM,
-			a.TOTAL_OUT_NUM,
-			a.STOCK_NUM,
-			a.PURCHASE_NUM,
-			a.MANUAL_NUM,
-			a.SELL_NUM,
-			a.UNCONTRACT_NUM,
-			a.CONTRACT_NUM,
-			a.REGISTER_NUM,
-			a.RETURN_NUM,
-			a.WEEK_AVG_SELL_NUM
+			b.region_name as lanIdName,
+			c.org_name as orgName,
+			a.TOTAL_IN_NUM as totalInNum,
+			a.TOTAL_OUT_NUM as totalOutNum,
+			a.stock_num as stockNum,
+			a.PURCHASE_NUM as purchaseNum,
+			a.MANUAL_NUM as manualNum,
+			a.TRANS_IN_NUM as transInNum,
+			a.SELL_NUM as sellNum,
+			a.UNCONTRACT_NUM as uncontractNum,
+			a.CONTRACT_NUM as contractNum,
+			a.REGISTER_NUM as registerNum,
+			a.TRANS_OUT_NUM as transOutNum,
+			a.RETURN_NUM as returnNum,
+			a.WEEK_AVG_SELL_NUM as weekAvgSellNum
 		FROM RPT_PARTNER_OPERATING_DAY a
 		LEFT JOIN par_merchant par ON par.merchant_id = a.PARTNER_ID
+		LEFT JOIN sys_common_org c ON INSTR(par.PAR_CRM_ORG_PATH_CODE, c.path_code) AND c.org_level='3'
+		LEFT JOIN sys_common_region b ON a.city_id = b.region_id
 		WHERE 1=1
 		<if test="req.dateStart!=null and req.dateStart!=''">
 		and str_to_date(a.DATE,'%Y-%m-%d') &gt;= str_to_date(#{req.dateStart}, '%Y-%m-%d')

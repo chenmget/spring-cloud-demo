@@ -391,7 +391,6 @@ public class UserController extends BaseController {
     })
     @ApiImplicitParam(name = "platformFlag", value = "平台标识：0交易平台；1管理平台", paramType = "query", required = true, dataType = "String")
     @RequestMapping(value = "/getUser", method = RequestMethod.GET)
-    @UserLoginToken
     public ResultVO<LoginResp> getUser(HttpServletRequest request, @RequestParam String platformFlag) throws UserNoMerchantException{
         ResultVO checkUserLoginResult = checkUserLogin(request);
 

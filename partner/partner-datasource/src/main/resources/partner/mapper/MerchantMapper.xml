@@ -79,6 +79,8 @@
     ,t.CONTRACT_EFF_DATE
     ,t.CONTRACT_EXP_DATE
     ,t.CERT_NUMBER
+    ,t.ADDRESS
+    ,t.MANAGE_BRAND
 </sql>
 <!--简要字段-->
 <sql id="simpleFields">

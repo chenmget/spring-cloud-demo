@@ -70,31 +70,12 @@ public class ReportDataInfoController extends BaseController {
     @PostMapping("/getStorePurchaserReport")
 	@UserLoginToken
     public ResultVO<Page<ReportStorePurchaserResq>> getStorePurchaserReport(@RequestBody ReportStorePurchaserReq req) {
-		log.info("****************************ReportStoreController getReportStSaleList    req={}",JSON.toJSONString(req));
-		//默认最大跨度查询三个月
-		String dateStart = req.getDateStart();
-		String dateEnd = req.getDateEnd();
-		Date date = new Date();
-		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.MONTH, -3);
-		Date date3 = cal.getTime();
-		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
-		if(dateStart==null && dateEnd==null){
-			dateStart = format3.format(date3);
-			dateEnd = df.format(date);
-			req.setDateStart(dateStart);
-			req.setDateEnd(dateEnd);
-		}
+		log.info("****************************ReportStoreController getStorePurchaserReport    req={}",JSON.toJSONString(req));
 		int userType=UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-		} else if (userType == SystemConst.USER_FOUNDER_9) { //地市管理员
+		if (userType == SystemConst.USER_FOUNDER_9) { //地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
-		} else {
-			return ResultVO.error("当前用户 没有权限");
 		}
 		return iReportDataInfoService.getStorePurchaserReport(req);
     }
@@ -110,31 +91,12 @@ public class ReportDataInfoController extends BaseController {
     @PostMapping(value="/StorePurchaserReportExport")
     @UserLoginToken
     public void StorePurchaserReportExport(@RequestBody ReportStorePurchaserReq req, HttpServletResponse response) {
-    	log.info("****************************ReportStoreController getReportStSaleList    req={}",JSON.toJSONString(req));
-		//默认最大跨度查询三个月
-		String dateStart = req.getDateStart();
-		String dateEnd = req.getDateEnd();
-		Date date = new Date();
-		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.MONTH, -3);
-		Date date3 = cal.getTime();
-		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
-		if(dateStart==null && dateEnd==null){
-			dateStart = format3.format(date3);
-			dateEnd = df.format(date);
-			req.setDateStart(dateStart);
-			req.setDateEnd(dateEnd);
-		}
+    	log.info("****************************ReportStoreController StorePurchaserReportExport    req={}",JSON.toJSONString(req));
 		int userType=UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-		} else if (userType == SystemConst.USER_FOUNDER_9) { //地市管理员
+		if (userType == SystemConst.USER_FOUNDER_9) { //地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
-		} else {
-			return ;
 		}
         ResultVO<List<ReportStorePurchaserResq>> resultVO = iReportDataInfoService.getStorePurchaserReportdc(req);
         ResultVO result = new ResultVO();

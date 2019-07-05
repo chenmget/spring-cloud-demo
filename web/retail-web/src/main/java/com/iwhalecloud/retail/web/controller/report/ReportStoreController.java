@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * @author zwl
  * @date 2018-11-09
- * 门店报表
+ * 门店进销存明细报表
  */
 @Slf4j
 @RestController
@@ -62,26 +62,9 @@ public class ReportStoreController extends BaseController {
 	@UserLoginToken
     public ResultVO<Page<ReportStSaleDaoResp>> getReportStSaleList(@RequestBody ReportStSaleDaoReq req) {
 		log.info("****************************ReportStoreController getReportStSaleList    req={}",JSON.toJSONString(req));
-		//默认最大跨度查询三个月
-		String dateStart = req.getDateStart();
-		String dateEnd = req.getDateEnd();
-		Date date = new Date();
-		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.MONTH, -3);
-		Date date3 = cal.getTime();
-		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
-		if(dateStart==null && dateEnd==null){
-			dateStart = format3.format(date3);
-			dateEnd = df.format(date);
-			req.setDateStart(dateStart);
-			req.setDateEnd(dateEnd);
-		}
 		int userType=UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3 ) {//零售商 （只能查看自己的仓库）
@@ -90,8 +73,6 @@ public class ReportStoreController extends BaseController {
 				return ResultVO.error("当前用户 没有商家编码");
 			}
 			req.setPartnerCode(merchantDTO.getMerchantCode());
-		} else {
-			return ResultVO.error("当前用户 没有权限");
 		}
         return reportStoreService.getReportStSaleList(req);
     }
@@ -107,25 +88,9 @@ public class ReportStoreController extends BaseController {
     @PostMapping(value="/cjStorePurchaserReportExport")
     @UserLoginToken
     public void cjStorePurchaserReportExport(@RequestBody ReportStSaleDaoReq req, HttpServletResponse response) {
-    	String dateStart = req.getDateStart();
-		String dateEnd = req.getDateEnd();
-		Date date = new Date();
-		DateFormat df = DateFormat.getDateInstance();//日期格式，精确到日  
-		Calendar cal = Calendar.getInstance();
-		cal.setTime(new Date());
-		cal.add(Calendar.MONTH, -3);
-		Date date3 = cal.getTime();
-		SimpleDateFormat format3= new SimpleDateFormat("yyyy-MM-dd");
-		if(dateStart==null && dateEnd==null){
-			dateStart = format3.format(date3);
-			dateEnd = df.format(date);
-			req.setDateStart(dateStart);
-			req.setDateEnd(dateEnd);
-		}
     	int userType=UserContext.getUser().getUserFounder();
     	List<String> list = new ArrayList<String>();
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_3 ) {//零售商 （只能查看自己的仓库）
@@ -134,10 +99,7 @@ public class ReportStoreController extends BaseController {
 				return ;
 			}
 			req.setPartnerCode(merchantDTO.getMerchantCode());
-		} else {
-			return ;
 		}
-		
         ResultVO<List<ReportStSaleDaoResp>> resultVO = reportStoreService.getReportStSaleListdc(req);
         ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {

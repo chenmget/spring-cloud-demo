@@ -527,7 +527,7 @@
   <select id="getProductApplyInfo" parameterType="java.lang.String"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductApplyInfoResp">
     SELECT p.product_id as productId,p.PRODUCT_BASE_ID as productBaseId,p.ATTR_VALUE1 as attrValue1,
-    p.MEMORY as memory,p.COLOR as color,p.CORPORATION_PRICE as corporationPrice,br.`NAME` as brandName,
+    p.ATTR_VALUE3 as memory,p.ATTR_VALUE2 as color,p.CORPORATION_PRICE as corporationPrice,br.`NAME` as brandName,
     b.UNIT_TYPE_NAME as unitTypeName,b.UNIT_TYPE as unitType ,p.SN as sn,b.PRODUCT_NAME as productName,
     CASE
     WHEN p.PURCHASE_TYPE ='1' THEN '集采'
@@ -550,10 +550,10 @@
       and upper(b.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
     </if>
     <if test="null!=req.memory and ''!=req.memory">
-      and p.MEMORY =#{req.memory}
+      and p.ATTR_VALUE3 =#{req.memory}
     </if>
     <if test="null!=req.color and ''!=req.color">
-      and p.COLOR =#{req.color}
+      and p.ATTR_VALUE2 =#{req.color}
     </if>
 
     <if test="null!=req.sn and ''!=req.sn">
@@ -592,7 +592,7 @@
   <select id="getDeliveryInfo" parameterType="java.lang.String"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductApplyInfoResp">
     SELECT p.product_id as productId,p.PRODUCT_BASE_ID as productBaseId,p.ATTR_VALUE1 as attrValue1,
-    p.MEMORY as memory,p.COLOR as color,p.CORPORATION_PRICE as corporationPrice,br.`NAME` as brandName,
+    p.ATTR_VALUE3 as memory,p.ATTR_VALUE2 as color,p.CORPORATION_PRICE as corporationPrice,br.`NAME` as brandName,
     b.UNIT_TYPE_NAME as unitTypeName,b.UNIT_TYPE as unitType ,p.SN as sn,b.PRODUCT_NAME as productName,
     CASE
     WHEN p.PURCHASE_TYPE ='1' THEN '集采'

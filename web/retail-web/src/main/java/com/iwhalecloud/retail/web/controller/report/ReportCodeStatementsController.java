@@ -85,11 +85,6 @@ public class ReportCodeStatementsController extends BaseController  {
 			return reportCodeStateService.getCodeStatementsReportAdmin(req);
 		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 
 				|| userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//省供应商4，地市供应商5，零售商3,厂商8
-//			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-//			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
-//			storeGetStoreIdReq.setStoreSubType("1300");
-//			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-			
 			MktResStoreIdReq mktResStoreIdReq = new MktResStoreIdReq();
 			mktResStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
 			mktResStoreIdReq.setStoreSubType("1300");
@@ -101,7 +96,7 @@ public class ReportCodeStatementsController extends BaseController  {
 			log.info("************************************************* ");
 			req.setMktResStoreId(mktResStoreId);
 		} else {
-			return ResultVO.error("当前用户 没有权限");
+			return reportCodeStateService.getCodeStatementsReportAdmin(req);
 		}
 		
 			return reportCodeStateService.getCodeStatementsReport(req);
@@ -119,7 +114,7 @@ public class ReportCodeStatementsController extends BaseController  {
     @UserLoginToken
     public void StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
 		req.setPageNo(1);
-		req.setPageSize(60000);
+		req.setPageSize(50000);
 		ResultVO<List<ReportCodeStatementsResp>> resultVO = null;
 		log.info("****************ReportOrderController getCodeStatementsReport()  ************start param={}",JSON.toJSONString(req));
 		String xdCreateTimeStart = req.getXdCreateTimeStart();
@@ -147,11 +142,6 @@ public class ReportCodeStatementsController extends BaseController  {
 			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
 		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 
 				|| userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//省供应商4，地市供应商5，零售商3,厂商8
-//			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-//			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
-//			storeGetStoreIdReq.setStoreSubType("1300");
-//			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-			
 			MktResStoreIdReq mktResStoreIdReq = new MktResStoreIdReq();
 			mktResStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
 			mktResStoreIdReq.setStoreSubType("1300");
@@ -164,7 +154,7 @@ public class ReportCodeStatementsController extends BaseController  {
 			req.setMktResStoreId(mktResStoreId);
 			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
 		} else {
-			return ;
+			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
 		}
 		
         ResultVO result = new ResultVO();

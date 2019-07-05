@@ -47,7 +47,7 @@
 		<if test="req.brandName!=null and req.brandName!=''">
 			and a.brand_id=#{req.brandName}
 		</if>
-		group by a.BUSINESS_ENTITY_ID,a.PRODUCT_BASE_ID
+		group by a.PRODUCT_BASE_ID
   </select>
   
   <select id="getMyMktResStoreId" parameterType="String" resultType="String">

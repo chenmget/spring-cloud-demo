@@ -46,7 +46,8 @@
 			    a.stock_amount ,
 			    a.city_id ,
 			    a.type_id ,
-			    a.brand_id
+			    a.brand_id,
+			    a.item_date
 			FROM 
 			rpt_supplier_operating_day a
 				LEFT JOIN prod_type b ON a.type_id = b.type_id

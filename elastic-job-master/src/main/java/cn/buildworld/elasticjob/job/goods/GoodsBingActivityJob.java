@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * @date: 2019年03月26日
  * @description: 更新商品参与活动标志
  **/
-@ElasticSimpleJob(cron = "0 0/30 * * * ?",
+@ElasticSimpleJob(cron = "0 0/10 * * * ?",
         jobName = "firstJob",
         shardingTotalCount = 1,
         jobParameter = "测试参数",

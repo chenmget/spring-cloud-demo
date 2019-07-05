@@ -923,6 +923,8 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Override
     public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
+        log.info("SupplierResourceInstServiceImpl.getMktResInstNbrForCheckInTrack . req={},resp={}", JSON.toJSONString(req));
+
         return resourceInstManager.getMktResInstNbrForCheckInTrack(req);
     }
 

@@ -49,8 +49,8 @@ public class MerchantColumn {
         orderMap.add(new ExcelTitleName("phoneNo", "(商家)联系电话"));
         orderMap.add(new ExcelTitleName("supplierName", "供应商名称"));
         orderMap.add(new ExcelTitleName("supplierCode", "供应商编码"));
-        orderMap.add(new ExcelTitleName("shopAddress", "(商家)生效时间"));
-        orderMap.add(new ExcelTitleName("effDate", "(商家)失效时间"));
+        orderMap.add(new ExcelTitleName("effDate", "(商家)生效时间"));
+        orderMap.add(new ExcelTitleName("expDate", "(商家)失效时间"));
         return orderMap;
     }
 
@@ -65,6 +65,8 @@ public class MerchantColumn {
         orderMap.add(new ExcelTitleName("busiLicenceExpDate","营业执照到期日期"));
         orderMap.add(new ExcelTitleName("registerBankAcct","银行账号"));
         orderMap.add(new ExcelTitleName("tagNames","标签组名"));
+        orderMap.add(new ExcelTitleName("orgNameWithLevel3","经营单元"));
+        orderMap.add(new ExcelTitleName("orgNameWithLevel4","营销中心/支局"));
         return orderMap;
     }
 

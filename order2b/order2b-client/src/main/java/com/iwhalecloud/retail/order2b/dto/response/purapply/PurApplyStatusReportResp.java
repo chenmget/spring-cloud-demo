@@ -58,6 +58,7 @@ public class PurApplyStatusReportResp extends PageVO implements Serializable {
 
 	private  String attrValue10;//容量-规格1 字段
 
+	private  String defaultImages;//图片地址
 
 
 

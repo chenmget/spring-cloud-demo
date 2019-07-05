@@ -58,5 +58,7 @@ public class ProductApplyInfoResp implements Serializable {
 
     private  String num;
 
+    private  String defaultImages;
+
 
 }

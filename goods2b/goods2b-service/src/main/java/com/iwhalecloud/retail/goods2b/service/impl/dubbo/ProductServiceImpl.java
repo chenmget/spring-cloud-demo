@@ -1,7 +1,6 @@
 package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
@@ -27,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -671,7 +671,33 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public ProductApplyInfoResp getProductApplyInfo(String productId) {
         log.info("ProductServiceImpl.getProductApplyInfo productId={}", productId);
-        return productManager.getProductApplyInfo(productId);
+        ProductApplyInfoResp resp = productManager.getProductApplyInfo(productId);
+        // 查询缩略图图片
+        String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();
+        String nailType = FileConst.ProductSubType.NAIL_SUB.getType();
+        List<ProdFileDTO> nailImages =  fileManager.getFile(resp.getProductId(), targetType,nailType);
+        if(null == nailImages || nailImages.isEmpty()){
+            // // 没有缩略图图片，查询默认图片
+            String defaultType = FileConst.ProductSubType.DEFAULT_SUB.getType();
+            nailImages =  fileManager.getFile(resp.getProductId(), targetType,defaultType);
+        }
+
+        if(null == nailImages || nailImages.isEmpty()){
+
+        }else {
+            StringBuilder url = new StringBuilder();
+            for (int i = 0;  i< nailImages.size(); i++){
+                ProdFileDTO file = nailImages.get(i);
+                if (i == (nailImages.size() - 1)){
+                    url.append(file.getFileUrl());
+                }else {
+                    url.append(file.getFileUrl()).append(",");
+                }
+            }
+            resp.setDefaultImages(url.toString());
+        }
+
+        return resp;
     }
 
     @Override

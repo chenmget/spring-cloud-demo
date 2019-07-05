@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.goods2b.dto.ActivityGoodsDTO;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityGoodDTO;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityGoodsByMerchantReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityByMerchantListReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
@@ -59,7 +60,7 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
      * @return
      */
     @Override
-    public ResultVO<Page<MarketingActivityByMerchantResp>> listMarketingActivityByMerchant(MarketingActivityByMerchantListReq req) {
+    public ResultVO<Page<MarketingActivityDTO>> listMarketingActivityByMerchant(MarketingActivityByMerchantListReq req) {
         // 1.查询参与对象类型为“按条件过滤”且有效的活动
         MarketingActivityListReq activityListReq = new MarketingActivityListReq();
         activityListReq.setActivityParticipantType(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode());

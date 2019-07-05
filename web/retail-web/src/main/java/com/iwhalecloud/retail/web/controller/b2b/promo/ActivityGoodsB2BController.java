@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityGoodsByMerchantReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityByMerchantListReq;
 import com.iwhalecloud.retail.promo.dto.req.VerifyProductPurchasesLimitReq;
@@ -48,7 +49,7 @@ public class ActivityGoodsB2BController {
     })
     @PostMapping(value="/listMarketingActivityByMerchant")
     @UserLoginToken
-    public ResultVO<Page<MarketingActivityByMerchantResp>> listMarketingActivityByMerchant(@RequestBody MarketingActivityByMerchantListReq req){
+    public ResultVO<Page<MarketingActivityDTO>> listMarketingActivityByMerchant(@RequestBody MarketingActivityByMerchantListReq req){
         log.info("ActivityGoodsB2BController listMarketingActivityByMerchant MarketingActivityByMerchantListReq={} ", req);
         if(UserContext.isUserLogin()) {
             UserDTO userDTO = UserContext.getUser();

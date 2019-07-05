@@ -927,6 +927,10 @@ public class UserController extends BaseController {
      */
     @RequestMapping("/ssoLogin")
     public void ssoLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        response.setCharacterEncoding("UTF-8");
+        response.setContentType("text/html;charset=UTF-8");
+
         String verifyKey = "YHJ@20190306#zte";
         //3.0门户菜单编码
         String businessCode = "YUN1";
@@ -934,7 +938,6 @@ public class UserController extends BaseController {
         //平台标识
         String platformFlag = "";
 
-        response.setCharacterEncoding("gbk");
         PrintWriter out = response.getWriter();
 
         String action = request.getParameter("action");

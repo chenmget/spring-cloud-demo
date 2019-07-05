@@ -62,7 +62,7 @@ public class Constant {
     private String noResInstInMerchant;
 
     /**
-     * 串码校验:该产品串码已在库，请不要重复录入！
+     * 串码校验:该产品串码已不在厂商库
      */
     private String mktResInstExists;
 

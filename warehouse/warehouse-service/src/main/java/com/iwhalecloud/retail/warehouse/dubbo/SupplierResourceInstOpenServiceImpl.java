@@ -220,7 +220,9 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
 
     @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
-        return supplierResourceInstService.resetResourceInst(req);
+        ResultVO resp = supplierResourceInstService.resetResourceInst(req);
+        resouceInstTrackService.asynResetResourceInst(req, resp);
+        return resp;
     }
 
     @Override

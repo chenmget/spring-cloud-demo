@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.promo.dto.resp.VerifyProductPurchasesLimitResp;
 import com.iwhalecloud.retail.promo.service.ActivityGoodService;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,7 +47,7 @@ public class ActivityGoodsB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/listMarketingActivityByMerchant")
-//    @UserLoginToken
+    @UserLoginToken
     public ResultVO<Page<MarketingActivityByMerchantResp>> listMarketingActivityByMerchant(@RequestBody MarketingActivityByMerchantListReq req){
         log.info("ActivityGoodsB2BController listMarketingActivityByMerchant MarketingActivityByMerchantListReq={} ", req);
         if(UserContext.isUserLogin()) {
@@ -54,8 +55,8 @@ public class ActivityGoodsB2BController {
             if(userDTO!=null){
                 req.setLanId(userDTO.getLanId());
                 req.setRegionId(userDTO.getRegionId());
+                req.setMerchantId(userDTO.getRelCode());
             }
-            req.setMerchantId(UserContext.getMerchantId());
         }
         return activityGoodService.listMarketingActivityByMerchant(req);
     }

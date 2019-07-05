@@ -3,18 +3,24 @@ package com.iwhalecloud.retail.promo.service.impl;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ActivityGoodsDTO;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
+import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityGoodDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityGoodsByMerchantReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityByMerchantListReq;
+import com.iwhalecloud.retail.promo.dto.req.MarketingActivityListReq;
 import com.iwhalecloud.retail.promo.dto.resp.ActivityGoodsByMerchantResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityByMerchantResp;
 import com.iwhalecloud.retail.promo.entity.ActivityProduct;
+import com.iwhalecloud.retail.promo.entity.MarketingActivity;
 import com.iwhalecloud.retail.promo.manager.ActivityGoodManager;
 import com.iwhalecloud.retail.promo.manager.ActivityProductManager;
+import com.iwhalecloud.retail.promo.manager.MarketingActivityManager;
 import com.iwhalecloud.retail.promo.service.ActivityGoodService;
+import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,11 +39,17 @@ import java.util.List;
 public class ActivityGoodServiceImpl implements ActivityGoodService {
 
     @Autowired
+    private MarketingActivityManager marketingActivityManager;
+
+    @Autowired
     private ActivityProductManager activityProductManager;
 
     @Autowired
     private ActivityGoodManager activityGoodManager;
-    
+
+    @Autowired
+    private MarketingActivityService marketingActivityService;
+
     @Reference
     private GoodsProductRelService goodsProductRelService;
 
@@ -48,6 +60,21 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
      */
     @Override
     public ResultVO<Page<MarketingActivityByMerchantResp>> listMarketingActivityByMerchant(MarketingActivityByMerchantListReq req) {
+        // 1.查询参与对象类型为“按条件过滤”且有效的活动
+        MarketingActivityListReq activityListReq = new MarketingActivityListReq();
+        activityListReq.setActivityParticipantType(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode());
+        List<MarketingActivity> marketingActivities = marketingActivityManager.queryAvailableActivityList(activityListReq);
+        // 2.遍历获取参与对象包含该商家的活动id
+        List<String> activityIds = new ArrayList<>(marketingActivities.size());
+        for (MarketingActivity marketingActivity : marketingActivities) {
+            String activityId = marketingActivity.getId();
+            boolean isisExisting = marketingActivityService.isExistingInParticipantFilterValue(marketingActivity.getId(),req.getMerchantId(),req.getLanId(),req.getRegionId());
+            if (isisExisting){
+                activityIds.add(activityId);
+            }
+        }
+        //设置活动ids到入参请求体中
+        req.setActivityIds(activityIds);
         return ResultVO.success(activityGoodManager.listMarketingActivityByMerchant(req));
     }
 

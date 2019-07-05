@@ -95,8 +95,9 @@ public class ReportOrderController extends BaseController {
 		}
 		int userType = UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+//		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
+//		} else 
+		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_4) {//省供应商
@@ -119,9 +120,10 @@ public class ReportOrderController extends BaseController {
 				return ResultVO.error("当前用户 没有商家编码");
 			}
 			req.setMerchantCode(merchantDTO.getMerchantCode());
-		} else {
-			return ResultVO.error("当前用户 没有权限");
-		}
+		} 
+//		else {
+//			return ResultVO.error("当前用户 没有权限");
+//		}
 		
         return reportOrderService.getReportOrderList1(req);
     }
@@ -161,8 +163,9 @@ public class ReportOrderController extends BaseController {
 		req.setPageNo(1);
 		req.setPageSize(60000);
 		List<String> list = new ArrayList<String>();
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+//		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
+//		} else 
+		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
 		} else if (userType == SystemConst.USER_FOUNDER_4) {//省供应商
@@ -185,9 +188,10 @@ public class ReportOrderController extends BaseController {
 				return ;
 			}
 			req.setMerchantCode(merchantDTO.getMerchantCode());
-		} else {
-			return ;
-		}
+		} 
+//		else {
+//			return ;
+//		}
 	    ResultVO<List<ReportOrderResp>> resultVO = reportOrderService.getReportOrderList1dc(req);
 	    ResultVO result = new ResultVO();
 	    if (!resultVO.isSuccess()) {
@@ -275,39 +279,11 @@ public class ReportOrderController extends BaseController {
 			lanIdList.add( UserContext.getUser().getLanId());
 			req.setLanIdList(lanIdList);
 		} else {
-			return ResultVO.error("当前用户 没有权限");
+			if(req == null || req.getLanIdList() == null) {
+				return ResultVO.success();
+			}
 		}
 		return commonOrgService.getSysCommonOrg(req);
 	}	
 	
-	
-	
-	
-	
-//	@ApiOperation(value = "查询经营单元", notes = "查询经营单元")
-//    @ApiResponses({
-//            @ApiResponse(code=400,message="请求参数没填好"),
-//            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-//    })
-//    @GetMapping("/getSysCommonOrg")
-//	@UserLoginToken
-//    public ResultVO<List<SysCommonOrgResp>> getSysCommonOrg() {
-//		log.info("****************ReportOrderController getSysCommonOrg()  ************start param={}");
-//		int userType = UserContext.getUser().getUserFounder();
-//		SysCommonOrgReq req = new SysCommonOrgReq();
-//		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2 || userType == SystemConst.USER_FOUNDER_4) {//超级管理员  省管理员  省供应商
-//		} else if (userType == SystemConst.USER_FOUNDER_9 || userType == SystemConst.USER_FOUNDER_5) {//地市管理员   地市供应商
-//			req.setLanIdName(UserContext.getUser().getLanId());
-//		} else if (userType == SystemConst.USER_FOUNDER_3) {//零售商
-//			MerchantDTO merchantDTO = merchantService.getMerchantInfoById(UserContext.getUser().getRelCode());
-//			if ( merchantDTO == null) {
-//				return ResultVO.error("当前用户 没有商家编码");
-//			}
-//			req.setOrgId(merchantDTO.getParCrmOrgId());
-//		} else {
-//			return ResultVO.error("当前用户 没有权限");
-//		}
-//		return commonOrgService.getSysCommonOrg(req);
-//	}	
-//	
 }

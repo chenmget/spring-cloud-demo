@@ -5,22 +5,22 @@
     <select id="getStorePurchaserReport" parameterType="com.iwhalecloud.retail.report.dto.request.ReportStorePurchaserReq"
             resultType="com.iwhalecloud.retail.report.dto.response.ReportStorePurchaserResq">
 		SELECT
-			a.PRODUCT_NAME,
-			a.PRODUCT_BASE_NAME,
-			a.PRODUCT_TYPE,
-			a.BRAND_NAME,
-			a.PRICE_LEVEL,
-			a.TOTAL_IN_NUM,
-			a.TOTAL_OUT_NUM,
-			a.STOCK_NUM,
-			a.PURCHASE_NUM,
-			a.MANUAL_NUM,
-			a.SELL_NUM,
-			a.UNCONTRACT_NUM,
-			a.CONTRACT_NUM,
-			a.REGISTER_NUM,
-			a.RETURN_NUM,
-			a.WEEK_AVG_SELL_NUM
+			a.PRODUCT_NAME as productName,
+			a.PRODUCT_BASE_NAME as productBaseName,
+			a.PRODUCT_TYPE as productType,
+			a.BRAND_NAME as brandName,
+			a.PRICE_LEVEL as priceLevel,
+			a.TOTAL_IN_NUM as totalInNum,
+			a.TOTAL_OUT_NUM as totalOutNum,
+			a.STOCK_NUM as stockNum,
+			a.PURCHASE_NUM as purchaseNum,
+			a.MANUAL_NUM as manualNum, 
+			a.SELL_NUM as sellNum,
+			a.UNCONTRACT_NUM as uncontractNum,
+			a.CONTRACT_NUM as contractNum,
+			a.REGISTER_NUM as registerNum,
+			a.RETURN_NUM as returnNum,
+			a.WEEK_AVG_SELL_NUM as weekAvgSellNum
 		FROM RPT_PARTNER_OPERATING_DAY a
 		WHERE 1=1
 		<if test="req.dateStart!=null and req.dateStart!=''">

@@ -32,6 +32,26 @@ public class ProductApplyInfoResp implements Serializable {
 
     private  String attrValue1;//容量-规格1 字段
 
+    private  String attrValue2;//容量-规格1 字段
+
+    private  String attrValue3;//容量-规格1 字段
+
+    private  String attrValue4;//容量-规格1 字段
+
+    private  String attrValue5;//容量-规格1 字段
+
+    private  String attrValue6;//容量-规格1 字段
+
+    private  String attrValue7;//容量-规格1 字段
+
+    private  String attrValue8;//容量-规格1 字段
+
+    private  String attrValue9;//容量-规格1 字段
+
+    private  String attrValue10;//容量-规格1 字段
+
+
+
     private  String purType;
 
     private  String purchaseType;

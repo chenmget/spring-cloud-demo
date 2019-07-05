@@ -255,12 +255,12 @@ public class PurApplyServiceImplTest  extends TestBase {
     }
     @Test
     public void applySearchReport(){
-        String json = "{\"pageNo\":1,\"pageSize\":10,\"applyCode\":\"\",\"applyName\":\"\",\"lanIdList\":[],\"merchantName\":\"\",\"productName\":\"\",\"unitType\":\"\",\"color\":\"亮黑色\",\"memory\":\"3G\",\"statusCd\":\"21\"}";
+        String json = "{\"pageNo\":1,\"pageSize\":10,\"applyCode\":\"\",\"applyName\":\"\",\"lanIdList\":[],\"merchantName\":\"\",\"productName\":\"\",\"unitType\":\"\",\"color\":\"\",\"memory\":\"\",\"statusCd\":\"\"}";
 //        PurApplyReq req = new PurApplyReq();
         Gson gson = new Gson();
-        PurApplyReportReq req = gson.fromJson(json, new TypeToken<PurApplyReportReq>(){}.getType());
+        PurApplyStatusReportReq req = gson.fromJson(json, new TypeToken<PurApplyStatusReportReq>(){}.getType());
 //        log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
-        req.setLanId("731");
+//        req.setLanId("731");
 //        String userId = UserContext.getUserId();
 //		String userId = "100028487";
 //        PriCityManagerResp login = purApplyService.getLoginInfo(userId);
@@ -283,7 +283,7 @@ public class PurApplyServiceImplTest  extends TestBase {
 //        }
 //
 //        log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
-        ResultVO resultVO =   purApplyService.applySearchReport(req);
+        ResultVO resultVO =   purApplyService.applyStatusSearchReport(req);
         System.out.println(JSON.toJSONString(resultVO));
 //        return ResultVO.success(purApplyResp);
     }

@@ -533,7 +533,10 @@
     WHEN p.PURCHASE_TYPE ='1' THEN '集采'
     WHEN p.PURCHASE_TYPE ='2' THEN '社采'
     END   as purType,
-    p.PURCHASE_TYPE as purchaseType
+    p.PURCHASE_TYPE as purchaseType,
+    p.ATTR_VALUE2 as attrValue2,p.ATTR_VALUE3 as attrValue3,p.ATTR_VALUE4 as attrValue4,p.ATTR_VALUE5 as attrValue5,
+    p.ATTR_VALUE6 as attrValue6,p.ATTR_VALUE7 as attrValue7,p.ATTR_VALUE8 as attrValue8,p.ATTR_VALUE9 as attrValue9,
+    p.ATTR_VALUE10 as attrValue10
     from prod_product p
     LEFT JOIN prod_product_base b on b.PRODUCT_BASE_ID=p.PRODUCT_BASE_ID
     LEFT JOIN prod_brand br ON b.BRAND_ID = br.BRAND_ID
@@ -598,7 +601,10 @@
     WHEN p.PURCHASE_TYPE ='1' THEN '集采'
     WHEN p.PURCHASE_TYPE ='2' THEN '社采'
     END   as purType,
-    p.PURCHASE_TYPE as purchaseType
+    p.PURCHASE_TYPE as purchaseType,
+    p.ATTR_VALUE2 as attrValue2,p.ATTR_VALUE3 as attrValue3,p.ATTR_VALUE4 as attrValue4,p.ATTR_VALUE5 as attrValue5,
+    p.ATTR_VALUE6 as attrValue6,p.ATTR_VALUE7 as attrValue7,p.ATTR_VALUE8 as attrValue8,p.ATTR_VALUE9 as attrValue9,
+    p.ATTR_VALUE10 as attrValue10
     from prod_product p
     LEFT JOIN prod_product_base b on b.PRODUCT_BASE_ID=p.PRODUCT_BASE_ID
     LEFT JOIN prod_brand br ON b.BRAND_ID = br.BRAND_ID

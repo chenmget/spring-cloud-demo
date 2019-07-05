@@ -56,4 +56,6 @@ public class PurApplyReportReq extends PageVO implements Serializable {
 	private	List<String> lanIdList;	//地市集合
 
 
+
+
 }

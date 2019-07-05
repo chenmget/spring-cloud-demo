@@ -27,7 +27,7 @@ public class PurApplyStatusReportResp extends PageVO implements Serializable {
 	private  String productName; // 产品名称
 
 	private  String corporationPrice;// 政企价格
-	private  String productCode;// 产品25位编码
+	private  String sn;// 产品25位编码
 
 
 	private String unitType;//产品型号
@@ -39,6 +39,27 @@ public class PurApplyStatusReportResp extends PageVO implements Serializable {
 	private  String memory;//内存
 
 	private  String attrValue1;//容量-规格1 字段
+
+	private  String attrValue2;//容量-规格1 字段
+
+	private  String attrValue3;//容量-规格1 字段
+
+	private  String attrValue4;//容量-规格1 字段
+
+	private  String attrValue5;//容量-规格1 字段
+
+	private  String attrValue6;//容量-规格1 字段
+
+	private  String attrValue7;//容量-规格1 字段
+
+	private  String attrValue8;//容量-规格1 字段
+
+	private  String attrValue9;//容量-规格1 字段
+
+	private  String attrValue10;//容量-规格1 字段
+
+	private  String defaultImages;//图片地址
+
 
 
 

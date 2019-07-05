@@ -266,7 +266,7 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             ResourceInstDTO resourceInstDTO = insts.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
-            resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
+            resouceInstTrackDTO.setMktResStoreId(req.getDestStoreId());
             resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynDeleteTrackForSupplier resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
@@ -1152,13 +1152,23 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         resourceInstsGetReq.setMktResStoreId(req.getDestStoreId());
         List<ResourceInstDTO> insts = resourceInstManager.selectByIds(resourceInstsGetReq);
         log.info("ResouceInstTrackServiceImpl.asynResetResourceInst resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(resourceInstsGetReq), JSON.toJSONString(insts));
+        ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(req.getMktResStoreId());
+        log.info("ResouceInstTrackServiceImpl.asynResetResourceInst resouceStoreService.getMerchantByStore req={}, resp={}", req.getMktResStoreId(), JSON.toJSONString(merchantResultVO));
+        if (!merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
+            return;
+        }
+        MerchantDTO merchantDTO = merchantResultVO.getResultData();
         int count = 0;
         for (int i = 0; i < insts.size(); i++) {
             ResourceInstDTO resourceInstDTO = insts.get(i);
             ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
             BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
-            resourceInstsGetReq.setMktResStoreId(req.getMktResStoreId());
-            resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
+            resouceInstTrackDTO.setMktResStoreId(req.getMktResStoreId());
+            resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+            resouceInstTrackDTO.setMerchantId(merchantDTO.getMerchantId());
+            resouceInstTrackDTO.setRegionId(merchantDTO.getCity());
+            resouceInstTrackDTO.setLanId(merchantDTO.getLanId());
+            resouceInstTrackDTO.setSourceType("");
             count += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
             log.info("ResouceInstTrackServiceImpl.asynResetResourceInst resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
             ResouceInstTrackDetailDTO resouceInstTrackDetailDTO = new ResouceInstTrackDetailDTO();
@@ -1166,6 +1176,11 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             resouceInstTrackDetailDTO.setStorageType(ResourceConst.STORAGETYPE.SUPPLIER_RESET.getCode());
             resouceInstTrackDetailDTO.setTargetStoreId(req.getMktResStoreId());
             resouceInstTrackDetailDTO.setSourceStoreId(req.getDestStoreId());
+            resouceInstTrackDetailDTO.setTargetLanId(merchantDTO.getLanId());
+            resouceInstTrackDetailDTO.setTargetRegionId(merchantDTO.getCity());
+            resouceInstTrackDetailDTO.setTargetLanId(merchantDTO.getLanId());
+            resouceInstTrackDetailDTO.setSourceRegionId(resourceInstDTO.getRegionId());
+            resouceInstTrackDetailDTO.setSourceLanId(resourceInstDTO.getLanId());
             count += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
             log.info("ResouceInstTrackServiceImpl.asynResetResourceInst resouceInstTrackManager.saveResouceInstTrack req={}, resp={}", JSON.toJSONString(resouceInstTrackDTO), count);
         }

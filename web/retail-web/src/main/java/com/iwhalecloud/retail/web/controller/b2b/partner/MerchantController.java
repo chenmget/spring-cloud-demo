@@ -616,11 +616,6 @@ public class MerchantController {
         return merchantService.saveFactoryMerchant(req);
     }
 
-    /**
-     *
-     * @param req
-     * @return
-     */
     @ApiOperation(value = "修改商户信息", notes = "修改商户信息")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
@@ -632,5 +627,15 @@ public class MerchantController {
         return merchantService.editMerchant(req);
     }
 
+    @ApiOperation(value = "获取厂商信息", notes = "获取厂商信息")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/getFactoryMerchant", method = RequestMethod.GET)
+    public ResultVO getFactoryMerchant(@RequestParam(value = "merchantId") String merchantId) {
+        log.info("MerchantController.editMerchant() input: merchantId={}", merchantId);
+        return merchantService.getFactoryMerchant(merchantId);
+    }
 
 }

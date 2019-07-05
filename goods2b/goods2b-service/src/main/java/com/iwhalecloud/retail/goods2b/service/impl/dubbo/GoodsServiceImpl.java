@@ -1939,6 +1939,9 @@ public class GoodsServiceImpl implements GoodsService {
                     // 同一个规格地包价格高于省包同一规格供货价平均价的的3%时
                     // 查询省包同规格商品
                     supplierGoodsDTOs = getSupplierGoods(productId, PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+
+                    setLowPrice(supplierGoodsDTOs, goodsId, productId);
+
                     msg = "零售价1599以上 并且 同一个规格地包价格 高于 省包同一规格供货价平均价的的3%，推荐省包同规格商品";
                 } else {
                     msg = "零售价1599以上 并且 同一个规格地包价格 不高于 省包同一规格供货价平均价的的3%，不推荐商品";
@@ -1964,6 +1967,33 @@ public class GoodsServiceImpl implements GoodsService {
 
         log.info("GoodsServiceImpl.querySupplierGoods listSupplierGoodsByType msg:{}, supplierGoodsDTOs={}", msg, JSON.toJSONString(supplierGoodsDTOs));
         return ResultVO.success(msg, supplierGoodsDTOs);
+    }
+
+    /**
+     * 设置推荐商品 相比 目标商品的 差价
+     * @param supplierGoodsDTOS 推荐商品集合
+     * @param goodsId 目标商品ID
+     * @param productId 目标商品的产品ID
+     */
+    private void setLowPrice(List<SupplierGoodsDTO> supplierGoodsDTOS, String goodsId, String productId) {
+        if (CollectionUtils.isEmpty(supplierGoodsDTOS)) {
+            log.info("GoodsServiceImpl.setLowPrice()  supplierGoodsDTOS is empty ");
+            return;
+        }
+
+        GoodsProductRel goodsProductRel = goodsProductRelManager.getGoodsProductRel(goodsId, productId);
+        if (Objects.isNull(goodsProductRel) || Objects.isNull(goodsProductRel.getDeliveryPrice())) {
+            log.info("GoodsServiceImpl.setLowPrice()  goodsProductRel is null  or goodsProductRel.getDeliveryPrice() is null, goodsId:{}, productId:{} ", goodsId, productId);
+            return;
+        }
+        // 目标商品的提货价
+        Double price = goodsProductRel.getDeliveryPrice().doubleValue();
+        supplierGoodsDTOS.forEach(supplierGoodsDTO -> {
+            if (!Objects.isNull(supplierGoodsDTO.getDeliveryPrice())) {
+                // 设置差价
+                supplierGoodsDTO.setLowPrice(price - supplierGoodsDTO.getDeliveryPrice());
+            }
+        });
     }
 
 }

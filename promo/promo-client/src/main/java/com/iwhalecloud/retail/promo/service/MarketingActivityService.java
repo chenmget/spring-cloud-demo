@@ -149,6 +149,15 @@ public interface MarketingActivityService{
      */
     ResultVO<List<MarketingAndPromotionResp>> listMarketingActivityAndPromotions(MarketingActivityQueryByGoodsReq req);
 
+    /**
+     * 判断商家merchantCode是否是活动activity参与对象
+     * @param activityId 活动id
+     * @param merchantId 商家id信息
+     * @param lanId 商家所在地市
+     * @param cityId 商家所在区县
+     * @return
+     */
+    boolean isExistingInParticipantFilterValue(String activityId,String merchantId,String lanId,String cityId);
 
     /**
      * 查询特定类型失效的活动

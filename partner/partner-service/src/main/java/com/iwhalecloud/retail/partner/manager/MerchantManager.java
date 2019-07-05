@@ -1030,7 +1030,7 @@ public class MerchantManager {
     public String getMerchantCode(String merchatType) {
         String merchantCode = merchantMapper.getMaxMerchantCode(merchatType);
         String num = merchantCode.substring(merchantCode.lastIndexOf("S") + 1);
-        int key = Integer.parseInt(merchantCode.substring(merchantCode.lastIndexOf("S") + 1)) + 1;
+        Long key = Long.parseLong(merchantCode.substring(merchantCode.lastIndexOf("S") + 1)) + 1;
         String keyStr = String.valueOf(key);
         int count = num.length() - keyStr.length();
         while (count > 0) {
@@ -1046,6 +1046,7 @@ public class MerchantManager {
         if (merchatType.equals(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType())) {
             keyStr = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getCodePrefix() + keyStr;
         }
+        log.info("MerchantManager.getMerchantCode req={} resp={}",merchatType,keyStr);
         return keyStr;
     }
 

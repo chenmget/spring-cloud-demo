@@ -254,8 +254,6 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
     public ResultVO noticeITMS(List<String> mktResInstNbrList, String userName, String storeId, String lanId) {
         //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
         StringBuffer params = new StringBuffer();
-        String addMethod = "ITMS_ADD";
-        String dellMethod = "ITMS_DELL";
         params.append("city_code=").append(lanId).append("#warehouse=").append(storeId).append("#source=2").
                 append("#factory=手机");
         List<String> successList = new ArrayList<>();
@@ -264,7 +262,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
             Map request = new HashMap<>();
             request.put("deviceId", mktResInstNbr);
             request.put("userName", userName);
-            request.put("code", addMethod);
+            request.put("code", MarketingResConst.ITME_METHOD.UPDATE);
             request.put("params", params.toString());
             resultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
             log.info("ResourceInstCheckServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS resp={}", JSON.toJSONString(resultVO));
@@ -280,7 +278,7 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                 Map request = new HashMap<>();
                 request.put("deviceId", mktResInstNbr);
                 request.put("userName", userName);
-                request.put("code", dellMethod);
+                request.put("code", MarketingResConst.ITME_METHOD.DELETE);
                 request.put("params", params.toString());
                 ResultVO dellResultVO = zopClientUtil.callExcuteNoticeITMS(MarketingResConst.ServiceEnum.OrdInventoryChange.getCode(), MarketingResConst.ServiceEnum.OrdInventoryChange.getVersion(), request);
                 log.info("ResourceInstCheckServiceImpl.noticeITMS zopClientUtil.callExcuteNoticeITMS dellResultVO={}", JSON.toJSONString(dellResultVO));

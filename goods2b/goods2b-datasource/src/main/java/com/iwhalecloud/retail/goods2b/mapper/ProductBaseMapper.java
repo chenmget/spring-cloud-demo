@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseListReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseLightResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductDetailResp;
 import com.iwhalecloud.retail.goods2b.entity.ProductBase;
 import org.apache.ibatis.annotations.Mapper;
@@ -66,4 +67,11 @@ public interface ProductBaseMapper extends BaseMapper<ProductBase>{
      * @return
      */
     List<String> getDistinctUnitType(@Param("typeId") String typeId, @Param("brandId") String brandId);
+
+    /**
+     * 查询产品基本表的基本信息
+     * @param productId
+     * @return
+     */
+    ProductBaseLightResp getProductBaseByProductId(@Param("productId") String productId);
 }

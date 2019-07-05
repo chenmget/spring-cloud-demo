@@ -18,7 +18,7 @@ import java.util.Date;
 @Data
 @TableName("mkt_res_itms_sync_rec")
 @ApiModel(value = "mkt_res_itms_sync_rec, 对应实体ResouceInstItmsSyncRec类")
-public class ResouceInstItmsSyncRec implements Serializable {
+public class ResouceInstItmsManualSyncRec implements Serializable {
     /**表名常量*/
     public static final String TNAME = "mkt_res_itms_sync_rec";
   	private static final long serialVersionUID = 1L;
@@ -33,58 +33,39 @@ public class ResouceInstItmsSyncRec implements Serializable {
   	private String mktResItmsSyncRecId;
 
   	/**
-  	 * 推送日期
-  	 */
-	@ApiModelProperty(value = "推送日期")
-  	private Date syncDate;
-
-  	/**
-  	 * 推送批次。
-  	 */
-	@ApiModelProperty(value = "推送批次。")
-  	private String syncBatchId;
-
-  	/**
-  	 * syncFileName
-  	 */
-	@ApiModelProperty(value = "syncFileName")
-  	private String syncFileName;
-
-  	/**
-  	 * 营销资源库存变动事件标识
-  	 */
-	@ApiModelProperty(value = "营销资源库存变动事件标识")
-  	private String mktResEventId;
-
-  	/**
-  	 * 营销资源库存变动事件明细ID
-  	 */
-	@ApiModelProperty(value = "营销资源库存变动事件明细ID")
-  	private String mktResChngEvtDetailId;
-
-  	/**
   	 * 记录营销资源实例编码
   	 */
 	@ApiModelProperty(value = "记录营销资源实例编码")
   	private String mktResInstNbr;
 
+	/**
+	 * productType
+	 */
+	@ApiModelProperty(value = "productType")
+	private String productType;
   	/**
   	 * 品牌ID
   	 */
 	@ApiModelProperty(value = "品牌ID")
   	private String brandId;
 
-  	/**
-  	 * 品牌名称
-  	 */
-	@ApiModelProperty(value = "品牌名称")
-  	private String brandName;
+	/**
+	 * 产品型号
+	 */
+	@ApiModelProperty(value = "产品型号")
+	private String unitType;
 
   	/**
-  	 * 产品型号
+  	 * productId
   	 */
-	@ApiModelProperty(value = "产品型号")
-  	private String unitType;
+	@ApiModelProperty(value = "productId")
+  	private String productId;
+
+	/**
+	 * 产品名称
+	 */
+	@ApiModelProperty(value = "productName")
+	private String productName;
 
   	/**
   	 * 推送前串码所在本地网
@@ -98,6 +79,12 @@ public class ResouceInstItmsSyncRec implements Serializable {
 	@ApiModelProperty(value = "目标本地网")
   	private String destLanId;
 
+	/**
+	 * 推送日期
+	 */
+	@ApiModelProperty(value = "推送日期")
+	private Date syncDate;
+
   	/**
   	 * 串码推送状态 0. 已推送待返回 1. 推送成功 -1. 推送失败
   	 */
@@ -108,7 +95,7 @@ public class ResouceInstItmsSyncRec implements Serializable {
   	 * 记录状态变更的时间
   	 */
 	@ApiModelProperty(value = "记录状态变更的时间")
-  	private String statusDate;
+  	private Date statusDate;
 
   	/**
   	 * 备注
@@ -137,26 +124,14 @@ public class ResouceInstItmsSyncRec implements Serializable {
 		/** 推送日期 */
 		syncDate("syncDate","SYNC_DATE"),
 		
-		/** 推送批次 */
-		syncBatchId("syncBatchId","SYNC_BATCH_ID"),
-		
-		/**  */
-		syncFileName("syncFileName","SYNC_FILE_NAME"),
-		
-		/** 营销资源库存变动事件标识*/
-		mktResEventId("mktResEventId","MKT_RES_EVENT_ID"),
-		
-		/** 营销资源库存变动事件明细ID */
-		mktResChngEvtDetailId("mktResChngEvtDetailId","MKT_RES_CHNG_EVT_DETAIL_ID"),
-		
-		/** 记录营销资源实例编码. */
-		mktResInstNbr("mktResInstNbr","MKT_RES_INST_NBR"),
+		/** productId. */
+		mktResInstNbr("productId","PRODUCT_ID"),
 		
 		/** 品牌ID */
 		brandId("brandId","BRAND_ID"),
 		
-		/** 品牌名称 */
-		brandName("brandName","BRAND_NAME"),
+		/** productName */
+		productName("productName","PRODUCT_NAME"),
 		
 		/** 产品型号*/
 		unitType("unitType","UNIT_TYPE"),

@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActivityGoodsByMerchantReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityByMerchantListReq;
 import com.iwhalecloud.retail.promo.dto.req.VerifyProductPurchasesLimitReq;
@@ -13,6 +14,7 @@ import com.iwhalecloud.retail.promo.dto.resp.VerifyProductPurchasesLimitResp;
 import com.iwhalecloud.retail.promo.service.ActivityGoodService;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -46,16 +48,16 @@ public class ActivityGoodsB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value="/listMarketingActivityByMerchant")
-//    @UserLoginToken
-    public ResultVO<Page<MarketingActivityByMerchantResp>> listMarketingActivityByMerchant(@RequestBody MarketingActivityByMerchantListReq req){
+    @UserLoginToken
+    public ResultVO<Page<MarketingActivityDTO>> listMarketingActivityByMerchant(@RequestBody MarketingActivityByMerchantListReq req){
         log.info("ActivityGoodsB2BController listMarketingActivityByMerchant MarketingActivityByMerchantListReq={} ", req);
         if(UserContext.isUserLogin()) {
             UserDTO userDTO = UserContext.getUser();
             if(userDTO!=null){
                 req.setLanId(userDTO.getLanId());
                 req.setRegionId(userDTO.getRegionId());
+                req.setMerchantId(userDTO.getRelCode());
             }
-            req.setMerchantId(UserContext.getMerchantId());
         }
         return activityGoodService.listMarketingActivityByMerchant(req);
     }

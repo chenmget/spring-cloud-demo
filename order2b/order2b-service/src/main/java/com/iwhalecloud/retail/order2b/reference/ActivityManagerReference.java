@@ -18,13 +18,14 @@ import com.iwhalecloud.retail.order2b.entity.Promotion;
 import com.iwhalecloud.retail.order2b.model.BuilderOrderModel;
 import com.iwhalecloud.retail.order2b.model.CreateOrderLogModel;
 import com.iwhalecloud.retail.order2b.util.CurrencyUtil;
-import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.PromotionWithMarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActHistoryPurChaseAddReq;
 import com.iwhalecloud.retail.promo.dto.req.ActHistoryPurChaseUpReq;
 import com.iwhalecloud.retail.promo.dto.req.AdvanceActivityProductInfoReq;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityQueryByGoodsReq;
 import com.iwhalecloud.retail.promo.dto.resp.AdvanceActivityProductInfoResp;
+import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityDetailResp;
+import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityInfoResp;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingAndPromotionResp;
 import com.iwhalecloud.retail.promo.service.HistoryPurchaseService;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
@@ -277,20 +278,18 @@ public class ActivityManagerReference {
     /**
      * 订单关联的前置补贴活动是否超过要求的发货截至时间
      */
-    public MarketingActivityDTO validActivityEndTimeByProductId(List<String> productIdList,String activityType) {
-        for (String productId : productIdList) {
-            ResultVO<List<MarketingActivityDTO>> resultVO = marketingActivityService.queryActivityByProductId(productId, activityType);
-            if (!resultVO.isSuccess() || CollectionUtils.isEmpty(resultVO.getResultData())) {
-                continue;
+    public MarketingActivityDetailResp validActivityEndTimeByProductId(List<String> activityIdList) {
+        for (String activityId : activityIdList) {
+            ResultVO<MarketingActivityInfoResp> resultVO = marketingActivityService.queryMarketingActivityInfor(activityId);
+            if (!resultVO.isSuccess() || null == resultVO.getResultData()) {
+                return null;
             }
-            List<MarketingActivityDTO> list = resultVO.getResultData();
-            for (MarketingActivityDTO dto : list) {
-                Date endTime = dto.getDeliverEndTime();
-                Date now = new Date();
-                // 前置补贴活动要求的发货截至时间小于当前时间
-                if (endTime.before(now)) {
-                    return dto;
-                }
+            MarketingActivityDetailResp resp = resultVO.getResultData().getMarketingActivityDetailResp();
+            Date endTime = resp.getDeliverEndTime();
+            Date now = new Date();
+            // 前置补贴活动要求的发货截至时间小于当前时间
+            if (endTime.before(now)) {
+                return resp;
             }
         }
         return null;

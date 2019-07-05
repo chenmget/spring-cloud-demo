@@ -81,5 +81,12 @@ spring.datasource:
     #设置public key
     connectionProperties: config.decrypt=true;config.decrypt.key=MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJptiLaauFuYuwkmQ2S0NSsvjdka34BLnbG5zFcuRqFi7RJowXs7P/dSmQWmlrx5RekyriyBUzgAgSbTFt1NpMsCAwEAAQ==
 
-
+# 日志配置
+#logging.path: ../
+#logging.file: **.log
+logging.level.root: WARN
+# 指定包的日志设置为warn
+logging.level.com.iwhalecloud.retail: INFO
+logging.pattern.console: "%d{yyyy/MM/dd-HH:mm:ss} [%thread] %-5level %logger- %msg%n"
+logging.pattern.file: "%d{yyyy/MM/dd-HH:mm} [%thread] %-5level %logger- %msg%n"
 

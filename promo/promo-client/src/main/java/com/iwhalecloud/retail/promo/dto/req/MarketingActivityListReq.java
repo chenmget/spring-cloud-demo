@@ -45,6 +45,12 @@ public class MarketingActivityListReq extends AbstractPageReq implements Seriali
     private String activityLevel;
 
     /**
+     * 参与范围标识  10地区/20对象/30按条件过滤
+     */
+    @ApiModelProperty(value = "参与范围标识")
+    private String activityParticipantType;
+
+    /**
      * 营销活动发起人
      */
     @ApiModelProperty(value = "营销活动发起人")

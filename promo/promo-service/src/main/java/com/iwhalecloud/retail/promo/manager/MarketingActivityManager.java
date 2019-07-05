@@ -34,6 +34,7 @@ import java.util.List;
 @Slf4j
 @Component
 public class MarketingActivityManager{
+
     @Resource
     private MarketingActivityMapper marketingActivityMapper;
 
@@ -429,5 +430,25 @@ public class MarketingActivityManager{
         marketingActivity.setId(activityId);
         marketingActivity.setIsModifying(isModifying);
         return marketingActivityMapper.updateById(marketingActivity);
+    }
+
+
+    /**
+     * 根据活动对象类型查询可用活动
+     *
+     * @param req 营销活动查询列表对象
+     * @return 活动列表
+     */
+    public List<MarketingActivity> queryAvailableActivityList(MarketingActivityListReq req) {
+        QueryWrapper<MarketingActivity> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(MarketingActivity.FieldNames.status.getTableFieldName(), PromoConst.STATUSCD.STATUS_CD_20.getCode());
+        queryWrapper.apply(MarketingActivity.FieldNames.startTime.getTableFieldName() + " <= now()");
+        queryWrapper.apply(MarketingActivity.FieldNames.endTime.getTableFieldName() + " > now()");
+        queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(), PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+
+        if(StringUtils.isNotEmpty(req.getActivityParticipantType())){
+            queryWrapper.eq(MarketingActivity.FieldNames.activityParticipantType.getTableFieldName(), req.getActivityParticipantType());
+        }
+        return marketingActivityMapper.selectList(queryWrapper);
     }
 }

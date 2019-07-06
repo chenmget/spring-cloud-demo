@@ -229,9 +229,4 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
         resouceInstTrackService.asynResetResourceInst(req, resp);
         return resp;
     }
-
-    @Override
-    public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
-        return supplierResourceInstService.getMktResInstNbrForCheckInTrack(req);
-    }
 }

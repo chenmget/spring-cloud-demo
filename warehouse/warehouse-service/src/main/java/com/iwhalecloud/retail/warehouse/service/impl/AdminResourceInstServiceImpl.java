@@ -699,17 +699,10 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         List<String> merchantIdList = instTrackList.stream().map(t -> t.getMerchantId()).distinct().collect(Collectors.toList());
         List<MerchantDTO> merchantDTOList = getMerchantByMerchantIdList(merchantIdList);
         //厂家列表转换为Map<merchantId,merchantType>
-<<<<<<< HEAD
         Map<String, String> merchantMap = merchantDTOList.stream().collect(Collectors.toMap(MerchantDTO::getMerchantId, MerchantDTO::getMerchantType));
 
         List<ResourceInstListPageResp> instRespList = new ArrayList<>(instTrackList.size());
         for (ResouceInstTrackDTO dto : instTrackList) {
-=======
-        Map<String,String> merchantMap = merchantDTOList.stream().collect(Collectors.toMap(MerchantDTO::getMerchantId, MerchantDTO::getMerchantType));
-
-        List<ResourceInstListPageResp> instRespList = new ArrayList<>(instTrackList.size());
-        for(ResouceInstTrackDTO dto : instTrackList){
->>>>>>> origin/feature_week
             ResourceInstListPageResp resp = new ResourceInstListPageResp();
             BeanUtils.copyProperties(dto, resp);
             instRespList.add(resp);
@@ -718,11 +711,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         resourceInstService.fillResourceInst(instRespList);
         //组装审核结果
         List<ResourceInstListPageResp> resultList = new ArrayList<>(uploadTempList.size());
-<<<<<<< HEAD
         for (ResourceUploadTempListResp tempListResp : uploadTempList) {
-=======
-        for(ResourceUploadTempListResp tempListResp : uploadTempList){
->>>>>>> origin/feature_week
             ResourceInstListPageResp resp = new ResourceInstListPageResp();
             BeanUtils.copyProperties(tempListResp, resp);
             for (ResourceInstListPageResp instResp : instRespList) {

@@ -1302,6 +1302,7 @@ public class MerchantServiceImpl implements MerchantService {
     public ResultVO registLandSupplierForAdmin(SupplierResistReq req) {
         try {
             req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
+            req.setIfByAdmin(true);
             //插入商家信息
             ResultVO<Merchant> merchantRt = addMerchantInfo(req);
             String merchantId = merchantRt.getResultData().getMerchantId();
@@ -1377,6 +1378,7 @@ public class MerchantServiceImpl implements MerchantService {
     public ResultVO registProvinceSupplierForAdmin(SupplierResistReq req) {
         try {
             req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+            req.setIfByAdmin(true);
             //插入商家信息
             ResultVO<Merchant> merchantRt = addMerchantInfo(req);
             String merchantId = merchantRt.getResultData().getMerchantId();
@@ -1491,6 +1493,8 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     public ResultVO<Merchant> addMerchantInfo (SupplierResistReq req) {
+        //管理员注册
+        if(req.isIfByAdmin()) req.setUserId(null);
         MerchantAccount account = new MerchantAccount();
         BeanUtils.copyProperties(req,account);
         Merchant merchant = fillMerchant(req);

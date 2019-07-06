@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Merchant
@@ -62,6 +63,12 @@ public class Merchant implements Serializable {
      */
     @ApiModelProperty(value = "商家类型:  1 厂商    2 地包商    3 省包商   4 零售商")
     private java.lang.String merchantType;
+
+    /**
+     * 地包商的类型:  1 电信电包 2 非电信地包'
+     */
+    @ApiModelProperty(value = "地包商的类型:  1 电信电包 2 非电信地包'")
+    private java.lang.String merchantSubType;
 
     /**
      * 关联sys_user表user_id
@@ -457,6 +464,29 @@ public class Merchant implements Serializable {
     @ApiModelProperty(value = "是否已赋权")
     private java.lang.String assignedFlg;
 
+    @ApiModelProperty(value = "公司地址")
+    private String address;
+
+    @ApiModelProperty(value = "法人姓名")
+    private String legalPerson;
+
+    @ApiModelProperty(value = "营业执照号")
+    private String busiLicenceCode;
+
+    @ApiModelProperty(value = "合同生效时间")
+    private Date contractEffDate;
+
+    @ApiModelProperty(value = "合同失效时间")
+    private Date contractExpDate;
+
+    @ApiModelProperty(value = "营业执照号失效期")
+    private Date busiLicenceExpDate;
+
+    @ApiModelProperty(value = "供货地区")
+    private String supplyRegion;
+
+    @ApiModelProperty(value = "经营品牌")
+    private String manageBrand;
 
     @ApiModelProperty(value = "身份证")
     private java.lang.String certNumber;
@@ -504,6 +534,11 @@ public class Merchant implements Serializable {
          * 04 零售商.
          */
         merchantType("merchantType", "MERCHANT_TYPE"),
+
+        /**
+         * 地包商的类型:  1 电信电包 2 非电信地包'
+         */
+        merchantSubType("merchantSubType", "merchant_sub_type"),
 
         /**
          * 关联sys_user表userid.
@@ -832,7 +867,12 @@ public class Merchant implements Serializable {
         /**
          * (商家)失效时间	.
          */
-        expDate("expDate", "EXP_DATE");
+        expDate("expDate", "EXP_DATE"),
+
+        /**
+         * 身份证号码
+         */
+        certNumber("certNumber","cert_number");
 
         private String fieldName;
         private String tableFieldName;

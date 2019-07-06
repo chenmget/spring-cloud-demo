@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.workflow.aop;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.system.common.ZopMessageConst;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
 import com.iwhalecloud.retail.system.dto.request.BaseZopMsgReq;
 import com.iwhalecloud.retail.system.dto.request.NoticeMsgReq;
@@ -42,7 +43,7 @@ public class SendMsgAop {
     private ZopMessageService verifyCodeService;
 
 
-    @AfterReturning(value = "@annotation(NoticeMsg)",returning="result")
+    @AfterReturning(value = "@annotation(com.iwhalecloud.retail.workflow.aop.NoticeProcessMsg)",returning="result")
     public void sendMsg(JoinPoint point,Object result){
         String processId = null;
         long time = System.currentTimeMillis();
@@ -94,6 +95,7 @@ public class SendMsgAop {
         }
         req.setBaseZopMsgReqs(zopMsgReqs);
         req.setTemplateList(templates);
+        req.setBusId(ZopMessageConst.NoticeMsg.NOTICE_MSG_PROCESS.getBusId());
         verifyCodeService.noticeMsg(req);
     }
 }

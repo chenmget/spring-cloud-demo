@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.warehouse.mapper.ResouceInstItmsManualSyncRecMappe
 import com.iwhalecloud.retail.warehouse.mapper.ResouceInstTrackMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -22,6 +23,9 @@ public class ResouceInstTtmsManualSyncRecManager extends ServiceImpl<ResouceInst
 
     @Resource
     private ResouceInstItmsManualSyncRecMapper resouceInstItmsManualSyncRecMapper;
+
+    @Autowired
+    private ResourceInstManager resourceInstManager;
 
     /**
      * 条件分页查询
@@ -45,6 +49,8 @@ public class ResouceInstTtmsManualSyncRecManager extends ServiceImpl<ResouceInst
         resouceInstItmsManualSyncRec.setSyncDate(now);
         resouceInstItmsManualSyncRec.setCreateDate(now);
         resouceInstItmsManualSyncRec.setStatusDate(now);
+        String privateKey = resourceInstManager.getPrimaryKey();
+        resouceInstItmsManualSyncRec.setMktResItmsSyncRecId(privateKey);
         return resouceInstItmsManualSyncRecMapper.insert(resouceInstItmsManualSyncRec);
     }
 }

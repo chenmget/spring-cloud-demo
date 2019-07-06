@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Service
+@Service("resouceInstItemsManualSyncRecService")
 @Slf4j
 public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItemsManualSyncRecService {
 
@@ -77,7 +77,7 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
             }
 
         }
-        return ResultVO.success(resouceInstTtmsManualSyncRecManager.listResourceItemsManualSyncRec(req));
+        return ResultVO.success(page);
     }
 
     @Override
@@ -95,8 +95,11 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
         req.setStatusCd(MarketingResConst.ResultEnum.SUCESS.getCode());
         if (!resultVO.isSuccess()) {
             req.setStatusCd(MarketingResConst.ResultEnum.FAIL.getCode());
+        } else {
+            req.setStatusCd(MarketingResConst.ResultEnum.SUCESS.getCode());
         }
-        resouceInstTtmsManualSyncRecManager.addResourceItemsManualSyncRec(req);
+        Integer sucessNum = resouceInstTtmsManualSyncRecManager.addResourceItemsManualSyncRec(req);
+        log.info("ResouceInstItemsManualSyncRecServiceImpl.addResourceItemsManualSyncRec sucessNum={}", sucessNum);
         return resultVO;
     }
 
@@ -115,8 +118,11 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
         req.setStatusCd(MarketingResConst.ResultEnum.SUCESS.getCode());
         if (!resultVO.isSuccess()) {
             req.setStatusCd(MarketingResConst.ResultEnum.FAIL.getCode());
+        } else {
+            req.setStatusCd(MarketingResConst.ResultEnum.SUCESS.getCode());
         }
-        resouceInstTtmsManualSyncRecManager.addResourceItemsManualSyncRec(req);
+        Integer sucessNum = resouceInstTtmsManualSyncRecManager.addResourceItemsManualSyncRec(req);
+        log.info("ResouceInstItemsManualSyncRecServiceImpl.addResourceItemsManualSyncRec sucessNum={}", sucessNum);
         return resultVO;
     }
 }

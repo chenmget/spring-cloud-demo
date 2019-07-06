@@ -176,7 +176,7 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
                 return ResultVO.error(resultCall.get("flag").toString());
             }
         } else {
-            ToPayResp resp = bpepPayLogService.handlePayData(order.getOrderId(), amount, orgLoginCode, operationType);
+            ToPayResp resp = bpepPayLogService.handlePayData(order.getOrderId(), amount, orgLoginCode, operationType, req.getNet());
             return ResultVO.success(resp);
         }
 

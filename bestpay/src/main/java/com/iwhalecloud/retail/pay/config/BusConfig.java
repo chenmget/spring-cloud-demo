@@ -20,7 +20,11 @@ public class BusConfig
     @Value("${pay.ASYNNOTICEURL}")
     private String ASYNNOTICEURL;
 
-    @Value("${pay.URL}")
-    private String URL;
+    @Value("${pay.INTRANET}")
+    private String INTRANET;
+
+    @Value("${pay.INTERNET}")
+    private String INTERNET;
+
 
 }

@@ -488,6 +488,30 @@ public class Merchant implements Serializable {
     @ApiModelProperty(value = "经营品牌")
     private String manageBrand;
 
+    @ApiModelProperty(value = "公司地址")
+    private String address;
+
+    @ApiModelProperty(value = "法人姓名")
+    private String legalPerson;
+
+    @ApiModelProperty(value = "营业执照号")
+    private String busiLicenceCode;
+
+    @ApiModelProperty(value = "合同生效时间")
+    private Date contractEffDate;
+
+    @ApiModelProperty(value = "合同失效时间")
+    private Date contractExpDate;
+
+    @ApiModelProperty(value = "营业执照号失效期")
+    private Date busiLicenceExpDate;
+
+    @ApiModelProperty(value = "供货地区")
+    private String supplyRegion;
+
+    @ApiModelProperty(value = "经营品牌")
+    private String manageBrand;
+
     @ApiModelProperty(value = "身份证")
     private java.lang.String certNumber;
 

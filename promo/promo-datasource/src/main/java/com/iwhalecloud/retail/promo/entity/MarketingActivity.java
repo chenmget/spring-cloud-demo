@@ -345,7 +345,7 @@ public class MarketingActivity implements Serializable {
 		activityScopeType("activityScopeType","ACTIVITY_SCOPE_TYPE","记录营销活动活动范围"),
 
 		/** 记录营销活动参与范围：10地区/20对象。  .   */
-		activityParticipantType("activityParticipantType","ACTIVITY_PARTICIPANTTYPE_TYPE","记录营销活动参与范围"),
+		activityParticipantType("activityParticipantType","ACTIVITY_PARTICIPANT_TYPE","记录营销活动参与范围"),
 		/** 支付方式. */
 		payType("payType","PAY_TYPE","支付方式"),
 		/** 支付定金开始时间. */

@@ -548,6 +548,9 @@
       <if test = "null != req.attrValue10 and '' != req.attrValue10">
         and attr_value10 = #{req.attrValue10}
       </if>
+      <if test = "null != req.productBaseId and '' != req.productBaseId">
+        and PRODUCT_BASE_ID = #{req.productBaseId}
+      </if>
   </select>
 
 

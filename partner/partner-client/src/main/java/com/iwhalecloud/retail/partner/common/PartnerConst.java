@@ -198,7 +198,7 @@ public class PartnerConst {
          * 退出 1102 未生效 1200 已归档 1300 预退出 8922 冻结 8923
          */
         VALID("1000", "有效"),
-        INVALID("1100", "有效"),
+        INVALID("1100", "无效"),
         PAUSE("1001", "主动暂停"),
         EXCEPTION_PAUSE("1002", "异常暂停"),
         TERMINATION("1101", "终止"),

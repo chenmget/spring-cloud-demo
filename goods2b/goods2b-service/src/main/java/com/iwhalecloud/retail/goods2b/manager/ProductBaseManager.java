@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseGetReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductBaseUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseLightResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductDetailResp;
 import com.iwhalecloud.retail.goods2b.entity.ProductBase;
 import com.iwhalecloud.retail.goods2b.mapper.ProductBaseMapper;
@@ -260,5 +261,14 @@ public class ProductBaseManager {
      */
     public List<String> getDistinctUnitType(String typeId, String brandId){
         return productBaseMapper.getDistinctUnitType(typeId, brandId);
+    }
+
+    /**
+     * 查询产品基本表的基本信息
+     * @param productId
+     * @return
+     */
+    public ProductBaseLightResp getProductBaseByProductId(String productId){
+        return productBaseMapper.getProductBaseByProductId(productId);
     }
 }

@@ -41,7 +41,6 @@ public class ResourceConst {
      */
     public final static String  CONSTANT_NO = "0";
 
-
     /**
      * 绿色通道流程实例ID
      */
@@ -70,20 +69,6 @@ public class ResourceConst {
      * 两步抽检流程（固网）
      */
     public final static String  TWO_STEP_WORK_FLOW_INST = "16";
-
-    /**
-     * 调拨返回成功的消息
-     */
-    public final static String ALLOCATE_SUCESS_MSG = "串码调拨已提交";
-    /**
-     * 调拨返回审核中的消息
-     */
-    public final static String ALLOCATE_AUDITING_MSG = "串码调拨审核中";
-
-    /**
-     * 返回成功的消息
-     */
-    public final static String SUCESS_MSG = "非交易类串码免审核限额不足，已为您提交申请";
 
     /**
      * 静态参数表ID产品阈值对应ID

@@ -285,17 +285,12 @@ public class MerchantServiceImpl implements MerchantService {
         if (result <= 0) {
             return ResultVO.error("更新商家信息失败");
         }
-        //如果商家状态值不为空，则执行用户状态更新操作
+        //如果修改商家状态值，则同步用户状态
         if (!StringUtils.isEmpty(req.getStatus())) {
-            //判断是否有用户的rel_code和商家的MERCHANT_ID相同,
-//            UserGetReq userGetReq = new UserGetReq();
-//            userGetReq.setRelCode(merchant.getMerchantId());
-//            UserDTO userDTO = userService.getUser(userGetReq);
             // 可能有绑定多个用户
             UserListReq userListReq = new UserListReq();
             userListReq.setRelCode(merchant.getMerchantId());
             List<UserDTO> userDTOList = userService.getUserList(userListReq);
-//            if(userDTO != null) {
             if (!CollectionUtils.isEmpty(userDTOList)) {
                 // 有绑定用户
                 try {
@@ -305,10 +300,6 @@ public class MerchantServiceImpl implements MerchantService {
                     throw new RuntimeException("更新商家信息失败");
                 }
             }
-//            else {
-//                // 更新商家信息失败
-//                throw new RuntimeException("更新商家信息失败");
-//            }
         }
         return ResultVO.success(result);
     }
@@ -1044,15 +1035,12 @@ public class MerchantServiceImpl implements MerchantService {
         }
     }
 
-
-
-
     /**
      * 上传厂商附件，生成审核流程
      * @param req
      * @param
      * @return
-             */
+     */
     public ResultVO<String> initFactoryMerchant(UserFactoryMerchantReq req, ProcessStartReq processStartReq) {
         //发起审核流程
         ResultVO processResult = taskService.startProcess(processStartReq);
@@ -1060,7 +1048,9 @@ public class MerchantServiceImpl implements MerchantService {
             return processResult;
         }
         //新增厂商附件记录
-        ResultVO fileResult = this.addCommonFile(req);
+        MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+        BeanUtils.copyProperties(req, fileReq);
+        ResultVO fileResult = this.addCommonFile(fileReq);
         return fileResult;
     }
 
@@ -1109,11 +1099,8 @@ public class MerchantServiceImpl implements MerchantService {
      * @param req
      * @return
      */
-    private  ResultVO addCommonFile(UserFactoryMerchantReq req) {
+    private  ResultVO addCommonFile(MerchantCommonFileReq req) {
         String merchantId = req.getMerchantId();
-        if (StringUtils.isEmpty(req.getAuthorizationCertificate())) {
-            return ResultVO.error("授权证明不允许为空");
-        }
         //上传营业执照正本
         if (StringUtils.isNotEmpty(req.getBusinessLicense())) {
             ResultVO result = this.saveCommonFile(req.getBusinessLicense(), merchantId, SystemConst.FileClass.BUSINESS_LICENSE.getCode());
@@ -1172,57 +1159,7 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     /**
-     * 上传授权证明
-     * @param authorizationCertificate 图片地址
-     * @param merchantId 关联主键
-     * @param rollBack 上传失败是否回滚 true 抛出异常 false处理异常
-     */
-    private void addAuthorizationCertificate(String authorizationCertificate, String merchantId,Boolean rollBack) {
-        Assert.notNull(authorizationCertificate, "授权证明不允许为空");
-        CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode(),merchantId,authorizationCertificate);
-        if(!commonFileService.saveCommonFile(dto).isSuccess() && rollBack)
-        {
-            throw new RuntimeException("上传授权失败");
-        }
-    }
-
-    /**
-     * 上传身份证
-     * @param legalPersonIdCardFont 图片地址
-     * @param merchantId 关联主键
-     * @param rollBack 上传失败是否回滚 true 抛出异常 false处理异常
-     */
-    private void addlegalPersonIdCard(String legalPersonIdCardFont, String merchantId,Boolean rollBack) {
-        //身份证不为空，上传身份证
-        if(StringUtils.isNotBlank(legalPersonIdCardFont)){
-            CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode(),merchantId,legalPersonIdCardFont);
-            if(!commonFileService.saveCommonFile(dto).isSuccess() && rollBack)
-            {
-                throw new RuntimeException("上传身份证失败");
-            }
-        }
-    }
-
-
-    /**
-     * 上传营业执照
-     * @param businessLicense 图片地址
-     * @param merchantId 关联主键
-     * @param rollBack 上传失败是否回滚 true 抛出异常 false处理异常
-     */
-    private void addBusinessLicense(String businessLicense, String merchantId,Boolean rollBack) {
-        //营业执照照片不为空，上传营业执照
-        if(StringUtils.isNotBlank(businessLicense)){
-            CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.BUSINESS_LICENSE.getCode(),merchantId,businessLicense);
-            if(!commonFileService.saveCommonFile(dto).isSuccess() && rollBack)
-            {
-                throw new RuntimeException("上传营业执照失败");
-            }
-        }
-    }
-
-    /**
-     * 新增审核流程
+     * 获取生成工作流参数
      *
      * @param title     流程名称
      * @param userId    流程发起人id
@@ -1255,7 +1192,10 @@ public class MerchantServiceImpl implements MerchantService {
             ResultVO<Merchant> merchantRt = addMerchantInfo(req);
             String merchantId = merchantRt.getResultData().getMerchantId();
             //插入附件表  --未做补偿
-            addEnclosure(req,merchantId);
+            MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+            BeanUtils.copyProperties(req, fileReq);
+            fileReq.setMerchantId(merchantId);
+            this.addCommonFile(fileReq);
             //发起审核流程
             ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessTitle(), req.getUserId(), req.getMerchantName()
                     ,PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessId(),
@@ -1278,7 +1218,10 @@ public class MerchantServiceImpl implements MerchantService {
             ResultVO<Merchant> merchantRt = addMerchantInfo(req);
             String merchantId = merchantRt.getResultData().getMerchantId();
             //插入附件表  --未做补偿
-            addEnclosure(req,merchantId);
+            MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+            BeanUtils.copyProperties(req, fileReq);
+            fileReq.setMerchantId(merchantId);
+            this.addCommonFile(fileReq);
             //发起审核流程
             ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessTitle(),req.getUserId(), req.getMerchantName()
                     ,PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessId(),
@@ -1307,7 +1250,10 @@ public class MerchantServiceImpl implements MerchantService {
             ResultVO<Merchant> merchantRt = addMerchantInfo(req);
             String merchantId = merchantRt.getResultData().getMerchantId();
             //插入附件表  --未做补偿
-            addEnclosure(req, merchantId);
+            MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+            BeanUtils.copyProperties(req, fileReq);
+            fileReq.setMerchantId(merchantId);
+            this.addCommonFile(fileReq);
             //调用user服务插入注册user信息
             ResultVO<UserDTO> addUserRt = addUser(req, SystemConst.USER_FOUNDER_4, merchantId);
             if (!addUserRt.isSuccess()) return addUserRt;
@@ -1331,30 +1277,6 @@ public class MerchantServiceImpl implements MerchantService {
         return ResultVO.success("注册成功");
     }
 
-    /**
-     * 上传省/地包附件信息
-     * @param req
-     * @return
-     */
-    //(可以定时扫描关联不到商户的附件删除)
-    private void addEnclosure(SupplierResistReq req,String merchantId) throws RuntimeException {
-        //上传营业执照
-        log.info("merchantId:{}" + merchantId);
-        addBusinessLicense(req.getBusinessLicense(),merchantId,Boolean.TRUE);
-        log.info("上传营业执照成功");
-        addBusinessLicense(req.getBusinessLicenseCopy(),merchantId,Boolean.TRUE);
-        log.info("上传营业执照辐照成功");
-        //上传身份证
-        addlegalPersonIdCard(req.getLegalPersonIdCardFont(),merchantId,Boolean.TRUE);
-        log.info("上传身份证正面成功");
-        addlegalPersonIdCard(req.getLegalPersonIdCardBack(),merchantId,Boolean.TRUE);
-        log.info("上传身份证反面成功");
-        //上传授权证明
-        addAuthorizationCertificate(req.getAuthorizationCertificate(),merchantId,Boolean.TRUE);
-        log.info("上传授权证明反面成功");
-        //上传合同
-        addContract(req.getContract(),merchantId,Boolean.FALSE);
-    }
 
     /**
      * 上传合同
@@ -1383,14 +1305,15 @@ public class MerchantServiceImpl implements MerchantService {
             ResultVO<Merchant> merchantRt = addMerchantInfo(req);
             String merchantId = merchantRt.getResultData().getMerchantId();
             //插入附件表  --未做补偿
-            addEnclosure(req,merchantId);
+            MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+            BeanUtils.copyProperties(req, fileReq);
+            fileReq.setMerchantId(merchantId);
+            this.addCommonFile(fileReq);
             //USER_FOUNDER_4 省包
             ResultVO<UserDTO> addUserRt = addUser(req,SystemConst.USER_FOUNDER_4,merchantId);
             if(!addUserRt.isSuccess())return addUserRt;
             UserDTO user = addUserRt.getResultData();
-            log.info("注册用户id"+user.getUserId());
             String statrProUserId = req.getUserId();
-            log.info("发起者id"+statrProUserId);
             UserGetReq userGetReq = new UserGetReq();
             userGetReq.setUserId(statrProUserId);
             UserDTO startProcessUser = userService.getUser(userGetReq);

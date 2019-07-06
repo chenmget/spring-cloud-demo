@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.goods2b.dto.TagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.TagRelAddReq;
+import com.iwhalecloud.retail.goods2b.dto.req.TagRelDetailListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TagRelListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TagRelUpdateReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.TagRelDetailListResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp;
 import com.iwhalecloud.retail.goods2b.entity.TagRel;
 import com.iwhalecloud.retail.goods2b.mapper.TagRelMapper;
@@ -158,5 +160,15 @@ public class TagRelManager extends ServiceImpl<TagRelMapper,TagRel> {
         UpdateWrapper<TagRel> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("PRODUCT_ID",productId);
         return tagRelMapper.delete(updateWrapper);
+    }
+
+
+    /**
+     * 查询产商品标签关联详情 （带出标签信息）
+     * @param req
+     * @return
+     */
+    public List<TagRelDetailListResp> listTagRelDetail(TagRelDetailListReq req) {
+        return tagRelMapper.listTagRelDetail(req);
     }
 }

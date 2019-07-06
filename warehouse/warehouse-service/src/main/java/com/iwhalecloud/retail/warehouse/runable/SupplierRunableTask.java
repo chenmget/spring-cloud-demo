@@ -105,7 +105,7 @@ public class SupplierRunableTask {
                         log.info("RunableTask.exceutorValidForSupplier resouceInstTrackService.listResourceInstsTrack req={}, newListSize={}, respSize={}", JSON.toJSONString(getReq), newList.size(), instsTrackvO.getResultData().size());
                         if (instsTrackvO.isSuccess() && CollectionUtils.isNotEmpty(instsTrackvO.getResultData())) {
                             List<ResouceInstTrackDTO> instTrackDTOList = instsTrackvO.getResultData();
-                            String deleteStatus = ResourceConst.STATUSCD.DELETED.getCode();
+                            String availableStatus = ResourceConst.STATUSCD.AVAILABLE.getCode();
                             List<String> instExitstNbr = instTrackDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
                             for (ResouceInstTrackDTO dto : instTrackDTOList) {
                                 ResouceUploadTemp inst = new ResouceUploadTemp();
@@ -116,10 +116,10 @@ public class SupplierRunableTask {
                                 inst.setMktResId(dto.getMktResId());
                                 inst.setCreateStaff(req.getCreateStaff());
                                 // 非厂商的串码且状态为非删除(非厂商删除的串码可再次导入)
-                                if (!deleteStatus.equals(dto.getStatusCd()) && StringUtils.isNotBlank(dto.getSourceType())) {
+                                if (StringUtils.isNotBlank(dto.getSourceType())) {
                                     inst.setResult(ResourceConst.CONSTANT_YES);
                                     inst.setResultDesc(constant.getMktResInstExists());
-                                } else if(deleteStatus.equals(dto.getStatusCd()) && StringUtils.isBlank(dto.getSourceType())){
+                                } else if(!availableStatus.equals(dto.getStatusCd()) && StringUtils.isBlank(dto.getSourceType())){
                                     inst.setResult(ResourceConst.CONSTANT_YES);
                                     inst.setResultDesc(constant.getNoResInstInMerchant());
                                 }else{

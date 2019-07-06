@@ -152,7 +152,6 @@ public class RunableTask {
                 }
             };
             addNbrFutureTask = executorService.submit(callable);
-            addNbrFutureTaskResult.add(addNbrFutureTask);
         }
         executorService.shutdown();
     }

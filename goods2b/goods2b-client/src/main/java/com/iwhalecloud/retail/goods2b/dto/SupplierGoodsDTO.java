@@ -59,4 +59,11 @@ public class SupplierGoodsDTO implements java.io.Serializable{
      */
     @ApiModelProperty(value = "图片路径")
     private String imageUrl;
+
+    /**
+     * 比某款商品 优惠多少价钱
+     */
+    @ApiModelProperty(value = "比某款商品 优惠多少价钱(差价）")
+    private Double lowPrice;
+
 }

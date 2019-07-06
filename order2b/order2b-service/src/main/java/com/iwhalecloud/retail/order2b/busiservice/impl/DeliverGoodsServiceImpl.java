@@ -23,8 +23,7 @@ import com.iwhalecloud.retail.order2b.manager.OrderManager;
 import com.iwhalecloud.retail.order2b.manager.PromotionManager;
 import com.iwhalecloud.retail.order2b.model.*;
 import com.iwhalecloud.retail.order2b.reference.*;
-import com.iwhalecloud.retail.promo.common.PromoConst;
-import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
+import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityDetailResp;
 import com.iwhalecloud.retail.warehouse.dto.request.DeliveryValidResourceInstReq;
 import com.iwhalecloud.retail.warehouse.dto.response.DeliveryValidResourceInstItemResp;
 import lombok.extern.slf4j.Slf4j;
@@ -248,10 +247,11 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
         List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);
         log.info("OrderDRGoodsOpenServiceImpl.valieNbr promotionManager.selectPromotion promotionModel={}, resp={}", JSON.toJSONString(promotionModel) , JSON.toJSONString(promotions));
         if (!CollectionUtils.isEmpty(productIdList) && !CollectionUtils.isEmpty(promotions)) {
-            MarketingActivityDTO activityDTO = activityManagerReference.validActivityEndTimeByProductId(productIdList, PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
-            if (null != activityDTO) {
+            List<String> activityIdList = promotions.stream().map(Promotion::getMktActId).collect(Collectors.toList());
+            MarketingActivityDetailResp activityDetailResp = activityManagerReference.validActivityEndTimeByProductId(activityIdList);
+            if (null != activityDetailResp) {
                 resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-                resp.setResultMsg("该订单参加的\""+activityDTO.getName()+"\"营销活动已结束，无法进行串码上传，未发货的商品请线下协调退款重新下单发货");
+                resp.setResultMsg("该订单参加的\""+activityDetailResp.getName()+"\"营销活动已结束，无法进行串码上传，未发货的商品请线下协调退款重新下单发货");
                 return resp;
             }
         }

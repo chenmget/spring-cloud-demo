@@ -1052,6 +1052,7 @@ public class MerchantManager {
         if (merchatType.equals(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType())) {
             keyStr = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getCodePrefix() + keyStr;
         }
+        log.info("MerchantManager.getMerchantCode req={} resp={}",merchatType,keyStr);
         return keyStr;
     }
 

@@ -340,18 +340,6 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
                 }
             }
 
-//                //添加缩略图地址
-//                List<ProdFileDTO> prodFileDTOs = prodFileManager.queryGoodsImage(activityGoodsDTO.getGoodsId());
-//                if(!CollectionUtils.isEmpty(prodFileDTOs)){
-//                    for(ProdFileDTO prodFileDTO : prodFileDTOs){
-//                        // 附件类型为图片。关联对象类型为商品。 子类型 为缩略图片
-//                        if("1".equals(prodFileDTO.getFileType()) && "1".equals(prodFileDTO.getTargetType()) &&
-//                        "5".equals(prodFileDTO.getSubType())){
-//                            activityGoodsDTO.setImageUrl(prodFileDTO.getFileUrl());
-//                            break;
-//                        }
-//                    }
-//                }
             String parCategoryId = activityGoodsDTO.getParCategoryId();
             if (!StringUtils.isEmpty(parCategoryId) && parCategoryId.indexOf("|") > -1) {
                 String[] parCategoryIds = parCategoryId.split("\\|");

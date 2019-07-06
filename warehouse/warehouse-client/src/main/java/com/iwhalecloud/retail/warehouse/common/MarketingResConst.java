@@ -84,6 +84,7 @@ public final class MarketingResConst {
 
     public static enum ResultEnum {
         FAIL("-1", "串码推送ITMS(新增)失败"),
+        SUCESS("0", "串码推送ITMS成功"),
         EXISTS("1", "串码推送ITMS(新增)已经存在");
 
         private String code;

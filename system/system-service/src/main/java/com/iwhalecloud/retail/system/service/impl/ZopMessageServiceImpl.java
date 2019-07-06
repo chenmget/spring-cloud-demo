@@ -2,7 +2,7 @@ package com.iwhalecloud.retail.system.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.system.common.SysUserMessageConst;
+import com.iwhalecloud.retail.system.common.ZopMessageConst;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.RandomLogGetResp;
 import com.iwhalecloud.retail.system.dto.request.SmsVerificationtemplate;
@@ -65,7 +65,7 @@ public class ZopMessageServiceImpl implements ZopMessageService {
         //selectLogIdByRandomCode 写死查询的是失效大于当前时间所以会有查询DATA为null
         ResultVO<RandomLogGetResp> resultVO = randomLogService.selectLogIdByRandomCode(req);
         RandomLogGetResp resp = resultVO.getResultData();
-        if(resp == null)return ResultVO.error(SysUserMessageConst.VERIFYCODE_ERR);
+        if(resp == null)return ResultVO.error(ZopMessageConst.VERIFYCODE_ERR);
 
         if(verifyCode.equals(resp.getRandomCode())){
             RandomLogUpdateReq randomLogUpdateReq = new RandomLogUpdateReq();
@@ -75,7 +75,7 @@ public class ZopMessageServiceImpl implements ZopMessageService {
             randomLogService.updateByPrimaryKey(randomLogUpdateReq);
             return ResultVO.success();
         }
-        return  ResultVO.error(SysUserMessageConst.VERIFYCODE_ERR) ;
+        return  ResultVO.error(ZopMessageConst.VERIFYCODE_ERR) ;
     }
 
     @Override
@@ -87,7 +87,7 @@ public class ZopMessageServiceImpl implements ZopMessageService {
               checkReq(req);
               ZopMsgModel model = new ZopMsgModel();
               //模板ID要改
-              model.setBusinessId(SysUserMessageConst.REGIST_VERIFY_BSID);
+              model.setBusinessId(msgReq.getBusId());
               model.setLatnId(req.getLandId());
               model.setToTel(req.getPhoneNo());
               model.setSentContent("");
@@ -108,14 +108,14 @@ public class ZopMessageServiceImpl implements ZopMessageService {
         ZopMsgModel model = new ZopMsgModel();
         SmsVerificationtemplate template = new SmsVerificationtemplate();
         template.setSmsVerificationCode(verifyCode);
-        if(SysUserMessageConst.VerifyCode.LOGIN_CODE.getType() == opType){
-            model.setBusinessId(SysUserMessageConst.VerifyCode.LOGIN_CODE.getBsid());
+        if(ZopMessageConst.VerifyCode.LOGIN_CODE.getType() == opType){
+            model.setBusinessId(ZopMessageConst.VerifyCode.LOGIN_CODE.getBsid());
         }
-        if(SysUserMessageConst.VerifyCode.REGIST_CODE.getType() == opType){
-            model.setBusinessId(SysUserMessageConst.VerifyCode.REGIST_CODE.getBsid());
+        if(ZopMessageConst.VerifyCode.REGIST_CODE.getType() == opType){
+            model.setBusinessId(ZopMessageConst.VerifyCode.REGIST_CODE.getBsid());
         }
-        if(SysUserMessageConst.VerifyCode.RESET_PASSWD_CODE.getType() == opType){
-            model.setBusinessId(SysUserMessageConst.VerifyCode.RESET_PASSWD_CODE.getBsid());
+        if(ZopMessageConst.VerifyCode.RESET_PASSWD_CODE.getType() == opType){
+            model.setBusinessId(ZopMessageConst.VerifyCode.RESET_PASSWD_CODE.getBsid());
         }
         if(StringUtils.isBlank(model.getBusinessId()))return false;
         model.setLatnId(landId);
@@ -129,9 +129,9 @@ public class ZopMessageServiceImpl implements ZopMessageService {
         addReq.setBusiType(getReq.getOperatType());
         addReq.setRandomCode(code);
         addReq.setValidStatus(0);
-        addReq.setSendType(SysUserMessageConst.SendMsgType.SEND_MESSAGE.getType());
+        addReq.setSendType(ZopMessageConst.SendMsgType.SEND_MESSAGE.getType());
         addReq.setReceviNo(getReq.getPhoneNo());
-        addReq.setValidStatus(SysUserMessageConst.UNVERIFIED);
+        addReq.setValidStatus(ZopMessageConst.UNVERIFIED);
         addReq.setCreateDate(new Date());
         Calendar calendar = Calendar.getInstance();
         Date createDate = calendar.getTime();

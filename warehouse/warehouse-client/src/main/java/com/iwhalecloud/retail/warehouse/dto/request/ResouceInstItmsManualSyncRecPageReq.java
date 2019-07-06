@@ -101,8 +101,14 @@ public class ResouceInstItmsManualSyncRecPageReq extends PageVO {
 	private String createTimeEnd;
 
 	/**
-	 * 操作类型
+	 * 增加操作类型
 	 */
-	@ApiModelProperty(value = "操作类型")
-	private String optionType;
+	@ApiModelProperty(value = "增加操作类型")
+	private String addOptionType;
+
+	/**
+	 * 修改操作类型
+	 */
+	@ApiModelProperty(value = "修改操作类型")
+	private String updateOptionType;
 }

@@ -1,6 +1,6 @@
 package com.iwhalecloud.retail.system.utils;
 
-import com.iwhalecloud.retail.system.common.SysUserMessageConst;
+import com.iwhalecloud.retail.system.common.ZopMessageConst;
 import com.iwhalecloud.retail.system.model.ZopMsgModel;
 import com.iwhalecloud.retail.system.model.ZopReqContent;
 import com.ztesoft.codec.binary.Hex;
@@ -8,13 +8,17 @@ import com.ztesoft.fastjson.JSON;
 import com.ztesoft.zop.ZopClient;
 import com.ztesoft.zop.common.message.RequestParams;
 import com.ztesoft.zop.common.message.ResponseResult;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+@Slf4j
 @Component
 public class ZopMsgUtil {
     @Autowired
@@ -40,8 +44,8 @@ public class ZopMsgUtil {
         //====
         list.add(zopMsgModel);
         content.setBillReqVo(list);
-        ResponseResult responseResult = ZopClient.callRest(params,  SysUserMessageConst.ZopServiceEnum.SEND_MESSAGE.getVersion()
-                ,SysUserMessageConst.ZopServiceEnum.SEND_MESSAGE.getMethod(),content,true);
+        ResponseResult responseResult = ZopClient.callRest(params,  ZopMessageConst.ZopServiceEnum.SEND_MESSAGE.getVersion()
+                ,ZopMessageConst.ZopServiceEnum.SEND_MESSAGE.getMethod(),content,true);
         return responseResult.getRes_code().equals("00000");
     }
 
@@ -63,12 +67,16 @@ public class ZopMsgUtil {
 
         for(int i=0;i<zopMsgModels.size();i++){
             String param = JSON.toJSONString(msgtTemplate.get(i));
-            param = new String(Hex.encodeHex(param.getBytes()));
+            try {
+                param = new String(Hex.encodeHex(param.getBytes(getCharset())));
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
             zopMsgModels.get(i).setParams(param);
         }
         content.setBillReqVo(zopMsgModels);
-        ResponseResult responseResult = ZopClient.callRest(params,  SysUserMessageConst.ZopServiceEnum.SEND_MESSAGE.getVersion()
-                ,SysUserMessageConst.ZopServiceEnum.SEND_MESSAGE.getMethod(),content,true);
+        ResponseResult responseResult = ZopClient.callRest(params,  ZopMessageConst.ZopServiceEnum.SEND_MESSAGE.getVersion()
+                ,ZopMessageConst.ZopServiceEnum.SEND_MESSAGE.getMethod(),content,true);
         return responseResult.getRes_code().equals("00000");
     }
 
@@ -80,6 +88,10 @@ public class ZopMsgUtil {
         return env.getProperty("zop.secret");
     }
 
+    public String getCharset(){
+        return env.getProperty("zop.charset");
+    }
+
     public Integer getTimeout() {
         return Integer.getInteger(env.getProperty("zop,timeout"));
     }
@@ -87,4 +99,5 @@ public class ZopMsgUtil {
     public String getUrl() {
         return env.getProperty("zop.url");
     }
+
 }

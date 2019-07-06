@@ -16,6 +16,9 @@ public class SupplierResistReq implements Serializable {
     @ApiModelProperty(value = "验证码")
     private String code;
 
+    @ApiModelProperty(value = "是否管理员注册")
+    private boolean ifByAdmin = false;
+
     //商户信息
     @NotEmpty(message = "公司名称不能为空")
     @ApiModelProperty(value = "公司名称")

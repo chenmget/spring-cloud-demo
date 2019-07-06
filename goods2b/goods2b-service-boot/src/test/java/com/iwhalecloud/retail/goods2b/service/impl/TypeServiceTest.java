@@ -5,6 +5,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.Goods2BServiceApplication;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeSelectByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.TypeDetailResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.TypeResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TypeService;
 import org.junit.Assert;
 import org.junit.Test;
@@ -31,6 +32,13 @@ public class TypeServiceTest {
         TypeSelectByIdReq req = new TypeSelectByIdReq();
         req.setTypeId("201903142030001");
         ResultVO<TypeDetailResp> resultVO = typeService.getDetailType(req);
+        System.out.println("resultVO=" + JSON.toJSON(resultVO));
+        Assert.assertNotNull(resultVO);
+    }
+
+    @Test
+    public void selectById() {
+        ResultVO<TypeResp> resultVO = typeService.selectById("210001");
         System.out.println("resultVO=" + JSON.toJSON(resultVO));
         Assert.assertNotNull(resultVO);
     }

@@ -637,5 +637,53 @@ public class MerchantController {
         log.info("MerchantController.editMerchant() input: merchantId={}", merchantId);
         return merchantService.getFactoryMerchant(merchantId);
     }
+    /**
+     * 管理员新建省包商
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "管理员新建省包商", notes = "管理员新建省包商，发起审核")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/addProvinceSupplier", method = RequestMethod.POST)
+    public ResultVO addProvinceSupplier(@RequestBody @ApiParam(value = "保存参数", required = true) SupplierResistReq req) {
+        req.setUserId(UserContext.getUserId());
+        return merchantService.registProvinceSupplierForAdmin(req);
+    }
+
+    /**
+     * 管理员新建地包商
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "管理员新建地包商", notes = "管理员新建省包商，发起审核")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/addLandSupplier", method = RequestMethod.POST)
+    public ResultVO addLandSupplier(@RequestBody @ApiParam(value = "保存参数", required = true) SupplierResistReq req) {
+        req.setUserId(UserContext.getUserId());
+        return merchantService.registLandSupplierForAdmin(req);
+    }
+
+
+    /**
+     * 获取审核详情
+     * @param merchantId
+     * @return
+     */
+    @ApiOperation(value = "获取详情", notes = "获取详情")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/getSupplierInfo", method = RequestMethod.GET)
+    public ResultVO getSupplierInfo( @RequestParam(value = "merchantId")String merchantId) {
+        return merchantService.getSupplierInfo(merchantId);
+    }
+
 
 }

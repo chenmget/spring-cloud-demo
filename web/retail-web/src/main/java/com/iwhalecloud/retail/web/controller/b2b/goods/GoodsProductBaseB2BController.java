@@ -408,7 +408,7 @@ public class GoodsProductBaseB2BController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value = "/getProductBaseByProductId")
-    ResultVO<ProductBaseLightResp> getProductBaseByProductId(@RequestParam(value = "typeId") String productId) {
+    ResultVO<ProductBaseLightResp> getProductBaseByProductId(@RequestParam(value = "productId") String productId) {
         log.info("GoodsProductBaseB2BController getProductBaseByProductId productId={}", productId);
         return prodProductBaseService.getProductBaseByProductId(productId);
     }

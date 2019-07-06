@@ -1003,10 +1003,16 @@ public class MerchantManager {
 
     public String addMerchan( Merchant merchant){
         List<PublicDictDTO> publicDictDTOList = publicDictService.queryPublicDictListByType("ZK");
-        String connectStr = publicDictDTOList.get(0).getPname();
+        String connectStr = null;
+        if(publicDictDTOList == null || publicDictDTOList.size() == 0) {
+            connectStr = "127.0.0.1:2181";
+        }else
+        {
+            connectStr = publicDictDTOList.get(0).getPname();
+        }
         InterProcessLock lock = ZookeeperTool.getInstance(connectStr).getLock();
         try {
-            //lock.acquire();
+            lock.acquire();
             String merchantCode = getMerchantCode(merchant.getMerchantType());
             merchant.setMerchantCode(merchantCode);
             merchantMapper.insert(merchant);
@@ -1030,7 +1036,7 @@ public class MerchantManager {
     public String getMerchantCode(String merchatType) {
         String merchantCode = merchantMapper.getMaxMerchantCode(merchatType);
         String num = merchantCode.substring(merchantCode.lastIndexOf("S") + 1);
-        Long key = Long.parseLong(merchantCode.substring(merchantCode.lastIndexOf("S") + 1)) + 1;
+        long key = Long.parseLong(num) + 1;
         String keyStr = String.valueOf(key);
         int count = num.length() - keyStr.length();
         while (count > 0) {

@@ -24,7 +24,7 @@
 
     <select id="listResourceItemsManualSyncRec" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecPageReq"
             resultType="com.iwhalecloud.retail.warehouse.dto.response.ResouceInstItmsManualSyncRecListResp">
-        SELECT <include refid="allFields"/>  FROM mkt_res_itms_sync_rec t WHERE 1 = 1
+        SELECT <include refid="allFields"/>  FROM mkt_res_itms_manual_sync_rec t WHERE 1 = 1
         <if test="null!=req.createDateStart and ''!=req.createDateStart">
             and t.CREATE_DATE &gt;= #{req.createDateStart}
         </if>
@@ -52,14 +52,12 @@
         <if test="null!=req.productName and ''!=req.productName">
             and upper(t.product_name) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
         </if>
-        <choose>
-            <when test="optionType !=null and ''!= optionType">
-                and trim(orig_lan_id)!=''
-            </when >
-            <otherwise>
-                and t.orig_lan_id is null or trim(COMMENTS)=''
-            </otherwise>
-        </choose>
+        <if test="null!=req.AddOptionType and ''!=req.AddOptionType">
+            and t.orig_lan_id is null or trim(orig_lan_id)=''
+        </if>
+        <if test="null!=req.updateOptionType and ''!=req.updateOptionType">
+            and trim(orig_lan_id)!=''
+        </if>
         <if test="null!=req.statusCd and ''!=req.statusCd">
             and t.status_cd = #{statusCd}
         </if>

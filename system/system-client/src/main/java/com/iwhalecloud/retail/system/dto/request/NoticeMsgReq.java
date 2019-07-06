@@ -15,4 +15,6 @@ public class NoticeMsgReq implements Serializable {
     private List templateList;
 
     private List<BaseZopMsgReq> baseZopMsgReqs;
+
+    private String busId;
 }

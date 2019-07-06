@@ -16,8 +16,8 @@ import java.util.Date;
  * @since 1.0
  */
 @Data
-@TableName("mkt_res_itms_sync_rec")
-@ApiModel(value = "mkt_res_itms_sync_rec, 对应实体ResouceInstItmsSyncRec类")
+@TableName("mkt_res_itms_manual_sync_rec")
+@ApiModel(value = "mkt_res_itms_manual_sync_rec, 对应实体ResouceInstItmsSyncRec类")
 public class ResouceInstItmsManualSyncRec implements Serializable {
     /**表名常量*/
     public static final String TNAME = "mkt_res_itms_sync_rec";
@@ -88,7 +88,7 @@ public class ResouceInstItmsManualSyncRec implements Serializable {
   	/**
   	 * 串码推送状态 0. 已推送待返回 1. 推送成功 -1. 推送失败
   	 */
-	@ApiModelProperty(value = "串码推送状态 0. 已推送待返回 1. 推送成功 -1. 推送失败")
+	@ApiModelProperty(value = "串码推送状态 1. 推送成功 -1. 推送失败")
   	private String statusCd;
 
   	/**

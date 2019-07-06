@@ -6,6 +6,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.NotEmpty;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @ApiModel(value = "供应商经营权限规则 删除请求对象，对应模型par_supplier_rules, 对应实体SupplierRules类")
@@ -18,6 +19,12 @@ public class MerchantRulesDeleteReq implements Serializable {
      */
     @ApiModelProperty(value = "关联ID")
     private java.lang.String merchantRuleId;
+
+    /**
+     * 关联ID集合（批量删除)
+     */
+    @ApiModelProperty(value = "关联ID集合（批量删除）")
+    private List<String> merchantRuleIdList;
 
     /**
      * 商家ID

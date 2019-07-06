@@ -5,6 +5,7 @@ import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
@@ -803,37 +804,40 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }
         }
 
-        List<String> listTagRelId = new ArrayList<>();
-        if (!CollectionUtils.isEmpty(list)) {
-            for (ProductDTO productDTO : list) {
-                TagRelListReq tagRelListReq = new TagRelListReq();
-                tagRelListReq.setProductId(productDTO.getProductId());
-                List<TagRelListResp> listTagRel = tagRelManager.listTagRel(tagRelListReq);
-                log.info("ProductBaseServiceImpl.getProductDetail tagRelManager.listTagRel req={}, resp={}", JSON.toJSONString(tagRelListReq), JSON.toJSONString(listTagRel));
-                List<String> relIdList = listTagRel.stream().map(TagRelListResp::getTagId).collect(Collectors.toList());
-                if (!CollectionUtils.isEmpty(relIdList)) {
-                    listTagRelId.addAll(relIdList);
-                }
-            }
-        }
-        if(CollectionUtils.isEmpty(productDetail.getTagList())){
-            productDetail.setTagList(listTagRelId);
-        } else {
-            List<String> tagList = productDetail.getTagList();
-            if (!CollectionUtils.isEmpty(listTagRelId)) {
-                tagList.addAll(listTagRelId);
-            }
-        }
-
-        //去重
-//        List<String> listTemp = new ArrayList();
-//        List<String> taglist = productDetail.getTagList();
-//        for(int i=0;i<taglist.size();i++){
-//            if(!listTemp.contains(taglist.get(i))){
-//                listTemp.add(taglist.get(i));
+//        List<String> listTagRelId = new ArrayList<>();
+//        if (!CollectionUtils.isEmpty(list)) {
+//            for (ProductDTO productDTO : list) {
+//                TagRelListReq tagRelListReq = new TagRelListReq();
+//                tagRelListReq.setProductId(productDTO.getProductId());
+//                List<TagRelListResp> listTagRel = tagRelManager.listTagRel(tagRelListReq);
+//                log.info("ProductBaseServiceImpl.getProductDetail tagRelManager.listTagRel req={}, resp={}", JSON.toJSONString(tagRelListReq), JSON.toJSONString(listTagRel));
+//                List<String> relIdList = listTagRel.stream().map(TagRelListResp::getTagId).collect(Collectors.toList());
+//                if (!CollectionUtils.isEmpty(relIdList)) {
+//                    listTagRelId.addAll(relIdList);
+//                }
 //            }
 //        }
-//        productDetail.setTagList(listTemp);
+//        if(CollectionUtils.isEmpty(productDetail.getTagList())){
+//            productDetail.setTagList(listTagRelId);
+//        } else {
+//            List<String> tagList = productDetail.getTagList();
+//            if (!CollectionUtils.isEmpty(listTagRelId)) {
+//                tagList.addAll(listTagRelId);
+//            }
+//        }
+
+        // zhongwenlong 获取标签ID集合
+        List<String> listTagRelId = new ArrayList<>();
+        TagRelListReq tagRelListReq = new TagRelListReq();
+        tagRelListReq.setProductId(req.getProductBaseId());
+        List<TagRelListResp> listTagRel = tagRelManager.listTagRel(tagRelListReq);
+        log.info("ProductBaseServiceImpl.getProductDetail tagRelManager.listTagRel req={}, resp={}", JSON.toJSONString(tagRelListReq), JSON.toJSONString(listTagRel));
+        List<String> relTagIdList = listTagRel.stream().map(TagRelListResp::getTagId).collect(Collectors.toList());
+        if (!CollectionUtils.isEmpty(relTagIdList)) {
+            // 去重
+            HashSet<String> relTagIdHashSet = new HashSet<>(relTagIdList);
+            productDetail.setTagList(Lists.newArrayList(relTagIdHashSet));
+        }
 
         ProductExtGetReq productExtGetReq = new ProductExtGetReq();
         productExtGetReq.setProductBaseId(req.getProductBaseId());

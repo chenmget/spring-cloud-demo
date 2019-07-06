@@ -48,6 +48,7 @@ import sun.misc.BASE64Encoder;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.io.PrintWriter;
 import java.security.MessageDigest;
 import java.text.SimpleDateFormat;
@@ -926,7 +927,7 @@ public class UserController extends BaseController {
      * @throws Exception
      */
     @RequestMapping("/ssoLogin")
-    public void ssoLogin(HttpServletRequest request, HttpServletResponse response) {
+    public void ssoLogin(HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");

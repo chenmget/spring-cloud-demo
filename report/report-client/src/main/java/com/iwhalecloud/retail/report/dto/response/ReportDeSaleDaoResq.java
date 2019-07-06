@@ -86,5 +86,7 @@ public class ReportDeSaleDaoResq implements Serializable {
 	
 	@ApiModelProperty(value = "brandId")
 	private String brandId;//品牌ID
-
+	
+	@ApiModelProperty(value = "itemDate")
+	private String itemDate;//统计时间
 }

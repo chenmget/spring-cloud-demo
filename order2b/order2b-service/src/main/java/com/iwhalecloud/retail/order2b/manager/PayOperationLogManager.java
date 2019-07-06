@@ -20,8 +20,8 @@ public class PayOperationLogManager{
         BeanUtils.copyProperties(payLogDTO, payLog);
         return payOperationLogMapper.insert(payLog);
     }
-    
-    public void UpdateOrdOrderStatus(UpdateOrdOrderReq req){
-    	payOperationLogMapper.UpdateOrdOrderStatus(req);
+
+    public void updateOrdOrderStatus(UpdateOrdOrderReq req){
+    	payOperationLogMapper.updateOrdOrderStatus(req);
     }
 }

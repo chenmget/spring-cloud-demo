@@ -117,15 +117,18 @@ public class UpdateOrderFlowServiceImpl implements UpdateOrderFlowService {
         updateAttrModel.setPayMoney(request.getPaymoney());
         updateAttrModel.setPayStatus(request.getPayStatus());
         updateAttrModel.setPayCode(request.getPayCode());
+        updateAttrModel.setLanId(request.getLanId());
         orderManager.updateOrderAttr(updateAttrModel);
 
         //更新流程
-        OrderZFlowDTO zFlowDTO = new OrderZFlowDTO();
-        zFlowDTO.setOrderId(request.getOrderId());
-        zFlowDTO.setHandlerId(request.getUserId());
-        zFlowDTO.setFlowType(request.getFlowType());
-        orderZFlowManager.updateFlowList(zFlowDTO);
-        resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+        if (TypeStatus.TYPE_01.getCode().equals(request.getPayStatus())) {
+            OrderZFlowDTO zFlowDTO = new OrderZFlowDTO();
+            zFlowDTO.setOrderId(request.getOrderId());
+            zFlowDTO.setHandlerId(request.getUserId());
+            zFlowDTO.setFlowType(request.getFlowType());
+            orderZFlowManager.updateFlowList(zFlowDTO);
+            resp.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+        }
         return resp;
     }
 

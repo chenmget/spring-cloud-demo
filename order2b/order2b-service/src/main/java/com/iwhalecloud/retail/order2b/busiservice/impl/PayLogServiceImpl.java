@@ -82,7 +82,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     
     @Override
     public void UpdateOrdOrderStatus(UpdateOrdOrderReq req){
-    	this.payOperationLogManager.UpdateOrdOrderStatus(req);
+    	this.payOperationLogManager.updateOrdOrderStatus(req);
     }
     
  // TODO:1、预授权支付 

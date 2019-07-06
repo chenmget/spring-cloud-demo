@@ -17,7 +17,6 @@ import java.io.Serializable;
  */
 @Data
 @TableName("pay_log")
-@KeySequence(value="seq_pay_log_id",clazz = String.class)
 @ApiModel(value = "对应模型pay_log, 对应实体PayLog类")
 public class PayLog implements Serializable {
     /**表名常量*/
@@ -29,7 +28,6 @@ public class PayLog implements Serializable {
   	/**
   	 * 支付流水ID 
   	 */
-	@TableId
 	@ApiModelProperty(value = "支付流水ID ")
   	private java.lang.String id;
   	

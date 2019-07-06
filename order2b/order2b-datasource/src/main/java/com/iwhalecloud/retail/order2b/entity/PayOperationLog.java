@@ -164,7 +164,10 @@ public class PayOperationLog implements Serializable {
 		payData("payData","PAY_DATA"),
 		
 		/** 外部平台接收数据. */
-		resultData("resultData","RESULT_DATA");
+		resultData("resultData","RESULT_DATA"),
+
+		/** 去支付ID */
+		payIdData("payId","PAY_ID");
 
 		private String fieldName;
 		private String tableFieldName;

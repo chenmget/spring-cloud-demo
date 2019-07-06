@@ -192,39 +192,42 @@ public class BestPayEnterprisePaymentOpenServiceImpl implements BestPayEnterpris
             return ResultVO.error("通知异常:没有支付订单");
         }
         if ("1".equals(orderStatus)) {
-            // 已通知过，幂等操作
-            if (PayConsts.PAY_STATUS_2.equals(orderPayInfoResp.getPayStatus())) {
-                return ResultVO.success();
-            }
             String orderId = orderPayInfoResp.getOrderId();
             String payId = req.getORDERID();
+            // 已通知过，幂等操作; 否则先修改支付状态
+            if (PayConsts.PAY_STATUS_2.equals(orderPayInfoResp.getPayStatus())) {
+                return ResultVO.success();
+            } else {
+                SaveLogModel saveLogModel = new SaveLogModel();
+                saveLogModel.setPayId(payId);
+                saveLogModel.setOrderId(orderId);
+                saveLogModel.setOrderAmount(req.getORDERAMOUNT());
+                saveLogModel.setPayStatus(PayConsts.PAY_STATUS_2);
+                saveLogModel.setOperationType(orderPayInfoResp.getOperationType());
+                int i = bpepPayLogService.updateLog(saveLogModel);
+            }
+            // 修改订单相关状态
             PayOrderRequest payOrderRequest = new PayOrderRequest();
             payOrderRequest.setOrderId(orderId);
             payOrderRequest.setFlowType(orderPayInfoResp.getOperationType());
-            payOrderRequest.setPaymoney(Double.parseDouble(req.getORDERAMOUNT()));
+            payOrderRequest.setPaymoney(Double.parseDouble(req.getORDERAMOUNT())*100);
             payOrderRequest.setPayType(OrderPayType.PAY_TYPE_1.getCode());
             payService.pay(payOrderRequest);
-            SaveLogModel saveLogModel = new SaveLogModel();
-            saveLogModel.setPayId(payId);
-            saveLogModel.setOrderId(orderId);
-            saveLogModel.setOrderAmount(req.getORDERAMOUNT());
-            saveLogModel.setPayStatus(PayConsts.PAY_STATUS_2);
-            saveLogModel.setOperationType(orderPayInfoResp.getOperationType());
-            int i = bpepPayLogService.updateLog(saveLogModel);
         } else if ("0".equals(orderStatus)) {
             // 已通知过，幂等操作
-            if (PayConsts.PAY_STATUS_0.equals(orderPayInfoResp.getPayStatus())) {
+            if (PayConsts.PAY_STATUS_4.equals(orderPayInfoResp.getPayStatus())) {
                 return ResultVO.success();
+            } else {
+                String orderId = orderPayInfoResp.getOrderId();
+                String payId = req.getORDERID();
+                SaveLogModel saveLogModel = new SaveLogModel();
+                saveLogModel.setPayId(payId);
+                saveLogModel.setOrderId(orderId);
+                saveLogModel.setOrderAmount(req.getORDERAMOUNT());
+                saveLogModel.setPayStatus(PayConsts.PAY_STATUS_4);
+                saveLogModel.setOperationType(orderPayInfoResp.getOperationType());
+                int i = bpepPayLogService.updateLog(saveLogModel);
             }
-            String orderId = orderPayInfoResp.getOrderId();
-            String payId = req.getORDERID();
-            SaveLogModel saveLogModel = new SaveLogModel();
-            saveLogModel.setPayId(payId);
-            saveLogModel.setOrderId(orderId);
-            saveLogModel.setOrderAmount(req.getORDERAMOUNT());
-            saveLogModel.setPayStatus(PayConsts.PAY_STATUS_4);
-            saveLogModel.setOperationType(orderPayInfoResp.getOperationType());
-            int i = bpepPayLogService.updateLog(saveLogModel);
         }
         return ResultVO.success();
     }

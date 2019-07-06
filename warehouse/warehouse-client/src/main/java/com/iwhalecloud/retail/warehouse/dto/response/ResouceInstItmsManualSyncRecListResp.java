@@ -120,4 +120,16 @@ public class ResouceInstItmsManualSyncRecListResp implements Serializable {
 	 */
 	@ApiModelProperty(value = "brandName")
 	private String brandName;
+
+	/**
+	 * 录入地市
+	 */
+	@ApiModelProperty(value = "lanName")
+	private String lanName;
+
+	/**
+	 * 操作类型
+	 */
+	@ApiModelProperty(value = "操作类型")
+	private String optionType;
 }

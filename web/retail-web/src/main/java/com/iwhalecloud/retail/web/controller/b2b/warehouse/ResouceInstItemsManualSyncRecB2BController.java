@@ -40,7 +40,7 @@ public class ResouceInstItemsManualSyncRecB2BController {
         return resouceInstItemsManualSyncRecService.addResourceItemsManualSyncRec(req);
     }
 
-    @ApiOperation(value = "ITMS跟新串码入库", notes = "添加操作")
+    @ApiOperation(value = "ITMS更新串码入库", notes = "添加操作")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")

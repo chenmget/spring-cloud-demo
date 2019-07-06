@@ -41,25 +41,6 @@
         order by GMT_CREATE DESC
     </select>
 
-
-    <select id="queryActivityParticipantByParams" parameterType="com.iwhalecloud.retail.promo.dto.req.CheckMarketingActivityReq" resultType="com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO">
-        select
-        <include refid="allFields"></include>
-        from act_activity_participant t where 1=1
-        <if test="null!=req.isDeleted and ''!=req.isDeleted">
-            AND t.IS_DELETED =  #{req.isDeleted}
-        </if>
-        <if test="null!=req.status and ''!=req.status">
-            AND t.STATUS =  #{req.status}
-        </if>
-        <if test="null!=req.marketingActivityId and ''!=req.marketingActivityId">
-            AND t.MARKETING_ACTIVITY_ID =  #{req.marketingActivityId}
-        </if>
-        <if test="null!=req.custId and ''!=req.custId">
-            AND t.MERCHANT_CODE =  #{req.custId}
-        </if>
-    </select>
-
     <select id="queryActivityParticipantByMktIdAndStatus" resultType="com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO">
         select
         <include refid="allFields"></include>

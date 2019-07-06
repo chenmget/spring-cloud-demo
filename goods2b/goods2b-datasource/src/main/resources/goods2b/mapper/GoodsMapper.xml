@@ -249,7 +249,9 @@
             <!--UNION select DISTINCT goods_id from prod_goods_target_rel where TARGET_ID = #{req.targetId }-->
             <!--UNION select DISTINCT goods_id from prod_goods where IS_ALLOT=1)-->
         <!--</if>-->
-        <!-- 新逻辑 不判断regionId -->
+
+        <!--start 新逻辑 zhongwenlong 2019.07.01-->
+        <!--不判断regionId -->
         <if test="req.lanId != null or req.targetId != null">
             and t.GOODS_ID in
             (
@@ -265,6 +267,18 @@
                 </if>
             )
         </if>
+        <!-- 新查询规则（商品过滤逻辑）:针对零售商查询商品 详情见下面具体条件 两句话说不清楚 -->
+        <if test="req.userFounder != null or req.userFounder == 3">
+            and t.GOODS_ID in (
+                <include refid="selectGoodsIdByCondition1"></include>
+                UNION
+                <include refid="selectGoodsIdByCondition2"></include>
+                UNION
+                <include refid="selectGoodsIdByCondition3"></include>
+            )
+        </if>
+
+        <!--end 新逻辑 不判断regionId -->
 
         <if test="req.sourceFrom != null">
             and t.SOURCE_FROM = #{req.sourceFrom }
@@ -310,6 +324,41 @@
             order by DELIVERY_PRICE ASC,MERCHANT_TYPE ASC
         </if>
     </select>
+
+    <!--1. 零售价1599以上机型（未参与省集约前置补贴）（逻辑：直接取价格大于1599元、没有前置补贴标志并且是地包的商品ID集合）：商品列表只展示地包商品，按价格从低到高排序-->
+    <sql id="selectGoodsIdByCondition1">
+        select DISTINCT a.goods_id from prod_goods a, prod_goods_product_rel b, prod_product c
+        where a.goods_id = b.goods_id and b.product_id = c.product_id
+          and a.market_enable = '1'
+          and a.merchant_type = '2'
+          <![CDATA[ and a.is_subsidy <> '1' ]]>
+          and c.cost > 159900
+          and c.status = '3'
+    </sql>
+    <!--2.有省集约前置补贴的机型（逻辑：直接取有前置补贴标志并且是地包的商品ID集合）：优先地包供货，即使地包无库存，也不展示省包商品-->
+    <sql id="selectGoodsIdByCondition2">
+        select DISTINCT a.goods_id from prod_goods a
+        where a.merchant_type = '2' and a.is_subsidy = '1';
+    </sql>
+    <!--3.零售价1599及以下机型（未参与省集约前置补贴）：如果某个机型所有规格地包无库存时，商品列表优先展示省包商品，地包商品打上“无库存”标识，往后排-->
+    <!--逻辑：先取 零售价1599及以下机型、商品是未参与省集约前置补贴的、机型所有规格地包无库存时的 product_base_id，再根据product_base_id找到该条件下到商品ID集合-->
+    <sql id="selectGoodsIdByCondition3">
+        select DISTINCT aa.goods_id from  prod_goods_product_rel aa,
+        (
+            select b.product_base_id, sum(b.supply_num) num
+            from prod_goods a, prod_goods_product_rel b, prod_product c
+            where  a.goods_id = b.goods_id and b.product_id = c.product_id
+                and a.merchant_type = '2'
+                <![CDATA[ and a.is_subsidy <> '1' ]]>
+                and a.market_enable = '1'
+                <![CDATA[ and c.cost <= 159900 ]]>
+                and c.status = '3'
+            group by b.product_base_id
+        ) bb
+        where aa.product_base_id = bb.product_base_id
+        and bb.num = 0;
+    </sql>
+
 
     <select id="queryPageByConditionAdmin" resultType="com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp"
             parameterType="com.iwhalecloud.retail.goods2b.dto.req.GoodsPageReq">
@@ -480,6 +529,7 @@
         AND t1.MERCHANT_TYPE = #{merchantType}
         AND t1.GOODS_ID = t2.GOODS_ID
         AND t2.PRODUCT_ID = #{productId}
+        ORDER BY t2.DELIVERY_PRICE ASC
     </select>
 
     <select id="getAvgPrice" parameterType="java.lang.String" resultType="java.lang.String">

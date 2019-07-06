@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author li.xinhang
@@ -16,6 +17,12 @@ import java.io.Serializable;
 public class MarketingActivityByMerchantListReq extends AbstractRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    /**
+     * 营销活动ID列表,作为or条件使用
+     */
+    @ApiModelProperty(value = "营销活动ID列表")
+    private List<String> activityIds;
 
     /**
      * 用户归属本地网

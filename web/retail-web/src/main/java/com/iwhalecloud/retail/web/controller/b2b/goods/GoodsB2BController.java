@@ -368,14 +368,17 @@ public class GoodsB2BController extends GoodsBaseController {
             } else if (userFounder == SystemConst.USER_FOUNDER_3) {
                 req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC_MERCHANT_TYPE_ASC.getValue());
 
-                String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType();
-                // 如果用户是零售商，只能查到地包商品
-                req.setMerchantType(merchantType);
+                // 零售商 可以查到 地包和省包的商品
+//                String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType();
+//                // 如果用户是零售商，只能查到地包商品
+//                req.setMerchantType(merchantType);
 
                 // 设置零售商的组织路径编码 zhong.wenlong 2019.06.13
                 req.setOrgPathCode(getOrgPathCode(merchantId));
 
             } else if (userFounder == SystemConst.USER_FOUNDER_5) {
+                req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC.getValue());
+
                 String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType();
                 // 商家类型为省包供应商
                 // 如果用户是地包供应商，只能查到省包商品
@@ -432,8 +435,11 @@ public class GoodsB2BController extends GoodsBaseController {
         MerchantDTO merchantDTO = merchantService.getMerchantById(merchantId).getResultData();
         log.info("GoodsB2BController.getOrgPathCode() merchantService.getMerchantById() input: merchantId={}, output: merchantDTO ={}", merchantId, JSON.toJSONString(merchantDTO));
         if (Objects.nonNull(merchantDTO)) {
-            // 判断 组织ID 是否为空
-            if (StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
+            // 判断 商家表中的组织路径 是否为空
+            if (StringUtils.isNotEmpty(merchantDTO.getParCrmOrgPathCode())) {
+                orgPathCode = merchantDTO.getParCrmOrgPathCode();
+            } else if (StringUtils.isNotEmpty(merchantDTO.getParCrmOrgId())) {
+                // 判断 组织ID 是否为空
                 OrganizationDTO organizationDTO = organizationService.getOrganization(merchantDTO.getParCrmOrgId()).getResultData();
                 log.info("GoodsB2BController.getOrgPathCode() organizationService.getOrganization() input: orgId={}, output: CommonOrgDTO ={}", merchantDTO.getParCrmOrgId(), JSON.toJSONString(organizationDTO));
                 if (Objects.nonNull(organizationDTO) && StringUtils.isNotEmpty(organizationDTO.getPathCode())) {
@@ -632,6 +638,11 @@ public class GoodsB2BController extends GoodsBaseController {
                 supplierIds.add(merchantId);
             }
             req.setSupplierIds(supplierIds);
+        } else {
+            // 判断是否是地市管理员 是：默认设置supplierLanId值为当前用户的lanId
+            if (UserContext.isCityAdminType()) {
+                req.setSupplierLanId(UserContext.getUser().getLanId());
+            }
         }
 
         return goodsService.queryPageByConditionAdmin(req);
@@ -755,11 +766,18 @@ public class GoodsB2BController extends GoodsBaseController {
     })
     @GetMapping(value = "/querySupplierGoods")
     ResultVO<List<SupplierGoodsDTO>> querySupplierGoods(@RequestParam(value = "goodsId") String goodsId, @RequestParam(value = "productId") String productId) {
-        log.info("GoodsController querySupplierGoods goodsId={},productId={}", goodsId, productId);
+        log.info("GoodsController querySupplierGoods goodsId={}, productId={}", goodsId, productId);
+//        List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
+//        List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsService.querySupplierGoods(goodsId, productId);
+//        if (!CollectionUtils.isEmpty(supplierGoodsDTOs1)) {
+//            supplierGoodsDTOs = supplierGoodsDTOs1;
+//        }
+//        return ResultVO.success(supplierGoodsDTOs);
+
         List<SupplierGoodsDTO> supplierGoodsDTOs = new ArrayList<>();
-        List<SupplierGoodsDTO> supplierGoodsDTOs1 = goodsService.querySupplierGoods(goodsId, productId);
-        if (!CollectionUtils.isEmpty(supplierGoodsDTOs1)) {
-            supplierGoodsDTOs = supplierGoodsDTOs1;
+        String merchantId = UserContext.getMerchantId();
+        if (StringUtils.isNotEmpty(merchantId)) {
+            return goodsService.queryRecommendGoods(goodsId, productId, merchantId);
         }
         return ResultVO.success(supplierGoodsDTOs);
 

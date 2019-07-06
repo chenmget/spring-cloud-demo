@@ -2,9 +2,9 @@ package com.iwhalecloud.retail.web.controller;
 
 import com.alibaba.dubbo.rpc.RpcException;
 import com.alibaba.fastjson.JSON;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
-import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.web.exception.ParamInvalidException;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.exception.UserNotLoginException;
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler extends BaseController<Object>{
     @Value("${spring.profiles.active}")
     private String env;
 
-    private ResultVO<Object> createResultVO(ResultCodeEnum resultCodeEnum,String detailMessage) {
+    private ResultVO<Object> createResultVO(ResultCodeEnum resultCodeEnum, String detailMessage) {
 
         //如果是本地环境/测试环境/开发环境抛出详细错误
         if (env.contains("local") || env.contains("test") || env.contains("dev") || true) {

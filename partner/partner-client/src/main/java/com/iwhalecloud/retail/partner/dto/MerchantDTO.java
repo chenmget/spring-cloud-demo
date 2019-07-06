@@ -168,4 +168,16 @@ public class MerchantDTO implements java.io.Serializable {
 	 */
 	@ApiModelProperty(value = "是否已赋权")
 	private java.lang.String assignedFlg;
+
+	@ApiModelProperty(value = "公司地址")
+	private String address;
+
+	@ApiModelProperty(value = "法人姓名")
+	private String legalPerson;
+
+	@ApiModelProperty(value = "经营品牌")
+	private String manageBrand;
+
+	@ApiModelProperty(value = "身份证")
+	private java.lang.String certNumber;
 }

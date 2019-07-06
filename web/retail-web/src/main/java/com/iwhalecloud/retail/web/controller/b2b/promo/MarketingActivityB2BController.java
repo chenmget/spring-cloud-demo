@@ -3,10 +3,8 @@ package com.iwhalecloud.retail.web.controller.b2b.promo;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsActRelDTO;
-import com.iwhalecloud.retail.goods2b.dto.req.GoodsActRelListReq;
-import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsActRelService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityChangeDetailDTO;
 import com.iwhalecloud.retail.promo.dto.ActivityParticipantDTO;
@@ -18,7 +16,10 @@ import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import com.iwhalecloud.retail.rights.dto.request.OrderCouponListReq;
 import com.iwhalecloud.retail.rights.dto.response.OrderCouponListResp;
 import com.iwhalecloud.retail.rights.service.CouponInstService;
+import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.UserDTO;
+import com.iwhalecloud.retail.system.dto.request.UserListReq;
+import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.promo.request.MarketingActivityListActivityReq;
 import com.iwhalecloud.retail.web.controller.b2b.promo.request.MarketingActivityListCouponyReq;
@@ -35,7 +36,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * @author mzl
@@ -54,10 +59,10 @@ public class MarketingActivityB2BController {
     private CouponInstService couponInstService;
 
     @Reference
-    private GoodsActRelService goodsActRelService;
+    ActivityChangeService activityChangeService;
 
     @Reference
-    ActivityChangeService activityChangeService;
+    private UserService userService;
 
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
@@ -85,6 +90,7 @@ public class MarketingActivityB2BController {
             req.setUserName(userDTO.getUserName());
             req.setSysPostName(userDTO.getUserName());
             req.setOrgId(userDTO.getOrgId());
+            req.setUserFounder(userDTO.getUserFounder());
         }
         if (!StringUtils.isEmpty(req.getPageImgUrl())) {
             req.setPageImgUrl(req.getPageImgUrl().replaceAll(dfsShowIp, ""));
@@ -109,8 +115,26 @@ public class MarketingActivityB2BController {
         //如果不是管理员，根据当前登录帐号过滤
         if (!UserContext.isAdminType()) {
             req.setCreator(UserContext.getUserId());
+        } else if (UserContext.isCityAdminType()) {
+            // zhongwenlong
+            // 判断是否是地市管理员 是：只能查当前地市的管理员创建的地市级活动
+            if (UserContext.isCityAdminType()) {
+                UserListReq userListReq = new UserListReq();
+                userListReq.setLanId(UserContext.getUser().getLanId());
+                userListReq.setUserFounderList(Lists.newArrayList(SystemConst.USER_FOUNDER_9));
+                List<UserDTO> userDTOList = userService.getUserList(userListReq);
+                if (CollectionUtils.isNotEmpty(userDTOList)) {
+                    List<String> userIdList = userDTOList.stream().map(UserDTO::getUserId).collect(Collectors.toList());
+                    req.setCreatorIdList(userIdList);
+                } else {
+                    // 没有相应条件下的 用户  塞个 空字符串 使查询结果为空 (理论上不会为空，起码会查出当前用户自己）
+                    req.setCreatorIdList(Lists.newArrayList(""));
+                }
+                // 设置 活动级别 为地市级活动
+                req.setActivityLevel(PromoConst.ActivityLevel.LEVEL_2.getCode());
+            }
         }
-        ;
+
         if ("Invalid date".equals(req.getStartTimeS())) {
             req.setStartTimeS("");
         }
@@ -308,32 +332,8 @@ public class MarketingActivityB2BController {
     public ResultVO<List<MarketingGoodsActivityQueryResp>> listGoodsAdvanceActivity
             (@RequestParam(value = "goodsId") @ApiParam("商品ID") String goodsId) {
         log.info(MarketingActivityB2BController.class.getName() + " listGoodsAdvanceActivity goodsId={}", goodsId);
-        MarketingActivityQueryByGoodsReq req = new MarketingActivityQueryByGoodsReq();
 
-        GoodsActRelListReq goodsActRelListReq = new GoodsActRelListReq();
-        goodsActRelListReq.setGoodsId(goodsId);
-        goodsActRelListReq.setActType(PromoConst.ACTIVITYTYPE.BOOKING.getCode());
-        ResultVO<List<GoodsActRelDTO>> goodsActRelListResultVo = goodsActRelService.queryGoodsActRel(goodsActRelListReq);
-        if (!goodsActRelListResultVo.isSuccess()) {
-            log.error("MarketingActivityB2BController.listGoodsAdvanceActivity-->goodsActRelListResultVo={}", JSON.toJSONString(goodsActRelListResultVo));
-            return ResultVO.error("查询商品关联的预售活动失败");
-        }
-
-        List<GoodsActRelDTO> goodsActRelDTOs = goodsActRelListResultVo.getResultData();
-        if (CollectionUtils.isEmpty(goodsActRelDTOs) || goodsActRelDTOs.size() > 1) {
-            log.error("MarketingActivityB2BController.goodsActRelDTOs-->goodsActRelDTOs={}", JSON.toJSONString(goodsActRelDTOs));
-            return ResultVO.error("预售商品配置异常，商品有且只能配置一个预售活动");
-        }
-
-        final String activityId = goodsActRelDTOs.get(0).getActId();
-        ResultVO<MarketingGoodsActivityQueryResp> respResultVO = marketingActivityService.getMarketingActivity(activityId);
-        if (!respResultVO.isSuccess()) {
-            log.error("MarketingActivityB2BController.goodsActRelDTOs-->respResultVO={}", JSON.toJSONString(respResultVO));
-            return ResultVO.error(respResultVO.getResultMsg());
-        }
-
-        List<MarketingGoodsActivityQueryResp> resp = Arrays.asList(respResultVO.getResultData());
-        return ResultVO.success(resp);
+        return marketingActivityService.listGoodsAdvanceActivity(goodsId);
     }
 
     @ApiOperation(value = "商品适用卡券", notes = "商品可领券的优惠券信息")

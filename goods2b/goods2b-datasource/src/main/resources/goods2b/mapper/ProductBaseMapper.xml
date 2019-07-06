@@ -217,6 +217,7 @@
         prod_product_base t4
         WHERE
         t1.GOODS_ID = t2.GOODS_ID
+
         AND t2.PRODUCT_ID = t3.PRODUCT_ID
         AND t3.PRODUCT_BASE_ID = t4.PRODUCT_BASE_ID
         AND t1.MERCHANT_TYPE = '3'
@@ -246,4 +247,22 @@
     <select id="getSeq" resultType="java.lang.String">
         SELECT seq_fixed_line_sn.nextval
     </select>
+
+    <select id="getDistinctUnitType" parameterType="java.lang.String"
+            resultType="java.lang.String">
+        SELECT DISTINCT UNIT_TYPE from prod_product_base WHERE 1 = 1
+        AND type_id = #{typeId}
+        AND brand_id = #{brandId}
+    </select>
+
+    <select id="getProductBaseByProductId" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseLightResp">
+        Select t.PRODUCT_BASE_ID, t.CAT_ID, t.TYPE_ID, t.BRAND_ID, t.PRODUCT_NAME,
+        t.UNIT_TYPE, t.UNIT_TYPE_NAME, t.IS_IMEI, t.IS_ITMS,t.IS_CT_CODE, IS_INSPECTION,
+         t.IS_FIXED_LINE, t.PRODUCT_CODE, t.MANUFACTURER_ID
+        FROM prod_product_base t
+        left join prod_product pp on pp.product_base_id = t.product_base_id
+        WHERE  pp.product_id = #{productId}
+    </select>
+
 </mapper>

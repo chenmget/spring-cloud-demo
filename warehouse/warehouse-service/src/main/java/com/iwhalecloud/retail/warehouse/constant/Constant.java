@@ -287,4 +287,14 @@ public class Constant {
      */
     private String allocateSubmit;
 
+    /**
+     * 新增
+     */
+    private String add;
+
+    /**
+     * 修改
+     */
+    private String update;
+
 }

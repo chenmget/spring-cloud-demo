@@ -158,6 +158,9 @@ public interface ResourceInstMapper extends BaseMapper<ResourceInst> {
      List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(@Param("req") ResourceStoreIdResnbr req);
 
 
+     List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(@Param("req") ResourceStoreIdResnbr req);
+
+
 
     /**
      * 查询商家的串码

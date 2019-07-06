@@ -947,4 +947,14 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
         return returnStr;
     }
+
+    @Override
+    public ResultVO<List<String>> getDistinctUnitType(String typeId, String brandId){
+        return ResultVO.success(productBaseManager.getDistinctUnitType(typeId, brandId));
+    }
+
+    @Override
+    public ResultVO<ProductBaseLightResp> getProductBaseByProductId(String productId){
+        return ResultVO.success(productBaseManager.getProductBaseByProductId(productId));
+    }
 }

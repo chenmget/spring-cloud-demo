@@ -2,10 +2,8 @@ package com.iwhalecloud.retail.web.zop;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.oms.OmsCommonConsts;
-import com.iwhalecloud.retail.oms.service.zop.ZopClientService;
-import com.iwhalecloud.retail.oms.service.zop.ZopConfigStorage;
 import com.ztesoft.zop.ZopClient;
 import com.ztesoft.zop.common.Consts;
 import com.ztesoft.zop.common.exception.CodeException;
@@ -93,7 +91,7 @@ public class ZopClientServiceImpl implements ZopClientService {
         rv.setResultData(result.getResult());
         rv.setResultMsg(result.getRes_message());
         if(Consts.CODE_00000.equals(rv.getResultCode())) {
-            rv.setResultCode(OmsCommonConsts.RESULE_CODE_SUCCESS);
+            rv.setResultCode(ResultCodeEnum.SUCCESS.getCode());
         } else {
             rv.setResultCode(result.getRes_code());
         }

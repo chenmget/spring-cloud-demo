@@ -8,11 +8,15 @@ import com.iwhalecloud.retail.order2b.dto.resquest.pay.AsynNotifyReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.OrderPayInfoReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.pay.ToPayReq;
 import com.iwhalecloud.retail.order2b.service.BestPayEnterprisePaymentService;
+import com.iwhalecloud.retail.system.dto.ConfigInfoDTO;
+import com.iwhalecloud.retail.system.service.ConfigInfoService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/b2b/order/pay")
@@ -22,11 +26,19 @@ public class BPEPController {
     @Reference
     private BestPayEnterprisePaymentService bestPayEnterprisePaymentService;
 
+    @Reference
+    private ConfigInfoService configInfoService;
+
     /**
      *  线上支付，去支付
      */
     @RequestMapping(value="/toPay",method = RequestMethod.POST)
-    public ResultVO toPay(@RequestBody ToPayReq req){
+    public ResultVO toPay(HttpServletRequest request, @RequestBody ToPayReq req){
+        String host = request.getHeader("Host");
+        ConfigInfoDTO configInfoDTO = configInfoService.getConfigInfoById("INTRANET_INTERNET");
+        if (null != configInfoDTO && configInfoDTO.getCfValue().indexOf(host) > -1) {
+            req.setNet("INTRANET");
+        }
         return bestPayEnterprisePaymentService.toPay(req);
     }
 

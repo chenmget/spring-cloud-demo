@@ -7,11 +7,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
+import com.iwhalecloud.retail.partner.dto.req.FactoryMerchantSaveReq;
+import com.iwhalecloud.retail.partner.dto.req.SupplierResistReq;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.common.DateUtils;
+import com.iwhalecloud.retail.system.common.SysUserLoginConst;
 import com.iwhalecloud.retail.system.common.SystemConst;
-import com.iwhalecloud.retail.system.dto.OrganizationDTO;
-import com.iwhalecloud.retail.system.dto.UserDTO;
-import com.iwhalecloud.retail.system.dto.UserDetailDTO;
+import com.iwhalecloud.retail.system.dto.*;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.UserLoginResp;
 import com.iwhalecloud.retail.system.entity.CommonRegion;
@@ -19,14 +21,23 @@ import com.iwhalecloud.retail.system.entity.User;
 import com.iwhalecloud.retail.system.manager.CommonRegionManager;
 import com.iwhalecloud.retail.system.manager.OrganizationManager;
 import com.iwhalecloud.retail.system.manager.UserManager;
+import com.iwhalecloud.retail.system.service.RoleService;
+import com.iwhalecloud.retail.system.service.ZopMessageService;
+import com.iwhalecloud.retail.system.service.UserRoleService;
 import com.iwhalecloud.retail.system.service.UserService;
+import com.iwhalecloud.retail.system.utils.SysUserCacheUtils;
 import com.twmacinta.util.MD5;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.CollectionUtils;
+import org.springframework.transaction.annotation.Propagation;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -44,12 +55,24 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private OrganizationManager organizationManager;
 
+    @Autowired
+    private SysUserCacheUtils sysUserCacheUtils;
+
     @Reference
     private MerchantService merchantService;
+
 
     @Value("${retailer.login}")
     private String retailerLogin;
 
+    @Reference
+    UserRoleService userRoleService;
+
+    @Reference
+    RoleService roleService;
+
+    @Autowired
+    ZopMessageService zopMessageService;
 
     @Override
     public UserLoginResp login(UserLoginReq req) {
@@ -128,12 +151,37 @@ public class UserServiceImpl implements UserService {
                 return resp;
             }
         }
-
+        MerchantDTO merchantDTO = null;
+        if(StringUtils.isNotBlank(user.getRelCode())){
+          ResultVO merchantRt = merchantService.getMerchantById(user.getRelNo());
+          if(merchantRt.isSuccess()) merchantDTO = (MerchantDTO) merchantRt.getResultData();
+        }
+    /*    //6 管理平台账户超过90天未登入强制要求修改密码
+        if(req.getPlatformFlag().equals(SysUserLoginConst.platformFlag.MANAGEMENT_PLATFORM.getPlaformCode())){
+            int intervalDate = DateUtils.differentDays(user.getLastLoginTime(),user.getCurLoginTime());
+            if(intervalDate >= 90 ){
+                resp.setFailCode(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getCode());
+                resp.setErrorMessage(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getMsg());
+                return resp;
+            }
+        }*/
+        //超过九十天强制修改密码
+        if(user.getLastLoginTime() == null)  user.setLastLoginTime(new Date());
+        if(user.getCurLoginTime() == null)  user.setCurLoginTime(new Date());
+        int intervalDate = DateUtils.differentDays(user.getLastLoginTime(),user.getCurLoginTime());
+        if(intervalDate >= 90 ){
+            resp.setFailCode(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getCode());
+            resp.setErrorMessage(SysUserLoginConst.loginFail_TRADING.NEED_RESETPASSWD.getMsg());
+            UserDTO userDTO = new UserDTO();
+            BeanUtils.copyProperties(user, userDTO);
+            resp.setUserDTO(userDTO);
+            return resp;
+        }
         //操作成功后的逻辑，修改当前登录时间，和上次登录时间 ，登录次数1+  将 failLoginCnt 清零
         user.setFailLoginCnt(0);
         Integer successCnt = user.getSuccessLoginCnt() != null ? user.getSuccessLoginCnt() : 0;
         // 登录失败次数大于0 才更新  不用每次成功都更新
-        if (Objects.nonNull(user.getFailLoginCnt()) && user.getFailLoginCnt() > 0) {
+/*        if (Objects.nonNull(user.getFailLoginCnt()) && user.getFailLoginCnt() > 0) {
             User updateUser = new User();
             updateUser.setUserId(user.getUserId());
             updateUser.setSuccessLoginCnt(successCnt + 1);
@@ -141,9 +189,19 @@ public class UserServiceImpl implements UserService {
             updateUser.setLastLoginTime(user.getCurLoginTime());
             updateUser.setCurLoginTime(new Date());
             userManager.updateUser(updateUser);
-        }
+        }*/
+        //先更新user表的登入时间在更新缓存
+        User updateUser = new User();
+        updateUser.setUserId(user.getUserId());
+        updateUser.setSuccessLoginCnt(successCnt + 1);
+        updateUser.setFailLoginCnt(0);
+        updateUser.setLastLoginTime(user.getCurLoginTime());
+        updateUser.setCurLoginTime(new Date());
+        userManager.updateUser(updateUser);
+        sysUserCacheUtils.put(user.getUserId(),user);
 
         resp.setErrorMessage("登录成功");
+        resp.setFailCode(0);
         resp.setIsLoginSuccess(true);
         UserDTO userDTO = new UserDTO();
         BeanUtils.copyProperties(user, userDTO);
@@ -207,7 +265,7 @@ public class UserServiceImpl implements UserService {
             updateUser.setStatusCd(SystemConst.USER_STATUS_LOCK);
             updateUser.setFailLoginCnt(0);
             userManager.updateUser(updateUser);
-
+            sysUserCacheUtils.put(user.getUserId(),user);
             return resp;
         }
 
@@ -258,19 +316,26 @@ public class UserServiceImpl implements UserService {
         log.info("UserServiceImpl.addUser(), 入参UserAddReq={} ", req);
         User user = new User();
         BeanUtils.copyProperties(req, user);
-        // 设置一些默认值
 
-        // 密码格式校验
-        if (!checkPassword(req.getLoginPwd())) {
-            return ResultVO.error("密码格式不对，密码应为包含大小写字母、数字、特殊字符的8到20位字符串");
+        // 检查是否存在同名账号
+        UserGetReq userGetReq = new UserGetReq();
+        userGetReq.setLoginName(req.getLoginName());
+        UserDTO userDTO = getUser(userGetReq);
+        if (userDTO != null) {
+            return ResultVO.error("该账号已经存在，请换一个账号名");
         }
 
-        user.setLoginPwd(new MD5(user.getLoginPwd()).asHex());
+        // 密码格式校验(改成前端验证密码合法性)
+//        if (!checkPassword(req.getLoginPwd())) {
+//            return ResultVO.error("密码格式不对，密码应为包含大小写字母、数字、特殊字符的8到20位字符串");
+//        }
+        /**前端加密后传给后台**/
+//        user.setLoginPwd(new MD5(user.getLoginPwd()).asHex());
 //        user.setStatusCd(SystemConst.USER_STATUS_VALID); //状态
         user.setCreateDate(new Date());
         user.setFailLoginCnt(0);
         user.setSuccessLoginCnt(0);
-        UserDTO userDTO = userManager.addAdminUser(user);
+        userDTO = userManager.addAdminUser(user);
         if (userDTO == null) {
             return ResultVO.error("新增用户失败");
         }
@@ -404,7 +469,18 @@ public class UserServiceImpl implements UserService {
         if (result <= 0) {
             return ResultVO.error("修改密码失败");
         }
+        updateLoginTime(user);
         return ResultVO.success(result);
+    }
+
+    private void updateLoginTime(User user) {
+        User updateUser = new User();
+        updateUser.setUserId(user.getUserId());
+        updateUser.setFailLoginCnt(0);
+        updateUser.setLastLoginTime(user.getCurLoginTime());
+        updateUser.setCurLoginTime(new Date());
+        userManager.updateUser(updateUser);
+        sysUserCacheUtils.put(user.getUserId(),user);
     }
 
     /**
@@ -519,6 +595,78 @@ public class UserServiceImpl implements UserService {
         return ResultVO.success(userManager.listUser(req));
     }
 
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registLandSupplier(UserRegisterReq resistReq) {
+        ResultVO codeRt = zopMessageService.checkVerifyCode(resistReq.getPhoneNo(),resistReq.getCode());
+        if(!codeRt.isSuccess())return codeRt;
+        //add user and get id into req
+        SupplierResistReq req = new SupplierResistReq();
+        BeanUtils.copyProperties(resistReq,req);
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req,userAddReq);
+        ResultVO<UserDTO> resultVO = addUser(userAddReq);
+        if(!resultVO.isSuccess())return resultVO;
+        String userId = resultVO.getResultData().getUserId();
+        req.setUserId(userId);
+        log.info("userId" + userId);
+        // use remote service
+        if(!resultVO.isSuccess()) return ResultVO.error(resultVO.getResultMsg());
+        ResultVO rt = merchantService.registLandSupplier(req);
+        log.info(rt.getResultCode()+" ---" + rt.getResultMsg());
+        if(!rt.isSuccess())
+        {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.info("地包商注册失败");
+            return ResultVO.error("地包商注册失败");
+        }
+        return ResultVO.success();
+    }
+
+
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registProvinceSupplier(UserRegisterReq resistReq) {
+        //verifyCode
+        ResultVO codeRt = zopMessageService.checkVerifyCode(resistReq.getPhoneNo(),resistReq.getCode());
+        if(!codeRt.isSuccess())return codeRt;
+        //add user and get id into req
+        SupplierResistReq req = new SupplierResistReq();
+        BeanUtils.copyProperties(resistReq,req);
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req,userAddReq);
+        ResultVO<UserDTO> resultVO = addUser(userAddReq);
+        if(!resultVO.isSuccess())return resultVO;
+        String userId = resultVO.getResultData().getUserId();
+        req.setUserId(userId);
+        log.info("userId" + userId);
+        if(!resultVO.isSuccess()) return ResultVO.error(resultVO.getResultMsg());
+        ResultVO rt = merchantService.registProvinceSupplier(req);
+        if(!rt.isSuccess())
+        {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            log.info("省包商注册失败");
+            return ResultVO.error("省包商注册失败");
+        }
+        return ResultVO.success();
+    }
+
+
+    /**
+     * 更改系统用户状态
+     * @param userId
+     * @param state
+     * @return
+     */
+    @Override
+    public ResultVO UpSysUserState(String userId, int state) {
+        User user = new User();
+        user.setUserId(userId);
+        user.setStatusCd(state);
+        if(userManager.updateUser(user)==1)return ResultVO.success();
+        return ResultVO.error();
+    }
+
+
+
 
     /**  对外提供的服务 end  **/
 
@@ -537,5 +685,101 @@ public class UserServiceImpl implements UserService {
                 SystemConst.USER_FOUNDER_9
         );
         return list.contains(userFounder);
+    }
+
+    /**
+     * 自建厂商
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVO registerFactoryMerchant(UserFactoryMerchantReq req) {
+        if(!zopMessageService.checkVerifyCode(req.getPhoneNo(),req.getCode()).isSuccess())
+            return ResultVO.error("短信验证码不一致");
+        //生成用户主键
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req, userAddReq);
+        userAddReq.setStatusCd(SystemConst.USER_STATUS_INVALID);//默认禁用字段
+        userAddReq.setUserFounder(SystemConst.USER_FOUNDER_8);//用户类型为厂商
+        ResultVO<UserDTO> addUserResultVO = addUser(userAddReq);
+        UserDTO userDTO = addUserResultVO.getResultData();
+        if (!addUserResultVO.isSuccess() || userDTO == null) {
+            return addUserResultVO;
+        }
+        //组装厂商信息
+        req.setUserId(userDTO.getUserId());
+        FactoryMerchantSaveReq factoryMerchantSaveReq=new FactoryMerchantSaveReq();
+        BeanUtils.copyProperties(req, factoryMerchantSaveReq);
+        factoryMerchantSaveReq.setCreateStaff(userDTO.getUserId());
+        factoryMerchantSaveReq.setCreateStaffName(userDTO.getUserName());
+        //调用自注册服务
+        ResultVO<String> vo=merchantService.registerFactoryMerchant(factoryMerchantSaveReq);
+        if(!vo.isSuccess()||null==vo.getResultData()){
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error(vo.getResultMsg());
+        }else{
+            //修改商家关联信息
+            String merchantId=vo.getResultData();
+            User user = new User();
+            BeanUtils.copyProperties(userDTO, user);
+            user.setRelCode(merchantId);
+            userManager.updateUser(user);
+        }
+        return ResultVO.success();
+    }
+
+
+    @Override
+    public ResultVO<UserDTO> addSysUser(UserDTO loginUser,UserSaveReq req) {
+        // 添加账号信息
+        ResultVO<UserDTO> addUserResultVO=initUser(req);
+        UserDTO userDTO = addUserResultVO.getResultData();
+        if (!addUserResultVO.isSuccess() || userDTO == null) {
+            return addUserResultVO;
+        }
+        // 判断是否需要增加角色关联
+        addUserRole(req,userDTO,loginUser);
+        return ResultVO.success(userDTO);
+    }
+
+    /**
+     * 初始化用户信息
+     * @param req
+     * @return
+     */
+    private  ResultVO<UserDTO> initUser(Object req){
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req, userAddReq);
+        ResultVO<UserDTO> addUserResultVO = addUser(userAddReq);
+        return addUserResultVO;
+    }
+
+    /**
+     *  是否新增权限
+     * @param req
+     * @param userDTO
+     * @param loginUser
+     */
+    private void addUserRole(UserSaveReq req,UserDTO userDTO,UserDTO loginUser) {
+        if (!CollectionUtils.isEmpty(req.getRoleIdList())) {
+            for (String roleId : req.getRoleIdList()) {
+                // 获取角色
+                RoleGetReq roleGetReq = new RoleGetReq();
+                roleGetReq.setRoleId(roleId);
+                RoleDTO roleDTO = roleService.getRole(roleGetReq);
+                if (roleDTO == null) {
+                    continue;
+                }
+                // 增加关联关系
+                UserRoleDTO userRoleDTO = new UserRoleDTO();
+                userRoleDTO.setRoleId(roleId);
+                userRoleDTO.setRoleName(roleDTO.getRoleName());
+                userRoleDTO.setUserId(userDTO.getUserId());
+                userRoleDTO.setUserName(userDTO.getLoginName());
+                userRoleDTO.setCreateStaff(loginUser.getUserId());
+                userRoleService.saveUserRole(userRoleDTO);
+            }
+        }
     }
 }

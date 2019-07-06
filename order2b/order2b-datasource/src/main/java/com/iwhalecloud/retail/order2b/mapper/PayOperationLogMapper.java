@@ -14,5 +14,5 @@ import org.apache.ibatis.annotations.Param;
 @Mapper
 public interface PayOperationLogMapper extends BaseMapper<PayOperationLog>{
 
-	public void UpdateOrdOrderStatus(@Param("req") UpdateOrdOrderReq req);
+	public void updateOrdOrderStatus(@Param("req") UpdateOrdOrderReq req);
 }

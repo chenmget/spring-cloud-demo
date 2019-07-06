@@ -358,4 +358,10 @@ public class ResourceInstListPageResp implements java.io.Serializable {
 	@ApiModelProperty(value = "厂商类型名称")
 	private String merchantTypeName;
 
+	/**
+	 * brandId
+	 */
+	@ApiModelProperty(value = "brandId")
+	private String brandId;
+
 }

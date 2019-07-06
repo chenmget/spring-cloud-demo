@@ -71,7 +71,7 @@ public class PermissionApplyItemServiceImpl implements PermissionApplyItemServic
      * @return
      */
     @Override
-    public ResultVO<List<PermissionApplyDTO>> listPermissionApplyItem(PermissionApplyItemListReq req) {
+    public ResultVO<List<PermissionApplyItemDTO>> listPermissionApplyItem(PermissionApplyItemListReq req) {
         log.info("PermissionApplyItemServiceImpl.listPermissionApplyItem(), input: PermissionApplyItemListReq={} ", JSON.toJSONString(req));
         List<PermissionApplyItem> entityList = permissionApplyItemManager.listPermissionApplyItem(req);
         List<PermissionApplyItemDTO> dtoList = Lists.newArrayList();

@@ -417,10 +417,11 @@ public class RetailerResourceInstServiceImpl implements RetailerResourceInstServ
             return ResultVO.error("商家获取失败");
         }
         // 是否商家是否同一经营主体
+
         Boolean isNotSameMerchant = !destMerchantDTO.getBusinessEntityCode().equals(sourceMerchantDTO.getBusinessEntityCode());
         // step3 如果跨地市或不属于同一个商家实体需要审核，申请单状态为处理中
         String requestStatusCd = ResourceConst.MKTRESSTATE.REVIEWED.getCode();
-        String successMessage = constant.getAllocateAudit();
+        String successMessage = constant.getAllocateSubmit();
         if (isTransRegional || isNotSameMerchant) {
             requestStatusCd = ResourceConst.MKTRESSTATE.PROCESSING.getCode();
             successMessage = constant.getAllocateAudit();

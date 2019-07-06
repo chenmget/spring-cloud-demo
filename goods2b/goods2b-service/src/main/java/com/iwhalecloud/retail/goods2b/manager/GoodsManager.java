@@ -21,10 +21,10 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-public class GoodsManager{
+public class GoodsManager {
     @Resource
     private GoodsMapper goodsMapper;
-    
+
     public int addGoods(Goods goods) {
         goods.setSearchKey(goods.getGoodsName());
         goods.setIsDeleted(GoodsConst.NO_DELETE);
@@ -36,9 +36,9 @@ public class GoodsManager{
     public Page<GoodsForPageQueryResp> queryGoodsForPage(GoodsForPageQueryReq req) {
         Page<GoodsForPageQueryResp> page = new Page<>(req.getPageNo(), req.getPageSize());
         String sortType = req.getSortType();
-        if(StringUtils.isNotEmpty(sortType)){
-            for(GoodsConst.SortTypeEnum m:GoodsConst.SortTypeEnum.values()){
-                if(m.getValue().equals(req.getSortType())){
+        if (StringUtils.isNotEmpty(sortType)) {
+            for (GoodsConst.SortTypeEnum m : GoodsConst.SortTypeEnum.values()) {
+                if (m.getValue().equals(req.getSortType())) {
                     req.setSortType(m.getCode().toString());
                 }
             }
@@ -47,16 +47,16 @@ public class GoodsManager{
         return prodGoodsPage;
     }
 
-    public List<Goods> listGoods(List<String> goods){
+    public List<Goods> listGoods(List<String> goods) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("is_deleted", GoodsConst.NO_DELETE);
-        queryWrapper.in("goods_id",goods);
+        queryWrapper.in("goods_id", goods);
         return goodsMapper.selectList(queryWrapper);
     }
 
-    public Page<GoodsPageResp> queryPageByConditionAdmin(GoodsPageReq req){
-        Page<GoodsPageResp> page = new Page<>(req.getPageNo(),req.getPageSize());
-        return goodsMapper.queryPageByConditionAdmin(page,req);
+    public Page<GoodsPageResp> queryPageByConditionAdmin(GoodsPageReq req) {
+        Page<GoodsPageResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+        return goodsMapper.queryPageByConditionAdmin(page, req);
     }
 
     public int deleteGoodsByGoodsId(String goodsId) {
@@ -80,10 +80,10 @@ public class GoodsManager{
         return goodsMapper.updateById(record);
     }
 
-    public Goods queryGoods(String goodsId){
+    public Goods queryGoods(String goodsId) {
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("is_deleted", GoodsConst.NO_DELETE);
-        queryWrapper.eq("goods_id",goodsId);
+        queryWrapper.eq("goods_id", goodsId);
         return goodsMapper.selectOne(queryWrapper);
     }
 
@@ -94,7 +94,7 @@ public class GoodsManager{
 
     public int updateBuyCountById(String goodsId, Long buyCount) {
         UpdateWrapper<Goods> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.eq("GOODS_ID",goodsId);
+        updateWrapper.eq("GOODS_ID", goodsId);
         Goods goods = new Goods();
         goods.setBuyCount(buyCount);
         return goodsMapper.update(goods, updateWrapper);
@@ -108,27 +108,32 @@ public class GoodsManager{
         return goodsMapper.listSupplierGroundSupplyNum(productBaseId);
     }
 
-    public int updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req){
+    public int updateGoodsActTypeByGoodsIdList(GoodsUpdateActTypeByGoodsIdsReq req) {
         UpdateWrapper<Goods> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.in("GOODS_ID",req.getGoodsIds());
-        if(null != req.getMerchantType()){
+        updateWrapper.in("GOODS_ID", req.getGoodsIds());
+        if (null != req.getMerchantType()) {
             updateWrapper.eq("MERCHANT_TYPE", req.getMerchantType());
         }
         Goods goods = new Goods();
-        if(null != req.getIsAdvanceSale()){
+        if (null != req.getIsAdvanceSale()) {
             goods.setIsAdvanceSale(req.getIsAdvanceSale());
         }
-        if(null != req.getIsSubsidy()){
+        if (null != req.getIsSubsidy()) {
             goods.setIsSubsidy(req.getIsSubsidy());
         }
         return goodsMapper.update(goods, updateWrapper);
     }
 
-    public List<SupplierGoodsDTO> listSupplierGoodsByType(String productId,String merchantType){
-        return goodsMapper.listSupplierGoodsByType(productId,merchantType);
+    public List<SupplierGoodsDTO> listSupplierGoodsByType(String productId, String merchantType) {
+        return goodsMapper.listSupplierGoodsByType(productId, merchantType);
     }
 
-    public String getAvgPrice(String productId){
+    /**
+     * 根据产品id查询省包商品规格平均价格
+     * @param productId
+     * @return
+     */
+    public String getAvgPrice(String productId) {
         return goodsMapper.getAvgPrice(productId);
     }
 }

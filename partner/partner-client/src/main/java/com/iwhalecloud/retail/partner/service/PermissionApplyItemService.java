@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.partner.service;
 
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.PermissionApplyDTO;
+import com.iwhalecloud.retail.partner.dto.PermissionApplyItemDTO;
 import com.iwhalecloud.retail.partner.dto.req.PermissionApplyItemListReq;
 import com.iwhalecloud.retail.partner.dto.req.PermissionApplyItemSaveReq;
 import com.iwhalecloud.retail.partner.dto.req.PermissionApplyItemUpdateReq;
@@ -30,7 +31,7 @@ public interface PermissionApplyItemService {
      * @param req
      * @return
      */
-    ResultVO<List<PermissionApplyDTO>> listPermissionApplyItem(PermissionApplyItemListReq req);
+    ResultVO<List<PermissionApplyItemDTO>> listPermissionApplyItem(PermissionApplyItemListReq req);
 
 
 }

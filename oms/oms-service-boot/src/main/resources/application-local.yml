@@ -10,7 +10,7 @@ spring:
       name: oms-provider
     registry:
 #      address: zookeeper://10.45.47.87:2285
-      address: zookeeper://localhost:2181
+      address: zookeeper://locost:2181
     protocol:
       name: dubbo
       port: 20887

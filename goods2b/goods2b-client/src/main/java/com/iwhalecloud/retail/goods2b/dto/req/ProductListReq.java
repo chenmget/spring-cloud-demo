@@ -33,5 +33,10 @@ public class ProductListReq implements Serializable {
     @ApiModelProperty(value = "attrValue10")
     private String attrValue10;
 
+    /**
+     * 产品基本信息ID
+     */
+    @ApiModelProperty(value = "产品基本信息ID")
+    private String productBaseId;
 
 }

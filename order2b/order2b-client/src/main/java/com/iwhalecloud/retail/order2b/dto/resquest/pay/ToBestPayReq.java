@@ -19,4 +19,7 @@ public class ToBestPayReq implements Serializable {
 
     @ApiModelProperty("支付类型")
     String operationType;
+
+    @ApiModelProperty("网络")
+    String net;
 }

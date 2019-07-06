@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.promo.manager;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.MarketingActivityByMerchantListReq;
 import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityByMerchantResp;
 import com.iwhalecloud.retail.promo.mapper.ActivityGoodMapper;
@@ -18,9 +19,9 @@ public class ActivityGoodManager {
     @Resource 
     private ActivityGoodMapper activityGoodMapper;
     
-    public Page<MarketingActivityByMerchantResp> listMarketingActivityByMerchant(MarketingActivityByMerchantListReq req) {
-        Page<MarketingActivityByMerchantResp> page = new Page<>(req.getPageNo(),req.getPageSize());
-        Page<MarketingActivityByMerchantResp> prodGoodsPage = activityGoodMapper.listMarketingActivityByMerchant(page, req);
+    public Page<MarketingActivityDTO> listMarketingActivityByMerchant(MarketingActivityByMerchantListReq req) {
+        Page<MarketingActivityDTO> page = new Page<>(req.getPageNo(),req.getPageSize());
+        Page<MarketingActivityDTO> prodGoodsPage = activityGoodMapper.listMarketingActivityByMerchant(page, req);
         return prodGoodsPage;
     }
     

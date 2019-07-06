@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.goods2b.dto.req.TypeIsUsedQueryByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeListByNameReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeSelectByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.TypeDetailResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.TypeResp;
 
 import java.util.List;
 
@@ -37,4 +38,6 @@ public interface TypeService {
      * @return
      */
     ResultVO<TypeDetailResp> getDetailType(TypeSelectByIdReq req);
+
+    ResultVO<TypeResp> selectById(String typeId);
 }

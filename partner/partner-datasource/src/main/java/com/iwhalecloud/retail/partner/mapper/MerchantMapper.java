@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantLigthReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantListReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantPageReq;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantLigthResp;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantPageResp;
@@ -43,5 +44,15 @@ public interface MerchantMapper extends BaseMapper<Merchant> {
      * @return
      */
     List<String> getMerchantIdList(@Param("merchantName")String merchantName);
+
+    String getPrimaryKey();
+
+    /**
+     * 获取商户编码唯一值()
+     * @return
+     */
+    String getMaxMerchantCode(String merchantType);
+
+    List<String> getMerchantIdListForPayment(MerchantListReq req);
 
 }

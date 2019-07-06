@@ -10,6 +10,7 @@
     ,t.MERCHANT_NAME
     ,t.STATUS 
     ,t.MERCHANT_TYPE
+    ,t.merchant_sub_type
     ,t.USER_ID
     ,t.LAST_UPDATE_DATE 
     ,t.BUSINESS_ENTITY_NAME 
@@ -70,7 +71,16 @@
     ,t.TOP_SHORT_NAME 
     ,t.TOP_LEVEL 
     ,t.EFF_DATE 
-    ,t.EXP_DATE 
+    ,t.EXP_DATE
+    ,t.SUPPLY_REGION
+    ,t.LEGAL_PERSON
+    ,t.BUSI_LICENCE_CODE
+    ,t.BUSI_LICENCE_EXP_DATE
+    ,t.CONTRACT_EFF_DATE
+    ,t.CONTRACT_EXP_DATE
+    ,t.CERT_NUMBER
+    ,t.ADDRESS
+    ,t.MANAGE_BRAND
 </sql>
 <!--简要字段-->
 <sql id="simpleFields">
@@ -79,6 +89,7 @@
     ,t.MERCHANT_NAME
     ,t.STATUS
     ,t.MERCHANT_TYPE
+    ,t.merchant_sub_type
     ,t.USER_ID
     ,t.BUSINESS_ENTITY_NAME
     ,t.BUSINESS_ENTITY_CODE
@@ -167,6 +178,22 @@
                 and t.CHANNEL_TYPE =  #{req.channelType}
             </if>
 
+--  parentOrgIdListWithAnd=["123","234"] 转换sql：... and t.PAR_CRM_ORG_PATH_CODE like "%123%" and t.PAR_CRM_ORG_PATH_CODE like "%234%" ...
+--  注意 open="" separator="" close="" 的值
+            <if test="req.parentOrgIdListWithAnd != null and req.parentOrgIdListWithAnd.size() >0 ">
+                <foreach item="item" index="index" open="" separator="" close="" collection="req.parentOrgIdListWithAnd">
+                    and t.PAR_CRM_ORG_PATH_CODE like CONCAT(CONCAT('%', #{item}), '%')
+                </foreach>
+            </if>
+--  parentOrgIdListWithOr=["123","234"] 转换sql：... and t.PAR_CRM_ORG_PATH_CODE like "%123%" and t.PAR_CRM_ORG_PATH_CODE like "%234%" ...
+--  注意 open="(" separator="or" close=")" 的值
+            <if test="req.parentOrgIdListWithOr != null and req.parentOrgIdListWithOr.size() >0 ">
+                and
+                <foreach item="item" index="index" open="(" separator="or" close=")" collection="req.parentOrgIdListWithOr">
+                    t.PAR_CRM_ORG_PATH_CODE like CONCAT(CONCAT('%', #{item}), '%')
+                </foreach>
+            </if>
+
         order by t.MERCHANT_ID desc
     </select>
 
@@ -203,5 +230,36 @@
         <if test="merchantName != null and merchantName != ''">
             and lower(t.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{merchantName }), '%'))
         </if>
+    </select>
+
+    <select id="getPrimaryKey" resultType="java.lang.String">
+        select seq_retail_all_tables.nextval
+    </select>
+
+    <select id="getMaxMerchantCode" resultType="java.lang.String" parameterType="java.lang.String">
+        select max(MERCHANT_CODE) from par_merchant  WHERE MERCHANT_TYPE = #{MERCHANT_TYPE}
+    </select>
+
+    <select id="getMerchantIdListForPayment" resultType="java.lang.String"
+            parameterType="com.iwhalecloud.retail.partner.dto.req.MerchantListReq">
+        select
+        t.MERCHANT_ID
+        from
+        par_merchant t
+        where
+        1=1
+        <if test="merchantType != null and merchantType != ''">
+            and t.MERCHANT_TYPE = #{merchantType}
+        </if>
+        <if test="merchantName != null and merchantName != ''">
+            and lower(t.MERCHANT_NAME) like lower(CONCAT(CONCAT('%', #{merchantName}), '%'))
+        </if>
+        <if test="merchantIdList != null and merchantIdList.size > 0">
+            and t.MERCHANT_ID in
+            <foreach collection="merchantIdList" open="(" index="index" item="item" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        limit 100000;
     </select>
 </mapper>

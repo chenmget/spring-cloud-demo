@@ -69,7 +69,7 @@ public class MerchantListReq implements Serializable {
     @ApiModelProperty(value = "系统账号")
     private String loginName;
 
-    @ApiModelProperty(value = "(商家)CRM组织ID集合")
+    @ApiModelProperty(value = "(商家)CRM组织ID集合(精确查找某些orgId")
     private List<String> parCrmOrgIdList;
 
     /**

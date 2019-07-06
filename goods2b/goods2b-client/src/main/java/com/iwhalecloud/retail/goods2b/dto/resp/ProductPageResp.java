@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 @Data
 @ApiModel(value = "对应模型prod_product, 对应实体ProdProduct类")
@@ -168,5 +169,9 @@ public class ProductPageResp implements Serializable {
 
     @ApiModelProperty(value = "产品类型父ID")
     private String parentTypeId;
-    
+
+
+    @ApiModelProperty(value = "标签名称集合")
+    private List<String> tagNameList;
+
 }

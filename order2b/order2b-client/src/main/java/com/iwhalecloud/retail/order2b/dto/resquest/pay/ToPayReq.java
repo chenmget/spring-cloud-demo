@@ -10,11 +10,15 @@ import java.io.Serializable;
 public class ToPayReq extends OrderRequest implements Serializable{
 
     @ApiModelProperty("订单号")
-    private String orderId      ;
+    private String orderId;
 
     @ApiModelProperty("支付金额，单位：分")
-    private String orderAmount      ;
+    private String orderAmount;
+
     @ApiModelProperty("操作类型 用于区分付费/退费：1001  收费，1002  退费，1003  预付费,  DJZF  定金支付,  WKZF  尾款支付,C  支付")
-    private String operationType      ;
+    private String operationType ;
+
+    @ApiModelProperty("内外网")
+    private String net;
 
 }

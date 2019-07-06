@@ -5,6 +5,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
@@ -174,15 +175,15 @@ public class MerchantResourceInstB2BController {
         String suffix = StringUtils.getFilenameExtension(file.getOriginalFilename());
         //如果不在允许范围内的附件后缀直接抛出错误
         if (allowUploadSuffix.indexOf(suffix) <= -1) {
-            return ResultVO.errorEnum(com.iwhalecloud.retail.oms.common.ResultCodeEnum.FORBID_UPLOAD_ERROR);
+            return ResultVO.errorEnum(ResultCodeEnum.FORBID_UPLOAD_ERROR);
         }
         ResultVO resultVO = new ResultVO();
         try (InputStream is = file.getInputStream()){
             List<ResInsExcleImportResp> data = ExcelToNbrUtils.getData(is);
-            resultVO.setResultCode(com.iwhalecloud.retail.oms.common.ResultCodeEnum.SUCCESS.getCode());
+            resultVO.setResultCode(ResultCodeEnum.SUCCESS.getCode());
             resultVO.setResultData(data);
         } catch (Exception e) {
-            resultVO.setResultCode(com.iwhalecloud.retail.oms.common.ResultCodeEnum.ERROR.getCode());
+            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
             resultVO.setResultMsg(e.getMessage());
             log.error("excel解析失败",e);
         }

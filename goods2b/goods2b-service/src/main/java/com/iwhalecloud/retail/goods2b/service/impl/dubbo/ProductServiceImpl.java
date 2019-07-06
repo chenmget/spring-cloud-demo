@@ -34,7 +34,9 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Slf4j
 @Component
@@ -56,8 +58,11 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private TagTelManager tagTelManager;
 
-    @Autowired
+       @Autowired
     private BrandManager brandManager;
+
+    @Autowired
+    private TagRelManager tagRelManager;
 
     @Override
     public ResultVO<String> getMerchantByProduct(MerChantGetProductReq req) {
@@ -276,6 +281,26 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(page);
     }
 
+    /**
+     * 根据productId取关联标签的名称
+     * @param productId
+     * @return
+     */
+    private List<String> getTagNameListByProductId(String productId) {
+        List<String> tagNameList = Lists.newArrayList();
+        TagRelDetailListReq relDetailListReq = new TagRelDetailListReq();
+        relDetailListReq.setProductId(productId);
+        List<TagRelDetailListResp> resps = tagRelManager.listTagRelDetail(relDetailListReq);
+        if (!CollectionUtils.isEmpty(resps)) {
+            HashSet<String> tagNameSet = new HashSet<>();
+            resps.forEach(resp -> {
+                tagNameSet.add(resp.getTagName());
+            });
+            tagNameList = Lists.newArrayList(tagNameSet);
+        }
+        return tagNameList;
+    }
+
     @Override
     public ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req) {
         Page<ProductPageResp> page = productManager.selectPageProductAdmin(req);
@@ -291,6 +316,9 @@ public class ProductServiceImpl implements ProductService {
             BeanUtils.copyProperties(resp, productDTO);
             String specName = this.getSpecName(productDTO);
             resp.setSpecName(specName);
+
+            // 设置标签名称
+            resp.setTagNameList(getTagNameListByProductId(resp.getProductId()));
 
             // 查询缩略图图片
             String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();

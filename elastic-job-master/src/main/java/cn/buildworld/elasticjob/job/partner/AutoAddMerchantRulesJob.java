@@ -107,7 +107,6 @@ public class AutoAddMerchantRulesJob implements SimpleJob {
                 productService.updateAttrValue10(productAuditStateUpdateReq);
                 log.info("AutoAddMerchantRulesJob updateAttrValue10={}", productAuditStateUpdateReq);
             }
-
         } catch (Exception e) {
             log.error("AutoAddMerchantRulesJob exceute exception", e);
         }

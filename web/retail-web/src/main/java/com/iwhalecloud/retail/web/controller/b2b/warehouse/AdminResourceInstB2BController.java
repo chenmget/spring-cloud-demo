@@ -5,9 +5,9 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.oms.common.ResultCodeEnum;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.common.ResultCodeEnum;
 import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.*;
@@ -65,7 +65,6 @@ public class AdminResourceInstB2BController {
 
     @Reference
     private AdminResourceInstService adminResourceInstService;
-    
     @ApiOperation(value = "管理员串码管理页面", notes = "条件分页查询")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),

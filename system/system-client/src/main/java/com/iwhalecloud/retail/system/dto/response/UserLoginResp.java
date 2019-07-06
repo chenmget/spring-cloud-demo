@@ -31,4 +31,9 @@ public class UserLoginResp implements Serializable {
     @ApiModelProperty(value = "是否登陆成功")
     private Boolean isLoginSuccess = false;
 
+    /**
+     *  默认通用失败码 -1
+     */
+    @ApiModelProperty(value = "登陆错误码")
+    private int failCode = -1;
 }

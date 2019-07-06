@@ -21,7 +21,8 @@
         <include refid="listMarketingActivityByMerchantFields"></include>
         from act_marketing_activity t,act_activity_participant p 
         <where>
-            and t.is_deleted = '0' 
+            and t.is_deleted = '0'
+            and p.is_deleted = '0'
             and p.marketing_activity_id = t.id
             and t.start_time <![CDATA[ <= ]]> now()
             and t.end_time <![CDATA[ >= ]]> now()
@@ -29,33 +30,24 @@
             <if test="req.merchantId != null or req.lanId != null or req.regionId != null">
                 and(
                 <if test="req.merchantId != null and req.merchantId !=''">
-                    lower(p.shop_code) = #{req.merchantId} or
+                    lower(p.shop_code) = #{req.merchantId}
                 </if>
                 <if test="req.lanId != null and req.lanId !=''">
-                    lower(p.lan_id) = #{req.lanId} or
+                    or lower(p.lan_id) = #{req.lanId}
                 </if>
                 <if test="req.regionId != null and req.regionId !=''">
-                    lower(p.city) = #{req.regionId} or
+                    or lower(p.city) = #{req.regionId}
                 </if>
-                1=0
-                )
+                <if test="req.activityIds !=null and req.activityIds.size()>0">
+                    or t.id in
+                    <foreach collection="req.activityIds" open="(" item="item" index="index" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                or 1=0)
             </if>
+
         </where>
-        <!--<if test="req.merchantId == null or req.merchantId == ''">-->
-            <!--and (lower(p.lan_id) = #{req.userInfo.lanId}-->
-            <!--or lower(p.city) = #{req.userInfo.regionId})-->
-        <!--</if>-->
         order by now() - t.start_time
     </select>
-
-
-
-
-
-
-
-
-
-
-
 </mapper>

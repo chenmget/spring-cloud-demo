@@ -7,6 +7,7 @@ import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
 import com.iwhalecloud.retail.partner.dto.resp.*;
+import com.iwhalecloud.retail.system.dto.request.UserFactoryMerchantReq;
 
 import java.util.List;
 
@@ -139,4 +140,76 @@ public interface MerchantService{
      */
     List<String> getMerchantIdList(String merchantName);
 
+
+    /**
+     * 管理平台新增厂商
+     * @param req
+     * @return
+     */
+    ResultVO<String> saveFactoryMerchant(FactoryMerchantSaveReq req);
+
+
+    /**
+     * 注册地包商
+     * @param req
+     * @return
+     */
+    ResultVO registLandSupplier(SupplierResistReq req);
+
+
+    /**
+     * 注册省包商
+     * @param req
+     * @return
+     */
+    ResultVO registProvinceSupplier(SupplierResistReq req);
+
+    /**
+     * 根据商家表字段筛选条件获取商家id列表
+     * @param req
+     * @return
+     */
+
+//    List<String> getMerchantIdListForPayment(MerchantIdListForPaymentReq req);
+
+
+    /**
+     * 地市管理员注册地包商
+     * @param req
+     * @return
+     */
+    ResultVO registLandSupplierForAdmin(SupplierResistReq req);
+
+    /**
+     * 修改商户信息
+     * @param req
+     * @return
+     */
+    ResultVO editMerchant(MerchantEditReq req);
+    /**
+     * 管理员注册省包商
+     * @param req
+     * @return
+     */
+    ResultVO registProvinceSupplierForAdmin(SupplierResistReq req);
+
+    /**
+     * 厂商自注册
+     * @param req
+     * @return
+     */
+    ResultVO<String>  registerFactoryMerchant(FactoryMerchantSaveReq req);
+
+    /**
+     * 获取厂商详情
+     * @param merchantId
+     * @return
+     */
+    ResultVO<FactoryMerchantResp> getFactoryMerchant(String merchantId);
+    /**
+     * 获取供应商信息
+     * @param merchantId
+     * @return
+     */
+    ResultVO<SupplierResistResp> getSupplierInfo(String merchantId);
 }

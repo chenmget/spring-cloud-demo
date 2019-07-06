@@ -328,7 +328,7 @@
 		a.apply_merchant_id AS applyMerchantId,
 		(SELECT b.user_name FROM sys_user b WHERE b.user_id=a.CREATE_STAFF) AS applyMerchantName,
 		a.LAN_ID as lanId,
-		(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
+		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),e.RECEIVE_ADDR) AS applyAddress,
 		a.region_id as regionId,
 		(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.region_id) AS applyDepartment,
 		a.phone as applyContact,
@@ -340,6 +340,7 @@
 		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS createDate
 		FROM
 		pur_apply a
+		LEFT JOIN pur_apply_ext e ON e.APPLY_ID = a.APPLY_ID
 		where 1=1 and a.apply_id = #{req.applyId}
 
 	</select>

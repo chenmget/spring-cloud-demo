@@ -917,7 +917,7 @@ public class UserController extends BaseController {
      * @throws Exception
      */
     @RequestMapping("/ssoLogin")
-    public void ssoLogin(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void ssoLogin(HttpServletRequest request, HttpServletResponse response) {
 
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/html;charset=UTF-8");

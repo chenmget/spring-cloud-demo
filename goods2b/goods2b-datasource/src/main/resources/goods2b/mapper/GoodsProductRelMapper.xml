@@ -119,7 +119,7 @@
         AND PRODUCT_ID = #{productId}
     </select>
     
-    <select id="insertProdFile" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProdFileReq">
+    <select id="insertProdFile" resultType="java.lang.Integer" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProdFileReq">
        insert into PROD_FILE(
          FILE_ID,
          FILE_TYPE,

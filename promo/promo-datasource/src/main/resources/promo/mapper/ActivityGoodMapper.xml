@@ -30,23 +30,23 @@
             <if test="req.merchantId != null or req.lanId != null or req.regionId != null">
                 and(
                 <if test="req.merchantId != null and req.merchantId !=''">
-                    lower(p.shop_code) = #{req.merchantId} or
+                    lower(p.shop_code) = #{req.merchantId}
                 </if>
                 <if test="req.lanId != null and req.lanId !=''">
-                    lower(p.lan_id) = #{req.lanId} or
+                    or lower(p.lan_id) = #{req.lanId}
                 </if>
                 <if test="req.regionId != null and req.regionId !=''">
-                    lower(p.city) = #{req.regionId} or
+                    or lower(p.city) = #{req.regionId}
                 </if>
-                1=0
-                )
+                <if test="req.activityIds !=null and req.activityIds.size()>0">
+                    or t.id in
+                    <foreach collection="req.activityIds" open="(" item="item" index="index" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                or 1=0)
             </if>
-            <if test="req.activityIds !=null and req.activityIds.size()>0">
-                and t.id in
-                <foreach collection="req.activityIds" open="(" item="item" index="index" separator="," close=")">
-                    #{item}
-                </foreach>
-            </if>
+
         </where>
         order by now() - t.start_time
     </select>

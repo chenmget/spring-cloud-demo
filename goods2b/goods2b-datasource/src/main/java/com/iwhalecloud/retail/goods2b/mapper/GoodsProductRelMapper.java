@@ -36,16 +36,16 @@ public interface GoodsProductRelMapper extends BaseMapper<GoodsProductRel>{
      */
     GoodsDetailDTO qryGoodsByProductIdAndGoodsId(@Param("productId") String productId, @Param("goodsId")String goodsId);
 
-    public List<ActivityGoodsDTO> qryActivityGoodsId(@Param("req") ActivityGoodsReq req);
+    List<ActivityGoodsDTO> qryActivityGoodsId(@Param("req") ActivityGoodsReq req);
 
     List<String> listGoodsBySupplierId(@Param("supplierId") String supplierId, @Param("productId") String productId);
     
-    public Integer insertProdFile(@Param("req") ProdFileReq req) ;
+    Integer insertProdFile(@Param("req") ProdFileReq req) ;
     
-    public String selectProdFileId();
+    String selectProdFileId();
     
     String isBindingToPricture(@Param("targetId") String targetId) ;
     
-    public void delProdFileByTargetId(@Param("goodsId") String goodsId) ;
+    void delProdFileByTargetId(@Param("goodsId") String goodsId) ;
     
 }

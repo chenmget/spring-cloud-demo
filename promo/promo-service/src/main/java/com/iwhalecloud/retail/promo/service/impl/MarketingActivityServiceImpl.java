@@ -934,11 +934,11 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         List<String> tagIds = filterValueModel.getTagIds();
 
         // 查看商家所在城市是否包含在城市条件里
-        if(!CollectionUtils.isEmpty(cityIds)){
+        if(!CollectionUtils.isEmpty(cityIds)&&StringUtils.isNotEmpty(lanId)){
             flag = cityIds.contains(lanId);
         }
         // 查看商家所在区县是否包含在区县条件里
-        if(!CollectionUtils.isEmpty(countyIds)){
+        if(!CollectionUtils.isEmpty(countyIds)&&StringUtils.isNotEmpty(cityId)){
             flag = countyIds.contains(cityId);
         }
         // 查看商家标签是否包含在标签条件里
@@ -1282,8 +1282,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetail.setChangeField(MarketingActivity.FieldNames.promotionDesc.getTableFieldName());
             activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.promotionDesc.getTableFieldComment());
             activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_1.getCode());
-            activityChangeDetail.setOldValue(originalActivity.getDescription());
-            activityChangeDetail.setNewValue(changedActivity.getDescription());
+            activityChangeDetail.setOldValue(originalActivity.getPromotionDesc());
+            activityChangeDetail.setNewValue(changedActivity.getPromotionDesc());
             activityChangeDetail.setKeyValue(originalActivity.getId());
             activityChangeDetails.add(activityChangeDetail);
         }

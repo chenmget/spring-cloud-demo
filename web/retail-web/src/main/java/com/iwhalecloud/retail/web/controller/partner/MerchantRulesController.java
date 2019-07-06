@@ -71,14 +71,32 @@ public class MerchantRulesController {
     @Transactional
     public ResultVO<Integer> saveMerchantRules(@RequestBody @ApiParam(value = "新建商家权限规则参数", required = true) MerchantRulesSaveReq req) {
         // targetIdList字段为空  只是删除
-        // 先删除原先的记录  再插入新的
-        MerchantRulesDeleteReq deleteReq = new MerchantRulesDeleteReq();
-        BeanUtils.copyProperties(req, deleteReq);
-        merchantRulesService.deleteMerchantRules(deleteReq);
+        // 先删除原先的记录  再插入新的  zhongwenlong 屏蔽掉先删除再添加逻辑
+//        MerchantRulesDeleteReq deleteReq = new MerchantRulesDeleteReq();
+//        BeanUtils.copyProperties(req, deleteReq);
+//        merchantRulesService.deleteMerchantRules(deleteReq);
         if (CollectionUtils.isEmpty(req.getTargetIdList())) {
             return ResultVO.success();
         }
         return merchantRulesService.saveMerchantRules(req);
+    }
+
+    /**
+     * 删除 商家经营权限规则
+     *
+     * @param req
+     * @return
+     */
+    @ApiOperation(value = "根据条件（记录ID或记录ID集合（删除多条）、规则类型等）删除商家权限规则接口", notes = "根据条件（记录ID或记录ID集合（删除多条）、规则类型等）删除商家权限规则接口")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @RequestMapping(value = "/delete", method = RequestMethod.POST)
+    @Transactional
+    public ResultVO<Integer> deleteMerchantRules(@RequestBody @ApiParam(value = "删除 商家权限规则参数", required = true) MerchantRulesDeleteReq req) {
+        // targetIdList字段为空  只是删除
+        return merchantRulesService.deleteMerchantRules(req);
     }
 
     @ApiOperation(value = "根据ID删除单条商家权限规则接口", notes = "根据ID删除单条商家权限规则接口")

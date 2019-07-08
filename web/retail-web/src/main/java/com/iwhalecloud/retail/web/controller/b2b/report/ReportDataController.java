@@ -101,6 +101,8 @@ public class ReportDataController extends BaseController {
     @UserLoginToken
     public void reportDeSaleExport(@RequestBody ReportDeSaleDaoReq req, HttpServletResponse response) {
     	//最大跨度查询三个月createTimeStart   createTimeEnd
+    	req.setPageNo(1);
+    	req.setPageSize(50000);
 		String itemDateStart = req.getItemDateStart();
 		String itemDateEnd = req.getItemDateEnd();
 		Date date = new Date();
@@ -126,8 +128,8 @@ public class ReportDataController extends BaseController {
 			req.setSupplierId(UserContext.getUser().getRelCode());
 		}
 		
-        ResultVO<List<ReportDeSaleDaoResq>> resultVO = reportService.reportDeSaleExport(req);
-        
+//        ResultVO<List<ReportDeSaleDaoResq>> resultVO = reportService.reportDeSaleExport(req);
+        ResultVO<Page<ReportDeSaleDaoResq>> resultVO = reportService.getReportDeSaleList(req);
         ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {
             result.setResultCode(ResultCodeEnum.ERROR.getCode());
@@ -136,7 +138,7 @@ public class ReportDataController extends BaseController {
             return;
         }
         
-        List<ReportDeSaleDaoResq> data = resultVO.getResultData();
+        List<ReportDeSaleDaoResq> data = resultVO.getResultData().getRecords();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
         

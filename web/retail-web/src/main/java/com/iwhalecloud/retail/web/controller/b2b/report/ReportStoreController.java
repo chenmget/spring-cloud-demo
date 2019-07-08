@@ -102,7 +102,8 @@ public class ReportStoreController extends BaseController {
 			}
 			req.setPartnerCode(merchantDTO.getMerchantCode());
 		}
-        ResultVO<List<ReportStSaleDaoResp>> resultVO = reportStoreService.getReportStSaleListdc(req);
+//        ResultVO<List<ReportStSaleDaoResp>> resultVO = reportStoreService.getReportStSaleListdc(req);
+		ResultVO<Page<ReportStSaleDaoResp>> resultVO = reportStoreService.getReportStSaleList(req);
         ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {
             result.setResultCode(ResultCodeEnum.ERROR.getCode());
@@ -110,7 +111,7 @@ public class ReportStoreController extends BaseController {
             deliveryGoodsResNberExcel.outputResponse(response,resultVO);
             return;
         }
-        List<ReportStSaleDaoResp> data = resultVO.getResultData();
+        List<ReportStSaleDaoResp> data = resultVO.getResultData().getRecords();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
         

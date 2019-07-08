@@ -74,19 +74,12 @@ public class ReportCodeStatementsController extends BaseController  {
 		}
 		int userType=UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-			return reportCodeStateService.getCodeStatementsReportAdmin(req);
-		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdName(list);
 			return reportCodeStateService.getCodeStatementsReportAdmin(req);
 		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 
 				|| userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//省供应商4，地市供应商5，零售商3,厂商8
-//			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-//			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
-//			storeGetStoreIdReq.setStoreSubType("1300");
-//			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-			
 			MktResStoreIdReq mktResStoreIdReq = new MktResStoreIdReq();
 			mktResStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
 			mktResStoreIdReq.setStoreSubType("1300");
@@ -97,11 +90,9 @@ public class ReportCodeStatementsController extends BaseController  {
 			req.setShangJiaId(UserContext.getUser().getRelCode());
 			log.info("************************************************* ");
 			req.setMktResStoreId(mktResStoreId);
-		} else {
-			return ResultVO.error("当前用户 没有权限");
-		}
-		
 			return reportCodeStateService.getCodeStatementsReport(req);
+		}
+		return reportCodeStateService.getCodeStatementsReportAdmin(req);	
     }
 	
 	/**
@@ -116,9 +107,8 @@ public class ReportCodeStatementsController extends BaseController  {
     @UserLoginToken
     public void StorePurchaserReportExport(@RequestBody ReportCodeStatementsReq req, HttpServletResponse response) {
 		req.setPageNo(1);
-		req.setPageSize(60000);
-		ResultVO<List<ReportCodeStatementsResp>> resultVO = null;
-		log.info("****************ReportOrderController getCodeStatementsReport()  ************start param={}",JSON.toJSONString(req));
+		req.setPageSize(50000);
+		ResultVO<Page<ReportCodeStatementsResp>> resultVO = null;
 		String xdCreateTimeStart = req.getXdCreateTimeStart();
 		String xdCreateTimeEnd = req.getXdCreateTimeEnd();
 		Date date = new Date();
@@ -136,19 +126,13 @@ public class ReportCodeStatementsController extends BaseController  {
 		}
 		int userType=UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
-		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
-		} else if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
+		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdName(list);
-			resultVO = reportCodeStateService.getCodeStatementsReportAdmindc(req);
+			log.info("****************ReportOrderController StorePurchaserReportExport()  ************start param={}",JSON.toJSONString(req));
+			resultVO = reportCodeStateService.getCodeStatementsReportAdmin(req);
 		} else if (userType == SystemConst.USER_FOUNDER_4 || userType == SystemConst.USER_FOUNDER_5 
 				|| userType == SystemConst.USER_FOUNDER_3 || userType == SystemConst.USER_FOUNDER_8) {//省供应商4，地市供应商5，零售商3,厂商8
-//			StoreGetStoreIdReq storeGetStoreIdReq = new StoreGetStoreIdReq();
-//			storeGetStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
-//			storeGetStoreIdReq.setStoreSubType("1300");
-//			String mktResStoreId = resouceStoreService.getStoreId(storeGetStoreIdReq);
-			
 			MktResStoreIdReq mktResStoreIdReq = new MktResStoreIdReq();
 			mktResStoreIdReq.setMerchantId(UserContext.getUser().getRelCode());
 			mktResStoreIdReq.setStoreSubType("1300");
@@ -159,9 +143,11 @@ public class ReportCodeStatementsController extends BaseController  {
 			req.setShangJiaId(UserContext.getUser().getRelCode());
 			log.info("************************************************* ");
 			req.setMktResStoreId(mktResStoreId);
-			resultVO = reportCodeStateService.getCodeStatementsReportdc(req);
+			log.info("****************ReportOrderController StorePurchaserReportExport()  ************start param={}",JSON.toJSONString(req));
+			resultVO = reportCodeStateService.getCodeStatementsReport(req);
 		} else {
-			return ;
+			log.info("****************ReportOrderController StorePurchaserReportExport()  ************start param={}",JSON.toJSONString(req));
+			resultVO = reportCodeStateService.getCodeStatementsReportAdmin(req);	
 		}
 		
         ResultVO result = new ResultVO();
@@ -172,7 +158,7 @@ public class ReportCodeStatementsController extends BaseController  {
             return;
         }
         
-        List<ReportCodeStatementsResp> data = resultVO.getResultData();
+        List<ReportCodeStatementsResp> data = resultVO.getResultData().getRecords();
         
         List<ExcelTitleName> orderMap = new ArrayList<>();
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));

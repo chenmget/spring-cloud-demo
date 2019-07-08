@@ -82,7 +82,8 @@ public class ReportStoreInvoicingCityController extends BaseController {
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
 		}
-        ResultVO<List<RptPartnerOperatingDay>> resultVO = reportStInvCityService.getReportStInvCityListExport(req);
+//        ResultVO<List<RptPartnerOperatingDay>> resultVO = reportStInvCityService.getReportStInvCityListExport(req);
+		ResultVO<Page<RptPartnerOperatingDay>> resultVO = reportStInvCityService.getReportStInvCityList(req);
         ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {
             result.setResultCode(ResultCodeEnum.ERROR.getCode());
@@ -90,7 +91,7 @@ public class ReportStoreInvoicingCityController extends BaseController {
             deliveryGoodsResNberExcel.outputResponse(response,resultVO);
             return;
         }
-        List<RptPartnerOperatingDay> data = resultVO.getResultData();
+        List<RptPartnerOperatingDay> data = resultVO.getResultData().getRecords();
 
         //创建Excel
         Workbook workbook = new HSSFWorkbook();

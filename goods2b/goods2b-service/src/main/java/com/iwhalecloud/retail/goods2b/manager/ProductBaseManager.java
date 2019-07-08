@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.goods2b.manager;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.goods2b.dto.TagRelDTO;
@@ -10,6 +11,7 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseLightResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductDetailResp;
 import com.iwhalecloud.retail.goods2b.entity.ProductBase;
+import com.iwhalecloud.retail.goods2b.entity.TagRel;
 import com.iwhalecloud.retail.goods2b.mapper.ProductBaseMapper;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -60,6 +62,26 @@ public class ProductBaseManager {
      */
     public Page<ProductBaseGetResp> getProductBaseList(ProductBaseListReq req){
         Page<ProductBaseGetResp> page = new Page<>(req.getPageNo(), req.getPageSize());
+        /**
+         * 查询标签
+         */
+        if(!CollectionUtils.isEmpty(req.getTagList())){
+            List<TagRel> tagRelList= tagRelManager.list(new LambdaQueryWrapper<TagRel>()
+                    .in(TagRel::getTagId,req.getTagList()));
+
+            List<String> prodIdByTags=new ArrayList<>();
+            if(!CollectionUtils.isEmpty(tagRelList)){
+                for (TagRel tag:tagRelList){
+                    prodIdByTags.add(tag.getProductId());
+                }
+            }
+            if(CollectionUtils.isEmpty(req.getProductIdList())){
+                req.setProductIdList(prodIdByTags);
+            }else {
+                req.getProductIdList().retainAll(prodIdByTags);
+            }
+        }
+
         Page<ProductBaseGetResp> pageResp = productBaseMapper.getProductBaseList(page, req);
         List<ProductBaseGetResp> respList = pageResp.getRecords();
         for(ProductBaseGetResp dto : respList){

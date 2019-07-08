@@ -244,10 +244,11 @@ public class MerchantResourceInstServiceImpl implements MerchantResourceInstServ
             return ResultVO.error(constant.getCannotGetMuanfacturerMsg());
         }
         // 厂商只能录入自己产品的串码
-        String sourceStoreMerchantId = productRespResultVO.getResultData();
-        if (!req.getMerchantId().equals(sourceStoreMerchantId)) {
-            return ResultVO.error(constant.getNotMatchMerchant());
-        }
+        // modified by chenm at 2019-07-08 for 允许管理员为厂商录入其它厂商产品的串码
+//        String sourceStoreMerchantId = productRespResultVO.getResultData();
+//        if (!req.getMerchantId().equals(sourceStoreMerchantId)) {
+//            return ResultVO.error(constant.getNotMatchMerchant());
+//        }
         req.setDestStoreId(req.getMktResStoreId());
         ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(req.getMerchantId());
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {

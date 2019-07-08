@@ -695,13 +695,16 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVO registerFactoryMerchant(UserFactoryMerchantReq req) {
-        if(!zopMessageService.checkVerifyCode(req.getPhoneNo(),req.getCode()).isSuccess())
+        if (!zopMessageService.checkVerifyCode(req.getPhoneNo(), req.getCode()).isSuccess()){
             return ResultVO.error("短信验证码不一致");
-        //生成用户主键
+        }
+        //注册用户
         UserAddReq userAddReq = new UserAddReq();
         BeanUtils.copyProperties(req, userAddReq);
-        userAddReq.setStatusCd(SystemConst.USER_STATUS_INVALID);//默认禁用字段
-        userAddReq.setUserFounder(SystemConst.USER_FOUNDER_8);//用户类型为厂商
+        //默认禁用字段
+        userAddReq.setStatusCd(SystemConst.USER_STATUS_INVALID);
+        //用户类型为厂商
+        userAddReq.setUserFounder(SystemConst.USER_FOUNDER_8);
         ResultVO<UserDTO> addUserResultVO = addUser(userAddReq);
         UserDTO userDTO = addUserResultVO.getResultData();
         if (!addUserResultVO.isSuccess() || userDTO == null) {
@@ -714,13 +717,13 @@ public class UserServiceImpl implements UserService {
         factoryMerchantSaveReq.setCreateStaff(userDTO.getUserId());
         factoryMerchantSaveReq.setCreateStaffName(userDTO.getUserName());
         //调用自注册服务
-        ResultVO<String> vo=merchantService.registerFactoryMerchant(factoryMerchantSaveReq);
-        if(!vo.isSuccess()||null==vo.getResultData()){
+        ResultVO<String> merchantResult = merchantService.registerFactoryMerchant(factoryMerchantSaveReq);
+        if (!merchantResult.isSuccess() || null == merchantResult.getResultData()) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
-            return ResultVO.error(vo.getResultMsg());
-        }else{
-            //修改商家关联信息
-            String merchantId=vo.getResultData();
+            return merchantResult;
+        } else {
+            //修改用户的关联信息
+            String merchantId = merchantResult.getResultData();
             User user = new User();
             BeanUtils.copyProperties(userDTO, user);
             user.setRelCode(merchantId);

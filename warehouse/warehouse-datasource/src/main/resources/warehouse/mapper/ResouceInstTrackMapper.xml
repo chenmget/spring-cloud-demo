@@ -30,6 +30,7 @@
         ,t.IF_DIRECT_SUPPLY
         ,t.IF_GROUND_SUPPLY
         ,t.IF_GREEN_CHANNEL
+        ,t.IF_PRE_SUBSIDY
     </sql>
 
     <select id="qryOrderIdByNbr" resultType="java.lang.String">

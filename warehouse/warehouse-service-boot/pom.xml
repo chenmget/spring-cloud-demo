@@ -122,6 +122,10 @@
 							<groupId>com.iwhalecloud.retail</groupId>
 							<artifactId>zop-sdk</artifactId>
 						</include>
+						<include>
+							<groupId>com.iwhalecloud.retail</groupId>
+							<artifactId>order2b-client</artifactId>
+						</include>
 					</includes>
 				</configuration>
 			</plugin>

@@ -232,47 +232,4 @@
 			 MKT_RES_CHNG_EVT_DETAIL_ID = #{mktResChngEvtDetailId}
 	</update>
 
-
-	<select id="listMktResItemsSyncRec" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
-		SELECT <include refid="allFields"/>  FROM mkt_res_itms_sync_rec t WHERE 1 = 1
-		<if test="null!=req.createDateStart and ''!=req.createDateStart">
-			and t.CREATE_DATE &gt;= #{req.createDateStart}
-		</if>
-		<if test="null!=req.createDateStart and ''!=req.createTimeEnd">
-			and t.CREATE_DATE &lt;= #{req.createDateEnd}
-		</if>
-		<if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">
-			and t.mkt_res_inst_nbr = #{mktResInstNbr}
-		</if>
-		<if test="null!=req.destLanId and ''!=req.destLanId">
-			and t.dest_lan_id = #{destLanId}
-		</if>
-		<if test="null!=req.destLanId and ''!=req.destLanId">
-			and t.dest_lan_id = #{destLanId}
-		</if>
-		<if test="null!=req.typeId and ''!=req.typeId">
-			and t.type_id = #{typeId}
-		</if>
-		<if test="null!=req.brandId and ''!=req.brandId">
-			and t.brand_id = #{brandId}
-		</if>
-		<if test="null!=req.unitType and ''!=req.unitType">
-			and t.unit_type = #{unitType}
-		</if>
-		<if test="null!=req.productName and ''!=req.productName">
-			and upper(t.product_name) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
-		</if>
-		<choose>
-			<when test="optionType !=null and ''!= optionType">
-				and t.orig_lan_id != null
-			</when >
-			<otherwise>
-				and t.orig_lan_id = null
-			</otherwise>
-		</choose>
-		<if test="null!=req.statusCd and ''!=req.statusCd">
-			and t.status_cd = #{statusCd}
-		</if>
-
-	</select>
 </mapper>

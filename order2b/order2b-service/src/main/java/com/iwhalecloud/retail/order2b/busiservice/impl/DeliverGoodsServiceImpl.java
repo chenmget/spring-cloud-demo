@@ -17,13 +17,17 @@ import com.iwhalecloud.retail.order2b.dto.base.CommonResultResp;
 import com.iwhalecloud.retail.order2b.dto.model.order.SendGoodsItemDTO;
 import com.iwhalecloud.retail.order2b.dto.response.DeliveryGoodsResp;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SendGoodsRequest;
-import com.iwhalecloud.retail.order2b.entity.*;
+import com.iwhalecloud.retail.order2b.entity.Delivery;
+import com.iwhalecloud.retail.order2b.entity.Order;
+import com.iwhalecloud.retail.order2b.entity.OrderItem;
+import com.iwhalecloud.retail.order2b.entity.OrderItemDetail;
 import com.iwhalecloud.retail.order2b.manager.DeliveryManager;
 import com.iwhalecloud.retail.order2b.manager.OrderManager;
-import com.iwhalecloud.retail.order2b.manager.PromotionManager;
-import com.iwhalecloud.retail.order2b.model.*;
+import com.iwhalecloud.retail.order2b.model.MemberAddrModel;
+import com.iwhalecloud.retail.order2b.model.OrderInfoModel;
+import com.iwhalecloud.retail.order2b.model.OrderUpdateAttrModel;
+import com.iwhalecloud.retail.order2b.model.SelectOrderDetailModel;
 import com.iwhalecloud.retail.order2b.reference.*;
-import com.iwhalecloud.retail.promo.dto.resp.MarketingActivityDetailResp;
 import com.iwhalecloud.retail.warehouse.dto.request.DeliveryValidResourceInstReq;
 import com.iwhalecloud.retail.warehouse.dto.response.DeliveryValidResourceInstItemResp;
 import lombok.extern.slf4j.Slf4j;
@@ -77,9 +81,6 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
 
     @Autowired
     private ActivityManagerReference activityManagerReference;
-
-    @Autowired
-    private PromotionManager promotionManager;
 
 
     @Override
@@ -240,21 +241,7 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
         }
         //获取订单项全部不重复的productId
         List<String> productIdList = orderItemList.stream().map(OrderItem::getProductId).collect(Collectors.toList());
-
         productIdList = productIdList.stream().distinct().collect(Collectors.toList());
-        PromotionModel promotionModel = new PromotionModel();
-        promotionModel.setOrderId(request.getOrderId());
-        List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);
-        log.info("OrderDRGoodsOpenServiceImpl.valieNbr promotionManager.selectPromotion promotionModel={}, resp={}", JSON.toJSONString(promotionModel) , JSON.toJSONString(promotions));
-        if (!CollectionUtils.isEmpty(productIdList) && !CollectionUtils.isEmpty(promotions)) {
-            List<String> activityIdList = promotions.stream().map(Promotion::getMktActId).collect(Collectors.toList());
-            MarketingActivityDetailResp activityDetailResp = activityManagerReference.validActivityEndTimeByProductId(activityIdList);
-            if (null != activityDetailResp) {
-                resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
-                resp.setResultMsg("该订单参加的\""+activityDetailResp.getName()+"\"营销活动已结束，无法进行串码上传，未发货的商品请线下协调退款重新下单发货");
-                return resp;
-            }
-        }
 
         DeliveryValidResourceInstReq validResourceInstReq = new DeliveryValidResourceInstReq();
         validResourceInstReq.setMerchantId(request.getMerchantId());
@@ -297,11 +284,17 @@ public class DeliverGoodsServiceImpl implements DeliverGoodsService {
                     shipNum += 1;
                 }
                 // 现在串码唯一性是按产品类型为维度，送去库存校验的串码如果有两个串码值是一样但产品类型不一样，那边区分不出来
-                // 而且会返回两条，一条校验通过，令一条产品id匹配不上，校验不过会导致发货不了，暂时这么处理
+                // 而且会返回两条，一条校验通过，另一条产品id匹配不上，校验不过会导致发货不了，暂时这么处理
                 for (String mktResInstNbr : nbrList) {
                     if (!CollectionUtils.isEmpty(notMatchProductIdNbrList) && notMatchProductIdNbrList.contains(mktResInstNbr)) {
                         notMatchProductIdNbrList.remove(mktResInstNbr);
                     }
+                }
+                String validResult = activityManagerReference.validActivityByOrderItemId(item.getItemId());
+                if (!StringUtils.isEmpty(validResult)) {
+                    resp.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                    resp.setResultMsg(validResult);
+                    return resp;
                 }
             }
         }

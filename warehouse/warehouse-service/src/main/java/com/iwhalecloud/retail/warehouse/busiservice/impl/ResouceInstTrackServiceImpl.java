@@ -5,6 +5,10 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.order2b.consts.OrderManagerConsts;
+import com.iwhalecloud.retail.order2b.dto.response.PromotionResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.promo.PromotionListReq;
+import com.iwhalecloud.retail.order2b.service.PromotionService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
@@ -63,6 +67,9 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
 
     @Reference
     private OrganizationService organizationService;
+
+    @Reference
+    private PromotionService promotionService;
 
 
     @Async
@@ -433,6 +440,10 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceStoreService.getStoreId req={},sellerStoreId={}", JSON.toJSONString(storePageReq), sellerStoreId);
         ResultVO<MerchantDTO> sellerMerchantResultVO = merchantService.getMerchantById(req.getSellerMerchantId());
         log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier merchantService.getMerchantById req={},sellerStoreId={}", req.getSellerMerchantId(), JSON.toJSONString(sellerMerchantResultVO));
+        if (!sellerMerchantResultVO.isSuccess() || null == sellerMerchantResultVO.getResultData()) {
+            return;
+        }
+        MerchantDTO seller = sellerMerchantResultVO.getResultData();
         ResultVO<MerchantDTO> buyerMerchantResultVO = merchantService.getMerchantById(buyerMerchantId);
         log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier merchantService.getMerchantById req={},buyerMerchantId={}", buyerMerchantId, JSON.toJSONString(buyerMerchantResultVO));
         if (!buyerMerchantResultVO.isSuccess() || null == buyerMerchantResultVO.getResultData()) {
@@ -443,6 +454,8 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
         String ifDirectSuppLy = ResourceConst.CONSTANT_NO;
         // 是否地包供货：地包商交易给零售商时填是
         String ifGroundSupply = ResourceConst.CONSTANT_NO;
+        // 是否前置补贴：地包商交易给零售商且订单项对应的活动是前置补贴
+        String ifPreSubsidy = ResourceConst.CONSTANT_NO;
         List<DeliveryResourceInstItem> instItems = req.getDeliveryResourceInstItemList();
         for (DeliveryResourceInstItem item : instItems) {
             List<String> mktResInstNbrList = item.getMktResInstNbrs();
@@ -454,14 +467,26 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
             log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resourceInstManager.getResourceInsts req={}, resp={}", JSON.toJSONString(getReq), JSON.toJSONString(insts));
             int countTrack = 0;
             int countTrackDetail = 0;
+            PromotionListReq promotionListReq = new PromotionListReq();
+            promotionListReq.setOrderItemId(item.getOrderItemId());
+            ResultVO<List<PromotionResp>> promotionRespVO = promotionService.selectPromotion(promotionListReq);
+            String mktActType = null;
+            if (promotionRespVO.isSuccess() && CollectionUtils.isNotEmpty(promotionRespVO.getResultData())) {
+                mktActType = promotionRespVO.getResultData().get(0).getMktActType();
+            }
+
+            log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier promotionService.selectPromotion orderItemId={}, resp={}", item.getOrderItemId(), JSON.toJSONString(promotionRespVO));
             for (int i = 0; i < insts.size(); i++) {
                 ResourceInstDTO resourceInstDTO = insts.get(i);
                 ResouceInstTrackDTO resouceInstTrackDTO = new ResouceInstTrackDTO();
-                if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(resourceInstDTO.getMerchantType()) && PartnerConst.MerchantTypeEnum.PARTNER.getType().equals(buyer.getMerchantType())) {
+                if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(seller.getMerchantType()) && PartnerConst.MerchantTypeEnum.PARTNER.getType().equals(buyer.getMerchantType())) {
                     ifDirectSuppLy = ResourceConst.CONSTANT_YES;
                 }
-                if (PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(resourceInstDTO.getMerchantType()) && PartnerConst.MerchantTypeEnum.PARTNER.getType().equals(buyer.getMerchantType())) {
+                if (PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(seller.getMerchantType()) && PartnerConst.MerchantTypeEnum.PARTNER.getType().equals(buyer.getMerchantType())) {
                     ifGroundSupply = ResourceConst.CONSTANT_YES;
+                    if (OrderManagerConsts.ACTIVITY_TYPE_1002.equals(mktActType)) {
+                        ifPreSubsidy = ResourceConst.CONSTANT_YES;
+                    }
                 }
                 BeanUtils.copyProperties(resourceInstDTO, resouceInstTrackDTO);
                 resouceInstTrackDTO.setIfDirectSupply(ifDirectSuppLy);
@@ -470,10 +495,8 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
                 resouceInstTrackDTO.setMktResStoreId(buyerStoreId);
                 resouceInstTrackDTO.setLanId(buyer.getLanId());
                 resouceInstTrackDTO.setRegionId(buyer.getCity());
-                if (sellerMerchantResultVO.isSuccess() && null != sellerMerchantResultVO.getResultData()) {
-                    MerchantDTO merchantDTO = sellerMerchantResultVO.getResultData();
-                    resouceInstTrackDTO.setSourceType(merchantDTO.getMerchantType());
-                }
+                resouceInstTrackDTO.setIfPreSubsidy(ifPreSubsidy);
+                resouceInstTrackDTO.setSourceType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
                 resouceInstTrackDTO.setMktResInstType(ResourceConst.MKTResInstType.TRANSACTION.getCode());
                 resouceInstTrackDTO.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
                 countTrack += resouceInstTrackManager.saveResouceInstTrack(resouceInstTrackDTO);
@@ -494,12 +517,10 @@ public class ResouceInstTrackServiceImpl implements ResouceInstTrackService {
                     resouceInstTrackDetailDTO.setSourceRegionId(merchantDTO.getCity());
                     resouceInstTrackDetailDTO.setSourceMerchantId(merchantDTO.getMerchantId());
                 }
-                if (buyerMerchantResultVO.isSuccess() && null != buyerMerchantResultVO.getResultData()) {
-                    MerchantDTO merchantDTO = buyerMerchantResultVO.getResultData();
-                    resouceInstTrackDetailDTO.setTargetMerchantId(merchantDTO.getMerchantId());
-                    resouceInstTrackDetailDTO.setTargetLanId(merchantDTO.getLanId());
-                    resouceInstTrackDetailDTO.setTargetRegionId(merchantDTO.getCity());
-                }
+                MerchantDTO merchantDTO = buyerMerchantResultVO.getResultData();
+                resouceInstTrackDetailDTO.setTargetMerchantId(merchantDTO.getMerchantId());
+                resouceInstTrackDetailDTO.setTargetLanId(merchantDTO.getLanId());
+                resouceInstTrackDetailDTO.setTargetRegionId(merchantDTO.getCity());
                 countTrackDetail += resouceInstTrackDetailManager.saveResouceInstTrackDetail(resouceInstTrackDetailDTO);
                 log.info("ResouceInstTrackServiceImpl.asynAcceptTrackForSupplier resouceInstTrackManager.saveResouceInstTrackDetail req={}, resp={}", JSON.toJSONString(resouceInstTrackDetailDTO), countTrackDetail);
             }

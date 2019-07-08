@@ -17,8 +17,11 @@ import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.service.MerchantService;
+import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.LanDTO;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.UserDetailDTO;
+import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.LanService;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -57,6 +60,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 	MerchantService merchantService;
 	@Reference
 	LanService lanService;
+    @Reference
+    CommonRegionService commonRegionService;
+
 
 	@Override
 	public ResultVO<Page<PurApplyResp>> cgSearchApply(PurApplyReq req) {
@@ -342,6 +348,28 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	public CkProcureApplyResp ckApplyData1(PurApplyReq req) {
 		CkProcureApplyResp ckProcureApplyResp  = purApplyManager.ckApplyData1(req);
+
+
+        if(ckProcureApplyResp.getRegionId() !=null) {
+            ResultVO<CommonRegionDTO> c = commonRegionService.getCommonRegionById(ckProcureApplyResp.getRegionId());
+            CommonRegionDTO v = c.getResultData();
+            if (v!=null)
+            ckProcureApplyResp.setApplyDepartment(v.getRegionName());
+        }
+        // 获取商家名称
+        if (ckProcureApplyResp.getSupplierId() !=null  && ckProcureApplyResp.getSupplierId().length()>0) {
+            MerchantDTO merchantDTO = merchantService.getMerchantInfoById(ckProcureApplyResp.getSupplierId());
+            if(null != merchantDTO)
+                ckProcureApplyResp.setSupplierName(merchantDTO.getMerchantName());
+        }
+        // 申请人用户名
+        if (ckProcureApplyResp.getCreateStaff() !=null && ckProcureApplyResp.getCreateStaff().length()>0 ) {
+            UserDTO u = userService.getUserByUserId(ckProcureApplyResp.getCreateStaff());
+            if (u!=null)
+                ckProcureApplyResp.setApplyMerchantName(u.getUserName());
+        }
+
+
 //		String createDate = ckProcureApplyResp.getCreateDate();
 //		createDate = createDate.substring(0, createDate.length()-2);
 //		ckProcureApplyResp.setCreateDate(createDate);
@@ -352,9 +380,10 @@ public class PurApplyServiceImpl implements PurApplyService {
 	public List<AddProductReq> ckApplyData2(PurApplyReq req) {
 		List<AddProductReq> result = purApplyManager.ckApplyData2(req);
 		for (AddProductReq p:result) {
-			PurApplyItemReq PurApplyItemReq = new PurApplyItemReq();
-			PurApplyItemReq.setApplyItem(p.getApplyItemId());
-			PurApplyItemReq.setProductId(p.getProductId());
+            ProductApplyInfoResp productApplyInfoResp = productService.getProductApplyInfo(p.getProductId());
+            String purType =  p.getPurchaseType();
+			BeanUtils.copyProperties(productApplyInfoResp,p);
+			p.setPurchaseType(purType);
 //			List<String> deliverMktResInstNbrList =  purApplyManager.countPurApplyItemDetail(PurApplyItemReq);
 //			log.info("ckApplyData2 data deliverMktResInstNbrList="+JSON.toJSONString(deliverMktResInstNbrList));
 //			Integer count = deliverMktResInstNbrList.size();//查询发货的条数

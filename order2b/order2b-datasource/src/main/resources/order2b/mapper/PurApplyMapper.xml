@@ -326,16 +326,16 @@
 		a.content AS content,
 		a.apply_merchant_code  AS applyMerchantCode,
 		a.apply_merchant_id AS applyMerchantId,
-		(SELECT b.user_name FROM sys_user b WHERE b.user_id=a.CREATE_STAFF) AS applyMerchantName,
+		'' AS applyMerchantName,
 		a.LAN_ID as lanId,
 		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),e.RECEIVE_ADDR) AS applyAddress,
 		a.region_id as regionId,
-		(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.region_id) AS applyDepartment,
+		'' AS applyDepartment,
 		a.phone as applyContact,
 		a.apply_name as applyName,
 		a.merchant_code as supplierCode,
 		a.merchant_id as supplierId,
-		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_CODE=a.merchant_code) AS supplierName,
+		'' AS supplierName,
 		a.status_cd as statusCd,
 		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS createDate
 		FROM
@@ -347,7 +347,7 @@
 
 	<select id="ckApplyData2" parameterType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq"
 			resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.AddProductReq">
-		SELECT e.*,
+		<!--SELECT e.*,
 		f.name AS brandName ,
 		h.type_name AS typeName
 		FROM (
@@ -380,7 +380,19 @@
 		) e
 		LEFT JOIN prod_brand f ON e.brand_id=f.brand_id
 		LEFT JOIN prod_type h ON e.type_id = h.type_id
+-->
+		SELECT
+		a.PRODUCT_ID AS productId,
+		a.APPLY_ID AS applyId,
+		a.APPLY_ITEM_ID AS applyItemId,
+		a.STATUS_CD AS statusCd,
 
+		a.PUR_NUM AS snCount,
+		a.PUR_PRICE AS priceInStore,
+		a.PUR_TYPE AS purchaseType
+		FROM
+		pur_apply_item a
+		WHERE 1=1 AND a.apply_id = #{req.applyId}
 
 	</select>
 

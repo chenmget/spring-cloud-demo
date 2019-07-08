@@ -243,7 +243,7 @@ public class Constant {
     private String addNbrWorkFlow;
 
     /**
-     * 串码入库审批流程
+     * 不允许调拨，请检查串码及调拨对象
      */
     private String canNotAllocate;
 

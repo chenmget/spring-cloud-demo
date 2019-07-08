@@ -1,11 +1,14 @@
 package com.iwhalecloud.retail.system.dto.request;
 
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @ApiModel("根据条件查找用户列表")
@@ -82,5 +85,11 @@ public class UserListReq implements Serializable {
      */
     @ApiModelProperty(value = "角色ID")
     private String roleId;
+
+    /**
+     * 本地网地市
+     */
+    @ApiModelProperty(value = "本地网地市")
+    private String lanId;
 
 }

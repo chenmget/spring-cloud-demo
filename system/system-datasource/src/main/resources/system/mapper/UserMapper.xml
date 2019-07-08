@@ -116,6 +116,9 @@
             <if test="req.orgId != null and req.orgId != ''">
                 and a.ORG_ID = #{req.orgId}
             </if>
+            <if test="req.lanId != null and req.lanId != ''">
+                and a.LAN_ID = #{req.lanId}
+            </if>
             <if test="req.orgName != null and req.orgName !='' ">
                 and a.ORG_ID IN (
                 SELECT ORG_ID FROM SYS_ORGANIZATION WHERE ORG_NAME LIKE CONCAT(CONCAT('%', #{req.orgName}), '%')

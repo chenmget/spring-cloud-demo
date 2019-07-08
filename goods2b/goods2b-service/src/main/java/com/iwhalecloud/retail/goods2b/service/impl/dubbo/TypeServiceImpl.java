@@ -15,6 +15,7 @@ import com.iwhalecloud.retail.goods2b.dto.TypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.TypeDetailResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.TypeResp;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
 import com.iwhalecloud.retail.goods2b.entity.ProdTypeComplex;
 import com.iwhalecloud.retail.goods2b.entity.Type;
@@ -375,5 +376,16 @@ public class TypeServiceImpl implements TypeService {
         }
         BeanUtils.copyProperties(type, typeDetailResp);
         return ResultVO.success(typeDetailResp);
+    }
+
+    @Override
+    public ResultVO<TypeResp> selectById(String typeId) {
+        Type type = typeManager.selectById(typeId);
+        if (null == type) {
+            return ResultVO.success();
+        }
+        TypeResp resp = new TypeResp();
+        BeanUtils.copyProperties(type, resp);
+        return ResultVO.success(resp);
     }
 }

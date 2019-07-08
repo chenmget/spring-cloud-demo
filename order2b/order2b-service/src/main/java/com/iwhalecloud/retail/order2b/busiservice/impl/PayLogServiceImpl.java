@@ -38,7 +38,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     private BestPayManagerReference bestPayManagerReference;
 
     @Override
-    public ToPayResp handlePayData(String orderId, String orderAmount, String orgLoginCode,String operationType) {
+    public ToPayResp handlePayData(String orderId, String orderAmount, String orgLoginCode, String operationType, String net) {
         ToPayResp toPayResp = new ToPayResp();
         String payId = IdWorker.getIdStr();
         orderAmount = d2l(orderAmount);
@@ -47,6 +47,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
         toBestPayReq.setOrderAmount(orderAmount);
         toBestPayReq.setOperationType(operationType);
         toBestPayReq.setOrgLoginCode(orgLoginCode);
+        toBestPayReq.setNet(net);
         toPayResp = bestPayManagerReference.handlePayData(toBestPayReq);
         log.info("BestPayEnterprisePaymentOpenServiceImpl.toPay bestPayManagerReference.handlePayData req={} resp={}", JSON.toJSONString(toBestPayReq), JSON.toJSONString(toPayResp));
         SaveLogModel saveLogModel = new SaveLogModel();
@@ -81,7 +82,7 @@ public class PayLogServiceImpl implements BPEPPayLogService {
     
     @Override
     public void UpdateOrdOrderStatus(UpdateOrdOrderReq req){
-    	this.payOperationLogManager.UpdateOrdOrderStatus(req);
+    	this.payOperationLogManager.updateOrdOrderStatus(req);
     }
     
  // TODO:1、预授权支付 

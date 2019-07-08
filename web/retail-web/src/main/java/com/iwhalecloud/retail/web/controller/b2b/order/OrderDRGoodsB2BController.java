@@ -1,8 +1,8 @@
 package com.iwhalecloud.retail.web.controller.b2b.order;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.ReceiveGoodsReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.order.SendGoodsRequest;
 import com.iwhalecloud.retail.order2b.service.OrderDRGoodsOpenService;
@@ -50,12 +50,12 @@ public class OrderDRGoodsB2BController {
         sendGoodsRequest.setMerchantId(UserContext.getMerchantId());
         try {
             if(request.getResNbrFile()!=null && !StringUtils.isEmpty(request.getResNbrList())){
-                resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
                 resultVO.setResultMsg("输入串码和导入串码不能同时上传");
                 return resultVO;
             }
             if(request.getResNbrFile()==null && StringUtils.isEmpty(request.getResNbrList())){
-                resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
                 resultVO.setResultMsg("串码不能为空");
                 return resultVO;
             }
@@ -68,12 +68,12 @@ public class OrderDRGoodsB2BController {
             Integer shipNum = mktResInstNbrList.size();
             Integer maxNum = 1001;
             if(shipNum > maxNum){
-                resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+                resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
                 resultVO.setResultMsg("串码过多，不能超过1000个");
                 return resultVO;
             }
         } catch (Exception e) {
-            resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
             resultVO.setResultMsg("解析数据失败：error="+e.getMessage());
             return resultVO;
         }

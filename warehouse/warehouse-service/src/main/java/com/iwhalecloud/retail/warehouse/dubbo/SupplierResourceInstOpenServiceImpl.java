@@ -219,14 +219,14 @@ public class SupplierResourceInstOpenServiceImpl implements SupplierResourceInst
     }
 
     @Override
+    public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
+        return supplierResourceInstService.getMktResInstNbrForCheckInTrack(req);
+    }
+
+    @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
         ResultVO resp = supplierResourceInstService.resetResourceInst(req);
         resouceInstTrackService.asynResetResourceInst(req, resp);
         return resp;
-    }
-
-    @Override
-    public List<ResourceInstCheckResp> getMktResInstNbrForCheckInTrack(ResourceStoreIdResnbr req) {
-        return supplierResourceInstService.getMktResInstNbrForCheckInTrack(req);
     }
 }

@@ -232,8 +232,17 @@ public class MarketingActivityAddReq extends AbstractRequest implements Serializ
     @ApiModelProperty(value = "当前用户名称")
     private String userName;
 
+    /**
+     * 岗位名称
+     */
     @ApiModelProperty(value = "岗位名称")
     private String sysPostName;
+
+    /**
+     * 发起人类型
+     */
+    @ApiModelProperty(value = "发起人类型")
+    private Integer userFounder;
 
     /**
      * 关联组织 id
@@ -250,6 +259,17 @@ public class MarketingActivityAddReq extends AbstractRequest implements Serializ
      */
     @ApiModelProperty(value = "活动发货截止时间 deliver_end_time")
     private Date deliverEndTime;
+
+    /**
+     * 活动级别，记录活动发起的对象级别 activity_level
+     *  1. 省级活动（运营商省级管理员发起）
+     *  2. 地市级活动（运营商地制级管理员发起）
+     *  3. 厂商活动（厂商自行发起）
+     *  4. 国省包商活动（国省包供应商自行发起）
+     *  5. 地包商活动（地包供应商自行发起）',
+     */
+    @ApiModelProperty(value="活动级别，记录活动发起的对象级别 activity_level")
+    private String activityLevel;
 
     /**
      * 活动的优惠规则描述.promotion_desc

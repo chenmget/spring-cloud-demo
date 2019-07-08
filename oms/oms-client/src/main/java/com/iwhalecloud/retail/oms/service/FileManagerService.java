@@ -7,18 +7,18 @@ import java.util.List;
 
 public interface FileManagerService {
 
-    /**
-     * 上传图片
-     */
-    CommonResultResp uploadImage(FileManagerDTO file);
+        /**
+         * 上传图片
+         */
+        CommonResultResp uploadImage(FileManagerDTO file);
 
-    /**
-     * 批量上传，
-     */
-    CommonResultResp uploadImage(List<FileManagerDTO> file);
+        /**
+         * 批量上传，
+         */
+        CommonResultResp uploadImage(List<FileManagerDTO> file);
 
-    /**
-     * 删除图片
-     */
-    CommonResultResp deleteImg(FileManagerDTO file);
+        /**
+         * 删除图片
+         */
+        CommonResultResp deleteImg(FileManagerDTO file);
 }

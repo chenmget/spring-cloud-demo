@@ -56,13 +56,13 @@ public class ProductResp implements Serializable {
      * 提货价
      */
     @ApiModelProperty(value = "提货价")
-    private Double deliveryPrice;
+    private Long deliveryPrice;
 
     /**
      * 初始提货价
      */
     @ApiModelProperty(value = "初始提货价")
-    private Double initialPrice;
+    private Long initialPrice;
 
     /**
      * 上架数量

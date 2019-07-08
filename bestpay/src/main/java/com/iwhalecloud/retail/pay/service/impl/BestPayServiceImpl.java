@@ -150,7 +150,13 @@ public class BestPayServiceImpl implements BestPayService {
         ret.setPlatCode(busConfig.getPLATCODE());
         ret.setSynNoticeUrl(busConfig.getSYNNOTICEURL());
         ret.setAsynNoticeUrl(busConfig.getASYNNOTICEURL());
-        ret.setPayFormActionUrl(busConfig.getURL());
+        if("INTRANET".equals(toBestPayReq.getNet())){
+            ret.setPayFormActionUrl(busConfig.getINTRANET());
+        } else {
+            ret.setPayFormActionUrl(busConfig.getINTERNET());
+        }
+
+
         ret.setPayType(paytype);
         return ret;
     }

@@ -9,6 +9,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseActivityQueryResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseLightResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductDetailResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductFlowService;
@@ -387,5 +388,28 @@ public class GoodsProductBaseB2BController {
         log.info("GoodsController isSaleByProductId productId={}", productId);
         return ResultVO.success(prodProductBaseService.isSaleByProductId(productId));
 
+    }
+
+    @ApiOperation(value = "获取不重复的unit_type数组", notes = "获取不重复的unit_type数组")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/getDistinctUnitType")
+    ResultVO<List<String>> getDistinctUnitType(@RequestParam(value = "typeId") String typeId,
+                                               @RequestParam(value = "brandId") String brandId) {
+        log.info("GoodsProductBaseB2BController getDistinctUnitType typeId={} brandId={}", typeId, brandId);
+        return prodProductBaseService.getDistinctUnitType(typeId, brandId);
+    }
+
+    @ApiOperation(value = "通过productId查询产品基本表基本信息", notes = "通过productId查询产品基本表基本信息")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/getProductBaseByProductId")
+    ResultVO<ProductBaseLightResp> getProductBaseByProductId(@RequestParam(value = "productId") String productId) {
+        log.info("GoodsProductBaseB2BController getProductBaseByProductId productId={}", productId);
+        return prodProductBaseService.getProductBaseByProductId(productId);
     }
 }

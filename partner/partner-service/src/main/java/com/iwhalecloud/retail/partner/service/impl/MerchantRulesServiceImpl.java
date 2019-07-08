@@ -10,16 +10,16 @@ import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.BrandService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductBaseService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
-import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
-import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
+import com.iwhalecloud.retail.partner.dto.*;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.MerchantImeiRulesResp;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
 import com.iwhalecloud.retail.partner.entity.Merchant;
@@ -29,6 +29,8 @@ import com.iwhalecloud.retail.partner.manager.MerchantRulesManager;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.SysOrgConst;
+import com.iwhalecloud.retail.partner.service.PermissionApplyItemService;
+import com.iwhalecloud.retail.partner.service.PermissionApplyService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.*;
@@ -45,10 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -88,6 +87,12 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
     @Autowired
     private MerchantManager merchantManager;
 
+    @Autowired
+    private PermissionApplyItemService permissionApplyItemService;
+
+    @Autowired
+    private PermissionApplyService permissionApplyService;
+
     /**
      * 添加一个 商家 权限规则
      *
@@ -118,17 +123,6 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         if (resultInt <= 0) {
             return ResultVO.error("新增商家权限信息失败，请确认参数");
         }
-//        if (PartnerConst.MerchantRuleTypeEnum.BUSINESS.getType().equals(req.getRuleType()) &&
-//                PartnerConst.MerchantBusinessTargetTypeEnum.REGION.getType().equals(req.getTargetType())) {
-//            MerchantGetReq merchantGetReq = new MerchantGetReq();
-//            merchantGetReq.setMerchantId(req.getMerchantId());
-//            Merchant merchant = merchantManager.getMerchant(merchantGetReq);
-//            //是地包 并且 没有赋权
-//            if (null != merchant && PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(merchant.getMerchantType()) &&
-//                    PartnerConst.AssignedFlgEnum.NO.getType().equals(merchant.getAssignedFlg())) {
-//                this.merchantAssigned(merchant.getMerchantId());
-//            }
-//        }
         return ResultVO.success(resultInt);
     }
 
@@ -183,6 +177,8 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
         return ResultVO.success("删除商家权限规则信息 条数：" + result, result);
     }
+
+
 
     @Override
     public ResultVO<List<MerchantRulesDTO>> listMerchantRules(MerchantRulesDetailListReq req) {
@@ -869,6 +865,19 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         return ResultVO.success(productIdList);
     }
 
+    @Override
+    public ResultVO<List<String>> getImeiPermission(String merchantId) {
+        MerchantRulesListReq req = new MerchantRulesListReq();
+        req.setMerchantId(merchantId);
+        // 串码录入
+        req.setRuleType(PartnerConst.MerchantRuleTypeEnum.IMIE.getType());
+        req.setTargetType(PartnerConst.MerchantImeiTargetTypeEnum.MODEL.getType());
+        List<MerchantRulesDTO> imeiRulelist = merchantRulesManager.listMerchantRules(req);
+        // 把产品的productId筛选出来
+        List<String> productIdList = imeiRulelist.stream().map(MerchantRulesDTO::getTargetId).collect(Collectors.toList());
+        return ResultVO.success(productIdList);
+    }
+
     /**
      * 通过查询对象获取targetId的集合
      *
@@ -1382,6 +1391,129 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         return ResultVO.success();
     }
 
+    @Override
+    public ResultVO saveFactoryMerchantImeiRule(MerchantRulesSaveReq req) {
+        //需要新增的串码权限
+        List<String> targetIds=req.getTargetIdList();
+        String merchantId =req.getMerchantId();
+        //获取商家目前所有的权限
+        ResultVO<List<String>> vo=getImeiPermission(merchantId);
+        List<String> ruleIds=vo.getResultData();
+        if (!CollectionUtils.isEmpty(targetIds)) {
+            for(String targetId : targetIds){
+                //判断商家是否原来就有该权限，有就忽略，没有就新加
+                if(!ruleIds.contains(targetId)){
+                    MerchantRules merchantRules=new MerchantRules();
+                    merchantRules.setMerchantId(merchantId);
+                    merchantRules.setRuleType(PartnerConst.MerchantRuleTypeEnum.IMIE.getType());
+                    merchantRules.setTargetId(targetId);
+                    merchantRules.setTargetType(PartnerConst.MerchantImeiTargetTypeEnum.MODEL.getType());
+                    merchantRulesManager.insert(merchantRules);
+                }
+            }
+        }
+        return ResultVO.success();
+    }
+
+    @Override
+    public ResultVO delFactoryMerchantImeiRule(MerchantRulesSaveReq req,UserDTO userDTO) {
+        //需要取消的串码权限
+        List<String> targetIds=req.getTargetIdList();
+        if(CollectionUtils.isEmpty(targetIds)) {
+            return ResultVO.success();
+        }
+        String merchantId =req.getMerchantId();
+        //生成一条权限取消的记录
+        PermissionApplySaveDTO permissionApplySaveDTO=new PermissionApplySaveDTO();
+        permissionApplySaveDTO.setMerchantId(merchantId);
+        permissionApplySaveDTO.setUserId(userDTO.getUserId());
+        permissionApplySaveDTO.setName(userDTO.getUserName());
+        //组装permissionApply
+        PermissionApplySaveReq permissionApplySaveReq=new PermissionApplySaveReq();
+        permissionApplySaveReq.setApplyType(PartnerConst.PermissionApplyTypeEnum.PERMISSION_APPLY.getCode());
+        permissionApplySaveReq.setMerchantId(merchantId);
+        permissionApplySaveReq.setStatusCd(PartnerConst.PermissionApplyStatusEnum.AUDITING.getCode());
+        permissionApplySaveDTO.setPermissionApplySaveReq(permissionApplySaveReq);
+        //permissionApplySaveReq.setLanId();
+        //组装permissionApplyItem
+        List<PermissionApplyItemSaveReq> itemList=new ArrayList<>();
+        for(String targetId : targetIds){
+            PermissionApplyItemSaveReq permissionApplyItemSaveReq=new PermissionApplyItemSaveReq();
+            permissionApplyItemSaveReq.setOperationType(PartnerConst.PermissionApplyItemOperationTypeEnum.DELETE.getType());
+            permissionApplyItemSaveReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.IMIE.getType());
+            permissionApplyItemSaveReq.setTargetType(PartnerConst.MerchantImeiTargetTypeEnum.MODEL.getType());
+            permissionApplyItemSaveReq.setTargetId(targetId);
+            permissionApplyItemSaveReq.setStatusCd(PartnerConst.TelecomCommonState.VALID.getCode());
+            itemList.add(permissionApplyItemSaveReq);
+        }
+        permissionApplySaveDTO.setItemList(itemList);
+        try {
+            permissionApplyService.savePermissionApply(permissionApplySaveDTO);
+        } catch (Exception e) {
+            return ResultVO.error("取消串码录入权限失败，稍后再试");
+        }
+        return ResultVO.success();
+
+
+    }
+
+    @Override
+    public ResultVO<List<MerchantImeiRulesResp>> listFactoryMerchantImeiRule(String merchantId) {
+        //获取厂商所有规格产品
+        ProductsPageReq productsPageReq=new ProductsPageReq();
+        productsPageReq.setManufacturerId(merchantId);
+        productsPageReq.setPageNo(1);
+        productsPageReq.setPageSize(1000);//默认取全部数据
+        ResultVO<Page<ProductPageResp>> pageResultVO = productService.selectPageProductAdminAll(productsPageReq);
+        List<ProductPageResp> products=pageResultVO.getResultData().getRecords();
+
+        //获取厂商有的权限
+        MerchantRulesDetailListReq merchantRulesDetailListReq=new MerchantRulesDetailListReq();
+        merchantRulesDetailListReq.setMerchantId(merchantId);
+        merchantRulesDetailListReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.IMIE.getType());
+        merchantRulesDetailListReq.setTargetType(PartnerConst.MerchantImeiTargetTypeEnum.MODEL.getType());
+        ResultVO<List<MerchantRulesDTO>> rulePageResultVO=listMerchantRules( merchantRulesDetailListReq);
+        List<MerchantRulesDTO> rules=rulePageResultVO.getResultData();
+
+
+
+        //获取厂商在审核中的权限
+        PermissionApplyItemListReq permissionApplyItemListReq=new PermissionApplyItemListReq();
+        permissionApplyItemListReq.setMerchantId(merchantId);
+        permissionApplyItemListReq.setOperationType(PartnerConst.PermissionApplyItemOperationTypeEnum.DELETE.getType());
+        permissionApplyItemListReq.setRuleType(PartnerConst.MerchantRuleTypeEnum.IMIE.getType());
+        permissionApplyItemListReq.setTargetType(PartnerConst.MerchantImeiTargetTypeEnum.MODEL.getType());
+        permissionApplyItemListReq.setStatusCd(PartnerConst.TelecomCommonState.VALID.getCode());
+        ResultVO<List<PermissionApplyItemDTO>>  applyResult=permissionApplyItemService.listPermissionApplyItem( permissionApplyItemListReq);
+        List<PermissionApplyItemDTO> applyList=applyResult.getResultData();
+
+        //拥有的权限
+        Map<String,String> ruleMap=new HashMap<>();
+        for(MerchantRulesDTO dto : rules){
+            ruleMap.put(dto.getTargetId(),"1");
+        }
+
+        //审核中的取消权限
+        Map<String,String> applyMap=new HashMap<>();
+        for(PermissionApplyItemDTO dto : applyList){
+            applyMap.put(dto.getTargetId(),"1");
+        }
+
+        List<MerchantImeiRulesResp> resList=new ArrayList<>();
+        //遍历是否有权限
+        for(ProductPageResp product : products){
+            MerchantImeiRulesResp merchantImeiRulesResp=new MerchantImeiRulesResp();
+            BeanUtils.copyProperties(product,merchantImeiRulesResp);
+            String productId=product.getProductId();
+            merchantImeiRulesResp.setStatusCd(ruleMap.get(productId)==null ? PartnerConst.PermissionApplyStatusEnum.NOT_PASS.getCode() : PartnerConst.PermissionApplyStatusEnum.PASS.getCode());
+            if(applyMap.get(productId)!=null) {
+                merchantImeiRulesResp.setStatusCd(PartnerConst.PermissionApplyStatusEnum.AUDITING.getCode());
+            }
+            resList.add(merchantImeiRulesResp);
+        }
+        return ResultVO.success(resList);
+    }
+
     /**
      *
      * 校验 商家经营权限-区域权限
@@ -1453,4 +1585,5 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
         return ResultVO.success(false);
     }
+
 }

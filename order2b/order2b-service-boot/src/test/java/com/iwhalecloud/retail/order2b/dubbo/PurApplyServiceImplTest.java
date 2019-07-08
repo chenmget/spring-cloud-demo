@@ -255,7 +255,7 @@ public class PurApplyServiceImplTest  extends TestBase {
     }
     @Test
     public void applySearchReport(){
-        String json = "{\"pageNo\":1,\"pageSize\":10,\"applyCode\":\"\",\"applyName\":\"\",\"lanIdList\":[],\"merchantName\":\"\",\"productName\":\"\",\"unitType\":\"\",\"color\":\"\",\"memory\":\"\",\"statusCd\":\"\"}";
+        String json = "{\"pageNo\":1,\"pageSize\":10,\"applyCode\":\"\",\"applyName\":\"\",\"lanIdList\":[],\"merchantName\":\"\",\"productName\":\"\",\"unitType\":\"\",\"color\":\"亮黑色\",\"memory\":\"3G\",\"statusCd\":\"21\"}";
 //        PurApplyReq req = new PurApplyReq();
         Gson gson = new Gson();
         PurApplyStatusReportReq req = gson.fromJson(json, new TypeToken<PurApplyStatusReportReq>(){}.getType());

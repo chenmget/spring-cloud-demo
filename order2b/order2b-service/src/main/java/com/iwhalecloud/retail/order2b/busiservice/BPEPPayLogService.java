@@ -35,9 +35,11 @@ public interface BPEPPayLogService {
      * @param orderId
      * @param orderAmount
      * @param orgLoginCode
+     * @param operationType
+     * @param net
      * @return
      */
-    public ToPayResp handlePayData(String orderId, String orderAmount, String orgLoginCode,String operationType);
+    public ToPayResp handlePayData(String orderId, String orderAmount, String orgLoginCode, String operationType, String net);
 
     /**
      * 线下支付

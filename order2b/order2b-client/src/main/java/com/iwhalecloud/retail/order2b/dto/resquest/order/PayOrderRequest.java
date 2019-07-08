@@ -29,8 +29,10 @@ public class PayOrderRequest extends UpdateOrderStatusRequest implements Seriali
 
     @ApiModelProperty("接收方银行编码")
     private String recBankId;
+
     @ApiModelProperty("接收方银行账号")
     private String recAccount;
+
     @ApiModelProperty("接收方账号名称")
     private String recAccountName;
 }

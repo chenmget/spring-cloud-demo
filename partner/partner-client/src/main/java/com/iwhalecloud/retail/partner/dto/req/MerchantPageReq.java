@@ -120,4 +120,10 @@ public class MerchantPageReq extends PageVO {
 
     @ApiModelProperty(value = "渠道大类")
     private java.lang.String channelType;
+
+    @ApiModelProperty(value = "父级组织集合，分别查找单个父级组织下的所有商家，取交集")
+    private List<String> parentOrgIdListWithAnd;
+
+    @ApiModelProperty(value = "父级组织集合，查找这些父级组织下的所有商家，取并集")
+    private List<String> parentOrgIdListWithOr;
 }

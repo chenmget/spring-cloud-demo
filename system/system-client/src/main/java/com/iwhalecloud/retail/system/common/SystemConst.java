@@ -36,6 +36,7 @@ public class SystemConst {
 
     // 最多登录失败次数限制
     public static final int MAX_FAIL_LOGIN_COUNT = 5;
+    public static final String DFPASSWD = "Ab_123456";
 
     // 用户状态 1有效  0禁用 2：无效(删除） 3:锁住（密码错误次数超限 等等）
     public static final int USER_STATUS_INVALID = 0;
@@ -507,6 +508,28 @@ public class SystemConst {
 
         public String getType() {
             return type;
+        }
+    }
+
+    public enum SysUserStatusCdEnum{
+        STATUS_CD_INVALD(0,"禁用"),
+        STATUS_CD_VALD(1,"有效"),
+        STATUS_CD_DELETE(2,"删除"),
+        STATUS_CD_LOCK(3,"锁住");
+
+        private int code;
+        private String value;
+
+        SysUserStatusCdEnum(int code, String value){
+            this.code = code;
+            this.value = value;
+        }
+        public int getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
         }
     }
 }

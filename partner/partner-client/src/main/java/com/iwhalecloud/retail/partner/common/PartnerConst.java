@@ -148,23 +148,26 @@ public class PartnerConst {
      */
     public enum MerchantTypeEnum {
 
-        MANUFACTURER("1", "厂商"),
-        SUPPLIER_GROUND("2", "地包供应商"),
-        SUPPLIER_PROVINCE("3", "省包供应商"),
-        PARTNER("4", "零售商");
+        MANUFACTURER("1","厂商","CS"),
+        SUPPLIER_GROUND("2","地包供应商","DBS"),
+        SUPPLIER_PROVINCE("3","省包供应商","SBS"),
+        PARTNER("4","零售商","LSS");
 
         private String type;
         private String name;
-
-        MerchantTypeEnum(String type, String name) {
+        private String codePrefix;
+        MerchantTypeEnum(String type, String name,String codePrefix){
             this.type = type;
             this.name = name;
+            this.codePrefix = codePrefix;
         }
 
         public String getName() {
             return name;
         }
-
+        public String getCodePrefix(){
+            return codePrefix;
+        }
         public String getType() {
             return type;
         }
@@ -195,7 +198,7 @@ public class PartnerConst {
          * 退出 1102 未生效 1200 已归档 1300 预退出 8922 冻结 8923
          */
         VALID("1000", "有效"),
-        INVALID("1100", "有效"),
+        INVALID("1100", "无效"),
         PAUSE("1001", "主动暂停"),
         EXCEPTION_PAUSE("1002", "异常暂停"),
         TERMINATION("1101", "终止"),
@@ -234,7 +237,8 @@ public class PartnerConst {
     public enum MerchantRuleTypeEnum {
         BUSINESS("1", "经营权限"),
         GREEN_CHANNEL("2", "绿色通道权限"),
-        TRANSFER("3", "调拨权限");
+        TRANSFER("3", "调拨权限"),
+        IMIE("4","串码录入");
 
         private String type;
         private String name;
@@ -298,6 +302,27 @@ public class PartnerConst {
             return name;
         }
 
+        public String getType() {
+            return type;
+        }
+    }
+
+    /**
+     *  商家串码录入权限的 对象类型
+     */
+    public enum MerchantImeiTargetTypeEnum {
+        PRODUCT("1","产品"),
+        MODEL("2","机型");
+
+        private String type;
+        private String name;
+        MerchantImeiTargetTypeEnum(String type, String name){
+            this.type = type;
+            this.name = name;
+        }
+        public String getName() {
+            return name;
+        }
         public String getType() {
             return type;
         }
@@ -449,6 +474,39 @@ public class PartnerConst {
 
         public String getType() {
             return type;
+        }
+    }
+
+    /**
+     * 商家流程配置
+     */
+    public enum MerchantProcessEnum {
+
+        PROCESS_DBGL("3040301", "地包商管理"),
+        PROCESS_ADMIN_DBGL("3040401", "地市管理员账号管理"),
+        PROCESS_SBGL("3040601", "国/省包管理"),
+        PROCESS_ADMIN_SBGL("3040602", "后台管理员国/省包管理"),
+        PROCESS_3040501("3040501", "厂商管理（自注册）"),
+        PROCESS_3040601("3040601", "国/省包管理"),
+        PROCESS_11("11", "商家权限申请审核流程"),
+        PROCESS_3010101("3010101", "厂商经营权限（串码录入停用申请）"),
+        PROCESS_3040301("3040301", "地包商管理"),
+        PROCESS_3040701("3040701", "厂商管理(管理平台注册)");
+
+        private String processId;
+        private String processTitle;
+
+        MerchantProcessEnum(String processId, String processTitle) {
+            this.processId = processId;
+            this.processTitle = processTitle;
+        }
+
+        public String getProcessId() {
+            return processId;
+        }
+
+        public String getProcessTitle() {
+            return processTitle;
         }
     }
 }

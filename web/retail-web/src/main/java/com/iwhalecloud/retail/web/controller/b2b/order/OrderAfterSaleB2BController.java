@@ -2,7 +2,6 @@ package com.iwhalecloud.retail.web.controller.b2b.order;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderApplyDTO;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderItemDetailDTO;
 import com.iwhalecloud.retail.order2b.dto.response.OrderApplyExportResp;
@@ -193,7 +192,7 @@ public class OrderAfterSaleB2BController {
         request.setUserCode(UserContext.getUser().getRelCode());
         ResultVO<OrderApplyExportResp> resultVO = selectAfterSaleOpenService.orderApplyExport(request);
         if (!resultVO.isSuccess()) {
-            resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resultVO.setResultCode(resultVO.getResultCode());
             resultVO.setResultMsg(resultVO.getResultMsg());
             deliveryGoodsResNberExcel.outputResponse(response, resultVO);
             return;

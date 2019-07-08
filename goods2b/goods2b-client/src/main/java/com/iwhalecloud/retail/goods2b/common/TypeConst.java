@@ -8,7 +8,7 @@ package com.iwhalecloud.retail.goods2b.common;
 public class TypeConst {
 
     /**
-     * 是否被删除
+     * 产品类型细类
      */
     public enum TYPE_DETAIL {
 
@@ -37,5 +37,16 @@ public class TypeConst {
         public String getValue() {
             return value;
         }
+
+        public static String getValueByCode(String code) {
+            TYPE_DETAIL[] enums = values();
+            for (TYPE_DETAIL obj : enums) {
+                if (obj.code.equals(code)) {
+                    return obj.value;
+                }
+            }
+            return null;
+        }
     }
+
 }

@@ -490,5 +490,28 @@ public class MerchantDetailDTO implements Serializable {
     @ApiModelProperty(value = "(商家)失效时间	")
     private java.util.Date expDate;
 
+    @ApiModelProperty(value = "原系统账号")
+    private java.lang.String legacyAccount;
+
+    @ApiModelProperty(value = "公司地址")
+    private java.lang.String address;
+
+    @ApiModelProperty(value = "供货地区")
+    private java.lang.String supplyRegion;
+
+    @ApiModelProperty(value = "经营品牌")
+    private java.lang.String manageBrand;
+
+    @ApiModelProperty(value = "法人名称")
+    private java.lang.String legalPerson;
+
+    @ApiModelProperty(value = "合同生效时间")
+    private Date contractEffDate;
+
+    @ApiModelProperty(value = "合同失效时间")
+    private Date contractExpDate;
+
+    @ApiModelProperty(value = "身份证")
+    private java.lang.String certNumber;
 
 }

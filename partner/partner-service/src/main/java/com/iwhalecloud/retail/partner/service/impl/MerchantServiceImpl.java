@@ -1,14 +1,15 @@
 package com.iwhalecloud.retail.partner.service.impl;
-
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.ParInvoiceConst;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -25,17 +26,20 @@ import com.iwhalecloud.retail.partner.manager.MerchantAccountManager;
 import com.iwhalecloud.retail.partner.manager.MerchantManager;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.system.common.SystemConst;
+import com.iwhalecloud.retail.system.dto.CommonFileDTO;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.dto.request.*;
 import com.iwhalecloud.retail.system.dto.response.OrganizationListResp;
-import com.iwhalecloud.retail.system.service.CommonRegionService;
-import com.iwhalecloud.retail.system.service.OrganizationService;
-import com.iwhalecloud.retail.system.service.UserService;
+import com.iwhalecloud.retail.system.service.*;
+import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
+import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
+import com.iwhalecloud.retail.workflow.service.TaskService;
+import com.twmacinta.util.MD5;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.BooleanUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,10 +47,19 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static com.iwhalecloud.retail.dto.ResultVO.success;
 
 @Slf4j
 @Service(timeout = 20000)
@@ -76,6 +89,18 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Autowired
     private BusinessEntityManager businessEntityManager;
+
+    @Reference
+    private CommonFileService commonFileService;
+
+    @Reference
+    private TaskService taskService;
+
+    @Reference
+    private ProductService productService;
+
+    @Reference
+    private ZopMessageService zopMessageService;
 
     /**
      * 根据条件 查询商家条数
@@ -260,17 +285,12 @@ public class MerchantServiceImpl implements MerchantService {
         if (result <= 0) {
             return ResultVO.error("更新商家信息失败");
         }
-        //如果商家状态值不为空，则执行用户状态更新操作
+        //如果修改商家状态值，则同步用户状态
         if (!StringUtils.isEmpty(req.getStatus())) {
-            //判断是否有用户的rel_code和商家的MERCHANT_ID相同,
-//            UserGetReq userGetReq = new UserGetReq();
-//            userGetReq.setRelCode(merchant.getMerchantId());
-//            UserDTO userDTO = userService.getUser(userGetReq);
             // 可能有绑定多个用户
             UserListReq userListReq = new UserListReq();
             userListReq.setRelCode(merchant.getMerchantId());
             List<UserDTO> userDTOList = userService.getUserList(userListReq);
-//            if(userDTO != null) {
             if (!CollectionUtils.isEmpty(userDTOList)) {
                 // 有绑定用户
                 try {
@@ -280,10 +300,6 @@ public class MerchantServiceImpl implements MerchantService {
                     throw new RuntimeException("更新商家信息失败");
                 }
             }
-//            else {
-//                // 更新商家信息失败
-//                throw new RuntimeException("更新商家信息失败");
-//            }
         }
         return ResultVO.success(result);
     }
@@ -399,8 +415,17 @@ public class MerchantServiceImpl implements MerchantService {
             }
 
         }
-        log.info("MerchantServiceImpl.listMerchant(), output: list.size()={} ", list.size());
+
+        //数据量太大，改为输出大小
+        log.info("MerchantServiceImpl.listMerchant(), output: list.size={} ", JSON.toJSONString(getSize(list)));
         return ResultVO.success(list);
+    }
+
+    private int getSize(List list) {
+        if (Objects.isNull(list)) {
+            return 0;
+        }
+        return list.size();
     }
 
     /**
@@ -956,5 +981,595 @@ public class MerchantServiceImpl implements MerchantService {
     @Override
     public List<String> getMerchantIdList(String merchantName) {
         return merchantManager.getMerchantIdList(merchantName);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVO<String> saveFactoryMerchant(FactoryMerchantSaveReq req) {
+        //新增厂商表记录
+        Merchant merchant = new Merchant();
+        BeanUtils.copyProperties(req, merchant);
+        merchant = this.addMerchant(merchant);
+        String merchantId = merchant.getMerchantId();
+        req.setMerchantId(merchantId);
+        //注册厂商信息并生成审核流程
+        UserFactoryMerchantReq userFactoryMerchantReq = new UserFactoryMerchantReq();
+        BeanUtils.copyProperties(req, userFactoryMerchantReq);
+        //生成管理平台注册的工作流请求参数
+        ProcessStartReq processStartReq = this.getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessTitle(), req.getCreateStaff(), req.getCreateStaffName(), PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessId(),
+                req.getMerchantId(), req.getLanId(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3038.getTaskSubType());
+        ResultVO vo = initFactoryMerchant(userFactoryMerchantReq, processStartReq);
+        if (!vo.isSuccess()) {
+            //注册厂商信息失败，回滚生成的账户信息
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error(vo.getResultMsg());
+        }
+        //关联账户信息,生成user信息
+        ResultVO<UserDTO> userResult = this.addUser(req);
+        if (!userResult.isSuccess() || null == userResult.getResultData()) {
+            //注册失败，回滚事务
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error(userResult.getResultMsg());
+        }
+        return success("新建厂商成功");
+    }
+
+    /**
+     *厂商自注册
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public ResultVO registerFactoryMerchant(FactoryMerchantSaveReq req) {
+        try {
+            Merchant merchant = new Merchant();
+            BeanUtils.copyProperties(req, merchant);
+            merchant = this.addMerchant(merchant);
+            req.setMerchantId(merchant.getMerchantId());
+            ProcessStartReq processStartReq = this.getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessTitle(), req.getCreateStaff(), req.getCreateStaffName(), PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessId(),
+                    req.getMerchantId(), req.getLanId(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3034.getTaskSubType());
+            //initFactoryMerchant(req, processStartReq);
+            return ResultVO.success();
+        } catch (Exception e) {
+            return ResultVO.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 上传厂商附件，生成审核流程
+     * @param req
+     * @param
+     * @return
+     */
+    public ResultVO<String> initFactoryMerchant(UserFactoryMerchantReq req, ProcessStartReq processStartReq) {
+        //发起审核流程
+        ResultVO processResult = taskService.startProcess(processStartReq);
+        if (!processResult.isSuccess()) {
+            return processResult;
+        }
+        //新增厂商附件记录
+        MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+        BeanUtils.copyProperties(req, fileReq);
+        ResultVO fileResult = this.addCommonFile(fileReq);
+        return fileResult;
+    }
+
+    /**
+     * 添加厂商初始记录
+     * @param
+     * @return
+     */
+    private Merchant addMerchant(Merchant merchant) {
+        //默认未生效
+        merchant.setStatus(PartnerConst.MerchantStatusEnum.NOT_EFFECT.getType());
+        //类别为厂商
+        merchant.setMerchantType(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType());
+        merchant.setMerchantCode(merchantManager.getMerchantCode(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType()));
+        merchant.setParCrmOrgId("843073100000000");
+        merchant.setParCrmOrgCode("843073100000000");
+        merchantManager.insertMerchant(merchant);
+        return merchant;
+    }
+
+    /**
+     * 厂商添加关联的用户信息
+     * @param req
+     * @return
+     * @throws Exception
+     */
+    private ResultVO<UserDTO> addUser(FactoryMerchantSaveReq req) {
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req, userAddReq);
+        //默认禁用,流程审批通过后修改状态
+        userAddReq.setStatusCd(SystemConst.USER_STATUS_INVALID);
+        //用户类型为厂商
+        userAddReq.setUserFounder(SystemConst.USER_FOUNDER_8);
+        //关联id为厂商id
+        userAddReq.setRelCode(req.getMerchantId());
+        userAddReq.setCreateStaff(req.getCreateStaff());
+        userAddReq.setUserSource(SystemConst.USER_RESOURCE_YHJ);
+        //生成默认密码
+        String loginPwd = "Ab_123456";
+        userAddReq.setLoginPwd(new MD5(loginPwd).asHex());
+        return userService.addUser(userAddReq);
+    }
+
+    /**
+     * 上传厂商附件信息
+     * @param req
+     * @return
+     */
+    private  ResultVO addCommonFile(MerchantCommonFileReq req) {
+        String merchantId = req.getMerchantId();
+        //上传营业执照正本
+        if (StringUtils.isNotEmpty(req.getBusinessLicense())) {
+            ResultVO result = this.saveCommonFile(req.getBusinessLicense(), merchantId, SystemConst.FileClass.BUSINESS_LICENSE.getCode());
+            if (!result.isSuccess()) {
+                return ResultVO.error("上传营业执照正本失败");
+            }
+        }
+        //上传营业执照副本
+        if (StringUtils.isNotEmpty(req.getBusinessLicenseCopy())) {
+            ResultVO result = this.saveCommonFile(req.getBusinessLicenseCopy(), merchantId, SystemConst.FileClass.BUSINESS_LICENSE.getCode());
+            if (!result.isSuccess()) {
+                return ResultVO.error("上传营业执照副本失败");
+            }
+        }
+        //上传身份证正面
+        if (StringUtils.isNotEmpty(req.getLegalPersonIdCardFont())) {
+            ResultVO result = this.saveCommonFile(req.getLegalPersonIdCardFont(), merchantId, SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode());
+            if (!result.isSuccess()) {
+                return ResultVO.error("上传身份证正面失败");
+            }
+        }
+        //上传身份证背面
+        if (StringUtils.isNotEmpty(req.getLegalPersonIdCardBack())) {
+            ResultVO result = this.saveCommonFile(req.getLegalPersonIdCardFont(), merchantId, SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode());
+            if (!result.isSuccess()) {
+                return ResultVO.error("上传身份证背面失败");
+            }
+        }
+        //上传授权证明
+        if (StringUtils.isNotEmpty(req.getAuthorizationCertificate())) {
+            ResultVO result = this.saveCommonFile(req.getAuthorizationCertificate(), merchantId, SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode());
+            if (!result.isSuccess()) {
+                return ResultVO.error("上传授权证明失败");
+            }
+        }
+        //上传合同
+        if (StringUtils.isNotEmpty(req.getContract())) {
+            ResultVO result = this.saveCommonFile(req.getContract(), merchantId, SystemConst.FileClass.CONTRACT_TEXT.getCode());
+            if (!result.isSuccess()) {
+                return ResultVO.error("上传合同失败");
+            }
+        }
+        return ResultVO.success();
+    }
+
+    /**
+     * 上传附件
+     * @param fileUrl
+     * @param merchantId
+     * @param fileClass
+     * @return
+     */
+    private ResultVO saveCommonFile(String fileUrl, String merchantId, String fileClass) {
+        CommonFileDTO dto = new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(), fileClass, merchantId, fileUrl);
+        return commonFileService.saveCommonFile(dto);
+    }
+
+    /**
+     * 获取生成工作流参数
+     *
+     * @param title     流程名称
+     * @param userId    流程发起人id
+     * @param userName  流程发起人name
+     * @param processId 流程processid
+     * @param formId
+     * @param extends1  如果申请人是商家，该字段信息显示“地市+区县”信息，如果是电信人员则显示“岗位+部门”信息
+     * @param taskType  流程类别
+     */
+    private ProcessStartReq getStartProcessDTO(String title, String userId, String userName, String processId, String formId, String extends1, String taskType) {
+        ProcessStartReq processStartDTO = new ProcessStartReq();
+        processStartDTO.setTitle(title);
+        //创建流程者， 参数需要提供
+        processStartDTO.setApplyUserId(userId);
+        processStartDTO.setApplyUserName(userName);
+        processStartDTO.setProcessId(processId);
+        processStartDTO.setFormId(formId);
+        processStartDTO.setExtends1(extends1);
+        processStartDTO.setTaskSubType(taskType);
+        return processStartDTO;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registLandSupplier(SupplierResistReq req) {
+        try {
+            //地包商
+            req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
+            //插入商家信息
+            ResultVO<Merchant> merchantRt = addMerchantInfo(req);
+            String merchantId = merchantRt.getResultData().getMerchantId();
+            //插入附件表  --未做补偿
+            MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+            BeanUtils.copyProperties(req, fileReq);
+            fileReq.setMerchantId(merchantId);
+            this.addCommonFile(fileReq);
+            //发起审核流程
+            ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessTitle(), req.getUserId(), req.getMerchantName()
+                    ,PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessId(),
+                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3033.getTaskSubType());
+            taskService.startProcess(getStartProcessDTO);
+        }catch (Exception e){
+            log.info(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error("注册失败");
+        }
+        return ResultVO.success("注册成功");
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registProvinceSupplier(SupplierResistReq req) {
+        try {
+            req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+            //插入商家信息
+            ResultVO<Merchant> merchantRt = addMerchantInfo(req);
+            String merchantId = merchantRt.getResultData().getMerchantId();
+            //插入附件表  --未做补偿
+            MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+            BeanUtils.copyProperties(req, fileReq);
+            fileReq.setMerchantId(merchantId);
+            this.addCommonFile(fileReq);
+            //发起审核流程
+            ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessTitle(),req.getUserId(), req.getMerchantName()
+                    ,PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessId(),
+                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3035.getTaskSubType());
+            taskService.startProcess(getStartProcessDTO);
+        }catch (Exception e){
+            log.error("注册失败" + e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error("注册失败");
+        }
+        return ResultVO.success("注册成功");
+    }
+
+    /**
+     * 管理员注册地包商
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registLandSupplierForAdmin(SupplierResistReq req) {
+        try {
+            req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType());
+            req.setIfByAdmin(true);
+            //插入商家信息
+            ResultVO<Merchant> merchantRt = addMerchantInfo(req);
+            String merchantId = merchantRt.getResultData().getMerchantId();
+            //插入附件表  --未做补偿
+            MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+            BeanUtils.copyProperties(req, fileReq);
+            fileReq.setMerchantId(merchantId);
+            this.addCommonFile(fileReq);
+            //调用user服务插入注册user信息
+            ResultVO<UserDTO> addUserRt = addUser(req, SystemConst.USER_FOUNDER_4, merchantId);
+            if (!addUserRt.isSuccess()) return addUserRt;
+            UserDTO user = addUserRt.getResultData();
+            log.info("注册用户id" + user.getUserId());
+            String statrProUserId = req.getUserId();
+            log.info("发起者id" + statrProUserId);
+            UserGetReq userGetReq = new UserGetReq();
+            userGetReq.setUserId(statrProUserId);
+            UserDTO startProcessUser = userService.getUser(userGetReq);
+            //发起审核流程
+            ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessTitle(), startProcessUser.getUserId(), startProcessUser.getUserName()
+                    , PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessId(),
+                    merchantId, req.getLanId(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3036.getTaskSubType());
+            taskService.startProcess(getStartProcessDTO);
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error("注册失败");
+        }
+        return ResultVO.success("注册成功");
+    }
+
+
+    /**
+     * 上传合同
+     * @param contract 图片地址
+     * @param merchantId 关联主键
+     * @param rollBack 上传失败是否回滚 true 抛出异常 false处理异常
+     */
+    private void addContract(String contract, String merchantId,Boolean rollBack) {
+        //合同不为空，上传合同
+        if(StringUtils.isNotBlank(contract)){
+            CommonFileDTO dto=new CommonFileDTO(SystemConst.FileType.IMG_FILE.getCode(),SystemConst.FileClass.CONTRACT_TEXT.getCode(),merchantId,contract);
+            if( !commonFileService.saveCommonFile(dto).isSuccess() && rollBack)
+            {
+                throw new RuntimeException("上传合同失败");
+            }
+        }
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
+    public ResultVO registProvinceSupplierForAdmin(SupplierResistReq req) {
+        try {
+            req.setMerchantType(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType());
+            req.setIfByAdmin(true);
+            //插入商家信息
+            ResultVO<Merchant> merchantRt = addMerchantInfo(req);
+            String merchantId = merchantRt.getResultData().getMerchantId();
+            //插入附件表  --未做补偿
+            MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+            BeanUtils.copyProperties(req, fileReq);
+            fileReq.setMerchantId(merchantId);
+            this.addCommonFile(fileReq);
+            //USER_FOUNDER_4 省包
+            ResultVO<UserDTO> addUserRt = addUser(req,SystemConst.USER_FOUNDER_4,merchantId);
+            if(!addUserRt.isSuccess())return addUserRt;
+            UserDTO user = addUserRt.getResultData();
+            String statrProUserId = req.getUserId();
+            UserGetReq userGetReq = new UserGetReq();
+            userGetReq.setUserId(statrProUserId);
+            UserDTO startProcessUser = userService.getUser(userGetReq);
+            //发起审核流程   如果是电信人员则显示“岗位+部门”信息
+            ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessTitle(), startProcessUser.getUserId(), startProcessUser.getUserName()
+                    ,PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessId(),
+                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3037.getTaskSubType());
+            taskService.startProcess(getStartProcessDTO);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return ResultVO.error("注册失败");
+        }
+        return ResultVO.success("注册成功");
+    }
+
+    @Override
+    public ResultVO<SupplierResistResp> getSupplierInfo(String merchantId) {
+        SupplierResistResp resistResp;
+        try {
+            MerchantGetReq req = new MerchantGetReq();
+            req.setMerchantId(merchantId);
+            UserGetReq userGetReq = new UserGetReq();
+            MerchantDetailDTO merchant = this.getMerchantDetail(req).getResultData();
+            MerchantAccountListReq merchantAccountListReq = new MerchantAccountListReq();
+            merchantAccountListReq.setMerchantId(merchantId);
+            List<MerchantAccount> merchantAccountList = merchantAccountManager.listMerchantAccount(merchantAccountListReq);
+            userGetReq.setUserId(merchant.getUserId());
+            UserDTO user = userService.getUser(userGetReq);
+            CommonFileDTO commonFileDTO = new CommonFileDTO();
+            commonFileDTO.setObjId(merchantId);
+            List<CommonFileDTO>commonFileList= commonFileService.listCommonFile(commonFileDTO).getResultData();
+            resistResp = fillSupplierRegistResp(merchant,user,merchantAccountList,commonFileList);
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return ResultVO.error("获取详情失败");
+        }
+        return ResultVO.success(resistResp);
+    }
+
+    private SupplierResistResp fillSupplierRegistResp(MerchantDetailDTO merchant, UserDTO user, List<MerchantAccount> merchantAccountList, List<CommonFileDTO> commonFileList) {
+        SupplierResistResp resistResp = new SupplierResistResp();
+        BeanUtils.copyProperties(merchant,resistResp);
+        BeanUtils.copyProperties(user,resistResp);
+        for(CommonFileDTO commonFileDTO : commonFileList) {
+            //身份证
+            if (commonFileDTO.getFileClass().equals(SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode())) {
+                if (resistResp.getLegalPersonIdCardFont() == null) {
+                    resistResp.setLegalPersonIdCardFont(commonFileDTO.getFileUrl());
+                } else resistResp.setLegalPersonIdCardBack(commonFileDTO.getFileUrl());
+            }
+            //营业执照
+            if (commonFileDTO.getFileClass().equals(SystemConst.FileClass.BUSINESS_LICENSE.getCode())) {
+                resistResp.setBusinessLicense(commonFileDTO.getFileUrl());
+                if (resistResp.getBusinessLicense() == null) {
+                    resistResp.setBusinessLicense(commonFileDTO.getFileUrl());
+                } else {
+                    resistResp.setBusinessLicenseCopy(commonFileDTO.getFileUrl());
+                }
+            }
+            if (commonFileDTO.getFileClass().equals(SystemConst.FileClass.CONTRACT_TEXT.getCode())) {
+                resistResp.setContract(commonFileDTO.getFileUrl());
+            }
+            if (commonFileDTO.getFileClass().equals(SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode())) {
+                resistResp.setAuthorizationCertificate(commonFileDTO.getFileUrl());
+            }
+        }
+        //accout
+        for(MerchantAccount account : merchantAccountList){
+            resistResp.setAccount(account.getAccount());
+            if(account.getAccountType().equals(PartnerConst.MerchantAccountTypeEnum.BEST_PAY.getType())){
+                resistResp.setWindPayCount(account.getAccountName());
+            }
+            if(account.getAccountType().equals(PartnerConst.MerchantAccountTypeEnum.BANK_ACCOUNT.getType())){
+                resistResp.setBank(account.getBank());
+                resistResp.setBankAccount(account.getBankAccount());
+            }
+        }
+        return resistResp;
+    }
+
+
+    /**
+     * remote add sys_user
+     * @param req
+     * @param userFounder
+     * @param merchantId
+     * @return
+     */
+    public ResultVO<UserDTO> addUser(SupplierResistReq req,int userFounder,String merchantId){
+        UserAddReq userAddReq = new UserAddReq();
+        BeanUtils.copyProperties(req,userAddReq);
+        userAddReq.setLoginPwd(new MD5(SystemConst.DFPASSWD).asHex());
+        userAddReq.setUserFounder(userFounder);
+        //关联商户信息和系统用户
+        userAddReq.setRelCode(merchantId); //关联商户信息和系统用户
+        //刚注册用户处于禁用状态
+        userAddReq.setStatusCd(SystemConst.USER_STATUS_INVALID);
+        return userService.addUser(userAddReq);
+    }
+
+    public ResultVO<Merchant> addMerchantInfo (SupplierResistReq req) {
+        //管理员注册
+        if(req.isIfByAdmin()) req.setUserId(null);
+        MerchantAccount account = new MerchantAccount();
+        BeanUtils.copyProperties(req,account);
+        Merchant merchant = fillMerchant(req);
+        String merchantId = merchantManager.addMerchan(merchant);
+        account.setMerchantId(merchantId);
+        //插入银行收款信息
+        account = fillBankAccount(req,account);
+        merchantAccountManager.insert(account);
+        //插入翼支付收款信息
+        account = fillWindPayAccount(req,account);
+        merchantAccountManager.insert(account);
+        return ResultVO.success(merchant);
+    }
+
+
+    public ResultVO checkBank(SupplierResistReq req) {
+        //银行卡号是否正确
+        JSONObject obj = JSONObject.parseObject(getCardDetail(req.getBankAccount()));
+        String stat = (String) obj.get("stat");
+        Boolean flag = (Boolean) obj.get("validated");
+        if(!stat.equals("ok") || !flag)
+            return ResultVO.error("银行卡无效");
+        return ResultVO.success();
+    }
+
+    /**
+     * 填充merchant
+     * @param req
+     * @return
+     */
+    private Merchant fillMerchant(SupplierResistReq req) {
+        //商户编码，id，名称，地市lanid，联系电话,状态,商户类型
+        //code要自动生成兼容手工维护的code，city可以地市+01,状态为待审核
+        Merchant merchant = new Merchant();
+        BeanUtils.copyProperties(req,merchant);
+        merchant.setStatus(PartnerConst.MerchantStatusEnum.NOT_EFFECT.getType());
+        if(merchant.getLanId()!=null)
+            merchant.setCity(merchant.getLanId() + "01");
+        return merchant;
+    }
+
+
+
+    private MerchantAccount fillWindPayAccount(SupplierResistReq resistReq, MerchantAccount account) {
+        account.setAccount(resistReq.getAccount());
+        account.setAccountName(resistReq.getWindPayCount());
+        //支付类型为---翼支付
+        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BEST_PAY.getType());
+        return account;
+    }
+
+    private MerchantAccount fillBankAccount(SupplierResistReq resistReq,MerchantAccount account) {
+        account.setAccount(resistReq.getAccount());
+        account.setBank(resistReq.getBank());
+        account.setBankAccount(resistReq.getBankAccount());
+        //支付类型为---银行
+        account.setAccountType(PartnerConst.MerchantAccountTypeEnum.BANK_ACCOUNT.getType());
+        return account;
+    }
+
+    private String getCardDetail(String cardNo) {
+        String url = "https://ccdcapi.alipay.com/validateAndCacheCardInfo.json?_input_charset=utf-8&cardNo=";
+        url+=cardNo;
+        url+="&cardBinCheck=true";
+        StringBuilder sb = new StringBuilder();
+        try {
+            URL urlObject = new URL(url);
+            URLConnection uc = urlObject.openConnection();
+            BufferedReader in = new BufferedReader(new InputStreamReader(uc.getInputStream()));
+            String inputLine = null;
+            while ( (inputLine = in.readLine()) != null) {
+                sb.append(inputLine);
+            }
+            in.close();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sb.toString();
+    }
+
+    /**
+     * 修改商户信息
+     * @param req
+     * @return
+     */
+    @Override
+    @Transactional
+    public ResultVO editMerchant (MerchantEditReq req) {
+        Merchant merchant=new Merchant();
+        BeanUtils.copyProperties(req, merchant);
+        this.merchantManager.updateMerchant(merchant);
+        return ResultVO.success();
+    }
+
+    @Override
+    public ResultVO<FactoryMerchantResp> getFactoryMerchant(String merchantId) {
+        FactoryMerchantResp factoryMerchantResp=new FactoryMerchantResp();
+        //获取厂家基本信息
+        ResultVO<MerchantDTO> merchantResult=this.getMerchantById(merchantId);
+        if(merchantResult.getResultData()==null){
+            return ResultVO.error("未找到对应的厂商信息");
+        }
+        MerchantDTO merchantDTO=merchantResult.getResultData();
+        BeanUtils.copyProperties(merchantDTO,factoryMerchantResp);
+        //获取厂家账号信息
+        UserGetReq userGetReq=new UserGetReq();
+        userGetReq.setRelCode(merchantId);
+        UserDTO userDTO=userService.getUser(userGetReq);
+        if(userDTO!=null){
+            BeanUtils.copyProperties(userDTO,factoryMerchantResp);
+        }
+        //获取厂家附件信息
+        CommonFileDTO commonFileDTO=new CommonFileDTO();
+        commonFileDTO.setObjId(merchantId);
+        ResultVO<List<CommonFileDTO>> commonFileResult=commonFileService.listCommonFile(commonFileDTO);
+        if(commonFileResult.isSuccess()&&commonFileResult.getResultData()!=null){
+            makeUpMerchantFile(commonFileResult.getResultData(),factoryMerchantResp);
+        }
+        return ResultVO.success(factoryMerchantResp);
+    }
+
+    /**
+     * 获取厂商附件
+     * @param fileList
+     * @param factoryMerchantResp
+     */
+    private void makeUpMerchantFile(List<CommonFileDTO> fileList, FactoryMerchantResp factoryMerchantResp) {
+        for(CommonFileDTO file : fileList ){
+            String fileUrl=file.getFileUrl();
+            if(file.getFileClass().equals(SystemConst.FileClass.BUSINESS_LICENSE.getCode())){
+                //营业执照
+                if (factoryMerchantResp.getBusinessLicense() == null) {
+                    factoryMerchantResp.setBusinessLicense(fileUrl);
+                } else {
+                    factoryMerchantResp.setBusinessLicenseCopy(fileUrl);
+                }
+            }else if(file.getFileClass().equals(SystemConst.FileClass.IDENTITY_CARD_PHOTOS.getCode())){
+                //身份证照片
+                if(factoryMerchantResp.getLegalPersonIdCardFont()==null){
+                    factoryMerchantResp.setLegalPersonIdCardFont(fileUrl);
+                }else{
+                    factoryMerchantResp.setLegalPersonIdCardBack(fileUrl);
+                }
+            }else if(file.getFileClass().equals(SystemConst.FileClass.AUTHORIZATION_CERTIFICATE.getCode())){
+                //授权证书
+                factoryMerchantResp.setAuthorizationCertificate(fileUrl);
+            }else if(file.getFileClass().equals(SystemConst.FileClass.CONTRACT_TEXT.getCode())){
+                //合同文本
+                factoryMerchantResp.setContract(fileUrl);
+            }
+        }
     }
 }

@@ -48,7 +48,7 @@ public class RandomLogServiceImpl implements RandomLogService {
 		resultVo.setResultCode(ResultCodeEnum.SUCCESS.getCode());
 
 		// 写死一些默认值
-		randomLogAddReq.setRandomCode("888888");
+		/*randomLogAddReq.setRandomCode("888888");*/
 		randomLogAddReq.setValidStatus(SystemConst.ValidStatusEnum.NOT_VALID.getCode());
 		Date now = new Date();
 		randomLogAddReq.setCreateDate(now);

@@ -8,10 +8,15 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.GoodsActRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.MerchantTagRelDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.GoodsActRelListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.MerchantTagRelListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResp;
+import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsActRelService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.MerchantTagRelService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderDTO;
@@ -28,6 +33,7 @@ import com.iwhalecloud.retail.promo.entity.*;
 import com.iwhalecloud.retail.promo.filter.activity.SellerActivityFilter;
 import com.iwhalecloud.retail.promo.filter.activity.model.ActivityAuthModel;
 import com.iwhalecloud.retail.promo.manager.*;
+import com.iwhalecloud.retail.promo.model.ActivityParticipantFilterValueModel;
 import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.promo.service.MarketingActivityService;
 import com.iwhalecloud.retail.promo.utils.ReflectUtils;
@@ -39,6 +45,7 @@ import com.iwhalecloud.retail.rights.dto.response.CouponApplyObjectRespDTO;
 import com.iwhalecloud.retail.rights.dto.response.CouponRuleAndTypeQueryResp;
 import com.iwhalecloud.retail.rights.service.*;
 import com.iwhalecloud.retail.system.common.SysUserMessageConst;
+import com.iwhalecloud.retail.system.common.SystemConst;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
 import com.iwhalecloud.retail.system.dto.ConfigInfoDTO;
 import com.iwhalecloud.retail.system.dto.SysUserMessageDTO;
@@ -70,6 +77,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
+/**
+ * 营销活动服务接口实现类
+ * @author xx
+ */
+
 @Slf4j
 @Component("marketingActivityService")
 @Service
@@ -93,9 +105,6 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     private ActivityProductManager activityProductManager;
 
     @Autowired
-    private ActivityGoodsManager activityGoodsManager;
-
-    @Autowired
     private PromotionManager promotionManager;
 
     @Autowired
@@ -104,14 +113,29 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Autowired
     private ActivityRuleManager activityRuleManager;
 
+    @Autowired
+    private AccountBalanceTypeManager accountBalanceTypeManager;
+
+    @Autowired
+    private AccountBalanceRuleManager accountBalanceRuleManager;
+
+    @Autowired
+    private ActivityProductService activityProductService;
+
+    @Autowired
+    private Constant constant;
+
     @Reference
     private MktResCouponService mktResCouponService;
 
     @Reference
     private PreSubsidyCouponService preSubsidyCouponService;
 
-    @Autowired
-    private ActivityProductService activityProductService;
+    @Reference
+    private GoodsActRelService goodsActRelService;
+
+    @Reference
+    private GoodsProductRelService goodsProductRelService;
 
     @Reference
     private TaskService taskService;
@@ -143,23 +167,14 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
     @Reference
     private UserService userService;
 
-    @Autowired
-    private Constant constant;
-
     @Reference
     private MktResCouponTaskService mktResCouponTaskService;
 
     @Reference
     private ProductService productService;
+
     @Reference
     private MerchantTagRelService merchantTagRelService;
-
-    @Autowired
-    private AccountBalanceTypeManager accountBalanceTypeManager;
-
-    @Autowired
-    private AccountBalanceRuleManager accountBalanceRuleManager;
-    private List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryRespList;
 
 
     @Override
@@ -168,6 +183,11 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         log.info("MarketingActivityServiceImpl.addMarketingActivity req={}", JSON.toJSONString(req));
         MarketingActivity marketingActivity = new MarketingActivity();
         BeanUtils.copyProperties(req, marketingActivity);
+        //根据发起人(userFounder)类型，转换成活动级别activityLevel，并设置
+        if(req.getUserFounder()!=null){
+            String activityLevel = convertToActivityLevel(req.getUserFounder());
+            req.setActivityLevel(activityLevel);
+        }
         // 添加营销活动
         marketingActivityManager.addMarketingActivity(marketingActivity);
         String marketingActivityId = marketingActivity.getId();
@@ -239,6 +259,32 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
         marketingActivityAddResp.setId(marketingActivityId);
         marketingActivityAddResp.setMarketingActivityModifyId(marketingActivityModifyId);
         return ResultVO.success(marketingActivityAddResp);
+    }
+
+    /**
+     * 根据发起人(userFounder)类型，转换成活动级别activityLevel
+     * @param userFounder
+     * @return
+     */
+    private String convertToActivityLevel(Integer userFounder){
+        String activityLevel = PromoConst.ActivityLevel.LEVEL_1.getCode();
+        switch (userFounder) {
+            case SystemConst.USER_FOUNDER_9:
+                activityLevel = PromoConst.ActivityLevel.LEVEL_2.getCode();
+                break;
+            case SystemConst.USER_FOUNDER_8:
+                activityLevel = PromoConst.ActivityLevel.LEVEL_3.getCode();
+                break;
+            case SystemConst.USER_FOUNDER_4:
+                activityLevel = PromoConst.ActivityLevel.LEVEL_4.getCode();
+                break;
+            case SystemConst.USER_FOUNDER_5:
+                activityLevel = PromoConst.ActivityLevel.LEVEL_5.getCode();
+                break;
+            default:
+                break;
+        }
+        return activityLevel;
     }
 
     @Override
@@ -612,6 +658,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                         if(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode().equals(item.getActivityType())){
                             //如果是前置补贴营销活动，需将产品补贴金额替换到营销活动优惠描述中
                             convertPromotionDesc(req.getProductId(),item);
+                        }else{
+                            item.setPromotionDesc(null);
                         }
                         MarketingGoodsActivityQueryResp marketingGoodsActivityQueryResp = new MarketingGoodsActivityQueryResp();
                         BeanUtils.copyProperties(item, marketingGoodsActivityQueryResp);
@@ -781,15 +829,16 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
      *
      * @param merchantCode
      * @param item
-     * @param marketingActivitieList
+     * @param marketingActivityList
      * @return
      */
-    private Boolean filterMerchant(String merchantCode, MarketingActivity item, List<MarketingActivity> marketingActivitieList) {
+    private Boolean filterMerchant(String merchantCode, MarketingActivity item, List<MarketingActivity> marketingActivityList) {
         if (StringUtils.isBlank(merchantCode)) {
             // 未登录
             return true;
         }
         // 已登录
+        // 1.数据校验和数据准备
         // 过滤当前登录用户是否为创建者
         UserGetReq userGetReq = new UserGetReq();
         userGetReq.setRelCode(merchantCode);
@@ -802,36 +851,39 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 return false;
             }
         }
-        // 创建者不为当前登录商家
+        // 创建者不为当前登录商家，则校验商家是否存在，不存在则直接返回false;
+        ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchantById(merchantCode);
+        MerchantDTO merchantDTO = merchantDTOResultVO.getResultData();
+        if (merchantDTO == null) {
+            return false;
+        }
+
+        // 2.开始比较
         String activityParticipantType = item.getActivityParticipantType();
         if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_10.getCode().equals(activityParticipantType)) {
-            //过滤地市、区县
-            ResultVO<MerchantDTO> merchantDTO = merchantService.getMerchantById(merchantCode);
-            MerchantDTO merchant = merchantDTO.getResultData();
-            if (merchant != null) {
-                ActivityParticipant activityParticipantsByLandId = activityParticipantManager.queryActivityParticipantByLandId(item.getId(), merchantDTO.getResultData().getLanId());
-                if (activityParticipantsByLandId != null) {
-                    //过滤地市
-                    marketingActivitieList.add(item);
-                } else {
-                    //过滤区县
-                    ActivityParticipant activityParticipantsByCity = activityParticipantManager.queryActivityParticipantByCityId(item.getId(), merchantDTO.getResultData().getCity());
-                    if (activityParticipantsByCity != null) {
-                        marketingActivitieList.add(item);
-                    }
+            // 2.1按地市过滤：过滤地市、区县
+            ActivityParticipant activityParticipantsByLandId = activityParticipantManager.queryActivityParticipantByLandId(item.getId(), merchantDTO.getLanId());
+            if (activityParticipantsByLandId != null) {
+                //过滤地市
+                marketingActivityList.add(item);
+            } else {
+                //过滤区县
+                ActivityParticipant activityParticipantsByCity = activityParticipantManager.queryActivityParticipantByCityId(item.getId(), merchantDTO.getCity());
+                if (activityParticipantsByCity != null) {
+                    marketingActivityList.add(item);
                 }
             }
         } else if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_20.getCode().equals(activityParticipantType)) {
-            //过滤商家（买家）编码
+            // 2.2按商家过滤：过滤商家（买家）编码
             ActivityParticipant activityParticipantList = activityParticipantManager.queryActivityParticipantByMerchantCode(item.getId(), merchantCode);
             if (activityParticipantList != null) {
-                marketingActivitieList.add(item);
+                marketingActivityList.add(item);
             }
         }else if (PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode().equals(activityParticipantType)) {
             //查看该商家是否是活动对象(要求满足全部过滤条件)
-            boolean flag = isExistingInParticipantFilterValue(item, merchantCode);
+            boolean flag = isExistingInParticipantFilterValue(item.getId(), merchantDTO.getMerchantId(),merchantDTO.getLanId(),merchantDTO.getCity());
             if (flag) {
-                marketingActivitieList.add(item);
+                marketingActivityList.add(item);
             }
         }
 
@@ -839,97 +891,69 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
 
     }
 
+
     /**
      * 判断商家merchantCode是否是活动activity参与对象
-     * @param activity 活动
-     * @param merchantCode 商家编码
+     * @param activityId 活动id
+     * @param merchantId 商家id信息
+     * @param lanId 商家所在地市
+     * @param cityId 商家所在区县
      * @return
      */
-    private boolean isExistingInParticipantFilterValue(MarketingActivity activity,String merchantCode){
-        // 1.准备过滤条件数据
+    @Override
+    public boolean isExistingInParticipantFilterValue(String activityId,String merchantId,String lanId,String cityId){
+        //如果activityId或merchantId有一个为空，直接返回false，因为不具备比较条件
+        if (StringUtils.isEmpty(activityId)||StringUtils.isEmpty(merchantId)){
+            return false;
+        }
+        // 1.准备商家标签信息，下面要用到
+        MerchantTagRelListReq req = new MerchantTagRelListReq();
+        req.setMerchantId(merchantId);
+        ResultVO<List<MerchantTagRelDTO>> tagListResultVO = merchantTagRelService.listMerchantTagRel(req);
+        List<MerchantTagRelDTO> merchantTagRelDTOs = CollectionUtils.isEmpty(tagListResultVO.getResultData())?null:tagListResultVO.getResultData();
+
+        // 2.准备过滤条件数据
         // 查询过滤条件是否存在，不存在则直接返回false;
-        List<ActivityParticipantDTO> activityParticipantDTOList  = activityParticipantManager.queryActivityParticipantByMktIdAndStatus(activity.getId(), PromoConst.Status.Audited.getCode());
+        List<ActivityParticipantDTO> activityParticipantDTOList  = activityParticipantManager.queryActivityParticipantByMktIdAndStatus(activityId, PromoConst.Status.Audited.getCode());
         ActivityParticipantDTO  activityParticipantDTO = CollectionUtils.isEmpty(activityParticipantDTOList)?null:activityParticipantDTOList.get(0);
         if (activityParticipantDTO == null||activityParticipantDTO.getFilterValue()==null) {
             return false;
         }
+        // 解析过滤条件内容,转为ActivityParticipantFilterValueModel对象模型
         String filterValue = activityParticipantDTO.getFilterValue();
-
-        // 2.准备商家数据
-        // 校验商家是否存在，不存在则直接返回false;
-        ResultVO<MerchantDTO> resultVO = merchantService.getMerchantByCode(merchantCode);
-        MerchantDTO merchantDTO = resultVO.getResultData();
-        if (merchantDTO == null) {
+        ActivityParticipantFilterValueModel filterValueModel = new ActivityParticipantFilterValueModel(filterValue);
+        if (!filterValueModel.isSuccess()){
             return false;
         }
-        // 3.准备标签数据
-        // 查询商家标签信息
-        MerchantTagRelListReq req = new MerchantTagRelListReq();
-        req.setMerchantId(merchantDTO.getMerchantId());
-        ResultVO<List<MerchantTagRelDTO>> tagListResultVO = merchantTagRelService.listMerchantTagRel(req);
-        List<MerchantTagRelDTO> merchantTagRelDTOs = null;
-        if(tagListResultVO!=null&&tagListResultVO.getResultData()!=null){
-            merchantTagRelDTOs = tagListResultVO.getResultData();
-        }
-        //4.开始比较是否是活动参与对象
-        boolean flag = true;
-        try {
-            // 解析过滤条件内容
-            JSONObject filterValueJson = JSONObject.parseObject(filterValue);
-            JSONArray cityArray = filterValueJson.getJSONArray("cityList");
-            JSONArray countyArray = filterValueJson.getJSONArray("countyList");
-            JSONArray tagArray = filterValueJson.getJSONArray("tagList");
-            // 获取各级过滤条件ids
-            List<String> cityIds =  getFieldListFromJSONArray(cityArray,"regionId");
-            List<String> countyIds =  getFieldListFromJSONArray(countyArray,"regionId");
-            List<String> tagIds =  getFieldListFromJSONArray(tagArray,"tagId");
 
-            // 查看商家所在城市是否包含在城市条件里
-            if(!CollectionUtils.isEmpty(cityIds)){
-                flag = cityIds.contains(merchantDTO.getLanId());
-            }
-            // 查看商家所在区县是否包含在区县条件里
-            if(!CollectionUtils.isEmpty(countyIds)){
-                flag = countyIds.contains(merchantDTO.getCity());
-            }
-            // 查看商家标签是否包含在标签条件里
-            if(!CollectionUtils.isEmpty(tagIds)&&!CollectionUtils.isEmpty(merchantTagRelDTOs)){
-                //只要有一个商家标签包含在标签条件里就算包含
-                flag = false;
-                for (MerchantTagRelDTO merchantTagRelDTO : merchantTagRelDTOs) {
-                    if(tagIds.contains(merchantTagRelDTO.getTagId())){
-                        flag = true;
-                        break;
-                    }
+        //3.开始比较是否是活动参与对象
+        boolean flag = true;
+        // 获取各级过滤条件ids
+        List<String> cityIds = filterValueModel.getCityIds();
+        List<String> countyIds = filterValueModel.getCountyIds();
+        List<String> tagIds = filterValueModel.getTagIds();
+
+        // 查看商家所在城市是否包含在城市条件里
+        if(!CollectionUtils.isEmpty(cityIds)&&StringUtils.isNotEmpty(lanId)){
+            flag = cityIds.contains(lanId);
+        }
+        // 查看商家所在区县是否包含在区县条件里
+        if(!CollectionUtils.isEmpty(countyIds)&&StringUtils.isNotEmpty(cityId)){
+            flag = countyIds.contains(cityId);
+        }
+        // 查看商家标签是否包含在标签条件里
+        if(!CollectionUtils.isEmpty(tagIds)&&!CollectionUtils.isEmpty(merchantTagRelDTOs)){
+            //只要有一个商家标签包含在标签条件里就算包含
+            flag = false;
+            for (MerchantTagRelDTO merchantTagRelDTO : merchantTagRelDTOs) {
+                if(tagIds.contains(merchantTagRelDTO.getTagId())){
+                    flag = true;
+                    break;
                 }
             }
-        } catch (Exception e) {
-            log.info("MarketingActivityServiceImpl.isActivityParticipant 处理异常，filterValue={}", filterValue);
-            return false;
         }
 
         return flag;
-    }
-
-    /**
-     * 从JsonArray里提取字段list
-     * @param array JsonArray模型对象
-     * @param field 要提取的字段
-     * @return
-     */
-    private List<String> getFieldListFromJSONArray(JSONArray array, String field){
-        List<String> list =  Lists.newArrayList();
-        try {
-            for (int i = 0; i < array.size(); i++) {
-                JSONObject object = array.getJSONObject(i);
-                String regionId = object.getString(field);
-                list.add(regionId);
-            }
-        } catch (Exception ex) {
-            log.info("MarketingActivityServiceImpl.getFieldListFromJSONArray 处理异常，array={}", array.toJSONString());
-            return list;
-        }
-        return list;
     }
 
     /**
@@ -1258,8 +1282,8 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
             activityChangeDetail.setChangeField(MarketingActivity.FieldNames.promotionDesc.getTableFieldName());
             activityChangeDetail.setChangeFieldName(MarketingActivity.FieldNames.promotionDesc.getTableFieldComment());
             activityChangeDetail.setFieldType(PromoConst.FieldType.FieldType_1.getCode());
-            activityChangeDetail.setOldValue(originalActivity.getDescription());
-            activityChangeDetail.setNewValue(changedActivity.getDescription());
+            activityChangeDetail.setOldValue(originalActivity.getPromotionDesc());
+            activityChangeDetail.setNewValue(changedActivity.getPromotionDesc());
             activityChangeDetail.setKeyValue(originalActivity.getId());
             activityChangeDetails.add(activityChangeDetail);
         }
@@ -2122,8 +2146,6 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                     sysUserMessageDTO.setEndTime(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).deliverEndItme);
                     sysUserMessageDTO.setTitle(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).title + SysUserMessageConst.NOTIFY_ACTIVITY_ORDER_DELIVERY_TITLE);
                     sysUserMessageDTO.setContent(activityIdAndDeliverEndTimeMap.get(historyPurchase.getMarketingActivityId()).title);
-
-
                     if (!Objects.isNull(orderDTO.getMerchantId())) {
                         UserGetReq userGetReq = new UserGetReq();
                         userGetReq.setRelCode(orderDTO.getMerchantId());
@@ -2209,5 +2231,58 @@ public class MarketingActivityServiceImpl implements MarketingActivityService {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 根据商品id查看预售活动列表，实际有且只有一个预售活动
+     * @param goodsId
+     */
+    @Override
+    public ResultVO listGoodsAdvanceActivity(String goodsId){
+        //校验入参
+        if (StringUtils.isEmpty(goodsId)){
+            return ResultVO.error("商品id为空");
+        }
+        //1.查询商品和活动关联信息，有且只能有一个活动
+        GoodsActRelListReq goodsActRelListReq = new GoodsActRelListReq();
+        goodsActRelListReq.setGoodsId(goodsId);
+        goodsActRelListReq.setActType(PromoConst.ACTIVITYTYPE.BOOKING.getCode());
+        ResultVO<List<GoodsActRelDTO>> goodsActRelListResultVo = goodsActRelService.queryGoodsActRel(goodsActRelListReq);
+        List<GoodsActRelDTO> goodsActRelDTOs = goodsActRelListResultVo.getResultData();
+        if (CollectionUtils.isEmpty(goodsActRelDTOs) || goodsActRelDTOs.size() > 1) {
+            log.error("MarketingActivityServiceImpl.listGoodsAdvanceActivity-->goodsActRelDTOs={}", JSON.toJSONString(goodsActRelDTOs));
+            return ResultVO.error("预售商品配置异常，商品有且只能配置一个预售活动");
+        }
+
+        //2.获取活动id，并查询活动详情信息
+        String activityId = goodsActRelDTOs.get(0).getActId();
+        ResultVO<MarketingGoodsActivityQueryResp> respResultVO = this.getMarketingActivity(activityId);
+        if (!respResultVO.isSuccess()) {
+            log.error("MarketingActivityServiceImpl.listGoodsAdvanceActivity-->respResultVO={}", JSON.toJSONString(respResultVO));
+            return ResultVO.error(respResultVO.getResultMsg());
+        }
+
+        //3.根据商品id查询商品和产品关联表，预售商品有且只能有一个关联商品
+        ResultVO<List<GoodsProductRelDTO>> listResultVO = goodsProductRelService.listGoodsProductRel(goodsId);
+        List<GoodsProductRelDTO> goodsProductRelDTOs = listResultVO.getResultData();
+        if (org.apache.commons.collections.CollectionUtils.isEmpty(goodsProductRelDTOs) || goodsProductRelDTOs.size() > 1) {
+            log.error("MarketingActivityServiceImpl.listGoodsAdvanceActivity-->goodsProductRelDTOs={}", JSON.toJSONString(goodsProductRelDTOs));
+            return ResultVO.error("预售商品配置异常，商品有且只能配置一个产品规格");
+        }
+        MarketingGoodsActivityQueryResp goodsActivityQueryResp = respResultVO.getResultData();
+//        String productId = goodsProductRelDTOs.get(0).getProductId();
+//        ActivityProductListReq activityProductListReq = new ActivityProductListReq();
+//        activityProductListReq.setMarketingActivityIds(Arrays.asList(activityId));
+//        activityProductListReq.setProductId(productId);
+//        ResultVO<List<ActivityProductDTO>> activityProductsVO = activityProductService.queryActivityProducts(activityProductListReq);
+//        List<ActivityProductDTO> activityProducts = activityProductsVO.getResultData();
+//        if (org.apache.commons.collections.CollectionUtils.isEmpty(activityProducts) || activityProducts.size() > 1) {
+//            log.error("MarketingActivityServiceImpl.listGoodsAdvanceActivity-->goodsProductRelDTOs={}", JSON.toJSONString(goodsProductRelDTOs));
+//            return ResultVO.error("预售活动配置异常，相同产品id规格有且只能配置一个");
+//        }
+//        Long prePrice = activityProducts.get(0).getPrePrice();
+//        goodsActivityQueryResp.setPrePrice(prePrice);
+        List<MarketingGoodsActivityQueryResp> resp = Arrays.asList(goodsActivityQueryResp);
+        return ResultVO.success(resp);
     }
 }

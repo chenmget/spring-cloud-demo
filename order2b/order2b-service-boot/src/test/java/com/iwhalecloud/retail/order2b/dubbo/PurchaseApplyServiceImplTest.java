@@ -1,9 +1,13 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.google.common.reflect.TypeToken;
+import com.google.gson.Gson;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.order2b.TestBase;
 import com.iwhalecloud.retail.order2b.dto.response.purapply.PurApplyDeliveryResp;
+import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyDeliveryReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReceivingReq;
 import com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyReq;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
@@ -66,4 +70,35 @@ public class PurchaseApplyServiceImplTest extends TestBase {
         //Integer i = purchaseApplyService.updatePurApplyItemDetailStatusCd(l);
         //System.out.println(i);
     }
+    @Test
+    public void deliveryEdit() {
+//        PurApplyDeliveryReq req = new PurApplyDeliveryReq();
+//        String json = "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"324234\",\"mktResInstNbr\":[\"1230600000103\",\"3378888453\"]}";
+        String json =  "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"2344234\",\"mktResInstNbr\":[\"3378888467\"]}";
+        Gson gson = new Gson();
+        PurApplyDeliveryReq req = gson.fromJson(json, new TypeToken<PurApplyDeliveryReq>(){}.getType());
+        req.setRegionId("73101");
+        req.setCityId("731");
+        req.setUserId("10000655");
+        ResultVO resultVO = purchaseApplyService.delivery(req);
+
+        System.out.println( JSON.toJSONString(resultVO));
+    }
+    @Test
+    public void receivingEdit() {
+//        PurApplyDeliveryReq req = new PurApplyDeliveryReq();
+//        String json = "{\"applyId\":\"5001\",\"shipAddr\":\"sadfsfs\",\"shipMobile\":\"13845678908\",\"shipNum\":\"324234\",\"mktResInstNbr\":[\"1230600000103\",\"3378888453\"]}";
+        String json =  "{\"applyId\":\"5001\",\"merchantId\":\"10000659\"}";
+        Gson gson = new Gson();
+        PurApplyReceivingReq req = gson.fromJson(json, new TypeToken<PurApplyReceivingReq>(){}.getType());
+        req.setRegionId("73101");
+        req.setLanId("731");
+        req.setCreateStaff("2476");
+        req.getMerchantId();
+
+        ResultVO resultVO = purchaseApplyService.receiving(req);
+
+        System.out.println( JSON.toJSONString(resultVO));
+    }
+
 }

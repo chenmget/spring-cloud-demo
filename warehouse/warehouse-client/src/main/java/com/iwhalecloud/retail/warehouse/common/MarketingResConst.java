@@ -84,12 +84,44 @@ public final class MarketingResConst {
 
     public static enum ResultEnum {
         FAIL("-1", "串码推送ITMS(新增)失败"),
+        SUCESS("0", "串码推送ITMS成功"),
         EXISTS("1", "串码推送ITMS(新增)已经存在");
 
         private String code;
         private String name;
 
         ResultEnum(String code, String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+    }
+
+    public static enum ITME_METHOD {
+        ADD("ITMS_ADD", "新增"),
+        UPDATE("ITMS_XG", "修改"),
+        DELETE("ITMS_DELL", "删除");
+
+        private String code;
+        private String name;
+
+        ITME_METHOD(String code, String name) {
             this.code = code;
             this.name = name;
         }

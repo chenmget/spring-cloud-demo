@@ -91,6 +91,14 @@ public class PermissionApplyItemManager  extends ServiceImpl<PermissionApplyItem
             hasParam = true;
             queryWrapper.eq(PermissionApplyItem.FieldNames.statusCd.getTableFieldName(), req.getStatusCd());
         }
+        if(!StringUtils.isEmpty(req.getRuleType())){
+            hasParam = true;
+            queryWrapper.eq(PermissionApplyItem.FieldNames.ruleType.getTableFieldName(), req.getRuleType());
+        }
+        if(!StringUtils.isEmpty(req.getTargetType())){
+            hasParam = true;
+            queryWrapper.eq(PermissionApplyItem.FieldNames.targetType.getTableFieldName(), req.getTargetType());
+        }
 
         if (!hasParam) {
             return Lists.newArrayList();

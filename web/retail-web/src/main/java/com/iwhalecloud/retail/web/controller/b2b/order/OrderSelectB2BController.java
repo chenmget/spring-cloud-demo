@@ -3,8 +3,8 @@ package com.iwhalecloud.retail.web.controller.b2b.order;
 
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.oms.OmsCommonConsts;
 import com.iwhalecloud.retail.order2b.dto.model.order.OrderItemDetailDTO;
 import com.iwhalecloud.retail.order2b.dto.response.CommonListResp;
 import com.iwhalecloud.retail.order2b.dto.response.OrderListExportResp;
@@ -82,7 +82,7 @@ public class OrderSelectB2BController {
 //        request.setUserExportType("3");
         ResultVO<OrderListExportResp> resultVO = orderSelectOpenService.orderExport(request);
         if (!resultVO.isSuccess()) {
-            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            result.setResultCode(ResultCodeEnum.ERROR.getCode());
             result.setResultMsg(resultVO.getResultMsg());
             deliveryGoodsResNberExcel.outputResponse(response,resultVO);
             return;
@@ -132,7 +132,7 @@ public class OrderSelectB2BController {
         ResultVO<CommonListResp<OrderItemDetailDTO>> resultVO = orderSelectOpenService.orderItemDetailExport(request);
         if (!resultVO.isSuccess() || resultVO.getResultData() == null
                 || CollectionUtils.isEmpty(resultVO.getResultData().getList())) {
-            result.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            result.setResultCode(ResultCodeEnum.ERROR.getCode());
             result.setResultMsg( resultVO.getResultMsg());
             deliveryGoodsResNberExcel.outputResponse(response,resultVO);
             return;
@@ -155,6 +155,12 @@ public class OrderSelectB2BController {
     @RequestMapping(value = "/managerOrderList", method = RequestMethod.POST)
     @UserLoginToken
     public ResultVO<IPage<OrderSelectSwapResp>> managerOrderList(@RequestBody SelectOrderReq request) {
+
+        // zhongwenlong 判断是否是地市管理员 是：默认设置lanId值为当前用户的lanId
+        if (UserContext.isCityAdminType()) {
+            request.setLanId(UserContext.getUser().getLanId());
+        }
+
         if (StringUtils.isNotBlank(request.getOrderCat())) {
             String orderCat = request.getOrderCat();
             request.setOrderCatList(Arrays.asList(orderCat.split(",")));
@@ -192,7 +198,7 @@ public class OrderSelectB2BController {
         ResultVO resultVO = new ResultVO();
         if (orderId == null) {
             resultVO.setResultMsg("订单id不能为空");
-            resultVO.setResultCode(OmsCommonConsts.RESULE_CODE_FAIL);
+            resultVO.setResultCode(ResultCodeEnum.ERROR.getCode());
             return resultVO;
         }
         SelectOrderReq request = new SelectOrderReq();

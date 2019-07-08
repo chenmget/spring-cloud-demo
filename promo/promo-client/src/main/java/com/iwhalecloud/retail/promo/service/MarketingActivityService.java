@@ -149,6 +149,15 @@ public interface MarketingActivityService{
      */
     ResultVO<List<MarketingAndPromotionResp>> listMarketingActivityAndPromotions(MarketingActivityQueryByGoodsReq req);
 
+    /**
+     * 判断商家merchantCode是否是活动activity参与对象
+     * @param activityId 活动id
+     * @param merchantId 商家id信息
+     * @param lanId 商家所在地市
+     * @param cityId 商家所在区县
+     * @return
+     */
+    boolean isExistingInParticipantFilterValue(String activityId,String merchantId,String lanId,String cityId);
 
     /**
      * 查询特定类型失效的活动
@@ -197,5 +206,12 @@ public interface MarketingActivityService{
      * @param req
      */
     void auitMarketingActivityMoify(AuitMarketingActivityReq req);
+
+
+    /**
+     * 根据商品id查看预售活动列表，实际有且只有一个预售活动
+     * @param goodsId
+     */
+    ResultVO listGoodsAdvanceActivity(String goodsId);
 
 }

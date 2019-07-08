@@ -3,7 +3,7 @@ package com.iwhalecloud.retail.web.utils;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.iwhalecloud.retail.web.consts.UserType;
-import com.iwhalecloud.retail.web.controller.cache.RedisCacheUtils;
+import com.iwhalecloud.retail.web.controller.b2b.cache.RedisCacheUtils;
 import com.twmacinta.util.MD5;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

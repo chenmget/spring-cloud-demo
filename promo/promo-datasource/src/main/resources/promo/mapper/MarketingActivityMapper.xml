@@ -123,6 +123,15 @@
         <if test="req.creator != null and req.creator != '' ">
             and t.creator = #{req.creator}
         </if>
+        <if test="req.activityLevel != null and req.activityLevel != '' ">
+            and t.activity_level = #{req.activityLevel}
+        </if>
+        <if test="req.creatorIdList !=null and req.creatorIdList.size()>0">
+            and t.creator in
+            <foreach collection="req.creatorIdList" open="(" item="item" index="index" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
 
         order by t.GMT_CREATE DESC
     </select>

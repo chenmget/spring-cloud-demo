@@ -31,29 +31,44 @@
     ptr.TAG_ID, ptr.PRODUCT_BASE_ID, ptr.PRODUCT_ID
   </sql>
   <select id="listTagRel" parameterType="com.iwhalecloud.retail.goods2b.dto.req.TagRelListReq"
-          resultType="com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp">
-      SELECT <include refid="relTagColoun" />
-      FROM prod_tag_rel ptr
-      WHERE 1 = 1
-      <if test="null!=relTagIdList and relTagIdList.size > 0">
-          AND ptr.TAG_ID in
-          (
-          SELECT TAG_ID FROM prod_tags pt WHERE
-          pt.REL_TAG_ID in
-          <foreach item="item" index="index" open="(" separator="," close=")" collection="relTagIdList">
-              #{item}
-          </foreach>
-          )
-      </if>
-      <if test="null!=tagId and ''!= tagId">
-          AND ptr.TAG_ID = #{tagId}
-      </if>
-      <if test="null!=productId and ''!= productId">
-          AND ptr.PRODUCT_ID = #{productId}
-      </if>
-      <if test="null!=productBaseId and ''!= productBaseId">
-          AND ptr.PRODUCT_BASE_ID = #{productBaseId}
-      </if>
+                   resultType="com.iwhalecloud.retail.goods2b.dto.resp.TagRelListResp">
+    SELECT <include refid="relTagColoun" />
+    FROM prod_tag_rel ptr
+    WHERE 1 = 1
+    <if test="null!=relTagIdList and relTagIdList.size > 0">
+        AND ptr.TAG_ID in
+        (
+        SELECT TAG_ID FROM prod_tags pt WHERE
+        pt.REL_TAG_ID in
+        <foreach item="item" index="index" open="(" separator="," close=")" collection="relTagIdList">
+            #{item}
+        </foreach>
+        )
+    </if>
+    <if test="null!=tagId and ''!= tagId">
+        AND ptr.TAG_ID = #{tagId}
+    </if>
+    <if test="null!=productId and ''!= productId">
+        AND ptr.PRODUCT_ID = #{productId}
+    </if>
+    <if test="null!=productBaseId and ''!= productBaseId">
+        AND ptr.PRODUCT_BASE_ID = #{productBaseId}
+    </if>
 
-  </select>
+</select>
+
+
+    <select id="listTagRelDetail" parameterType="com.iwhalecloud.retail.goods2b.dto.req.TagRelDetailListReq"
+            resultType="com.iwhalecloud.retail.goods2b.dto.resp.TagRelDetailListResp">
+        SELECT ptr.rel_id, ptr.tag_id, ptr.product_base_id, ptr.product_id, pt.tag_name
+        FROM prod_tag_rel ptr
+        LEFT JOIN prod_tags pt on ptr.tag_id = pt.tag_id
+        WHERE 1 = 1
+        <if test="null != req.productId and '' != req.productId">
+            AND ptr.PRODUCT_ID = #{req.productId}
+        </if>
+        <if test="null != req.productBaseId and '' != req.productBaseId">
+            AND ptr.PRODUCT_BASE_ID = #{req.productBaseId}
+        </if>
+    </select>
 </mapper>

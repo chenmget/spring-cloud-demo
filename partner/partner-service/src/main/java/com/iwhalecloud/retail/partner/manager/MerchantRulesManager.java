@@ -13,6 +13,7 @@ import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.entity.MerchantRules;
 import com.iwhalecloud.retail.partner.mapper.MerchantRulesMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
@@ -74,6 +75,12 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
             hasParams = true;
             queryWrapper.eq(MerchantRules.FieldNames.targetType.getTableFieldName(), req.getTargetType());
         }
+
+        if (CollectionUtils.isNotEmpty(req.getMerchantRuleIdList())) {
+            hasParams = true;
+            queryWrapper.in(MerchantRules.FieldNames.merchantRuleId.getTableFieldName(), req.getMerchantRuleIdList());
+        }
+
         // 没有参数 直接返回  不然会删整个表
         if (!hasParams) {
             return 0;

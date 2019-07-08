@@ -115,10 +115,10 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     private String zopUrl;
 
     @Autowired
-    private ResouceInstTrackService resouceInstTrackService;
+    private ResouceInstTrackDetailManager resouceInstTrackDetailManager;
 
     @Autowired
-    private ResouceInstTrackDetailManager resouceInstTrackDetailManager;
+    private ResouceInstTrackService resouceInstTrackService;
 
     @Reference
     private MerchantService merchantService;

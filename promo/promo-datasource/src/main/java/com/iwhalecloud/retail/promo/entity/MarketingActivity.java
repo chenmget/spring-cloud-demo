@@ -236,6 +236,19 @@ public class MarketingActivity implements Serializable {
 	private String isModifying;
 
 	/**
+	 * 活动级别，记录活动发起的对象级别 activity_level
+	 *  1. 省级活动（运营商省级管理员发起）
+	 *  2. 地市级活动（运营商地制级管理员发起）
+	 *  3. 厂商活动（厂商自行发起）
+	 *  4. 国省包商活动（国省包供应商自行发起）
+	 *  5. 地包商活动（地包供应商自行发起）',
+	 */
+	@ApiModelProperty(value="活动级别，记录活动发起的对象级别 activity_level")
+	private String activityLevel;
+
+
+
+	/**
 	 * 活动的优惠规则描述.promotion_desc
 	 *    如前置补贴为:
 	 *    省级前置补贴xx元
@@ -332,7 +345,7 @@ public class MarketingActivity implements Serializable {
 		activityScopeType("activityScopeType","ACTIVITY_SCOPE_TYPE","记录营销活动活动范围"),
 
 		/** 记录营销活动参与范围：10地区/20对象。  .   */
-		activityParticipantType("activityParticipantType","ACTIVITY_PARTICIPANTTYPE_TYPE","记录营销活动参与范围"),
+		activityParticipantType("activityParticipantType","ACTIVITY_PARTICIPANT_TYPE","记录营销活动参与范围"),
 		/** 支付方式. */
 		payType("payType","PAY_TYPE","支付方式"),
 		/** 支付定金开始时间. */
@@ -361,6 +374,9 @@ public class MarketingActivity implements Serializable {
 
 		/** 修改标识，是否修改审批中：0否/1是. */
 		isModifying("isModifying","is_modifying","修改标识，是否修改审批中：0否/1是"),
+
+		/** 活动级别，记录活动发起的对象级别 */
+		activityLevel("activityLevel","activity_level","活动级别，记录活动发起的对象级别"),
 
 		/** 修改标识，是否修改审批中：0否/1是. */
 		promotionDesc("promotionDesc","promotion_desc","活动的优惠规则描述");

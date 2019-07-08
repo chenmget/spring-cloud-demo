@@ -18,7 +18,7 @@ public class SelectErrorCode {
         strArray.add("goods2b"); //王振宇
         strArray.add("member");  //王振宇
         strArray.add("order2b"); //王振宇
-        --strArray.add("partner");//王振宇
+        strArray.add("partner");//王振宇
 //        strArray.add("payment");
         strArray.add("promo");   //王振宇
 

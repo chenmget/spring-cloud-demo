@@ -83,30 +83,6 @@ public class UserAddReq implements Serializable {
     private java.lang.String relCode;
 
     /**
-     * 当前登陆时间
-     */
-//    @ApiModelProperty(value = "当前登陆时间")
-//    private java.util.Date curLoginTime;
-
-    /**
-     * 上次登陆时间
-     */
-//    @ApiModelProperty(value = "上次登陆时间")
-//    private java.util.Date lastLoginTime;
-
-    /**
-     * 登陆失败的次数
-     */
-//    @ApiModelProperty(value = "登陆失败的次数")
-//    private java.lang.Integer failLoginCnt;
-
-    /**
-     * 登陆成功的次数
-     */
-//    @ApiModelProperty(value = "登陆成功的次数")
-//    private java.lang.Integer successLoginCnt;
-
-    /**
      * 用户电话号码
      */
     @ApiModelProperty(value = "用户电话号码")
@@ -136,24 +112,6 @@ public class UserAddReq implements Serializable {
     @ApiModelProperty(value = "创建人")
     private java.lang.String createStaff;
 
-    /**
-     * 创建时间
-     */
-//    @ApiModelProperty(value = "创建时间")
-//    private java.util.Date createDate;
-
-    /**
-     * 修改人
-     */
-//    @ApiModelProperty(value = "修改人")
-//    private java.lang.String updateStaff;
-
-    /**
-     * 修改时间
-     */
-//    @ApiModelProperty(value = "修改时间")
-//    private java.util.Date updateDate;
-
     @ApiModelProperty(value = "岗位ID")
     private Long sysPostId;
 
@@ -162,5 +120,8 @@ public class UserAddReq implements Serializable {
 
     @ApiModelProperty(value = "用户来源")
     private java.lang.Integer userSource;
+
+    @ApiModelProperty(value = "用户Id")
+    private String userId;
 }
 

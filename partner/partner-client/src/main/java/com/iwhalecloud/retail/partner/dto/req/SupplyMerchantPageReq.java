@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 @Data
 @ApiModel("根据条件查找 供应商类型的商家信息 分页列表")
@@ -35,6 +36,17 @@ public class SupplyMerchantPageReq extends PageVO {
     @ApiModelProperty(value = "商家所属经营主体	")
     private String businessEntityName;
 
+    @ApiModelProperty(value = "地市")
+    private String lanId;
+
+    @ApiModelProperty(value = "市县")
+    private java.lang.String city;
+
+    @ApiModelProperty(value = "地市ID集合")
+    private List<String> lanIdList;
+
+    @ApiModelProperty(value = "市县ID集合")
+    private List<String> cityList;
 
     /**  下面的是 非 par_merchant 表字段  **/
 

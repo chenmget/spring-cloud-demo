@@ -47,7 +47,7 @@ jmx:
 
 spring.datasource:
   driver-class-name: com.mysql.jdbc.Driver
-  url: jdbc:mysql://10.45.46.67:8866/YHJDB?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
+  url: jdbc:mysql://10.45.46.67:8866/YHJDB_TEST?zeroDateTimeBehavior=convertToNull&useUnicode=true&characterEncoding=UTF-8
   username: szxtest
   #password: szxtest.2019
   password: kw0KpgWfOpAVqO4sdMTlLIcXrbbZOIXl4gwhUZqqNehmasEh/58907TPY7kguZ91Ke7rGLUVEkX5YpOBemm18g==
@@ -119,3 +119,13 @@ type:
   fusionTerminal: 230000
   setTopBox: 210000
   opticalModem: 220000
+
+# 日志配置
+#logging.path: ../
+#logging.file: **.log
+logging.level.root: WARN
+# 指定包的日志设置为warn
+logging.level.com.iwhalecloud.retail: INFO
+logging.level.org.springframework.boot.context.embedded: INFO
+logging.pattern.console: "%d{yyyy/MM/dd-HH:mm:ss} [%thread] %-5level %logger- %msg%n"
+logging.pattern.file: "%d{yyyy/MM/dd-HH:mm} [%thread] %-5level %logger- %msg%n"

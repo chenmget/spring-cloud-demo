@@ -1116,4 +1116,18 @@ public class ResourceConst {
         }
 
     }
+
+    public static final String DICT_TYPE_FTP = "FTP_ITMS";
+    public static final String DICT_TYPE_FTP_ITMS_PATH = "FTP_ITMS_PATH";
+    public static final String DICT_TYPE_FTP_ITMS_RETURN_PATH = "FTP_ITMS_RETURN_PATH";
+
+    public static final String IPTV_ADD = "IPTV_ADD";
+    public static final String IPTV_DELETE = "IPTV_DELETE";
+    public static final String IPTV_MODIFY = "IPTV_MODIFY";
+    public static final String TERMINAL_ADD = "TERMINAL_ADD";
+    public static final String TERMINAL_DELETE = "TERMINAL_DELETE";
+    public static final String TERMINAL_MODIFY = "TERMINAL_MODIFY";
+
+    public static final int EVERY_PART_NUM = 1000;
+    public static final int PER_NUM = 10000;
 }

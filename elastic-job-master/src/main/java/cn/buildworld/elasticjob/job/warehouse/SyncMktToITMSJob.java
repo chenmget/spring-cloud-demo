@@ -4,7 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.dangdang.ddframe.job.api.ShardingContext;
 import com.dangdang.ddframe.job.api.simple.SimpleJob;
 import com.dangdang.elasticjob.lite.annotation.ElasticSimpleJob;
-import com.iwhalecloud.retail.warehouse.service.ResourceInstStoreService;
+import com.iwhalecloud.retail.warehouse.service.MktResItmsSyncRecService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * <p>
  * Created by jiyou on 2019/4/24.
  */
-@ElasticSimpleJob(cron = "0 0/30 * * * ?",
+@ElasticSimpleJob(cron = "0 0/3 * * * ?",
         jobName = "SyncMktToITMSJob",
         shardingTotalCount = 1,
         jobParameter = "任务参数",
@@ -24,18 +24,17 @@ import org.springframework.stereotype.Component;
 public class SyncMktToITMSJob implements SimpleJob {
 
     @Reference(timeout = 10000)
-    ResourceInstStoreService resourceInstStoreService;
+    private MktResItmsSyncRecService mktResItmsSyncRecService;
 
     @Override
     public void execute(ShardingContext shardingContext) {
         log.info("SyncMktToITMSJob start.....");
-        if (resourceInstStoreService == null) {
-            log.info("SyncMktToITMSJob error mktResStoreTempService is null");
+        if (mktResItmsSyncRecService == null) {
+            log.info("SyncMktToITMSJob error mktResItmsSyncRecService is null");
             return;
         }
         try {
-            resourceInstStoreService.syncMktToITMS();
-
+            mktResItmsSyncRecService.syncMktToITMS();
         } catch (RuntimeException e) {
             log.error("串码入库，与ITMS集成", e);
         } catch (Exception e) {

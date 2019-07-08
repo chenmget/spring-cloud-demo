@@ -31,12 +31,8 @@ public interface MktResItmsSyncRecMapper extends BaseMapper<MktResItmsSyncRec>{
 	 * @param  lanId 地市编码， type 不同事件类型对应的过滤条件， isItms 是否itms ,ResouceEvent resouceEvent
 	 * @return
 	 */
-
-	List<MktResItmsSyncRec> findDateMKTInfoByParamsOld(@Param("lanId")String lanId,@Param("typeOps")String typeOps,@Param("eventType")String eventType,
-											  @Param("isItms")String[] isItms,@Param("even")ResouceEvent resouceEvent);
-	List<MktResItmsSyncRec> findDateMKTInfoByParams(@Param("lanId")String lanId,@Param("typeOps")String typeOps,@Param("eventType")String eventType,
-													@Param("isItms")String[] isItms,@Param("even")ResouceEvent resouceEvent,
-													 @Param("det")ResourceChngEvtDetail resourceChngEvtDetail);
+	List<MktResItmsSyncRec> findDateMKTInfoByParams(@Param("lanId")String lanId,@Param("eventType")String eventType,
+													@Param("isItms")String[] isItms,@Param("even")ResouceEvent resouceEvent);
     /**
      * 根据ID保存itms推送表
      * @param id ID， destFileName 推送的文件路径， syncBatchId 推送的批次

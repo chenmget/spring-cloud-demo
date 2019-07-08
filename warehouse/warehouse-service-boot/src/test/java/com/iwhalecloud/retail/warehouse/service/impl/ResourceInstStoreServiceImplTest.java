@@ -130,11 +130,5 @@ public class ResourceInstStoreServiceImplTest {
 //            System.out.println("***********************"+mktResItmsSyncRecMapper.updateMRIyFileName(mktResItmsSyncRecRep.get(i)));
         }
     }
-    @Test
-    public void syncMktToITMSBack(){
-//        System.out.println(mktResItmsSyncRecMapper.getSeqBysendDir("/home/itsm_y/itmsfile/data/back/IPTV/add/730"));
-        resourceInstStoreServiceImpl.syncMktToITMS();
-//        resourceInstStoreService.syncMktToITMS();
-    }
 
 }

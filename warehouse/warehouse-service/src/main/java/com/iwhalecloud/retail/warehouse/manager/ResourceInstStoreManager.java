@@ -191,8 +191,4 @@ public class ResourceInstStoreManager{
         return i;
     }
 
-    public void batchAddMKTInfo(List<MktResItmsSyncRec> mktResItmsSyncRecRep){
-        mktResItmsSyncRecMapper.batchAddMKTInfo(mktResItmsSyncRecRep);
-    }
-
 }

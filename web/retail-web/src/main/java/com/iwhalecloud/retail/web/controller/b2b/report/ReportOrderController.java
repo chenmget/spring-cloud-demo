@@ -95,8 +95,6 @@ public class ReportOrderController extends BaseController {
 		}
 		int userType = UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
-//		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-//		} else 
 		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
@@ -121,9 +119,6 @@ public class ReportOrderController extends BaseController {
 			}
 			req.setMerchantCode(merchantDTO.getMerchantCode());
 		} 
-//		else {
-//			return ResultVO.error("当前用户 没有权限");
-//		}
 		
         return reportOrderService.getReportOrderList1(req);
     }
@@ -145,7 +140,7 @@ public class ReportOrderController extends BaseController {
 	@UserLoginToken
 	public void orderReportDataExport(@RequestBody ReportOrderDaoReq req, HttpServletResponse response) {
 		req.setPageNo(1);
-		req.setPageSize(60000);
+		req.setPageSize(50000);
 		String CreateTimeStart = req.getCreateTimeStart();
 		String CreateTimeEnd = req.getCreateTimeEnd();
 		Date date = new Date();
@@ -163,8 +158,6 @@ public class ReportOrderController extends BaseController {
 		}
 		int userType = UserContext.getUser().getUserFounder();
 		List<String> list = new ArrayList<String>();
-//		if(userType == SystemConst.USER_FOUNDER_1  || userType == SystemConst.USER_FOUNDER_2) {//超级管理员  省管理员
-//		} else 
 		if (userType == SystemConst.USER_FOUNDER_9) {//地市管理员
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
@@ -189,10 +182,8 @@ public class ReportOrderController extends BaseController {
 			}
 			req.setMerchantCode(merchantDTO.getMerchantCode());
 		} 
-//		else {
-//			return ;
-//		}
-	    ResultVO<List<ReportOrderResp>> resultVO = reportOrderService.getReportOrderList1dc(req);
+//	    ResultVO<List<ReportOrderResp>> resultVO = reportOrderService.getReportOrderList1dc(req);
+		ResultVO<Page<ReportOrderResp>> resultVO = reportOrderService.getReportOrderList1(req);
 	    ResultVO result = new ResultVO();
 	    if (!resultVO.isSuccess()) {
 	        result.setResultCode(ResultCodeEnum.ERROR.getCode());
@@ -200,7 +191,7 @@ public class ReportOrderController extends BaseController {
 	        deliveryGoodsResNberExcel.outputResponse(response,resultVO);
 	        return;
 	    }
-	    List<ReportOrderResp> data = resultVO.getResultData();
+	    List<ReportOrderResp> data = resultVO.getResultData().getRecords();
 	    //创建Excel
 	    Workbook workbook = new HSSFWorkbook();
 	    

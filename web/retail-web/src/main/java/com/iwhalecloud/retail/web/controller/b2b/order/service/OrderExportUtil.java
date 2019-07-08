@@ -135,7 +135,6 @@ public class OrderExportUtil {
 
     public static List<ExcelTitleName> getResourceUploadTemp() {
         List<ExcelTitleName> orderMap = new ArrayList<>();
-        orderMap.add(new ExcelTitleName("mktResReqDetailId", "申请id"));
         orderMap.add(new ExcelTitleName("reqCode", "申请单号"));
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
         orderMap.add(new ExcelTitleName("typeName", "产品类型"));

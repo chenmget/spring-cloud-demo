@@ -1118,7 +1118,7 @@ public class UserController extends BaseController {
         // 先密码还原成普通字符串
         userResetPasswordReq.setUpdatePassword(decodePassword(userResetPasswordReq.getUpdatePassword()));
 
-        if (UserContext.getUser().getUserFounder() != 1) {
+        if (!UserContext.isAdminType()) {
             return ResultVO.error("只有管理员才能重置密码");
         }
         return userService.resetPassword(userResetPasswordReq);

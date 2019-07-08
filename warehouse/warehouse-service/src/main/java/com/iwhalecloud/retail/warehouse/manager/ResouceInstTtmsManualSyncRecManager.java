@@ -53,4 +53,13 @@ public class ResouceInstTtmsManualSyncRecManager extends ServiceImpl<ResouceInst
         resouceInstItmsManualSyncRec.setMktResItmsSyncRecId(privateKey);
         return resouceInstItmsManualSyncRecMapper.insert(resouceInstItmsManualSyncRec);
     }
+
+    /**
+     * 根据串码查询最新的一条推送记录
+     * @param mktResInstNbr
+     * @return
+     */
+    public ResouceInstItmsManualSyncRecListResp getDestLanIdByNbr(String mktResInstNbr){
+        return resouceInstItmsManualSyncRecMapper.getDestLanIdByNbr(mktResInstNbr);
+    }
 }

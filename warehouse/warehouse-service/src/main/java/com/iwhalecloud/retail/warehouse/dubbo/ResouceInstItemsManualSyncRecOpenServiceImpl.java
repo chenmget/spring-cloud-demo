@@ -22,19 +22,25 @@ public class ResouceInstItemsManualSyncRecOpenServiceImpl implements ResouceInst
 
     @Override
     public ResultVO<Page<ResouceInstItmsManualSyncRecListResp>> listResourceItemsManualSyncRec(ResouceInstItmsManualSyncRecPageReq req) {
-        log.info("ResouceInstItemsManualSyncRecOpenServiceImpl.listResourceItemsManualSyncRec req={},storeId={}", JSON.toJSONString(req));
+        log.info("ResouceInstItemsManualSyncRecOpenServiceImpl.listResourceItemsManualSyncRec req={}", JSON.toJSONString(req));
         return resouceInstItemsManualSyncRecService.listResourceItemsManualSyncRec(req);
     }
 
     @Override
     public ResultVO<Integer> addResourceItemsManualSyncRec(ResouceInstItmsManualSyncRecAddReq req){
-        log.info("ResouceInstItemsManualSyncRecOpenServiceImpl.addResourceItemsManualSyncRec req={},storeId={}", JSON.toJSONString(req));
+        log.info("ResouceInstItemsManualSyncRecOpenServiceImpl.addResourceItemsManualSyncRec req={}", JSON.toJSONString(req));
         return resouceInstItemsManualSyncRecService.addResourceItemsManualSyncRec(req);
     }
 
     @Override
     public ResultVO<Integer> updateResourceItemsManualSyncRec(ResouceInstItmsManualSyncRecAddReq req){
-        log.info("ResouceInstItemsManualSyncRecOpenServiceImpl.updateResourceItemsManualSyncRec req={},storeId={}", JSON.toJSONString(req));
+        log.info("ResouceInstItemsManualSyncRecOpenServiceImpl.updateResourceItemsManualSyncRec req={}", JSON.toJSONString(req));
         return resouceInstItemsManualSyncRecService.updateResourceItemsManualSyncRec(req);
+    }
+
+    @Override
+    public ResultVO<ResouceInstItmsManualSyncRecListResp> getDestLanIdByNbr(String mktResInstNbr){
+        log.info("ResouceInstItemsManualSyncRecOpenServiceImpl.getDestLanIdByNbr mktResInstNbr={}", mktResInstNbr);
+        return resouceInstItemsManualSyncRecService.getDestLanIdByNbr(mktResInstNbr);
     }
 }

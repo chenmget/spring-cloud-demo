@@ -24,4 +24,11 @@ public interface ResouceInstItmsManualSyncRecMapper extends BaseMapper<ResouceIn
      * @return
      */
     Page<ResouceInstItmsManualSyncRecListResp> listResourceItemsManualSyncRec(Page<ResouceInstItmsManualSyncRecListResp> page, @Param("req")ResouceInstItmsManualSyncRecPageReq req);
+
+    /**
+     * 根据串码查询最新的一条推送记录
+     * @param mktResInstNbr
+     * @return
+     */
+    ResouceInstItmsManualSyncRecListResp getDestLanIdByNbr(@Param("mktResInstNbr")String mktResInstNbr);
 }

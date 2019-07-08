@@ -1,8 +1,10 @@
 package com.iwhalecloud.retail.warehouse.service.impl;
 
+import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.WarehouseServiceApplication;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecPageReq;
+import com.iwhalecloud.retail.warehouse.dto.response.ResouceInstItmsManualSyncRecListResp;
 import com.iwhalecloud.retail.warehouse.service.ResouceInstItemsManualSyncRecService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.Test;
@@ -46,4 +48,9 @@ public class ResouceInstItemsManualSyncRecServiceImplTest {
         resouceInstItemsManualSyncRecService.addResourceItemsManualSyncRec(req);
     }
 
+    @Test
+    public void getDestLanIdByNbr() {
+        ResultVO<ResouceInstItmsManualSyncRecListResp> resultVO = resouceInstItemsManualSyncRecService.getDestLanIdByNbr("123456");
+        System.out.print(resultVO.toString());
+    }
 }

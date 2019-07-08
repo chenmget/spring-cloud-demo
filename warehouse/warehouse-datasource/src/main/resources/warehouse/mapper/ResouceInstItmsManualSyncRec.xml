@@ -26,10 +26,10 @@
             resultType="com.iwhalecloud.retail.warehouse.dto.response.ResouceInstItmsManualSyncRecListResp">
         SELECT <include refid="allFields"/>  FROM mkt_res_itms_manual_sync_rec t WHERE 1 = 1
         <if test="null!=req.createDateStart and ''!=req.createDateStart">
-            and t.CREATE_DATE &gt;= #{req.createDateStart}
+            and t.create_date &gt;= #{req.createDateStart}
         </if>
         <if test="null!=req.createDateStart and ''!=req.createTimeEnd">
-            and t.CREATE_DATE &lt;= #{req.createDateEnd}
+            and t.create_date &lt;= #{req.createDateEnd}
         </if>
         <if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">
             and t.mkt_res_inst_nbr = #{mktResInstNbr}
@@ -61,8 +61,14 @@
         <if test="null!=req.statusCd and ''!=req.statusCd">
             and t.status_cd = #{statusCd}
         </if>
-
+        order by create_date desc
     </select>
 
+    <select id="getDestLanIdByNbr" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.warehouse.dto.response.ResouceInstItmsManualSyncRecListResp">
+        SELECT <include refid="allFields"/>  FROM mkt_res_itms_manual_sync_rec t WHERE 1 = 1
+        and t.mkt_res_inst_nbr = #{mktResInstNbr} order by create_date desc limit 1
+
+    </select>
 
 </mapper>

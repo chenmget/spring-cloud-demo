@@ -81,7 +81,7 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
     }
 
     @Override
-    public ResultVO<Integer> addResourceItemsManualSyncRec(ResouceInstItmsManualSyncRecAddReq req){
+    public ResultVO addResourceItemsManualSyncRec(ResouceInstItmsManualSyncRecAddReq req){
         StringBuffer params = new StringBuffer();
         params.append("city_code=").append(req.getDestLanId()).append("#warehouse=").append("#source=2").
                 append("#factory=网络终端");
@@ -104,7 +104,7 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
     }
 
     @Override
-    public ResultVO<Integer> updateResourceItemsManualSyncRec(ResouceInstItmsManualSyncRecAddReq req){
+    public ResultVO updateResourceItemsManualSyncRec(ResouceInstItmsManualSyncRecAddReq req){
         StringBuffer params = new StringBuffer();
         params.append("city_code=").append(req.getDestLanId()).append("#warehouse=").append("#source=2").
                 append("#factory=网络终端");
@@ -124,5 +124,10 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
         Integer sucessNum = resouceInstTtmsManualSyncRecManager.addResourceItemsManualSyncRec(req);
         log.info("ResouceInstItemsManualSyncRecServiceImpl.addResourceItemsManualSyncRec sucessNum={}", sucessNum);
         return resultVO;
+    }
+
+    @Override
+    public ResultVO<ResouceInstItmsManualSyncRecListResp> getDestLanIdByNbr(String mktResInstNbr){
+        return ResultVO.success(resouceInstTtmsManualSyncRecManager.getDestLanIdByNbr(mktResInstNbr));
     }
 }

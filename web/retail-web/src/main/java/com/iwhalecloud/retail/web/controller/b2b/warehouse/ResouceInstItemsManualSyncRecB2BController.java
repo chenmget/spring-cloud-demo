@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecPageReq;
+import com.iwhalecloud.retail.warehouse.dto.response.ResouceInstItmsManualSyncRecListResp;
 import com.iwhalecloud.retail.warehouse.service.ResouceInstItemsManualSyncRecService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -11,10 +12,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * @Author My
@@ -61,6 +59,16 @@ public class ResouceInstItemsManualSyncRecB2BController {
     @PostMapping(value="listResourceItemsManualSyncRec")
     public ResultVO listResourceItemsManualSyncRec(@RequestBody ResouceInstItmsManualSyncRecPageReq req) {
         return resouceInstItemsManualSyncRecService.listResourceItemsManualSyncRec(req);
+    }
+
+    @ApiOperation(value = "根据串码查询推送ITMS最新记录", notes = "查询操作")
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value="getDestLanIdByNbr")
+    public ResultVO<ResouceInstItmsManualSyncRecListResp> getDestLanIdByNbr(@RequestParam String mktResInstNbr) {
+        return resouceInstItemsManualSyncRecService.getDestLanIdByNbr(mktResInstNbr);
     }
 
 }

@@ -30,4 +30,11 @@ public interface ResouceInstItemsManualSyncRecService {
     ResultVO updateResourceItemsManualSyncRec(ResouceInstItmsManualSyncRecAddReq req);
 
 
+    /**
+     * 根据串码查询最新的一条推送记录
+     * @param mktResInstNbr
+     * @return
+     */
+    ResultVO<ResouceInstItmsManualSyncRecListResp> getDestLanIdByNbr(String mktResInstNbr);
+
 }

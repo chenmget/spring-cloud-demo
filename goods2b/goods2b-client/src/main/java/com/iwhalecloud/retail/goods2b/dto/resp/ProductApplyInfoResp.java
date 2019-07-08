@@ -60,5 +60,15 @@ public class ProductApplyInfoResp implements Serializable {
 
     private  String defaultImages;
 
+    private  String cost; //零售价
+
+    private  String isFixedLine; //是否固网
+
+    private  String typeId; //类型ID
+
+    private  String typeNmae; //类型名称
+
+
+
 
 }

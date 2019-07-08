@@ -16,6 +16,11 @@ public class MerchantPageResp implements Serializable {
     private static final long serialVersionUID = -631284145693938464L;
 
     /*** 非当前表字段 ****/
+
+    // prod_merchant_tag_rel表字段
+    @ApiModelProperty(value = "标签组名")
+    private String tagNames;
+
     /**
      * 地市
      */

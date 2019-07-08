@@ -73,11 +73,8 @@ public class MerchantRulesController {
     @RequestMapping(value = "/save", method = RequestMethod.POST)
     @Transactional
     public ResultVO<Integer> saveMerchantRules(@RequestBody @ApiParam(value = "新建商家权限规则参数", required = true) MerchantRulesSaveReq req) {
-        // targetIdList字段为空  只是删除
-        // 先删除原先的记录  再插入新的  zhongwenlong 屏蔽掉先删除再添加逻辑
-//        MerchantRulesDeleteReq deleteReq = new MerchantRulesDeleteReq();
-//        BeanUtils.copyProperties(req, deleteReq);
-//        merchantRulesService.deleteMerchantRules(deleteReq);
+        log.info("MerchantRulesController.saveMerchantRules(), input: MerchantRulesSaveReq={} ", JSON.toJSONString(req));
+
         if (CollectionUtils.isEmpty(req.getTargetIdList())) {
             return ResultVO.success();
         }
@@ -98,7 +95,7 @@ public class MerchantRulesController {
     @RequestMapping(value = "/delete", method = RequestMethod.POST)
     @Transactional
     public ResultVO<Integer> deleteMerchantRules(@RequestBody @ApiParam(value = "删除 商家权限规则参数", required = true) MerchantRulesDeleteReq req) {
-        // targetIdList字段为空  只是删除
+        log.info("MerchantRulesController.deleteMerchantRules(), input: MerchantRulesDeleteReq={} ", JSON.toJSONString(req));
         return merchantRulesService.deleteMerchantRules(req);
     }
 

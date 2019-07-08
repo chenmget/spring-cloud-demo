@@ -103,6 +103,10 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 //    @Transactional
     public ResultVO<Integer> saveMerchantRules(MerchantRulesSaveReq req) {
         log.info("MerchantRulesServiceImpl.saveMerchantRules(), 入参ManufacturerSaveReq={} ", req);
+
+        // 过滤已经存在的权限
+        req.setTargetIdList(filterTargetIdList(req.getTargetIdList(), req));
+
         int resultInt = 0;
         if (!CollectionUtils.isEmpty(req.getTargetIdList())) {
             // 批量插入
@@ -125,6 +129,35 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         }
         return ResultVO.success(resultInt);
     }
+
+    /**
+     * 过滤targetIdList中已经存在的 权限
+     * @param targetIdList
+     * @param req
+     * @return
+     */
+    private List<String> filterTargetIdList(List<String> targetIdList, MerchantRulesSaveReq req) {
+
+        if (CollectionUtils.isEmpty(targetIdList)) {
+            return targetIdList;
+        }
+
+        // 先获取已经有权限  过滤targetIdList 里面包含 已有的权限
+        MerchantRulesListReq listReq = new MerchantRulesListReq();
+        // 一定要包含下面三个条件  才能精确到某一类权限
+        listReq.setMerchantId(req.getMerchantId());
+        listReq.setRuleType(req.getRuleType());
+        listReq.setTargetType(req.getTargetType());
+        List<MerchantRulesDTO> merchantRulesDTOList = merchantRulesManager.listMerchantRules(listReq);
+        if (!CollectionUtils.isEmpty(merchantRulesDTOList)) {
+            // 比较
+            List<String> idList = merchantRulesDTOList.stream().map(MerchantRulesDTO::getTargetId).collect(Collectors.toList());
+            targetIdList.removeAll(idList);
+        }
+
+        return targetIdList;
+    }
+
 
     private void merchantAssigned(String merchantId) {
         ProductGetReq productGetReq = new ProductGetReq();

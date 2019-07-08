@@ -59,6 +59,10 @@
                             <groupId>com.iwhalecloud.retail</groupId>
                             <artifactId>partner-client</artifactId>
                         </include>
+                        <include>
+                            <groupId>com.iwhalecloud.retail</groupId>
+                            <artifactId>zop-sdk</artifactId>
+                        </include>
                     </includes>
                 </configuration>
             </plugin>

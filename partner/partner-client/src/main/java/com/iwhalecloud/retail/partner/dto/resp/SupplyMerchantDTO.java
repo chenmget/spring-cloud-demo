@@ -14,7 +14,11 @@ public class SupplyMerchantDTO implements Serializable {
 
 /*** 非当前表字段 ****/
 
-  // sys_common_region 表字段
+    // prod_merchant_tag_rel表字段
+    @ApiModelProperty(value = "标签组名")
+    private String tagNames;
+
+    // sys_common_region 表字段
     @ApiModelProperty(value = "地市名称")
     private java.lang.String lanName;
 

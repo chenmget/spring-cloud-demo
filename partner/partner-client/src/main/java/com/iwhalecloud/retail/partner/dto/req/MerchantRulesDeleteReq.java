@@ -36,7 +36,6 @@ public class MerchantRulesDeleteReq implements Serializable {
      * 规则类型:  1 经营权限   2 绿色通道权限   3 调拨权限
      */
     @ApiModelProperty(value = "规则类型:  1 经营权限   2 绿色通道权限   3 调拨权限")
-    @NotEmpty(message = "规则类型不能为空")
     private java.lang.String ruleType;
 
     /**

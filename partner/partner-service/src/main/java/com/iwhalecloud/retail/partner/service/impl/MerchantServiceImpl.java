@@ -459,6 +459,7 @@ public class MerchantServiceImpl implements MerchantService {
 
             Map<String, String> regionNamesMap = getRegionNamesMap(regionIdHashSet);
             Map<String, String> loginNamesMap = getLoginNamesMap(merchantIdHashSet);
+            Map<String, String> tagNamesMap = getTagNamesMap(merchantIdHashSet);
 
             // 取本地网名称  市县名称
             for (MerchantPageResp merchantDTO : page.getRecords()) {
@@ -468,6 +469,9 @@ public class MerchantServiceImpl implements MerchantService {
 
                 // 取商家的登录名称
                 merchantDTO.setLoginName(loginNamesMap.get(merchantDTO.getMerchantId()));
+
+                // 设置标签
+                merchantDTO.setTagNames(tagNamesMap.get(merchantDTO.getMerchantId()));
             }
         }
         log.info("MerchantServiceImpl.pageMerchant() output: list<MerchantPageResp>.siz()={} ", JSON.toJSONString(page.getRecords().size()));
@@ -693,6 +697,7 @@ public class MerchantServiceImpl implements MerchantService {
             Map<String, Invoice> invoiceMap = getInvoiceMap(merchantIdHashSet);
             Map<String, String> merchantAccountMap = getMerchantAccountMap(merchantIdHashSet);
             Map<String, String> loginNamesMap = getLoginNamesMap(merchantIdHashSet);
+            Map<String, String> tagNamesMap = getTagNamesMap(merchantIdHashSet);
 
             // 取本地网名称  市县名称
             for (SupplyMerchantDTO dto : targetList) {
@@ -717,6 +722,9 @@ public class MerchantServiceImpl implements MerchantService {
 
                 // 设置 账户名称
                 dto.setAccount(merchantAccountMap.get(dto.getMerchantId()));
+
+                // 设置标签
+                dto.setTagNames(tagNamesMap.get(dto.getMerchantId()));
             }
         }
 

@@ -14,6 +14,7 @@ public class MerchantColumn {
 
     /**
      * 商家表的要导出的基本信息  标题 和 对应的字段
+     *
      * @return
      */
     public static List<ExcelTitleName> merchantColumn() {
@@ -22,6 +23,7 @@ public class MerchantColumn {
         orderMap.add(new ExcelTitleName("merchantId", "商家ID"));
         orderMap.add(new ExcelTitleName("merchantCode", "商家编码"));
         orderMap.add(new ExcelTitleName("merchantName", "商家名称"));
+        orderMap.add(new ExcelTitleName("tagNames", "标签"));
         orderMap.add(new ExcelTitleName("status", "渠道状态"));
         orderMap.add(new ExcelTitleName("merchantType", "商家类型"));
         orderMap.add(new ExcelTitleName("mktResInstType", "关联用户ID"));
@@ -32,8 +34,6 @@ public class MerchantColumn {
         orderMap.add(new ExcelTitleName("customerCode", "客户编码"));
         orderMap.add(new ExcelTitleName("lanName", "地市"));
         orderMap.add(new ExcelTitleName("cityName", "市县"));
-//        orderMap.add(new ExcelTitleName("subBureau", "分局/县部门"));
-//        orderMap.add(new ExcelTitleName("marketCenter", "营销中心/支局"));
         orderMap.add(new ExcelTitleName("shopCode", "销售点编码"));
         orderMap.add(new ExcelTitleName("shopName", "销售点名称"));
         orderMap.add(new ExcelTitleName("selfShopLevel", "自营厅级别"));
@@ -54,31 +54,32 @@ public class MerchantColumn {
 
     /**
      * 零售商的 要导出的 额外字段  标题 和 对应的字段
+     *
      * @return
      */
-    public static  List<ExcelTitleName> retailMerchantFields() {
+    public static List<ExcelTitleName> retailMerchantFields() {
         List<ExcelTitleName> orderMap = merchantColumn();
-        orderMap.add(new ExcelTitleName("taxCode","纳税人识别号"));
-        orderMap.add(new ExcelTitleName("busiLicenceCode","营业执照号"));
-        orderMap.add(new ExcelTitleName("busiLicenceExpDate","营业执照到期日期"));
-        orderMap.add(new ExcelTitleName("registerBankAcct","银行账号"));
-        orderMap.add(new ExcelTitleName("tagNames","标签组名"));
-        orderMap.add(new ExcelTitleName("orgNameWithLevel3","经营单元"));
-        orderMap.add(new ExcelTitleName("orgNameWithLevel4","营销中心/支局"));
+        orderMap.add(new ExcelTitleName("taxCode", "纳税人识别号"));
+        orderMap.add(new ExcelTitleName("busiLicenceCode", "营业执照号"));
+        orderMap.add(new ExcelTitleName("busiLicenceExpDate", "营业执照到期日期"));
+        orderMap.add(new ExcelTitleName("registerBankAcct", "银行账号"));
+        orderMap.add(new ExcelTitleName("orgNameWithLevel3", "经营单元"));
+        orderMap.add(new ExcelTitleName("orgNameWithLevel4", "营销中心/支局"));
         return orderMap;
     }
 
     /**
      * 供应商的 要导出的 额外字段  标题 和 对应的字段
+     *
      * @param orderMap
      * @return
      */
-    public static  List<ExcelTitleName> complementSupplyMerchantFileds(List<ExcelTitleName> orderMap) {
-        orderMap.add(new ExcelTitleName("taxCode","纳税人识别号"));
-        orderMap.add(new ExcelTitleName("busiLicenceCode","营业执照号"));
-        orderMap.add(new ExcelTitleName("busiLicenceExpDate","营业执照到期日期"));
-        orderMap.add(new ExcelTitleName("registerBankAcct","银行账号"));
-        orderMap.add(new ExcelTitleName("account","商家账号"));
+    public static List<ExcelTitleName> complementSupplyMerchantFileds(List<ExcelTitleName> orderMap) {
+        orderMap.add(new ExcelTitleName("taxCode", "纳税人识别号"));
+        orderMap.add(new ExcelTitleName("busiLicenceCode", "营业执照号"));
+        orderMap.add(new ExcelTitleName("busiLicenceExpDate", "营业执照到期日期"));
+        orderMap.add(new ExcelTitleName("registerBankAcct", "银行账号"));
+        orderMap.add(new ExcelTitleName("account", "商家账号"));
         return orderMap;
     }
 

@@ -166,7 +166,7 @@ public class UserServiceImpl implements UserService {
             }
         }*/
         //超过九十天强制修改密码
-        if(!merchantDTO.getMerchantType().equals(SysUserLoginConst.RETAILER_MERCHANT))
+        if(merchantDTO !=null && !merchantDTO.getMerchantType().equals(SysUserLoginConst.RETAILER_MERCHANT))
         {
             if(user.getLastLoginTime() == null)  user.setLastLoginTime(new Date());
             if(user.getCurLoginTime() == null)  user.setCurLoginTime(new Date());

@@ -931,58 +931,55 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
 
     @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
-        log.info("SupplierResourceInstServiceImpl.resetResourceInst req={}", JSON.toJSONString(req));
-        ResourceInstsGetByIdListAndStoreIdReq queryReq = new ResourceInstsGetByIdListAndStoreIdReq();
-        queryReq.setMktResInstIdList(req.getMktResInstIdList());
-        queryReq.setMktResStoreId(req.getDestStoreId());
-        List<ResourceInstDTO> instListResps = resourceInstManager.selectByIds(queryReq);
-        log.info("SupplierResourceInstServiceImpl.resetResourceInst resourceInstManager.selectByIds req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(instListResps));
-        if (CollectionUtils.isEmpty(instListResps)) {
-            return ResultVO.error(constant.getNoResInst());
-        }
-        Map<String, String> mktResInstNbrMap = new HashMap<>(instListResps.size());
-        for (ResourceInstDTO resp : instListResps) {
-            if (StringUtils.isNotEmpty(resp.getOrderId())) {
-                return ResultVO.error(resp.getMktResInstNbr()+constant.getTradeNbrCanNotReset());
+        List<String> mktResInstIdList = req.getMktResInstIdList();
+        for (String mktResInstId : mktResInstIdList) {
+            log.info("SupplierResourceInstServiceImpl.resetResourceInst req={}", JSON.toJSONString(req));
+            ResourceInstsGetByIdListAndStoreIdReq queryReq = new ResourceInstsGetByIdListAndStoreIdReq();
+            queryReq.setMktResInstIdList(Lists.newArrayList(mktResInstId));
+            queryReq.setMktResStoreId(req.getDestStoreId());
+            List<ResourceInstDTO> instListResps = resourceInstManager.selectByIds(queryReq);
+            log.info("SupplierResourceInstServiceImpl.resetResourceInst resourceInstManager.selectByIds req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(instListResps));
+            if (CollectionUtils.isEmpty(instListResps)) {
+                return ResultVO.error(constant.getNoResInst());
             }
-            mktResInstNbrMap.put(resp.getMktResInstId(), resp.getMktResInstNbr());
-        }
-
-        String mktResStoreId = resouceInstTrackDetailManager.getMerchantStoreId(instListResps.get(0).getMktResInstNbr());
-        log.info("SupplierResourceInstServiceImpl.resetResourceInst resouceInstTrackDetailManager.getMerchantStoreId req={}", instListResps.get(0).getMktResInstNbr(), mktResStoreId);
-        if (StringUtils.isEmpty(mktResStoreId)) {
-            return ResultVO.error(constant.getCannotGetStoreMsg());
-        }
-
-        req.setMktResStoreId(mktResStoreId);
-        ResultVO resultVO = resourceInstService.updateResourceInstByIds(req);
-        if (!resultVO.isSuccess()) {
-            return resultVO;
-        }
-        List<String> failMktResInstIdList = (List<String>)resultVO.getResultData();
-        if (CollectionUtils.isNotEmpty(failMktResInstIdList)) {
-            for (String mktResInstId : failMktResInstIdList) {
-                if (mktResInstNbrMap.containsKey(mktResInstId)) {
-                    mktResInstNbrMap.remove(mktResInstId);
-                }
+            ResourceInstDTO dto = instListResps.get(0);
+            if (StringUtils.isNotEmpty(dto.getOrderId())) {
+                return ResultVO.error(dto.getMktResInstNbr()+constant.getTradeNbrCanNotReset());
             }
+            String mktResStoreId = resouceInstTrackDetailManager.getMerchantStoreId(dto.getMktResInstNbr());
+            log.info("SupplierResourceInstServiceImpl.resetResourceInst resouceInstTrackDetailManager.getMerchantStoreId req={}, resp", instListResps.get(0).getMktResInstNbr(), mktResStoreId);
+            if (StringUtils.isEmpty(mktResStoreId)) {
+                return ResultVO.error(constant.getCannotGetStoreMsg());
+            }
+            req.setMktResInstIdList(Lists.newArrayList(mktResInstId));
+            req.setMktResStoreId(mktResStoreId);
+            ResultVO resultVO = resourceInstService.updateResourceInstByIds(req);
+            if (!resultVO.isSuccess()) {
+                return resultVO;
+            }
+            List<String> failMktResInstIdList = (List<String>)resultVO.getResultData();
+            if (CollectionUtils.isNotEmpty(failMktResInstIdList)) {
+                return resultVO;
+            }
+            ResultVO<MerchantDTO> sourceMerchantResultVO = resouceStoreService.getMerchantByStore(mktResStoreId);
+            log.info("SupplierResourceInstServiceImpl.resetResourceInst resouceStoreService.getMerchantByStore mktResStoreId={}, resp={}", mktResStoreId, JSON.toJSONString(sourceMerchantResultVO));
+            if (!sourceMerchantResultVO.isSuccess() || null == sourceMerchantResultVO.getResultData()) {
+                return ResultVO.error(constant.getCannotGetMerchantMsg());
+            }
+            // 更新厂家对应的串码
+            ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
+            updateReq.setUpdateStaff(req.getUpdateStaff());
+            updateReq.setMktResInstNbrs(Lists.newArrayList(dto.getMktResInstNbr()));
+            updateReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
+            updateReq.setMktResStoreId(req.getMktResStoreId());
+            updateReq.setDestStoreId(mktResStoreId);
+            updateReq.setMktResId(dto.getMktResId());
+            updateReq.setMerchantId(sourceMerchantResultVO.getResultData().getMerchantId());
+            List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode());
+            updateReq.setCheckStatusCd(checkStatusCd);
+            resourceInstService.updateInstState(updateReq);
+            log.info("SupplierResourceInstServiceImpl.resetResourceInst resourceInstManager.batchUpdateInstState req={}", JSON.toJSONString(updateReq));
         }
-        List<String> mktResInstNbrList = new ArrayList<String>(mktResInstNbrMap.values());
-        if (CollectionUtils.isEmpty(mktResInstNbrList)) {
-            return resultVO;
-        }
-        // 更新厂家对应的串码
-        ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
-        updateReq.setUpdateStaff(req.getUpdateStaff());
-        updateReq.setMktResInstNbrs(mktResInstNbrList);
-        updateReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
-        updateReq.setMktResStoreId(req.getMktResStoreId());
-        updateReq.setDestStoreId(mktResStoreId);
-        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode());
-        updateReq.setCheckStatusCd(checkStatusCd);
-
-        Integer sucessNum = resourceInstManager.batchUpdateInstState(updateReq);
-        log.info("SupplierResourceInstServiceImpl.resetResourceInst resourceInstManager.batchUpdateInstState req={}, resp={}", JSON.toJSONString(updateReq), sucessNum);
-        return resultVO;
+        return ResultVO.success();
     }
 }

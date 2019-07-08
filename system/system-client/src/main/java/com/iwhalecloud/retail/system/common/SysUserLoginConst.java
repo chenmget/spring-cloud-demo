@@ -7,14 +7,13 @@ package com.iwhalecloud.retail.system.common;
 public class SysUserLoginConst {
 
      public static final int NEED_RESETPASSWDCODE =1001;
-/*     public static final int USER_NOTEXIT_TRADING = 1002;
-     public static final int USER_OTEXIT_MANAGEMENT = 2002;
-     public static final int USER_PASSWORD_ERRO_TRADING = 1003;
-     public static final int USER_PASSWORD_ERRO_MANAGEMENT = 2003;
-     public static final int USER_STATUE_DISABLED_TRADING = 1004;
-    public static final int USER_STATUE_DISABLED_MANAGEMENT = 2004;*/
+     public static final String FACTORY_MERCHANT = "1";
+     public static final String LANDSUPPLIER_MERCHANT = "2";
+     public static final String PROVINCESUPPLIER_MERCHANT = "3";
+     public static final String RETAILER_MERCHANT = "4";
 
-     public enum platformFlag{
+
+    public enum platformFlag{
         TRADING_PLATFORM("0","交易平台"),
         MANAGEMENT_PLATFORM("1","管理平台");
         private String plaformCode;

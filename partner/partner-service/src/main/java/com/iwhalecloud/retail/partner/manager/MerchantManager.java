@@ -592,10 +592,6 @@ public class MerchantManager {
             queryWrapper.like(Merchant.FieldNames.businessEntityName.getTableFieldName(), req.getBusinessEntityName());
         }
 
-        // 是否需要先获取userId集合（后面判空用） 查询条件有涉及到通过user_id字段关联的其他表字段且有值时 为true
-        Boolean isNeedGetUserIdList = false;
-        List<String> userIdList = Lists.newArrayList();
-
         // 是否需要先获取merchantId集合（后面判空用） 查询条件有涉及到通过merchant_id字段关联的其他表字段且有值时 为true
         Boolean isNeedGetMerchantIdList = false;
         List<String> merchantIdList = Lists.newArrayList();
@@ -655,13 +651,19 @@ public class MerchantManager {
             isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
         }
 
+        // 分组标签 转换成 merchant_id
+        if (!StringUtils.isEmpty(req.getTagId())) {
+            List<String> resultList = getMerchantIdListByTag(req.getTagId());
+            if (isNeedGetMerchantIdList) {
+                // 取交集
+                merchantIdList.retainAll(resultList);
+            } else {
+                merchantIdList = resultList;
+            }
 
-        if (CollectionUtils.isEmpty(userIdList)
-                && isNeedGetUserIdList) {
-            // 筛选后 集合为空
-            // 添加一个空值 ID （使查询结果为空的）
-            userIdList.add("");
+            isNeedGetMerchantIdList = true; // 这个赋值要放到最后面
         }
+
 
         if (CollectionUtils.isEmpty(merchantIdList)
                 && isNeedGetMerchantIdList) {
@@ -671,10 +673,6 @@ public class MerchantManager {
         }
 
         // 条件是：in(包含的）  的字段
-        if (!CollectionUtils.isEmpty(userIdList)) {
-            // user_id
-            queryWrapper.in(Merchant.FieldNames.userId.getTableFieldName(), userIdList);
-        }
         if (!CollectionUtils.isEmpty(merchantIdList)) {
             // merchant_id
             queryWrapper.in(Merchant.FieldNames.merchantId.getTableFieldName(), merchantIdList);

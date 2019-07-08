@@ -338,7 +338,7 @@
     <!--2.有省集约前置补贴的机型（逻辑：直接取有前置补贴标志并且是地包的商品ID集合）：优先地包供货，即使地包无库存，也不展示省包商品-->
     <sql id="selectGoodsIdByCondition2">
         select DISTINCT a.goods_id from prod_goods a
-        where a.merchant_type = '2' and a.is_subsidy = '1';
+        where a.merchant_type = '2' and a.is_subsidy = '1'
     </sql>
     <!--3.零售价1599及以下机型（未参与省集约前置补贴）：如果某个机型所有规格地包无库存时，商品列表优先展示省包商品，地包商品打上“无库存”标识，往后排-->
     <!--逻辑：先取 零售价1599及以下机型、商品是未参与省集约前置补贴的、机型所有规格地包无库存时的 product_base_id，再根据product_base_id找到该条件下到商品ID集合-->
@@ -356,7 +356,7 @@
             group by b.product_base_id
         ) bb
         where aa.product_base_id = bb.product_base_id
-        and bb.num = 0;
+        and bb.num = 0
     </sql>
 
 

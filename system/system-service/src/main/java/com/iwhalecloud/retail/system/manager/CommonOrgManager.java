@@ -78,6 +78,10 @@ public class CommonOrgManager {
             queryWrapper.in(CommonOrg.FieldNames.lanId.getTableFieldName(), req.getLanIdList());
         }
 
+        if (!CollectionUtils.isEmpty(req.getParentOrgIdList())) {
+            queryWrapper.in(CommonOrg.FieldNames.parentOrgId.getTableFieldName(), req.getParentOrgIdList());
+        }
+
         List<CommonOrg> list = commonOrgMapper.selectList(queryWrapper);
         return list;
     }

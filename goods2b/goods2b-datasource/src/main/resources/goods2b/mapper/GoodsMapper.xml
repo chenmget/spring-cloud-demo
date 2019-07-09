@@ -270,7 +270,7 @@
             )
         </if>
         <!-- 新查询规则（商品过滤逻辑）:针对零售商查询商品 详情见下面具体条件 两句话说不清楚 -->
-        <if test="req.userFounder != null or req.userFounder == 3">
+        <if test="req.userFounder != null and req.userFounder == 3">
             and t.GOODS_ID in (
                 <include refid="selectGoodsIdByCondition2"></include>
                 UNION

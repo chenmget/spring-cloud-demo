@@ -19,11 +19,9 @@ import com.iwhalecloud.retail.goods2b.dto.resp.CatListResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.CatResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
-import com.iwhalecloud.retail.goods2b.entity.Brand;
-import com.iwhalecloud.retail.goods2b.entity.Cat;
-import com.iwhalecloud.retail.goods2b.entity.CatComplex;
-import com.iwhalecloud.retail.goods2b.entity.Goods;
+import com.iwhalecloud.retail.goods2b.entity.*;
 import com.iwhalecloud.retail.goods2b.manager.*;
+import com.iwhalecloud.retail.goods2b.service.dubbo.CatConditionService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import lombok.extern.slf4j.Slf4j;
@@ -52,6 +50,9 @@ public class CatServiceImpl implements CatService {
     private CatComplexManager catComplexManager;
     @Reference
     private ProductService productService;
+
+    @Reference
+    private CatConditionService catConditionService;
 
     private static final String OPERATION_TYPE = "update";
 
@@ -82,6 +83,10 @@ public class CatServiceImpl implements CatService {
         log.info("CatServiceImpl addProdCat addGoodsImage num={}", num);
         //批量新增关联商品和品牌
         batchAddCatComplex("add",catId, req.getBrandIds(), req.getGoodsIds());
+
+        // 新增分类条件
+        batchAddCatCondition(catId, req.getCreateStaff(), req.getCatConditionList());
+
         if (num < 1) {
             return ResultVO.error("新增类别图片失败");
         }
@@ -146,6 +151,14 @@ public class CatServiceImpl implements CatService {
         catComplexManager.delCatComplexByTargetId(catId, CatComplexConst.TargetType.CAT_RECOMMEND_TARGET.getType());
         //新增关联品牌 商品
         batchAddCatComplex(operation,catId, req.getBrandIds(), req.getGoodsIds());
+
+        //先删除 分类条件
+        CatConditionDeleteReq catConditionDeleteReq = new CatConditionDeleteReq();
+        catConditionDeleteReq.setCatId(catId);
+        catConditionService.deleteCatCondition(catConditionDeleteReq);
+        // 新增分类条件
+        batchAddCatCondition(catId, req.getUpdateStaff(), req.getCatConditionList());
+
         if (num < 1) {
             return ResultVO.error();
         }
@@ -404,4 +417,21 @@ public class CatServiceImpl implements CatService {
         }
     }
 
+
+    /**
+     * 批量新增 分类条件 关联
+     * @param catId
+     * @param createStaff
+     * @param catConditionSaveReqList
+     */
+    public void batchAddCatCondition(String catId, String createStaff, List<CatConditionSaveReq> catConditionSaveReqList) {
+        if (CollectionUtils.isEmpty(catConditionSaveReqList)) {
+            return;
+        }
+        for (CatConditionSaveReq saveReq : catConditionSaveReqList) {
+            saveReq.setCatId(catId);
+            saveReq.setCreateStaff(createStaff);
+            catConditionService.saveCatCondition(saveReq);
+        }
+    }
 }

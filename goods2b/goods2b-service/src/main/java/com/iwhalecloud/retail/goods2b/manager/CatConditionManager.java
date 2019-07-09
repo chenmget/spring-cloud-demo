@@ -2,6 +2,7 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.goods2b.dto.CatConditionDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.CatConditionDeleteReq;
 import com.iwhalecloud.retail.goods2b.dto.req.CatConditionListReq;
 import com.iwhalecloud.retail.goods2b.entity.CatCondition;
 import com.iwhalecloud.retail.goods2b.mapper.CatConditionMapper;
@@ -57,5 +58,31 @@ public class CatConditionManager {
             dtoList.add(dto);
         }
         return dtoList;
+    }
+
+    /**
+     * 商品类型条件 列表查询
+     *
+     * @param req
+     * @return
+     */
+    public Integer deleteCatCondition(CatConditionDeleteReq req) {
+        QueryWrapper<CatCondition> queryWrapper = new QueryWrapper<CatCondition>();
+        // 是否有参数
+        Boolean hasParams = false;
+        if (!StringUtils.isEmpty(req.getCatId())) {
+            hasParams = true;
+            queryWrapper.eq(CatCondition.FieldNames.id.getTableFieldName(), req.getId());
+        }
+        if (!StringUtils.isEmpty(req.getCatId())) {
+            hasParams = true;
+            queryWrapper.eq(CatCondition.FieldNames.catId.getTableFieldName(), req.getCatId());
+        }
+
+        // 没有参数 直接返回  不然会删整个表
+        if (!hasParams) {
+            return 0;
+        }
+        return catConditionMapper.delete(queryWrapper);
     }
 }

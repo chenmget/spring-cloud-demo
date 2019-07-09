@@ -28,7 +28,7 @@ public class ReadGoodsRelByGGService extends ReadExcel<GoodsRulesDTO> {
 
         goodsRelModel.setTargetName(getValue(cell.getCell(0)));
         goodsRelModel.setTargetCode(getValue(cell.getCell(1)));
-        goodsRelModel.setMarketNum(Long.parseLong(getValue(cell.getCell(2))));
+        goodsRelModel.setMarketNum(new Double(Double.parseDouble(getValue(cell.getCell(2)))).longValue());
         goodsRelModel.setProductCode(getValue(cell.getCell(3)));
         return goodsRelModel;
 

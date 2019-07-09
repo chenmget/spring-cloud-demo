@@ -25,34 +25,11 @@ public class ReadGoodsRelByGGService extends ReadExcel<GoodsRulesDTO> {
 
         boolean isContinue = true;
         GoodsRulesDTO goodsRelModel=new GoodsRulesDTO();
-        int i = 0;
-        while (isContinue) {
-            XSSFCell cell1 = cell.getCell(i);
-            log.info("gs_builderObject2010_cell1={}",cell1);
-            if (cell1 == null) {
-                i++;
-                continue;
-            }
-            switch (i) {
-                case 0:
-                    goodsRelModel.setTargetName(getValue(cell1));
-                    break;
-                case 1:
-                    goodsRelModel.setTargetCode(getValue(cell1));
-                    break;
-                case 2:
-                    goodsRelModel.setMarketNum(Long.parseLong(getValue(cell1)));
-                    break;
-                case 3:
-                    goodsRelModel.setProductCode(getValue(cell1));
-                    break;
-                default:
-                    isContinue = false;
-                    break;
-            }
-            i++;
-            log.info("gs_builderObject2010_i={}",i);
-        }
+
+        goodsRelModel.setTargetName(getValue(cell.getCell(0)));
+        goodsRelModel.setTargetCode(getValue(cell.getCell(1)));
+        goodsRelModel.setMarketNum(Long.parseLong(getValue(cell.getCell(2))));
+        goodsRelModel.setProductCode(getValue(cell.getCell(3)));
         return goodsRelModel;
 
     }

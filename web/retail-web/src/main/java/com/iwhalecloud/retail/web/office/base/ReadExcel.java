@@ -79,6 +79,9 @@ public abstract class ReadExcel<T> {
    public abstract T builderObject2010(XSSFRow cell);
 
     public String getValue(XSSFCell xssfRow) {
+        if(xssfRow == null){
+            return null;
+        }
         if (xssfRow.getCellType() == XSSFCell.CELL_TYPE_BOOLEAN) {
             return String.valueOf(xssfRow.getBooleanCellValue());
         } else if (xssfRow.getCellType() == XSSFCell.CELL_TYPE_NUMERIC) {

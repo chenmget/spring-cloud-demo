@@ -31,6 +31,10 @@ public class ZopMsgUtil {
      * @return
      */
     public boolean SendMsg(ZopMsgModel zopMsgModel,Object msgtTemplate) {
+        if(!ifOpen()){
+            log.warn("短信接口开关关闭");
+            return false;
+        }
         RequestParams params = new RequestParams();
         params.setAccess_token(getToken());
         params.setTimeout(getTimeout());
@@ -98,6 +102,10 @@ public class ZopMsgUtil {
 
     public String getUrl() {
         return env.getProperty("zop.url");
+    }
+
+    public boolean ifOpen(){
+        return Boolean.parseBoolean(env.getProperty("zop.ifopen"));
     }
 
 }

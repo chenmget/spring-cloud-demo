@@ -123,7 +123,7 @@ public class GoodsProductRelManager {
 
     public List<ActivityGoodsDTO> qryActivityGoodsId(ActivityGoodsReq req) {
         List<ActivityGoodsDTO> activityGoodsDTOs = goodsProductRelMapper.qryActivityGoodsId(req);
-        if (org.apache.commons.collections.CollectionUtils.isNotEmpty(activityGoodsDTOs)) {
+        if (!CollectionUtils.isEmpty(activityGoodsDTOs)) {
             for (ActivityGoodsDTO activityGoodsDTO : activityGoodsDTOs) {
                 String imageUrl = activityGoodsDTO.getImageUrl();
                 if (StringUtils.isNotEmpty(imageUrl)) {

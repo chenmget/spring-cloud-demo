@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
+import com.iwhalecloud.retail.goods2b.common.TagsConst;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
@@ -35,10 +36,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component
@@ -277,6 +276,13 @@ public class ProductServiceImpl implements ProductService {
                 product.setProdFiles(fileList);
                 String specName = this.getSpecName(product);
                 product.setSpecName(specName);
+
+                // 补充是否有“集约管理机型标签”信息
+                List<TagRelDetailListResp> tagList = getTagListByProductId(productId);
+                List<String> tagIdList = tagList.stream().map(TagRelDetailListResp::getTagId).collect(Collectors.toList());
+                if(!CollectionUtils.isEmpty(tagIdList)&&tagIdList.contains(TagsConst.INTENSIVE_MANAGE_LABEL)){
+                    product.setIsTag(true);
+                }
             }
         }
         log.info("ProductServiceImpl.selectProduct req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(list));
@@ -284,23 +290,15 @@ public class ProductServiceImpl implements ProductService {
     }
 
     /**
-     * 根据productId取关联标签的名称
+     * 根据productId获取关联标签信息列表
      * @param productId
      * @return
      */
-    private List<String> getTagNameListByProductId(String productId) {
-        List<String> tagNameList = Lists.newArrayList();
+    private List<TagRelDetailListResp> getTagListByProductId(String productId) {
         TagRelDetailListReq relDetailListReq = new TagRelDetailListReq();
         relDetailListReq.setProductId(productId);
-        List<TagRelDetailListResp> resps = tagRelManager.listTagRelDetail(relDetailListReq);
-        if (!CollectionUtils.isEmpty(resps)) {
-            HashSet<String> tagNameSet = new HashSet<>();
-            resps.forEach(resp -> {
-                tagNameSet.add(resp.getTagName());
-            });
-            tagNameList = Lists.newArrayList(tagNameSet);
-        }
-        return tagNameList;
+        List<TagRelDetailListResp> tagList = tagRelManager.listTagRelDetail(relDetailListReq);
+        return CollectionUtils.isEmpty(tagList)?new ArrayList<>():tagList;
     }
 
     @Override
@@ -319,8 +317,10 @@ public class ProductServiceImpl implements ProductService {
             String specName = this.getSpecName(productDTO);
             resp.setSpecName(specName);
 
-            // 设置标签名称
-            resp.setTagNameList(getTagNameListByProductId(resp.getProductId()));
+            // 查询并设置产品标签名称
+            List<TagRelDetailListResp> tagList = getTagListByProductId(resp.getProductId());
+            Set<String> tagNameSet = tagList.stream().map(TagRelDetailListResp::getTagName).collect(Collectors.toSet());
+            resp.setTagNameList(Lists.newArrayList(tagNameSet));
 
             // 查询缩略图图片
             String targetType = FileConst.TargetType.PRODUCT_TARGET.getType();

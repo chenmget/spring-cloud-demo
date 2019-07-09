@@ -120,7 +120,7 @@ public class GovernmentReportManageController extends BaseController {
         orderMap.add(new ExcelTitleName("attrValue1", "容量"));
         orderMap.add(new ExcelTitleName("sn", "产品25位编码"));
         orderMap.add(new ExcelTitleName("purType", "采购类型"));
-        orderMap.add(new ExcelTitleName("corporationPrice", "政企销售价"));
+        orderMap.add(new ExcelTitleName("purPrice", "政企销售价"));
         orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
 
         orderMap.add(new ExcelTitleName("applyTime", "采购时间"));
@@ -190,7 +190,7 @@ public class GovernmentReportManageController extends BaseController {
 
         orderMap.add(new ExcelTitleName("purNum", "数量"));
 
-        orderMap.add(new ExcelTitleName("corporationPrice", "政企销售价"));
+        orderMap.add(new ExcelTitleName("purPrice", "政企销售价"));
         orderMap.add(new ExcelTitleName("statusCd", "项目状态"));
 
 

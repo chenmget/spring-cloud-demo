@@ -74,10 +74,6 @@ public class MerchantRulesController {
     @Transactional
     public ResultVO<Integer> saveMerchantRules(@RequestBody @ApiParam(value = "新建商家权限规则参数", required = true) MerchantRulesSaveReq req) {
         log.info("MerchantRulesController.saveMerchantRules(), input: MerchantRulesSaveReq={} ", JSON.toJSONString(req));
-
-        if (CollectionUtils.isEmpty(req.getTargetIdList())) {
-            return ResultVO.success();
-        }
         return merchantRulesService.saveMerchantRules(req);
     }
 

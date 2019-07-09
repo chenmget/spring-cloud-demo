@@ -30,21 +30,20 @@ public abstract class ReadExcel<T> {
         XSSFWorkbook xssfWorkbook = new XSSFWorkbook(is);
         List<T> list = new ArrayList<>();
         // Read the Sheet
-//        for (int numSheet = 0; numSheet < xssfWorkbook.getNumberOfSheets(); numSheet++) {
-//            XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(numSheet);
-//            if (xssfSheet == null) {
-//                continue;
-//            }
-//        }
+        for (int numSheet = 0; numSheet < xssfWorkbook.getNumberOfSheets(); numSheet++) {
+            XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(numSheet);
+            if (xssfSheet == null) {
+                continue;
+            }
 
-        // Read the Row
-        XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(page);
-        for (int rowNum = 1; rowNum <= xssfSheet.getLastRowNum(); rowNum++) {
-            XSSFRow xssfRow = xssfSheet.getRow(rowNum);
-            if (xssfRow != null) {
-                list.add(builderObject2010(xssfRow));
+            for (int rowNum = 1; rowNum <= xssfSheet.getLastRowNum(); rowNum++) {
+                XSSFRow xssfRow = xssfSheet.getRow(rowNum);
+                if (xssfRow != null) {
+                    list.add(builderObject2010(xssfRow));
+                }
             }
         }
+
         return list;
     }
 

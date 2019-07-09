@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.partner.entity;
+package com.iwhalecloud.retail.warehouse.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -16,9 +16,9 @@ import java.io.Serializable;
  * @since 1.0
  */
 @Data
-@TableName("par_merchant_limit2")
-@ApiModel(value = "对应模型par_merchant_limit2, 对应实体MerchantLimit2类")
-public class MerchantLimit2 implements Serializable {
+@TableName("mkt_res_itms_limit")
+@ApiModel(value = "mkt_res_itms_limit, 对应实体MerchantLimit2类")
+public class ResourceInstItmsLimit implements Serializable {
     /**表名常量*/
     public static final String TNAME = "par_merchant_limit";
   	private static final long serialVersionUID = 1L;

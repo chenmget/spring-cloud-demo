@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.partner.dto;
+package com.iwhalecloud.retail.warehouse.dto.response;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -12,8 +12,8 @@ import lombok.Data;
  * @since 1.0
  */
 @Data
-@ApiModel(value = "对应模型par_merchant_limit2, 对应实体MerchantLimit2类")
-public class MerchantLimit2DTO implements java.io.Serializable {
+@ApiModel(value = "对应模型mkt_res_itms_limit, 对应实体ResourceInstItmsLimit类")
+public class ResourceInstItmsLimitResp implements java.io.Serializable {
     
   	private static final long serialVersionUID = 1L;
   

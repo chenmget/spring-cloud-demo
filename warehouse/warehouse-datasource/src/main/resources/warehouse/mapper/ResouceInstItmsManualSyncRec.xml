@@ -32,22 +32,19 @@
             and t.create_date &lt;= #{req.createDateEnd}
         </if>
         <if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">
-            and t.mkt_res_inst_nbr = #{mktResInstNbr}
+            and t.mkt_res_inst_nbr = #{req.mktResInstNbr}
         </if>
         <if test="null!=req.destLanId and ''!=req.destLanId">
-            and t.dest_lan_id = #{destLanId}
-        </if>
-        <if test="null!=req.destLanId and ''!=req.destLanId">
-            and t.dest_lan_id = #{destLanId}
+            and t.dest_lan_id = #{req.destLanId}
         </if>
         <if test="null!=req.productType and ''!=req.productType">
-            and t.product_type = #{productType}
+            and t.product_type = #{req.productType}
         </if>
         <if test="null!=req.brandId and ''!=req.brandId">
-            and t.brand_id = #{brandId}
+            and t.brand_id = #{req.brandId}
         </if>
         <if test="null!=req.unitType and ''!=req.unitType">
-            and t.unit_type = #{unitType}
+            and t.unit_type = #{req.unitType}
         </if>
         <if test="null!=req.productName and ''!=req.productName">
             and upper(t.product_name) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
@@ -59,7 +56,7 @@
             and trim(orig_lan_id)!=''
         </if>
         <if test="null!=req.statusCd and ''!=req.statusCd">
-            and t.status_cd = #{statusCd}
+            and t.status_cd = #{req.statusCd}
         </if>
         order by create_date desc
     </select>

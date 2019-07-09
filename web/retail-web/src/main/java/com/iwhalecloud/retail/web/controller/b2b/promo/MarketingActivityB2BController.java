@@ -183,18 +183,8 @@ public class MarketingActivityB2BController {
             }
 
         }
-        if (!StringUtils.isEmpty(marketingActivityDetailResp.getPageImgUrl())) {
-            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getPageImgUrl(), dfsShowIp, true);
-            marketingActivityDetailResp.setPageImgUrl(newImageFile);
-        }
-        if (!StringUtils.isEmpty(marketingActivityDetailResp.getTopImgUrl())) {
-            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getTopImgUrl(), dfsShowIp, true);
-            marketingActivityDetailResp.setTopImgUrl(newImageFile);
-        }
-        if (!StringUtils.isEmpty(marketingActivityDetailResp.getActivityUrl())) {
-            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getActivityUrl(), dfsShowIp, true);
-            marketingActivityDetailResp.setActivityUrl(newImageFile);
-        }
+        //将活动详情中图片信息补充全路径
+        setFullImageUrl(marketingActivityDetailResp);
         return respResultVO;
     }
 
@@ -382,8 +372,14 @@ public class MarketingActivityB2BController {
     @RequestMapping(value = "/queryMarketingActivityInfo", method = RequestMethod.GET)
     public ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfo(@RequestParam String activityId) {
         log.info("MarketingActivityB2BController queryMarketingActivityInfo marketingActivityCode={} ", activityId);
-        return marketingActivityService.queryMarketingActivityInfo(activityId);
+        ResultVO<MarketingActivityInfoResp> respResultVO = marketingActivityService.queryMarketingActivityInfo(activityId);
+        if (respResultVO.getResultData()!=null&&respResultVO.getResultData().getMarketingActivityDetailResp()!=null){
+            //将活动详情中图片信息补充全路径
+            setFullImageUrl(respResultVO.getResultData().getMarketingActivityDetailResp());
+        }
+        return respResultVO;
     }
+
 
     @ApiOperation(value = "查询活动详情", notes = "查询活动详情")
     @ApiResponses({
@@ -393,7 +389,12 @@ public class MarketingActivityB2BController {
     @RequestMapping(value = "/queryMarketingActivityInfor", method = RequestMethod.GET)
     public ResultVO<MarketingActivityInfoResp> queryMarketingActivityInfor(@RequestParam String activityId) {
         log.info("MarketingActivityB2BController queryMarketingActivityInfo marketingActivityCode={} ", activityId);
-        return marketingActivityService.queryMarketingActivityInfor(activityId);
+        ResultVO<MarketingActivityInfoResp> respResultVO = marketingActivityService.queryMarketingActivityInfor(activityId);
+        if (respResultVO.getResultData()!=null&&respResultVO.getResultData().getMarketingActivityDetailResp()!=null){
+            //将活动详情中图片信息补充全路径
+            setFullImageUrl(respResultVO.getResultData().getMarketingActivityDetailResp());
+        }
+        return respResultVO;
     }
 
     /**
@@ -455,5 +456,27 @@ public class MarketingActivityB2BController {
     public ResultVO<List<MarketingActivityListResp>> queryInvalidActivity(@RequestBody MarketingActivityListReq marketingActivityListReq) {
         log.info("MarketingActivityB2BController queryPreSubsidyActivity-->marketingActivityListReq={} ", JSON.toJSON(marketingActivityListReq));
         return marketingActivityService.queryInvalidActivity(marketingActivityListReq);
+    }
+
+    /**
+     * 将活动详情中图片信息补充全路径
+     * @param marketingActivityDetailResp
+     */
+    private void setFullImageUrl(MarketingActivityDetailResp marketingActivityDetailResp){
+        if(marketingActivityDetailResp==null){
+            return;
+        }
+        if (!StringUtils.isEmpty(marketingActivityDetailResp.getPageImgUrl())) {
+            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getPageImgUrl(), dfsShowIp, true);
+            marketingActivityDetailResp.setPageImgUrl(newImageFile);
+        }
+        if (!StringUtils.isEmpty(marketingActivityDetailResp.getTopImgUrl())) {
+            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getTopImgUrl(), dfsShowIp, true);
+            marketingActivityDetailResp.setTopImgUrl(newImageFile);
+        }
+        if (!StringUtils.isEmpty(marketingActivityDetailResp.getActivityUrl())) {
+            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getActivityUrl(), dfsShowIp, true);
+            marketingActivityDetailResp.setActivityUrl(newImageFile);
+        }
     }
 }

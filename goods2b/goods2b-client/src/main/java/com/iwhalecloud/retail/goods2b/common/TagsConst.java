@@ -16,6 +16,10 @@ public class TagsConst {
      * 政企供货
      */
     public static final String GOVERNMENT_ENTERPRISE_SUPPLIERS = "2019052902";
+    /**
+     * 集约管理机型标签
+     */
+    public static final String INTENSIVE_MANAGE_LABEL = "2019070901";
 
     /**
      * 是否被删除

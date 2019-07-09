@@ -522,8 +522,10 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         for (String key : deliveryingMap.keySet()) {
             if (listMap.get(key) == null) {
                 mgs=mgs+key+",";
-                List<String> mkt =tradeMap.get(key);
-                errorMktList.addAll(mkt);
+                List<String> mkt =errorMap.get(key);
+                if (mkt !=null) {
+                    errorMktList.addAll(mkt);
+                }
                 errorFlag=1;
             }
         }

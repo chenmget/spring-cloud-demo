@@ -310,7 +310,7 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
     }
 
     @Override
-    public ResultVO<List<ActivityGoodsDTO>> qryActivityGoodsId(List<String> productIdList, String regionId, String lanId, String merchantId) {
+    public ResultVO<List<ActivityGoodsDTO>> qryActivityGoodsId(List<String> productIdList, String merchantId, String pathCode) {
         List<ActivityGoodsDTO> activityGoodsDTOs = new ArrayList<>();
         if (CollectionUtils.isEmpty(productIdList)) {
             return ResultVO.successMessage("产品列表为空");
@@ -318,9 +318,8 @@ public class GoodsProductRelServiceImpl implements GoodsProductRelService {
 
         ActivityGoodsReq activityGoodsReq = new ActivityGoodsReq();
         activityGoodsReq.setProductIdList(productIdList);
-        activityGoodsReq.setLanId(lanId);
-        activityGoodsReq.setRegionId(regionId);
         activityGoodsReq.setMerchantId(merchantId);
+        activityGoodsReq.setPathCode(pathCode);
         List<ActivityGoodsDTO> activityGoodsDTOs1 = goodsProductRelManager.qryActivityGoodsId(activityGoodsReq);
         if (CollectionUtils.isEmpty(activityGoodsDTOs1)) {
             return ResultVO.success(activityGoodsDTOs);

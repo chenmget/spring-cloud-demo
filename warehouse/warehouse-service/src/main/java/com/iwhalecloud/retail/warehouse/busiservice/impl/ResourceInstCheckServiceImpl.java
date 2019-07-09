@@ -226,12 +226,12 @@ public class ResourceInstCheckServiceImpl implements ResourceInstCheckService {
                     // 融合终端、机顶盒
                     processId = WorkFlowConst.PROCESS_ID.PROCESS_16.getTypeCode();
                     requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK_CUSTSUP.getCode();
-                } else if(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode().equals(detailCode)){
-                    // 泛智能
+                } else if(TypeConst.TYPE_DETAIL.INTELLIGENT_TERMINA.getCode().equals(detailCode) || TypeConst.TYPE_DETAIL.ROUTER.getCode().equals(detailCode)){
+                    // 泛智能、路由器
                     processId = WorkFlowConst.PROCESS_ID.PROCESS_201917.getTypeCode();
                     requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK.getCode();
                 } else{
-                    // 社采
+                    // 社采（剩下应该就是网关即光猫）
                     processId = WorkFlowConst.PROCESS_ID.PROCESS_14.getTypeCode();
                     requestStatusCd = ResourceConst.MKTRESSTATE.WAIT_SPOTCHECK.getCode();
                 }

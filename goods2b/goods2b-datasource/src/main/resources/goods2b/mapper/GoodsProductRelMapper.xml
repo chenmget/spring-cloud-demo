@@ -67,16 +67,14 @@
         WHERE pgpr.GOODS_ID=pg.GOODS_ID
         AND pg.GOODS_CAT_ID=pc.CAT_ID
         AND pg.GOODS_ID = pgrr.GOODS_ID
+        AND pg.MARKET_ENABLE = '1'
         AND pg.TARGET_TYPE='1'
         AND pgpr.PRODUCT_ID in
         <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">
             #{item}
         </foreach>
-        <if test="null!=req.lanId and ''!=req.lanId">
-            and pgrr.LAN_ID = #{req.lanId}
-        </if>
-        <if test="null!=req.regionId and ''!=req.regionId">
-            and (pgrr.REGION_ID = #{req.regionId} or pgrr.REGION_ID = pgrr.LAN_ID)
+        <if test="null!=req.pathCode and ''!=req.pathCode">
+            and locate(pgrr.ORG_ID,#{req.pathCode})>0
         </if>
         ) p
         LEFT JOIN (select pc.TARGET_ID,pc.FILE_URL from prod_file pc where pc.SUB_TYPE='6' and pc.FILE_TYPE='1'
@@ -93,6 +91,7 @@
         WHERE pgpr.GOODS_ID=pg.GOODS_ID
         AND pg.GOODS_CAT_ID=pc.CAT_ID
         AND pg.GOODS_ID = pgtr.GOODS_ID
+        AND pg.MARKET_ENABLE = '1'
         AND pg.TARGET_TYPE='2'
         AND pgpr.PRODUCT_ID in
         <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">

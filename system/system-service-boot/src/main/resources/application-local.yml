@@ -116,6 +116,7 @@ zop:
   url: http://134.176.42.45:9090/api/
   timeout: 50000
   charset: GBK
+  ifopen: false
 
 # 日志配置
 #logging.path: ../

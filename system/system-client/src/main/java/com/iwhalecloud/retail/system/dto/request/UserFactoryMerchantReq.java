@@ -26,7 +26,7 @@ public class UserFactoryMerchantReq  implements Serializable {
 
     @NotEmpty(message = "经营品牌不能为空")
     @ApiModelProperty(value = "经营品牌")
-    private String managementBrand;
+    private String manageBrand;
 
     @NotEmpty(message = "法人姓名不能为空")
     @ApiModelProperty(value = "法人姓名")

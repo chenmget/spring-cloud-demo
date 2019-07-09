@@ -25,6 +25,9 @@ public class CommonOrgListReq implements Serializable {
     @ApiModelProperty(value = "记录上级组织标识。")
     private String parentOrgId;
 
+    @ApiModelProperty(value = "记录上级组织标识ID集合")
+    private List<String> parentOrgIdList;
+
     @ApiModelProperty(value = "组织名称（模糊查询）")
     private String orgName;
 

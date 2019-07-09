@@ -65,6 +65,7 @@ public class ValidAndAddRunableTask {
         String batchId = resourceInstService.getPrimaryKey();
         try {
             ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
+            List<Future<Boolean>> futures = new ArrayList<>();
             List<String> nbrList = req.getMktResInstNbrs();
             List<String> ctCodeList = req.getCtCodeList();
             List<String> snCodeList = req.getSnCodeList();
@@ -94,12 +95,13 @@ public class ValidAndAddRunableTask {
                     CopyOnWriteArrayList<String> subMacCodeList = new CopyOnWriteArrayList(macCodeList.subList(perNum * i, macCodeMaxNum));
                     getReq.setMacCodeList(subMacCodeList);
                 }
-                log.info("ValidAndAddRunableTask.exceutorValid, getReq={},newList={}, batchId={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), batchId);
                 Callable<Boolean> callable = new ValidNbr(req, getReq, newListTwo, batchId);
-                tasks.put(callable);
+                Future<Boolean> future = executorService.submit(callable);
+                futures.add(future);
+                log.info("ValidAndAddRunableTask.exceutorValid, getReq={},newList={}, batchId={}", JSON.toJSONString(getReq), JSON.toJSONString(newList), batchId);
             }
-            List<Future<Boolean>> futures = executorService.invokeAll(tasks);
             validFutureTaskResult.put(batchId, futures);
+            log.info("ValidAndAddRunableTask.exceutorValid validFutureTaskResult={}, futures={}, batchId={}", JSON.toJSONString(validFutureTaskResult), JSON.toJSONString(futures), batchId);
             executorService.shutdown();
             return batchId;
         } catch (Exception e) {
@@ -122,7 +124,6 @@ public class ValidAndAddRunableTask {
             List<Future<Boolean>> futures = validFutureTaskResult.get(batchId);
             for (Future<Boolean> future : futures) {
                 if (!future.isDone()) {
-                    validFutureTaskResult.remove(batchId);
                     return future.isDone();
                 }
             }
@@ -143,6 +144,8 @@ public class ValidAndAddRunableTask {
      */
     public void exceutorDelNbr(ResourceUploadTempDelReq req) {
         ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
+        // 此时所有都执行成功了，去掉map的数据，减小开支
+        validFutureTaskResult.remove(req.getMktResUploadBatch());
         Callable callable = new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
@@ -307,7 +310,7 @@ public class ValidAndAddRunableTask {
                     inst.setResult(ResourceConst.CONSTANT_YES);
                     inst.setResultDesc(constant.getVaileNbr24());
                 }
-            }else if (TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode())) {
+            }else if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
                 Pattern pattern39= Pattern.compile(reg39);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches() || pattern39.matcher(mktResInstNbr).matches();
@@ -315,7 +318,7 @@ public class ValidAndAddRunableTask {
                     inst.setResult(ResourceConst.CONSTANT_YES);
                     inst.setResultDesc(constant.getVaileNbr32Or39());
                 }
-            }else if (TypeConst.TYPE_DETAIL.FUSION_TERMINAL.getCode().equals(req.getDetailCode())) {
+            }else if (TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode())) {
                 Pattern pattern32= Pattern.compile(reg32);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches();
                 if (!matchs) {
@@ -525,12 +528,5 @@ public class ValidAndAddRunableTask {
         }
     }
 
-    public static void main(String[] args) {
-        String reg = "([A-Z]|[0-9]|[-]){12}$";
-        Pattern pattern39= Pattern.compile(reg);
-        String test = "203911110190";
-        Boolean matchs = pattern39.matcher(test).matches();
-        System.out.print(matchs);
-    }
 }
 

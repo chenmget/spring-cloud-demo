@@ -67,6 +67,8 @@ public class PurApplyReportResp extends PageVO implements Serializable {
 
 	private  String defaultImages;//图片地址
 
+	private String purPrice;//采购价
+
 
 
 

@@ -729,7 +729,7 @@ public class MerchantServiceImpl implements MerchantService {
         }
 
         targetPage.setRecords(targetList);
-        log.info("MerchantServiceImpl.pageSupplyMerchant() output：list<SupplyMerchantDTO>={}", JSON.toJSONString(targetPage.getRecords()));
+        log.info("MerchantServiceImpl.pageSupplyMerchant() output：list<SupplyMerchantDTO>.size()={}", JSON.toJSONString(targetPage.getRecords().size()));
         return ResultVO.success(targetPage);
     }
 
@@ -790,7 +790,7 @@ public class MerchantServiceImpl implements MerchantService {
 
         targetPage.setRecords(targetList);
 
-        log.info("MerchantServiceImpl.pageFactoryMerchant() output：list<FactoryMerchantDTO>={}", JSON.toJSONString(targetPage.getRecords()));
+        log.info("MerchantServiceImpl.pageFactoryMerchant() output：list<FactoryMerchantDTO>.size()={}", JSON.toJSONString(targetPage.getRecords().size()));
         return ResultVO.success(targetPage);
     }
 
@@ -1042,8 +1042,9 @@ public class MerchantServiceImpl implements MerchantService {
             MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
             BeanUtils.copyProperties(req, fileReq);
             initFactoryMerchant(fileReq, processStartReq);
-            return ResultVO.success();
-        } catch (Exception e) {
+            return ResultVO.success(merchant.getMerchantId());
+        }
+        catch (Exception e) {
             return ResultVO.error(e.getMessage());
         }
     }
@@ -1061,8 +1062,6 @@ public class MerchantServiceImpl implements MerchantService {
             return processResult;
         }
         //新增厂商附件记录
-//        MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
-//        BeanUtils.copyProperties(req, fileReq);
         ResultVO fileResult = this.addCommonFile(fileReq);
         return fileResult;
     }

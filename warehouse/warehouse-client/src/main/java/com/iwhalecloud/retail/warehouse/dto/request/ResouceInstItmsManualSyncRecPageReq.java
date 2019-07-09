@@ -5,8 +5,6 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import java.util.Date;
-
 /**
  * ResouceInstTrack
  * @author generator
@@ -92,13 +90,13 @@ public class ResouceInstItmsManualSyncRecPageReq extends PageVO {
 	 * 创建时间起始时间
 	 */
 	@ApiModelProperty(value = "创建时间起始时间")
-	private Date createDateStart;
+	private String createDateStart;
 
 	/**
 	 * 创建时间结束时间
 	 */
 	@ApiModelProperty(value = "创建时间结束时间")
-	private String createTimeEnd;
+	private String createDateEnd;
 
 	/**
 	 * 增加操作类型

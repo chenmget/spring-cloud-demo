@@ -146,5 +146,11 @@
             <artifactId>promo-client</artifactId>
             <version>${warehouse.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.iwhalecloud.retail</groupId>
+            <artifactId>order2b-client</artifactId>
+            <version>${warehouse.version}</version>
+        </dependency>
     </dependencies>
 </project>

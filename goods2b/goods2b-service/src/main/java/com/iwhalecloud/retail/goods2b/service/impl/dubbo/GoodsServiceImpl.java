@@ -883,21 +883,12 @@ public class GoodsServiceImpl implements GoodsService {
         UserDTO userDTO = userService.getUserByUserId(req.getUserId());
         if (null != userDTO) {
             merchantCode = userDTO.getRelCode();
-//            MerchantGetReq merchantGetReq = new MerchantGetReq();
-//            merchantGetReq.setMerchantId(userDTO.getRelCode());
-//            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
-//            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
-//            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
-//                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
-//            }
         }
-        // 查询商品是否收藏
+        // 查询商品是否收藏，并查询展示的前置补贴价格
         log.info("GoodsServiceImpl.queryGoodsForPage queryUserCollection userCollectionListReq={}", userCollectionListReq);
         ResultVO<List<UserCollectionDTO>> listResultVO = userCollectionService.queryUserCollection(userCollectionListReq);
         log.info("GoodsServiceImpl.queryGoodsForPage queryUserCollection listResultVO={}", listResultVO);
-        // 查询展示的前置补贴价格
         List<UserCollectionDTO> userCollectionDTOList = listResultVO.getResultData();
-        long startTime = System.currentTimeMillis();
         for (GoodsForPageQueryResp goods : goodsDTOList) {
             goods.setIsCollection(false);
             // 设置是否有收藏
@@ -910,17 +901,13 @@ public class GoodsServiceImpl implements GoodsService {
                 }
             }
             // 设置前置补贴价格
-            goods.setDeliveryPrice(goods.getDeliveryPrice());
             goods.setIsPresubsidy(false);
             if (null != goods.getIsSubsidy()) {
-                int isSubsidy = goods.getIsSubsidy();
-                if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode() == isSubsidy) {
+                if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode().equals(goods.getIsSubsidy())) {
                     this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
                 }
             }
         }
-        long endTime = System.currentTimeMillis();
-        log.info("setPresubsidyPrice costTime={}:", endTime - startTime);
     }
 
     private void setGoodsImageUrl(List<GoodsForPageQueryResp> goodsDTOList, List<String> goodsIdList) {
@@ -954,10 +941,7 @@ public class GoodsServiceImpl implements GoodsService {
             marketingActivityQueryByGoodsReq.setMerchantCode(merchantCode);
             marketingActivityQueryByGoodsReq.setActivityType(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
             log.info("GoodsServiceImpl.queryGoodsForPage listGoodsMarketingReliefActivitys marketingActivityQueryByGoodsReq={}", marketingActivityQueryByGoodsReq);
-            long startTime = System.currentTimeMillis();
             ResultVO<List<MarketingReliefActivityQueryResp>> resultVO1 = marketingActivityService.listGoodsMarketingReliefActivitys(marketingActivityQueryByGoodsReq);
-            long endTime = System.currentTimeMillis();
-            log.info("setPresubsidyPrice costTime={}:", endTime - startTime);
             if (resultVO1.isSuccess() && CollectionUtils.isNotEmpty(resultVO1.getResultData())) {
                 goods.setIsPresubsidy(true);
                 List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryResps = resultVO1.getResultData();

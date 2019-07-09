@@ -15,8 +15,10 @@ import com.iwhalecloud.retail.order2b.entity.AdvanceOrder;
 import com.iwhalecloud.retail.order2b.entity.Order;
 import com.iwhalecloud.retail.order2b.entity.OrderItem;
 import com.iwhalecloud.retail.order2b.entity.Promotion;
+import com.iwhalecloud.retail.order2b.manager.PromotionManager;
 import com.iwhalecloud.retail.order2b.model.BuilderOrderModel;
 import com.iwhalecloud.retail.order2b.model.CreateOrderLogModel;
+import com.iwhalecloud.retail.order2b.model.PromotionModel;
 import com.iwhalecloud.retail.order2b.util.CurrencyUtil;
 import com.iwhalecloud.retail.promo.dto.PromotionWithMarketingActivityDTO;
 import com.iwhalecloud.retail.promo.dto.req.ActHistoryPurChaseAddReq;
@@ -38,6 +40,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
@@ -48,6 +51,9 @@ public class ActivityManagerReference {
 
     @Reference
     private HistoryPurchaseService historyPurchaseService;
+
+    @Autowired
+    private PromotionManager promotionManager;
 
 
     @Autowired
@@ -278,18 +284,30 @@ public class ActivityManagerReference {
     /**
      * 订单关联的前置补贴活动是否超过要求的发货截至时间
      */
-    public MarketingActivityDetailResp validActivityEndTimeByProductId(List<String> activityIdList) {
-        for (String activityId : activityIdList) {
-            ResultVO<MarketingActivityInfoResp> resultVO = marketingActivityService.queryMarketingActivityInfor(activityId);
-            if (!resultVO.isSuccess() || null == resultVO.getResultData()) {
-                return null;
-            }
-            MarketingActivityDetailResp resp = resultVO.getResultData().getMarketingActivityDetailResp();
-            Date endTime = resp.getDeliverEndTime();
-            Date now = new Date();
-            // 前置补贴活动要求的发货截至时间小于当前时间
-            if (endTime.before(now)) {
-                return resp;
+    public String validActivityByOrderItemId(String orderItemId) {
+        PromotionModel promotionModel = new PromotionModel();
+        promotionModel.setOrderItemId(orderItemId);
+        List<Promotion> promotions = promotionManager.selectPromotion(promotionModel);
+        log.info("ActivityManagerReference.valieNbr promotionManager.selectPromotion promotionModel={}, resp={}", JSON.toJSONString(promotionModel) , JSON.toJSONString(promotions));
+        if (!CollectionUtils.isEmpty(promotions)) {
+            List<String> activityIdList = promotions.stream().map(Promotion::getMktActId).collect(Collectors.toList());
+            for (String activityId : activityIdList) {
+                ResultVO<MarketingActivityInfoResp> resultVO = marketingActivityService.queryMarketingActivityInfor(activityId);
+                if (!resultVO.isSuccess() || null == resultVO.getResultData()) {
+                    return null;
+                }
+                MarketingActivityDetailResp resp = resultVO.getResultData().getMarketingActivityDetailResp();
+                Date endTime = resp.getDeliverEndTime();
+                Date startTime = resp.getDeliverStartTime();
+                Date now = new Date();
+                // 前置补贴活动要求的发货截至时间小于当前时间
+                if (endTime.before(now)) {
+                    return "该订单参加的\""+resp.getName()+"\"营销活动已结束，无法进行串码上传，未发货的商品请线下协调退款重新下单发货";
+                }
+                // 前置补贴活动要求的发货开始时间大于当前时间
+                if (startTime.after(now)) {
+                    return "该订单参加的\""+resp.getName()+"\"营销活动发货时间还没到，请到发货时间重新下单发货";
+                }
             }
         }
         return null;

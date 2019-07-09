@@ -47,6 +47,9 @@ public class CatAddReq extends AbstractRequest implements Serializable {
     @ApiModelProperty(value = "创建时间")
     private Date createDate;
 
+    @ApiModelProperty(value = "分类条件 List")
+    private List<CatConditionSaveReq> catConditionList;
+
     @Data
     public static class BrandReq implements Serializable{
         public BrandReq(){

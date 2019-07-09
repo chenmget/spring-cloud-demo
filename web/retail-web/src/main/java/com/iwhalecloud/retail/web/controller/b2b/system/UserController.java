@@ -1118,7 +1118,7 @@ public class UserController extends BaseController {
         // 先密码还原成普通字符串
         userResetPasswordReq.setUpdatePassword(decodePassword(userResetPasswordReq.getUpdatePassword()));
 
-        if (UserContext.getUser().getUserFounder() != 1) {
+        if (!UserContext.isAdminType()) {
             return ResultVO.error("只有管理员才能重置密码");
         }
         return userService.resetPassword(userResetPasswordReq);
@@ -1129,7 +1129,7 @@ public class UserController extends BaseController {
      * @param req
      * @return
      */
-    @ApiOperation(value = "用户自注册为厂商", notes = "注册用户，同时生成厂商信息，配置产商权限，生成厂商审核流程")
+    @ApiOperation(value = "用户自注册为厂商", notes = "注册用户，同时生成厂商信息，生成厂商审核流程")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")

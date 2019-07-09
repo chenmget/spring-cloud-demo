@@ -34,6 +34,7 @@
     ,t.GOODS_NAME
     ,t.GOODS_CAT_ID
     ,t.MKTPRICE
+    ,t.COST
     ,t.BUY_COUNT
     ,t.SUPPLIER_ID
     ,t.SELLING_POINT
@@ -73,6 +74,7 @@
 ,t2.COLOR
 ,t2.MEMORY
 ,t2.INCH
+,t2.COST
 ,t2.ATTR_VALUE1
 ,t2.ATTR_VALUE2
 ,t2.ATTR_VALUE3

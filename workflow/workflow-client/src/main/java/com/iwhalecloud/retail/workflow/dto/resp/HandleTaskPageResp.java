@@ -128,4 +128,7 @@ public class HandleTaskPageResp implements Serializable {
             "2：办结")
     private String taskStatus;
 
+    @ApiModelProperty(value = "环节处理人")
+    private String handlerUserName;
+
 }

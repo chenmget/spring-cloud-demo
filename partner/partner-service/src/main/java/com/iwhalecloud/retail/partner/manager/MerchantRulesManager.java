@@ -29,17 +29,6 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
     private MerchantRulesMapper merchantRulesMapper;
 
     /**
-     * 校验 商家经营权限-区域权限
-     * @return
-     */
-    public int checkBusinessRegionPermission() {
-
-
-        return 0;
-    }
-
-
-    /**
      * 添加一个 商家 权限规则
      *
      * @param merchantRules
@@ -118,7 +107,7 @@ public class MerchantRulesManager extends ServiceImpl<MerchantRulesMapper, Merch
             BeanUtils.copyProperties(merchantRules, merchantRulesDTO);
             merchantRulesDTOList.add(merchantRulesDTO);
         }
-        log.info("MerchantRulesManager.listMerchantRules(), output: merchantRulesDTOList={} ", JSON.toJSONString(merchantRulesDTOList));
+        log.info("MerchantRulesManager.listMerchantRules(), output: merchantRulesDTOList.size={} ", JSON.toJSONString(merchantRulesDTOList.size()));
         return merchantRulesDTOList;
     }
 

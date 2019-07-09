@@ -96,8 +96,9 @@ public class ReportDataInfoController extends BaseController {
 			list.add(UserContext.getUser().getLanId());
 			req.setLanIdList(list);
 		}
-        ResultVO<List<ReportStorePurchaserResq>> resultVO = iReportDataInfoService.getStorePurchaserReportdc(req);
-        ResultVO result = new ResultVO();
+//        ResultVO<List<ReportStorePurchaserResq>> resultVO = iReportDataInfoService.getStorePurchaserReportdc(req);
+		ResultVO<Page<ReportStorePurchaserResq>> resultVO = iReportDataInfoService.getStorePurchaserReport(req);
+		ResultVO result = new ResultVO();
         if (!resultVO.isSuccess()) {
             result.setResultCode(ResultCodeEnum.ERROR.getCode());
             result.setResultMsg(resultVO.getResultMsg());
@@ -105,7 +106,7 @@ public class ReportDataInfoController extends BaseController {
             return;
         }
         
-        List<ReportStorePurchaserResq> data = resultVO.getResultData();
+        List<ReportStorePurchaserResq> data = resultVO.getResultData().getRecords();
         //创建Excel
         Workbook workbook = new HSSFWorkbook();
         

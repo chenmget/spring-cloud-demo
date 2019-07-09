@@ -13,9 +13,12 @@ import com.iwhalecloud.retail.goods2b.dto.resp.ProductForResourceResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
+import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantLimitDTO;
+import com.iwhalecloud.retail.partner.dto.req.BusinessEntityGetReq;
 import com.iwhalecloud.retail.partner.dto.req.MerchantLimitUpdateReq;
+import com.iwhalecloud.retail.partner.service.BusinessEntityService;
 import com.iwhalecloud.retail.partner.service.MerchantLimitService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.warehouse.busiservice.*;
@@ -99,6 +102,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     private ResouceStoreManager resouceStoreManager;
     @Autowired
     private ResourceInstCheckService resourceInstCheckService;
+    @Reference
+    private BusinessEntityService businessEntityService;
 
     private final String CLASS_TYPE_1 = "1";
     private final String CLASS_TYPE_2 = "2";
@@ -892,8 +897,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
 
     /**
      * 判断是否需要审核环节：
-     * 零售商门店，省包供货、绿色通道录入的串码，只能选择同个经营主体下的其他门店仓库进行调拨，同地市时不审核，跨地市时需要审核（调出和调入双方审核）
-     * 地包供货的串码，只能选择同地市的零售商仓库，不需要审核
+     * 零售商门店，省包供货、绿色通道录入的串码，只能选择同个经营主体下的其他门店仓库进行调拨(跨商不允许调拨)，同地市时不审核，跨地市时需要审核（调出和调入双方审核）
+     * 地包供货的串码，跨地市只能一商多店且不带任何营销补贴政策,本地市可跨商
      * @param sourceMerchant
      * @param destMerchant
      * @param nbrList
@@ -904,11 +909,12 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         String destBusinessEntityCode = destMerchant.getBusinessEntityCode();
         String sourceLanId = sourceMerchant.getLanId();
         String destLanId = destMerchant.getLanId();
-        Boolean sameMerchant = StringUtils.isNotBlank(sourceBusinessEntityCode) && StringUtils.isNotBlank(destBusinessEntityCode) && sourceBusinessEntityCode.equals(destBusinessEntityCode);
+        Boolean sameMerchant = this.ifSameBusinessEntity(sourceBusinessEntityCode, destBusinessEntityCode);
         Boolean sameLanId = StringUtils.isNotBlank(sourceLanId) && StringUtils.isNotBlank(destLanId) && sourceLanId.equals(destLanId);
 
         Boolean hasDirectSuppLy = false;
         Boolean hasGroundSupply = false;
+        Boolean ifPreSubsidy = false;
         for (String nbr : nbrList) {
             ResultVO<ResouceInstTrackDTO> resouceInstTrackDTOVO = resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId(nbr, sourceMerchant.getMerchantId());
             log.info("RetailerResourceInstMarketServiceImpl.validAllocateNbr resouceInstTrackService.getResourceInstTrackByNbrAndMerchantId nbr={}, resp={}", nbr, JSON.toJSONString(resouceInstTrackDTOVO));
@@ -922,17 +928,20 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfGroundSupply())) {
                 hasGroundSupply = true;
             }
+            if (ResourceConst.CONSTANT_YES.equals(resouceInstTrackDTO.getIfPreSubsidy())) {
+                ifPreSubsidy = true;
+            }
         }
-        // 全是绿色通道和省直供串码且跨商 不让调拨
-        Boolean directSuppLyAndNotSameMerchant = hasDirectSuppLy && !hasGroundSupply && !sameMerchant;
-        // 全是绿色通道和省直供串码且不跨商，且不跨地市  不需审核
+        // 全是绿色通道和省直供串码不跨商，不跨地市  不需审核
         Boolean directSuppLyAndSameMerchantAndSameLanId = hasDirectSuppLy && !hasGroundSupply && sameMerchant && sameLanId;
         // 全是绿色通道和省直供串码不跨商，跨地市  需要调出方和调入方审核
         Boolean directSuppLyAndSameMerchantAndNotSameLanId = hasDirectSuppLy && !hasGroundSupply && sameMerchant && !sameLanId;
-        // 全是地堡供应串码，且不能跨地市（跨地市不让调拨，跨不跨商家都不需要审核）不需要审核
+        // 全是地堡供应串码，且不跨地市，不需要审核
         Boolean directSuppLyAndSameLanId = !hasDirectSuppLy && hasGroundSupply && sameLanId;
-
-        if (directSuppLyAndSameMerchantAndNotSameLanId) {
+        // 全是地堡供应串码，跨地市，串码是有前置补贴活动发货过来的，需要调出方和调入方审核
+        Boolean directSuppLyNotSameLanIdAndPreSubsidy = !hasDirectSuppLy && hasGroundSupply && !sameLanId && ifPreSubsidy;
+        log.info("RetailerResourceInstMarketServiceImpl.validAllocateNbr sameMerchant={}, sameLanId={}, hasDirectSuppLy={}, hasGroundSupply={}, ifPreSubsidy={}", sameMerchant, sameLanId, hasDirectSuppLy, hasGroundSupply, ifPreSubsidy);
+        if (directSuppLyAndSameMerchantAndNotSameLanId || directSuppLyNotSameLanIdAndPreSubsidy) {
             return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode();
         } else if(directSuppLyAndSameMerchantAndSameLanId || directSuppLyAndSameLanId) {
             return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_1.getCode();
@@ -997,5 +1006,75 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     @Override
     public ResultVO<Boolean> greenChannelValid(String mktResId, String merchantId){
         return resourceInstCheckService.greenChannelValid(mktResId, merchantId);
+    }
+
+    /**
+     * 校验两个经营主体编码是否是同一门店
+     * 判断是否一商多店时，是否同一经营主体的判断要纳入经营主体上下级关系，有上下级关系的经营主体间同样视为一商多店
+     * @param businessEntityCode1
+     * @param businessEntityCode2
+     * @return
+     */
+    private Boolean ifSameBusinessEntity(String businessEntityCode1,  String businessEntityCode2) {
+        if (StringUtils.isEmpty(businessEntityCode1) || StringUtils.isEmpty(businessEntityCode2)) {
+            return false;
+        }
+        if (businessEntityCode1.equals(businessEntityCode2)) {
+            return true;
+        }
+        List<String> bussinessEntityCodeList1 = Lists.newArrayList(businessEntityCode1);
+        List<String> bussinessEntityCodeList2 = Lists.newArrayList(businessEntityCode2);
+
+        BusinessEntityGetReq req = new BusinessEntityGetReq();
+        String parentCode = businessEntityCode1;
+        Integer num1 = 0;
+        while (true){
+            req.setBusinessEntityCode(parentCode);
+            ResultVO<BusinessEntityDTO> businessEntityResultVO = businessEntityService.getBusinessEntity(req);
+            log.info("RetailerResourceInstMarketServiceImpl.ifSameBusinessEntity businessEntityService.getBusinessEntity parentCode={}, resp={}", parentCode, JSON.toJSONString(businessEntityResultVO));
+            if (!businessEntityResultVO.isSuccess() || null == businessEntityResultVO.getResultData()) {
+                return false;
+            }
+            parentCode = businessEntityResultVO.getResultData().getParentBusinessEntityCode();
+            if (StringUtils.isEmpty(parentCode)) {
+                break;
+            } else {
+                bussinessEntityCodeList1.add(parentCode);
+            }
+            if (bussinessEntityCodeList1.contains(businessEntityCode2)) {
+                return true;
+            }
+            if (num1 > 5) {
+                break;
+            }
+        }
+
+        parentCode = businessEntityCode2;
+        Integer num2 = 0;
+        while (true){
+            if (StringUtils.isEmpty(parentCode)) {
+                break;
+            }
+            req.setBusinessEntityCode(parentCode);
+            ResultVO<BusinessEntityDTO> businessEntityResultVO = businessEntityService.getBusinessEntity(req);
+            log.info("RetailerResourceInstMarketServiceImpl.ifSameBusinessEntity businessEntityService.getBusinessEntity parentCode={}, resp={}", parentCode, JSON.toJSONString(businessEntityResultVO));
+            if (!businessEntityResultVO.isSuccess() || null == businessEntityResultVO.getResultData()) {
+                return false;
+            }
+            parentCode = businessEntityResultVO.getResultData().getParentBusinessEntityCode();
+            if (StringUtils.isEmpty(parentCode)) {
+                break;
+            } else {
+                bussinessEntityCodeList2.add(parentCode);
+            }
+            if (bussinessEntityCodeList2.contains(businessEntityCode1)) {
+                return true;
+            }
+            if (num2 > 5) {
+                break;
+            }
+        }
+        // 不是直接上下级，两个主体处于多层级的不连续层级
+        return bussinessEntityCodeList2.retainAll(bussinessEntityCodeList1);
     }
 }

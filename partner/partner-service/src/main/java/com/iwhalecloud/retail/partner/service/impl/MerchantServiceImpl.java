@@ -729,7 +729,7 @@ public class MerchantServiceImpl implements MerchantService {
         }
 
         targetPage.setRecords(targetList);
-        log.info("MerchantServiceImpl.pageSupplyMerchant() output：list<SupplyMerchantDTO>={}", JSON.toJSONString(targetPage.getRecords()));
+        log.info("MerchantServiceImpl.pageSupplyMerchant() output：list<SupplyMerchantDTO>.size()={}", JSON.toJSONString(targetPage.getRecords().size()));
         return ResultVO.success(targetPage);
     }
 
@@ -790,7 +790,7 @@ public class MerchantServiceImpl implements MerchantService {
 
         targetPage.setRecords(targetList);
 
-        log.info("MerchantServiceImpl.pageFactoryMerchant() output：list<FactoryMerchantDTO>={}", JSON.toJSONString(targetPage.getRecords()));
+        log.info("MerchantServiceImpl.pageFactoryMerchant() output：list<FactoryMerchantDTO>.size()={}", JSON.toJSONString(targetPage.getRecords().size()));
         return ResultVO.success(targetPage);
     }
 
@@ -1005,7 +1005,9 @@ public class MerchantServiceImpl implements MerchantService {
         //生成管理平台注册的工作流请求参数
         ProcessStartReq processStartReq = this.getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessTitle(), req.getCreateStaff(), req.getCreateStaffName(), PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessId(),
                 req.getMerchantId(), req.getLanId(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3038.getTaskSubType());
-        ResultVO vo = initFactoryMerchant(userFactoryMerchantReq, processStartReq);
+        MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+        BeanUtils.copyProperties(userFactoryMerchantReq, fileReq);
+        ResultVO vo = initFactoryMerchant(fileReq, processStartReq);
         if (!vo.isSuccess()) {
             //注册厂商信息失败，回滚生成的账户信息
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -1036,7 +1038,10 @@ public class MerchantServiceImpl implements MerchantService {
             req.setMerchantId(merchant.getMerchantId());
             ProcessStartReq processStartReq = this.getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessTitle(), req.getCreateStaff(), req.getCreateStaffName(), PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessId(),
                     req.getMerchantId(), req.getLanId(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3034.getTaskSubType());
-            //initFactoryMerchant(req, processStartReq);
+            //上传的附件
+            MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+            BeanUtils.copyProperties(req, fileReq);
+            initFactoryMerchant(fileReq, processStartReq);
             return ResultVO.success();
         } catch (Exception e) {
             return ResultVO.error(e.getMessage());
@@ -1045,19 +1050,19 @@ public class MerchantServiceImpl implements MerchantService {
 
     /**
      * 上传厂商附件，生成审核流程
-     * @param req
+     * @param
      * @param
      * @return
      */
-    public ResultVO<String> initFactoryMerchant(UserFactoryMerchantReq req, ProcessStartReq processStartReq) {
+    public ResultVO<String> initFactoryMerchant(MerchantCommonFileReq fileReq, ProcessStartReq processStartReq) {
         //发起审核流程
         ResultVO processResult = taskService.startProcess(processStartReq);
         if (!processResult.isSuccess()) {
             return processResult;
         }
         //新增厂商附件记录
-        MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
-        BeanUtils.copyProperties(req, fileReq);
+//        MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
+//        BeanUtils.copyProperties(req, fileReq);
         ResultVO fileResult = this.addCommonFile(fileReq);
         return fileResult;
     }

@@ -37,10 +37,16 @@ public class GoodsForPageQueryResp implements Serializable {
     private String goodsCatId;
 
     /**
-     * 零售价
+     * 市场价格
+     */
+    @ApiModelProperty(value = "市场价格")
+    private Double mktprice;
+
+    /**
+     * 零售价(prod_product表cost字段）
      */
     @ApiModelProperty(value = "零售价")
-    private Double mktprice;
+    private Double cost;
 
     /**
      * 提货价

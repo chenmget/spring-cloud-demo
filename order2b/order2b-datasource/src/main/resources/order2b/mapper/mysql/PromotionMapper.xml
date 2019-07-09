@@ -25,6 +25,9 @@
         <if test="orderId !=null and orderId !=''">
             AND order_id =#{orderId}
         </if>
+        <if test="orderItemId !=null and orderItemId !=''">
+            AND order_item_id =#{orderItemId}
+        </if>
       <if test="mktActName !=null and mktActName !=''">
           AND mkt_act_name like #{mktActName}
       </if>

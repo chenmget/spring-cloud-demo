@@ -344,7 +344,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         addReq.setLanId(detailDTO.getLanId());
         addReq.setMktResId(detailDTO.getMktResId());
         addReq.setRegionId(detailDTO.getRegionId());
-        addReq.setMktResStoreId(resourceRequestResp.getMktResStoreId());
+        addReq.setMktResStoreId(resourceRequestResp.getDestStoreId());
         ResultVO syncTerminalVO = resourceInstService.syncTerminal(addReq);
         log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceInstService.syncTerminal req={},resp={}", JSON.toJSONString(addReq),JSON.toJSONString(syncTerminalVO));
         if (syncTerminalVO.isSuccess()) {

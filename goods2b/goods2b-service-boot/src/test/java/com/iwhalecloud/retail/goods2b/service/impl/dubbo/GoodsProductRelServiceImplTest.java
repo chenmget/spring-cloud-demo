@@ -75,7 +75,8 @@ public class GoodsProductRelServiceImplTest {
         String regionId = "430100";
         String lanId = "731";
         String merchantId="11";
-        ResultVO<List<ActivityGoodsDTO>> listResultVO = goodsProductRelService.qryActivityGoodsId(productIdList,regionId,lanId,merchantId);
+        String pathCode = "1000000020.843000000000000.843073100000000.843073105040000.843073105041041.110025773777.110025774594";
+        ResultVO<List<ActivityGoodsDTO>> listResultVO = goodsProductRelService.qryActivityGoodsId(productIdList,merchantId,pathCode);
 
         System.out.println(listResultVO.getResultData());
     }

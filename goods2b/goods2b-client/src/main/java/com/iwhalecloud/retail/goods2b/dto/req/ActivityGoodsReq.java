@@ -25,4 +25,11 @@ public class ActivityGoodsReq  extends AbstractRequest implements Serializable {
 
     @ApiModelProperty(value = "merchantId")
     private String merchantId;
+
+    /**
+     * (商家)CRM组织路径编码
+     */
+    @ApiModelProperty(value = "pathCode")
+    private String pathCode;
+
 }

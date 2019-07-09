@@ -16,15 +16,20 @@ import com.iwhalecloud.retail.promo.service.ActivityProductService;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
+import com.iwhalecloud.retail.web.utils.FastDFSImgStrJoinUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * @author li.xinhang
@@ -39,8 +44,12 @@ public class ActivityGoodsB2BController {
 
     @Reference
     private ActivityGoodService activityGoodService;
+
     @Reference
     private ActivityProductService activityProductService;
+
+    @Value("${fdfs.showUrl}")
+    private String dfsShowIp;
 
     @ApiOperation(value = "根据登录用户查询活动列表", notes = "条件分页查询")
     @ApiResponses({
@@ -59,6 +68,12 @@ public class ActivityGoodsB2BController {
                 req.setMerchantId(userDTO.getRelCode());
             }
         }
+        ResultVO<Page<MarketingActivityDTO>> pageResultVO = activityGoodService.listMarketingActivityByMerchant(req);
+        if (pageResultVO!=null&&pageResultVO.getResultData()!=null&& !CollectionUtils.isEmpty(pageResultVO.getResultData().getRecords())){
+            List<MarketingActivityDTO> activityDTOS = pageResultVO.getResultData().getRecords();
+            activityDTOS.forEach(item -> item.setPageImgUrl(FastDFSImgStrJoinUtil.fullImageUrl(item.getPageImgUrl(),dfsShowIp,true)));
+            activityDTOS.forEach(item -> item.setTopImgUrl(FastDFSImgStrJoinUtil.fullImageUrl(item.getTopImgUrl(),dfsShowIp,true)));
+        }
         return activityGoodService.listMarketingActivityByMerchant(req);
     }
 
@@ -73,6 +88,7 @@ public class ActivityGoodsB2BController {
         log.info("ActivityGoodsB2BController listActivityGoodsByActivityId ActivityGoodsByMerchantReq={} ", req);
         if(UserContext.isUserLogin()) {
             req.setMerchantId(UserContext.getMerchantId());
+            //以下两值暂时未用上
             req.setLanId(UserContext.getUser().getLanId());
             req.setRegionId(UserContext.getUser().getRegionId());
         }

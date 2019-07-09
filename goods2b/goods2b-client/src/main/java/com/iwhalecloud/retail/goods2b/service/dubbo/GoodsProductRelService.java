@@ -52,7 +52,7 @@ public interface GoodsProductRelService{
      * @param productIdList
      * @return
      */
-    ResultVO<List<ActivityGoodsDTO>> qryActivityGoodsId(List<String> productIdList,String regionId,String lanId,String merchantId);
+    ResultVO<List<ActivityGoodsDTO>> qryActivityGoodsId(List<String> productIdList,String merchantId,String pathCode);
 
     /**
      * 根据产品ID列表查询商品ID列表

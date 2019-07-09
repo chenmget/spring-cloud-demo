@@ -32,7 +32,6 @@ import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
-import com.iwhalecloud.retail.web.controller.b2b.goods.request.AddGoodsLeadingInReq;
 import com.iwhalecloud.retail.web.controller.b2b.goods.service.ReadGoodsRelByGGService;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -108,20 +107,24 @@ public class GoodsB2BController extends GoodsBaseController {
     private ReadGoodsRelByGGService readGoodsRelByGGService;
 
     @PostMapping(value = "/getObjInfoByReadExcel",headers = "content-type=multipart/form-data")
-    public ResultVO<List<GoodsRulesDTO>> getGoodsRulesByExcel(@RequestParam("objType") String objType,
+    public ResultVO<List<GoodsRulesProductDTO>> getGoodsRulesByExcel(@RequestParam("objType") String objType,
+                                                              @RequestParam("prodBaseId") String prodBaseId,
                                                               @RequestParam("file") MultipartFile file) throws Exception {
 
         if(!file.getName().contains(OfficeCommon.OFFICE_EXCEL_2010_POSTFIX)){
             ResultVO.error("上传的Excel只能是2010以上的版本");
         }
-       List<GoodsRulesDTO> goodsRelModels = readGoodsRelByGGService.readXlsx2010(file.getInputStream(),0);
+       List<GoodsRulesProductDTO> goodsRelModels = readGoodsRelByGGService.readXlsx2010(file.getInputStream(),0);
         if(CollectionUtils.isEmpty(goodsRelModels)){
             ResultVO.error("上传的Excel不能为空");
         }
         for (GoodsRulesDTO dto: goodsRelModels){
             dto.setTargetType(objType);
         }
-        return goodsRulesService.checkObj(goodsRelModels);
+        QueryProductObjReq req=new QueryProductObjReq();
+        req.setDtoList(goodsRelModels);
+        req.setProductBaseId(prodBaseId);
+        return goodsRulesService.queryProductObj(req);
     }
 
 

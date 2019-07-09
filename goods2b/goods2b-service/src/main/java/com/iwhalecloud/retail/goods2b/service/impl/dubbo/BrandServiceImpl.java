@@ -213,6 +213,9 @@ public class BrandServiceImpl implements BrandService {
     public ResultVO<BrandUrlResp> getBrandByBrandId(String brandId) {
         BrandUrlResp brandUrlResp = new BrandUrlResp();
         Brand brand = brandManager.getBrandByBrandId(brandId);
+        if (null == brand) {
+            return ResultVO.success();
+        }
         BeanUtils.copyProperties(brand, brandUrlResp);
         return ResultVO.success(brandUrlResp);
     }

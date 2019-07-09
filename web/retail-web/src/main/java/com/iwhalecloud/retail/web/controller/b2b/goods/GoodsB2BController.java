@@ -108,7 +108,7 @@ public class GoodsB2BController extends GoodsBaseController {
     private ReadGoodsRelByGGService readGoodsRelByGGService;
 
     @PostMapping(value = "/getObjInfoByReadExcel",headers = "content-type=multipart/form-data")
-    public ResultVO<List<GoodsRulesDTO>> getGoodsRulesByExcel(@RequestParam("obj") AddGoodsLeadingInReq req,
+    public ResultVO<List<GoodsRulesDTO>> getGoodsRulesByExcel(@RequestParam("objType") String objType,
                                                               @RequestParam("file") MultipartFile file) throws Exception {
 
         if(!file.getName().contains(OfficeCommon.OFFICE_EXCEL_2010_POSTFIX)){
@@ -119,7 +119,7 @@ public class GoodsB2BController extends GoodsBaseController {
             ResultVO.error("上传的Excel不能为空");
         }
         for (GoodsRulesDTO dto: goodsRelModels){
-            dto.setTargetType(req.getObjType());
+            dto.setTargetType(objType);
         }
         return goodsRulesService.checkObj(goodsRelModels);
     }

@@ -729,7 +729,7 @@ public class MerchantServiceImpl implements MerchantService {
         }
 
         targetPage.setRecords(targetList);
-        log.info("MerchantServiceImpl.pageSupplyMerchant() output：list<SupplyMerchantDTO>={}", JSON.toJSONString(targetPage.getRecords()));
+        log.info("MerchantServiceImpl.pageSupplyMerchant() output：list<SupplyMerchantDTO>.size()={}", JSON.toJSONString(targetPage.getRecords().size()));
         return ResultVO.success(targetPage);
     }
 
@@ -790,7 +790,7 @@ public class MerchantServiceImpl implements MerchantService {
 
         targetPage.setRecords(targetList);
 
-        log.info("MerchantServiceImpl.pageFactoryMerchant() output：list<FactoryMerchantDTO>={}", JSON.toJSONString(targetPage.getRecords()));
+        log.info("MerchantServiceImpl.pageFactoryMerchant() output：list<FactoryMerchantDTO>.size()={}", JSON.toJSONString(targetPage.getRecords().size()));
         return ResultVO.success(targetPage);
     }
 

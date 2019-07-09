@@ -237,7 +237,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
         List<MerchantRulesDetailDTO> resultList = getDetailList(req, list);
 
-        log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), output: resultList={} ", resultList);
+        log.info("MerchantRulesServiceImpl.listMerchantRulesDetail(), output: resultList.size={} ", resultList.size());
         return ResultVO.success(resultList);
     }
 
@@ -251,7 +251,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         List<MerchantRulesDTO> list = merchantRulesManager.listMerchantRules(merchantRulesListReq);
         Page<MerchantRulesDetailDTO> merchantRulesDetailDTOPage = getDetailPageList(req, list);
 
-        log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), output: resultList={} ", JSON.toJSONString(merchantRulesDetailDTOPage.getRecords()));
+        log.info("MerchantRulesServiceImpl.pageMerchantRulesDetail(), output: resultList.size={} ", JSON.toJSONString(merchantRulesDetailDTOPage.getRecords().size()));
         return ResultVO.success(merchantRulesDetailDTOPage);
     }
 
@@ -354,7 +354,7 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
             merchantRulesDetailPageRespPage.setRecords(ruleList);
         }
 
-        log.info("MerchantRulesServiceImpl.pageMerchantRules(), output: list={} ", JSON.toJSONString(ruleList));
+        log.info("MerchantRulesServiceImpl.pageMerchantRules(), output: list.size={} ", JSON.toJSONString(ruleList.size()));
 
         return ResultVO.success(merchantRulesDetailPageRespPage);
     }

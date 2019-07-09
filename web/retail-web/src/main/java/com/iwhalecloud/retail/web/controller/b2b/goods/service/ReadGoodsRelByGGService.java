@@ -1,10 +1,9 @@
 package com.iwhalecloud.retail.web.controller.b2b.goods.service;
 
-import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
+import com.iwhalecloud.retail.goods2b.dto.GoodsRulesProductDTO;
 import com.iwhalecloud.retail.web.office.base.ReadExcel;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFRow;
-import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.springframework.stereotype.Component;
 
@@ -14,17 +13,16 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class ReadGoodsRelByGGService extends ReadExcel<GoodsRulesDTO> {
+public class ReadGoodsRelByGGService extends ReadExcel<GoodsRulesProductDTO> {
     @Override
-    public GoodsRulesDTO builderObject2007(HSSFRow cell) {
+    public GoodsRulesProductDTO builderObject2007(HSSFRow cell) {
         return null;
     }
 
     @Override
-    public GoodsRulesDTO builderObject2010(XSSFRow cell) {
+    public GoodsRulesProductDTO builderObject2010(XSSFRow cell) {
 
-        boolean isContinue = true;
-        GoodsRulesDTO goodsRelModel=new GoodsRulesDTO();
+        GoodsRulesProductDTO goodsRelModel=new GoodsRulesProductDTO();
 
         goodsRelModel.setTargetName(getValue(cell.getCell(0)));
         goodsRelModel.setTargetCode(getValue(cell.getCell(1)));

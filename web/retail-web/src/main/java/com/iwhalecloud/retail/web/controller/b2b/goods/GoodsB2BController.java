@@ -32,7 +32,6 @@ import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
-import com.iwhalecloud.retail.web.controller.b2b.goods.request.AddGoodsLeadingInReq;
 import com.iwhalecloud.retail.web.controller.b2b.goods.service.ReadGoodsRelByGGService;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
@@ -108,20 +107,24 @@ public class GoodsB2BController extends GoodsBaseController {
     private ReadGoodsRelByGGService readGoodsRelByGGService;
 
     @PostMapping(value = "/getObjInfoByReadExcel",headers = "content-type=multipart/form-data")
-    public ResultVO<List<GoodsRulesDTO>> getGoodsRulesByExcel(@RequestParam("objType") String objType,
+    public ResultVO<List<GoodsRulesProductDTO>> getGoodsRulesByExcel(@RequestParam("objType") String objType,
+                                                              @RequestParam("prodBaseId") String prodBaseId,
                                                               @RequestParam("file") MultipartFile file) throws Exception {
 
         if(!file.getName().contains(OfficeCommon.OFFICE_EXCEL_2010_POSTFIX)){
             ResultVO.error("上传的Excel只能是2010以上的版本");
         }
-       List<GoodsRulesDTO> goodsRelModels = readGoodsRelByGGService.readXlsx2010(file.getInputStream(),0);
+       List<GoodsRulesProductDTO> goodsRelModels = readGoodsRelByGGService.readXlsx2010(file.getInputStream(),0);
         if(CollectionUtils.isEmpty(goodsRelModels)){
             ResultVO.error("上传的Excel不能为空");
         }
         for (GoodsRulesDTO dto: goodsRelModels){
             dto.setTargetType(objType);
         }
-        return goodsRulesService.checkObj(goodsRelModels);
+        QueryProductObjReq req=new QueryProductObjReq();
+        req.setDtoList(goodsRelModels);
+        req.setProductBaseId(prodBaseId);
+        return goodsRulesService.queryProductObj(req);
     }
 
 
@@ -395,12 +398,9 @@ public class GoodsB2BController extends GoodsBaseController {
             if (null == userFounder) {
                 throw new UserNoMerchantException(ResultCodeEnum.ERROR.getCode(), "用户没有商家类型，请确认");
             } else if (userFounder == SystemConst.USER_FOUNDER_3) {
-                req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC_MERCHANT_TYPE_ASC.getValue());
+                req.setSortType(GoodsConst.SortTypeEnum.DELIVERY_PRICE_ASC_PRODUCT_ID_ASC_MERCHANT_TYPE_DESC.getValue());
 
-                // 零售商 可以查到 地包和省包的商品
-//                String merchantType = PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType();
-//                // 如果用户是零售商，只能查到地包商品
-//                req.setMerchantType(merchantType);
+                // 零售商 可以查到 地包和省包的商品 （不用设置商家类型）
 
                 // 设置零售商的组织路径编码 zhong.wenlong 2019.06.13
                 req.setOrgPathCode(getOrgPathCode(merchantId));

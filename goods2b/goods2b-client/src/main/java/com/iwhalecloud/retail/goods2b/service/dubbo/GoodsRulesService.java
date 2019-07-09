@@ -3,8 +3,10 @@ package com.iwhalecloud.retail.goods2b.service.dubbo;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
+import com.iwhalecloud.retail.goods2b.dto.GoodsRulesProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleByExcelFileReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
+import com.iwhalecloud.retail.goods2b.dto.req.QueryProductObjReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsRulesExcelResp;
 
 import java.util.List;
@@ -61,8 +63,8 @@ public interface GoodsRulesService {
 
     /**
      * 校验分货对象
-     * @param list
+     * @param req
      * @return list
      */
-    ResultVO<List<GoodsRulesDTO>> checkObj(List<GoodsRulesDTO> list);
+    ResultVO<List<GoodsRulesProductDTO>> queryProductObj(QueryProductObjReq req);
 }

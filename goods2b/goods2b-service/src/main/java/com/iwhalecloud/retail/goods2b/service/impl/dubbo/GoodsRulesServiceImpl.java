@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
@@ -12,10 +13,13 @@ import com.iwhalecloud.retail.goods2b.dto.*;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleByExcelFileReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductGetReq;
+import com.iwhalecloud.retail.goods2b.dto.req.QueryProductObjReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsRulesExcelResp;
 import com.iwhalecloud.retail.goods2b.entity.Goods;
+import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.manager.GoodsManager;
 import com.iwhalecloud.retail.goods2b.manager.GoodsRulesManager;
+import com.iwhalecloud.retail.goods2b.manager.ProductManager;
 import com.iwhalecloud.retail.goods2b.reference.BusinessEntityReference;
 import com.iwhalecloud.retail.goods2b.reference.MerchantReference;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsRulesService;
@@ -46,6 +50,9 @@ import java.util.stream.Collectors;
 public class GoodsRulesServiceImpl implements GoodsRulesService {
     @Autowired
     private GoodsRulesManager goodsRulesManager;
+
+    @Autowired
+    private ProductManager productManager;
 
     @Resource
     private BusinessEntityReference businessEntityReference;
@@ -619,13 +626,33 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
     }
 
     @Override
-    public ResultVO<List<GoodsRulesDTO>> checkObj(List<GoodsRulesDTO> dtoList) {
-
-        for (GoodsRulesDTO entity :dtoList){
+    public ResultVO<List<GoodsRulesProductDTO>> queryProductObj(QueryProductObjReq req) {
+      List<Product> productList=  productManager.list(new LambdaQueryWrapper<Product>()
+              .eq(Product::getProductBaseId,req.getProductBaseId()));
+      if(CollectionUtils.isEmpty(productList)){
+          return ResultVO.error("未查询到产品数据");
+      }
+        for (GoodsRulesProductDTO entity :req.getDtoList()){
             supplyTargetInfo(entity);
-            supplyProductInfo(entity);
+            Product p=productList.get(0);
+            entity.setProductName(p.getUnitName());
+            if(StringUtils.isEmpty(entity.getProductCode())){
+                continue;
+            }
+
+            for (Product product:productList){
+                if(entity.getProductCode().equals(product.getSn())){
+                    entity.setAttrValue1(product.getAttrValue1());
+                    entity.setAttrValue2(product.getAttrValue2());
+                    entity.setAttrValue3(product.getAttrValue3());
+                    entity.setProductId(product.getProductId());
+                    break;
+                }
+            }
+
         }
-        return ResultVO.success(dtoList);
+        return ResultVO.success(req.getDtoList());
     }
+
 
 }

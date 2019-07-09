@@ -2,8 +2,8 @@ package com.iwhalecloud.retail.goods2b.manager;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
-import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.exception.RetailTipException;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
@@ -20,7 +20,7 @@ import java.util.List;
 
 
 @Component
-public class ProductManager {
+public class ProductManager extends ServiceImpl<ProductMapper,Product> {
     @Resource
     private ProductMapper productMapper;
 

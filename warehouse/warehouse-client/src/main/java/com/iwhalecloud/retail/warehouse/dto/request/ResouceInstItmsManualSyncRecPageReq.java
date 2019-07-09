@@ -98,7 +98,7 @@ public class ResouceInstItmsManualSyncRecPageReq extends PageVO {
 	 * 创建时间结束时间
 	 */
 	@ApiModelProperty(value = "创建时间结束时间")
-	private String createTimeEnd;
+	private String createDateEnd;
 
 	/**
 	 * 增加操作类型

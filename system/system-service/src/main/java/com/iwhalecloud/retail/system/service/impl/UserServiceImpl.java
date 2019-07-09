@@ -698,7 +698,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public ResultVO registerFactoryMerchant(UserFactoryMerchantReq req) {
-        if (!zopMessageService.checkVerifyCode(req.getPhoneNo(), req.getCode()).isSuccess()){
+        if (!zopMessageService.checkVerifyCode(req.getPhoneNo(), req.getCode()).isSuccess()) {
             return ResultVO.error("短信验证码不一致");
         }
         //注册用户
@@ -715,16 +715,19 @@ public class UserServiceImpl implements UserService {
         }
         //组装厂商信息
         req.setUserId(userDTO.getUserId());
-        FactoryMerchantSaveReq factoryMerchantSaveReq=new FactoryMerchantSaveReq();
+        FactoryMerchantSaveReq factoryMerchantSaveReq = new FactoryMerchantSaveReq();
         BeanUtils.copyProperties(req, factoryMerchantSaveReq);
         factoryMerchantSaveReq.setCreateStaff(userDTO.getUserId());
         factoryMerchantSaveReq.setCreateStaffName(userDTO.getUserName());
         //调用自注册服务
         ResultVO<String> merchantResult = merchantService.registerFactoryMerchant(factoryMerchantSaveReq);
+        log.info("UserServiceImpl.registerFactoryMerchant req：factoryMerchantSaveReq={} resp={}", JSON.toJSON(factoryMerchantSaveReq), JSON.toJSON(merchantResult));
         if (!merchantResult.isSuccess() || null == merchantResult.getResultData()) {
+            //调用服务失败
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return merchantResult;
-        } else {
+        }
+        else {
             //修改用户的关联信息
             String merchantId = merchantResult.getResultData();
             User user = new User();

@@ -38,7 +38,7 @@ import java.util.Objects;
 /**
  * @author z
  */
-@Service
+@Service(parameters = {"addActSup.timeout", "10000"})
 @Slf4j
 public class TaskServiceImpl implements TaskService {
 

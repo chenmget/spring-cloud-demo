@@ -1042,8 +1042,9 @@ public class MerchantServiceImpl implements MerchantService {
             MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
             BeanUtils.copyProperties(req, fileReq);
             initFactoryMerchant(fileReq, processStartReq);
-            return ResultVO.success();
-        } catch (Exception e) {
+            return ResultVO.success(merchant.getMerchantId());
+        }
+        catch (Exception e) {
             return ResultVO.error(e.getMessage());
         }
     }
@@ -1061,8 +1062,6 @@ public class MerchantServiceImpl implements MerchantService {
             return processResult;
         }
         //新增厂商附件记录
-//        MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
-//        BeanUtils.copyProperties(req, fileReq);
         ResultVO fileResult = this.addCommonFile(fileReq);
         return fileResult;
     }

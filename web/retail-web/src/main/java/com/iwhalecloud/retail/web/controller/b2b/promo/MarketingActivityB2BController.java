@@ -474,9 +474,5 @@ public class MarketingActivityB2BController {
             String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getTopImgUrl(), dfsShowIp, true);
             marketingActivityDetailResp.setTopImgUrl(newImageFile);
         }
-        if (!StringUtils.isEmpty(marketingActivityDetailResp.getActivityUrl())) {
-            String newImageFile = FastDFSImgStrJoinUtil.fullImageUrl(marketingActivityDetailResp.getActivityUrl(), dfsShowIp, true);
-            marketingActivityDetailResp.setActivityUrl(newImageFile);
-        }
     }
 }

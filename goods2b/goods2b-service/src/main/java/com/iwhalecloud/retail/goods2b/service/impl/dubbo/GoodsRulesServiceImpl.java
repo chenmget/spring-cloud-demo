@@ -617,5 +617,15 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
 
         return ResultVO.success();
     }
-    
+
+    @Override
+    public ResultVO<List<GoodsRulesDTO>> checkObj(List<GoodsRulesDTO> dtoList) {
+
+        for (GoodsRulesDTO entity :dtoList){
+            supplyTargetInfo(entity);
+            supplyProductInfo(entity);
+        }
+        return ResultVO.success(dtoList);
+    }
+
 }

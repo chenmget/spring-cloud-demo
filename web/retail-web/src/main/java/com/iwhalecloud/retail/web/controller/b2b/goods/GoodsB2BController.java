@@ -32,8 +32,11 @@ import com.iwhalecloud.retail.system.dto.OrganizationDTO;
 import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
+import com.iwhalecloud.retail.web.controller.b2b.goods.request.AddGoodsLeadingInReq;
+import com.iwhalecloud.retail.web.controller.b2b.goods.service.ReadGoodsRelByGGService;
 import com.iwhalecloud.retail.web.exception.UserNoMerchantException;
 import com.iwhalecloud.retail.web.interceptor.UserContext;
+import com.iwhalecloud.retail.web.office.base.OfficeCommon;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -41,9 +44,11 @@ import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -95,6 +100,30 @@ public class GoodsB2BController extends GoodsBaseController {
 
     @Reference
     private OrganizationService organizationService;
+
+    @Reference
+    private GoodsRulesService goodsRulesService;
+
+    @Autowired
+    private ReadGoodsRelByGGService readGoodsRelByGGService;
+
+    @PostMapping(value = "/getObjInfoByReadExcel",headers = "content-type=multipart/form-data")
+    public ResultVO<List<GoodsRulesDTO>> getGoodsRulesByExcel(@RequestParam("obj") AddGoodsLeadingInReq req,
+                                                              @RequestParam("file") MultipartFile file) throws Exception {
+
+        if(!file.getName().contains(OfficeCommon.OFFICE_EXCEL_2010_POSTFIX)){
+            ResultVO.error("上传的Excel只能是2010以上的版本");
+        }
+       List<GoodsRulesDTO> goodsRelModels = readGoodsRelByGGService.readXlsx2010(file.getInputStream(),0);
+        if(CollectionUtils.isEmpty(goodsRelModels)){
+            ResultVO.error("上传的Excel不能为空");
+        }
+        for (GoodsRulesDTO dto: goodsRelModels){
+            dto.setTargetType(req.getObjType());
+        }
+        return goodsRulesService.checkObj(goodsRelModels);
+    }
+
 
     @ApiOperation(value = "添加商品", notes = "添加商品")
     @ApiResponses({

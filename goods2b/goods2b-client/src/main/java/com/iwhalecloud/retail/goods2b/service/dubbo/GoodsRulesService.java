@@ -58,4 +58,11 @@ public interface GoodsRulesService {
     ResultVO getGoodsRulesByExcel(ProdGoodsRuleByExcelFileReq prodGoodsRuleByExcelFileReq) throws Exception;
 
     ResultVO checkGoodsRules(List<GoodsRulesDTO> entityList, List<GoodsProductRelDTO> goodsProductRelList,String supplierId);
+
+    /**
+     * 校验分货对象
+     * @param list
+     * @return list
+     */
+    ResultVO<List<GoodsRulesDTO>> checkObj(List<GoodsRulesDTO> list);
 }

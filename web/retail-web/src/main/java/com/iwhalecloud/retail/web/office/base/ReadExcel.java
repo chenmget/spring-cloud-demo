@@ -26,21 +26,23 @@ public abstract class ReadExcel<T> {
      * @return
      * @throws IOException
      */
-    public List<T> readXlsx2010(InputStream is) throws IOException {
+    public List<T> readXlsx2010(InputStream is,int page) throws IOException {
         XSSFWorkbook xssfWorkbook = new XSSFWorkbook(is);
         List<T> list = new ArrayList<>();
         // Read the Sheet
-        for (int numSheet = 0; numSheet < xssfWorkbook.getNumberOfSheets(); numSheet++) {
-            XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(numSheet);
-            if (xssfSheet == null) {
-                continue;
-            }
-            // Read the Row
-            for (int rowNum = 1; rowNum <= xssfSheet.getLastRowNum(); rowNum++) {
-                XSSFRow xssfRow = xssfSheet.getRow(rowNum);
-                if (xssfRow != null) {
-                    list.add(builderObject2010(xssfRow));
-                }
+//        for (int numSheet = 0; numSheet < xssfWorkbook.getNumberOfSheets(); numSheet++) {
+//            XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(numSheet);
+//            if (xssfSheet == null) {
+//                continue;
+//            }
+//        }
+
+        // Read the Row
+        XSSFSheet xssfSheet = xssfWorkbook.getSheetAt(page);
+        for (int rowNum = 1; rowNum <= xssfSheet.getLastRowNum(); rowNum++) {
+            XSSFRow xssfRow = xssfSheet.getRow(rowNum);
+            if (xssfRow != null) {
+                list.add(builderObject2010(xssfRow));
             }
         }
         return list;
@@ -54,7 +56,6 @@ public abstract class ReadExcel<T> {
      * @throws IOException
      */
     public List<T> readXls2007(String path) throws IOException {
-        System.out.println(Common.PROCESSING + path);
         InputStream is = new FileInputStream(path);
         HSSFWorkbook hssfWorkbook = new HSSFWorkbook(is);
         List<T> list = new ArrayList<>();

@@ -28,7 +28,7 @@
         <if test="null!=req.createDateStart and ''!=req.createDateStart">
             and t.create_date &gt;= #{req.createDateStart}
         </if>
-        <if test="null!=req.createDateStart and ''!=req.createTimeEnd">
+        <if test="null!=req.createDateStart and ''!=req.createDateEnd">
             and t.create_date &lt;= #{req.createDateEnd}
         </if>
         <if test="null!=req.mktResInstNbr and ''!=req.mktResInstNbr">

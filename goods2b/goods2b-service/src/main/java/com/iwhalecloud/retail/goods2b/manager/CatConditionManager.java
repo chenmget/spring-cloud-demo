@@ -70,7 +70,7 @@ public class CatConditionManager {
         QueryWrapper<CatCondition> queryWrapper = new QueryWrapper<CatCondition>();
         // 是否有参数
         Boolean hasParams = false;
-        if (!StringUtils.isEmpty(req.getCatId())) {
+        if (!StringUtils.isEmpty(req.getId())) {
             hasParams = true;
             queryWrapper.eq(CatCondition.FieldNames.id.getTableFieldName(), req.getId());
         }

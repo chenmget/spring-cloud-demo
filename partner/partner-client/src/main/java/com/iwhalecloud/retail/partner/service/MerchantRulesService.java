@@ -6,10 +6,10 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantRulesDetailDTO;
 import com.iwhalecloud.retail.partner.dto.req.*;
+import com.iwhalecloud.retail.partner.dto.resp.FactoryMerchantImeiResp;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantImeiRulesResp;
 import com.iwhalecloud.retail.partner.dto.resp.MerchantRulesDetailPageResp;
 import com.iwhalecloud.retail.partner.dto.resp.TransferPermissionGetResp;
-import com.iwhalecloud.retail.system.dto.UserDTO;
 
 import java.util.List;
 
@@ -89,12 +89,7 @@ public interface MerchantRulesService {
      */
     ResultVO<List<String>> getGreenChannelPermission(String merchantId);
 
-    /**
-     * 获取串码权限--机型
-     * @param merchantId
-     * @return
-     */
-    ResultVO<List<String>> getImeiPermission(String merchantId);
+
 
 
     /**
@@ -141,34 +136,54 @@ public interface MerchantRulesService {
     ResultVO<String> checkMerchantRules(MerchantRulesCheckReq req);
 
     /**
-     * 增加厂商串码录入权限
-     * @param req
-     * @return
-     */
-    ResultVO saveFactoryMerchantImeiRule(MerchantRulesSaveReq req);
-
-    /**
-     * 取消厂商串码录入权限
-     * @param req
-     * @return
-     */
-    ResultVO delFactoryMerchantImeiRule(MerchantRulesSaveReq req, UserDTO userDTO);
-
-    /**
-     * 商家串码录入权限
-     * @param merchantId
-     * @return
-     */
-    ResultVO<List<MerchantImeiRulesResp>> listFactoryMerchantImeiRule(String merchantId);
-
-    /**
      * 商家权限规则校验 商家是否有经营权限进行提示
      *
      * @param merchantId 规则校验入参
      * @param productBaseId 规则校验入参
      * @return ResultVO
      */
-    ResultVO<Boolean> checkProdListRule(String merchantId,String productBaseId);
+    ResultVO<Boolean> checkProdListRule(String merchantId, String productBaseId);
 
+    /**
+     * 增加厂商串码录入权限
+     * @param req
+     * @return
+     */
+    ResultVO addFactoryMerchantImeiRule(MerchantRulesUpdateReq req);
 
+    /**
+     * 获取串码权限--机型
+     * @param merchantId
+     * @return
+     */
+    ResultVO<List<String>> getImeiPermission(String merchantId);
+
+    /**
+     * 取消厂商串码录入权限
+     * @param req
+     * @return
+     */
+    ResultVO delFactoryMerchantImeiRule(MerchantRulesUpdateReq req);
+
+    /**
+     * 厂商串码录入权限
+     * @param merchantId
+     * @return
+     */
+    ResultVO<List<MerchantImeiRulesResp>> listFactoryMerchantImeiRuleByMerchant(String merchantId);
+
+    /**
+     * 厂商取消的串码录入权限
+     * @param applyId
+     * @return
+     */
+    ResultVO<FactoryMerchantImeiResp> listFactoryMerchantDelImeiRuleByApplyId(String applyId);
+
+    /**
+     * 校验厂家是否有该机型的串码录入权限
+     * @param merchantId
+     * @param productId
+     * @return
+     */
+    ResultVO<String> checkMerchantImeiRule(String merchantId, String productId);
 }

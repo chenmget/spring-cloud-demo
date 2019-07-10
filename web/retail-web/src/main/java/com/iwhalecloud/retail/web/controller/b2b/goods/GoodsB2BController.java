@@ -114,7 +114,7 @@ public class GoodsB2BController extends GoodsBaseController {
         if(!file.getName().contains(OfficeCommon.OFFICE_EXCEL_2010_POSTFIX)){
             ResultVO.error("上传的Excel只能是2010以上的版本");
         }
-       List<GoodsRulesProductDTO> goodsRelModels = readGoodsRelByGGService.readXlsx2010(file.getInputStream(),0);
+       List<GoodsRulesDTO> goodsRelModels = readGoodsRelByGGService.readXlsx2010(file.getInputStream(),0);
         if(CollectionUtils.isEmpty(goodsRelModels)){
             ResultVO.error("上传的Excel不能为空");
         }

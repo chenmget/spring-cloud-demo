@@ -11,6 +11,13 @@ import java.io.Serializable;
 @ApiModel
 public class GoodsRulesDTO extends AbstractRequest implements Serializable {
 
+    private String productBaseId;
+
+    /**
+     * 分货种类，1；机型，2：规格，默认按规格
+     */
+    private String assignType;
+
     @ApiModelProperty(value = "关联ID")
     private String goodsRuleId;
 

@@ -23,6 +23,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
@@ -77,32 +78,16 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
 //        applySaveReq.setApplyType(PartnerConst.PermissionApplyTypeEnum.PERMISSION_APPLY.getCode());
         String applyId = permissionApplyManager.savePermissionApply(applySaveReq);
         if (StringUtils.isEmpty(applyId)) {
-           return ResultVO.error("新增商家权限申请单失败");
+            return ResultVO.error("新增商家权限申请单失败");
         }
 
         // 2、新增申请单项列表信息
         // 批量插入
-        List<PermissionApplyItem> entityList = Lists.newArrayList();
-        for (PermissionApplyItemSaveReq item : req.getItemList()) {
-            PermissionApplyItem entity = new PermissionApplyItem();
-            BeanUtils.copyProperties(item, entity);
-            // 设置其他信息
-            entity.setApplyId(applyId);
-            entity.setMerchantId(req.getMerchantId());
-            entity.setStatusCd(PartnerConst.TelecomCommonState.VALID.getCode());
-            entity.setOperationType(PartnerConst.PermissionApplyItemOperationTypeEnum.ADD.getType());
-            entity.setCreateStaff(req.getUserId());
-            entity.setUpdateStaff(req.getUserId());
-            entity.setCreateDate(new Date());
-            entity.setUpdateDate(new Date());
-
-            entityList.add(entity);
+        ResultVO<String> applyItemResult = addPermissionApplyItem(req, applyId);
+        if (!applyItemResult.isSuccess()) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return applyItemResult;
         }
-        if (!permissionApplyItemManager.saveBatch(entityList)) {
-            log.info("PermissionApplyServiceImpl.savePermissionApply(), 商家权限 申请单项列表 批量插入失败");
-            throw new Exception("商家权限 申请单项列表 批量插入失败");
-        }
-
         // 启动审核工作流
         // 3.调用外部接口 发起审核流程
         // 发起流程到零售，由零售商决定是否接受
@@ -136,7 +121,6 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
             log.info("TaskService.startProcess req={},resp={}",
                     JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
         }
-
 //        log.info("PermissionApplyServiceImpl.savePermissionApply(), output: resultVO={} ", JSON.toJSONString(resultVO));
         return ResultVO.success(applyId);
     }
@@ -269,4 +253,64 @@ public class PermissionApplyServiceImpl implements PermissionApplyService {
         return merchantRulesManager.saveBatch(merchantRulesList);
     }
 
+    @Override
+    public ResultVO<PermissionApplyDTO> getPermissionApplyById(String applyId) {
+        PermissionApply permissionApply = permissionApplyManager.getPermissionApplyById(applyId);
+        PermissionApplyDTO permissionApplyDTO = new PermissionApplyDTO();
+        BeanUtils.copyProperties(permissionApply, permissionApplyDTO);
+        return ResultVO.success(permissionApplyDTO);
+    }
+
+    @Override
+    @Transactional(rollbackForClassName = "Exception")
+    public ResultVO<String> addPermissionApply(PermissionApplySaveDTO req) {
+        PermissionApplySaveReq applySaveReq = req.getPermissionApplySaveReq();
+        applySaveReq.setCreateStaff(req.getUserId());
+        applySaveReq.setUpdateStaff(req.getUserId());
+        applySaveReq.setMerchantId(req.getMerchantId());
+        applySaveReq.setStatusCd(PartnerConst.PermissionApplyStatusEnum.AUDITING.getCode());
+        applySaveReq.setLanId(req.getLanId());
+        applySaveReq.setRegionId(req.getRegionId());
+        applySaveReq.setRuleType(req.getRuleType());
+        String applyId = permissionApplyManager.savePermissionApply(applySaveReq);
+        if (StringUtils.isEmpty(applyId)) {
+            return ResultVO.error("新增商家权限申请单失败");
+        }
+        //发起审核流程
+        ProcessStartReq processStartReq = new ProcessStartReq(PartnerConst.MerchantProcessEnum.PROCESS_3010101.getProcessId(), PartnerConst.MerchantProcessEnum.PROCESS_3010101.getProcessTitle(),
+                applyId, req.getUserId(), req.getName(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3050.getTaskSubType(), null);
+        ResultVO processResult = taskService.startProcess(processStartReq);
+        if (!processResult.isSuccess()) {
+            //回滚业务
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return processResult;
+        }
+        return ResultVO.success(applyId);
+    }
+
+    @Override
+    public ResultVO<String> addPermissionApplyItem(PermissionApplySaveDTO req, String applyId)  {
+        List<PermissionApplyItem> entityList = Lists.newArrayList();
+        PermissionApplyItem entity = new PermissionApplyItem();
+        for (PermissionApplyItemSaveReq item : req.getItemList()) {
+            BeanUtils.copyProperties(item, entity);
+            // 设置其他信息
+            entity.setApplyId(applyId);
+            entity.setMerchantId(req.getMerchantId());
+            entity.setStatusCd(PartnerConst.TelecomCommonState.VALID.getCode());
+            if(null == entity.getOperationType()){
+                entity.setOperationType(PartnerConst.PermissionApplyItemOperationTypeEnum.ADD.getType());
+            }
+            entity.setCreateStaff(req.getUserId());
+            entity.setUpdateStaff(req.getUserId());
+            entity.setCreateDate(new Date());
+            entity.setUpdateDate(new Date());
+            entityList.add(entity);
+        }
+        boolean flag = permissionApplyItemManager.saveBatch(entityList);
+        if (!flag) {
+            return ResultVO.error("商家权限 申请单项列表 批量插入失败");
+        }
+        return ResultVO.success();
+    }
 }

@@ -122,6 +122,8 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
             }
             ResultVO<ResourceInstAddResp> resp = merchantResourceInstService.addResourceInst(req);
             log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={} resp={}", JSON.toJSONString(req), JSON.toJSONString(resp));
+            CopyOnWriteArrayList<String> newlist = new CopyOnWriteArrayList<String>(req.getMktResInstNbrs());
+            resouceInstTrackService.asynSaveTrackForMerchant(req, resp, newlist);
             return resp;
         }
     }
@@ -169,7 +171,10 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
     @Override
     public ResultVO addResourceInstForProvinceStore(ResourceInstAddReq req){
         log.info("MerchantResourceInstOpenServiceImpl.addResourceInstForProvinceStore req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(req));
-        return merchantResourceInstService.addResourceInstForProvinceStore(req);
+        ResultVO resp = merchantResourceInstService.addResourceInstForProvinceStore(req);
+        CopyOnWriteArrayList<String> newlist = new CopyOnWriteArrayList<String>(req.getMktResInstNbrs());
+        resouceInstTrackService.asynSaveTrackForMerchant(req, resp, newlist);
+        return resp;
     }
 
 }

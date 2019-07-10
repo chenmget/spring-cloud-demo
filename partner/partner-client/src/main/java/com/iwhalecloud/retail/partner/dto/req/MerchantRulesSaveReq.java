@@ -45,12 +45,6 @@ public class MerchantRulesSaveReq implements Serializable {
     private java.lang.String targetType;
 
     /**
-     * 对象ID
-     */
-//    @ApiModelProperty(value = "对象ID")
-//    private java.lang.String targetId;
-
-    /**
      * 对象ID集合  用于批量插入
      */
     @ApiModelProperty(value = "对象ID集合  用于批量插入")

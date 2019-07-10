@@ -1003,8 +1003,8 @@ public class MerchantServiceImpl implements MerchantService {
         UserFactoryMerchantReq userFactoryMerchantReq = new UserFactoryMerchantReq();
         BeanUtils.copyProperties(req, userFactoryMerchantReq);
         //生成管理平台注册的工作流请求参数
-        ProcessStartReq processStartReq = this.getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessTitle(), req.getCreateStaff(), req.getCreateStaffName(), PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessId(),
-                req.getMerchantId(), req.getLanId(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3038.getTaskSubType());
+        ProcessStartReq processStartReq = new ProcessStartReq(PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessId(),PartnerConst.MerchantProcessEnum.PROCESS_3040701.getProcessTitle(),
+                req.getMerchantId(),req.getCreateStaff(),req.getCreateStaffName(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3038.getTaskSubType(),null);
         MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
         BeanUtils.copyProperties(userFactoryMerchantReq, fileReq);
         ResultVO vo = initFactoryMerchant(fileReq, processStartReq);
@@ -1036,8 +1036,8 @@ public class MerchantServiceImpl implements MerchantService {
             BeanUtils.copyProperties(req, merchant);
             merchant = this.addMerchant(merchant);
             req.setMerchantId(merchant.getMerchantId());
-            ProcessStartReq processStartReq = this.getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessTitle(), req.getCreateStaff(), req.getCreateStaffName(), PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessId(),
-                    req.getMerchantId(), req.getLanId(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3034.getTaskSubType());
+            ProcessStartReq processStartReq = new ProcessStartReq(PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessId(),PartnerConst.MerchantProcessEnum.PROCESS_3040501.getProcessTitle(),
+                    req.getMerchantId(),req.getCreateStaff(),req.getCreateStaffName(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3034.getTaskSubType(),null );
             //上传的附件
             MerchantCommonFileReq fileReq = new MerchantCommonFileReq();
             BeanUtils.copyProperties(req, fileReq);
@@ -1170,30 +1170,6 @@ public class MerchantServiceImpl implements MerchantService {
         return commonFileService.saveCommonFile(dto);
     }
 
-    /**
-     * 获取生成工作流参数
-     *
-     * @param title     流程名称
-     * @param userId    流程发起人id
-     * @param userName  流程发起人name
-     * @param processId 流程processid
-     * @param formId
-     * @param extends1  如果申请人是商家，该字段信息显示“地市+区县”信息，如果是电信人员则显示“岗位+部门”信息
-     * @param taskType  流程类别
-     */
-    private ProcessStartReq getStartProcessDTO(String title, String userId, String userName, String processId, String formId, String extends1, String taskType) {
-        ProcessStartReq processStartDTO = new ProcessStartReq();
-        processStartDTO.setTitle(title);
-        //创建流程者， 参数需要提供
-        processStartDTO.setApplyUserId(userId);
-        processStartDTO.setApplyUserName(userName);
-        processStartDTO.setProcessId(processId);
-        processStartDTO.setFormId(formId);
-        processStartDTO.setExtends1(extends1);
-        processStartDTO.setTaskSubType(taskType);
-        return processStartDTO;
-    }
-
     @Override
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO registLandSupplier(SupplierResistReq req) {
@@ -1209,10 +1185,9 @@ public class MerchantServiceImpl implements MerchantService {
             fileReq.setMerchantId(merchantId);
             this.addCommonFile(fileReq);
             //发起审核流程
-            ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessTitle(), req.getUserId(), req.getMerchantName()
-                    ,PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessId(),
-                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3033.getTaskSubType());
-            taskService.startProcess(getStartProcessDTO);
+            ProcessStartReq processStartReq = new ProcessStartReq(PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessId(),PartnerConst.MerchantProcessEnum.PROCESS_DBGL.getProcessTitle(),
+                    merchantId,req.getUserId(),req.getMerchantName(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3033.getTaskSubType(),null);
+            taskService.startProcess(processStartReq);
         }catch (Exception e){
             log.info(e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -1235,10 +1210,9 @@ public class MerchantServiceImpl implements MerchantService {
             fileReq.setMerchantId(merchantId);
             this.addCommonFile(fileReq);
             //发起审核流程
-            ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessTitle(),req.getUserId(), req.getMerchantName()
-                    ,PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessId(),
-                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3035.getTaskSubType());
-            taskService.startProcess(getStartProcessDTO);
+            ProcessStartReq processStartReq = new ProcessStartReq(PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessId(),PartnerConst.MerchantProcessEnum.PROCESS_SBGL.getProcessTitle(),
+                    merchantId,req.getUserId(),req.getMerchantName(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3033.getTaskSubType(),null);
+            taskService.startProcess(processStartReq);
         }catch (Exception e){
             log.error("注册失败" + e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -1277,10 +1251,9 @@ public class MerchantServiceImpl implements MerchantService {
             userGetReq.setUserId(statrProUserId);
             UserDTO startProcessUser = userService.getUser(userGetReq);
             //发起审核流程
-            ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessTitle(), startProcessUser.getUserId(), startProcessUser.getUserName()
-                    , PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessId(),
-                    merchantId, req.getLanId(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3036.getTaskSubType());
-            taskService.startProcess(getStartProcessDTO);
+            ProcessStartReq processStartReq = new ProcessStartReq(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessId(),PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_DBGL.getProcessTitle(),
+                    merchantId,startProcessUser.getUserId(),startProcessUser.getUserName(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3036.getTaskSubType(),null );
+            taskService.startProcess(processStartReq);
         } catch (Exception e) {
             log.error(e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -1330,10 +1303,9 @@ public class MerchantServiceImpl implements MerchantService {
             userGetReq.setUserId(statrProUserId);
             UserDTO startProcessUser = userService.getUser(userGetReq);
             //发起审核流程   如果是电信人员则显示“岗位+部门”信息
-            ProcessStartReq getStartProcessDTO = getStartProcessDTO(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessTitle(), startProcessUser.getUserId(), startProcessUser.getUserName()
-                    ,PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessId(),
-                    merchantId,req.getLanId(),WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3037.getTaskSubType());
-            taskService.startProcess(getStartProcessDTO);
+            ProcessStartReq processStartReq = new ProcessStartReq(PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessId(),PartnerConst.MerchantProcessEnum.PROCESS_ADMIN_SBGL.getProcessTitle(),
+                    merchantId,startProcessUser.getUserId(),startProcessUser.getUserName(), WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_3036.getTaskSubType(),null );
+            taskService.startProcess(processStartReq);
         }catch (Exception e){
             log.error(e.getMessage());
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();

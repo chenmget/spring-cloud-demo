@@ -67,7 +67,7 @@ public class PreSaleActivityB2BController {
     @PostMapping(value = "/queryPreSaleProduct")
     public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSaleProduct(@RequestBody QueryMarketingActivityReq queryMarketingActivityReq){
         log.info("PreSaleActivityB2BController queryPreSaleProduct queryMarketingActivityReq={}", JSON.toJSON(queryMarketingActivityReq));
-        return activityProductService.queryPreSaleProduct(queryMarketingActivityReq);
+        return activityProductService.queryPreSubsidyProduct(queryMarketingActivityReq.getMarketingActivityId());
     }
 
     @ApiOperation(value = "更新预售活动规则",notes = "更新预售活动规则")
@@ -95,7 +95,7 @@ public class PreSaleActivityB2BController {
     @PostMapping(value = "/queryPreSaleActivityRule")
     public ResultVO<MarketingActivityDTO> queryPreSaleActivityRule(@RequestBody QueryMarketingActivityReq queryMarketingActivityReq){
         log.info("PreSaleActivityB2BController queryPreSaleActivityRule queryMarketingActivityReq={}", JSON.toJSON(queryMarketingActivityReq));
-        return marketingActivityService.queryMarketingActivityById(queryMarketingActivityReq);
+        return marketingActivityService.queryMarketingActivityById(queryMarketingActivityReq.getMarketingActivityId());
     }
 
 }

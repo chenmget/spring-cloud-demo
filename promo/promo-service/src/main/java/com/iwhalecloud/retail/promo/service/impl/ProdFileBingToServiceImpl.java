@@ -51,7 +51,7 @@ public class ProdFileBingToServiceImpl implements ProdFileBingToService  {
         	 for(int j=0;j<activityProducts.size();j++) {
         		 ActivityProduct activityProduct = activityProducts.get(j);
         		 String fileUrl = activityProduct.getProductPic();//	附件路径
-        		 if(fileUrl == null) {
+        		 if(fileUrl == null || fileUrl == "" || "".equals(fileUrl)) {
         			 break ;
         		 }
         		 String productPicUseType = activityProduct.getProductPicUseType();
@@ -120,7 +120,7 @@ public class ProdFileBingToServiceImpl implements ProdFileBingToService  {
         		 ActivityProduct activityProduct = activityProducts.get(j);
             	 
         		 String fileUrl = activityProduct.getProductPic();//	附件路径
-        		 if(fileUrl == null) {
+        		 if(fileUrl == null || fileUrl == "" || "".equals(fileUrl)) {
         			 break ;
         		 }
         		 String productPicUseType = activityProduct.getProductPicUseType();

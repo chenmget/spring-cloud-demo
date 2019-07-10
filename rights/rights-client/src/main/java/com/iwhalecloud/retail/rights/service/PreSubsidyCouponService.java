@@ -60,13 +60,6 @@ public interface PreSubsidyCouponService {
     ResultVO<List<PreSubsidyProductPromResqDTO>> queryPreSubsidyProduct(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO);
 
     /**
-     * 查询前置补贴活动产品
-     * @param queryPreSubsidyReqDTO
-     * @return
-     */
-    ResultVO<List<PreSubsidyProductPromResqDTO>> queryPreSubsidyProductInfo(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO);
-
-    /**
      * 查询可以混用的优惠券
      *
      * @param queryPreSubsidyReqDTO
@@ -82,10 +75,4 @@ public interface PreSubsidyCouponService {
      */
     ResultVO updateActCouponType(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO);
 
-    /**
-     * 更新优惠券的时间
-     * @param marketingActivityId
-     * @return
-     */
-    ResultVO updateCouponDate( String marketingActivityId);
 }

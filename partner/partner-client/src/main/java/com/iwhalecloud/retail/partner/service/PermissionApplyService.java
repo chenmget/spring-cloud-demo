@@ -40,4 +40,22 @@ public interface PermissionApplyService {
      */
     ResultVO<Integer> auditPermissionApply(PermissionApplyAuditReq req) throws Exception;
 
+    /**
+     * 根据申请单id 获取申请信息
+     * @param applyId
+     * @return
+     */
+    ResultVO<PermissionApplyDTO> getPermissionApplyById(String applyId);
+
+    /**
+     * 发起厂商串码权限删除申请
+     * @param permissionApplySaveDTO
+     * @return
+     */
+    ResultVO<String> addPermissionApply(PermissionApplySaveDTO permissionApplySaveDTO);
+
+    /**
+     * 添加厂商串码权限删除明细
+     */
+    ResultVO<String>  addPermissionApplyItem(PermissionApplySaveDTO permissionApplySaveDTO, String applyId);
 }

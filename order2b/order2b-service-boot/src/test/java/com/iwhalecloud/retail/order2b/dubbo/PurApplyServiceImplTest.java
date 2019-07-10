@@ -299,5 +299,30 @@ public class PurApplyServiceImplTest  extends TestBase {
         System.out.println("lllll==="+JSON.toJSONString(resultVO));
 
     }
+    @Test
+    public void ckData() {
+        PurApplyReq req = new PurApplyReq();
+        req.setApplyId("5009");
+        CkProcureApplyResp procureApplyReq1 = purApplyService.ckApplyData1(req);
+        //获取添加的产品信息
+        List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
+        List<AddFileReq> procureApplyReq3 = purApplyService.ckApplyData3(req);
+        // 发货串码
+        List<String> deliverMktResInstNbrList = purApplyService.countDelivery(req.getApplyId());
+        if ( deliverMktResInstNbrList !=null && deliverMktResInstNbrList.size()>0 ) {
+            procureApplyReq1.setDeliveryTotal(String.valueOf(deliverMktResInstNbrList.size()));
+            procureApplyReq1.setDeliverMktResInstNbrList(deliverMktResInstNbrList);
+        }else {
+            procureApplyReq1.setDeliveryTotal("0");
+        }
 
+        //如果是采购单，则查看收货地址
+        List<PurApplyExtReq> procureApplyReq4 = purApplyService.ckApplyData4(req);
+        procureApplyReq1.setPurApplyExtReq(procureApplyReq4);
+
+        procureApplyReq1.setAddProductReq(procureApplyReq2);
+        procureApplyReq1.setAddFileReq(procureApplyReq3);
+        System.out.println("lllll==="+JSON.toJSONString(procureApplyReq1));
+//        return ResultVO.success(procureApplyReq1);
+    }
 }

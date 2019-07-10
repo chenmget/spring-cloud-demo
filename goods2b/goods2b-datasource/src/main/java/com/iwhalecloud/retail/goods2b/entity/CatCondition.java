@@ -64,7 +64,7 @@ public class CatCondition implements Serializable {
      * 排序
      */
     @ApiModelProperty(value = "排序")
-    private Long order;
+    private Long orderBy;
 
     /**
      * 创建人
@@ -125,7 +125,7 @@ public class CatCondition implements Serializable {
         /**
          * 排序.
          */
-        order("order", "ORDER"),
+        orderBy("orderBy", "ORDER_BY"),
 
         /**
          * 创建人.

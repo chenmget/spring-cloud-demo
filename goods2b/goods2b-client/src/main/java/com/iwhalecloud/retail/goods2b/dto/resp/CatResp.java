@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.goods2b.dto.resp;
 
+import com.iwhalecloud.retail.goods2b.dto.CatConditionDTO;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -37,6 +38,10 @@ public class CatResp implements Serializable {
 
     @ApiModelProperty(value = "商品列表")
     private List<GoodsResp> goodsRespList;
+
+    @ApiModelProperty(value = "分类条件关联列表")
+    private List<CatConditionDTO> catConditionList;
+
 
     @Data
     public class BrandResp implements Serializable{

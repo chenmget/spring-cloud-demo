@@ -50,31 +50,6 @@ public class CatConditionDTO implements java.io.Serializable {
   	 * 排序
   	 */
 	@ApiModelProperty(value = "排序")
-  	private Long order;
-	
-	/**
-  	 * 创建人
-  	 */
-	@ApiModelProperty(value = "创建人")
-  	private String createStaff;
-	
-	/**
-  	 * 创建时间
-  	 */
-	@ApiModelProperty(value = "创建时间")
-  	private java.util.Date createDate;
-	
-	/**
-  	 * 修改人
-  	 */
-	@ApiModelProperty(value = "修改人")
-  	private String updateStaff;
-	
-	/**
-  	 * 修改时间
-  	 */
-	@ApiModelProperty(value = "修改时间")
-  	private java.util.Date updateDate;
-	
+	private Long orderBy;
   	
 }

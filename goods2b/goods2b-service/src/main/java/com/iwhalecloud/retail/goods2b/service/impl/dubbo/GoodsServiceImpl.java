@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.busiservice.GoodsRulesProductService;
 import com.iwhalecloud.retail.goods2b.common.*;
 import com.iwhalecloud.retail.goods2b.dto.*;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
@@ -18,6 +19,7 @@ import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 import com.iwhalecloud.retail.goods2b.helper.AttrSpecHelper;
 import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsProductRelMapper;
+import com.iwhalecloud.retail.goods2b.model.CheckRuleModel;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.CurrencyUtil;
 import com.iwhalecloud.retail.goods2b.utils.ResultVOUtils;
@@ -167,6 +169,9 @@ public class GoodsServiceImpl implements GoodsService {
     @Autowired
     GoodsProductRelMapper goodsProductRelMapper;
 
+    @Autowired
+    private GoodsRulesProductService goodsRulesProductService;
+
     /**
      * 首字母转小写
      *
@@ -226,7 +231,16 @@ public class GoodsServiceImpl implements GoodsService {
             });
             prodGoodsRuleEditReq.setGoodsRulesDTOList(goodsRulesDTOList);
 
-            ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());
+            /**
+             * 分货数量,默认按规格，当 disProductType=1时候,按机型校验
+             */
+            CheckRuleModel model=new CheckRuleModel();
+            model.setEntityList(req.getEntityList());
+            model.setDisProductType(req.getDisProductType());
+            model.setSupplierId(req.getSupplierId());
+            model.setGoodsProductRelList(req.getGoodsProductRelList());
+            ResultVO checkResult=goodsRulesProductService.addGoodsCheckRuleGoods(model);
+
             log.info("GoodsServiceImpl.addGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
                 try {
@@ -429,7 +443,15 @@ public class GoodsServiceImpl implements GoodsService {
                 CollectionUtils.isNotEmpty(req.getEntityList())) {
             ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
             prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
-            ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());
+            /**
+             * 分货数量,默认按规格，当 disProductType=1时候,按机型校验
+             */
+            CheckRuleModel model=new CheckRuleModel();
+            model.setEntityList(req.getEntityList());
+//            model.setDisProductType(req.getDisProductType());
+            model.setSupplierId(req.getSupplierId());
+            model.setGoodsProductRelList(req.getGoodsProductRelList());
+            ResultVO checkResult=goodsRulesProductService.addGoodsCheckRuleGoods(model);
             log.info("GoodsServiceImpl.editGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
                 try {

@@ -26,7 +26,7 @@ public abstract class ReadExcel<T> {
      * @return
      * @throws IOException
      */
-    public List<T> readXlsx2010(InputStream is) throws IOException {
+    public List<T> readXlsx2010(InputStream is,int page) throws IOException {
         XSSFWorkbook xssfWorkbook = new XSSFWorkbook(is);
         List<T> list = new ArrayList<>();
         // Read the Sheet
@@ -35,7 +35,7 @@ public abstract class ReadExcel<T> {
             if (xssfSheet == null) {
                 continue;
             }
-            // Read the Row
+
             for (int rowNum = 1; rowNum <= xssfSheet.getLastRowNum(); rowNum++) {
                 XSSFRow xssfRow = xssfSheet.getRow(rowNum);
                 if (xssfRow != null) {
@@ -43,6 +43,7 @@ public abstract class ReadExcel<T> {
                 }
             }
         }
+
         return list;
     }
 
@@ -54,7 +55,6 @@ public abstract class ReadExcel<T> {
      * @throws IOException
      */
     public List<T> readXls2007(String path) throws IOException {
-        System.out.println(Common.PROCESSING + path);
         InputStream is = new FileInputStream(path);
         HSSFWorkbook hssfWorkbook = new HSSFWorkbook(is);
         List<T> list = new ArrayList<>();
@@ -79,6 +79,9 @@ public abstract class ReadExcel<T> {
    public abstract T builderObject2010(XSSFRow cell);
 
     public String getValue(XSSFCell xssfRow) {
+        if(xssfRow == null){
+            return null;
+        }
         if (xssfRow.getCellType() == XSSFCell.CELL_TYPE_BOOLEAN) {
             return String.valueOf(xssfRow.getBooleanCellValue());
         } else if (xssfRow.getCellType() == XSSFCell.CELL_TYPE_NUMERIC) {

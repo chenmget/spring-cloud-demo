@@ -74,7 +74,7 @@ public class ActivityGoodsB2BController {
             activityDTOS.forEach(item -> item.setPageImgUrl(FastDFSImgStrJoinUtil.fullImageUrl(item.getPageImgUrl(),dfsShowIp,true)));
             activityDTOS.forEach(item -> item.setTopImgUrl(FastDFSImgStrJoinUtil.fullImageUrl(item.getTopImgUrl(),dfsShowIp,true)));
         }
-        return activityGoodService.listMarketingActivityByMerchant(req);
+        return pageResultVO;
     }
 
     @ApiOperation(value = "根据活动查询商品列表", notes = "条件查询")

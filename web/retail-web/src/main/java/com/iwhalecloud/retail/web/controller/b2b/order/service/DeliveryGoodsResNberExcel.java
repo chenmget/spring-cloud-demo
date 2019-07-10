@@ -69,7 +69,7 @@ public class DeliveryGoodsResNberExcel extends ReadExcel<String> {
                     }
                 });
         List<String> list = new ArrayList<>();
-        list.addAll(readXlsx2010(inputStream));
+        list.addAll(readXlsx2010(inputStream,0));
         return list;
 
     }

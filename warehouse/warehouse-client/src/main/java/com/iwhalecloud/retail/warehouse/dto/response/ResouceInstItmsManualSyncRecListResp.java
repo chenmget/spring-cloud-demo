@@ -132,4 +132,22 @@ public class ResouceInstItmsManualSyncRecListResp implements Serializable {
 	 */
 	@ApiModelProperty(value = "操作类型")
 	private String optionType;
+
+	/**
+	 * 变更前地市
+	 */
+	@ApiModelProperty(value = "lanName")
+	private String origlanName;
+
+	/**
+	 * 创建人
+	 */
+	@ApiModelProperty(value = "创建人")
+	private String createStaffName;
+
+	/**
+	 * 限额
+	 */
+	@ApiModelProperty(value = "地市每月特殊串码录入额度")
+	private Long maxSerialNum;
 }

@@ -25,6 +25,13 @@ public class GoodsConst {
     public static final String RelType = "RECOMMEND";
 
     /**
+     * 分货种类
+     * 1:机型，2规格
+     */
+    public static final String DIS_PRODUCT_TYPE_1 ="1";
+    public static final String DIS_PRODUCT_TYPE_2 ="2";
+
+    /**
      * 系统来源
      */
     public static final String SourceFrom = "MM";
@@ -230,7 +237,7 @@ public class GoodsConst {
 
         MKTPRICE_ASC(10, "MKTPRICE ASC"),
 
-        DELIVERY_PRICE_ASC_MERCHANT_TYPE_ASC(11, "DELIVERY_PRICE ASC,MERCHANT_TYPE ASC");
+        DELIVERY_PRICE_ASC_PRODUCT_ID_ASC_MERCHANT_TYPE_DESC(11, "DELIVERY_PRICE ASC,PRODUCT_ID ASC,MERCHANT_TYPE DESC");
 
         private Integer code;
 

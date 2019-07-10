@@ -331,6 +331,7 @@
 		a.apply_merchant_id AS applyMerchantId,
 		'' AS applyMerchantName,
 		a.LAN_ID as lanId,
+		a.create_staff as createStaff,
 		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),e.RECEIVE_ADDR) AS applyAddress,
 		a.region_id as regionId,
 		'' AS applyDepartment,

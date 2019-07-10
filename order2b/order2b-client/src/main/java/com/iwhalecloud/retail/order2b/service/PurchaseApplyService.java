@@ -21,13 +21,6 @@ public interface PurchaseApplyService {
      */
     ResultVO delivery(PurApplyDeliveryReq req);
 
-    /**
-     * 采购单发货修改
-     *
-     * @param req
-     * @return
-     */
-    ResultVO deliveryEdit(PurApplyDeliveryReq req);
 
     /**
      * 采购单确认收货
@@ -36,13 +29,6 @@ public interface PurchaseApplyService {
      * @return
      */
     ResultVO receiving(PurApplyReceivingReq req);
-    /**
-     * 采购单确认收货修改
-     *
-     * @param req
-     * @return
-     */
-    ResultVO receivingEdit(PurApplyReceivingReq req);
 
     /**
      * 修改采购申请单状态

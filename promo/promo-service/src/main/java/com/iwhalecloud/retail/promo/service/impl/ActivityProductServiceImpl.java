@@ -120,10 +120,17 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         return activityProductManager.deleteActivityProduct(marketingActivityId);
     }
 
+    /**
+     * 根据活动id查询前置补贴或预售的产品配置信息
+     *
+     * @param marketingActivityId
+     * @return
+     */
     @Override
     public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProduct(String marketingActivityId) {
         log.info("ActivityProductServiceImpl.queryPreSubsidyProduct marketingActivityId={}", marketingActivityId);
         List<PreSubsidyProductRespDTO> preSubsidyProductResqDTOS = new ArrayList<>();
+        //根据活动id查找活动有效产品
         List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityId);
         log.info("ActivityProductServiceImpl.queryPreSubsidyProduct activityProductManager.queryActivityProductByCondition activityProducts={}", JSON.toJSON(activityProducts));
         if (activityProducts.size() <= 0) {
@@ -134,7 +141,7 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             String productId = activityProduct.getProductId();
             QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();
             queryProductInfoReqDTO.setProductId(productId);
-            ResultVO<QueryProductInfoResqDTO> productInfoResqDTOResultVO = productService.getProductInfo(queryProductInfoReqDTO);
+            ResultVO<QueryProductInfoResqDTO> productInfoResqDTOResultVO = productService.getProductInfor(queryProductInfoReqDTO);
             log.info("ActivityProductServiceImpl.queryPreSubsidyProduct productService.getProductInfo productInfoResqDTOResultVO ={}", JSON.toJSON(productInfoResqDTOResultVO));
             if (productInfoResqDTOResultVO.getResultData() == null) {
                 continue;
@@ -143,6 +150,28 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             ActivityProductRespDTO activityProductResqDTO = new ActivityProductRespDTO();
             BeanUtils.copyProperties(activityProduct, activityProductResqDTO);
             preSubsidyProductResqDTO.setActivityProductResqDTO(activityProductResqDTO);
+
+            //把全路径拼接出来
+            if(activityProduct.getProductPic() != null) {
+                String productPic = fullImageUrl(activityProduct.getProductPic(), dfsShowIp, true);
+                activityProduct.setProductPic(productPic);
+            }
+            //获取活动产品图片
+            ActivityProductRespDTO activityProductRespDTO = preSubsidyProductResqDTO.getActivityProductResqDTO();
+            if(activityProductRespDTO != null) {
+                preSubsidyProductResqDTO.setProductPic(activityProductRespDTO.getProductPic());
+                preSubsidyProductResqDTO.setProductPicUseType(activityProductRespDTO.getProductPicUseType());
+            }
+            //如果是预售活动,则把支付定金和尾款的时间加上
+            ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(activityProduct.getMarketingActivityId());
+            MarketingActivityDTO marketingActivityDTO = marketingActivityDTOResultVO.getResultData();
+            if(marketingActivityDTO!=null&&PromoConst.ACTIVITYTYPE.BOOKING.getCode().equals(marketingActivityDTO.getActivityType())){
+                activityProductResqDTO.setPreStartTime(marketingActivityDTO.getPreStartTime());
+                activityProductResqDTO.setPreEndTime(marketingActivityDTO.getPreEndTime());
+                activityProductResqDTO.setTailPayStartTime(marketingActivityDTO.getTailPayStartTime());
+                activityProductResqDTO.setTailPayEndTime(marketingActivityDTO.getTailPayEndTime());
+            }
+
             preSubsidyProductResqDTOS.add(preSubsidyProductResqDTO);
         }
         return ResultVO.success(preSubsidyProductResqDTOS);
@@ -155,7 +184,7 @@ public class ActivityProductServiceImpl implements ActivityProductService {
      * @param flag 为true时，拼接完整地址，为false时，是截取地址
      * @return
      */
-    public static String fullImageUrl(String imagePath, String showUrl, boolean flag) {
+    private static String fullImageUrl(String imagePath, String showUrl, boolean flag) {
         String aftPath = "";
         if (flag) {
             String[] pathArr = imagePath.split(",");
@@ -180,69 +209,6 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             }
         }
         return aftPath;
-    }
-    
-    @Override
-    public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSubsidyProductInfo(String marketingActivityId) {
-        log.info("ActivityProductServiceImpl.queryPreSubsidyProduct marketingActivityId={}", marketingActivityId);
-        List<PreSubsidyProductRespDTO> preSubsidyProductResqDTOS = new ArrayList<>();
-        List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivityId);
-        for(int i=0;i<activityProducts.size();i++) {//把路径拼接出来
-        	ActivityProduct activityProduct = activityProducts.get(i);
-        	if(activityProduct.getProductPic() != null) {
-        		String productPic = fullImageUrl(activityProduct.getProductPic(), dfsShowIp, true);//lwslws
-            	activityProduct.setProductPic(productPic);
-        	}
-        }
-        
-        log.info("ActivityProductServiceImpl.queryPreSubsidyProduct activityProductManager.queryActivityProductByCondition activityProducts={}", JSON.toJSON(activityProducts));
-        if (activityProducts.size() <= 0) {
-            return ResultVO.success(preSubsidyProductResqDTOS);
-        }
-        for (ActivityProduct activityProduct : activityProducts) {
-            //把支付定金的时间加上lws
-            QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
-            queryMarketingActivityReq.setMarketingActivityId(activityProduct.getMarketingActivityId());
-            ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityByIdtime(queryMarketingActivityReq);//获取时间lws
-            MarketingActivityDTO marketingActivityDTO = marketingActivityDTOResultVO.getResultData();
-            Date preStartTime = marketingActivityDTO.getPreStartTime();
-//        	String pre_Start_Time = "";
-            Date preEndTime = marketingActivityDTO.getPreEndTime();
-            Date tailPayStartTime = marketingActivityDTO.getTailPayStartTime();
-            Date tailPayEndTime = marketingActivityDTO.getTailPayEndTime();
-//        	String pre_End_Time = "";
-//        	if(preStartTime != null){
-//        		pre_Start_Time = preStartTime.toLocaleString();
-//        	}
-//        	if(preEndTime != null){
-//        		pre_End_Time = preEndTime.toLocaleString();
-//        	}
-            PreSubsidyProductRespDTO preSubsidyProductResqDTO = new PreSubsidyProductRespDTO();
-            String productId = activityProduct.getProductId();
-            QueryProductInfoReqDTO queryProductInfoReqDTO = new QueryProductInfoReqDTO();
-            queryProductInfoReqDTO.setProductId(productId);
-            ResultVO<QueryProductInfoResqDTO> productInfoResqDTOResultVO = productService.getProductInfor(queryProductInfoReqDTO);
-            log.info("ActivityProductServiceImpl.queryPreSubsidyProduct productService.getProductInfo productInfoResqDTOResultVO ={}", JSON.toJSON(productInfoResqDTOResultVO));
-            if (productInfoResqDTOResultVO.getResultData() == null) {
-                continue;
-            }
-            BeanUtils.copyProperties(productInfoResqDTOResultVO.getResultData(), preSubsidyProductResqDTO);
-            ActivityProductRespDTO activityProductResqDTO = new ActivityProductRespDTO();
-            BeanUtils.copyProperties(activityProduct, activityProductResqDTO);
-            activityProductResqDTO.setPreStartTime(preStartTime);
-            activityProductResqDTO.setPreEndTime(preEndTime);
-            activityProductResqDTO.setTailPayStartTime(tailPayStartTime);
-            activityProductResqDTO.setTailPayEndTime(tailPayEndTime);
-            preSubsidyProductResqDTO.setActivityProductResqDTO(activityProductResqDTO);
-            
-            ActivityProductRespDTO activityProductRespDTO = preSubsidyProductResqDTO.getActivityProductResqDTO();
-            if(activityProductRespDTO != null) {
-            	preSubsidyProductResqDTO.setProductPic(activityProductRespDTO.getProductPic());
-                preSubsidyProductResqDTO.setProductPicUseType(activityProductRespDTO.getProductPicUseType());
-            }
-            preSubsidyProductResqDTOS.add(preSubsidyProductResqDTO);
-        }
-        return ResultVO.success(preSubsidyProductResqDTOS);
     }
 
     @Override
@@ -291,17 +257,6 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         return ResultVO.success();
     }
 
-    @Override
-    public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSaleProduct(QueryMarketingActivityReq queryMarketingActivityReq) {
-        ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = queryPreSubsidyProduct(queryMarketingActivityReq.getMarketingActivityId());
-        return ResultVO.success(listResultVO.getResultData());
-    }
-
-    @Override
-    public ResultVO<List<PreSubsidyProductRespDTO>> queryPreSaleProductInfo(QueryMarketingActivityReq queryMarketingActivityReq) {
-        ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = queryPreSubsidyProductInfo(queryMarketingActivityReq.getMarketingActivityId());
-        return ResultVO.success(listResultVO.getResultData());
-    }
 
     @Override
     public ResultVO checkProductDiscountAmount(String productId, Long discountAmount) {

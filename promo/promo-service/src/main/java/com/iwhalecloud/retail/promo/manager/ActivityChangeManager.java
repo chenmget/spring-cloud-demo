@@ -164,6 +164,11 @@ public class ActivityChangeManager{
                 marketingActivity.setDescription(detail.getNewValue());
                 continue;
             }
+            //活动优惠描述
+            if(MarketingActivity.TNAME.equals(detail.getTableName())&&MarketingActivity.FieldNames.promotionDesc.getTableFieldName().equals(detail.getChangeField())){
+                marketingActivity.setPromotionDesc(detail.getNewValue());
+                continue;
+            }
             //活动顶部图片
             if(MarketingActivity.TNAME.equals(detail.getTableName())&&MarketingActivity.FieldNames.topImgUrl.getTableFieldName().equals(detail.getChangeField())){
                 marketingActivity.setTopImgUrl(detail.getNewValue());

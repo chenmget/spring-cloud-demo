@@ -50,7 +50,7 @@ public class CatConditionDTO implements java.io.Serializable {
   	 * 排序
   	 */
 	@ApiModelProperty(value = "排序")
-  	private Long order;
+	private Long orderBy;
 	
 	/**
   	 * 创建人

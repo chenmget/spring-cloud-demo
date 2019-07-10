@@ -49,8 +49,9 @@ public class SysUserMessageController {
     
     
 
-    @PostMapping(value = "/notifyMerchantActivityOrderDelivery")
+    @GetMapping(value = "/notifyMerchantActivityOrderDelivery")
     public ResultVO<IPage<SysUserMessageDTO>> notifyMerchantActivityOrderDelivery() {
+        sysUserMessageService.updateSysUserMessage();
         marketingActivityService.notifyMerchantActivityOrderDelivery();
      return ResultVO.success();
 

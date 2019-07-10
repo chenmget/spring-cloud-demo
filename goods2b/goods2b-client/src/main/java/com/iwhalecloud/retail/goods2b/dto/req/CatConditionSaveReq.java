@@ -33,7 +33,7 @@ public class CatConditionSaveReq extends AbstractRequest implements Serializable
     private String relObjValue;
 
     @ApiModelProperty(value = "排序")
-    private Long order;
+    private Long orderBy;
 
     @ApiModelProperty(value = "创建人")
     private String createStaff;

@@ -115,12 +115,12 @@ public class GoodsProductBaseB2BController {
         return prodProductBaseService.getProductBaseList(req);
     }
 
-	@ApiOperation(value = "添加产品基本信息", notes = "添加操作")
+    @ApiOperation(value = "添加产品基本信息", notes = "添加操作")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="addProductBase")
+    @PostMapping(value = "addProductBase")
     @UserLoginToken
     public ResultVO<String> addProductBase(@RequestBody ProductBaseAddReqDTO dto) {
         //获取memberId

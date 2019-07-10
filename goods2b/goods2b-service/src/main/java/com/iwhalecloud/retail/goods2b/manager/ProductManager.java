@@ -209,13 +209,6 @@ public class ProductManager extends ServiceImpl<ProductMapper,Product> {
     }
 
     public int updateAuditStateByProductBaseId(ProductAuditStateUpdateReq req) {
-//        Product record = new Product();
-//        record.setProductId(productId);
-//        record.setStatus(auditState);
-//        record.setUpdateDate(new Date());
-//        record.setUpdateStaff(updateStaff);
-////        productMapper.update()
-//        productMapper.
         return productMapper.updateAuditStateByProductBaseId(req);
 
     }
@@ -327,7 +320,4 @@ public class ProductManager extends ServiceImpl<ProductMapper,Product> {
     public List<ProductApplyInfoResp> getDeliveryInfo(List<String> productIds) {
         return productMapper.getDeliveryInfo(productIds);
     }
-
-
-
 }

@@ -37,11 +37,11 @@ public class ProductAuditPassServiceImpl implements ProductAuditPassService {
 
     @Value("${zop.url}")
     private String zopUrl;
+
     @Override
     public ResultVO run(InvokeRouteServiceRequest params) {
         log.info("ProductAuditPassServiceImpl.run params={}", JSON.toJSONString(params));
-        if (params == null||StringUtils.isEmpty(params.getBusinessId()) ) {
-
+        if (params == null || StringUtils.isEmpty(params.getBusinessId())) {
             return ResultVO.error(ResultCodeEnum.LACK_OF_PARAM);
         }
 
@@ -49,64 +49,37 @@ public class ProductAuditPassServiceImpl implements ProductAuditPassService {
         req.setProductBaseId(params.getBusinessId());
         //审核通过
         req.setAuditState(ProductConst.AuditStateType.AUDIT_PASS.getCode());
-
         req.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
-
         req.setAttrValue10(ProductConst.attrValue10.EFFECTIVE.getCode());
         //固网产品需要提交串码到itms
         ProductBaseGetByIdReq productBaseGetByIdReq = new ProductBaseGetByIdReq();
         productBaseGetByIdReq.setProductBaseId(params.getBusinessId());
         ResultVO<ProductBaseGetResp> productBaseGetRespResultVO = productBaseService.getProductBase(productBaseGetByIdReq);
-        if(productBaseGetRespResultVO.isSuccess() && null!=productBaseGetRespResultVO.getResultData()){
+        if (productBaseGetRespResultVO.isSuccess() && null != productBaseGetRespResultVO.getResultData()) {
             ProductBaseGetResp productBaseGetResp = productBaseGetRespResultVO.getResultData();
             String isInspection = productBaseGetResp.getIsInspection();
             String isItms = productBaseGetResp.getIsItms();
-            if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection) &&
-                    StringUtils.isNotEmpty(isItms) &&  !ProductConst.isItms.NOPUSH.equals(isItms)){
+            if (StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection) &&
+                    StringUtils.isNotEmpty(isItms) && !ProductConst.isItms.NOPUSH.equals(isItms)) {
                 String serialCode = productBaseGetResp.getParam20();  //串码  xxxx-1234556612
 //                String param = productBaseGetResp.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
                 String userName = productBaseGetResp.getParam18();  //login_name
-                if(StringUtils.isNotEmpty(serialCode) && StringUtils.isNotEmpty(userName)){
-                    if(serialCode.indexOf(",")>-1){
+                if (StringUtils.isNotEmpty(serialCode) && StringUtils.isNotEmpty(userName)) {
+                    if (serialCode.indexOf(",") > -1) {
                         String[] serialCodes = serialCode.split(",");
-                        for(int i=0;i<serialCodes.length;i++){
-                            this.pushItms(serialCodes[i],userName,"ITMS_DELL","");
+                        for (int i = 0; i < serialCodes.length; i++) {
+                            this.pushItms(serialCodes[i], userName, "ITMS_DELL", "");
                         }
-                    }else{
-                        this.pushItms(serialCode,userName,"ITMS_DELL","");
+                    } else {
+                        this.pushItms(serialCode, userName, "ITMS_DELL", "");
                     }
-
-//                    String b = "";
-//                    String callUrl = "ord.operres.OrdInventoryChange";
-//                    Map request = new HashMap<>();
-//                    request.put("deviceId",serialCode);
-//                    request.put("userName",userName);
-//                    request.put("code","ITMS_DELL");
-//                    request.put("params","");
-//                    try {
-//                        b = ZopClientUtil.zopService(callUrl, zopUrl, request, zopSecret);
-//                        Map parseObject = JSON.parseObject(b, new TypeReference<HashMap>(){});
-//                        String body = String.valueOf(parseObject.get("Body"));
-//                        Map parseObject2 = JSON.parseObject(body, new TypeReference<HashMap>(){});
-//                        String inventoryChangeResponse = String.valueOf(parseObject2.get("inventoryChangeResponse"));
-//                        Map parseObject3 = JSON.parseObject(inventoryChangeResponse, new TypeReference<HashMap>(){});
-//                        String inventoryChangeReturn = String.valueOf(parseObject3.get("inventoryChangeReturn"));
-//                        if("-1".equals(inventoryChangeReturn)){
-//                            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(删除)失败");
-//                        }else if("1".equals(inventoryChangeReturn)){
-//                            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "串码推送ITMS(删除)已经存在");
-//                        }
-//                    } catch (Exception e) {
-//                        log.error(e.getMessage());
-//                    }
                 }
             }
         }
-
         return productService.updateAuditState(req);
     }
 
-    private void pushItms(String deviceId,String userName,String code,String params) {
+    private void pushItms(String deviceId, String userName, String code, String params) {
         String b = "";
         String callUrl = "ord.operres.OrdInventoryChange";
         Map request = new HashMap<>();

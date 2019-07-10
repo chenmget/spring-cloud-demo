@@ -2,6 +2,9 @@ package com.iwhalecloud.retail.workflow.dto.req;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.io.Serializable;
 import java.util.List;
@@ -11,7 +14,9 @@ import java.util.List;
  * @author Z
  * @date 2019/1/4
  */
-@Data
+@Setter
+@Getter
+@NoArgsConstructor
 public class ProcessStartReq implements Serializable {
 
     @ApiModelProperty(value = "流程ID")
@@ -46,4 +51,14 @@ public class ProcessStartReq implements Serializable {
     @ApiModelProperty(value = "业务参数类型在启动流程的时候传入，便于在环节流转时直接获取需要的数据。")
     private java.lang.String paramsValue;
 
+
+    public ProcessStartReq(String processId, String title, String formId, String applyUserId, String applyUserName, String taskSubType, String extends1) {
+        this.processId = processId;
+        this.title = title;
+        this.formId = formId;
+        this.applyUserId = applyUserId;
+        this.applyUserName = applyUserName;
+        this.taskSubType = taskSubType;
+        this.extends1 = extends1;
+    }
 }

@@ -467,10 +467,11 @@
   </select>
   <select id="getProductForRebate" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductRebateReq"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductResp">
-    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name,ppb.unit_type
+    select t.*,ppb.product_name,ppb.unit_type_name,pb.name as brand_name,ppb.unit_type,pt.type_name
     from prod_product t
     left join prod_product_base ppb on t.product_base_id = ppb.product_base_id
     left join prod_brand pb on pb.brand_id = ppb.brand_id
+    left join prod_type pt on pt.TYPE_ID = ppb.TYPE_ID
     where 1 = 1 and t.is_deleted = '0' and ppb.is_deleted = '0' and pb.is_deleted = '0'
     <if test="null!=req.productName and ''!=req.productName">
       and upper(ppb.PRODUCT_NAME) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
@@ -487,6 +488,9 @@
     </if>
     <if test="null!=req.typeId and ''!=req.typeId">
       and ppb.type_id =#{req.typeId}
+    </if>
+    <if test="null!=req.manufacturerId and ''!=req.manufacturerId">
+      and t.manufacturer_id = #{req.manufacturerId}
     </if>
   </select>
 
@@ -630,5 +634,4 @@
 
 
   </select>
-
 </mapper>

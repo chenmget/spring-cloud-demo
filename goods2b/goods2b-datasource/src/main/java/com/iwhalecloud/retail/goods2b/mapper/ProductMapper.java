@@ -152,10 +152,11 @@ public interface ProductMapper extends BaseMapper<Product>{
      * @return
      */
     List<String> listProductId(@Param("req")ProductListReq req);
+
     ProductApplyInfoResp getProductApplyInfo(@Param("productId")String productId);
 
+    List<String> getProductIdListForApply(@Param("req") ProductGetIdReq req);
 
-     List<String>getProductIdListForApply(@Param("req")ProductGetIdReq req);
-    List <ProductApplyInfoResp> getDeliveryInfo(@Param("productIds")List<String> productIds);
+    List<ProductApplyInfoResp> getDeliveryInfo(@Param("productIds") List<String> productIds);
 
 }

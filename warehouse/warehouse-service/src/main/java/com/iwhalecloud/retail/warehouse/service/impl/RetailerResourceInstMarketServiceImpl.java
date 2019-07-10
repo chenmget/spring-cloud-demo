@@ -643,29 +643,31 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             return resultVOInsertResReq;
         }
         // step4 如果不需要审核则发起流程目标仓库处理人，由目标仓库处理人决定是否接受
-        String uuid = resourceInstManager.getPrimaryKey();
-        ProcessStartReq processStartDTO = new ProcessStartReq();
-        processStartDTO.setTitle(constant.getAddNbrWorkFlow());
-        processStartDTO.setApplyUserId(req.getCreateStaff());
-        processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_12.getTypeCode());
-        processStartDTO.setFormId(resultVOInsertResReq.getResultData());
-        processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType());
-        // 指定下一环节处理人
-        HandlerUser user = new HandlerUser();
-        user.setHandlerUserId(destMerchantDTO.getUserId());
-        user.setHandlerUserName(destMerchantDTO.getMerchantName());
-        List<HandlerUser> uerList = new ArrayList<HandlerUser>(1);
-        processStartDTO.setNextHandlerUser(uerList);
-        processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
-        Map map=new HashMap();
-        String secondStepFlag = "1";
-        map.put(sourceMerchantDTO.getLanId(), sourceMerchantDTO.getLanId());
-        map.put(destMerchantDTO.getLanId() + secondStepFlag, destMerchantDTO.getLanId() + secondStepFlag);
-        processStartDTO.setParamsValue(JSON.toJSONString(map));
-        ResultVO taskServiceRV = taskService.startProcess(processStartDTO);
-        log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst taskService.startProcess req={},resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
-        if (!taskServiceRV.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
-            throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
+        if (ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_1.getCode().equals(auditType)) {
+            String uuid = resourceInstManager.getPrimaryKey();
+            ProcessStartReq processStartDTO = new ProcessStartReq();
+            processStartDTO.setTitle(constant.getAddNbrWorkFlow());
+            processStartDTO.setApplyUserId(req.getCreateStaff());
+            processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_12.getTypeCode());
+            processStartDTO.setFormId(resultVOInsertResReq.getResultData());
+            processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType());
+            // 指定下一环节处理人
+            HandlerUser user = new HandlerUser();
+            user.setHandlerUserId(destMerchantDTO.getUserId());
+            user.setHandlerUserName(destMerchantDTO.getMerchantName());
+            List<HandlerUser> uerList = new ArrayList<HandlerUser>(1);
+            processStartDTO.setNextHandlerUser(uerList);
+            processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
+            Map map=new HashMap();
+            String secondStepFlag = "1";
+            map.put(sourceMerchantDTO.getLanId(), sourceMerchantDTO.getLanId());
+            map.put(destMerchantDTO.getLanId() + secondStepFlag, destMerchantDTO.getLanId() + secondStepFlag);
+            processStartDTO.setParamsValue(JSON.toJSONString(map));
+            ResultVO taskServiceRV = taskService.startProcess(processStartDTO);
+            log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst taskService.startProcess req={},resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
+            if (!taskServiceRV.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
+            }
         }
         // 删除源串码
         String nbrs = StringUtils.join(mktResInstNbrs, ",");
@@ -939,7 +941,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         // 全是地堡供应串码，且不跨地市，不需要审核
         Boolean directSuppLyAndSameLanId = !hasDirectSuppLy && hasGroundSupply && sameLanId;
         // 全是地堡供应串码，跨地市，串码是有前置补贴活动发货过来的，需要调出方和调入方审核
-        Boolean directSuppLyNotSameLanIdAndPreSubsidy = !hasDirectSuppLy && hasGroundSupply && !sameLanId && ifPreSubsidy;
+        Boolean directSuppLyNotSameLanIdAndPreSubsidy = !hasDirectSuppLy && hasGroundSupply && !sameLanId && !ifPreSubsidy;
         log.info("RetailerResourceInstMarketServiceImpl.validAllocateNbr sameMerchant={}, sameLanId={}, hasDirectSuppLy={}, hasGroundSupply={}, ifPreSubsidy={}", sameMerchant, sameLanId, hasDirectSuppLy, hasGroundSupply, ifPreSubsidy);
         if (directSuppLyAndSameMerchantAndNotSameLanId || directSuppLyNotSameLanIdAndPreSubsidy) {
             return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode();

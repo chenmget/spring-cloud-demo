@@ -253,4 +253,7 @@ public class ProductDTO extends PageVO {
 
 	@ApiModelProperty(value = "是否有销售记录")
 	private Boolean isSale;
+
+	@ApiModelProperty(value = "是否有集约管理机型标签")
+	private Boolean isTag;
 }

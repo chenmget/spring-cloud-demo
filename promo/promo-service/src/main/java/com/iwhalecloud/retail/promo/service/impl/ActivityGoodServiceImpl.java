@@ -7,6 +7,9 @@ import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.ActivityGoodsDTO;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsProductRelService;
+import com.iwhalecloud.retail.partner.dto.MerchantDTO;
+import com.iwhalecloud.retail.partner.service.MemchantTempService;
+import com.iwhalecloud.retail.partner.service.MerchantService;
 import com.iwhalecloud.retail.promo.common.PromoConst;
 import com.iwhalecloud.retail.promo.dto.ActivityGoodDTO;
 import com.iwhalecloud.retail.promo.dto.MarketingActivityDTO;
@@ -54,6 +57,9 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
     @Reference
     private GoodsProductRelService goodsProductRelService;
 
+    @Reference
+    private MerchantService merchantService;
+
     /**
      * 根据登录用户及商家ID查询活动列表
      * @param req
@@ -99,7 +105,10 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
         for (int i = 0; i < activityGoodsList.size(); i++) {
             productIds.add(activityGoodsList.get(i).getProductId());
         }
-        ResultVO<List<ActivityGoodsDTO>> resultVO = goodsProductRelService.qryActivityGoodsId(productIds,req.getRegionId(),req.getLanId(),req.getMerchantId());
+        //通过商家id查询商家信息，获取商家pathCode
+        MerchantDTO merchantDto = merchantService.getMerchantInfoById(req.getMerchantId());
+        String pathCode = (merchantDto==null)?null:merchantDto.getParCrmOrgPathCode();
+        ResultVO<List<ActivityGoodsDTO>> resultVO = goodsProductRelService.qryActivityGoodsId(productIds,req.getMerchantId(),pathCode);
         if(!resultVO.isSuccess()) {
             return ResultVO.error(resultVO.getResultMsg());
         }

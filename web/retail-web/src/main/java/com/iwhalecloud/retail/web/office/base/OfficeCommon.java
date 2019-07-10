@@ -1,6 +1,6 @@
 package com.iwhalecloud.retail.web.office.base;
 
-public class Common {
+public class OfficeCommon {
 
     public static final String OFFICE_EXCEL_2003_POSTFIX = "xls";
     public static final String OFFICE_EXCEL_2010_POSTFIX = "xlsx";

@@ -9,6 +9,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultCodeEnum;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.busiservice.GoodsRulesProductService;
 import com.iwhalecloud.retail.goods2b.common.*;
 import com.iwhalecloud.retail.goods2b.dto.*;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
@@ -18,6 +19,7 @@ import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 import com.iwhalecloud.retail.goods2b.helper.AttrSpecHelper;
 import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsProductRelMapper;
+import com.iwhalecloud.retail.goods2b.model.CheckRuleModel;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.CurrencyUtil;
 import com.iwhalecloud.retail.goods2b.utils.ResultVOUtils;
@@ -167,6 +169,9 @@ public class GoodsServiceImpl implements GoodsService {
     @Autowired
     GoodsProductRelMapper goodsProductRelMapper;
 
+    @Autowired
+    private GoodsRulesProductService goodsRulesProductService;
+
     /**
      * 首字母转小写
      *
@@ -226,7 +231,16 @@ public class GoodsServiceImpl implements GoodsService {
             });
             prodGoodsRuleEditReq.setGoodsRulesDTOList(goodsRulesDTOList);
 
-            ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());
+            /**
+             * 分货数量,默认按规格，当 disProductType=1时候,按机型校验
+             */
+            CheckRuleModel model=new CheckRuleModel();
+            model.setEntityList(req.getEntityList());
+            model.setDisProductType(req.getDisProductType());
+            model.setSupplierId(req.getSupplierId());
+            model.setGoodsProductRelList(req.getGoodsProductRelList());
+            ResultVO checkResult=goodsRulesProductService.addGoodsCheckRuleGoods(model);
+
             log.info("GoodsServiceImpl.addGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
                 try {
@@ -429,7 +443,15 @@ public class GoodsServiceImpl implements GoodsService {
                 CollectionUtils.isNotEmpty(req.getEntityList())) {
             ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
             prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
-            ResultVO checkResult = goodsRulesService.checkGoodsRules(req.getEntityList(), req.getGoodsProductRelList(), req.getSupplierId());
+            /**
+             * 分货数量,默认按规格，当 disProductType=1时候,按机型校验
+             */
+            CheckRuleModel model=new CheckRuleModel();
+            model.setEntityList(req.getEntityList());
+//            model.setDisProductType(req.getDisProductType());
+            model.setSupplierId(req.getSupplierId());
+            model.setGoodsProductRelList(req.getGoodsProductRelList());
+            ResultVO checkResult=goodsRulesProductService.addGoodsCheckRuleGoods(model);
             log.info("GoodsServiceImpl.editGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
                 try {
@@ -883,21 +905,12 @@ public class GoodsServiceImpl implements GoodsService {
         UserDTO userDTO = userService.getUserByUserId(req.getUserId());
         if (null != userDTO) {
             merchantCode = userDTO.getRelCode();
-//            MerchantGetReq merchantGetReq = new MerchantGetReq();
-//            merchantGetReq.setMerchantId(userDTO.getRelCode());
-//            log.info("GoodsServiceImpl.queryGoodsForPage getMerchant merchantGetReq={}", merchantGetReq);
-//            ResultVO<MerchantDTO> merchantDTOResultVO = merchantService.getMerchant(merchantGetReq);
-//            if (merchantDTOResultVO.isSuccess() && null != merchantDTOResultVO.getResultData()) {
-//                merchantCode = merchantDTOResultVO.getResultData().getMerchantCode();
-//            }
         }
-        // 查询商品是否收藏
+        // 查询商品是否收藏，并查询展示的前置补贴价格
         log.info("GoodsServiceImpl.queryGoodsForPage queryUserCollection userCollectionListReq={}", userCollectionListReq);
         ResultVO<List<UserCollectionDTO>> listResultVO = userCollectionService.queryUserCollection(userCollectionListReq);
         log.info("GoodsServiceImpl.queryGoodsForPage queryUserCollection listResultVO={}", listResultVO);
-        // 查询展示的前置补贴价格
         List<UserCollectionDTO> userCollectionDTOList = listResultVO.getResultData();
-        long startTime = System.currentTimeMillis();
         for (GoodsForPageQueryResp goods : goodsDTOList) {
             goods.setIsCollection(false);
             // 设置是否有收藏
@@ -910,17 +923,13 @@ public class GoodsServiceImpl implements GoodsService {
                 }
             }
             // 设置前置补贴价格
-            goods.setDeliveryPrice(goods.getDeliveryPrice());
             goods.setIsPresubsidy(false);
             if (null != goods.getIsSubsidy()) {
-                int isSubsidy = goods.getIsSubsidy();
-                if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode() == isSubsidy) {
+                if (GoodsConst.IsSubsidy.IS_SUBSIDY.getCode().equals(goods.getIsSubsidy())) {
                     this.setPresubsidyPrice(goods.getProductId(), goods.getSupplierId(), merchantCode, goods);
                 }
             }
         }
-        long endTime = System.currentTimeMillis();
-        log.info("setPresubsidyPrice costTime={}:", endTime - startTime);
     }
 
     private void setGoodsImageUrl(List<GoodsForPageQueryResp> goodsDTOList, List<String> goodsIdList) {
@@ -954,10 +963,7 @@ public class GoodsServiceImpl implements GoodsService {
             marketingActivityQueryByGoodsReq.setMerchantCode(merchantCode);
             marketingActivityQueryByGoodsReq.setActivityType(PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
             log.info("GoodsServiceImpl.queryGoodsForPage listGoodsMarketingReliefActivitys marketingActivityQueryByGoodsReq={}", marketingActivityQueryByGoodsReq);
-            long startTime = System.currentTimeMillis();
             ResultVO<List<MarketingReliefActivityQueryResp>> resultVO1 = marketingActivityService.listGoodsMarketingReliefActivitys(marketingActivityQueryByGoodsReq);
-            long endTime = System.currentTimeMillis();
-            log.info("setPresubsidyPrice costTime={}:", endTime - startTime);
             if (resultVO1.isSuccess() && CollectionUtils.isNotEmpty(resultVO1.getResultData())) {
                 goods.setIsPresubsidy(true);
                 List<MarketingReliefActivityQueryResp> marketingReliefActivityQueryResps = resultVO1.getResultData();

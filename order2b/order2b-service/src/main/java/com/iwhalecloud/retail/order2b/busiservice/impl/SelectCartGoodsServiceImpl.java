@@ -78,7 +78,7 @@ public class SelectCartGoodsServiceImpl implements SelectCartGoodsService {
             itemEntityDTO.setPrice(cartItem.getPrice());
             itemEntityDTO.setGoodsName(cartItem.getName());
             itemEntityDTO.setNum(cartItem.getNum());
-            itemEntityDTO.setCouponPrice(0.0);
+            itemEntityDTO.setCouponPrice(0.0D);
             itemEntityDTO.setSpecId(cartItem.getProductId());
             //商品类型（1：手机）
             itemEntityDTO.setGoodsId(cartItem.getGoodsId());
@@ -110,7 +110,7 @@ public class SelectCartGoodsServiceImpl implements SelectCartGoodsService {
         //订单项减免
         if (!CollectionUtils.isEmpty(builder.getPromotionList())) {
             for (OrderItem orderItem : builder.getOrderItem()) {
-                double couponAmount = 0.0;
+                Double couponAmount = 0.0D;
                 for (Promotion promotion : builder.getPromotionList()) {
                     if (promotion.getOrderItemId().equals(orderItem.getItemId())) {
                         if (promotion.getDiscount() != null) {

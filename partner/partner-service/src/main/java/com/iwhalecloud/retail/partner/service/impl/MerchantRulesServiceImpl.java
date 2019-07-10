@@ -107,6 +107,10 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
         // 过滤已经存在的权限
         req.setTargetIdList(filterTargetIdList(req.getTargetIdList(), req));
 
+        if (CollectionUtils.isEmpty(req.getTargetIdList())) {
+            return ResultVO.success();
+        }
+
         int resultInt = 0;
         if (!CollectionUtils.isEmpty(req.getTargetIdList())) {
             // 批量插入

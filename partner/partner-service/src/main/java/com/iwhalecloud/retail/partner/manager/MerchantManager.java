@@ -30,6 +30,7 @@ import com.iwhalecloud.retail.system.service.OrganizationService;
 import com.iwhalecloud.retail.system.service.PublicDictService;
 import com.iwhalecloud.retail.system.service.UserService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang.text.StrBuilder;
 import org.apache.curator.framework.recipes.locks.InterProcessLock;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1035,23 +1036,23 @@ public class MerchantManager {
         String merchantCode = merchantMapper.getMaxMerchantCode(merchatType);
         String num = merchantCode.substring(merchantCode.lastIndexOf("S") + 1);
         long key = Long.parseLong(num) + 1;
-        String keyStr = String.valueOf(key);
+        StringBuilder keyStr = new StringBuilder(String.valueOf(key));
         int count = num.length() - keyStr.length();
         while (count > 0) {
             count--;
-            keyStr = "0" + keyStr;
+            keyStr.insert(0,"0");
         }
         if (merchatType.equals(PartnerConst.MerchantTypeEnum.MANUFACTURER.getType())) {
-            keyStr = PartnerConst.MerchantTypeEnum.MANUFACTURER.getCodePrefix() + keyStr;
+            keyStr.insert(0,PartnerConst.MerchantTypeEnum.MANUFACTURER.getCodePrefix());
         }
         if (merchatType.equals(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType())) {
-            keyStr = PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getCodePrefix() + keyStr;
+            keyStr.insert(0,PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getCodePrefix());
         }
         if (merchatType.equals(PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType())) {
-            keyStr = PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getCodePrefix() + keyStr;
-        }
+            keyStr.insert(0,PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getCodePrefix());
+         }
         log.info("MerchantManager.getMerchantCode req={} resp={}",merchatType,keyStr);
-        return keyStr;
+        return keyStr.toString();
     }
 
 }

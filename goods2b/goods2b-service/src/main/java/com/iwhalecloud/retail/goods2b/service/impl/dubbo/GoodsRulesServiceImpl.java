@@ -533,13 +533,20 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
     public ResultVO checkGoodsRules(List<GoodsRulesDTO> entityList, List<GoodsProductRelDTO> goodsProductRelList,String supplierId){
         log.info("GoodsRulesServiceImpl.checkGoodsRules    entityList={},goodsProductRelList={}",entityList,goodsProductRelList);
         Map<String ,Long> map = new HashMap<>();
-        List<String> targetList = new ArrayList();
+        List<String> targetList = new ArrayList<>();
+        String objType="";
         for (int i = 0; i < entityList.size(); i++) {
             GoodsRulesDTO goodsRulesDTO = entityList.get(i);
             Long purchasedNum = goodsRulesDTO.getPurchasedNum() == null ? 0:goodsRulesDTO.getPurchasedNum();
-            if(GoodsRulesConst.Stockist.PARTNER_IN_SHOP_TYPE.getValue().equals(goodsRulesDTO.getTargetType())){
-                targetList.add(goodsRulesDTO.getTargetId());
+            if(StringUtils.isEmpty(objType)){
+                objType=goodsRulesDTO.getTargetType();
+            }else{
+                if (!objType.equals(goodsRulesDTO.getTargetType())){
+                   return ResultVO.error("分货对象列表不能存在两种类型");
+                }
             }
+
+            targetList.add(goodsRulesDTO.getTargetId());
             if(goodsRulesDTO.getMarketNum() <= 0){
                 //分货数量大于0
                 return ResultVO.error("分货数量必须大于0");
@@ -586,6 +593,15 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
             }
         }
 
+        /**
+         * 经营主体不需要做校验
+         */
+        if(GoodsRulesConst.Stockist.BUSINESS_ENTITY_TYPE.getValue().equals(objType)){
+            return ResultVO.success();
+        }
+        /**
+         * 地包，店中商需要校验
+         */
         MerchantRulesCheckReq merchantRulesCheckReq = new MerchantRulesCheckReq();
         merchantRulesCheckReq.setSourceMerchantId(supplierId);
         merchantRulesCheckReq.setTargetMerchantIds(targetList);

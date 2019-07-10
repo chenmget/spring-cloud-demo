@@ -101,17 +101,10 @@ public interface MarketingActivityService{
     
     /**
      * 据营销活动ID查询营销活动信息
-     * @param queryMarketingActivityReq
+     * @param activityId
      * @return
      */
-    ResultVO<MarketingActivityDTO> queryMarketingActivityById(QueryMarketingActivityReq queryMarketingActivityReq);
-    
-    /**
-     * 据营销活动ID查询营销活动信息
-     * @param queryMarketingActivityReq
-     * @return
-     */
-    ResultVO<MarketingActivityDTO> queryMarketingActivityByIdtime(QueryMarketingActivityReq queryMarketingActivityReq);
+    ResultVO<MarketingActivityDTO> queryMarketingActivityById(String activityId);
     
     /**
      * 更新预售活动的规则

@@ -14,6 +14,7 @@ import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
+import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecPageReq;
@@ -96,11 +97,6 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
                     resp.setCreateStaffName(userDTO.getUserName());
                 }
             }
-            if (StringUtils.isNotBlank(resp.getOrigLanId())) {
-                resp.setOptionType(constant.getUpdate());
-            } else {
-                resp.setOptionType(constant.getAdd());
-            }
 
         }
         return ResultVO.success(page);
@@ -124,6 +120,7 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
         } else {
             req.setStatusCd(MarketingResConst.ResultEnum.SUCESS.getCode());
         }
+        req.setOperType(ResourceConst.OPER_TYPE.ADD.getCode());
         Integer sucessNum = resouceInstTtmsManualSyncRecManager.addResourceItemsManualSyncRec(req);
         log.info("ResouceInstItemsManualSyncRecServiceImpl.addResourceItemsManualSyncRec sucessNum={}", sucessNum);
         return resultVO;
@@ -147,6 +144,7 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
         } else {
             req.setStatusCd(MarketingResConst.ResultEnum.SUCESS.getCode());
         }
+        req.setOperType(ResourceConst.OPER_TYPE.UPDATE.getCode());
         Integer sucessNum = resouceInstTtmsManualSyncRecManager.addResourceItemsManualSyncRec(req);
         log.info("ResouceInstItemsManualSyncRecServiceImpl.addResourceItemsManualSyncRec sucessNum={}", sucessNum);
         return resultVO;

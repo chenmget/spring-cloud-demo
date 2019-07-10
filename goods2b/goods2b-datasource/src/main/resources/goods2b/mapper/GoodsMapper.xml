@@ -254,6 +254,8 @@
                 UNION
                 <include refid="selectGoodsIdByCondition3"></include>
                 UNION
+                <include refid="selectGoodsIdByCondition4"></include>
+                UNION
                 <include refid="selectAllSupplierGroundGoodsId"></include>
             )
         </if>
@@ -341,6 +343,30 @@
         ) bb
         where aa.product_base_id = bb.product_base_id
         and bb.num = 0
+    </sql>
+    <!--4.零售价1599及以下机型（未参与省集约前置补贴）, product_base_id 对应没有 地包商品  只有省包商品的-->
+    <!--跟第3个条件一起用-->
+    <sql id="selectGoodsIdByCondition4">
+        SELECT DISTINCT goods_id from prod_goods_product_rel where  product_base_id in (
+            select DISTINCT b.product_base_id
+            from prod_goods a, prod_goods_product_rel b, prod_product c
+            where  a.goods_id = b.goods_id and b.product_id = c.product_id
+                and a.merchant_type = '3'
+                <![CDATA[ and ( a.is_subsidy is null or a.is_subsidy <> '1' ) ]]>
+                and a.market_enable = '1'
+                <![CDATA[ and c.cost <= 159900 ]]>
+                and c.status = '3'
+                and b.product_base_id not in (
+                   select DISTINCT b.product_base_id
+                    from prod_goods a, prod_goods_product_rel b, prod_product c
+                    where  a.goods_id = b.goods_id and b.product_id = c.product_id
+                    and a.merchant_type = '2'
+                    <![CDATA[ and ( a.is_subsidy is null or a.is_subsidy <> '1' ) ]]>
+                    and a.market_enable = '1'
+                    <![CDATA[ and c.cost <= 159900 ]]>
+                    and c.status = '3'
+                )
+        )
     </sql>
 
 

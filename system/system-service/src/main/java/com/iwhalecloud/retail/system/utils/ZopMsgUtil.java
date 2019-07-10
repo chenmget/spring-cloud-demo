@@ -32,7 +32,7 @@ public class ZopMsgUtil {
      */
     public boolean SendMsg(ZopMsgModel zopMsgModel,Object msgtTemplate) {
         if(!ifOpen()){
-            log.warn("短信接口开关关闭");
+            log.warn("zopMsg closed");
             return false;
         }
         RequestParams params = new RequestParams();
@@ -61,7 +61,7 @@ public class ZopMsgUtil {
      */
     public boolean SendMsgs(List<ZopMsgModel> zopMsgModels,List<Object> msgtTemplate) {
         if(!ifOpen()){
-            log.warn("短信接口开关关闭");
+            log.warn("zopMsg closed");
             return false;
         }
         if(zopMsgModels.size()!=msgtTemplate.size()){

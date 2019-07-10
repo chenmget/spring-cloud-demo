@@ -643,7 +643,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             return resultVOInsertResReq;
         }
         // step4 如果不需要审核则发起流程目标仓库处理人，由目标仓库处理人决定是否接受
-        if (ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_1.getCode().equals(auditType)) {
+        if (!ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_1.getCode().equals(auditType)) {
             String uuid = resourceInstManager.getPrimaryKey();
             ProcessStartReq processStartDTO = new ProcessStartReq();
             processStartDTO.setTitle(constant.getAddNbrWorkFlow());

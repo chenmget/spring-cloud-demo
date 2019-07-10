@@ -129,7 +129,7 @@ public class GoodsRulesProductService {
          * 经营主体不需要做校验
          */
         if(GoodsRulesConst.Stockist.BUSINESS_ENTITY_TYPE.getValue().equals(objType)){
-            ResultVO.success();
+            return ResultVO.success();
         }
         /**
          * 地包，店中商需要校验

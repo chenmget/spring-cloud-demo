@@ -1075,6 +1075,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             }
         }
         // 不是直接上下级，两个主体处于多层级的不连续层级
-        return bussinessEntityCodeList2.retainAll(bussinessEntityCodeList1);
+        bussinessEntityCodeList2.retainAll(bussinessEntityCodeList1);
+        return !CollectionUtils.isEmpty(bussinessEntityCodeList2);
     }
 }

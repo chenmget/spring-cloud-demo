@@ -52,9 +52,9 @@ public class PermissionApplySaveReq implements Serializable {
     private String merchantId;
 
     /**
-     * 申请单类型: 为10权限申请时: 1 经营权限  2 绿色通道权限   3 调拨权限
+     * 申请单类型: 为10权限申请时: 1 经营权限  2 绿色通道权限   3 调拨权限 4串码权限
      */
-    @ApiModelProperty(value = "申请单类型: 为10权限申请时: 1 经营权限  2 绿色通道权限   3 调拨权限")
+    @ApiModelProperty(value = "申请单类型: 为10权限申请时: 1 经营权限  2 绿色通道权限   3 调拨权限  4串码权限")
     private String ruleType;
 
     /**

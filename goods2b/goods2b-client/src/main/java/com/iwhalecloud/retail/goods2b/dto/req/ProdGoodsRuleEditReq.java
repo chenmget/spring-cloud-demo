@@ -18,8 +18,13 @@ public class ProdGoodsRuleEditReq extends AbstractRequest implements Serializabl
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty("分货种类，1；机型，2：规格，默认按规格")
+    private String assignType;
+
     @ApiModelProperty
     private List<GoodsRulesDTO> goodsRulesDTOList;
+
+    private List<String> productIds;
 
     @ApiModelProperty
     private List<String> idList;

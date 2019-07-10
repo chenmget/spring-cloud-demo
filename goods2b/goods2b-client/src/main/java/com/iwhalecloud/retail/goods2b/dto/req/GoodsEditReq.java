@@ -223,4 +223,11 @@ public class GoodsEditReq extends AbstractRequest implements Serializable {
      */
     @ApiModelProperty(value = "是否前置补贴商品 1.是 0.否")
     private Integer isSubsidy;
+
+    /**
+     * 分货种类
+     */
+    @ApiModelProperty("分货种类:1按机型，2按规格")
+    private String disProductType;
+
 }

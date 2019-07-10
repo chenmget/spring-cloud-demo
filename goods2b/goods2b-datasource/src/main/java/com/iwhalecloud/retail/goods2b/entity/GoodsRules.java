@@ -18,6 +18,13 @@ public class GoodsRules implements Serializable {
 
     public static final String TNAME = "prod_goods_rules";
 
+    private String productBaseId;
+
+    /**
+     * 分货种类，1；机型，2或者null  按规格
+     */
+    private String assignType;
+
     @TableId(type=IdType.ID_WORKER_STR)
     @ApiModelProperty(value = "关联ID")
     private String goodsRuleId;

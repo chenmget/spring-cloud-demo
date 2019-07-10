@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.goods2b.dto.req;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.iwhalecloud.retail.dto.AbstractRequest;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -14,6 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @ApiModel(value = "商品类型条件 新建请求对象")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class CatConditionSaveReq extends AbstractRequest implements Serializable {
     private static final long serialVersionUID = -3546080674360151642L;
 

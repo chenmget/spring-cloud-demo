@@ -80,6 +80,24 @@ public class PurApplyServiceImpl implements PurApplyService {
 				purApplyResps.setTaskId(wfTaskResp.getTaskId());
 				purApplyResps.setTaskItemId(wfTaskResp.getTaskItemId());
 			}
+			// 获取商家名称
+			if (purApplyResps.getMerchantId() !=null  && purApplyResps.getMerchantId().length()>0) {
+				MerchantDTO merchantDTO = merchantService.getMerchantInfoById(purApplyResps.getMerchantId());
+				if(null != merchantDTO)
+					purApplyResps.setSupplierName(merchantDTO.getMerchantName());
+			}
+			// 申请人用户名
+			if (purApplyResps.getCreateStaff() !=null && purApplyResps.getCreateStaff().length()>0 ) {
+				UserDTO u = userService.getUserByUserId(purApplyResps.getCreateStaff());
+				if (u!=null)
+					purApplyResps.setApplyMerchantName(u.getUserName());
+			}
+			if(purApplyResps.getLanId() !=null) {
+				ResultVO<CommonRegionDTO> c = commonRegionService.getCommonRegionById(purApplyResps.getLanId());
+				CommonRegionDTO v = c.getResultData();
+				if (v!=null)
+					purApplyResps.setApplyAddress(v.getRegionName());
+			}
 //			String createDate = purApplyResps.getApplyTime();
 //			createDate = createDate.substring(0, createDate.length()-2);
 //			purApplyResps.setApplyTime(createDate);
@@ -366,6 +384,12 @@ public class PurApplyServiceImpl implements PurApplyService {
             if (u!=null)
                 ckProcureApplyResp.setApplyMerchantName(u.getUserName());
         }
+		if(ckProcureApplyResp.getLanId() !=null) {
+			ResultVO<CommonRegionDTO> c = commonRegionService.getCommonRegionById(ckProcureApplyResp.getLanId());
+			CommonRegionDTO v = c.getResultData();
+			if (v!=null)
+				ckProcureApplyResp.setApplyAddress(v.getRegionName());
+		}
 
 
 //		String createDate = ckProcureApplyResp.getCreateDate();

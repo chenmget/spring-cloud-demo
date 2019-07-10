@@ -24,17 +24,17 @@ public class GoodsRulesB2BController {
     @Reference
     private GoodsRulesService goodsRulesService;
 
-    @ApiOperation(value = "批量新增更新分货规则", notes = "批量新增或更新")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping(value="/addOrUpdateGoodsRulesBatch")
-    public ResultVO<GoodsRulesExcelResp> addOrUpdateGoodsRulesBatch(@RequestBody List<GoodsRulesDTO> entityList){
-        ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
-        prodGoodsRuleEditReq.setGoodsRulesDTOList(entityList);
-        return goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
-    }
+//    @ApiOperation(value = "批量新增更新分货规则", notes = "批量新增或更新")
+//    @ApiResponses({
+//            @ApiResponse(code=400,message="请求参数没填好"),
+//            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+//    })
+//    @PostMapping(value="/addOrUpdateGoodsRulesBatch")
+//    public ResultVO<GoodsRulesExcelResp> addOrUpdateGoodsRulesBatch(@RequestBody List<GoodsRulesDTO> entityList){
+//        ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
+//        prodGoodsRuleEditReq.setGoodsRulesDTOList(entityList);
+//        return goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
+//    }
 
     @ApiOperation(value = "删除分货规则", notes = "根据id，进行单条删除")
     @ApiImplicitParams({

@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.web.controller.b2b.goods.service;
 
+import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesProductDTO;
 import com.iwhalecloud.retail.web.office.base.ReadExcel;
 import lombok.extern.slf4j.Slf4j;
@@ -13,14 +14,14 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @Slf4j
-public class ReadGoodsRelByGGService extends ReadExcel<GoodsRulesProductDTO> {
+public class ReadGoodsRelByGGService extends ReadExcel<GoodsRulesDTO> {
     @Override
-    public GoodsRulesProductDTO builderObject2007(HSSFRow cell) {
+    public GoodsRulesDTO builderObject2007(HSSFRow cell) {
         return null;
     }
 
     @Override
-    public GoodsRulesProductDTO builderObject2010(XSSFRow cell) {
+    public GoodsRulesDTO builderObject2010(XSSFRow cell) {
 
         GoodsRulesProductDTO goodsRelModel=new GoodsRulesProductDTO();
 

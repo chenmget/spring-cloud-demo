@@ -12,7 +12,9 @@ public class GoodsRulesConst {
         // 经营主体类型
         BUSINESS_ENTITY_TYPE("BUSINESS_ENTITY_TYPE","1"),
         // 店中商类型编码
-        PARTNER_IN_SHOP_TYPE("PARTNER_IN_SHOP_TYPE","2");
+        PARTNER_IN_SHOP_TYPE("PARTNER_IN_SHOP_TYPE","2"),
+        //地包商
+        DB_CODE("PARTNER_IN_SHOP_TYPE","3");
 
         private String key;
         private String value;

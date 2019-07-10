@@ -221,15 +221,6 @@ public class GoodsServiceImpl implements GoodsService {
         //添加分货规则
         if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot()) &&
                 CollectionUtils.isNotEmpty(req.getEntityList())) {
-            ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
-//            prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
-
-            // zhongwenlong 分货规则 列表项 塞goodsId字段
-            List<GoodsRulesDTO> goodsRulesDTOList = req.getEntityList();
-            goodsRulesDTOList.forEach(goodsRulesDTO -> {
-                goodsRulesDTO.setGoodsId(goods.getGoodsId());
-            });
-            prodGoodsRuleEditReq.setGoodsRulesDTOList(goodsRulesDTOList);
 
             /**
              * 分货数量,默认按规格，当 disProductType=1时候,按机型校验
@@ -244,6 +235,22 @@ public class GoodsServiceImpl implements GoodsService {
             log.info("GoodsServiceImpl.addGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
                 try {
+                    /**
+                     * 新增分货规则
+                     */
+                    ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
+                    // zhongwenlong 分货规则 列表项 塞goodsId字段
+                    List<GoodsRulesDTO> goodsRulesDTOList = req.getEntityList();
+                    goodsRulesDTOList.forEach(goodsRulesDTO -> {
+                        goodsRulesDTO.setGoodsId(goods.getGoodsId());
+                    });
+                    List<String> products=new ArrayList<>();
+                    for (GoodsProductRelDTO dto: req.getGoodsProductRelList()){
+                        products.add(dto.getProductId());
+                    }
+                    prodGoodsRuleEditReq.setProductIds(products);
+                    prodGoodsRuleEditReq.setAssignType(req.getDisProductType());
+                    prodGoodsRuleEditReq.setGoodsRulesDTOList(goodsRulesDTOList);
                     goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
                 } catch (Exception e) {
                     log.info("添加分货规则失败");
@@ -441,20 +448,26 @@ public class GoodsServiceImpl implements GoodsService {
         //添加分货规则
         if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot()) &&
                 CollectionUtils.isNotEmpty(req.getEntityList())) {
-            ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
-            prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
             /**
              * 分货数量,默认按规格，当 disProductType=1时候,按机型校验
              */
             CheckRuleModel model=new CheckRuleModel();
             model.setEntityList(req.getEntityList());
-//            model.setDisProductType(req.getDisProductType());
+            model.setDisProductType(req.getDisProductType());
             model.setSupplierId(req.getSupplierId());
             model.setGoodsProductRelList(req.getGoodsProductRelList());
             ResultVO checkResult=goodsRulesProductService.addGoodsCheckRuleGoods(model);
             log.info("GoodsServiceImpl.editGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
                 try {
+                    ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
+                    prodGoodsRuleEditReq.setAssignType(req.getDisProductType());
+                    List<String> products=new ArrayList<>();
+                    for (GoodsProductRelDTO dto: req.getGoodsProductRelList()){
+                        products.add(dto.getProductId());
+                    }
+                    prodGoodsRuleEditReq.setProductIds(products);
+                    prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
                     goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
                 } catch (Exception e) {
                     log.info("添加分货规则失败");

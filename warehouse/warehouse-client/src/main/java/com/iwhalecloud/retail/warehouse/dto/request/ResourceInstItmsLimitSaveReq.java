@@ -1,4 +1,4 @@
-package com.iwhalecloud.retail.partner.dto.req;
+package com.iwhalecloud.retail.warehouse.dto.request;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -13,7 +13,7 @@ import java.io.Serializable;
 
 @Data
 @ApiModel(value = "添加商家限额请求对象")
-public class MerchantLimit2SaveReq implements Serializable {
+public class ResourceInstItmsLimitSaveReq implements Serializable {
     private static final long serialVersionUID = 7657953088196836447L;
 
     /**

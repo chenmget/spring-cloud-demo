@@ -86,4 +86,21 @@ public class ResourceInstColum {
         orderMap.add(new ExcelTitleName("resultDesc", "状态描述"));
         return orderMap;
     }
+
+    public static List<ExcelTitleName> itmsColumn() {
+        List<ExcelTitleName> orderMap = new ArrayList<>();
+        orderMap.add(new ExcelTitleName("mktResInstNbr", "串码"));
+        orderMap.add(new ExcelTitleName("typeName", "产品类型"));
+        orderMap.add(new ExcelTitleName("brandName", "品牌"));
+        orderMap.add(new ExcelTitleName("unitType", "产品型号"));
+        orderMap.add(new ExcelTitleName("productName", "产品名称"));
+        orderMap.add(new ExcelTitleName("optionType", "操作类型"));
+        orderMap.add(new ExcelTitleName("origlanName", "变更前的地市"));
+        orderMap.add(new ExcelTitleName("lanName", "录入地市"));
+        orderMap.add(new ExcelTitleName("maxSerialNum", "限额"));
+        orderMap.add(new ExcelTitleName("createStaffName", "录入人"));
+        orderMap.add(new ExcelTitleName("createDate", "录入时间"));
+        orderMap.add(new ExcelTitleName("statusCd", "状态"));
+        return orderMap;
+    }
 }

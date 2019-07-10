@@ -10,14 +10,18 @@ import com.iwhalecloud.retail.goods2b.dto.resp.TypeResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.BrandService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TypeService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.UserDTO;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
+import com.iwhalecloud.retail.system.service.UserService;
 import com.iwhalecloud.retail.warehouse.common.MarketingResConst;
 import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecAddReq;
 import com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecPageReq;
 import com.iwhalecloud.retail.warehouse.dto.response.ResouceInstItmsManualSyncRecListResp;
+import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstItmsLimitResp;
 import com.iwhalecloud.retail.warehouse.manager.ResouceInstTtmsManualSyncRecManager;
 import com.iwhalecloud.retail.warehouse.service.ResouceInstItemsManualSyncRecService;
+import com.iwhalecloud.retail.warehouse.service.ResourceInstItmsLimitService;
 import com.iwhalecloud.retail.warehouse.util.MarketingZopClientUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -44,6 +48,10 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
     private Constant constant;
     @Reference
     private CommonRegionService commonRegionService;
+    @Reference
+    private UserService userService;
+    @Reference
+    private ResourceInstItmsLimitService resourceInstItmsLimitService;
 
 
     @Override
@@ -69,6 +77,24 @@ public class ResouceInstItemsManualSyncRecServiceImpl implements ResouceInstItem
             ResultVO<CommonRegionDTO> commonRegionVO = commonRegionService.getCommonRegionById(destLanId);
             if (commonRegionVO.isSuccess() && null != commonRegionVO.getResultData()) {
                 resp.setLanName(commonRegionVO.getResultData().getRegionName());
+            }
+            ResultVO<ResourceInstItmsLimitResp> limitRespResultVO = resourceInstItmsLimitService.getResourceInstItmsLimit(destLanId);
+            if (limitRespResultVO.isSuccess() && null != limitRespResultVO) {
+                resp.setMaxSerialNum(limitRespResultVO.getResultData().getMaxSerialNum());
+            }
+            String origLanId = resp.getOrigLanId();
+            if (StringUtils.isNotEmpty(origLanId)) {
+                ResultVO<CommonRegionDTO> commonRegionVO2 = commonRegionService.getCommonRegionById(origLanId);
+                if (commonRegionVO2.isSuccess() && null != commonRegionVO2.getResultData()) {
+                    resp.setOriglanName(commonRegionVO2.getResultData().getRegionName());
+                }
+            }
+            String createStaff = resp.getCreateStaff();
+            if (StringUtils.isNotEmpty(createStaff)) {
+                UserDTO userDTO = userService.getUserByUserId(createStaff);
+                if (null != userDTO) {
+                    resp.setCreateStaffName(userDTO.getUserName());
+                }
             }
             if (StringUtils.isNotBlank(resp.getOrigLanId())) {
                 resp.setOptionType(constant.getUpdate());

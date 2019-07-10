@@ -43,8 +43,8 @@ public class CatConditionServiceImpl implements CatConditionService {
         if (!StringUtils.isEmpty(req.getCreateStaff())) {
             entity.setUpdateStaff(req.getCreateStaff());
         }
-        if (Objects.isNull(req.getOrder())) {
-            entity.setOrder(0L);
+        if (Objects.isNull(req.getOrderBy())) {
+            entity.setOrderBy(0L);
         }
         Integer resultInt = catConditionManager.saveCatCondition(entity);
         if (resultInt > 0) {

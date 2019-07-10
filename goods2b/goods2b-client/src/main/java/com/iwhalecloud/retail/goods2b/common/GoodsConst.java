@@ -25,6 +25,13 @@ public class GoodsConst {
     public static final String RelType = "RECOMMEND";
 
     /**
+     * 分货种类
+     * 1:机型，2规格
+     */
+    public static final String DIS_PRODUCT_TYPE_1 ="1";
+    public static final String DIS_PRODUCT_TYPE_2 ="2";
+
+    /**
      * 系统来源
      */
     public static final String SourceFrom = "MM";

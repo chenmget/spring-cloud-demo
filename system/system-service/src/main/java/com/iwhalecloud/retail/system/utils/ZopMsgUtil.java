@@ -24,7 +24,7 @@ public class ZopMsgUtil {
     @Autowired
     Environment env;
 
-    /**
+    /**】
      * 发送一条模板短信
      * @param zopMsgModel  短信报文模型
      * @param msgtTemplate 短信模板内容类,参照SmsVerificationtemplate
@@ -60,6 +60,10 @@ public class ZopMsgUtil {
      * @return
      */
     public boolean SendMsgs(List<ZopMsgModel> zopMsgModels,List<Object> msgtTemplate) {
+        if(!ifOpen()){
+            log.warn("短信接口开关关闭");
+            return false;
+        }
         if(zopMsgModels.size()!=msgtTemplate.size()){
             return false;
         }

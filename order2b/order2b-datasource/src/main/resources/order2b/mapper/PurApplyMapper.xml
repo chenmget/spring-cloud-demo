@@ -54,8 +54,8 @@
 		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') as applyTime,DATE_FORMAT(d.UPDATE_DATE,'%Y-%m-%d %H:%i:%s') as revingDate,d.PRODUCT_ID as productId,
 		d.MKT_RES_INST_NBR as mktResInstNbr,DATE_FORMAT(d.CREATE_DATE,'%Y-%m-%d %H:%i:%s') as deliveryDate ,e.RECEIVE_NAME as receiveName,
 		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),e.RECEIVE_ADDR) as receiveAddr,e.CITY as receiveCity,i.PUR_PRICE as purPrice
-		from pur_apply a, pur_apply_item_detail d
-		-- LEFT JOIN pur_apply_item_detail d ON d.APPLY_ID = a.APPLY_ID
+		from  pur_apply_item_detail d
+		LEFT JOIN pur_apply a ON d.APPLY_ID = a.APPLY_ID
 		LEFT JOIN pur_apply_ext e ON a.APPLY_ID=e.APPLY_ID
 		LEFT JOIN pur_apply_item i ON a.APPLY_ID=i.APPLY_ID AND i.PRODUCT_ID = d.PRODUCT_ID
 		WHERE 1=1 AND a.APPLY_ID = d.APPLY_ID

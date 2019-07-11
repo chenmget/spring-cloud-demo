@@ -73,6 +73,9 @@
         <foreach item="item" index="index" open="(" separator="," close=")" collection="req.productIdList">
             #{item}
         </foreach>
+        <if test="null!=req.lanId and ''!=req.lanId">
+            and pgrr.LAN_ID = #{req.lanId}
+        </if>
         <if test="null!=req.pathCode and ''!=req.pathCode">
             and locate(pgrr.ORG_ID,#{req.pathCode})>0
         </if>

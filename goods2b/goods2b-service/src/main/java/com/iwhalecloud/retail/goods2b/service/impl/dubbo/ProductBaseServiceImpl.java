@@ -563,6 +563,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }
         }
         int index = productBaseManager.updateProductBase(req);
+
+        if (req.isAdminType()) {
+            // 是否是管理员修改 管理员不走审核流程 zhengwenlong
+            return  ResultVO.success(index);
+        }
+
         //修改成功并且非审核中
         if(index>0&&!ProductConst.AuditStateType.AUDITING.getCode().equals(oldAuditState)){
 

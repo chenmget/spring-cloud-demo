@@ -120,6 +120,12 @@ public class ActivityProduct implements Serializable {
 	private String isDeleted;
 
 	/**
+	 * 活动产品状态 0. 无效 1. 有效 -1. 待生效
+	 */
+	@ApiModelProperty(value = "活动产品状态 0. 无效 1. 有效 -1. 待生效")
+	private String status;
+
+	/**
 	 * 记录数据来源
 	 */
 	@ApiModelProperty(value = "记录数据来源。")
@@ -176,13 +182,14 @@ public class ActivityProduct implements Serializable {
 		/** 达量. */
 		reachAmount("reachAmount","REACH_AMOUNT"),
 		
-
-		
 		/** 供应商编码. */
 		supplierCode("supplierCode","SUPPLIER_CODE"),
 
 		/** 是否删除：0未删、1删除。. */
 		isDeleted("isDeleted","IS_DELETED"),
+
+		/** 活动产品状态 0. 无效 1. 有效 -1. 待生效 */
+		status("status","STATUS"),
 
 		/** 记录首次创建的员工标识。. */
 		creator("creator","CREATOR"),

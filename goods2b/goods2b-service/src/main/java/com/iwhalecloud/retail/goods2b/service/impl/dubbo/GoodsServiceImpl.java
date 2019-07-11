@@ -227,7 +227,7 @@ public class GoodsServiceImpl implements GoodsService {
              */
             CheckRuleModel model=new CheckRuleModel();
             model.setEntityList(req.getEntityList());
-            model.setDisProductType(req.getDisProductType());
+            model.setDisProductType(req.getAssignType());
             model.setSupplierId(req.getSupplierId());
             model.setGoodsProductRelList(req.getGoodsProductRelList());
             ResultVO checkResult=goodsRulesProductService.addGoodsCheckRuleGoods(model);
@@ -249,7 +249,7 @@ public class GoodsServiceImpl implements GoodsService {
                         products.add(dto.getProductId());
                     }
                     prodGoodsRuleEditReq.setProductIds(products);
-                    prodGoodsRuleEditReq.setAssignType(req.getDisProductType());
+                    prodGoodsRuleEditReq.setAssignType(req.getAssignType());
                     prodGoodsRuleEditReq.setGoodsRulesDTOList(goodsRulesDTOList);
                     goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
                 } catch (Exception e) {
@@ -453,7 +453,7 @@ public class GoodsServiceImpl implements GoodsService {
              */
             CheckRuleModel model=new CheckRuleModel();
             model.setEntityList(req.getEntityList());
-            model.setDisProductType(req.getDisProductType());
+            model.setDisProductType(req.getAssignType());
             model.setSupplierId(req.getSupplierId());
             model.setGoodsProductRelList(req.getGoodsProductRelList());
             ResultVO checkResult=goodsRulesProductService.addGoodsCheckRuleGoods(model);
@@ -461,7 +461,7 @@ public class GoodsServiceImpl implements GoodsService {
             if (checkResult.isSuccess()) {
                 try {
                     ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
-                    prodGoodsRuleEditReq.setAssignType(req.getDisProductType());
+                    prodGoodsRuleEditReq.setAssignType(req.getAssignType());
                     List<String> products=new ArrayList<>();
                     for (GoodsProductRelDTO dto: req.getGoodsProductRelList()){
                         products.add(dto.getProductId());

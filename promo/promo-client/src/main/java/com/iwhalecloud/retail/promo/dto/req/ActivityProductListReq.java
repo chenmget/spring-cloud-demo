@@ -17,8 +17,11 @@ import java.util.List;
 @ApiModel(value = "活动产品列表查询")
 public class ActivityProductListReq implements Serializable {
 
-    @ApiModelProperty("营销活动主键")
+    @ApiModelProperty("营销活动主键列表")
     private List<String> marketingActivityIds;
+
+    @ApiModelProperty("营销活动主键")
+    private String marketingActivityId;
 
     @ApiModelProperty("产品ID")
     private String productId;

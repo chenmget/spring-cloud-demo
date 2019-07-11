@@ -554,9 +554,9 @@ public class PromoConst {
      * 活动卖家范围和买家范围有效状态枚举
      */
     public enum Status {
-        WaitAudit("0","待审核"),
+        WaitAudit("0","待审核或无效"),
         Audited("1","有效"),
-        AuditFailed("-1","审核不通过");
+        AuditFailed("-1","审核不通过或待生效");
 
         private String code;
         private String name;

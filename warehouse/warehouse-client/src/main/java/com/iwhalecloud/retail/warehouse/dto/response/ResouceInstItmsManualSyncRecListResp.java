@@ -131,7 +131,7 @@ public class ResouceInstItmsManualSyncRecListResp implements Serializable {
 	 * 操作类型
 	 */
 	@ApiModelProperty(value = "操作类型")
-	private String optionType;
+	private String operType;
 
 	/**
 	 * 变更前地市

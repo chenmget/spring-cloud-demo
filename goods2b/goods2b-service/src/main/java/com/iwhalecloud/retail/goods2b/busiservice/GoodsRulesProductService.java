@@ -90,13 +90,19 @@ public class GoodsRulesProductService {
 
         Map<String, Long> map = new HashMap<>();
         List<String> targetList = new ArrayList<>();
+        String objType="";
         Long totalMarket = 0L;
         for (int i = 0; i < model.getEntityList().size(); i++) {
             GoodsRulesDTO goodsRulesDTO = model.getEntityList().get(i);
             Long purchasedNum = goodsRulesDTO.getPurchasedNum() == null ? 0 : goodsRulesDTO.getPurchasedNum();
-            if (GoodsRulesConst.Stockist.PARTNER_IN_SHOP_TYPE.getValue().equals(goodsRulesDTO.getTargetType())) {
-                targetList.add(goodsRulesDTO.getTargetId());
+            if(StringUtils.isEmpty(objType)){
+                objType=goodsRulesDTO.getTargetType();
+            }else{
+                if (!objType.equals(goodsRulesDTO.getTargetType())){
+                    return ResultVO.error("分货对象列表不能存在两种类型");
+                }
             }
+            targetList.add(goodsRulesDTO.getTargetId());
             if (goodsRulesDTO.getMarketNum() <= 0) {
                 //分货数量大于0
                 return ResultVO.error("分货数量必须大于0");
@@ -118,6 +124,16 @@ public class GoodsRulesProductService {
             return ResultVO.error("每个产品规格的所有分货规则分货数量的和，必须小于等于该产品规格的库存");
         }
 
+
+        /**
+         * 经营主体不需要做校验
+         */
+        if(GoodsRulesConst.Stockist.BUSINESS_ENTITY_TYPE.getValue().equals(objType)){
+            return ResultVO.success();
+        }
+        /**
+         * 地包，店中商需要校验
+         */
         MerchantRulesCheckReq merchantRulesCheckReq = new MerchantRulesCheckReq();
         merchantRulesCheckReq.setSourceMerchantId(model.getSupplierId());
         merchantRulesCheckReq.setTargetMerchantIds(targetList);
@@ -149,13 +165,16 @@ public class GoodsRulesProductService {
             return passGoodsLsit;
         }
         for (GoodsRulesDTO entity : req.getDtoList()) {
-            if (!supplyTargetInfo(entity)) {
-                continue;
-            }
+
             Product p = productList.get(0);
             entity.setProductName(p.getUnitName());
             entity.setAssignType(req.getAssignedType());
             entity.setProductBaseId(p.getProductBaseId());
+            boolean b=supplyTargetInfo(entity);
+            log.info("gs_10010_queryProductObj,supplyTargetInfo_entity{},b{}",JSON.toJSONString(entity),b);
+            if (!b) {
+                continue;
+            }
             GoodsRulesProductDTO rulesProductDTO = new GoodsRulesProductDTO();
             BeanUtils.copyProperties(entity, rulesProductDTO);
             if (StringUtils.isEmpty(entity.getProductCode())) {
@@ -174,6 +193,7 @@ public class GoodsRulesProductService {
                     break;
                 }
             }
+            log.info("gs_10010_queryProductObj,product_entity{}",JSON.toJSONString(entity));
 
         }
         return passGoodsLsit;

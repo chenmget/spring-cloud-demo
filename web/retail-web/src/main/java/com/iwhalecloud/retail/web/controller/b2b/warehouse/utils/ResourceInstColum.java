@@ -94,7 +94,7 @@ public class ResourceInstColum {
         orderMap.add(new ExcelTitleName("brandName", "品牌"));
         orderMap.add(new ExcelTitleName("unitType", "产品型号"));
         orderMap.add(new ExcelTitleName("productName", "产品名称"));
-        orderMap.add(new ExcelTitleName("optionType", "操作类型"));
+        orderMap.add(new ExcelTitleName("operType", "操作类型"));
         orderMap.add(new ExcelTitleName("origlanName", "变更前的地市"));
         orderMap.add(new ExcelTitleName("lanName", "录入地市"));
         orderMap.add(new ExcelTitleName("maxSerialNum", "限额"));

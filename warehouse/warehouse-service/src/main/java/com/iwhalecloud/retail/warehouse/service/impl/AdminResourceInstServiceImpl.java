@@ -786,7 +786,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             // 更新厂家对应的串码
             ResourceInstUpdateReq updateReq = new ResourceInstUpdateReq();
             updateReq.setUpdateStaff(req.getUpdateStaff());
-            updateReq.setMktResInstNbrs(Lists.newArrayList(mktResInstId));
+            updateReq.setMktResInstNbrs(Lists.newArrayList(dto.getMktResInstNbr()));
             updateReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
             updateReq.setMktResStoreId(req.getMktResStoreId());
             updateReq.setDestStoreId(mktResStoreId);

@@ -83,4 +83,9 @@ public class ResouceInstItmsManualSyncRecAddReq implements Serializable {
 	@ApiModelProperty(value = "创建人")
 	private String createStaff;
 
+	/**
+	 * 操作类型
+	 */
+	@ApiModelProperty(value = "操作类型")
+	private String operType;
 }

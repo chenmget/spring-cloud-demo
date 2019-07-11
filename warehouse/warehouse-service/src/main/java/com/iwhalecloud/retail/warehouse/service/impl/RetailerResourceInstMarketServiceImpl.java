@@ -655,8 +655,9 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             HandlerUser user = new HandlerUser();
             user.setHandlerUserId(destMerchantDTO.getUserId());
             user.setHandlerUserName(destMerchantDTO.getMerchantName());
-            List<HandlerUser> uerList = new ArrayList<HandlerUser>(1);
-            processStartDTO.setNextHandlerUser(uerList);
+            List<HandlerUser> userList = new ArrayList<HandlerUser>(1);
+            userList.add(user);
+            processStartDTO.setNextHandlerUser(userList);
             processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
             Map map=new HashMap();
             String secondStepFlag = "1";

@@ -244,7 +244,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (!merchantDTOResultVO.isSuccess() || null == merchantDTOResultVO.getResultData()) {
             return ResultVO.error(constant.getCannotGetMerchantMsg());
         }
-
         // 先获取串码，用来记录库存及事件
         ResourceInstBatchReq resourceInstBatchReq = new ResourceInstBatchReq();
         resourceInstBatchReq.setMktResStoreId(mktResStoreId);
@@ -297,9 +296,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
     @Override
     @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     public ResultVO confirmReciveNbr(ConfirmReciveNbrReq req) {
-        AdminResourceInstDelReq delReq = new AdminResourceInstDelReq();
-
-        // step1 申请单状态改为完成
         String resReqId = req.getResReqId();
         ResourceRequestItemQueryReq resourceRequestReq = new ResourceRequestItemQueryReq();
         resourceRequestReq.setMktResReqId(resReqId);
@@ -310,13 +306,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (statusNotRight) {
             return ResultVO.error(ResultCodeEnum.ERROR.getCode(), constant.getRequestItemInvalid());
         }
-
         ResourceRequestResp resourceRequestResp = resourceRequestRespVO.getResultData();
-        ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
-        reqUpdate.setMktResReqId(resReqId);
-        reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
-        ResultVO<Boolean> updateResourceRequestStateVO =  requestService.updateResourceRequestState(reqUpdate);
-        log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr requestService.queryResourceRequest req={},resp={}", JSON.toJSONString(reqUpdate),JSON.toJSONString(updateResourceRequestStateVO));
 
         // step1 找到串码明细
         ResourceReqDetailQueryReq queryReq = new ResourceReqDetailQueryReq();
@@ -326,13 +316,27 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         if (null == list || list.isEmpty()) {
             return ResultVO.error(constant.getCannotGetRequestItemMsg());
         }
-
-        // step3 领用方入库
-        ResourceInstAddReq addReq = new ResourceInstAddReq();
         List<String> mktResInstNbrs = list.stream().map(ResourceReqDetailDTO::getMktResInstNbr).collect(Collectors.toList());
         ResourceReqDetailDTO detailDTO = list.get(0);
-
-        //根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
+        ResultVO<MerchantDTO> sourceMerchantVO = resouceStoreService.getMerchantByStore(detailDTO.getMktResStoreId());
+        log.info("RetailerResourceInstMarketServiceImpl.confirmReciveNbr resouceStoreService.getMerchantByStore resp={}", JSON.toJSONString(sourceMerchantVO));
+        if (!sourceMerchantVO.isSuccess() || null == sourceMerchantVO.getResultData()) {
+            return ResultVO.error(constant.getCannotGetMerchantMsg());
+        }
+        MerchantDTO sourceMerchant = sourceMerchantVO.getResultData();
+        // step3 删除源串码
+        String nbrs = StringUtils.join(mktResInstNbrs, ",");
+        SynMktInstStatusSwapReq synMktInstStatusSwapReq = new SynMktInstStatusSwapReq();
+        synMktInstStatusSwapReq.setLanId(sourceMerchant.getLanId());
+        synMktInstStatusSwapReq.setBarCode(nbrs);
+        synMktInstStatusSwapReq.setServiceCode(serviceCode);
+        ResultVO synMktInstStatusVO = marketingResStoreService.synMktInstStatus(synMktInstStatusSwapReq);
+        log.info("RetailerResourceInstMarketServiceImpl.confirmReciveNbr marketingResStoreService.synMktInstStatus req={},resp={}", JSON.toJSONString(synMktInstStatusSwapReq), JSON.toJSONString(synMktInstStatusVO));
+        if (!synMktInstStatusVO.isSuccess()) {
+            return synMktInstStatusVO;
+        }
+        // step4 领用方入库 根据申请单表保存的目标仓库和申请单明细找到对应的串码及商家信息
+        ResourceInstAddReq addReq = new ResourceInstAddReq();
         addReq.setMktResInstNbrs(mktResInstNbrs);
         addReq.setStatusCd(ResourceConst.STATUSCD.AVAILABLE.getCode());
         addReq.setSourceType(ResourceConst.SOURCE_TYPE.MERCHANT.getCode());
@@ -348,6 +352,13 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         ResultVO syncTerminalVO = resourceInstService.syncTerminal(addReq);
         log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceInstService.syncTerminal req={},resp={}", JSON.toJSONString(addReq),JSON.toJSONString(syncTerminalVO));
         if (syncTerminalVO.isSuccess()) {
+            // step5 申请单状态改为完成
+            ResourceRequestUpdateReq reqUpdate = new ResourceRequestUpdateReq();
+            reqUpdate.setMktResReqId(resReqId);
+            reqUpdate.setStatusCd(ResourceConst.MKTRESSTATE.DONE.getCode());
+            ResultVO<Boolean> updateResourceRequestStateVO = requestService.updateResourceRequestState(reqUpdate);
+            log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr requestService.queryResourceRequest req={},resp={}", JSON.toJSONString(reqUpdate),JSON.toJSONString(updateResourceRequestStateVO));
+
             Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(list, CLASS_TYPE_3);
             // 增加事件和批次
             BatchAndEventAddReq batchAndEventAddReq = new BatchAndEventAddReq();
@@ -366,7 +377,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             resourceBatchRecService.saveEventAndBatch(batchAndEventAddReq);
             log.info("RetailerResourceInstMarketServiceImpl.confirmRefuseNbr resourceBatchRecService.saveEventAndBatch req={}", JSON.toJSONString(batchAndEventAddReq));
 
-            // step 4:修改库存(出库)
+            // step6:修改库存(出库)
             for (Map.Entry<String, List<String>> entry : mktResIdAndNbrMap.entrySet()) {
                 ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
                 resourceInstStoreDTO.setMktResId(entry.getKey());
@@ -670,17 +681,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
             }
         }
-        // 删除源串码
-        String nbrs = StringUtils.join(mktResInstNbrs, ",");
-        SynMktInstStatusSwapReq synMktInstStatusSwapReq = new SynMktInstStatusSwapReq();
-        synMktInstStatusSwapReq.setLanId(req.getLanId());
-        synMktInstStatusSwapReq.setBarCode(nbrs);
-        synMktInstStatusSwapReq.setServiceCode(serviceCode);
-        ResultVO synMktInstStatusVO = marketingResStoreService.synMktInstStatus(synMktInstStatusSwapReq);
-        log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst marketingResStoreService.synMktInstStatus req={},resp={}", JSON.toJSONString(synMktInstStatusSwapReq), JSON.toJSONString(synMktInstStatusVO));
-        if (!synMktInstStatusVO.isSuccess()) {
-            return synMktInstStatusVO;
-        }
+
         Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(resourceInstDTOList, CLASS_TYPE_1);
         // step 4:修改库存(出库)
         for (Map.Entry<String, List<String>> entry : mktResIdAndNbrMap.entrySet()) {
@@ -941,8 +942,8 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         Boolean directSuppLyAndSameMerchantAndNotSameLanId = hasDirectSuppLy && !hasGroundSupply && sameMerchant && !sameLanId;
         // 全是地堡供应串码，且不跨地市，不需要审核
         Boolean directSuppLyAndSameLanId = !hasDirectSuppLy && hasGroundSupply && sameLanId;
-        // 全是地堡供应串码，跨地市，串码是有前置补贴活动发货过来的，需要调出方和调入方审核
-        Boolean directSuppLyNotSameLanIdAndPreSubsidy = !hasDirectSuppLy && hasGroundSupply && !sameLanId && !ifPreSubsidy;
+        // 全是地堡供应串码，跨地市，串码是非前置补贴活动发货过来的，需要调出方和调入方审核
+        Boolean directSuppLyNotSameLanIdAndPreSubsidy = !hasDirectSuppLy && hasGroundSupply && !sameLanId && ifPreSubsidy;
         log.info("RetailerResourceInstMarketServiceImpl.validAllocateNbr sameMerchant={}, sameLanId={}, hasDirectSuppLy={}, hasGroundSupply={}, ifPreSubsidy={}", sameMerchant, sameLanId, hasDirectSuppLy, hasGroundSupply, ifPreSubsidy);
         if (directSuppLyAndSameMerchantAndNotSameLanId || directSuppLyNotSameLanIdAndPreSubsidy) {
             return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode();

@@ -213,9 +213,6 @@ public class GoodsRulesProductService {
             if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(req.getAssignedType())){
                 entity.setProductCode(null);
                 rulesProductDTO.setProductCode(null);
-                continue;
-            }
-            if (StringUtils.isEmpty(entity.getProductCode())) {
                 passGoodsLsit.add(rulesProductDTO);
                 continue;
             }

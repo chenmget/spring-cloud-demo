@@ -100,14 +100,16 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
         activityGoodsByMerchantResp.setActivityId(req.getActivityId());
         activityGoodsByMerchantResp.setGoodsList(activityGoodDTOList);
         // 根据活动编码查询参与活动产品
-        List<ActivityProduct> activityGoodsList = activityProductManager.queryActivityProductByCondition(req.getActivityId());
-        if(activityGoodsList.size() < 1){
+        List<ActivityProduct> activityProductsList = activityProductManager.queryActivityProductByCondition(req.getActivityId());
+        if(activityProductsList.size() < 1){
             return ResultVO.success();
         }
         List<String> productIds = new ArrayList();
-        for (int i = 0; i < activityGoodsList.size(); i++) {
-            productIds.add(activityGoodsList.get(i).getProductId());
+        for (int i = 0; i < activityProductsList.size(); i++) {
+            productIds.add(activityProductsList.get(i).getProductId());
         }
+        // 活动产品供货价
+        Long price = activityProductsList.get(0).getPrice();
         //通过商家id查询商家信息，获取商家pathCode
         MerchantDTO merchantDto = merchantService.getMerchantInfoById(req.getMerchantId());
         String pathCode = (merchantDto==null)?null:merchantDto.getParCrmOrgPathCode();
@@ -121,6 +123,7 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
             for (int i = 0; i < activityGoodsDTOS.size(); i++) {
                 ActivityGoodDTO activityGoodDTO = new ActivityGoodDTO();
                 BeanUtils.copyProperties(activityGoodsDTOS.get(i), activityGoodDTO);
+                activityGoodDTO.setWholeSalePrice(String.valueOf(price));
                 activityGoodDTOList.add(activityGoodDTO);
             }
         }

@@ -220,7 +220,7 @@ public class ActivityProductServiceImpl implements ActivityProductService {
         }
         activityProduct.setGmtCreate(new Date());
         activityProduct.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
-        activityProduct.setIsDeleted(PromoConst.Status.Audited.getCode());
+        activityProduct.setStatus(PromoConst.Status.Audited.getCode());
         activityProductManager.insertProductActivity(activityProduct);
         return ResultVO.success();
     }
@@ -245,7 +245,7 @@ public class ActivityProductServiceImpl implements ActivityProductService {
             ActivityProduct activityProduct = new ActivityProduct();
             BeanUtils.copyProperties(activityProductReq, activityProduct);
             activityProduct.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
-            activityProduct.setIsDeleted(PromoConst.Status.Audited.getCode());
+            activityProduct.setStatus(PromoConst.Status.Audited.getCode());
             activityProduct.setMarketingActivityId(addPreSaleProductReqDTO.getMarketingActivityId());
             activityProduct.setCreator(addPreSaleProductReqDTO.getUserId());
             activityProducts.add(activityProduct);

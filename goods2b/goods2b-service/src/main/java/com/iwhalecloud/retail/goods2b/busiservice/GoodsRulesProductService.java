@@ -198,7 +198,9 @@ public class GoodsRulesProductService {
 
             Product p = productList.get(0);
             entity.setProductName(p.getUnitName());
-            entity.setAssignType(req.getAssignedType());
+            if(StringUtils.isEmpty(entity.getAssignType())){
+                entity.setAssignType(req.getAssignedType());
+            }
             entity.setProductBaseId(p.getProductBaseId());
             boolean b = supplyTargetInfo(entity);
             log.info("gs_10010_queryProductObj,supplyTargetInfo_entity{},b{}", JSON.toJSONString(entity), b);

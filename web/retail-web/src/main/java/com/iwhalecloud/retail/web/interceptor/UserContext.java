@@ -302,7 +302,7 @@ public class UserContext implements Serializable {
             return false;
         }
         List<Integer> list = Lists.newArrayList(
-                SystemConst.USER_FOUNDER_9
+                SystemConst.USER_FOUNDER_8
         );
         return list.contains(userDTO.getUserFounder());
     }

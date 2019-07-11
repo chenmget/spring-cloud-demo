@@ -10,6 +10,7 @@ import com.iwhalecloud.retail.goods2b.common.AttrSpecConst;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
 import com.iwhalecloud.retail.goods2b.common.TypeConst;
 import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
+import com.iwhalecloud.retail.goods2b.dto.ProdCRMTypeDto;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.TypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
@@ -410,12 +411,14 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
-    public ResultVO<String> getCrmTypeName(String prodBaseId) {
+    public ResultVO<ProdCRMTypeDto> getCrmTypeName(String prodBaseId) {
         ProductBaseGetReq req = new ProductBaseGetReq();
         req.setProductBaseId(prodBaseId);
         ProductBaseGetResp resp = productBaseManager.selectProductBase(req).get(0);
         Type type = typeManager.selectById(resp.getTypeId());
         ProdCRMType prodCRMType = lindCrmTypeManager.getProCRMType(type.getCrmResKind());
-        return ResultVO.success(prodCRMType.getTypeName());
+        ProdCRMTypeDto prodCRMTypeDto = new ProdCRMTypeDto();
+        BeanUtils.copyProperties(prodCRMType,prodCRMTypeDto);
+        return ResultVO.success(prodCRMTypeDto);
     }
 }

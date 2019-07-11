@@ -30,7 +30,7 @@ public class ActivityParticipantFilterValueModel {
 	/**
 	 * 区县列表
 	 */
-	private List<Map<String,String>> countyList;
+	private List<Map<String,String>> orgList;
 
 	/**
 	 * 标签列表
@@ -45,7 +45,7 @@ public class ActivityParticipantFilterValueModel {
 	/**
 	 * 区县id列表
 	 */
-	private List<String> countyIds;
+	private List<String> orgIds;
 
 	/**
 	 * 标签id列表
@@ -83,9 +83,9 @@ public class ActivityParticipantFilterValueModel {
 				this.cityList = object.cityList;
 				this.cityIds = object.cityList.stream().map(e->e.get("regionId")).collect(Collectors.toList());
 			}
-			if(object.countyList!=null){
-				this.countyList = object.countyList;
-				this.countyIds = object.countyList.stream().map(e->e.get("regionId")).collect(Collectors.toList());
+			if(object.orgList!=null){
+				this.orgList = object.orgList;
+				this.orgIds = object.orgList.stream().map(e->e.get("orgId")).collect(Collectors.toList());
 			}
 			if(object.tagList!=null){
 				this.tagList = object.tagList;
@@ -94,15 +94,5 @@ public class ActivityParticipantFilterValueModel {
 		}
 	}
 
-	public static void main(String[] args) {
-//		String filterValue = "{\"cityList\":[{\"regionId\":\"730\",\"regionName\":\"岳阳市\"},{\"regionId\":\"731\",\"regionName\":\"长沙市\"},{\"regionId\":\"735\",\"regionName\":\"郴州市\"}],\"countyList\":[{\"regionId\":\"73003\",\"regionName\":\"临湘市分公司\"},{\"regionId\":\"73004\",\"regionName\":\"华容县分公司\"},{\"regionId\":\"73005\",\"regionName\":\"汨罗市分公司\"},{\"regionId\":\"7352001\",\"regionName\":\"郴州市C网号码段\"},{\"regionId\":\"73509\",\"regionName\":\"汝城县电信分公司\"}],\"tagList\":[{\"tagId\":\"10147734\",\"tagName\":\"主推\"},{\"tagId\":\"1101786839631069186\",\"tagName\":\"热卖\"},{\"tagId\":\"1101787084045746177\",\"tagName\":\"特价\"}]}";
-//		JSONObject filterValueJson = JSONObject.parseObject(filterValue);
-//		ActivityParticipantFilterValueModel object = JSONObject.toJavaObject(filterValueJson, ActivityParticipantFilterValueModel.class);
-
-		String filterValue2 = "{\"tagList\":[{\"tagId\":\"10147734\",\"tagName\":\"主推\"},{\"tagId\":\"1101786839631069186\",\"tagName\":\"热卖\"},{\"tagId\":\"1101787084045746177\",\"tagName\":\"特价\"}]}";
-		ActivityParticipantFilterValueModel object2 = new ActivityParticipantFilterValueModel(filterValue2);
-		System.out.printf("-----");
-
-	}
 
 }

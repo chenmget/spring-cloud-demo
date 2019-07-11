@@ -74,6 +74,7 @@ public class SysUserMessageManager {
          }
          queryWrapper.like(Objects.nonNull(sysUserMessageReq.getMessageTitle()),SysUserMessage.FieldNames.title.getTableFieldName(),sysUserMessageReq.getMessageTitle());
          queryWrapper.isNotNull(SysUserMessage.FieldNames.taskId.getTableFieldName());
+         queryWrapper.orderByDesc(SysUserMessage.FieldNames.beginTime.getTableFieldName());
          return sysUserMessageMapper.selectPage(page,queryWrapper);
 
      }

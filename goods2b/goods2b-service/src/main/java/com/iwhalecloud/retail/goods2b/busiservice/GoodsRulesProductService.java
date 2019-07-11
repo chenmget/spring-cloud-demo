@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsRulesConst;
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
@@ -209,7 +210,9 @@ public class GoodsRulesProductService {
             }
             GoodsRulesProductDTO rulesProductDTO = new GoodsRulesProductDTO();
             BeanUtils.copyProperties(entity, rulesProductDTO);
-            if (StringUtils.isEmpty(entity.getProductCode())) {
+            if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(req.getAssignedType())){
+                entity.setProductCode(null);
+                rulesProductDTO.setProductCode(null);
                 passGoodsLsit.add(rulesProductDTO);
                 continue;
             }

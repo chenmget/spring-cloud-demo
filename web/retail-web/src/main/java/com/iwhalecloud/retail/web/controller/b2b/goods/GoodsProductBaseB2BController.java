@@ -159,6 +159,15 @@ public class GoodsProductBaseB2BController {
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
         req.setPurchaseType(purchaseTypeString);
+
+        // 设置是否是管理员修改 管理员不走审核流程 zhengwenlong
+        if (UserContext.isAdminType()) {
+            req.setAdminType(true);
+        } else {
+            req.setAdminType(false);
+        }
+
+
         return prodProductBaseService.updateProductBase(req);
 
 

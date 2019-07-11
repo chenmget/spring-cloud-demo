@@ -183,6 +183,7 @@ public class ExportCSVUtils {
 	private static String transferValue(String filedName, String value) {
 		final String STATUS_CD = "statusCd";
 		final String CREATE_DATE = "createDate";
+		final String OPER_TYPE = "operType";
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd  HH:mm:ss");
 		String finalValue = (value == null || "null".equals(value))? "" : value;
 
@@ -207,6 +208,14 @@ public class ExportCSVUtils {
 				finalValue = "失败";
 			}else {
 				finalValue = "成功";
+			}
+		}
+
+		if (OPER_TYPE.equals(filedName)) {
+			if (ResourceConst.OPER_TYPE.ADD.getCode().equals(value)) {
+				finalValue = "新增";
+			}else {
+				finalValue = "修改";
 			}
 		}
 		finalValue = finalValue == "" ? finalValue : finalValue + CSV_T;

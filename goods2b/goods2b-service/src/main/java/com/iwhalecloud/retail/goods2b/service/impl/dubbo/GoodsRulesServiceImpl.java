@@ -16,19 +16,17 @@ import com.iwhalecloud.retail.goods2b.dto.req.ProductGetReq;
 import com.iwhalecloud.retail.goods2b.dto.req.QueryProductObjReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsRulesExcelResp;
 import com.iwhalecloud.retail.goods2b.entity.Goods;
-import com.iwhalecloud.retail.goods2b.entity.Product;
 import com.iwhalecloud.retail.goods2b.manager.GoodsManager;
 import com.iwhalecloud.retail.goods2b.manager.GoodsRulesManager;
 import com.iwhalecloud.retail.goods2b.manager.ProductManager;
+import com.iwhalecloud.retail.goods2b.dto.req.CheckRuleReq;
 import com.iwhalecloud.retail.goods2b.reference.BusinessEntityReference;
 import com.iwhalecloud.retail.goods2b.reference.MerchantReference;
 import com.iwhalecloud.retail.goods2b.service.dubbo.GoodsRulesService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.goods2b.utils.ResultVOUtils;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
-import com.iwhalecloud.retail.partner.dto.BusinessEntityDTO;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
-import com.iwhalecloud.retail.partner.dto.req.MerchantRulesCheckReq;
 import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.usermodel.*;
@@ -526,79 +524,32 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
 
     /**
      * 分货规则入库校验
-     * @param entityList
      * @return
      */
     @Override
-    public ResultVO checkGoodsRules(List<GoodsRulesDTO> entityList, List<GoodsProductRelDTO> goodsProductRelList,String supplierId){
-        log.info("GoodsRulesServiceImpl.checkGoodsRules    entityList={},goodsProductRelList={}",entityList,goodsProductRelList);
-        Map<String ,Long> map = new HashMap<>();
-        List<String> targetList = new ArrayList();
-        for (int i = 0; i < entityList.size(); i++) {
-            GoodsRulesDTO goodsRulesDTO = entityList.get(i);
-            Long purchasedNum = goodsRulesDTO.getPurchasedNum() == null ? 0:goodsRulesDTO.getPurchasedNum();
-            if(GoodsRulesConst.Stockist.PARTNER_IN_SHOP_TYPE.getValue().equals(goodsRulesDTO.getTargetType())){
-                targetList.add(goodsRulesDTO.getTargetId());
-            }
-            if(goodsRulesDTO.getMarketNum() <= 0){
-                //分货数量大于0
-                return ResultVO.error("分货数量必须大于0");
-            }else if(goodsRulesDTO.getMarketNum() < purchasedNum){
-                //分货数量大于等于已提货数量
-                return  ResultVO.error("分货数量必须大于等于已提货数量");
-            }
-            //把分货数量按产品分类放进map
-            Iterator keys = map.keySet().iterator();
-            Boolean keyFlag = false;
-            while (keys.hasNext()){
-                if(keys.next().equals(goodsRulesDTO.getProductId())){
-                    keyFlag = true;
-                    break;
-                }
-            }
-            if(keyFlag){
-                //当前产品已经在map
-                Long marketNum = goodsRulesDTO.getMarketNum() + map.get(goodsRulesDTO.getProductId());
-                map.put(goodsRulesDTO.getProductId(),marketNum);
-            }else{
-                //当前产品不在map
-                map.put(goodsRulesDTO.getProductId(),goodsRulesDTO.getMarketNum());
-            }
+    public ResultVO checkGoodsRules(CheckRuleReq req){
+        log.info("gs_10010_checkGoodsRules,req={}",JSON.toJSONString(req));
+        if (CollectionUtils.isEmpty(req.getEntityList())) {
+            //每个产品规格必须有一条分货规则
+            return ResultVO.error("每个产品规格必须有一条分货规则");
         }
 
-        for (int i = 0; i < goodsProductRelList.size(); i++) {
-            Boolean rulesNotEmpty = false;
-            GoodsProductRelDTO goodsProductRelDTO = goodsProductRelList.get(i);
-            Iterator keys = map.keySet().iterator();
-            while (keys.hasNext()) {
-                String key = (String) keys.next();
-                if(key.equals(goodsProductRelDTO.getProductId())){
-                    rulesNotEmpty = true;
-                    if(map.get(key) > goodsProductRelDTO.getSupplyNum()){
-                        //每个产品规格的所有分货规则分货数量的和，必须小于等于该产品规格的库存
-                        return ResultVO.error("每个产品规格的所有分货规则分货数量的和，必须小于等于该产品规格的库存");
-                    }
-                }
-            }
-            if(!rulesNotEmpty){
-                //每个产品规格必须有一条分货规则
-                return ResultVO.error("每个产品规格必须有一条分货规则");
-            }
+        ResultVO resultVO;
+        if (req.getAssignType() == null) {
+            req.setAssignType(GoodsConst.DIS_PRODUCT_TYPE_2);
         }
 
-        MerchantRulesCheckReq merchantRulesCheckReq = new MerchantRulesCheckReq();
-        merchantRulesCheckReq.setSourceMerchantId(supplierId);
-        merchantRulesCheckReq.setTargetMerchantIds(targetList);
-        log.info("校验卖家配置权限     merchantRulesCheckReq= {} ",merchantRulesCheckReq);
-        ResultVO merchantResultVO = merchantRulesService.checkMerchantRules(merchantRulesCheckReq);
-
-        if(!merchantResultVO.isSuccess()){
-            //分货规则对象必须是当前供应商有权限的对象
-            return ResultVO.error(merchantResultVO.getResultMsg());
+        switch (req.getAssignType()) {
+            //按商品校验
+            case GoodsConst.DIS_PRODUCT_TYPE_1:
+                resultVO = goodsRulesProductService.checkRuleByGoods(req);
+                break;
+            //默认按规格校验
+            default:
+                resultVO = goodsRulesProductService.checkRuleByProduct(req);
+                break;
         }
-
-
-        return ResultVO.success();
+        return resultVO;
     }
 
     @Override
@@ -609,6 +560,14 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
             ResultVO.error("未查询到产品数据");
         }
         return ResultVO.success(passGoodsLsit);
+    }
+
+    @Override
+    public ResultVO checkObj(CheckRuleReq req) {
+        if(CollectionUtils.isEmpty(req.getTargetList()) && StringUtils.isEmpty(req.getSupplierId())){
+            ResultVO.error("对象和供应商id不能为空");
+        }
+        return goodsRulesProductService.checkMerchant(req.getSupplierId(),req.getTargetList());
     }
 
 

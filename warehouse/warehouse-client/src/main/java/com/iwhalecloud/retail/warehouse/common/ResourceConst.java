@@ -1082,4 +1082,38 @@ public class ResourceConst {
         }
 
     }
+
+    /**
+     * 手工推送ITMS类型
+     */
+    public enum OPER_TYPE {
+        ADD("1","新增"),
+
+        UPDATE("2","修改");
+
+        private String code;
+        private String name;
+
+        OPER_TYPE(String code,String name) {
+            this.code = code;
+            this.name = name;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+    }
 }

@@ -26,7 +26,7 @@ public class DubboConsumer {
 
     public static ConcurrentMap<String, ReferenceConfig> referenceConfig = new ConcurrentHashMap<>();
 
-    private ReferenceConfig initConsumer( String className,String serviceGroup) throws ClassNotFoundException {
+    private ReferenceConfig initConsumer(String className, String serviceGroup) throws ClassNotFoundException {
         ReferenceConfig reference = new ReferenceConfig<>();
         reference.setApplication(applicationConfig);
         reference.setRegistry(registryConfig);
@@ -47,17 +47,20 @@ public class DubboConsumer {
      * @param serviceGroup 分组
      * @return
      */
-    public ReferenceConfig getConsumer(String className,String serviceGroup) {
+    public ReferenceConfig getConsumer(String className, String serviceGroup) {
         final String key = className + "_" + serviceGroup;
-        ReferenceConfig  reference= referenceConfig.get(key);
-        if(reference==null){
+
+//        ReferenceConfig reference = referenceConfig.get(key);
+        //todo 临时取消缓存，验证是否因为缓存导致获取duboo消费者调用端NPE问题
+        ReferenceConfig reference = null;
+        if (reference == null) {
             try {
-            	log.info("------------------------------------------DubboConsumer.getConsumer-------className = -------------"+className);
+                log.info("------------------------------------------DubboConsumer.getConsumer-------className = -------------" + className);
                 reference = initConsumer(className, serviceGroup);
 
                 referenceConfig.put(key, reference);
             } catch (ClassNotFoundException e) {
-                log.info("DubboConsumer.addConsumer  error ",e);
+                log.info("DubboConsumer.addConsumer  error ", e);
             }
         }
         return reference;

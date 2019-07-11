@@ -226,7 +226,7 @@ public class GoodsAddReq extends AbstractRequest implements Serializable {
      * 分货种类
      */
     @ApiModelProperty("分货种类:1按机型，2按规格")
-    private String disProductType;
+    private String assignType;
 
     /**
      * 预售类型：1. 集约预受活动商品（关联管理员定义的预售活动） 2. 自定义预售商品（供货商定义的无活动预售商品）

@@ -228,6 +228,6 @@ public class GoodsEditReq extends AbstractRequest implements Serializable {
      * 分货种类
      */
     @ApiModelProperty("分货种类:1按机型，2按规格")
-    private String disProductType;
+    private String assignType;
 
 }

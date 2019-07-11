@@ -81,7 +81,7 @@ public class ActivityProductManager extends ServiceImpl<ActivityProductMapper,Ac
      */
     public List<ActivityProduct> queryActivityProductByCondition(List<String> marketingActivityIds,String productId) {
         //根据活动id查找活动有效产品
-        if(CollectionUtils.isEmpty(marketingActivityIds)||StringUtils.isEmpty(productId)){
+        if(CollectionUtils.isEmpty(marketingActivityIds)&&StringUtils.isEmpty(productId)){
             return null;
         }
         ActivityProductListReq req = new ActivityProductListReq();

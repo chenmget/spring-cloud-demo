@@ -155,6 +155,7 @@ public class RetailerResourceInstB2BController {
         if (isAdminType) {
             merchantId = req.getMerchantId();
         }
+        List<String> nbrs = req.getMktResInstNbrs();
         ResultVO<TransferPermissionGetResp> transferPermissionVO = merchantRulesService.getTransferPermission(merchantId);
         log.info("RetailerResourceInstB2BController.getBatch merchantRulesService.getTransferPermission req={}, resp={}", merchantId, JSON.toJSONString(transferPermissionVO));
         if (null == transferPermissionVO || !transferPermissionVO.isSuccess() || null == transferPermissionVO.getResultData()) {
@@ -167,22 +168,24 @@ public class RetailerResourceInstB2BController {
         ResultVO<List<ResourceInstListPageResp>> respListVO = retailerResourceInstService.getBatch(req);
         log.info("RetailerResourceInstB2BController.getBatch retailerResourceInstService.getBatch req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respListVO));
         List<ResourceInstListPageResp> respList = respListVO.getResultData();
+
         // 有机型权限的串码
         List<ResourceInstListPageResp> resourceInstRespList = respList.stream().filter(s -> mktResIdList.contains(s.getMktResId())).collect(Collectors.toList());
         List<String> resourceInstNbrList = resourceInstRespList.stream().map(ResourceInstListPageResp::getMktResInstNbr).collect(Collectors.toList());
-
+        ResultVO<List<String>> processNbrListVO = resourceReqDetailService.getProcessingNbrList(nbrs);
+        log.info("RetailerResourceInstB2BController.getBatch resourceReqDetailService.getProcessingNbrList req={}, resp={}", JSON.toJSONString(nbrs), JSON.toJSONString(processNbrListVO));
+        if (processNbrListVO.isSuccess() && CollectionUtils.isNotEmpty(processNbrListVO.getResultData())) {
+            List<String> processNbrList = processNbrListVO.getResultData();
+            resourceInstNbrList = resourceInstNbrList.stream().filter(t -> !processNbrList.contains(t)).collect(Collectors.toList());
+        }
         // 无机型权限的串码
         List<String> getBatchNbrList = respList.stream().map(ResourceInstListPageResp::getMktResInstNbr).collect(Collectors.toList());
         getBatchNbrList.removeAll(resourceInstNbrList);
 
         // 状态不对的串码,传进来的串码去掉有权限的，去掉没权限的
-        List<String> nbrs = req.getMktResInstNbrs();
         nbrs.removeAll(resourceInstNbrList);
         nbrs.removeAll(getBatchNbrList);
-        ResultVO<List<String>> processNbrListVO = resourceReqDetailService.getProcessingNbrList(req.getMktResInstNbrs());
-        if (processNbrListVO.isSuccess() && CollectionUtils.isNotEmpty(processNbrListVO.getResultData())) {
-            nbrs.addAll(processNbrListVO.getResultData());
-        }
+
         resourceAllocateResp.setResourceInstListRespListPage(resourceInstRespList);
         resourceAllocateResp.setStatusWrongNbrs(nbrs);
         resourceAllocateResp.setNoRightsNbrs(getBatchNbrList);

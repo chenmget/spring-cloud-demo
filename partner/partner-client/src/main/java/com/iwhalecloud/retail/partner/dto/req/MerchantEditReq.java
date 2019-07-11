@@ -34,6 +34,9 @@ public class MerchantEditReq  implements Serializable {
     @ApiModelProperty(value = "联系方式")
     private String phoneNo;
 
+    @ApiModelProperty(value = "地区")
+    private String lanId;
+
 
 
 

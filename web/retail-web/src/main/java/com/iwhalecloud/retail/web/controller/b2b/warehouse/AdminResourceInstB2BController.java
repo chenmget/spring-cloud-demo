@@ -140,22 +140,6 @@ public class AdminResourceInstB2BController {
         return resourceInstService.updateResourceInstByIds(req);
     }
 
-    @ApiOperation(value = "根据batchId删除串码", notes = "根据batchId删除串码")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @DeleteMapping(value="delResourceInstByBatchId")
-    @UserLoginToken
-    public ResultVO delResourceInstByBatchId(@RequestParam(value="mktResUploadBatch") String mktResUploadBatch) {
-        if(StringUtils.isEmpty(mktResUploadBatch)) {
-            return ResultVO.error("mktResUploadBatch can not be null");
-        }
-        String userId = UserContext.getUserId();
-        log.info("AdminResourceInstB2BController.delResourceInstByBatchId mktResUploadBatch={}", mktResUploadBatch);
-        return resourceInstService.delResourceInstByBatchId(mktResUploadBatch, userId);
-    }
-
     @ApiOperation(value = "(供应商)串码退库", notes = "串码还原在库可用")
     @ApiResponses({
             @ApiResponse(code=400,message="请求参数没填好"),
@@ -481,5 +465,21 @@ public class AdminResourceInstB2BController {
         deliveryGoodsResNberExcel.builderOrderExcel(workbook, data,
                 OrderExportUtil.getDelResourceInstTemp(), "导入删除串码失败列表");
         deliveryGoodsResNberExcel.exportExcel("导入删除串码失败列表", workbook, response);
+    }
+
+    @ApiOperation(value = "导入删除串码", notes = "根据batchId删除串码")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @DeleteMapping(value = "delResourceInstByBatchId")
+    @UserLoginToken
+    public ResultVO delResourceInstByBatchId(@RequestParam(value = "mktResUploadBatch") String mktResUploadBatch) {
+        if (StringUtils.isEmpty(mktResUploadBatch)) {
+            return ResultVO.error("mktResUploadBatch can not be null");
+        }
+        String userId = UserContext.getUserId();
+        log.info("AdminResourceInstB2BController.delResourceInstByBatchId mktResUploadBatch={}", mktResUploadBatch);
+        return resourceInstService.delResourceInstByBatchId(mktResUploadBatch, userId);
     }
 }

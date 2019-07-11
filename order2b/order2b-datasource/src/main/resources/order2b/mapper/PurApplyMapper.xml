@@ -11,6 +11,7 @@
 		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
 		a.MERCHANT_ID As merchantId,
 		a.APPLY_MERCHANT_ID As applyMerchantId,
+        a.lan_id as lanId,
 		'' AS applyAddress,
 		'' AS supplierName,
 		'' AS applyMerchantName,
@@ -526,7 +527,7 @@
 			resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq">
 		SELECT
 		a.RECEIVE_NAME receiveName,
-		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),a.RECEIVE_ADDR) receiveAddr,
+		concat(IFNULL(a.PROVINCE,''),IFNULL(a.CITY,''),IFNULL(a.REGION,''),a.RECEIVE_ADDR) receiveAddr,
 		a.RECEIVE_ZIP receiveZip,
 		a.RECEIVE_MOBILE receiveMobile,
 		a.RECEIVE_TIME receiveTime,

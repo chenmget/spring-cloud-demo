@@ -1717,17 +1717,20 @@ public class MerchantRulesServiceImpl implements MerchantRulesService {
 
     @Override
     public ResultVO<String> checkMerchantImeiRule(String merchantId, String productId) {
+        //默认返回成功
+        return ResultVO.success();
+
         //获取厂家串码录入权限
-        MerchantRulesListReq req = new MerchantRulesListReq();
-        req.setMerchantId(merchantId);
-        req.setRuleType(PartnerConst.MerchantRuleTypeEnum.IMIE.getType());
-        req.setTargetType(PartnerConst.MerchantImeiTargetTypeEnum.MODEL.getType());
-        req.setTargetId(productId);
-        List<MerchantRulesDTO> imeiRulelist = merchantRulesManager.listMerchantRules(req);
-        if (imeiRulelist.size() > 0) {
-            return ResultVO.success();
-        }
-        return ResultVO.error("您暂时没有该产品的串码录入权限");
+//        MerchantRulesListReq req = new MerchantRulesListReq();
+//        req.setMerchantId(merchantId);
+//        req.setRuleType(PartnerConst.MerchantRuleTypeEnum.IMIE.getType());
+//        req.setTargetType(PartnerConst.MerchantImeiTargetTypeEnum.MODEL.getType());
+//        req.setTargetId(productId);
+//        List<MerchantRulesDTO> imeiRulelist = merchantRulesManager.listMerchantRules(req);
+//        if (imeiRulelist.size() > 0) {
+//            return ResultVO.success();
+//        }
+//        return ResultVO.error("您暂时没有该产品的串码录入权限");
     }
 
 }

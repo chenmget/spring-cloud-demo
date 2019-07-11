@@ -67,6 +67,9 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
      */
     @Override
     public ResultVO<Page<MarketingActivityDTO>> listMarketingActivityByMerchant(MarketingActivityByMerchantListReq req) {
+        // 1.通过商家id查询商家信息，获取商家pathCode
+        MerchantDTO merchantDto = merchantService.getMerchantInfoById(req.getMerchantId());
+        String pathCode = (merchantDto==null)?null:merchantDto.getParCrmOrgPathCode();
         // 1.查询参与对象类型为“按条件过滤”且有效的活动
         MarketingActivityListReq activityListReq = new MarketingActivityListReq();
         activityListReq.setActivityParticipantType(PromoConst.ActivityParticipantType.ACTIVITY_PARTICIPANT_TYPE_30.getCode());
@@ -75,7 +78,7 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
         List<String> activityIds = new ArrayList<>(marketingActivities.size());
         for (MarketingActivity marketingActivity : marketingActivities) {
             String activityId = marketingActivity.getId();
-            boolean isisExisting = marketingActivityService.isExistingInParticipantFilterValue(marketingActivity.getId(),req.getMerchantId(),req.getLanId(),req.getRegionId());
+            boolean isisExisting = marketingActivityService.isExistingInParticipantFilterValue(marketingActivity.getId(),req.getMerchantId(),req.getLanId(),pathCode);
             if (isisExisting){
                 activityIds.add(activityId);
             }

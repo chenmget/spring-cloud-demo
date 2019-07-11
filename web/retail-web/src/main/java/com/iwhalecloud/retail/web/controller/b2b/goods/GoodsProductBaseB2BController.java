@@ -136,6 +136,14 @@ public class GoodsProductBaseB2BController {
         BeanUtils.copyProperties(dto, req);
         req.setCreateStaff(userId);
         req.setPurchaseType(purchaseTypeString);
+
+        // 设置是否厂商修改 非厂商（一般是管理员）不走审核流程 zhengwenlong
+        if (UserContext.isManufacturerType()) {
+            req.setManufacturerType(true);
+        } else {
+            req.setManufacturerType(false);
+        }
+
         return prodProductBaseService.addProductBase(req);
     }
 
@@ -160,13 +168,12 @@ public class GoodsProductBaseB2BController {
         req.setUpdateStaff(userId);
         req.setPurchaseType(purchaseTypeString);
 
-        // 设置是否是管理员修改 管理员不走审核流程 zhengwenlong
-        if (UserContext.isAdminType()) {
-            req.setAdminType(true);
+        // 设置是否厂商修改 非厂商（一般是管理员）不走审核流程 zhengwenlong
+        if (UserContext.isManufacturerType()) {
+            req.setManufacturerType(true);
         } else {
-            req.setAdminType(false);
+            req.setManufacturerType(false);
         }
-
 
         return prodProductBaseService.updateProductBase(req);
 

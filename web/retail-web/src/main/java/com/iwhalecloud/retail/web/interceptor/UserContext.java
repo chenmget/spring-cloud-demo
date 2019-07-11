@@ -290,4 +290,20 @@ public class UserContext implements Serializable {
         );
         return list.contains(userDTO.getUserFounder());
     }
+
+    /**
+     * 是否 厂商类型
+     *
+     * @return
+     */
+    public static boolean isManufacturerType() {
+        UserDTO userDTO = getUser();
+        if (userDTO == null) {
+            return false;
+        }
+        List<Integer> list = Lists.newArrayList(
+                SystemConst.USER_FOUNDER_9
+        );
+        return list.contains(userDTO.getUserFounder());
+    }
 }

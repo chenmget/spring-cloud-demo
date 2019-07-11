@@ -157,7 +157,7 @@ public class TaskServiceImpl implements TaskService {
      */
     private void fillUserHandle(List<HandleTaskPageResp> taskList) {
         for (HandleTaskPageResp task : taskList) {
-            TaskItem item = taskItemManager.getCurTaskItem(task.getTaskId(), task.getCurNodeId());
+            TaskItem item = taskItemManager.getCurTaskItem(task.getTaskId());
             if (null != item) {
                 task.setHandlerUserName(item.getHandlerUserName());
             }

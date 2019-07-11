@@ -37,7 +37,7 @@
         </where>
     </select>
 
-    <!--<select id="getCurTaskItem" parameterType="java.lang.String"
+    <select id="getCurTaskItem" parameterType="java.lang.String"
             resultType="com.iwhalecloud.retail.workflow.entity.TaskItem">
         SELECT
         <include refid="allFields" />
@@ -46,6 +46,6 @@
         <where>
             t.task_id =#{task_id}
         </where>
-        order by create_time desc limit 1
-    </select>-->
+        order by create_time desc,task_item_id desc limit 1
+    </select>
 </mapper>

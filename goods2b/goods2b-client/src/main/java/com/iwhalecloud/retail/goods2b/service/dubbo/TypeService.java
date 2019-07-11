@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.goods2b.service.dubbo;
 
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.ProdCRMTypeDto;
 import com.iwhalecloud.retail.goods2b.dto.TypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeDeleteByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeIsUsedQueryByIdReq;
@@ -46,5 +47,5 @@ public interface TypeService {
     /**
      *
      */
-    ResultVO<String> getCrmTypeName(String crmKindId);
+    ResultVO<ProdCRMTypeDto> getCrmTypeName(String crmKindId);
 }

@@ -7,6 +7,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.dto.SourceFromContext;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
@@ -15,10 +16,7 @@ import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
-import com.iwhalecloud.retail.goods2b.entity.Brand;
-import com.iwhalecloud.retail.goods2b.entity.ProdFile;
-import com.iwhalecloud.retail.goods2b.entity.Product;
-import com.iwhalecloud.retail.goods2b.entity.Tags;
+import com.iwhalecloud.retail.goods2b.entity.*;
 import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -64,6 +62,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private TagRelManager tagRelManager;
+
+    @Autowired
+    private TypeManager typeManager;
 
     @Override
     public ResultVO<String> getMerchantByProduct(MerChantGetProductReq req) {
@@ -303,6 +304,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req) {
+        List<String> typeIdList = getSubtypeIdList(req.getTypeId());
+        req.setTypeIdList(typeIdList);
         Page<ProductPageResp> page = productManager.selectPageProductAdmin(req);
         List<ProductPageResp> respList = page.getRecords();
         for (ProductPageResp resp : respList){
@@ -349,6 +352,36 @@ public class ProductServiceImpl implements ProductService {
         page.setRecords(respList);
         log.info("ProductServiceImpl.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respList));
         return ResultVO.success(page);
+    }
+
+    private List<String> getSubtypeIdList(String typeId) {
+        //二级分类
+        if(typeId.length() > 6){
+            List<String> typeIdList = new ArrayList<>();
+            typeIdList.add(typeId);
+            return typeIdList;
+        }
+        List<Type> list;
+        if(typeId.charAt(1)!='0'){
+            list = typeManager.selectSubTypeById(typeId);
+            if( list == null || list.size()==0 ){
+                List<String> typeIdList = new ArrayList<>();
+                typeIdList.add(typeId);
+                return typeIdList;
+            }
+            return list.stream().map(Type::getTypeId).collect(Collectors.toList());
+        }
+        //一级分类
+        String likeTypeId = typeId.charAt(0)+"";
+        log.info("like typeId = {}",likeTypeId);
+        List<Type> typeList = typeManager.selectAllSubTypeById(likeTypeId);
+        List<String> typeIdList = typeList.stream().map(Type::getTypeId).collect(Collectors.toList());
+        for (Type type : typeList){
+           if(typeIdList.contains(type.getParentTypeId())) {
+               typeIdList.remove(type.getParentTypeId());
+           }
+        }
+        return typeIdList;
     }
 
     @Override

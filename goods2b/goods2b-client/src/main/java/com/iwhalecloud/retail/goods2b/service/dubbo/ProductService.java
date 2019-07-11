@@ -240,5 +240,4 @@ public interface ProductService {
 
      List<ProductApplyInfoResp> getDeliveryInfo(List<String> productIds);
 
-
 }

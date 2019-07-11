@@ -66,4 +66,20 @@ public class TypeManager{
         QueryWrapper queryWrapper = new QueryWrapper();
         return typeMapper.selectList(queryWrapper);
     }
+
+    /**
+     * 根据id获取子分类
+     * @param parentTypeId
+     * @return
+     */
+    public List<Type> selectSubTypeById(String parentTypeId){
+        QueryWrapper<Type> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(Type.FieldNames.parentTypeId.getTableFieldName(),parentTypeId);
+        return typeMapper.selectList(queryWrapper);
+    }
+
+
+    public List<Type> selectAllSubTypeById(String typeId){
+        return typeMapper.selectAllSubTypeById(typeId);
+    }
 }

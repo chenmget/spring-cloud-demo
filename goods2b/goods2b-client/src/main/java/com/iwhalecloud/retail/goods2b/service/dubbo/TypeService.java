@@ -25,6 +25,8 @@ public interface TypeService {
 
     public ResultVO<List<TypeDTO>> selectAll();
 
+    public ResultVO<List<TypeDTO>> selectSubTypeById(TypeSelectByIdReq req);
+
     /**
      * 校验类型是否关联产品
      * @param typeIsUsedQueryByIdReq
@@ -40,4 +42,9 @@ public interface TypeService {
     ResultVO<TypeDetailResp> getDetailType(TypeSelectByIdReq req);
 
     ResultVO<TypeResp> selectById(String typeId);
+
+    /**
+     *
+     */
+    ResultVO<String> getCrmTypeName(String crmKindId);
 }

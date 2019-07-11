@@ -171,7 +171,8 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
         Page<ResourceRequestQueryResp> respPage = new Page<>();
         if (StringUtils.isNotEmpty(req.getCatId())) {
             ProductsPageReq productsPageReq = new ProductsPageReq();
-            productsPageReq.setCatId(req.getCatId());
+            // 前端传的是typeId的值，后续优化
+            productsPageReq.setTypeId(req.getCatId());
             productsPageReq.setPageSize(100000);
             ResultVO<Page<ProductPageResp>> productPage = productService.selectPageProductAdmin(productsPageReq);
             if (productPage.isSuccess() && !CollectionUtils.isEmpty(productPage.getResultData().getRecords())){

@@ -355,6 +355,8 @@ public class MarketingActivityManager{
         if (isInvalid) {
             // 失效
             queryWrapper.ne(MarketingActivity.FieldNames.status.getTableFieldName(), PromoConst.STATUSCD.STATUS_CD_20.getCode());
+            queryWrapper.or().apply(MarketingActivity.FieldNames.startTime.getTableFieldName() + " > now()")
+                    .or().apply(MarketingActivity.FieldNames.endTime.getTableFieldName() + " <= now()");
         } else {
             // 生效
             queryWrapper.eq(MarketingActivity.FieldNames.status.getTableFieldName(), PromoConst.STATUSCD.STATUS_CD_20.getCode());

@@ -50,6 +50,10 @@
         <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
             when #{item.goodsRuleId} then #{item.targetId}
         </foreach>
+        ,ASSIGN_TYPE =
+        <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
+            when #{item.goodsRuleId} then #{item.assignType}
+        </foreach>
         ,STATE =
         <foreach collection="list" item="item" index="index" separator=" " open="case GOODS_RULE_ID" close="end">
             when #{item.goodsRuleId} then #{item.state}

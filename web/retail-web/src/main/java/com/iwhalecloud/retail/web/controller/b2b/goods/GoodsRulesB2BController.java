@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.web.controller.b2b.goods;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
+import com.iwhalecloud.retail.goods2b.dto.GoodsRulesProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.CheckRuleReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleByExcelFileReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
@@ -85,7 +86,7 @@ public class GoodsRulesB2BController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value = "/listGoodsRulesByCondition")
-    public ResultVO<List<GoodsRulesDTO>> listGoodsRulesByCondition(@RequestBody GoodsRulesDTO condition) {
+    public ResultVO<List<GoodsRulesProductDTO>> listGoodsRulesByCondition(@RequestBody GoodsRulesDTO condition) {
         return goodsRulesService.queryProdGoodsRuleByCondition(condition);
     }
 

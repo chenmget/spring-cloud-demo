@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.common.GlobalConsts;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.dto.SourceFromContext;
+import com.iwhalecloud.retail.goods2b.dto.ProdCRMTypeDto;
 import com.iwhalecloud.retail.goods2b.dto.TypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeDeleteByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeIsUsedQueryByIdReq;
@@ -136,7 +137,7 @@ public class TypeB2BController {
             @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value = "/getCrmTypeName")
-    public ResultVO getCrmTypeName(@RequestParam String productBaseId) {
+    public ResultVO<List<ProdCRMTypeDto>> getCrmTypeName(@RequestParam String productBaseId) {
         return typeService.getCrmTypeName(productBaseId);
     }
 }

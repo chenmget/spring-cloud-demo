@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author wenlong.zhong
@@ -17,6 +18,9 @@ public class CatConditionListReq implements Serializable {
 
     @ApiModelProperty(value = "产品类别ID(prod_cat表主键)")
     private String catId;
+
+    @ApiModelProperty(value = "产品类别ID(prod_cat表主键)集合")
+    private List<String> catIdList;
 
     @ApiModelProperty(value = "商品类型关联的筛选条件类型 1. 产品类型 2. 产品属性 3. 品牌 4. 营销活动类型 5. 产品标签")
     private String relType;

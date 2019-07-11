@@ -122,8 +122,6 @@ public class MerchantResourceInstOpenServiceImpl implements MerchantResourceInst
             }
             ResultVO<ResourceInstAddResp> resp = merchantResourceInstService.addResourceInst(req);
             log.info("MerchantResourceInstOpenServiceImpl.addResourceInst req={} resp={}", JSON.toJSONString(req), JSON.toJSONString(resp));
-            CopyOnWriteArrayList<String> newlist = new CopyOnWriteArrayList<String>(req.getMktResInstNbrs());
-            resouceInstTrackService.asynSaveTrackForMerchant(req, resp, newlist);
             return resp;
         }
     }

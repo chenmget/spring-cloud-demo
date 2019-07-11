@@ -171,7 +171,8 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
         Page<ResourceRequestQueryResp> respPage = new Page<>();
         if (StringUtils.isNotEmpty(req.getCatId())) {
             ProductsPageReq productsPageReq = new ProductsPageReq();
-            productsPageReq.setCatId(req.getCatId());
+            // 前端传的是typeId的值，后续优化
+            productsPageReq.setTypeId(req.getCatId());
             productsPageReq.setPageSize(100000);
             ResultVO<Page<ProductPageResp>> productPage = productService.selectPageProductAdmin(productsPageReq);
             if (productPage.isSuccess() && !CollectionUtils.isEmpty(productPage.getResultData().getRecords())){
@@ -195,8 +196,8 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
 
             ResultVO<Page<ProductPageResp>> productPage = productService.selectPageProductAdmin(productsPageReq);
             if (productPage.isSuccess() && !CollectionUtils.isEmpty(productPage.getResultData().getRecords())){
-                resourceRequestQueryResp.setTypeId(productPage.getResultData().getRecords().get(0).getCatId());
-                resourceRequestQueryResp.setTypeName(productPage.getResultData().getRecords().get(0).getCatName());
+                resourceRequestQueryResp.setTypeId(productPage.getResultData().getRecords().get(0).getTypeId());
+                resourceRequestQueryResp.setTypeName(productPage.getResultData().getRecords().get(0).getTypeName());
             }
 
             if (req.getQryType().equals(ResourceConst.REQUEST_QRY_TYPE.REQUEST_QRY_TYPE_IN.getCode())){

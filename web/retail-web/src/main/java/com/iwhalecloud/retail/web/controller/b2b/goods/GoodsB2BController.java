@@ -109,6 +109,7 @@ public class GoodsB2BController extends GoodsBaseController {
     @PostMapping(value = "/getObjInfoByReadExcel",headers = "content-type=multipart/form-data")
     public ResultVO<List<GoodsRulesProductDTO>> getGoodsRulesByExcel(@RequestParam("objType") String objType,
                                                               @RequestParam("prodBaseId") String prodBaseId,
+                                                                     @RequestParam("assignType") String assignType,
                                                               @RequestParam("file") MultipartFile file) throws Exception {
 
         if(!file.getName().contains(OfficeCommon.OFFICE_EXCEL_2010_POSTFIX)){
@@ -123,6 +124,7 @@ public class GoodsB2BController extends GoodsBaseController {
         }
         QueryProductObjReq req=new QueryProductObjReq();
         req.setDtoList(goodsRelModels);
+        req.setAssignedType(assignType);
         req.setProductBaseId(prodBaseId);
         return goodsRulesService.queryProductObj(req);
     }

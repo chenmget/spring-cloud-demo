@@ -11,6 +11,7 @@ import com.iwhalecloud.retail.goods2b.mapper.GoodsRulesMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
@@ -35,11 +36,112 @@ public class GoodsRulesManager {
         List<GoodsRules> prodGoodsRuleAddList = new ArrayList<>();
         List<GoodsRules> prodGoodsRuleUpdateList = new ArrayList<>();
         List<GoodsRules> prodGoodsRuleDeleteList = new ArrayList<>();
-        Boolean flag;
+
         String goodsId = entityList.get(0).getGoodsId();
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq(GoodsRules.FieldNames.goodsId.getTableFieldName(),goodsId);
         List<GoodsRules> resultList = goodsRulesMapper.selectList(queryWrapper);
+
+        String assignType=entityList.get(0).getAssignType();
+        //按规格
+        if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(assignType)){
+            builderGoodsRulesBy1(entityList,
+                    resultList,
+                    prodGoodsRuleAddList,
+                    prodGoodsRuleUpdateList,
+                    prodGoodsRuleDeleteList);
+        //按机型
+        }else{
+            builderGoodsRulesBy2(
+                    entityList,
+                    resultList,
+                    prodGoodsRuleAddList,
+                    prodGoodsRuleUpdateList,
+                    prodGoodsRuleDeleteList);
+        }
+
+        log.info("gs_10010_addRules,entity{},prodGoodsRuleAddList{}",
+                JSON.toJSONString(entityList),JSON.toJSONString(prodGoodsRuleAddList));
+        int addEffRow = prodGoodsRuleAddList.size()>0 ? goodsRulesMapper.insertBatch(prodGoodsRuleAddList) : 0;
+        int updateEffRow = prodGoodsRuleUpdateList.size()>0 ? goodsRulesMapper.updateBatch(prodGoodsRuleUpdateList) : 0;
+        int deleteEffRow = prodGoodsRuleDeleteList.size()>0 ? goodsRulesMapper.updateBatch(prodGoodsRuleDeleteList) : 0;
+        return addEffRow + updateEffRow + deleteEffRow;
+    }
+
+    /**
+     * 按机型
+     * @param entityList
+     * @param resultList
+     * @param prodGoodsRuleAddList
+     * @param prodGoodsRuleUpdateList
+     * @param prodGoodsRuleDeleteList
+     */
+    private void builderGoodsRulesBy1(List<GoodsRulesDTO> entityList,
+                                      List<GoodsRules> resultList,
+                                      List<GoodsRules> prodGoodsRuleAddList,
+                                      List<GoodsRules> prodGoodsRuleUpdateList,
+                                      List<GoodsRules> prodGoodsRuleDeleteList){
+
+        //新增
+        if(CollectionUtils.isEmpty(resultList)){
+            for (GoodsRulesDTO en:entityList){
+                GoodsRules goodsRules=new GoodsRules();
+                BeanUtils.copyProperties(en,goodsRules);
+                prodGoodsRuleAddList.add(goodsRules);
+            }
+
+
+         //更新
+        }else{
+            for (GoodsRulesDTO en:entityList){
+                //新增
+                if(StringUtils.isEmpty(en.getGoodsRuleId())){
+                    GoodsRules goodsRules=new GoodsRules();
+                    BeanUtils.copyProperties(en,goodsRules);
+                    prodGoodsRuleAddList.add(goodsRules);
+                    continue;
+                }
+                boolean deleteG=true;
+                for (GoodsRules gs: resultList){
+                    //有修改的
+                    if(gs.getGoodsRuleId().equals(en.getGoodsRuleId())){
+                        GoodsRules goodsRules=new GoodsRules();
+                        BeanUtils.copyProperties(en,goodsRules);
+                        prodGoodsRuleAddList.add(goodsRules);
+                        prodGoodsRuleUpdateList.add(goodsRules);
+                        deleteG=false;
+                        break;
+                    }
+                }
+
+                //删除的
+                if(deleteG){
+                    GoodsRules goodsRules=new GoodsRules();
+                    BeanUtils.copyProperties(en,goodsRules);
+                    prodGoodsRuleAddList.add(goodsRules);
+                    prodGoodsRuleDeleteList.add(goodsRules);
+                }
+
+            }
+
+        }
+
+    }
+
+    /**
+     * 按规格
+     * @param entityList
+     * @param resultList
+     * @param prodGoodsRuleAddList
+     * @param prodGoodsRuleUpdateList
+     * @param prodGoodsRuleDeleteList
+     */
+    private void builderGoodsRulesBy2(List<GoodsRulesDTO> entityList,
+                                      List<GoodsRules> resultList,
+                                      List<GoodsRules> prodGoodsRuleAddList,
+                                      List<GoodsRules> prodGoodsRuleUpdateList,
+                                       List<GoodsRules> prodGoodsRuleDeleteList){
+        Boolean flag;
         for (int i = 0; i < resultList.size(); i++) {
             flag = false;
             GoodsRules goodsRules = resultList.get(i);
@@ -86,7 +188,7 @@ public class GoodsRulesManager {
                 prodGoodsRuleAddList.add(entityGoodsRules);
             }
         }
-        
+
 //        for (GoodsRulesDTO item : entityList){
 //            boolean flag = true;
 //            QueryWrapper queryWrapper = genBasicQueryWrapper(item);
@@ -124,12 +226,6 @@ public class GoodsRulesManager {
 //                goodsMapper.updateById(goods);
 //            }
 //        }
-        log.info("gs_10010_addRules,entity{},prodGoodsRuleAddList{}",
-                JSON.toJSONString(entityList),JSON.toJSONString(prodGoodsRuleAddList));
-        int addEffRow = prodGoodsRuleAddList.size()>0 ? goodsRulesMapper.insertBatch(prodGoodsRuleAddList) : 0;
-        int updateEffRow = prodGoodsRuleUpdateList.size()>0 ? goodsRulesMapper.updateBatch(prodGoodsRuleUpdateList) : 0;
-        int deleteEffRow = prodGoodsRuleDeleteList.size()>0 ? goodsRulesMapper.updateBatch(prodGoodsRuleDeleteList) : 0;
-        return addEffRow + updateEffRow + deleteEffRow;
     }
 
     /**

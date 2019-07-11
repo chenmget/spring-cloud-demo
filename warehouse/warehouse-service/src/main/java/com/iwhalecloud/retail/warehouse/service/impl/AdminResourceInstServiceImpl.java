@@ -712,7 +712,13 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             }
             String merchantType = merchantResultVO.getResultData().getMerchantType();
             if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(merchantType)) {
-                delManufacturerInst(resourceInstDTOList, storeId, userId);
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        delManufacturerInst(resourceInstDTOList, storeId, userId);
+                    }
+                };
+                executorService.execute(runnable);
             }
             else if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(merchantType)) {
                 Runnable runnable = new Runnable() {

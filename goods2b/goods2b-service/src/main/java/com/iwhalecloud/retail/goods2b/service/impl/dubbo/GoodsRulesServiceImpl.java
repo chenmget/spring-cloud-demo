@@ -299,8 +299,16 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
     }
 
     @Override
-    public ResultVO<List<GoodsRulesDTO>> queryProdGoodsRuleByCondition(GoodsRulesDTO condition) {
-        return ResultVOUtils.genQueryResultVO(goodsRulesManager.listByConditon(condition));
+    public ResultVO<List<GoodsRulesProductDTO>> queryProdGoodsRuleByCondition(GoodsRulesDTO condition) {
+        List<GoodsRulesDTO> list=goodsRulesManager.listByConditon(condition);
+        List<GoodsRulesProductDTO> ruleList=new ArrayList<>();
+        if(!CollectionUtils.isEmpty(list)){
+            QueryProductObjReq req=new QueryProductObjReq();
+            req.setProductBaseId(list.get(0).getProductBaseId());
+            req.setDtoList(list);
+            ruleList.addAll(goodsRulesProductService.queryProductObj(req));
+        }
+        return ResultVOUtils.genQueryResultVO(ruleList);
     }
 
     /**

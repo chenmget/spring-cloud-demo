@@ -21,6 +21,13 @@ public interface TaskItemMapper extends BaseMapper<TaskItem>{
      */
     List<TaskItem> queryTaskItemByFormId(String formId);
 
+    /**
+     * 获取流程当前item
+     * @param taskId
+     * @return
+     */
+    TaskItem getCurTaskItem(String taskId);
+
 //    /**
 //     * 根据业务ID获取当前处理中的待办项
 //     * @param formId 业务ID

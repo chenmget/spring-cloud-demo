@@ -15,10 +15,7 @@ import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.ProductDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
 import com.iwhalecloud.retail.goods2b.dto.resp.*;
-import com.iwhalecloud.retail.goods2b.entity.Brand;
-import com.iwhalecloud.retail.goods2b.entity.ProdFile;
-import com.iwhalecloud.retail.goods2b.entity.Product;
-import com.iwhalecloud.retail.goods2b.entity.Tags;
+import com.iwhalecloud.retail.goods2b.entity.*;
 import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -67,6 +64,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private TagRelManager tagRelManager;
+
+    @Autowired
+    private TypeManager typeManager;
 
     @Reference
     private MerchantRulesService merchantRulesService;
@@ -309,6 +309,8 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ResultVO<Page<ProductPageResp>> selectPageProductAdmin(ProductsPageReq req) {
+        List<String> typeIdList = getSubtypeIdList(req.getTypeId());
+        req.setTypeIdList(typeIdList);
         Page<ProductPageResp> page = productManager.selectPageProductAdmin(req);
         List<ProductPageResp> respList = page.getRecords();
         for (ProductPageResp resp : respList){
@@ -355,6 +357,36 @@ public class ProductServiceImpl implements ProductService {
         page.setRecords(respList);
         log.info("ProductServiceImpl.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(req), JSON.toJSONString(respList));
         return ResultVO.success(page);
+    }
+
+    private List<String> getSubtypeIdList(String typeId) {
+        //二级分类
+        if(typeId.length() > 6){
+            List<String> typeIdList = new ArrayList<>();
+            typeIdList.add(typeId);
+            return typeIdList;
+        }
+        List<Type> list;
+        if(typeId.charAt(1)!='0'){
+            list = typeManager.selectSubTypeById(typeId);
+            if( list == null || list.size()==0 ){
+                List<String> typeIdList = new ArrayList<>();
+                typeIdList.add(typeId);
+                return typeIdList;
+            }
+            return list.stream().map(Type::getTypeId).collect(Collectors.toList());
+        }
+        //一级分类
+        String likeTypeId = typeId.charAt(0)+"";
+        log.info("like typeId = {}",likeTypeId);
+        List<Type> typeList = typeManager.selectAllSubTypeById(likeTypeId);
+        List<String> typeIdList = typeList.stream().map(Type::getTypeId).collect(Collectors.toList());
+        for (Type type : typeList){
+           if(typeIdList.contains(type.getParentTypeId())) {
+               typeIdList.remove(type.getParentTypeId());
+           }
+        }
+        return typeIdList;
     }
 
     @Override
@@ -587,10 +619,10 @@ public class ProductServiceImpl implements ProductService {
         log.info("ProductServiceImpl.updateAuditState productBaseId={},auditState={},updateStaff={}", req.getProductBaseId(), req.getAuditState(), req.getUpdateStaff());
         int result = productManager.updateAuditStateByProductBaseId(req);
         //如果审核通过，增加商家对应的产品串码录入权限
-        if (req.getStatus().equals(ProductConst.StatusType.EFFECTIVE.getCode()) && req.getAuditState().equals(ProductConst.AuditStateType.AUDIT_PASS.getCode()))
-        {
-            addMerchantImeiRule(req.getProductBaseId());
-        }
+//        if (req.getStatus().equals(ProductConst.StatusType.EFFECTIVE.getCode()) && req.getAuditState().equals(ProductConst.AuditStateType.AUDIT_PASS.getCode()))
+//        {
+//            addMerchantImeiRule(req.getProductBaseId());
+//        }
         if (result > 0) {
             return ResultVO.success();
         }

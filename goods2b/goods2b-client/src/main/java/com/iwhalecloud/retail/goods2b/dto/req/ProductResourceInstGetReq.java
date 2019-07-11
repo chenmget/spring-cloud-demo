@@ -52,5 +52,10 @@ public class ProductResourceInstGetReq extends AbstractRequest implements Serial
   	 */
 	@ApiModelProperty(value = "产品基本表名称")
   	private String productName;
+	/**
+	 * 产品类型主键
+	 */
+	@ApiModelProperty(value = "typeId")
+	private String typeId;
 
 }

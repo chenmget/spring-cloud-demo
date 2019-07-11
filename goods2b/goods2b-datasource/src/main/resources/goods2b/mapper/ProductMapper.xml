@@ -358,6 +358,9 @@
     <if test="null!=productName and ''!=productName">
       and upper(ppb.product_name) like CONCAT(CONCAT('%',upper(#{productName})),'%')
     </if>
+    <if test="null!=brandId and ''!=brandId">
+      and pt.type_id = #{typeId}
+    </if>
   </select>
 
   <!--根据产品ID产归属商家-->

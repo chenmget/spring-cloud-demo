@@ -38,14 +38,6 @@ public interface AdminResourceInstService {
     ResultVO updateResourceInstByIds(AdminResourceInstDelReq req);
 
     /**
-     * 管理员根据batchId删除串码
-     * @param batchId
-     * @param userId
-     * @return
-     */
-    ResultVO delResourceInstByBatchId(String batchId, String userId);
-
-    /**
      * 补录串码状态
      *
      * @param req
@@ -113,6 +105,14 @@ public interface AdminResourceInstService {
      * @return
      */
     ResultVO<Boolean> validBatchAuditNbr();
+
+    /**
+     * 管理员根据batchId删除串码
+     * @param batchId
+     * @param userId
+     * @return
+     */
+    ResultVO delResourceInstByBatchId(String batchId, String userId);
 
     /**
      * 供应商串码退库

@@ -979,6 +979,7 @@ public class SupplierResourceInstServiceImpl implements SupplierResourceInstServ
             updateReq.setCheckStatusCd(checkStatusCd);
             resourceInstService.updateInstState(updateReq);
             log.info("SupplierResourceInstServiceImpl.resetResourceInst resourceInstManager.batchUpdateInstState req={}", JSON.toJSONString(updateReq));
+            resouceInstTrackService.asynResetResourceInst(req, ResultVO.success());
         }
         return ResultVO.success();
     }

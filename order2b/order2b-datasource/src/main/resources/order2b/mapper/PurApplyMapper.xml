@@ -526,7 +526,7 @@
 			resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq">
 		SELECT
 		a.RECEIVE_NAME receiveName,
-		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),a.RECEIVE_ADDR) receiveAddr,
+		concat(IFNULL(a.PROVINCE,''),IFNULL(a.CITY,''),IFNULL(a.REGION,''),a.RECEIVE_ADDR) receiveAddr,
 		a.RECEIVE_ZIP receiveZip,
 		a.RECEIVE_MOBILE receiveMobile,
 		a.RECEIVE_TIME receiveTime,

@@ -33,6 +33,7 @@ import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.MerchantResourceInstService;
 import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.SupplierResourceInstService;
+import com.iwhalecloud.retail.warehouse.util.ExcutorServiceUtils;
 import com.iwhalecloud.retail.warehouse.util.WarehouseCacheUtils;
 import com.iwhalecloud.retail.warehouse.util.ZopClientUtil;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
@@ -47,10 +48,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.ExecutorService;
 import java.util.stream.Collectors;
 
 @Service
@@ -159,67 +162,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
     public ResultVO updateResourceInstByIds(AdminResourceInstDelReq req) {
         log.info("AdminResourceInstServiceImpl.updateResourceInstByIds req={}", JSON.toJSONString(req));
         return resourceInstService.updateResourceInstByIds(req);
-    }
-
-    /**
-     * 管理员根据batchId删除串码
-     * @param batchId 上一步导入时的批次号
-     * @param userId  操作人的id
-     * @return
-     */
-    @Override
-    public ResultVO delResourceInstByBatchId(String batchId,String userId){
-        log.info("ResourceInstServiceImpl.delResourceInstByBatchId batchId={}", batchId);
-        // 1.根据batchId 查询临时表中有效数据信息
-        ResourceUploadTempListPageReq resourceInstTempListReq = new ResourceUploadTempListPageReq();
-        resourceInstTempListReq.setMktResUploadBatch(batchId);
-        resourceInstTempListReq.setResult(ResourceConst.CONSTANT_NO);
-        List<ResourceUploadTempListResp> resourceInstTempList = resourceUploadTempManager.listResourceUpload(resourceInstTempListReq);
-        // 2.过滤出有效数据串码id信息
-        List<String> mktResInstNbrs=resourceInstTempList.stream().map(ResourceUploadTempListResp::getMktResInstNbr).collect(Collectors.toList());
-        // 3.根据串码ids信息查询营销资源轨迹表，获取完整数据
-        ResourceInstsTrackGetReq instsTrackGetReq = new ResourceInstsTrackGetReq();
-        instsTrackGetReq.setMktResInstNbrList(new CopyOnWriteArrayList(mktResInstNbrs));
-        List<ResouceInstTrackDTO> instTrackList = resouceInstTrackManager.listResourceInstsTrack(instsTrackGetReq);
-        // 4.将处理好的完整数据，根据仓库StoreId进行分组
-        Map<String, List<ResouceInstTrackDTO>> groups = instTrackList.stream().collect(Collectors.groupingBy(t -> t.getMktResStoreId()));
-        // 5.根据分组结果，调用原有的批量删除方法()进行批量删除处理
-        List<String> unDeleteNbrs = Lists.newArrayList();
-        for (Map.Entry<String,List<ResouceInstTrackDTO>> group:groups.entrySet()){
-            String storeId = group.getKey();
-            AdminResourceInstDelReq resourceInstDelReq = new AdminResourceInstDelReq();
-            resourceInstDelReq.setUpdateStaff(userId);
-            resourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
-            resourceInstDelReq.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
-            // 只有可用状态的串码才能删除
-            List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
-                    ResourceConst.STATUSCD.AUDITING.getCode(),ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
-                    ResourceConst.STATUSCD.RESTORAGEING.getCode(),ResourceConst.STATUSCD.RESTORAGED.getCode(),
-                    ResourceConst.STATUSCD.SALED.getCode());
-            resourceInstDelReq.setCheckStatusCd(checkStatusCd);
-
-            resourceInstDelReq.setMktResStoreId(group.getKey());
-            List<ResouceInstTrackDTO> resourceInstDTOList = group.getValue();
-            List<String> resInstNbrs=resourceInstDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
-            //根据串码和仓库获取串码实例
-            ResourceInstsGetReq instsGetReq = new ResourceInstsGetReq();
-            instsGetReq.setMktResInstNbrs(resInstNbrs);
-            instsGetReq.setMktResStoreId(storeId);
-            List<ResourceInstDTO> instList = resourceInstManager.getResourceInsts(instsGetReq);
-            List<String> resInstId = instList.stream().map(ResourceInstDTO::getMktResInstId).collect(Collectors.toList());
-            resourceInstDelReq.setMktResInstIdList(resInstId);
-            resourceInstDelReq.setDestStoreId(storeId);
-            ResultVO resultVO = updateResourceInstByIds(resourceInstDelReq);
-            List<String> unavailbaleNbrs = (List<String>)resultVO.getResultData();
-            unDeleteNbrs.addAll(unavailbaleNbrs);
-            //删除轨迹表数据
-            AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
-            adminResourceInstDelReq.setMktResStoreId(storeId);
-            adminResourceInstDelReq.setMktResInstIdList(resInstId);
-            adminResourceInstDelReq.setDestStoreId(storeId);
-            resouceInstTrackService.asynUpdateTrackForAddmin(adminResourceInstDelReq, ResultVO.success(unavailbaleNbrs));
-        }
-        return ResultVO.success(unDeleteNbrs);
     }
 
     @Override
@@ -604,7 +546,6 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         Date now = new Date();
         //获取厂家id集合
         List<String> merchantIdList = instTrackList.stream().map(t -> t.getMerchantId()).distinct().collect(Collectors.toList());
-        //获取厂家id集合
         List<MerchantDTO> merchantDTOList = getMerchantByMerchantIdList(merchantIdList);
         //厂家列表转换为Map<merchantId,merchantType>
         Map<String, String> merchantMap = merchantDTOList.stream().collect(Collectors.toMap(MerchantDTO::getMerchantId, MerchantDTO::getMerchantType));
@@ -636,7 +577,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
      * @param merchantMap
      * @return
      */
-    private ResouceUploadTemp getResourceTempByInstOptional(Optional<ResouceInstTrackDTO> optional , Map<String,String> merchantMap) {
+    private ResouceUploadTemp getResourceTempByInstOptional(Optional<ResouceInstTrackDTO> optional, Map<String, String> merchantMap) {
         ResouceUploadTemp uploadTemp = new ResouceUploadTemp();
         //默认有异常
         uploadTemp.setResult(ResourceConst.CONSTANT_YES);
@@ -735,8 +676,134 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
         return merchantDTOList;
     }
 
+    /**
+     * 管理员根据batchId删除串码
+     * @param batchId 上一步导入时的批次号
+     * @param userId  操作人的id
+     * @return
+     */
+    @Override
+    public ResultVO delResourceInstByBatchId(String batchId, String userId) {
+        log.info("ResourceInstServiceImpl.delResourceInstByBatchId batchId={}", batchId);
+        // 1.根据batchId 查询临时表中有效数据信息
+        ResourceUploadTempListPageReq resourceInstTempListReq = new ResourceUploadTempListPageReq();
+        resourceInstTempListReq.setMktResUploadBatch(batchId);
+        resourceInstTempListReq.setResult(ResourceConst.CONSTANT_NO);
+        List<ResourceUploadTempListResp> resourceInstTempList = resourceUploadTempManager.listResourceUpload(resourceInstTempListReq);
+        // 2.过滤出有效数据串码id信息
+        List<String> mktResInstNbrs = resourceInstTempList.stream().map(ResourceUploadTempListResp::getMktResInstNbr).collect(Collectors.toList());
+        // 3.根据串码ids信息查询营销资源轨迹表，获取完整数据
+        ResourceInstsTrackGetReq instsTrackGetReq = new ResourceInstsTrackGetReq();
+        instsTrackGetReq.setMktResInstNbrList(new CopyOnWriteArrayList(mktResInstNbrs));
+        List<ResouceInstTrackDTO> instTrackList = resouceInstTrackManager.listResourceInstsTrack(instsTrackGetReq);
+        // 4.将处理好的完整数据，根据仓库StoreId进行分组
+        Map<String, List<ResouceInstTrackDTO>> groups = instTrackList.stream().collect(Collectors.groupingBy(t -> t.getMktResStoreId()));
+        //初始化线程池
+        ExecutorService executorService = ExcutorServiceUtils.initExecutorService();
+        // 5.根据分组结果，调用原有的批量删除方法()进行批量删除处理
+        for (Map.Entry<String, List<ResouceInstTrackDTO>> group : groups.entrySet()) {
+            String storeId = group.getKey();
+            List<ResouceInstTrackDTO> resourceInstDTOList = group.getValue();
+            //根据当前仓库判断归属厂商还是省包商，厂商直接作废，省包商退库
+            ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(storeId);
+            log.info("AdminResourceInstServiceImpl.delResourceInstByBatchId resouceStoreService.getMerchantByStore req={}, resp={}", storeId, JSON.toJSONString(merchantResultVO));
+            if (!merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
+                continue;
+            }
+            String merchantType = merchantResultVO.getResultData().getMerchantType();
+            if (PartnerConst.MerchantTypeEnum.MANUFACTURER.getType().equals(merchantType)) {
+                delManufacturerInst(resourceInstDTOList, storeId, userId);
+            }
+            else if (PartnerConst.MerchantTypeEnum.SUPPLIER_PROVINCE.getType().equals(merchantType)) {
+                Runnable runnable = new Runnable() {
+                    @Override
+                    public void run() {
+                        resetSupplierProvinceInst(resourceInstDTOList, storeId, userId);
+                    }
+                };
+                executorService.execute(runnable);
+            }
+            else {
+                log.warn("AdminResourceInstServiceImpl.delResourceInstByBatchId merchantType is inlegal merchantType = {}, storeId= {}", merchantType, storeId);
+                continue;
+            }
+        }
+        executorService.shutdown();
+        return ResultVO.success();
+    }
+
+    /**
+     * 供应商退货
+     * @param resourceInstDTOList
+     */
+    @Async
+    public void resetSupplierProvinceInst(List<ResouceInstTrackDTO> resourceInstDTOList, String storeId, String userId) {
+        AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
+        adminResourceInstDelReq.setDestStoreId(storeId);
+        adminResourceInstDelReq.setUpdateStaff(userId);
+        adminResourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
+        adminResourceInstDelReq.setEventStatusCd(ResourceConst.EVENTSTATE.DONE.getCode());
+        adminResourceInstDelReq.setEventType(ResourceConst.EVENTTYPE.BUY_BACK.getCode());
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
+                ResourceConst.STATUSCD.SALED.getCode(),
+                ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
+                ResourceConst.STATUSCD.RESTORAGEING.getCode(),
+                ResourceConst.STATUSCD.EXCHANGEING.getCode(),
+                ResourceConst.STATUSCD.RESTORAGED.getCode());
+        adminResourceInstDelReq.setCheckStatusCd(checkStatusCd);
+        //根据串码和仓库获取串码实例
+        ResourceInstsGetReq instsGetReq = new ResourceInstsGetReq();
+        instsGetReq.setMktResInstNbrs(resourceInstDTOList.stream().map(t -> t.getMktResInstNbr()).collect(Collectors.toList()));
+        instsGetReq.setMktResStoreId(storeId);
+        List<ResourceInstDTO> instList = resourceInstManager.getResourceInsts(instsGetReq);
+        List<String> resInstId = instList.stream().map(ResourceInstDTO::getMktResInstId).collect(Collectors.toList());
+        adminResourceInstDelReq.setMktResInstIdList(resInstId);
+        ResultVO resp = resetResourceInst(adminResourceInstDelReq);
+        resouceInstTrackService.asynResetResourceInst(adminResourceInstDelReq, resp);
+    }
+
+    /**
+     * 厂商删除串码
+     * @param resourceInstDTOList
+     * @param storeId
+     * @param userId
+     */
+    private void delManufacturerInst(List<ResouceInstTrackDTO> resourceInstDTOList, String storeId, String userId) {
+        AdminResourceInstDelReq resourceInstDelReq = new AdminResourceInstDelReq();
+        resourceInstDelReq.setUpdateStaff(userId);
+        resourceInstDelReq.setStatusCd(ResourceConst.STATUSCD.DELETED.getCode());
+        resourceInstDelReq.setEventType(ResourceConst.EVENTTYPE.CANCEL.getCode());
+        // 只有可用状态的串码才能删除
+        List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode(),
+                ResourceConst.STATUSCD.AUDITING.getCode(), ResourceConst.STATUSCD.ALLOCATIONING.getCode(),
+                ResourceConst.STATUSCD.RESTORAGEING.getCode(), ResourceConst.STATUSCD.RESTORAGED.getCode(),
+                ResourceConst.STATUSCD.SALED.getCode());
+        resourceInstDelReq.setCheckStatusCd(checkStatusCd);
+        resourceInstDelReq.setMktResStoreId(storeId);
+        List<String> resInstNbrs = resourceInstDTOList.stream().map(ResouceInstTrackDTO::getMktResInstNbr).collect(Collectors.toList());
+        //根据串码和仓库获取串码实例
+        ResourceInstsGetReq instsGetReq = new ResourceInstsGetReq();
+        instsGetReq.setMktResInstNbrs(resInstNbrs);
+        instsGetReq.setMktResStoreId(storeId);
+        List<ResourceInstDTO> instList = resourceInstManager.getResourceInsts(instsGetReq);
+        List<String> resInstId = instList.stream().map(ResourceInstDTO::getMktResInstId).collect(Collectors.toList());
+        resourceInstDelReq.setMktResInstIdList(resInstId);
+        resourceInstDelReq.setDestStoreId(storeId);
+        ResultVO resultVO = updateResourceInstByIds(resourceInstDelReq);
+        List<String> unavailbaleNbrs = (List<String>) resultVO.getResultData();
+        //删除轨迹表数据
+        AdminResourceInstDelReq adminResourceInstDelReq = new AdminResourceInstDelReq();
+        adminResourceInstDelReq.setMktResStoreId(storeId);
+        adminResourceInstDelReq.setMktResInstIdList(resInstId);
+        adminResourceInstDelReq.setDestStoreId(storeId);
+        resouceInstTrackService.asynUpdateTrackForAddmin(adminResourceInstDelReq, ResultVO.success(unavailbaleNbrs));
+    }
+
+
     @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
+//        AdminResourceInstDelReq req = new AdminResourceInstDelReq();
+//        BeanUtils.copyProperties(adminResourceInstDelReq, req);
         ResultVO<MerchantDTO> merchantResultVO = resouceStoreService.getMerchantByStore(req.getDestStoreId());
         log.info("AdminResourceInstServiceImpl.resetResourceInst resouceStoreService.getMerchantByStore req={}, resp={}", req.getDestStoreId(), JSON.toJSONString(merchantResultVO));
         if (!merchantResultVO.isSuccess() || null == merchantResultVO.getResultData()) {
@@ -795,6 +862,7 @@ public class AdminResourceInstServiceImpl implements AdminResourceInstService {
             List<String> checkStatusCd = Lists.newArrayList(ResourceConst.STATUSCD.DELETED.getCode());
             updateReq.setCheckStatusCd(checkStatusCd);
             resourceInstService.updateInstState(updateReq);
+            resouceInstTrackService.asynResetResourceInst(req, ResultVO.success());
             log.info("AdminResourceInstServiceImpl.resetResourceInst resourceInstManager.batchUpdateInstState req={}", JSON.toJSONString(updateReq));
         }
         return ResultVO.success();

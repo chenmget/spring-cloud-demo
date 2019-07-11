@@ -82,6 +82,9 @@ public class GovernmentReportManageController extends BaseController {
 //		}
 
 //		log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
+        log.info("applySearchReport 用户所属地市lanId ={}",UserContext.getUser().getLanId());
+        req.setLanId(UserContext.getUser().getLanId());
+        req.setLanIdTemp(UserContext.getUser().getLanId());
         return purApplyService.applySearchReport(req);
     }
 
@@ -97,7 +100,9 @@ public class GovernmentReportManageController extends BaseController {
         //数据量控制在1万条
         req.setPageSize(60000);
 //        Integer userFounder = UserContext.getUser().getUserFounder();
-
+        log.info("applySearchReportExcel 用户所属地市lanId ={}",UserContext.getUser().getLanId());
+        req.setLanId(UserContext.getUser().getLanId());
+        req.setLanIdTemp(UserContext.getUser().getLanId());
         // 管理员查看所有
         ResultVO<Page<PurApplyReportResp>> PurApplyReportRespPage = purApplyService.applySearchReport(req);
 
@@ -148,7 +153,9 @@ public class GovernmentReportManageController extends BaseController {
     @PostMapping("/applyStatusSearchReport")
     @UserLoginToken
     public ResultVO<Page<PurApplyStatusReportResp>> applyStatusSearchReport(@RequestBody PurApplyStatusReportReq req) {
-
+        log.info("applyStatusSearchReport 用户所属地市lanId ={}",UserContext.getUser().getLanId());
+        req.setLanId(UserContext.getUser().getLanId());
+        req.setLanIdTemp(UserContext.getUser().getLanId());
         return purApplyService.applyStatusSearchReport(req);
     }
 
@@ -164,7 +171,9 @@ public class GovernmentReportManageController extends BaseController {
         //数据量控制在1万条
         req.setPageSize(60000);
 //        Integer userFounder = UserContext.getUser().getUserFounder();
-
+        log.info("applyStatusSearchReportExcel 用户所属地市lanId ={}",UserContext.getUser().getLanId());
+        req.setLanId(UserContext.getUser().getLanId());
+        req.setLanIdTemp(UserContext.getUser().getLanId());
         // 管理员查看所有
         ResultVO<Page<PurApplyStatusReportResp>> purApplyStatusReportResp = purApplyService.applyStatusSearchReport(req);
 

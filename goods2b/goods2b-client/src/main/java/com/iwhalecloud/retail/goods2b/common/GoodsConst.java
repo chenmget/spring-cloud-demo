@@ -93,6 +93,25 @@ public class GoodsConst {
     public static final Double GOODS_MKT_PRICE = 159900D;
 
     public static final Double AVG_SUPPLY_PRICE = 0.03;
+    
+    /**
+     * 活动商品绑定图片
+     */
+    public static final String PRODUCT_PIC_USE_TYPE_1 = "1";
+    
+    public static final String PRODUCT_PIC_USE_TYPE_2 = "2";
+
+    public static final String PRODUCT_PIC_USE_TYPE_12 = "12";
+
+    public static final String FILE_TYPE_1 = "1";
+    
+    public static final String TARGET_TYPE_1 = "1";
+
+    public static final String SUB_TYPE_8 = "8";
+
+    public static final String SUB_TYPE_9 = "9";
+
+    public static final String SUB_TYPE_10 = "10";
 
     /**
      * 国际化配置文件里当前语言

@@ -129,7 +129,7 @@ public class GoodsRulesProductService {
          * 经营主体不需要做校验
          */
         if(GoodsRulesConst.Stockist.BUSINESS_ENTITY_TYPE.getValue().equals(objType)){
-            ResultVO.success();
+            return ResultVO.success();
         }
         /**
          * 地包，店中商需要校验
@@ -165,13 +165,16 @@ public class GoodsRulesProductService {
             return passGoodsLsit;
         }
         for (GoodsRulesDTO entity : req.getDtoList()) {
-            if (!supplyTargetInfo(entity)) {
-                continue;
-            }
+
             Product p = productList.get(0);
             entity.setProductName(p.getUnitName());
             entity.setAssignType(req.getAssignedType());
             entity.setProductBaseId(p.getProductBaseId());
+            boolean b=supplyTargetInfo(entity);
+            log.info("gs_10010_queryProductObj,supplyTargetInfo_entity{},b{}",JSON.toJSONString(entity),b);
+            if (!b) {
+                continue;
+            }
             GoodsRulesProductDTO rulesProductDTO = new GoodsRulesProductDTO();
             BeanUtils.copyProperties(entity, rulesProductDTO);
             if (StringUtils.isEmpty(entity.getProductCode())) {
@@ -190,6 +193,7 @@ public class GoodsRulesProductService {
                     break;
                 }
             }
+            log.info("gs_10010_queryProductObj,product_entity{}",JSON.toJSONString(entity));
 
         }
         return passGoodsLsit;

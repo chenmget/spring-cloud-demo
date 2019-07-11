@@ -749,9 +749,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	public ResultVO<Page<PurApplyReportResp>> applySearchReport(PurApplyReportReq req) {
 		log.info("applySearchReport参数   req={}"+JSON.toJSONString(req));
-		if (req.getLanId()!=null) {
-			req.setRegionId(req.getLanId());
-		}
+
 		Boolean flag = productParamCheck(req);
 		if (flag == true) {
 			ProductGetIdReq productGetIdReq = new ProductGetIdReq();
@@ -773,6 +771,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		}
 
 		//req.setRegionId();
+		if (req.getLanIdList() !=null && req.getLanIdList().size()>0) {
+			req.setLanIdTemp(null);
+		}
 		Page<PurApplyReportResp> purApplyReportResp = purApplyManager.applySearchReport(req);
 		List<PurApplyReportResp>  list=purApplyReportResp.getRecords();
 		if (list ==null || list.size()==0 ) {
@@ -830,6 +831,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		}
 
 		//req.setRegionId();
+		if (req.getLanIdList() !=null && req.getLanIdList().size()>0) {
+			req.setLanIdTemp(null);
+		}
 		Page<PurApplyStatusReportResp> purApplyStatusReportResp = purApplyManager.applyStatusSearchReport(req);
 		List<PurApplyStatusReportResp>  list=purApplyStatusReportResp.getRecords();
 		if (list ==null || list.size()==0 ) {

@@ -66,6 +66,62 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 log.info("更新商品表字段结果 resp={}", JSON.toJSON(resultData));
             }
         }
+        //生效的活动配的图插入到prod_file表
+        if (CollectionUtils.isNotEmpty(advanceSaleActivityList)) {
+	        for(int i=0;i<advanceSaleActivityList.size();i++) {
+	        	MarketingActivity marketingActivity = advanceSaleActivityList.get(i);
+	        	if(marketingActivity == null) {
+	        		continue ;
+	        	}
+	        	log.info("**********************通过活动ID查act_activity_product(参与活动产品表)******************start****");
+	        	 List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivity.getId()); //通过活动ID查  fileUrl  ，  productPicUseType
+	        	 for(int j=0;j<activityProducts.size();j++) {
+	        		 ActivityProduct activityProduct = activityProducts.get(j);
+	        		 if(activityProduct == null) {
+	        			 continue ;
+	        		 }
+	        		 String fileUrl = activityProduct.getProductPic();//	附件路径
+	        		 if(fileUrl == null || fileUrl == "" || "".equals(fileUrl)) {
+	        			 continue ;
+	        		 }
+	        		 String productPicUseType = activityProduct.getProductPicUseType();
+	        		 String productId = activityProduct.getProductId();//取出产品ID，去查商品ID
+	        		 List<String> productIdList = new ArrayList<String>();
+	        		 productIdList.add(productId);
+	        		 GoodsQueryByProductIdsReq req = new GoodsQueryByProductIdsReq();
+	                 req.setProductIds(productIdList);
+	                 log.info("**********************获取这个产品下的所有goods_id******************start**** param={}",JSON.toJSONString(req));
+	        		 List<String> goodsIdsList = goodsProductRelService.queryGoodsIdsByProductIds(req).getResultData().getGoodsIds();//获取这个产品下的所有goods_id
+	        		 if(CollectionUtils.isEmpty(goodsIdsList)){
+	        			 continue ;
+					 }
+	        		 for(int k=0;k<goodsIdsList.size();k++) {
+	            		 ProdFileReq prodFileReq = new ProdFileReq();
+	            		//插表prod_file
+	            		 String targetId = goodsIdsList.get(k);//商品ID
+	            		 //如果商品已经配了图片，就continue
+	            		 String isBinging = goodsProductRelService.isBindingToPricture(targetId);
+	            		 if(Integer.parseInt(isBinging)>0) {
+	            			 continue ;
+	            		 }
+	            		 if(GoodsConst.PRODUCT_PIC_USE_TYPE_1.equals(productPicUseType)) {//应用到商品详情轮拨图8
+	            			 prodFileReq.setSubType(GoodsConst.SUB_TYPE_8);//当关联对象类型为商品时， 子类型为 1：默认图片 2：轮播图片 3：详情图片    8的时候说明是配置的活动图片
+	            		 }else if(GoodsConst.PRODUCT_PIC_USE_TYPE_2.equals(productPicUseType)) {//应用到商品列表缩略图9
+	            			 prodFileReq.setSubType(GoodsConst.SUB_TYPE_9);//当关联对象类型为商品时， 子类型为 1：默认图片 2：轮播图片 3：详情图片,6缩略图    8的时候说明是配置的活动图片
+	            		 }else if (GoodsConst.PRODUCT_PIC_USE_TYPE_12.equals(productPicUseType)) {//两者都应用10
+	            			 prodFileReq.setSubType(GoodsConst.SUB_TYPE_10);//当关联对象类型为商品时， 子类型为 1：默认图片 2：轮播图片 3：详情图片,6缩略图    8的时候说明是配置的活动图片
+	            		 }
+	            		 prodFileReq.setFileId(goodsProductRelService.selectProdFileId());
+            			 prodFileReq.setFileType(GoodsConst.FILE_TYPE_1);//	1：图片 2：文件
+            			 prodFileReq.setTargetType(GoodsConst.TARGET_TYPE_1);//商品图片：1 	订单图片：2 	商品规格图片：3
+            			 prodFileReq.setCreateDate(new Date());
+            			 prodFileReq.setTargetId(targetId);
+            			 prodFileReq.setFileUrl(fileUrl);
+            			 goodsProductRelService.insertProdFile(prodFileReq); 
+	        		 }
+	        	 }
+	        }
+        }
         // 查询生效的前置补贴活动
         List<MarketingActivity> subsidyActivityList = marketingActivityManager.queryActivityListByStatus(false, PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
         if (CollectionUtils.isNotEmpty(subsidyActivityList)) {
@@ -82,6 +138,61 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 Boolean resultData = goodsService.updateGoodsActTypeByGoodsIdList(req).getResultData();
                 log.info("更新商品表字段结果 resp={}", JSON.toJSON(resultData));
             }
+        }
+      //生效的活动配的图插入到prod_file表
+        if (CollectionUtils.isNotEmpty(subsidyActivityList)) {
+	        for(int i=0;i<subsidyActivityList.size();i++) {
+	        	MarketingActivity marketingActivity = subsidyActivityList.get(i);
+	        	if(marketingActivity == null) {
+	        		continue ;
+	        	}
+	        	 List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivity.getId()); //通过活动ID查  fileUrl  ，  productPicUseType
+	        	 for(int j=0;j<activityProducts.size();j++) {
+	        		 ActivityProduct activityProduct = activityProducts.get(j);
+	        		 if(activityProduct == null) {
+	        			 continue ;
+	        		 }
+	        		 String fileUrl = activityProduct.getProductPic();//	附件路径
+	        		 if(fileUrl == null || fileUrl == "" || "".equals(fileUrl)) {
+	        			 continue ;
+	        		 }
+	        		 String productPicUseType = activityProduct.getProductPicUseType();
+	        		 String productId = activityProduct.getProductId();//取出产品ID，去查商品ID
+	        		 List<String> productIdList = new ArrayList<String>();
+	        		 productIdList.add(productId);
+	        		 GoodsQueryByProductIdsReq req = new GoodsQueryByProductIdsReq();
+	                 req.setProductIds(productIdList);
+	        		 List<String> goodsIdsList = goodsProductRelService.queryGoodsIdsByProductIds(req).getResultData().getGoodsIds();//获取这个产品下的所有goods_id
+	        		 if(CollectionUtils.isEmpty(goodsIdsList)){
+	        			 continue ;
+					 }
+	        		 for(int k=0;k<goodsIdsList.size();k++) {
+	            		 ProdFileReq prodFileReq = new ProdFileReq();
+	            		//插表prod_file
+	            		 String targetId = goodsIdsList.get(k);//商品ID
+	            		 //如果商品已经配了图片，就continue
+	            		 String isBinging = goodsProductRelService.isBindingToPricture(targetId);
+	            		 if(Integer.parseInt(isBinging)>0) {
+	            			 continue ;
+	            		 }
+	            		 if(GoodsConst.PRODUCT_PIC_USE_TYPE_1.equals(productPicUseType)) {//应用到商品详情轮拨图8
+	            			 prodFileReq.setSubType(GoodsConst.SUB_TYPE_8);//当关联对象类型为商品时， 子类型为 1：默认图片 2：轮播图片 3：详情图片    8的时候说明是配置的活动图片
+	            		 }else if(GoodsConst.PRODUCT_PIC_USE_TYPE_2.equals(productPicUseType)) {//应用到商品列表缩略图9
+	            			 prodFileReq.setSubType(GoodsConst.SUB_TYPE_9);//当关联对象类型为商品时， 子类型为 1：默认图片 2：轮播图片 3：详情图片,6缩略图    8的时候说明是配置的活动图片
+	            		 }else if (GoodsConst.PRODUCT_PIC_USE_TYPE_12.equals(productPicUseType)) {//两者都应用10
+	            			 prodFileReq.setSubType(GoodsConst.SUB_TYPE_10);//当关联对象类型为商品时， 子类型为 1：默认图片 2：轮播图片 3：详情图片,6缩略图    8的时候说明是配置的活动图片
+	            		 }
+	            		 prodFileReq.setFileId(goodsProductRelService.selectProdFileId());
+            			 prodFileReq.setFileType(GoodsConst.FILE_TYPE_1);//	1：图片 2：文件
+            			 prodFileReq.setTargetType(GoodsConst.TARGET_TYPE_1);//商品图片：1 	订单图片：2 	商品规格图片：3
+            			 prodFileReq.setCreateDate(new Date());
+            			 prodFileReq.setTargetId(targetId);
+            			 prodFileReq.setFileUrl(fileUrl);
+            			 goodsProductRelService.insertProdFile(prodFileReq); 
+	        		 }
+	        		 
+	        	 }
+	        }
         }
     }
 
@@ -102,6 +213,33 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 log.info("更新商品表字段结果 resp={}", JSON.toJSON(resultData));
             }
         }
+        if (CollectionUtils.isNotEmpty(advanceSaleActivityList)) {
+	        for(int i=0;i<advanceSaleActivityList.size();i++) {
+	        	MarketingActivity marketingActivity = advanceSaleActivityList.get(i);
+	        	if(marketingActivity == null) {
+	        		continue ;
+	        	}
+	       	 	List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivity.getId());
+	       	 	if (activityProducts == null) {
+    	 			continue ;
+    	 		}
+	       	 	for(int j=0;j<activityProducts.size();j++) {
+	       	 		ActivityProduct activityProduct = activityProducts.get(j);
+	       	 		String productId = activityProduct.getProductId();
+	       	 		List<String> productIdList = new ArrayList<String>();
+	       	 		productIdList.add(productId);
+	       	 		GoodsQueryByProductIdsReq req = new GoodsQueryByProductIdsReq();
+	       	 		req.setProductIds(productIdList);
+	       	 		List<String> goodsIdsList = goodsProductRelService.queryGoodsIdsByProductIds(req).getResultData().getGoodsIds();//获取这个产品下的所有goods_id
+		       	 	if(CollectionUtils.isEmpty(goodsIdsList)){
+		       	 		continue ;
+					}
+	       	 		for(int k=0;k<goodsIdsList.size();k++) {
+	       	 			goodsProductRelService.delProdFileByTargetId(goodsIdsList.get(k));
+	       	 		}
+	       	 	}
+	        }
+        }
         // 查询失效的前置补贴活动
         List<MarketingActivity> subsidyActivityList = marketingActivityManager.queryActivityListByStatus(true, PromoConst.ACTIVITYTYPE.PRESUBSIDY.getCode());
         if (CollectionUtils.isNotEmpty(subsidyActivityList)) {
@@ -116,6 +254,35 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 Boolean resultData = goodsService.updateGoodsActTypeByGoodsIdList(req).getResultData();
                 log.info("更新商品表字段结果 resp={}", JSON.toJSON(resultData));
             }
+        }
+        if (CollectionUtils.isNotEmpty(advanceSaleActivityList)) {
+	        for(int i=0;i<subsidyActivityList.size();i++) {
+	        	MarketingActivity marketingActivity = subsidyActivityList.get(i);
+	        	if(marketingActivity == null) {
+	        		continue ;
+	        	}
+	       	 	List<ActivityProduct> activityProducts = activityProductManager.queryActivityProductByCondition(marketingActivity.getId());
+	       	 	if(activityProducts == null) {
+	       	 		continue ;
+	       	 	}
+	       	 	for(int j=0;j<activityProducts.size();j++) {
+	       	 		ActivityProduct activityProduct = activityProducts.get(j);
+	       	 		String productId = activityProduct.getProductId();
+	       	 		List<String> productIdList = new ArrayList<String>();
+	       	 		productIdList.add(productId);
+	       	 		GoodsQueryByProductIdsReq req = new GoodsQueryByProductIdsReq();
+	       	 		req.setProductIds(productIdList);
+	       	 		List<String> goodsIdsList = goodsProductRelService.queryGoodsIdsByProductIds(req).getResultData().getGoodsIds();//获取这个产品下的所有goods_id
+		       	 	if(CollectionUtils.isEmpty(goodsIdsList)){
+		       	 		continue ;
+					}
+	       	 		for(int k=0;k<goodsIdsList.size();k++) {
+	       	 			goodsProductRelService.delProdFileByTargetId(goodsIdsList.get(k));
+	       	 			
+	       	 		}
+	       	 	}
+	       	 	
+	        }
         }
     }
 

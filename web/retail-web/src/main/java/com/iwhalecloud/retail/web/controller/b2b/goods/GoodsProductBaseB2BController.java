@@ -115,12 +115,12 @@ public class GoodsProductBaseB2BController {
         return prodProductBaseService.getProductBaseList(req);
     }
 
-	@ApiOperation(value = "添加产品基本信息", notes = "添加操作")
+    @ApiOperation(value = "添加产品基本信息", notes = "添加操作")
     @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @PostMapping(value="addProductBase")
+    @PostMapping(value = "addProductBase")
     @UserLoginToken
     public ResultVO<String> addProductBase(@RequestBody ProductBaseAddReqDTO dto) {
         //获取memberId
@@ -136,6 +136,14 @@ public class GoodsProductBaseB2BController {
         BeanUtils.copyProperties(dto, req);
         req.setCreateStaff(userId);
         req.setPurchaseType(purchaseTypeString);
+
+        // 设置是否厂商修改 非厂商（一般是管理员）不走审核流程 zhengwenlong
+        if (UserContext.isManufacturerType()) {
+            req.setManufacturerType(true);
+        } else {
+            req.setManufacturerType(false);
+        }
+
         return prodProductBaseService.addProductBase(req);
     }
 
@@ -159,6 +167,14 @@ public class GoodsProductBaseB2BController {
         BeanUtils.copyProperties(dto, req);
         req.setUpdateStaff(userId);
         req.setPurchaseType(purchaseTypeString);
+
+        // 设置是否厂商修改 非厂商（一般是管理员）不走审核流程 zhengwenlong
+        if (UserContext.isManufacturerType()) {
+            req.setManufacturerType(true);
+        } else {
+            req.setManufacturerType(false);
+        }
+
         return prodProductBaseService.updateProductBase(req);
 
 

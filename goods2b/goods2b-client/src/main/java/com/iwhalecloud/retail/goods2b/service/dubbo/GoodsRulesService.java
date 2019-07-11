@@ -1,9 +1,9 @@
 package com.iwhalecloud.retail.goods2b.service.dubbo;
 
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesProductDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.CheckRuleReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleByExcelFileReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
 import com.iwhalecloud.retail.goods2b.dto.req.QueryProductObjReq;
@@ -31,7 +31,7 @@ public interface GoodsRulesService {
 
     ResultVO<GoodsRulesDTO> queryProdGoodsRuleById(ProdGoodsRuleEditReq prodGoodsRuleEditReq);
 
-    ResultVO<List<GoodsRulesDTO>> queryProdGoodsRuleByCondition(GoodsRulesDTO condition);
+    ResultVO<List<GoodsRulesProductDTO>> queryProdGoodsRuleByCondition(GoodsRulesDTO condition);
 
     /**
      * 购买时的分货规则校验
@@ -59,7 +59,12 @@ public interface GoodsRulesService {
 
     ResultVO getGoodsRulesByExcel(ProdGoodsRuleByExcelFileReq prodGoodsRuleByExcelFileReq) throws Exception;
 
-    ResultVO checkGoodsRules(List<GoodsRulesDTO> entityList, List<GoodsProductRelDTO> goodsProductRelList,String supplierId);
+    /**
+     * 添加商品，规则校验
+     * @param req
+     * @return
+     */
+    ResultVO checkGoodsRules(CheckRuleReq req);
 
     /**
      * 校验分货对象
@@ -67,4 +72,11 @@ public interface GoodsRulesService {
      * @return list
      */
     ResultVO<List<GoodsRulesProductDTO>> queryProductObj(QueryProductObjReq req);
+
+    /**
+     * 校验分货对象是否有经营权限
+     * @param  req
+     * @return  aa
+     */
+    ResultVO checkObj(CheckRuleReq req);
 }

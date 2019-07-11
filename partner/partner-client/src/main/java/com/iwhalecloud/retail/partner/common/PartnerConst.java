@@ -311,18 +311,21 @@ public class PartnerConst {
      *  商家串码录入权限的 对象类型
      */
     public enum MerchantImeiTargetTypeEnum {
-        PRODUCT("1","产品"),
-        MODEL("2","机型");
+        PRODUCT("1", "产品"),
+        MODEL("2", "机型");
 
         private String type;
         private String name;
-        MerchantImeiTargetTypeEnum(String type, String name){
+
+        MerchantImeiTargetTypeEnum(String type, String name) {
             this.type = type;
             this.name = name;
         }
+
         public String getName() {
             return name;
         }
+
         public String getType() {
             return type;
         }
@@ -488,7 +491,6 @@ public class PartnerConst {
         PROCESS_ADMIN_SBGL("3040602", "后台管理员国/省包管理"),
         PROCESS_3040501("3040501", "厂商管理（自注册）"),
         PROCESS_3040601("3040601", "国/省包管理"),
-        PROCESS_11("11", "商家权限申请审核流程"),
         PROCESS_3010101("3010101", "厂商经营权限（串码录入停用申请）"),
         PROCESS_3040301("3040301", "地包商管理"),
         PROCESS_3040701("3040701", "厂商管理(管理平台注册)");

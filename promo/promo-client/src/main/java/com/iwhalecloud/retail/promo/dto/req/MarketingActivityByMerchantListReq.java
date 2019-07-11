@@ -37,6 +37,12 @@ public class MarketingActivityByMerchantListReq extends AbstractRequest implemen
     private java.lang.String regionId;
 
     /**
+     * (商家)CRM组织路径编码
+     */
+    @ApiModelProperty(value = "pathCode")
+    private String pathCode;
+
+    /**
      * 商家ID
      */
     @ApiModelProperty(value = "商家ID")

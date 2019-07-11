@@ -115,17 +115,17 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     }
 
 
-    @Transactional(isolation= Isolation.DEFAULT,propagation= Propagation.REQUIRED,rollbackFor=Exception.class)
+    @Transactional(isolation = Isolation.DEFAULT, propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
     @Override
-    public ResultVO<String> addProductBase(ProductBaseAddReq req){
+    public ResultVO<String> addProductBase(ProductBaseAddReq req) {
         log.info("ProductBaseServiceImpl.addProductBase,req={}", JSON.toJSONString(req));
         String unitType = req.getUnitType();
-        if(StringUtils.isNotEmpty(unitType)){
+        if (StringUtils.isNotEmpty(unitType)) {
             ProductBaseGetReq productBaseGetReq = new ProductBaseGetReq();
             productBaseGetReq.setUnitType(unitType);
             List<ProductBaseGetResp> productBaseGetRespList = productBaseManager.selectProductBase(productBaseGetReq);
-            if(!CollectionUtils.isEmpty(productBaseGetRespList)){
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "同一型号只能创建一个产品，已经存在改型号产品");
+            if (!CollectionUtils.isEmpty(productBaseGetRespList)) {
+                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), "同一型号只能创建一个产品，已经存在该型号产品");
             }
         }
         ProductBase t = new ProductBase();
@@ -136,51 +136,51 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         t.setIsDeleted(ProductConst.IsDelete.NO.getCode());
         // 产品编码后端生成
         t.setProductCode(GenerateCodeUtil.generateCode());
-        if (null == t.getEffDate()){
+        if (null == t.getEffDate()) {
             t.setEffDate(now);
         }
         // 默认有效期三年
-        if (null == t.getExpDate()){
+        if (null == t.getExpDate()) {
             t.setExpDate(DateUtil.getNextYearTime(now, 3));
         }
         //固网产品需要提交串码到itms
         String isInspection = req.getIsInspection();
         String isItms = req.getIsItms();
-        if(StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection) &&
-                StringUtils.isNotEmpty(isItms) &&  !ProductConst.isItms.NOPUSH.equals(isItms)){
+        if (StringUtils.isNotEmpty(isInspection) && ProductConst.isInspection.YES.getCode().equals(isInspection) &&
+                StringUtils.isNotEmpty(isItms) && !ProductConst.isItms.NOPUSH.equals(isItms)) {
             String serialCode = req.getParam20(); //串码  xxxx-1234556612
             String params = req.getParam19(); //附加参数  city_code=731# warehouse=12#source=1#factory=厂家
             String userName = req.getParam18();  //login_name
-            if(StringUtils.isNotEmpty(serialCode) && StringUtils.isNotEmpty(params) && StringUtils.isNotEmpty(userName)){
-                if(serialCode.indexOf(",")>-1){
+            if (StringUtils.isNotEmpty(serialCode) && StringUtils.isNotEmpty(params) && StringUtils.isNotEmpty(userName)) {
+                if (serialCode.indexOf(",") > -1) {
                     String[] serialCodes = serialCode.split(",");
-                    for(int i=0;i<serialCodes.length;i++){
-                       this.pushItms(serialCodes[i],userName,"ITMS_ADD",params);
+                    for (int i = 0; i < serialCodes.length; i++) {
+                        this.pushItms(serialCodes[i], userName, "ITMS_ADD", params);
                     }
-                }else{
-                    this.pushItms(serialCode,userName,"ITMS_ADD",params);
+                } else {
+                    this.pushItms(serialCode, userName, "ITMS_ADD", params);
                 }
             }
         }
-        if(StringUtils.isEmpty(req.getPriceLevel())){
+        if (StringUtils.isEmpty(req.getPriceLevel())) {
             Double minCost = 0.0;
             List<ProductAddReq> productAddReqs = req.getProductAddReqs();
             if (null != productAddReqs && !productAddReqs.isEmpty()) {
                 for (ProductAddReq par : productAddReqs) {
                     String cost = String.valueOf(par.getCost());
-                    if(StringUtils.isEmpty(cost) || "null".equals(cost)){
+                    if (StringUtils.isEmpty(cost) || "null".equals(cost)) {
                         continue;
                     }
-                    if(minCost < 0.01){
+                    if (minCost < 0.01) {
                         minCost = par.getCost();
-                    }else{
-                        minCost = (par.getCost()-minCost)<0 ? par.getCost():minCost;
+                    } else {
+                        minCost = (par.getCost() - minCost) < 0 ? par.getCost() : minCost;
                     }
                 }
-                log.info("ProductBaseServiceImpl.addProductBase minCost={}",minCost);
-                if(minCost > 0.01){
+                log.info("ProductBaseServiceImpl.addProductBase minCost={}", minCost);
+                if (minCost > 0.01) {
                     t.setPriceLevel(this.getPriceLevel(minCost));
-                    log.info("ProductBaseServiceImpl.addProductBase PriceLevel={}",t.getPriceLevel());
+                    log.info("ProductBaseServiceImpl.addProductBase PriceLevel={}", t.getPriceLevel());
                 }
             }
         }
@@ -199,60 +199,67 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         typeSelectByIdReq.setTypeId(req.getTypeId());
         ResultVO<TypeDetailResp> respResultVO = typeService.getDetailType(typeSelectByIdReq);
         TypeDetailResp type = new TypeDetailResp();
-        if(respResultVO.isSuccess() && null !=respResultVO.getResultData()){
+        if (respResultVO.isSuccess() && null != respResultVO.getResultData()) {
             type = respResultVO.getResultData();
         }
         Brand brand = brandManager.getBrandByBrandId(req.getBrandId());
         //易购网下线固网规格同步CRM开关,默认是关闭
         String syncSpecCrm = "";
         List<PublicDictDTO> publicDictDTOs = publicDictService.queryPublicDictListByType("SYNC_SPEC_CRM");
-        log.info("ProductBaseServiceImpl.addProductBase publicDictDTOs={}" , publicDictDTOs);
-        if(!CollectionUtils.isEmpty(publicDictDTOs)){
+        log.info("ProductBaseServiceImpl.addProductBase publicDictDTOs={}", publicDictDTOs);
+        if (!CollectionUtils.isEmpty(publicDictDTOs)) {
             PublicDictDTO publicDictDTO = publicDictDTOs.get(0);
-            if(null!=publicDictDTO){
+            if (null != publicDictDTO) {
                 syncSpecCrm = publicDictDTO.getCodeb();
             }
         }
-        if(StringUtils.isEmpty(syncSpecCrm)){
+        if (StringUtils.isEmpty(syncSpecCrm)) {
             syncSpecCrm = "F";
         }
-        if (null != productAddReqs && !productAddReqs.isEmpty()){
-            for (ProductAddReq par : productAddReqs){
+        if (null != productAddReqs && !productAddReqs.isEmpty()) {
+            for (ProductAddReq par : productAddReqs) {
                 //
-                if(StringUtils.isEmpty(req.getIsFixedLine()) || (StringUtils.isNotEmpty(req.getIsFixedLine()) &&
-                        !"1".equals(req.getIsFixedLine()))){
+                if (StringUtils.isEmpty(req.getIsFixedLine()) || (StringUtils.isNotEmpty(req.getIsFixedLine()) &&
+                        !"1".equals(req.getIsFixedLine()))) {
                     String sn = par.getSn();
                     String purchaseString = sn.substring(sn.length() - 3);
-                    if ("100".equals(purchaseString)){
+                    if ("100".equals(purchaseString)) {
                         par.setPurchaseType(ProductConst.purchaseType.COLLECTIVE.getCode());
-                    }else if("300".equals(purchaseString)){
+                    } else if ("300".equals(purchaseString)) {
                         par.setPurchaseType(ProductConst.purchaseType.SOCIOLOGY.getCode());
                     }
                 }
                 status = par.getStatus();
                 String auditState = ProductConst.AuditStateType.UN_SUBMIT.getCode();
                 //除了待提交，都是审核中
-                if(!ProductConst.StatusType.SUBMIT.getCode().equals(status)){
-                    auditState =ProductConst.AuditStateType.AUDITING.getCode();
+                if (!ProductConst.StatusType.SUBMIT.getCode().equals(status)) {
+                    auditState = ProductConst.AuditStateType.AUDITING.getCode();
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
+
+                    // 如果是: 非厂商添加(一般是管理员）  直接挂网 zhongwenlong
+                    if (!req.isManufacturerType()) {
+                        auditState = ProductConst.AuditStateType.AUDIT_PASS.getCode();
+                        par.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+                    }
+
                 }
                 par.setProductBaseId(productBaseId);
                 par.setCreateStaff(t.getCreateStaff());
                 par.setAuditState(auditState);
                 String productId = productService.addProduct(par);
                 //是固网产品并且开发打开才同步CRM
-                if(StringUtils.isNotEmpty(req.getIsFixedLine()) && "1".equals(req.getIsFixedLine()) &&
-                        "T".equals(syncSpecCrm) && null!=type && null!=brand){
+                if (StringUtils.isNotEmpty(req.getIsFixedLine()) && "1".equals(req.getIsFixedLine()) &&
+                        "T".equals(syncSpecCrm) && null != type && null != brand) {
                     Map request = new HashMap<>();
-                    request.put("Good_id",productId);
-                    request.put("u_kind_id",type.getCrmResKind());
-                    request.put("u_kind_name",type.getDetailName());
-                    request.put("GOOD_BAND",brand.getName());
-                    request.put("sales_resource_id",par.getSn());
-                    request.put("terminal_type",type.getCrmResType());
-                    request.put("sales_resource_name",par.getUnitName());
-                    request.put("Good_price",par.getCost());
-                    request.put("terminal_type_name",type.getTypeName());
+                    request.put("Good_id", productId);
+                    request.put("u_kind_id", type.getCrmResKind());
+                    request.put("u_kind_name", type.getDetailName());
+                    request.put("GOOD_BAND", brand.getName());
+                    request.put("sales_resource_id", par.getSn());
+                    request.put("terminal_type", type.getCrmResType());
+                    request.put("sales_resource_name", par.getUnitName());
+                    request.put("Good_price", par.getCost());
+                    request.put("terminal_type_name", type.getTypeName());
                     this.pushCrm(request);
                 }
                 if (!CollectionUtils.isEmpty(req.getTagList())) {
@@ -273,33 +280,38 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             tagRelService.batchAddTagRel(relBatchAddReq);
         }
 
+        // 如果是:非厂商添加(一般是管理员）不走审核流程 zhongwenlong
+        if (!req.isManufacturerType()) {
+            return  ResultVO.success(productBaseId);
+        }
+
         //除了待提交，都是审核中,都要提交审核
-        if(!ProductConst.StatusType.SUBMIT.getCode().equals(status) && addResult){
-            StartProductFlowReq startProductFlowReq= new StartProductFlowReq();
+        if (!ProductConst.StatusType.SUBMIT.getCode().equals(status) && addResult) {
+            StartProductFlowReq startProductFlowReq = new StartProductFlowReq();
             startProductFlowReq.setProductBaseId(productBaseId);
             startProductFlowReq.setDealer(t.getCreateStaff());
             startProductFlowReq.setProductName(req.getProductName());
             startProductFlowReq.setProcessId(ProductConst.APP_PRODUCT_FLOW_PROCESS_ID);
             //如果是固网产品
-            if(StringUtils.isNotEmpty(req.getIsFixedLine()) && "1".equals(req.getIsFixedLine())){
+            if (StringUtils.isNotEmpty(req.getIsFixedLine()) && "1".equals(req.getIsFixedLine())) {
 //                String isItms = req.getIsItms();
-                if(StringUtils.isNotEmpty(isItms) && (ProductConst.isItms.PUSHIPTV.getCode().equals(isItms) ||
-                        ProductConst.isItms.PUSHIPTVMODEL.getCode().equals(isItms))){
+                if (StringUtils.isNotEmpty(isItms) && (ProductConst.isItms.PUSHIPTV.getCode().equals(isItms) ||
+                        ProductConst.isItms.PUSHIPTVMODEL.getCode().equals(isItms))) {
                     startProductFlowReq.setProcessId(ProductConst.ITV_PRODUCT_FLOW_PROCESS_ID);
-                }else if(StringUtils.isNotEmpty(isItms) && ProductConst.isItms.PUSHMODEL.getCode().equals(isItms)){
+                } else if (StringUtils.isNotEmpty(isItms) && ProductConst.isItms.PUSHMODEL.getCode().equals(isItms)) {
                     startProductFlowReq.setProcessId(ProductConst.MODEL_PRODUCT_FLOW_PROCESS_ID);
-                }else{
+                } else {
                     startProductFlowReq.setProcessId(ProductConst.INTELLIGENCE_PRODUCT_FLOW_PROCESS_ID);
                 }
             }
             startProductFlowReq.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.STRING_PARAMS.getCode());
             startProductFlowReq.setParamsValue(t.getBrandId());
             ResultVO flowResltVO = productFlowService.startProductFlow(startProductFlowReq);
-            if(!flowResltVO.isSuccess()){
+            if (!flowResltVO.isSuccess()) {
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), flowResltVO.getResultMsg());
             }
         }
-        return  ResultVO.success(productBaseId);
+        return ResultVO.success(productBaseId);
     }
 
     private void pushItms(String deviceId,String userName,String code,String params){
@@ -473,6 +485,14 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 if(!ProductConst.StatusType.SUBMIT.getCode().equals(state)){
                     productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     productUpdateReq.setStatus(ProductConst.StatusType.AUDIT.getCode());
+
+                    // 如果是非厂商添加(一般是管理员）并且之前的是已挂网状态  直接挂网 zhongwenlong
+                    if (!req.isManufacturerType()
+                            && ProductConst.StatusType.EFFECTIVE.getCode().equals(state)) {
+                        productUpdateReq.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+                        productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDIT_PASS.getCode());
+                    }
+
                 }
                 if (!CollectionUtils.isEmpty(tagList)) {
                     TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
@@ -497,6 +517,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 if(!ProductConst.StatusType.SUBMIT.getCode().equals(state)){
                     par.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
+
+                    // 如果是: 非厂商添加(一般是管理员）  直接挂网 zhongwenlong
+                    if (!req.isManufacturerType()) {
+                        par.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+                        par.setAuditState(ProductConst.AuditStateType.AUDIT_PASS.getCode());
+                    }
                 }
                 productService.addProduct(par);
                 continue;
@@ -526,6 +552,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 if(!ProductConst.StatusType.SUBMIT.getCode().equals(status)){
                     auditState =ProductConst.AuditStateType.AUDITING.getCode();
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
+
+                    // 如果是非厂商添加(一般是管理员）  直接挂网 zhongwenlong
+                    if (!req.isManufacturerType()) {
+                        auditState =ProductConst.AuditStateType.AUDIT_PASS.getCode();
+                        par.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+                    }
+
                 }
                 par.setProductBaseId(req.getProductBaseId());
                 par.setCreateStaff(req.getUpdateStaff());
@@ -563,6 +596,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             }
         }
         int index = productBaseManager.updateProductBase(req);
+
+        if (!req.isManufacturerType()) {
+            // 如果是 非厂商修改(一般是管理员）不走审核流程 zhongwenlong
+            return  ResultVO.success(index);
+        }
+
         //修改成功并且非审核中
         if(index>0&&!ProductConst.AuditStateType.AUDITING.getCode().equals(oldAuditState)){
 

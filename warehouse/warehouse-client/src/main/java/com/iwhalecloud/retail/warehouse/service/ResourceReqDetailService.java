@@ -48,4 +48,11 @@ public interface ResourceReqDetailService {
      * @return
      */
     List<String> getUserHandleFormId(String userId);
+
+    /**
+     * 申请单明细处理中的串码
+     * @param nbrList
+     * @return
+     */
+    ResultVO<List<String>> getProcessingNbrList(List<String> nbrList);
 }

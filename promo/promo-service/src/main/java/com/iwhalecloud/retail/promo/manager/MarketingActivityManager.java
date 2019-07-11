@@ -251,18 +251,6 @@ public class MarketingActivityManager{
         queryWrapper.in(MarketingActivity.FieldNames.id.getTableFieldName(), idList);
         return marketingActivityMapper.selectList(queryWrapper);
     }
-//    /**
-//     * 根据活动ID更新状态
-//     * @param marketingActivityId
-//     * @return
-//     */
-//    public ResultVO<Boolean> updateMarketingActivityStatus(String marketingActivityId){
-//        MarketingActivity marketingActivity = new MarketingActivity();
-//        marketingActivity.setId(marketingActivityId);
-//        marketingActivity.setStatus(PromoConst.STATUSCD.STATUS_CD_10.getCode());
-//        return ResultVO.success(marketingActivityMapper.updateById(marketingActivity) > 0);
-//    }
-
 
     /**
      * 根据活动id查询活动信息
@@ -274,19 +262,6 @@ public class MarketingActivityManager{
         queryWrapper.eq(MarketingActivity.FieldNames.id.getTableFieldName(),marketingActivityId);
         queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(),PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
         return marketingActivityMapper.selectOne(queryWrapper);
-    }
-
-    /**
-     * 根据活动id查询活动信息
-     * @param marketingActivityId
-     * @return
-     */
-    public MarketingActivity queryMarketingActivityTime(String marketingActivityId){
-//        QueryWrapper queryWrapper = new QueryWrapper();
-//        queryWrapper.eq(MarketingActivity.FieldNames.id.getTableFieldName(),marketingActivityId);
-//        queryWrapper.eq(MarketingActivity.FieldNames.isDeleted.getTableFieldName(),PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
-//        return marketingActivityMapper.selectOne(queryWrapper);
-    	return marketingActivityMapper.queryMarketingActivityTime(marketingActivityId);
     }
     
     /**
@@ -380,8 +355,6 @@ public class MarketingActivityManager{
         if (isInvalid) {
             // 失效
             queryWrapper.ne(MarketingActivity.FieldNames.status.getTableFieldName(), PromoConst.STATUSCD.STATUS_CD_20.getCode());
-            queryWrapper.apply(MarketingActivity.FieldNames.startTime.getTableFieldName() + " > now()")
-                    .or().apply(MarketingActivity.FieldNames.endTime.getTableFieldName() + " <= now()");
         } else {
             // 生效
             queryWrapper.eq(MarketingActivity.FieldNames.status.getTableFieldName(), PromoConst.STATUSCD.STATUS_CD_20.getCode());

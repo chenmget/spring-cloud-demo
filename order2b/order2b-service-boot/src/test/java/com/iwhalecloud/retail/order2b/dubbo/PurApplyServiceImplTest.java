@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.reflect.TypeToken;
@@ -12,6 +13,8 @@ import com.iwhalecloud.retail.order2b.entity.PurApplyItemDetail;
 import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
+import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.service.CommonRegionService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -38,7 +41,8 @@ public class PurApplyServiceImplTest  extends TestBase {
     private PurApplyManager purApplyManager;
     @Resource
     private PurchaseApplyService purchaseApplyService;
-
+    @Reference
+    CommonRegionService commonRegionService;
 
     @Test
     public void tcProcureApply() {
@@ -255,10 +259,14 @@ public class PurApplyServiceImplTest  extends TestBase {
     }
     @Test
     public void applySearchReport(){
-        String json = "{\"pageNo\":1,\"pageSize\":10,\"applyCode\":\"\",\"applyName\":\"\",\"lanIdList\":[],\"merchantName\":\"\",\"productName\":\"\",\"unitType\":\"\",\"color\":\"亮黑色\",\"memory\":\"3G\",\"statusCd\":\"21\"}";
-//        PurApplyReq req = new PurApplyReq();
-        Gson gson = new Gson();
-        PurApplyStatusReportReq req = gson.fromJson(json, new TypeToken<PurApplyStatusReportReq>(){}.getType());
+        ResultVO<CommonRegionDTO> c = commonRegionService.getCommonRegionById("731");
+
+        System.out.println(JSON.toJSONString(c));
+
+//        String json = "{\"pageNo\":1,\"pageSize\":10,\"applyCode\":\"\",\"applyName\":\"\",\"lanIdList\":[],\"merchantName\":\"\",\"productName\":\"\",\"unitType\":\"\",\"color\":\"亮黑色\",\"memory\":\"3G\",\"statusCd\":\"21\"}";
+////        PurApplyReq req = new PurApplyReq();
+//        Gson gson = new Gson();
+//        PurApplyStatusReportReq req = gson.fromJson(json, new TypeToken<PurApplyStatusReportReq>(){}.getType());
 //        log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
 //        req.setLanId("731");
 //        String userId = UserContext.getUserId();
@@ -283,8 +291,8 @@ public class PurApplyServiceImplTest  extends TestBase {
 //        }
 //
 //        log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
-        ResultVO resultVO =   purApplyService.applyStatusSearchReport(req);
-        System.out.println(JSON.toJSONString(resultVO));
+//        ResultVO resultVO =   purApplyService.applyStatusSearchReport(req);
+//        System.out.println(JSON.toJSONString(resultVO));
 //        return ResultVO.success(purApplyResp);
     }
 
@@ -299,5 +307,30 @@ public class PurApplyServiceImplTest  extends TestBase {
         System.out.println("lllll==="+JSON.toJSONString(resultVO));
 
     }
+    @Test
+    public void ckData() {
+        PurApplyReq req = new PurApplyReq();
+        req.setApplyId("5009");
+        CkProcureApplyResp procureApplyReq1 = purApplyService.ckApplyData1(req);
+        //获取添加的产品信息
+        List<AddProductReq> procureApplyReq2 = purApplyService.ckApplyData2(req);
+        List<AddFileReq> procureApplyReq3 = purApplyService.ckApplyData3(req);
+        // 发货串码
+        List<String> deliverMktResInstNbrList = purApplyService.countDelivery(req.getApplyId());
+        if ( deliverMktResInstNbrList !=null && deliverMktResInstNbrList.size()>0 ) {
+            procureApplyReq1.setDeliveryTotal(String.valueOf(deliverMktResInstNbrList.size()));
+            procureApplyReq1.setDeliverMktResInstNbrList(deliverMktResInstNbrList);
+        }else {
+            procureApplyReq1.setDeliveryTotal("0");
+        }
 
+        //如果是采购单，则查看收货地址
+        List<PurApplyExtReq> procureApplyReq4 = purApplyService.ckApplyData4(req);
+        procureApplyReq1.setPurApplyExtReq(procureApplyReq4);
+
+        procureApplyReq1.setAddProductReq(procureApplyReq2);
+        procureApplyReq1.setAddFileReq(procureApplyReq3);
+        System.out.println("lllll==="+JSON.toJSONString(procureApplyReq1));
+//        return ResultVO.success(procureApplyReq1);
+    }
 }

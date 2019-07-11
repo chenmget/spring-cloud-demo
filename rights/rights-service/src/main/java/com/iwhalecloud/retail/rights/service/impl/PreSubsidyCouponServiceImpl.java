@@ -77,9 +77,7 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
     @Transactional
     public ResultVO addPreSubsidyCoupon(AddPreSubsidyCouponReqDTO req) {
         log.info("PreSubsidyCouponServiceImpl.addPreSubsidyCoupon AddPreSubsidyCouponReqDTO={}", JSON.toJSON(req));
-        QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
-        queryMarketingActivityReq.setMarketingActivityId(req.getMarketingActivityId());
-        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(queryMarketingActivityReq);
+        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(req.getMarketingActivityId());
         if (!marketingActivityDTOResultVO.isSuccess() || marketingActivityDTOResultVO.getResultData() == null) {
             return ResultVO.error("查询活动信息异常");
         }
@@ -147,9 +145,7 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
     @Transactional
     public ResultVO updatePreSubsidyCoupon(UpdatePreSubsidyCouponReqDTO req) {
         log.info("PreSubsidyCouponServiceImpl.updatePreSubsidyCoupon UpdatePreSubsidyCouponReqDTO={}", JSON.toJSON(req));
-        QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
-        queryMarketingActivityReq.setMarketingActivityId(req.getMarketingActivityId());
-        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(queryMarketingActivityReq);
+        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(req.getMarketingActivityId());
         log.info("PreSubsidyCouponServiceImpl.updatePreSubsidyCoupon marketingActivityService.queryMarketingActivityById marketingActivityDTOResultVO={}", JSON.toJSON(marketingActivityDTOResultVO));
         if (!marketingActivityDTOResultVO.isSuccess() || marketingActivityDTOResultVO.getResultData() == null) {
             return ResultVO.error("查询活动信息异常");
@@ -234,9 +230,7 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
     @Transactional
     public ResultVO addPreSubsidyProduct(AddPromotionProductReqDTO addPromotionProductReqDTO) {
         log.info("PreSubsidyCouponServiceImpl.addPreSubsidyProduct addPromotionProductReqDTO={}", JSON.toJSON(addPromotionProductReqDTO));
-        QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
-        queryMarketingActivityReq.setMarketingActivityId(addPromotionProductReqDTO.getMarketingActivityId());
-        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(queryMarketingActivityReq);
+        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(addPromotionProductReqDTO.getMarketingActivityId());
         log.info("PreSubsidyCouponServiceImpl.addPreSubsidyProduct marketingActivityService.queryMarketingActivityById marketingActivityDTOResultVO={}", JSON.toJSON(marketingActivityDTOResultVO));
         if (!marketingActivityDTOResultVO.isSuccess() || marketingActivityDTOResultVO.getResultData() == null) {
             return ResultVO.error("活动数据异常");
@@ -310,9 +304,7 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
     @Override
     public ResultVO<List<PreSubsidyProductPromResqDTO>> queryPreSubsidyProduct(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO) {
         log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct  queryPreSubsidyReqDTO ={}", JSON.toJSON(queryPreSubsidyReqDTO));
-        QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
-        queryMarketingActivityReq.setMarketingActivityId(queryPreSubsidyReqDTO.getMarketingActivityId());
-        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(queryMarketingActivityReq);//获取时间lws
+        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(queryPreSubsidyReqDTO.getMarketingActivityId());
         log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct marketingActivityService.queryMarketingActivityById marketingActivityDTOResultVO ={} ", JSON.toJSON(marketingActivityDTOResultVO));
         if (!marketingActivityDTOResultVO.isSuccess() || marketingActivityDTOResultVO.getResultData() == null) {
             return ResultVO.error("活动数据异常");
@@ -320,48 +312,6 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
         String promotionType = marketingActivityDTOResultVO.getResultData().getPromotionTypeCode();
         List<PreSubsidyProductPromResqDTO> preSubsidyProductPromResqDTOS = Lists.newArrayList();
         ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = activityProductService.queryPreSubsidyProduct(queryPreSubsidyReqDTO.getMarketingActivityId());
-        log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct activityProductService.queryPreSubsidyProduct listResultVO ={} ", JSON.toJSON(listResultVO));
-        if (listResultVO.getResultData().size() <= 0) {
-            return ResultVO.success(preSubsidyProductPromResqDTOS);
-        }
-        for (PreSubsidyProductRespDTO preSubsidyProductResqDTO : listResultVO.getResultData()) {
-            //复制产品信息
-            PreSubsidyProductPromResqDTO preSubsidyProductPromResqDTO = new PreSubsidyProductPromResqDTO();
-            BeanUtils.copyProperties(preSubsidyProductResqDTO, preSubsidyProductPromResqDTO);
-            //复制活动产品信息
-            ActivityProductResq activityProductResq = new ActivityProductResq();
-            BeanUtils.copyProperties(preSubsidyProductResqDTO.getActivityProductResqDTO(), activityProductResq);
-            preSubsidyProductPromResqDTO.setActivityProductResq(activityProductResq);
-            if (PromoConst.PromotionType.PROMOTION_TYPE_CD_20.getCode().equals(promotionType)) {
-                String productId = preSubsidyProductResqDTO.getActivityProductResqDTO().getProductId();
-                QueryProductCouponReq queryProductCouponReq = new QueryProductCouponReq();
-                queryProductCouponReq.setProductId(productId);
-                queryProductCouponReq.setMarketingActivityId(queryPreSubsidyReqDTO.getMarketingActivityId());
-                queryProductCouponReq.setStatusCd(RightsStatusConsts.RIGHTS_STATUS_EXPIRE);
-                queryProductCouponReq.setObjType(RightsConst.CouponApplyObjType.PRODUCT.getType());
-                List<MktResCouponRespDTO> mktResCouponRespDTOList = mktResCouponManager.queryActivityCoupon(queryProductCouponReq);
-                log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct mktResCouponManager.queryActivityCoupon mktResCouponRespDTOList={}", JSON.toJSON(mktResCouponRespDTOList));
-                preSubsidyProductPromResqDTO.setMktResRegionRespDTOS(mktResCouponRespDTOList);
-            }
-            preSubsidyProductPromResqDTOS.add(preSubsidyProductPromResqDTO);
-        }
-        log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct preSubsidyProductPromResqDTOS={}", JSON.toJSON(preSubsidyProductPromResqDTOS));
-        return ResultVO.success(preSubsidyProductPromResqDTOS);
-    }
-
-    @Override
-    public ResultVO<List<PreSubsidyProductPromResqDTO>> queryPreSubsidyProductInfo(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO) {
-        log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct  queryPreSubsidyReqDTO ={}", JSON.toJSON(queryPreSubsidyReqDTO));
-        QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
-        queryMarketingActivityReq.setMarketingActivityId(queryPreSubsidyReqDTO.getMarketingActivityId());
-        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityByIdtime(queryMarketingActivityReq); // 获取时间lws
-        log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct marketingActivityService.queryMarketingActivityById marketingActivityDTOResultVO ={} ", JSON.toJSON(marketingActivityDTOResultVO));
-        if (!marketingActivityDTOResultVO.isSuccess() || marketingActivityDTOResultVO.getResultData() == null) {
-            return ResultVO.error("活动数据异常");
-        }
-        String promotionType = marketingActivityDTOResultVO.getResultData().getPromotionTypeCode();
-        List<PreSubsidyProductPromResqDTO> preSubsidyProductPromResqDTOS = Lists.newArrayList();
-        ResultVO<List<PreSubsidyProductRespDTO>> listResultVO = activityProductService.queryPreSubsidyProductInfo(queryPreSubsidyReqDTO.getMarketingActivityId());
         log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct activityProductService.queryPreSubsidyProduct listResultVO ={} ", JSON.toJSON(listResultVO));
         if (listResultVO.getResultData().size() <= 0) {
             return ResultVO.success(preSubsidyProductPromResqDTOS);
@@ -446,9 +396,7 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
     @Override
     public ResultVO<List<MktResCouponRespDTO>> queryMixUseCoupon(QueryPreSubsidyReqDTO queryPreSubsidyReqDTO) {
         log.info("PreSubsidyCouponServiceImpl.queryMixUseCoupon queryPreSubsidyReqDTO={}", JSON.toJSON(queryPreSubsidyReqDTO));
-        QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
-        queryMarketingActivityReq.setMarketingActivityId(queryPreSubsidyReqDTO.getMarketingActivityId());
-        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(queryMarketingActivityReq);
+        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(queryPreSubsidyReqDTO.getMarketingActivityId());
         log.info("PreSubsidyCouponServiceImpl.queryPreSubsidyProduct marketingActivityService.queryMarketingActivityById marketingActivityDTOResultVO ={} ", JSON.toJSON(marketingActivityDTOResultVO));
         if (!marketingActivityDTOResultVO.isSuccess() || marketingActivityDTOResultVO.getResultData() == null) {
             return ResultVO.error("活动数据异常");
@@ -462,25 +410,4 @@ public class PreSubsidyCouponServiceImpl implements PreSubsidyCouponService {
         return ResultVO.success(mktResCouponManager.updateActCouponType(queryPreSubsidyReqDTO.getMarketingActivityId(), queryPreSubsidyReqDTO.getCouponKind()));
     }
 
-    @Override
-    @Transactional
-    public ResultVO updateCouponDate(String marketingActivityId) {
-        log.info("PreSubsidyCouponServiceImpl.updateCouponDate marketingActivityId={}", marketingActivityId);
-        QueryMarketingActivityReq queryMarketingActivityReq = new QueryMarketingActivityReq();
-        queryMarketingActivityReq.setMarketingActivityId(marketingActivityId);
-        ResultVO<MarketingActivityDTO> marketingActivityDTOResultVO = marketingActivityService.queryMarketingActivityById(queryMarketingActivityReq);
-        log.info("PreSubsidyCouponServiceImpl.updateCouponDate marketingActivityService.queryMarketingActivityById marketingActivityDTOResultVO ={} ", JSON.toJSON(marketingActivityDTOResultVO));
-        if (!marketingActivityDTOResultVO.isSuccess() || marketingActivityDTOResultVO.getResultData() == null) {
-            return ResultVO.error("活动数据异常");
-        }
-        MarketingActivityDTO resultData = marketingActivityDTOResultVO.getResultData();
-        List<MktResCoupon> mktResCoupons = mktResCouponManager.queryCouponByActId(marketingActivityId);
-        log.info("PreSubsidyCouponServiceImpl.updateCouponDate mktResCouponManager.queryCouponByActId mktResCoupons ={} ", JSON.toJSON(mktResCoupons));
-        List<String> mktResIds = mktResCoupons.stream().map(MktResCoupon::getMktResId).collect(Collectors.toList());
-        //更新优惠券生失效时间
-        couponEffExpRuleManager.updateCouponEffExpDate(mktResIds, resultData.getStartTime(), resultData.getEndTime());
-        //更新优惠券领取时间
-        couponSupplyRuleManager.updateCouponSupplyDate(mktResIds, resultData.getStartTime(), resultData.getEndTime());
-        return ResultVO.success();
-    }
 }

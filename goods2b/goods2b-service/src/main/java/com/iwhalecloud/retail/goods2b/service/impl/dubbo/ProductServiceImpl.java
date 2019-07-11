@@ -7,7 +7,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
-import com.iwhalecloud.retail.dto.SourceFromContext;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.ProductConst;
@@ -21,6 +20,9 @@ import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
 import com.iwhalecloud.retail.partner.dto.req.MerchantGetReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantRulesSaveReq;
+import com.iwhalecloud.retail.partner.dto.req.MerchantRulesUpdateReq;
+import com.iwhalecloud.retail.partner.service.MerchantRulesService;
 import com.iwhalecloud.retail.partner.service.MerchantService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -57,7 +59,7 @@ public class ProductServiceImpl implements ProductService {
     @Autowired
     private TagTelManager tagTelManager;
 
-       @Autowired
+    @Autowired
     private BrandManager brandManager;
 
     @Autowired
@@ -65,6 +67,9 @@ public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private TypeManager typeManager;
+
+    @Reference
+    private MerchantRulesService merchantRulesService;
 
     @Override
     public ResultVO<String> getMerchantByProduct(MerChantGetProductReq req) {
@@ -610,14 +615,39 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public ResultVO updateAuditState(ProductAuditStateUpdateReq req){
-        log.info("ProductServiceImpl.updateAuditState productBaseId={},auditState={},updateStaff={}", req.getProductBaseId(), req.getAuditState(),req.getUpdateStaff());
+    public ResultVO updateAuditState(ProductAuditStateUpdateReq req) {
+        log.info("ProductServiceImpl.updateAuditState productBaseId={},auditState={},updateStaff={}", req.getProductBaseId(), req.getAuditState(), req.getUpdateStaff());
         int result = productManager.updateAuditStateByProductBaseId(req);
-        if(result > 0){
+        //如果审核通过，增加商家对应的产品串码录入权限
+//        if (req.getStatus().equals(ProductConst.StatusType.EFFECTIVE.getCode()) && req.getAuditState().equals(ProductConst.AuditStateType.AUDIT_PASS.getCode()))
+//        {
+//            addMerchantImeiRule(req.getProductBaseId());
+//        }
+        if (result > 0) {
             return ResultVO.success();
         }
-
         return ResultVO.error("审核失败");
+    }
+
+    /**
+     * 产品审核通过，添加厂商对应的产品串码录入权限
+     * @param productBaseId
+     */
+    private void addMerchantImeiRule(String productBaseId) {
+        //根据productbaseId获取所有产品
+        ProductGetReq productGetReq = new ProductGetReq();
+        productGetReq.setProductBaseId(productBaseId);
+        productGetReq.setPageNo(1);
+        productGetReq.setPageSize(10000);
+        Page<ProductDTO> page = productManager.selectProduct(productGetReq);
+        List<ProductDTO> productDTOList = page.getRecords();
+        if (productDTOList.size() > 0) {
+            List<String> productIds = productDTOList.stream().map(t -> t.getProductId()).collect(Collectors.toList());
+            MerchantRulesUpdateReq merchantRulesUpdateReq = new MerchantRulesUpdateReq();
+            merchantRulesUpdateReq.setTargetIdList(productIds);
+            merchantRulesUpdateReq.setMerchantId(productDTOList.get(0).getManufacturerId());
+            merchantRulesService.addFactoryMerchantImeiRule(merchantRulesUpdateReq);
+        }
     }
 
     @Override

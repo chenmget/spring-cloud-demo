@@ -1,9 +1,11 @@
-package com.iwhalecloud.retail.goods2b.model;
+package com.iwhalecloud.retail.goods2b.dto.req;
 
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.io.Serializable;
 import java.util.List;
 
 /****
@@ -11,7 +13,7 @@ import java.util.List;
  * @date 2019/7/9 21:34
  */
 @Data
-public class CheckRuleModel {
+public class CheckRuleReq implements Serializable {
 
     private List<GoodsRulesDTO> entityList;
 
@@ -19,5 +21,9 @@ public class CheckRuleModel {
 
     private String supplierId;
 
-    private String disProductType;
+    @ApiModelProperty("分货方式：2按规格，1按机型")
+    private String assignType;
+
+
+    private List<String> targetList;
 }

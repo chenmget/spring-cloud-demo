@@ -20,6 +20,7 @@
         ,t.REMARK
         ,t.CREATE_STAFF
         ,t.CREATE_DATE
+        ,t.OPER_TYPE
     </sql>
 
     <select id="listResourceItemsManualSyncRec" parameterType="com.iwhalecloud.retail.warehouse.dto.request.ResouceInstItmsManualSyncRecPageReq"
@@ -49,12 +50,10 @@
         <if test="null!=req.productName and ''!=req.productName">
             and upper(t.product_name) like CONCAT(CONCAT('%',upper(#{req.productName})),'%')
         </if>
-        <if test="null!=req.AddOptionType and ''!=req.AddOptionType">
-            and t.orig_lan_id is null or trim(orig_lan_id)=''
+        <if test="null!=req.operType and ''!=req.operType">
+            and t.oper_type = #{req.operType}
         </if>
-        <if test="null!=req.updateOptionType and ''!=req.updateOptionType">
-            and trim(orig_lan_id)!=''
-        </if>
+
         <if test="null!=req.statusCd and ''!=req.statusCd">
             and t.status_cd = #{req.statusCd}
         </if>

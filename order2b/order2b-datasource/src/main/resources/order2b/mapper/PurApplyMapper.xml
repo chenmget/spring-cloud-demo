@@ -11,9 +11,11 @@
 		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
 		a.MERCHANT_ID As merchantId,
 		a.APPLY_MERCHANT_ID As applyMerchantId,
-		(SELECT b.REGION_NAME FROM SYS_COMMON_REGION b WHERE b.REGION_ID=a.LAN_ID) AS applyAddress,
-		(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.MERCHANT_ID) AS supplierName,
-		(SELECT b.user_name FROM sys_user b WHERE b.user_id=a.CREATE_STAFF) AS applyMerchantName,
+        a.lan_id as lanId,
+		'' AS applyAddress,
+		'' AS supplierName,
+		'' AS applyMerchantName,
+		a.CREATE_STAFF As createStaff,
 		<!--			(SELECT b.MERCHANT_NAME FROM PAR_MERCHANT b WHERE b.MERCHANT_ID=a.APPLY_MERCHANT_ID) AS applyMerchantName,-->
 		a.STATUS_CD AS STATUS,
 		'' AS `option`
@@ -54,12 +56,14 @@
 		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') as applyTime,DATE_FORMAT(d.UPDATE_DATE,'%Y-%m-%d %H:%i:%s') as revingDate,d.PRODUCT_ID as productId,
 		d.MKT_RES_INST_NBR as mktResInstNbr,DATE_FORMAT(d.CREATE_DATE,'%Y-%m-%d %H:%i:%s') as deliveryDate ,e.RECEIVE_NAME as receiveName,
 		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),e.RECEIVE_ADDR) as receiveAddr,e.CITY as receiveCity,i.PUR_PRICE as purPrice
-		from (pur_apply a, pur_apply_item_detail d)
-		-- LEFT JOIN pur_apply_item_detail d ON d.APPLY_ID = a.APPLY_ID
+		from  pur_apply_item_detail d
+		LEFT JOIN pur_apply a ON d.APPLY_ID = a.APPLY_ID
 		LEFT JOIN pur_apply_ext e ON a.APPLY_ID=e.APPLY_ID
 		LEFT JOIN pur_apply_item i ON a.APPLY_ID=i.APPLY_ID AND i.PRODUCT_ID = d.PRODUCT_ID
 		WHERE 1=1 AND a.APPLY_ID = d.APPLY_ID
-
+		<if test='req.lanIdTemp!=null and req.lanIdTemp!=""'>
+			and a.LAN_ID= #{req.lanIdTemp}
+		</if>
 		<if test='req.mktResInstNbr!=null and req.mktResInstNbr!=""'>
 			and d.MKT_RES_INST_NBR = #{req.mktResInstNbr}
 		</if>
@@ -140,6 +144,9 @@
 		from pur_apply a,pur_apply_item i WHERE
 		i.APPLY_ID = a.APPLY_ID
 
+		<if test='req.lanIdTemp!=null and req.lanIdTemp!=""'>
+			and a.LAN_ID= #{req.lanIdTemp}
+		</if>
 		<if test='req.applyCode!=null and req.applyCode!=""'>
 			and a.APPLY_CODE = #{req.applyCode}
 		</if>
@@ -331,7 +338,8 @@
 		a.apply_merchant_id AS applyMerchantId,
 		'' AS applyMerchantName,
 		a.LAN_ID as lanId,
-		concat(IFNULL(e.PROVINCE,''),IFNULL(e.CITY,''),IFNULL(e.REGION,''),e.RECEIVE_ADDR) AS applyAddress,
+		a.create_staff as createStaff,
+		'' AS applyAddress,
 		a.region_id as regionId,
 		'' AS applyDepartment,
 		a.phone as applyContact,
@@ -519,7 +527,7 @@
 			resultType="com.iwhalecloud.retail.order2b.dto.resquest.purapply.PurApplyExtReq">
 		SELECT
 		a.RECEIVE_NAME receiveName,
-		a.RECEIVE_ADDR receiveAddr,
+		concat(IFNULL(a.PROVINCE,''),IFNULL(a.CITY,''),IFNULL(a.REGION,''),a.RECEIVE_ADDR) receiveAddr,
 		a.RECEIVE_ZIP receiveZip,
 		a.RECEIVE_MOBILE receiveMobile,
 		a.RECEIVE_TIME receiveTime,

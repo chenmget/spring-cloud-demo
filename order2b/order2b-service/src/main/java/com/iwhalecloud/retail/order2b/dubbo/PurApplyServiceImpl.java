@@ -1,7 +1,6 @@
 package com.iwhalecloud.retail.order2b.dubbo;
 
 import com.alibaba.dubbo.config.annotation.Reference;
-
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -32,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.ss.formula.functions.T;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
@@ -81,6 +79,24 @@ public class PurApplyServiceImpl implements PurApplyService {
 			if(wfTaskResp != null){
 				purApplyResps.setTaskId(wfTaskResp.getTaskId());
 				purApplyResps.setTaskItemId(wfTaskResp.getTaskItemId());
+			}
+			// 获取商家名称
+			if (purApplyResps.getMerchantId() !=null  && purApplyResps.getMerchantId().length()>0) {
+				MerchantDTO merchantDTO = merchantService.getMerchantInfoById(purApplyResps.getMerchantId());
+				if(null != merchantDTO)
+					purApplyResps.setSupplierName(merchantDTO.getMerchantName());
+			}
+			// 申请人用户名
+			if (purApplyResps.getCreateStaff() !=null && purApplyResps.getCreateStaff().length()>0 ) {
+				UserDTO u = userService.getUserByUserId(purApplyResps.getCreateStaff());
+				if (u!=null)
+					purApplyResps.setApplyMerchantName(u.getUserName());
+			}
+			if(purApplyResps.getLanId() !=null) {
+				ResultVO<CommonRegionDTO> c = commonRegionService.getCommonRegionById(purApplyResps.getLanId());
+				CommonRegionDTO v = c.getResultData();
+				if (v!=null)
+					purApplyResps.setApplyAddress(v.getRegionName());
 			}
 //			String createDate = purApplyResps.getApplyTime();
 //			createDate = createDate.substring(0, createDate.length()-2);
@@ -368,6 +384,12 @@ public class PurApplyServiceImpl implements PurApplyService {
             if (u!=null)
                 ckProcureApplyResp.setApplyMerchantName(u.getUserName());
         }
+		if(ckProcureApplyResp.getLanId() !=null) {
+			ResultVO<CommonRegionDTO> c = commonRegionService.getCommonRegionById(ckProcureApplyResp.getLanId());
+			CommonRegionDTO v = c.getResultData();
+			if (v!=null)
+				ckProcureApplyResp.setApplyAddress(v.getRegionName());
+		}
 
 
 //		String createDate = ckProcureApplyResp.getCreateDate();
@@ -727,9 +749,7 @@ public class PurApplyServiceImpl implements PurApplyService {
 	@Override
 	public ResultVO<Page<PurApplyReportResp>> applySearchReport(PurApplyReportReq req) {
 		log.info("applySearchReport参数   req={}"+JSON.toJSONString(req));
-		if (req.getLanId()!=null) {
-			req.setRegionId(req.getLanId());
-		}
+
 		Boolean flag = productParamCheck(req);
 		if (flag == true) {
 			ProductGetIdReq productGetIdReq = new ProductGetIdReq();
@@ -751,6 +771,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		}
 
 		//req.setRegionId();
+		if (req.getLanIdList() !=null && req.getLanIdList().size()>0) {
+			req.setLanIdTemp(null);
+		}
 		Page<PurApplyReportResp> purApplyReportResp = purApplyManager.applySearchReport(req);
 		List<PurApplyReportResp>  list=purApplyReportResp.getRecords();
 		if (list ==null || list.size()==0 ) {
@@ -808,6 +831,9 @@ public class PurApplyServiceImpl implements PurApplyService {
 		}
 
 		//req.setRegionId();
+		if (req.getLanIdList() !=null && req.getLanIdList().size()>0) {
+			req.setLanIdTemp(null);
+		}
 		Page<PurApplyStatusReportResp> purApplyStatusReportResp = purApplyManager.applyStatusSearchReport(req);
 		List<PurApplyStatusReportResp>  list=purApplyStatusReportResp.getRecords();
 		if (list ==null || list.size()==0 ) {

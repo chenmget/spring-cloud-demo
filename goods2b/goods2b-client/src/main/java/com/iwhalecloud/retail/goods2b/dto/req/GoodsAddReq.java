@@ -226,6 +226,38 @@ public class GoodsAddReq extends AbstractRequest implements Serializable {
      * 分货种类
      */
     @ApiModelProperty("分货种类:1按机型，2按规格")
-    private String disProductType;
+    private String assignType;
+
+    /**
+     * 预售类型：1. 集约预受活动商品（关联管理员定义的预售活动） 2. 自定义预售商品（供货商定义的无活动预售商品）
+     */
+    @ApiModelProperty(value = "预售类型：1. 集约预受活动商品（关联管理员定义的预售活动） 2. 自定义预售商品（供货商定义的无活动预售商品）")
+    private String advanceSaleType;
+
+    /**
+     * 预售支付类型：支付方式 1. 支付定金 2. 全款支付
+     */
+    @ApiModelProperty(value = "预售支付类型：支付方式 1. 支付定金 2. 全款支付")
+    private String advancePayType;
+    /**
+     * 支付定金开始时间
+     */
+    @ApiModelProperty(value = "支付定金开始时间")
+    private java.util.Date preStartTime;
+    /**
+     * 支付定金结束时间
+     */
+    @ApiModelProperty(value = "支付定金结束时间")
+    private java.util.Date preEndTime;
+    /**
+     * 支付尾款开始时间
+     */
+    @ApiModelProperty(value = "支付尾款开始时间")
+    private java.util.Date tailPayStartTime;
+    /**
+     * 支付尾款结束时间
+     */
+    @ApiModelProperty(value = "支付尾款结束时间")
+    private java.util.Date tailPayEndTime;
 
 }

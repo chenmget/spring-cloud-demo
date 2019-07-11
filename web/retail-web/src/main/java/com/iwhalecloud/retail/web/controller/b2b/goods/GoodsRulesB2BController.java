@@ -3,6 +3,8 @@ package com.iwhalecloud.retail.web.controller.b2b.goods;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
+import com.iwhalecloud.retail.goods2b.dto.GoodsRulesProductDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.CheckRuleReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleByExcelFileReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsRulesExcelResp;
@@ -24,17 +26,17 @@ public class GoodsRulesB2BController {
     @Reference
     private GoodsRulesService goodsRulesService;
 
-    @ApiOperation(value = "批量新增更新分货规则", notes = "批量新增或更新")
-    @ApiResponses({
-            @ApiResponse(code=400,message="请求参数没填好"),
-            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
-    })
-    @PostMapping(value="/addOrUpdateGoodsRulesBatch")
-    public ResultVO<GoodsRulesExcelResp> addOrUpdateGoodsRulesBatch(@RequestBody List<GoodsRulesDTO> entityList){
-        ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
-        prodGoodsRuleEditReq.setGoodsRulesDTOList(entityList);
-        return goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
-    }
+//    @ApiOperation(value = "批量新增更新分货规则", notes = "批量新增或更新")
+//    @ApiResponses({
+//            @ApiResponse(code=400,message="请求参数没填好"),
+//            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+//    })
+//    @PostMapping(value="/addOrUpdateGoodsRulesBatch")
+//    public ResultVO<GoodsRulesExcelResp> addOrUpdateGoodsRulesBatch(@RequestBody List<GoodsRulesDTO> entityList){
+//        ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
+//        prodGoodsRuleEditReq.setGoodsRulesDTOList(entityList);
+//        return goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
+//    }
 
     @ApiOperation(value = "删除分货规则", notes = "根据id，进行单条删除")
     @ApiImplicitParams({
@@ -84,9 +86,20 @@ public class GoodsRulesB2BController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @PostMapping(value = "/listGoodsRulesByCondition")
-    public ResultVO<List<GoodsRulesDTO>> listGoodsRulesByCondition(@RequestBody GoodsRulesDTO condition) {
+    public ResultVO<List<GoodsRulesProductDTO>> listGoodsRulesByCondition(@RequestBody GoodsRulesDTO condition) {
         return goodsRulesService.queryProdGoodsRuleByCondition(condition);
     }
+
+    @ApiOperation(value = "校验分货对象是否有经营权限", notes = "校验")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value = "/checkObj")
+    public ResultVO checkObj(@RequestBody CheckRuleReq condition) {
+        return goodsRulesService.checkObj(condition);
+    }
+
 
     private ByteArrayOutputStream cloneInputStream(InputStream input) {
         try {

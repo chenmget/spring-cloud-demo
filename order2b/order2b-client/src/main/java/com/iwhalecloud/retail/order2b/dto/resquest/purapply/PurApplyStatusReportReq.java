@@ -21,7 +21,8 @@ public class PurApplyStatusReportReq extends PageVO implements Serializable {
 
     private String regionId;// 其实是lanId 因为使用lanId page aop 会拦截把他设置null
 
-
+    private String lanId;
+	private String lanIdTemp;
 
 	// 产品字段
 	private  String productName; // 产品名称

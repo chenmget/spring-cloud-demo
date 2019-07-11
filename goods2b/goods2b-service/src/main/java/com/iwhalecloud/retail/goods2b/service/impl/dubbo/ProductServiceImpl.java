@@ -817,5 +817,4 @@ public class ProductServiceImpl implements ProductService {
         return ResultVO.success(productIdList);
     }
 
-
 }

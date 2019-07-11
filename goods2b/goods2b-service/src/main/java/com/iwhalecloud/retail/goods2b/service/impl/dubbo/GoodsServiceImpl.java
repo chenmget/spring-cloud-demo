@@ -19,7 +19,7 @@ import com.iwhalecloud.retail.goods2b.exception.GoodsRulesException;
 import com.iwhalecloud.retail.goods2b.helper.AttrSpecHelper;
 import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsProductRelMapper;
-import com.iwhalecloud.retail.goods2b.model.CheckRuleModel;
+import com.iwhalecloud.retail.goods2b.dto.req.CheckRuleReq;
 import com.iwhalecloud.retail.goods2b.service.dubbo.*;
 import com.iwhalecloud.retail.goods2b.utils.CurrencyUtil;
 import com.iwhalecloud.retail.goods2b.utils.ResultVOUtils;
@@ -223,14 +223,14 @@ public class GoodsServiceImpl implements GoodsService {
                 CollectionUtils.isNotEmpty(req.getEntityList())) {
 
             /**
-             * 分货数量,默认按规格，当 disProductType=1时候,按机型校验
+             * 分货数量,默认按规格，当 assignType=1时候,按机型校验
              */
-            CheckRuleModel model=new CheckRuleModel();
+            CheckRuleReq model=new CheckRuleReq();
             model.setEntityList(req.getEntityList());
-            model.setDisProductType(req.getAssignType());
+            model.setAssignType(req.getAssignType());
             model.setSupplierId(req.getSupplierId());
             model.setGoodsProductRelList(req.getGoodsProductRelList());
-            ResultVO checkResult=goodsRulesProductService.addGoodsCheckRuleGoods(model);
+            ResultVO checkResult=goodsRulesService.checkGoodsRules(model);
 
             log.info("GoodsServiceImpl.addGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
@@ -449,14 +449,14 @@ public class GoodsServiceImpl implements GoodsService {
         if (GoodsConst.IsAllotEnum.IS_ALLOT.getCode().equals(req.getIsAllot()) &&
                 CollectionUtils.isNotEmpty(req.getEntityList())) {
             /**
-             * 分货数量,默认按规格，当 disProductType=1时候,按机型校验
+             * 分货数量,默认按规格，当 AssignType=1时候,按机型校验
              */
-            CheckRuleModel model=new CheckRuleModel();
+            CheckRuleReq model=new CheckRuleReq();
             model.setEntityList(req.getEntityList());
-            model.setDisProductType(req.getAssignType());
+            model.setAssignType(req.getAssignType());
             model.setSupplierId(req.getSupplierId());
             model.setGoodsProductRelList(req.getGoodsProductRelList());
-            ResultVO checkResult=goodsRulesProductService.addGoodsCheckRuleGoods(model);
+            ResultVO checkResult=goodsRulesService.checkGoodsRules(model);
             log.info("GoodsServiceImpl.editGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
                 try {

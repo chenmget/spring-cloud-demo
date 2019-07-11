@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.web.controller.b2b.goods;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
+import com.iwhalecloud.retail.goods2b.dto.req.CheckRuleReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleByExcelFileReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProdGoodsRuleEditReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.GoodsRulesExcelResp;
@@ -87,6 +88,17 @@ public class GoodsRulesB2BController {
     public ResultVO<List<GoodsRulesDTO>> listGoodsRulesByCondition(@RequestBody GoodsRulesDTO condition) {
         return goodsRulesService.queryProdGoodsRuleByCondition(condition);
     }
+
+    @ApiOperation(value = "校验分货对象是否有经营权限", notes = "校验")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @PostMapping(value = "/checkObj")
+    public ResultVO checkObj(@RequestBody CheckRuleReq condition) {
+        return goodsRulesService.checkObj(condition);
+    }
+
 
     private ByteArrayOutputStream cloneInputStream(InputStream input) {
         try {

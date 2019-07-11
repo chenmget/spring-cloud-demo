@@ -587,10 +587,10 @@ public class ProductServiceImpl implements ProductService {
         log.info("ProductServiceImpl.updateAuditState productBaseId={},auditState={},updateStaff={}", req.getProductBaseId(), req.getAuditState(), req.getUpdateStaff());
         int result = productManager.updateAuditStateByProductBaseId(req);
         //如果审核通过，增加商家对应的产品串码录入权限
-        if (req.getStatus().equals(ProductConst.StatusType.EFFECTIVE.getCode()) && req.getAuditState().equals(ProductConst.AuditStateType.AUDIT_PASS.getCode()))
-        {
-            addMerchantImeiRule(req.getProductBaseId());
-        }
+//        if (req.getStatus().equals(ProductConst.StatusType.EFFECTIVE.getCode()) && req.getAuditState().equals(ProductConst.AuditStateType.AUDIT_PASS.getCode()))
+//        {
+//            addMerchantImeiRule(req.getProductBaseId());
+//        }
         if (result > 0) {
             return ResultVO.success();
         }

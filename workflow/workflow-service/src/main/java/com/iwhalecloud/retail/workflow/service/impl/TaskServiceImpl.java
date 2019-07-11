@@ -140,16 +140,29 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public ResultVO<Page<HandleTaskPageResp>> queryHandleTaskPage(HandleTaskPageReq req) {
-
         log.info("TaskServiceImpl.queryHandleTaskPage  req={}", JSON.toJSONString(req));
-
         Page<HandleTaskPageResp> page = taskManager.queryHandleTask(req);
-
         log.info("TaskServiceImpl.queryHandleTaskPage  page={}", JSON.toJSONString(page));
+        //填充当前处理人
+        List<HandleTaskPageResp> taskList = page.getRecords();
+        fillUserHandle(taskList);
+        page.setRecords(taskList);
         return ResultVO.success(page);
 
     }
 
+    /**
+     * 填充流程处理人
+     * @param taskList
+     */
+    private void fillUserHandle(List<HandleTaskPageResp> taskList) {
+        for (HandleTaskPageResp task : taskList) {
+            TaskItem item = taskItemManager.getCurTaskItem(task.getTaskId());
+            if (null != item) {
+                task.setHandlerUserName(item.getHandlerUserName());
+            }
+        }
+    }
 
 
     @Override

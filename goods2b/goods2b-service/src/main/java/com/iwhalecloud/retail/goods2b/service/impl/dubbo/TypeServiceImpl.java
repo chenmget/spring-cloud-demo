@@ -10,19 +10,19 @@ import com.iwhalecloud.retail.goods2b.common.AttrSpecConst;
 import com.iwhalecloud.retail.goods2b.common.FileConst;
 import com.iwhalecloud.retail.goods2b.common.TypeConst;
 import com.iwhalecloud.retail.goods2b.dto.AttrSpecDTO;
+import com.iwhalecloud.retail.goods2b.dto.ProdCRMTypeDto;
 import com.iwhalecloud.retail.goods2b.dto.ProdFileDTO;
 import com.iwhalecloud.retail.goods2b.dto.TypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.*;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductBaseGetResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.TypeDetailResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.TypeResp;
 import com.iwhalecloud.retail.goods2b.entity.Brand;
+import com.iwhalecloud.retail.goods2b.entity.ProdCRMType;
 import com.iwhalecloud.retail.goods2b.entity.ProdTypeComplex;
 import com.iwhalecloud.retail.goods2b.entity.Type;
-import com.iwhalecloud.retail.goods2b.manager.AttrSpecManager;
-import com.iwhalecloud.retail.goods2b.manager.BrandManager;
-import com.iwhalecloud.retail.goods2b.manager.ProdFileManager;
-import com.iwhalecloud.retail.goods2b.manager.TypeManager;
+import com.iwhalecloud.retail.goods2b.manager.*;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TypeService;
 import com.iwhalecloud.retail.goods2b.utils.FastDFSImgStrJoinUtil;
@@ -59,6 +59,12 @@ public class TypeServiceImpl implements TypeService {
 
     @Autowired
     private ProdFileManager prodFileManager;
+
+    @Autowired
+    private LindCrmTypeManager lindCrmTypeManager;
+
+    @Autowired
+    private ProductBaseManager productBaseManager;
 
     @Value("${fdfs.showUrl}")
     private String dfsShowIp;
@@ -198,6 +204,7 @@ public class TypeServiceImpl implements TypeService {
         List<Type> list = typeManager.listTypeByName(req.getTypeName());
         List<TypeDTO> typeDTOS = new ArrayList<>();
         for(Type type : list){
+//            if(!type.getTypeId().endsWith("0"))continue;
             TypeDTO dto = new TypeDTO();
             BeanUtils.copyProperties(type, dto);
             String typeId = dto.getTypeId();
@@ -280,9 +287,11 @@ public class TypeServiceImpl implements TypeService {
             List<AttrSpecDTO> attrDTOS = new ArrayList<>();
             List<AttrSpecDTO> specDTOS = new ArrayList<>();
             for(AttrSpecDTO attrSpecDTO : attrSpecDTOS){
+                //产品规格---内存颜色
                 if("1".equals(attrSpecDTO.getAttrType())){
                     specDTOS.add(attrSpecDTO);
                 }
+                //属性---对应产品的基本属性
                 if("2".equals(attrSpecDTO.getAttrType())){
                     attrDTOS.add(attrSpecDTO);
                 }
@@ -311,6 +320,18 @@ public class TypeServiceImpl implements TypeService {
             }
         }
         return ResultVO.success(typeDTOs);
+    }
+
+    @Override
+    public ResultVO<List<TypeDTO>> selectSubTypeById(TypeSelectByIdReq req) {
+        List<Type> typeList = typeManager.selectSubTypeById(req.getTypeId());
+        List<TypeDTO> typeDTOS = new ArrayList<>();
+        for(Type type : typeList) {
+            TypeDTO dto = new TypeDTO();
+            BeanUtils.copyProperties(type, dto);
+            typeDTOS.add(dto);
+        }
+        return ResultVO.success(typeDTOS);
     }
 
 
@@ -387,5 +408,17 @@ public class TypeServiceImpl implements TypeService {
         TypeResp resp = new TypeResp();
         BeanUtils.copyProperties(type, resp);
         return ResultVO.success(resp);
+    }
+
+    @Override
+    public ResultVO<ProdCRMTypeDto> getCrmTypeName(String prodBaseId) {
+        ProductBaseGetReq req = new ProductBaseGetReq();
+        req.setProductBaseId(prodBaseId);
+        ProductBaseGetResp resp = productBaseManager.selectProductBase(req).get(0);
+        Type type = typeManager.selectById(resp.getTypeId());
+        ProdCRMType prodCRMType = lindCrmTypeManager.getProCRMType(type.getCrmResKind());
+        ProdCRMTypeDto prodCRMTypeDto = new ProdCRMTypeDto();
+        BeanUtils.copyProperties(prodCRMType,prodCRMTypeDto);
+        return ResultVO.success(prodCRMTypeDto);
     }
 }

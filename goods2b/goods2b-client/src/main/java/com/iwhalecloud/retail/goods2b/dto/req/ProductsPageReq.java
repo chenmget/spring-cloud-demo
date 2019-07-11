@@ -121,4 +121,10 @@ public class ProductsPageReq extends PageVO {
      */
     @ApiModelProperty(value = "标签ID集合")
     private List<String> tagIdList;
+
+    /**
+     * 产品类型集合
+     */
+    @ApiModelProperty(value = "产品类型集合")
+    private List<String> typeIdList;
 }

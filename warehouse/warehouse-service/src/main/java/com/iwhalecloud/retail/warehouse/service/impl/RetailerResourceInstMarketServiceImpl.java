@@ -674,25 +674,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
             }
         }
-
-        Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(resourceInstDTOList, CLASS_TYPE_1);
-        // step 4:修改库存(出库)
-        for (Map.Entry<String, List<String>> entry : mktResIdAndNbrMap.entrySet()) {
-            ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
-            resourceInstStoreDTO.setMktResId(entry.getKey());
-            resourceInstStoreDTO.setMktResStoreId(mktResStoreId);
-            resourceInstStoreDTO.setMerchantId(sourceMerchantDTO.getMerchantId());
-            resourceInstStoreDTO.setLanId(sourceMerchantDTO.getLanId());
-            resourceInstStoreDTO.setRegionId(sourceMerchantDTO.getCity());
-            // 出库类型，库存减少
-            resourceInstStoreDTO.setQuantityAddFlag(false);
-            resourceInstStoreDTO.setQuantity(Long.valueOf(entry.getValue().size()));
-            int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
-            log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
-            if (updateResInstStore < 1) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
-            }
-        }
         return ResultVO.success(successMessage);
     }
 

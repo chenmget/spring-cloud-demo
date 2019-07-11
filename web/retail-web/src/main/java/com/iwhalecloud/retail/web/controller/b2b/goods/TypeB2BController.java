@@ -3,6 +3,7 @@ package com.iwhalecloud.retail.web.controller.b2b.goods;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.common.GlobalConsts;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.dto.SourceFromContext;
 import com.iwhalecloud.retail.goods2b.dto.TypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeDeleteByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeIsUsedQueryByIdReq;
@@ -109,4 +110,33 @@ public class TypeB2BController {
         return typeService.getDetailType(req);
     }
 
+
+    @ApiOperation(value = "产品类型三级子类", notes = "添加产品传入二级分类typeId如果有三级分类返回三级分类,没有返回空")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "parentTypeId", value = "类型id", paramType = "query", required = true, dataType = "String")
+    })
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/getChildProduct")
+    public ResultVO<List<TypeDTO>> getChildProduct(@RequestParam String parentTypeId) {
+        TypeSelectByIdReq req = new TypeSelectByIdReq();
+        req.setTypeId(parentTypeId);
+        return typeService.selectSubTypeById(req);
+    }
+
+
+    @ApiOperation(value = "获取crm侧typeId", notes = "")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name = "productBaseId", value = "类型id", paramType = "query", required = true, dataType = "String")
+    })
+    @ApiResponses({
+            @ApiResponse(code=400,message="请求参数没填好"),
+            @ApiResponse(code=404,message="请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/getCrmTypeName")
+    public ResultVO getCrmTypeName(@RequestParam String productBaseId) {
+        return typeService.getCrmTypeName(productBaseId);
+    }
 }

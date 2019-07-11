@@ -21,8 +21,7 @@
 			sum(a.RETURN_NUM) as returnNum,
 			sum(a.WEEK_AVG_SELL_NUM) as weekAvgSellNum
 		FROM RPT_PARTNER_OPERATING_DAY a
-		LEFT JOIN par_merchant par ON par.merchant_id = a.PARTNER_ID
-		LEFT JOIN sys_common_org c ON INSTR(par.PAR_CRM_ORG_PATH_CODE, c.path_code) AND c.org_level='3'
+		LEFT JOIN sys_common_org c ON INSTR(a.PATH_CODE, c.path_code) AND c.org_level='3'
 		LEFT JOIN sys_common_region b ON a.city_id = b.region_id
 		WHERE 1=1
 		<if test="req.dateStart!=null and req.dateStart!=''">
@@ -40,10 +39,10 @@
 	    <if test="req.orgName!=null and req.orgName.size()>0">
 		  	and 
 		  	<foreach collection="req.orgName" open="(" item="item" index="index" separator=" or " close=")">
-		  		INSTR( par.PAR_CRM_ORG_PATH_CODE, #{item}) 
+		  		INSTR( a.PATH_CODE, #{item}) 
 		  	</foreach>
 		  </if> 
-		 group by a.CITY_ID,SUBSTRING_INDEX(par.PAR_CRM_ORG_PATH_CODE,'.',4)
+		 group by a.CITY_ID,SUBSTRING_INDEX(a.PATH_CODE,'.',4)
   </select> 
             
 </mapper>

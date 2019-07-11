@@ -868,7 +868,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         // zhongwenlong 获取标签ID集合
         List<String> listTagRelId = new ArrayList<>();
         TagRelListReq tagRelListReq = new TagRelListReq();
-        tagRelListReq.setProductId(req.getProductBaseId());
+        tagRelListReq.setProductBaseId(req.getProductBaseId());
         List<TagRelListResp> listTagRel = tagRelManager.listTagRel(tagRelListReq);
         log.info("ProductBaseServiceImpl.getProductDetail tagRelManager.listTagRel req={}, resp={}", JSON.toJSONString(tagRelListReq), JSON.toJSONString(listTagRel));
         List<String> relTagIdList = listTagRel.stream().map(TagRelListResp::getTagId).collect(Collectors.toList());

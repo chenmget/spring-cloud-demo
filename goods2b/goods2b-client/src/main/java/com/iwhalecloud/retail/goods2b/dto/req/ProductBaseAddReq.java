@@ -16,6 +16,10 @@ import java.util.List;
 public class ProductBaseAddReq extends AbstractRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    @ApiModelProperty(value = "是否厂商修改，是：需要走审核")
+    private boolean manufacturerType;
+
     /**
      * 产品类别
      */

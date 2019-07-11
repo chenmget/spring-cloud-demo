@@ -67,6 +67,7 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
             }
         }
         //生效的活动配的图插入到prod_file表
+        log.info("*************************************生效的活动配的图插入到prod_file表****************************************start---advanceSaleActivityList");
         if (CollectionUtils.isNotEmpty(advanceSaleActivityList)) {
 	        for(int i=0;i<advanceSaleActivityList.size();i++) {
 	        	MarketingActivity marketingActivity = advanceSaleActivityList.get(i);
@@ -139,6 +140,7 @@ public class GoodsBindingActivityServiceImpl implements GoodsBindingActivityServ
                 log.info("更新商品表字段结果 resp={}", JSON.toJSON(resultData));
             }
         }
+        log.info("*************************************生效的活动配的图插入到prod_file表****************************************start---subsidyActivityList");
       //生效的活动配的图插入到prod_file表
         if (CollectionUtils.isNotEmpty(subsidyActivityList)) {
 	        for(int i=0;i<subsidyActivityList.size();i++) {

@@ -14,7 +14,12 @@ import org.springframework.stereotype.Service;
 public class WorkFlowErrorCode {
 
     /**
-     * 第一位编码
+     * 这是一个普通提示
      */
     public static ResultCode ERROR_900000;
+
+    /**
+     * 这是一个包含两个占位符的提示%s-%s
+     */
+    public static ResultCode ERROR_900001;
 }

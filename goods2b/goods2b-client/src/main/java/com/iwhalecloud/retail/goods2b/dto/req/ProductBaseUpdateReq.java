@@ -17,6 +17,9 @@ public class ProductBaseUpdateReq extends AbstractRequest implements Serializabl
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "是否管理员修改， 默认否")
+    private boolean adminType = false;
+
     @ApiModelProperty(value = "productBaseId")
     private String productBaseId;
 

@@ -113,7 +113,7 @@ public class MarketingResStoreServiceTest {
     public void synMktInstStatus() {
         SynMktInstStatusSwapReq req = new SynMktInstStatusSwapReq();
         //req.setLanId("734"); // 731
-        req.setLanId("731");
+//        req.setLanId("731");
         req.setBarCode("20191111019909");
        // req.setBarCode("BC54FC5B30EAB,BC54FC5B30EAa,A000009BB1FA14,A000009BB1FA15,A000009BB1FA11"); //20191111019909
         ResultVO resultVO = marketingResStoreService.synMktInstStatus(req);

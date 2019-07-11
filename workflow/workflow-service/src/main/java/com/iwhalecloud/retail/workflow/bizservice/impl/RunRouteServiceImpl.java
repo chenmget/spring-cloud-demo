@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author mzl
@@ -36,7 +37,11 @@ public class RunRouteServiceImpl implements RunRouteService {
             if (reference == null) {
                 return ResultVO.error("获取消费服务失败");
             }
-            ResultVO resultVO = reference.get().run(invokeRouteServiceRequest);
+            WfRunnable wfRunnable = reference.get();
+            if (Objects.isNull(wfRunnable)) {
+                log.error("wfRunnable is null ");
+            }
+            ResultVO resultVO = wfRunnable.run(invokeRouteServiceRequest);
             log.info("invokeRouteService.run:{}", resultVO);
             if (resultVO == null || !resultVO.isSuccess()) {
                 log.error("RunRouteServiceImpl.invokeRouteService invoke fail,classPath={},serviceGroup={},resultVO={}",

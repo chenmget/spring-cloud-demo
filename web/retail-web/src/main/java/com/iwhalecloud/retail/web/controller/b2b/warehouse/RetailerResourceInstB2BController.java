@@ -16,6 +16,7 @@ import com.iwhalecloud.retail.warehouse.common.ResourceConst;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceAllocateResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
+import com.iwhalecloud.retail.warehouse.service.ResourceReqDetailService;
 import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import com.iwhalecloud.retail.web.annotation.UserLoginToken;
 import com.iwhalecloud.retail.web.controller.b2b.order.dto.ExcelTitleName;
@@ -61,6 +62,8 @@ public class RetailerResourceInstB2BController {
     private ProductService productService;
     @Reference
     private AttrSpecService attrSpecService;
+    @Reference
+    private ResourceReqDetailService resourceReqDetailService;
 
     @ApiOperation(value = "零售商串码管理页面", notes = "条件分页查询")
     @ApiResponses({
@@ -176,7 +179,10 @@ public class RetailerResourceInstB2BController {
         List<String> nbrs = req.getMktResInstNbrs();
         nbrs.removeAll(resourceInstNbrList);
         nbrs.removeAll(getBatchNbrList);
-
+        ResultVO<List<String>> processNbrListVO = resourceReqDetailService.getProcessingNbrList(req.getMktResInstNbrs());
+        if (processNbrListVO.isSuccess() && CollectionUtils.isNotEmpty(processNbrListVO.getResultData())) {
+            nbrs.addAll(processNbrListVO.getResultData());
+        }
         resourceAllocateResp.setResourceInstListRespListPage(resourceInstRespList);
         resourceAllocateResp.setStatusWrongNbrs(nbrs);
         resourceAllocateResp.setNoRightsNbrs(getBatchNbrList);

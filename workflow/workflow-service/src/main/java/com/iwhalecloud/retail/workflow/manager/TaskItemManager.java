@@ -172,10 +172,13 @@ public class TaskItemManager {
 
     /**
      * 获取当前
-     * @param taskId
+     * @param
      * @return
      */
-    public TaskItem getCurTaskItem(String taskId) {
-        return taskItemMapper.getCurTaskItem(taskId);
+    public TaskItem getCurTaskItem(String taskId, String curNodeId) {
+        QueryWrapper<TaskItem> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(TaskItem.FieldNames.taskId.getTableFieldName(), taskId);
+        queryWrapper.eq(TaskItem.FieldNames.curNodeId.getTableFieldName(), curNodeId);
+        return taskItemMapper.selectOne(queryWrapper);
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import com.alibaba.dubbo.config.annotation.Reference;
 import com.iwhalecloud.retail.promo.PromoServiceApplication;
 import com.iwhalecloud.retail.promo.service.GoodsBindingActivityService;
+import com.iwhalecloud.retail.promo.service.ProdFileBingToService;
 
 import lombok.extern.slf4j.Slf4j;
 /**
@@ -21,11 +22,11 @@ import lombok.extern.slf4j.Slf4j;
 public class LwsTest {
 	
 	@Reference
-	GoodsBindingActivityService goodsBindingActivityService;
+	ProdFileBingToService prodFileBingToService;
 	
 	@Test
 	public void test() {
-		goodsBindingActivityService.goodsBingActivity();
+		prodFileBingToService.goodsBingProdFile();
 	}
 
 }

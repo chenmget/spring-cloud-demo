@@ -18,6 +18,7 @@ public class PurApplyReportReq extends PageVO implements Serializable {
 	private String applyCode;	//申请单号
 	private String applyName;//项目名称(申请单名称)
 	private	String lanId;	//申请地市
+	private  String lanIdTemp; // 申请地市
 	private	String applyCity;	//申请地市名称
 	private String purType;	//采购类型
 	private String merchantName; // 供应商名称

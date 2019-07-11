@@ -350,4 +350,9 @@ public class ResourceReqDetailServiceImpl implements ResourceReqDetailService {
             }
         }
     }
+
+    @Override
+    public ResultVO<List<String>> getProcessingNbrList(List<String> nbrList){
+        return ResultVO.success(resourceReqDetailManager.getProcessingNbrList(nbrList));
+    }
 }

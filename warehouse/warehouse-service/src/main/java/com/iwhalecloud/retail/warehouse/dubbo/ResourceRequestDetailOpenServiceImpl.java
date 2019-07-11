@@ -50,5 +50,11 @@ public class ResourceRequestDetailOpenServiceImpl implements ResourceReqDetailSe
         return resourceReqDetailService.getUserHandleFormId(userId);
     }
 
+    @Override
+    public ResultVO<List<String>> getProcessingNbrList(List<String> nbrList) {
+        ResultVO<List<String>> resp = resourceReqDetailService.getProcessingNbrList(nbrList);
+        log.info("ResourceRequestOpenServiceImpl.resourceRequestPage req={}, resp={}", JSON.toJSONString(nbrList), JSON.toJSONString(resp));
+        return resp;
+    }
 
 }

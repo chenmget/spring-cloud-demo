@@ -39,7 +39,7 @@ public class ResouceInstTrackDetailManager extends ServiceImpl<ResouceInstTrackD
      * @param mktResInstNbr
      * @return
      */
-    public String getMerchantStoreId(String mktResInstNbr){
+    public String getMerchantStoreId(String mktResInstNbr) {
         return resouceInstTrackDetailMapper.getMerchantStoreId(mktResInstNbr);
     }
 }

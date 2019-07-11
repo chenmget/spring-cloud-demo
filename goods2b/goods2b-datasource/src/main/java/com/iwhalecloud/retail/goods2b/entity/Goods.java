@@ -201,8 +201,39 @@ public class Goods implements Serializable {
 	 */
 	@ApiModelProperty(value = "商家类型")
 	private String merchantType;
-  	
-  	
+
+	/**
+	 * 预售类型：1. 集约预受活动商品（关联管理员定义的预售活动） 2. 自定义预售商品（供货商定义的无活动预售商品）
+	 */
+	@ApiModelProperty(value = "预售类型：1. 集约预受活动商品（关联管理员定义的预售活动） 2. 自定义预售商品（供货商定义的无活动预售商品）")
+	private String advanceSaleType;
+
+	/**
+	 * 预售支付类型：支付方式 1. 支付定金 2. 全款支付
+	 */
+	@ApiModelProperty(value = "预售支付类型：支付方式 1. 支付定金 2. 全款支付")
+	private String advancePayType;
+	/**
+	 * 支付定金开始时间
+	 */
+	@ApiModelProperty(value = "支付定金开始时间")
+	private java.util.Date preStartTime;
+	/**
+	 * 支付定金结束时间
+	 */
+	@ApiModelProperty(value = "支付定金结束时间")
+	private java.util.Date preEndTime;
+	/**
+	 * 支付尾款开始时间
+	 */
+	@ApiModelProperty(value = "支付尾款开始时间")
+	private java.util.Date tailPayStartTime;
+	/**
+	 * 支付尾款结束时间
+	 */
+	@ApiModelProperty(value = "支付尾款结束时间")
+	private java.util.Date tailPayEndTime;
+
   	//属性 end
   	
   	public static enum FieldNames{
@@ -257,9 +288,20 @@ public class Goods implements Serializable {
 		/** 商品发布对象 */
 		targetType,
 		/** 商家类型 */
-		merchantType
-    }
+		merchantType,
+		/** 预售类型 */
+		advanceSaleType,
+		/** 预售支付类型 */
+		advancePayType,
+		/** 支付定金开始时间 */
+		preStartTime,
+		/** 支付定金结束时间 */
+		preEndTime,
+		/** 支付尾款开始时间 */
+		tailPayStartTime,
+		/** 支付尾款结束时间 */
+		tailPayEndTime;
 
-	
+	}
 
 }

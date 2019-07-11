@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Service
+@Service(parameters = {"addActSup.timeout", "20000"})
 @Slf4j
 public class AdminResourceInstOpenServiceImpl implements AdminResourceInstService {
 
@@ -61,9 +61,9 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
      * @return
      */
     @Override
-    public ResultVO delResourceInstByBatchId(String batchId,String userId){
+    public ResultVO delResourceInstByBatchId(String batchId, String userId) {
         log.info("AdminResourceInstOpenServiceImpl.delResourceInstByBatchId batchId={}", batchId);
-        ResultVO resp = adminResourceInstService.delResourceInstByBatchId(batchId,userId);
+        ResultVO resp = adminResourceInstService.delResourceInstByBatchId(batchId, userId);
         return resp;
     }
 
@@ -123,7 +123,7 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
     @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
         ResultVO resp = adminResourceInstService.resetResourceInst(req);
-        resouceInstTrackService.asynResetResourceInst(req, resp);
+        //resouceInstTrackService.asynResetResourceInst(req, resp);
         return resp;
     }
 

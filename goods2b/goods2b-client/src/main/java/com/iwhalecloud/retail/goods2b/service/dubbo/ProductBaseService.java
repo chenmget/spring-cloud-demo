@@ -32,7 +32,7 @@ public interface ProductBaseService {
      * @param req
      * @return
      */
-    public ResultVO<String> addProductBase (ProductBaseAddReq req);
+    public ResultVO<String> addProductBase(ProductBaseAddReq req);
 
     /**
      * 更新

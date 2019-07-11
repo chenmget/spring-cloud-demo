@@ -2,11 +2,13 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.iwhalecloud.retail.goods2b.mapper.GoodsRulesMapper" >
     <insert id="insertBatch" parameterType="java.util.List" useGeneratedKeys="true">
-        insert into prod_goods_rules(GOODS_RULE_ID,GOODS_ID, PRODUCT_CODE, PRODUCT_NAME, TARGET_CODE, TARGET_NAME, TARGET_TYPE, MARKET_NUM,PRODUCT_ID,TARGET_ID,STATE)
+        insert into prod_goods_rules(GOODS_RULE_ID,GOODS_ID, PRODUCT_CODE, PRODUCT_NAME, TARGET_CODE, TARGET_NAME, TARGET_TYPE, MARKET_NUM,PRODUCT_ID,TARGET_ID,STATE,
+        ASSIGN_TYPE,PRODUCT_BASE_ID)
         values
         <foreach collection="list" item="item" index="index" separator="," >
             (#{item.goodsRuleId},#{item.goodsId},#{item.productCode},#{item.productName},#{item.targetCode},
-            #{item.targetName},#{item.targetType},#{item.marketNum},#{item.productId},#{item.targetId},#{item.state})
+            #{item.targetName},#{item.targetType},#{item.marketNum},#{item.productId},#{item.targetId},#{item.state},
+            #{item.assignType},#{item.productBaseId})
         </foreach>
     </insert>
 

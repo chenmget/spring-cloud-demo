@@ -1189,25 +1189,36 @@ public class GoodsServiceImpl implements GoodsService {
             } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
                 List<GoodsTargetRel> goodsTargetRels = goodsTargetManager.queryGoodsTargerRel(resp.getGoodsId());
                 if (CollectionUtils.isNotEmpty(goodsTargetRels)) {
-                    List<String> merchantList = new ArrayList<>();
-                    for (GoodsTargetRel goodsTargetRel : goodsTargetRels) {
-                        if (StringUtils.isEmpty(goodsTargetRel.getTargetId())) {
-                            merchantList.add(goodsTargetRel.getTargetId());
-                        }
-                    }
+//                    List<String> merchantList = new ArrayList<>();
+//                    for (GoodsTargetRel goodsTargetRel : goodsTargetRels) {
+//                        if (StringUtils.isEmpty(goodsTargetRel.getTargetId())) {
+//                            merchantList.add(goodsTargetRel.getTargetId());
+//                        }
+//                    }
+//                    MerchantListReq merchantListReq = new MerchantListReq();
+//                    merchantListReq.setMerchantIdList(merchantList);
+//                    ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(merchantListReq);
+//                    List<String> goodsTargetRelLists = new ArrayList<>();
+//                    if (resultVO.isSuccess() && null != resultVO.getResultData()) {
+//                        List<MerchantDTO> merchantDTOs = resultVO.getResultData();
+//                        if (CollectionUtils.isNotEmpty(merchantDTOs)) {
+//                            for (MerchantDTO merchantDTO : merchantDTOs) {
+//                                goodsTargetRelLists.add(merchantDTO.getMerchantName());
+//                            }
+//                        }
+//                    }
+//                    resp.setGoodsTargetRels(goodsTargetRelLists);
+
+                    List<String> merchantIdList = goodsTargetRels.stream().map(GoodsTargetRel::getTargetId).collect(Collectors.toList());
                     MerchantListReq merchantListReq = new MerchantListReq();
-                    merchantListReq.setMerchantIdList(merchantList);
-                    ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(merchantListReq);
-                    List<String> goodsTargetRelLists = new ArrayList<>();
-                    if (resultVO.isSuccess() && null != resultVO.getResultData()) {
-                        List<MerchantDTO> merchantDTOs = resultVO.getResultData();
-                        if (CollectionUtils.isNotEmpty(merchantDTOs)) {
-                            for (MerchantDTO merchantDTO : merchantDTOs) {
-                                goodsTargetRelLists.add(merchantDTO.getMerchantName());
-                            }
-                        }
+                    merchantListReq.setMerchantIdList(merchantIdList);
+                    List<MerchantDTO> merchantDTOList = merchantService.listMerchant(merchantListReq).getResultData();
+                    List<String> merchantNameList = new ArrayList<>();
+                    if (CollectionUtils.isNotEmpty(merchantDTOList)) {
+                        merchantNameList = merchantDTOList.stream().map(MerchantDTO::getMerchantName).collect(Collectors.toList());
                     }
-                    resp.setGoodsTargetRels(goodsTargetRelLists);
+                    log.info("GoodsServiceImpl.queryPageByConditionAdmin queryGoodsTargerRel merchantNameList={}", JSON.toJSONString(merchantNameList));
+                    resp.setGoodsTargetRels(merchantNameList);
                 }
             }
 

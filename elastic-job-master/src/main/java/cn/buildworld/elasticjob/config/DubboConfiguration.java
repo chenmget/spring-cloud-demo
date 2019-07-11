@@ -16,7 +16,7 @@ public class DubboConfiguration {
 	public ConsumerConfig consumerConfig() {
 	   ConsumerConfig consumerConfig = new ConsumerConfig();
 	   consumerConfig.setCheck(false);
-	   consumerConfig.setTimeout(5000);
+	   consumerConfig.setTimeout(15000);
 	   consumerConfig.setRetries(0); 	//不重发请求
 	   return consumerConfig;
 	}

@@ -1,20 +1,23 @@
 package com.iwhalecloud.retail.goods2b.manager;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.goods2b.dto.CatConditionDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.CatConditionDeleteReq;
 import com.iwhalecloud.retail.goods2b.dto.req.CatConditionListReq;
 import com.iwhalecloud.retail.goods2b.entity.CatCondition;
 import com.iwhalecloud.retail.goods2b.mapper.CatConditionMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 
-
+@Slf4j
 @Component
 public class CatConditionManager {
     @Resource
@@ -37,6 +40,8 @@ public class CatConditionManager {
      * @return
      */
     public List<CatConditionDTO> listCatCondition(CatConditionListReq req) {
+        log.info("CatConditionManager.listCatCondition() input: {}", JSON.toJSONString(req));
+
         QueryWrapper<CatCondition> queryWrapper = new QueryWrapper<CatCondition>();
         if (!StringUtils.isEmpty(req.getCatId())) {
             queryWrapper.eq(CatCondition.FieldNames.catId.getTableFieldName(), req.getCatId());
@@ -49,6 +54,9 @@ public class CatConditionManager {
         }
         if (!StringUtils.isEmpty(req.getRelObjValue())) {
             queryWrapper.eq(CatCondition.FieldNames.relObjValue.getTableFieldName(), req.getRelObjValue());
+        }
+        if (!CollectionUtils.isEmpty(req.getCatIdList())) {
+            queryWrapper.in(CatCondition.FieldNames.catId.getTableFieldName(), req.getCatIdList());
         }
         List<CatCondition> entityList = catConditionMapper.selectList(queryWrapper);
         List<CatConditionDTO> dtoList = new ArrayList<>();

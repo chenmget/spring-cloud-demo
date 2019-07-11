@@ -1,14 +1,21 @@
 package com.iwhalecloud.retail.web.controller.b2b.goods;
 
 import com.alibaba.dubbo.config.annotation.Reference;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.CatConditionDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.CatAddReq;
+import com.iwhalecloud.retail.goods2b.dto.req.CatConditionListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.CatQueryReq;
 import com.iwhalecloud.retail.goods2b.dto.req.CatUpdateReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.CatListResp;
 import com.iwhalecloud.retail.goods2b.dto.resp.CatResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;

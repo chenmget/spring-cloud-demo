@@ -47,5 +47,5 @@ public interface TypeService {
     /**
      *
      */
-    ResultVO<ProdCRMTypeDto> getCrmTypeName(String crmKindId);
+    ResultVO<List<ProdCRMTypeDto>> getCrmTypeName(String crmKindId);
 }

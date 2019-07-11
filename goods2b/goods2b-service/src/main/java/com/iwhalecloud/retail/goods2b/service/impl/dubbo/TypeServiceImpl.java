@@ -411,14 +411,18 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
-    public ResultVO<ProdCRMTypeDto> getCrmTypeName(String prodBaseId) {
+    public ResultVO<List<ProdCRMTypeDto>> getCrmTypeName(String prodBaseId) {
         ProductBaseGetReq req = new ProductBaseGetReq();
         req.setProductBaseId(prodBaseId);
         ProductBaseGetResp resp = productBaseManager.selectProductBase(req).get(0);
         Type type = typeManager.selectById(resp.getTypeId());
-        ProdCRMType prodCRMType = lindCrmTypeManager.getProCRMType(type.getCrmResKind());
-        ProdCRMTypeDto prodCRMTypeDto = new ProdCRMTypeDto();
-        BeanUtils.copyProperties(prodCRMType,prodCRMTypeDto);
-        return ResultVO.success(prodCRMTypeDto);
+        List<ProdCRMType> prodCRMTypes = lindCrmTypeManager.getProCRMType(type.getCrmResKind());
+        List<ProdCRMTypeDto> prodCRMTypeDtos = new ArrayList<>();
+        for (ProdCRMType prodCRMType : prodCRMTypes){
+            ProdCRMTypeDto prodCRMTypeDto = new ProdCRMTypeDto();
+            BeanUtils.copyProperties(prodCRMType,prodCRMTypeDto);
+            prodCRMTypeDtos.add(prodCRMTypeDto);
+        }
+        return ResultVO.success(prodCRMTypeDtos);
     }
 }

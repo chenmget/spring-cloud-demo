@@ -235,6 +235,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 if (!ProductConst.StatusType.SUBMIT.getCode().equals(status)) {
                     auditState = ProductConst.AuditStateType.AUDITING.getCode();
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
+
+                    // 如果是: 非厂商添加(一般是管理员）  直接挂网 zhongwenlong
+                    if (!req.isManufacturerType()) {
+                        auditState = ProductConst.AuditStateType.AUDIT_PASS.getCode();
+                        par.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+                    }
+
                 }
                 par.setProductBaseId(productBaseId);
                 par.setCreateStaff(t.getCreateStaff());
@@ -271,6 +278,11 @@ public class ProductBaseServiceImpl implements ProductBaseService {
             relBatchAddReq.setProductBaseId(productBaseId);
             relBatchAddReq.setTagList(tagList);
             tagRelService.batchAddTagRel(relBatchAddReq);
+        }
+
+        // 如果是:非厂商添加(一般是管理员）不走审核流程 zhongwenlong
+        if (!req.isManufacturerType()) {
+            return  ResultVO.success(productBaseId);
         }
 
         //除了待提交，都是审核中,都要提交审核
@@ -473,6 +485,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 if(!ProductConst.StatusType.SUBMIT.getCode().equals(state)){
                     productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     productUpdateReq.setStatus(ProductConst.StatusType.AUDIT.getCode());
+
+                    // 如果是非厂商添加(一般是管理员）  直接挂网 zhongwenlong
+                    if (!req.isManufacturerType()) {
+                        productUpdateReq.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+                        productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDIT_PASS.getCode());
+                    }
+
                 }
                 if (!CollectionUtils.isEmpty(tagList)) {
                     TagRelDeleteByGoodsIdReq relDeleteByGoodsIdReq = new TagRelDeleteByGoodsIdReq();
@@ -497,6 +516,12 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 if(!ProductConst.StatusType.SUBMIT.getCode().equals(state)){
                     par.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
+
+                    // 如果是: 非厂商添加(一般是管理员）  直接挂网 zhongwenlong
+                    if (!req.isManufacturerType()) {
+                        par.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+                        par.setAuditState(ProductConst.AuditStateType.AUDIT_PASS.getCode());
+                    }
                 }
                 productService.addProduct(par);
                 continue;
@@ -526,6 +551,13 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                 if(!ProductConst.StatusType.SUBMIT.getCode().equals(status)){
                     auditState =ProductConst.AuditStateType.AUDITING.getCode();
                     par.setStatus(ProductConst.StatusType.AUDIT.getCode());
+
+                    // 如果是非厂商添加(一般是管理员）  直接挂网 zhongwenlong
+                    if (!req.isManufacturerType()) {
+                        auditState =ProductConst.AuditStateType.AUDIT_PASS.getCode();
+                        par.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
+                    }
+
                 }
                 par.setProductBaseId(req.getProductBaseId());
                 par.setCreateStaff(req.getUpdateStaff());
@@ -564,8 +596,8 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         }
         int index = productBaseManager.updateProductBase(req);
 
-        if (req.isAdminType()) {
-            // 是否是管理员修改 管理员不走审核流程 zhengwenlong
+        if (!req.isManufacturerType()) {
+            // 如果是 非厂商修改(一般是管理员）不走审核流程 zhongwenlong
             return  ResultVO.success(index);
         }
 

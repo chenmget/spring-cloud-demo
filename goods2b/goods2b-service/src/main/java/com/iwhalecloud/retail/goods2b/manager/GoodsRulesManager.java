@@ -1,5 +1,6 @@
 package com.iwhalecloud.retail.goods2b.manager;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsRulesConst;
@@ -7,6 +8,7 @@ import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
 import com.iwhalecloud.retail.goods2b.entity.GoodsRules;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsMapper;
 import com.iwhalecloud.retail.goods2b.mapper.GoodsRulesMapper;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -16,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
+@Slf4j
 public class GoodsRulesManager {
     @Resource
     private GoodsRulesMapper goodsRulesMapper;
@@ -121,6 +124,8 @@ public class GoodsRulesManager {
 //                goodsMapper.updateById(goods);
 //            }
 //        }
+        log.info("gs_10010_addRules,entity{},prodGoodsRuleAddList{}",
+                JSON.toJSONString(entityList),JSON.toJSONString(prodGoodsRuleAddList));
         int addEffRow = prodGoodsRuleAddList.size()>0 ? goodsRulesMapper.insertBatch(prodGoodsRuleAddList) : 0;
         int updateEffRow = prodGoodsRuleUpdateList.size()>0 ? goodsRulesMapper.updateBatch(prodGoodsRuleUpdateList) : 0;
         int deleteEffRow = prodGoodsRuleDeleteList.size()>0 ? goodsRulesMapper.updateBatch(prodGoodsRuleDeleteList) : 0;

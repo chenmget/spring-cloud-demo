@@ -11,6 +11,7 @@
 		DATE_FORMAT(a.CREATE_DATE,'%Y-%m-%d %H:%i:%s') AS applyTime,
 		a.MERCHANT_ID As merchantId,
 		a.APPLY_MERCHANT_ID As applyMerchantId,
+        a.lan_id as lanId,
 		'' AS applyAddress,
 		'' AS supplierName,
 		'' AS applyMerchantName,

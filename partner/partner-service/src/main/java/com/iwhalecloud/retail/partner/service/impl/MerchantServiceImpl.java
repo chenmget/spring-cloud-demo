@@ -1491,8 +1491,8 @@ public class MerchantServiceImpl implements MerchantService {
      */
     @Override
     @Transactional
-    public ResultVO editMerchant (MerchantEditReq req) {
-        Merchant merchant=new Merchant();
+    public ResultVO editMerchant(MerchantEditReq req) {
+        Merchant merchant = new Merchant();
         BeanUtils.copyProperties(req, merchant);
         this.merchantManager.updateMerchant(merchant);
         return ResultVO.success();
@@ -1500,27 +1500,27 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Override
     public ResultVO<FactoryMerchantResp> getFactoryMerchant(String merchantId) {
-        FactoryMerchantResp factoryMerchantResp=new FactoryMerchantResp();
+        FactoryMerchantResp factoryMerchantResp = new FactoryMerchantResp();
         //获取厂家基本信息
-        ResultVO<MerchantDTO> merchantResult=this.getMerchantById(merchantId);
-        if(merchantResult.getResultData()==null){
+        ResultVO<MerchantDTO> merchantResult = this.getMerchantById(merchantId);
+        if (merchantResult.getResultData() == null) {
             return ResultVO.error("未找到对应的厂商信息");
         }
-        MerchantDTO merchantDTO=merchantResult.getResultData();
-        BeanUtils.copyProperties(merchantDTO,factoryMerchantResp);
+        MerchantDTO merchantDTO = merchantResult.getResultData();
+        BeanUtils.copyProperties(merchantDTO, factoryMerchantResp);
         //获取厂家账号信息
-        UserGetReq userGetReq=new UserGetReq();
+        UserGetReq userGetReq = new UserGetReq();
         userGetReq.setRelCode(merchantId);
-        UserDTO userDTO=userService.getUser(userGetReq);
-        if(userDTO!=null){
-            BeanUtils.copyProperties(userDTO,factoryMerchantResp);
+        UserDTO userDTO = userService.getUser(userGetReq);
+        if (userDTO != null) {
+            factoryMerchantResp.setLoginName(userDTO.getLoginName());
         }
         //获取厂家附件信息
-        CommonFileDTO commonFileDTO=new CommonFileDTO();
+        CommonFileDTO commonFileDTO = new CommonFileDTO();
         commonFileDTO.setObjId(merchantId);
-        ResultVO<List<CommonFileDTO>> commonFileResult=commonFileService.listCommonFile(commonFileDTO);
-        if(commonFileResult.isSuccess()&&commonFileResult.getResultData()!=null){
-            makeUpMerchantFile(commonFileResult.getResultData(),factoryMerchantResp);
+        ResultVO<List<CommonFileDTO>> commonFileResult = commonFileService.listCommonFile(commonFileDTO);
+        if (commonFileResult.isSuccess() && commonFileResult.getResultData() != null) {
+            makeUpMerchantFile(commonFileResult.getResultData(), factoryMerchantResp);
         }
         return ResultVO.success(factoryMerchantResp);
     }

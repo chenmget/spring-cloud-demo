@@ -43,7 +43,6 @@ import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import com.iwhalecloud.retail.warehouse.service.ResourceRequestService;
 import com.iwhalecloud.retail.warehouse.service.RetailerResourceInstService;
 import com.iwhalecloud.retail.workflow.common.WorkFlowConst;
-import com.iwhalecloud.retail.workflow.dto.req.HandlerUser;
 import com.iwhalecloud.retail.workflow.dto.req.ProcessStartReq;
 import com.iwhalecloud.retail.workflow.service.TaskService;
 import lombok.extern.slf4j.Slf4j;
@@ -655,20 +654,14 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         }
         // step4 如果不需要审核则发起流程目标仓库处理人，由目标仓库处理人决定是否接受
         if (!ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_1.getCode().equals(auditType)) {
-            String uuid = resourceInstManager.getPrimaryKey();
             ProcessStartReq processStartDTO = new ProcessStartReq();
             processStartDTO.setTitle(constant.getAddNbrWorkFlow());
             processStartDTO.setApplyUserId(req.getCreateStaff());
+            processStartDTO.setApplyUserName(sourceMerchantDTO.getMerchantName());
             processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_12.getTypeCode());
             processStartDTO.setFormId(resultVOInsertResReq.getResultData());
             processStartDTO.setTaskSubType(WorkFlowConst.TASK_SUB_TYPE.TASK_SUB_TYPE_2040.getTaskSubType());
-            // 指定下一环节处理人
-            HandlerUser user = new HandlerUser();
-            user.setHandlerUserId(destMerchantDTO.getUserId());
-            user.setHandlerUserName(destMerchantDTO.getMerchantName());
-            List<HandlerUser> userList = new ArrayList<HandlerUser>(1);
-            userList.add(user);
-            processStartDTO.setNextHandlerUser(userList);
+
             processStartDTO.setParamsType(WorkFlowConst.TASK_PARAMS_TYPE.JSON_PARAMS.getCode());
             Map map=new HashMap();
             String secondStepFlag = "1";
@@ -940,10 +933,10 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         Boolean directSuppLyAndSameMerchantAndSameLanId = hasDirectSuppLy && !hasGroundSupply && sameMerchant && sameLanId;
         // 全是绿色通道和省直供串码不跨商，跨地市  需要调出方和调入方审核
         Boolean directSuppLyAndSameMerchantAndNotSameLanId = hasDirectSuppLy && !hasGroundSupply && sameMerchant && !sameLanId;
-        // 全是地堡供应串码，且不跨地市，不需要审核
+        // 全是地堡供应串码，不跨地市，不需要审核
         Boolean directSuppLyAndSameLanId = !hasDirectSuppLy && hasGroundSupply && sameLanId;
-        // 全是地堡供应串码，跨地市，串码是非前置补贴活动发货过来的，需要调出方和调入方审核
-        Boolean directSuppLyNotSameLanIdAndPreSubsidy = !hasDirectSuppLy && hasGroundSupply && !sameLanId && ifPreSubsidy;
+        // 全是地堡供应串码，跨地市，不跨商，串码是非前置补贴活动发货过来的，需要调出方和调入方审核
+        Boolean directSuppLyNotSameLanIdAndPreSubsidy = !hasDirectSuppLy && hasGroundSupply && !sameLanId && sameMerchant && !ifPreSubsidy;
         log.info("RetailerResourceInstMarketServiceImpl.validAllocateNbr sameMerchant={}, sameLanId={}, hasDirectSuppLy={}, hasGroundSupply={}, ifPreSubsidy={}", sameMerchant, sameLanId, hasDirectSuppLy, hasGroundSupply, ifPreSubsidy);
         if (directSuppLyAndSameMerchantAndNotSameLanId || directSuppLyNotSameLanIdAndPreSubsidy) {
             return ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_2.getCode();

@@ -14,6 +14,20 @@
         ,t.UPDATE_STAFF
         ,t.UPDATE_DATE
         ,t.SOURCE_FROM
+        ,t.PARENT_TYPE_ID
+        ,t.CRM_RES_KIND
+        ,t.CRM_RES_TYPE
     </sql>
+
+    <select id="selectAllSubTypeById" parameterType="java.lang.String"
+            resultType="com.iwhalecloud.retail.goods2b.entity.Type">
+        select <include refid="allFields" /> from prod_type t
+
+        <where>
+            <if test="null!=typeId and ''!=typeId">
+                and t.TYPE_ID like  concat(#{typeId},'%')
+            </if>
+        </where>
+    </select>
 
 </mapper>

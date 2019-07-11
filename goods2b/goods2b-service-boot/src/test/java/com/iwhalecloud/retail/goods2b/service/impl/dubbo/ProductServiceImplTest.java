@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.List;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = Goods2BServiceApplication.class)
 public class ProductServiceImplTest {
@@ -46,5 +48,11 @@ public class ProductServiceImplTest {
         ProductApplyInfoResp r= productService.getProductApplyInfo(productId);
         System.out.println(JSON.toJSON(r));
     }
+
+//    @Test
+//    public void gettypeIds(){
+//        List<String> list = productService.getSubtypeIdList("400000");
+//        System.out.println(list);
+//    }
 
 }

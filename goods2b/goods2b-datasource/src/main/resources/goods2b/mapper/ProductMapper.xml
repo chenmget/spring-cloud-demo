@@ -141,8 +141,11 @@
     <if test="null!=pageReq.catName and ''!=pageReq.catName">
       and upper(c.CAT_NAME) like CONCAT(CONCAT('%',upper(#{pageReq.catName})),'%')
     </if>
-    <if test="null!=pageReq.typeId and ''!=pageReq.typeId">
-      and t.TYPE_ID = #{pageReq.typeId}
+    <if test="null!=pageReq.typeIdList and pageReq.typeIdList.size > 0">
+      and t.TYPE_ID in
+      <foreach item="item" index="index" open="(" separator="," close=")" collection="pageReq.typeIdList">
+        #{item}
+      </foreach>
     </if>
     <if test="null!=pageReq.statusList and pageReq.statusList.size > 0">
       and p.STATUS in
@@ -205,7 +208,7 @@
     order by p.CREATE_DATE DESC
   </select>
 
-  <select id="selectPageProductAdminAll" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq"
+  <select id="selectPageProductAdminAll" parameterType="java.lang.String"
           resultType="com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp">
     select <include refid="pageProductFields"/>
     from prod_product p

@@ -218,8 +218,8 @@ public class GoodsRulesProductService {
             }
 
             for (Product product : productList) {
-                if (rulesProductDTO.getProductCode().equals(product.getSn())) {
-                    entity.setProductId(product.getProductId());
+                if (product.getSn().equals(rulesProductDTO.getProductCode())) {
+                    entity.setProductId(rulesProductDTO.getProductId());
                     rulesProductDTO.setAttrValue1(product.getAttrValue1());
                     rulesProductDTO.setAttrValue2(product.getAttrValue2());
                     rulesProductDTO.setAttrValue3(product.getAttrValue3());

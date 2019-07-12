@@ -87,6 +87,7 @@ public class GoodsRulesManager {
             for (GoodsRulesDTO en:entityList){
                 GoodsRules goodsRules=new GoodsRules();
                 BeanUtils.copyProperties(en,goodsRules);
+                goodsRules.setState(GoodsRulesConst.state.EFF.getValue());
                 prodGoodsRuleAddList.add(goodsRules);
             }
 
@@ -98,6 +99,7 @@ public class GoodsRulesManager {
                 if(StringUtils.isEmpty(en.getGoodsRuleId())){
                     GoodsRules goodsRules=new GoodsRules();
                     BeanUtils.copyProperties(en,goodsRules);
+                    goodsRules.setState(GoodsRulesConst.state.EFF.getValue());
                     prodGoodsRuleAddList.add(goodsRules);
                     continue;
                 }
@@ -118,6 +120,7 @@ public class GoodsRulesManager {
                 if(deleteG){
                     GoodsRules goodsRules=new GoodsRules();
                     BeanUtils.copyProperties(en,goodsRules);
+                    goodsRules.setState(GoodsRulesConst.state.EXP.getValue());
                     prodGoodsRuleAddList.add(goodsRules);
                     prodGoodsRuleDeleteList.add(goodsRules);
                 }

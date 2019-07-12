@@ -102,32 +102,30 @@ public class CatConditionServiceImpl implements CatConditionService {
      * @return
      */
     @Override
-    public ResultVO<List<CatConditionDetailResp>> listCatConditionDetail(String catId) {
-        log.info("CatConditionServiceImpl.listCatConditionDetail() input  catId: {}", JSON.toJSONString(catId));
+    public ResultVO<CatConditionDetailResp> getCatConditionDetail(String catId) {
+        log.info("CatConditionServiceImpl.getCatConditionDetail() input  catId: {}", JSON.toJSONString(catId));
+
+        CatConditionDetailResp resp = new CatConditionDetailResp();
+
         CatConditionListReq req = new CatConditionListReq();
         req.setCatId(catId);
         List<CatConditionDTO> dtoList = catConditionManager.listCatCondition(req);
         if (CollectionUtils.isEmpty(dtoList)) {
-            return ResultVO.success(Lists.newArrayList());
+            resp.setCatConditionList(Lists.newArrayList());
+            return ResultVO.success(resp);
         }
 
-        List<CatConditionDetailResp> respList = Lists.newArrayList();
+        resp.setCatConditionList(dtoList);
 
         for (CatConditionDTO dto : dtoList) {
-            CatConditionDetailResp resp = new CatConditionDetailResp();
-            BeanUtils.copyProperties(dto, resp);
-
-            if (StringUtils.equals(CatConditionConst.RelType.PRODUCT_TYPE.getCode(), resp.getRelType())) {
+            if (StringUtils.equals(CatConditionConst.RelType.PRODUCT_TYPE.getCode(), dto.getRelType())) {
                 // 类型是1的 要去获取类型详情
-                resp.setTypeDetail(getTypeDetail(resp.getRelObjId()));
+                resp.setTypeDetail(getTypeDetail(dto.getRelObjId()));
             }
-
-            respList.add(resp);
         }
 
-
-        ResultVO<List<CatConditionDetailResp>> resultVO = ResultVO.success();
-        log.info("CatConditionServiceImpl.listCatConditionDetail() output: {}", JSON.toJSONString(resultVO));
+        ResultVO<CatConditionDetailResp> resultVO = ResultVO.success(resp);
+        log.info("CatConditionServiceImpl.getCatConditionDetail() output: {}", JSON.toJSONString(resultVO));
         return resultVO;
     }
 

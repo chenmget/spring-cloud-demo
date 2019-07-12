@@ -175,7 +175,7 @@ public class TaskItemManager {
      * @param taskId
      * @return
      */
-    public TaskItem getCurTaskItem(String taskId) {
+    public TaskItem getCurTaskItem(String taskId){
         return taskItemMapper.getCurTaskItem(taskId);
     }
 }

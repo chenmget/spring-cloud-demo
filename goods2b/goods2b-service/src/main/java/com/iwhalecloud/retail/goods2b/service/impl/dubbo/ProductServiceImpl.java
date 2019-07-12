@@ -360,6 +360,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private List<String> getSubtypeIdList(String typeId) {
+        if(StringUtils.isBlank(typeId)) return  null;
         //二级分类
         if(typeId.length() > 6){
             List<String> typeIdList = new ArrayList<>();
@@ -381,7 +382,10 @@ public class ProductServiceImpl implements ProductService {
         log.info("like typeId = {}",likeTypeId);
         List<Type> typeList = typeManager.selectAllSubTypeById(likeTypeId);
         List<String> typeIdList = typeList.stream().map(Type::getTypeId).collect(Collectors.toList());
+
         for (Type type : typeList){
+            //去除手机typeid
+           if(type.getTypeId().length() > 6) typeIdList.remove(type.getTypeId());
            if(typeIdList.contains(type.getParentTypeId())) {
                typeIdList.remove(type.getParentTypeId());
            }

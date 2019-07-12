@@ -223,8 +223,9 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
         GoodsRulesExcelResp resp = new GoodsRulesExcelResp();
         //校验配置的分货规则对象是否存在交叉记录
         ProdGoodsRuleEditReq prodGoodsRuleEditReq1 = new ProdGoodsRuleEditReq();
-        prodGoodsRuleEditReq.setGoodsRulesDTOList(entityList);
-        ResultVO<Boolean> validResultVO = overlappingRecordsValid(prodGoodsRuleEditReq);
+        prodGoodsRuleEditReq1.setGoodsRulesDTOList(entityList);
+        prodGoodsRuleEditReq1.setAssignType(prodGoodsRuleEditReq.getAssignType());
+        ResultVO<Boolean> validResultVO = overlappingRecordsValid(prodGoodsRuleEditReq1);
         if (!validResultVO.isSuccess() || !validResultVO.getResultData()) {
             ResultVO<GoodsRulesExcelResp> rv = new ResultVO<GoodsRulesExcelResp>();
             rv.setResultMsg(validResultVO.getResultMsg());
@@ -468,16 +469,23 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
             return ResultVO.success(true);
         }
 
-        Map<String,List<GoodsRulesDTO>> productGroupDtos =  goodsRulesDTOs.stream().collect(Collectors.groupingBy(GoodsRulesDTO::getProductCode));
+        Map<String,List<GoodsRulesDTO>> productGroupDtos =null;
+        if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(prodGoodsRuleEditReq.getAssignType())){
+           productGroupDtos =  goodsRulesDTOs.stream().collect(Collectors.groupingBy(GoodsRulesDTO::getProductBaseId));
+
+        }else{
+           productGroupDtos =  goodsRulesDTOs.stream().collect(Collectors.groupingBy(GoodsRulesDTO::getProductCode));
+        }
         Iterator<String> it = productGroupDtos.keySet().iterator();
         while (it.hasNext()) {
-            String productCode = it.next();
-            List<GoodsRulesDTO> productGoodsRulesDto = productGroupDtos.get(productCode);
-            ResultVO<Boolean> rv = overlappingRecordsValidByProductCode(productCode,productGoodsRulesDto);
+            String productBaseId = it.next();
+            List<GoodsRulesDTO> productGoodsRulesDto = productGroupDtos.get(productBaseId);
+            ResultVO<Boolean> rv = overlappingRecordsValidByProductCode(productBaseId,productGoodsRulesDto);
             if (!rv.isSuccess() || !rv.getResultData()) {
                 return rv;
             }
         }
+
 
         return ResultVO.success(true);
     }

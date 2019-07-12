@@ -145,7 +145,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         }
         if (errorList!=null && errorList.size()>0) {
             log.info("5.错误串码errorList={} " ,JSON.toJSONString(errorList));
-            return ResultVO.error("这些串码不可用"+ JSON.toJSONString(errorList));
+            return ResultVO.error("这些串码不可用"+ listToString(errorList,','));
         }
 
 //     相同产品，数量
@@ -190,7 +190,7 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         }
         log.info("8.串码机型不符合申请单规格，请检查！mgs={},errorMktList={}" ,mgs.toString(),JSON.toJSONString(errorMktList));
         if (errorFlag ==1) {
-            return ResultVO.error("串码机型不符合申请单规格，请检查！"+JSON.toJSONString(errorMktList));
+            return ResultVO.error("串码机型不符合申请单规格，请检查！"+ listToString(errorMktList,','));
         }
 //       判断 发货的数量是否 有超过
         Integer numFlag = 0;
@@ -260,7 +260,20 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         }
         return ResultVO.success();
     }
+    /**
+     * List 集合转换为String
+     * @param list
+     * @param separator
+     * @return
+     */
 
+    public String listToString(List<String> list, char separator) {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < list.size(); i++) {
+            sb.append(list.get(i)).append(separator);
+        }
+        return sb.toString().substring(0,sb.toString().length()-1);
+    }
 
     /**
      *   整理调用接口的数据

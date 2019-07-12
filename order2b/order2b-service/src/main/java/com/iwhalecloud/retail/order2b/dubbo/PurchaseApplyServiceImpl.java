@@ -98,6 +98,10 @@ public class PurchaseApplyServiceImpl implements PurchaseApplyService {
         if (isSame == false) {
             return ResultVO.error("串码有重复，请检查！");
         }
+//      一次发货不能超过1000
+        if(mktResInstNbr.size()>1000) {
+            return ResultVO.error("一次发货数量不能超过1000！");
+        }
         PurApply purApply = purApplyManager.getPurApplyByAppId(req.getApplyId());
         log.info("1.查询申请单信息根据appId={},purApply={}",req.getApplyId(),JSON.toJSONString(purApply));
         //供应商 商家id

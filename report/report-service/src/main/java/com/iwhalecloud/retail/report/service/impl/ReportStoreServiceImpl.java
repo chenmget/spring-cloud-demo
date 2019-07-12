@@ -1,6 +1,7 @@
 package com.iwhalecloud.retail.report.service.impl;
 
 import com.alibaba.dubbo.config.annotation.Service;
+
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.report.dto.request.ReportStSaleDaoReq;
@@ -11,7 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-@Service
+
+@Service(parameters={"addActSup.timeout","30000"})
 public class ReportStoreServiceImpl implements ReportStoreService{
 	 
 	@Autowired

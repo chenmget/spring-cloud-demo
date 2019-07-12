@@ -57,11 +57,11 @@
     <select id="qryActivityGoodsId" parameterType="com.iwhalecloud.retail.goods2b.dto.req.ActivityGoodsReq"
             resultType="com.iwhalecloud.retail.goods2b.dto.ActivityGoodsDTO">
         select DISTINCT p.PRODUCT_BASE_ID,p.GOODS_ID as goodsId,p.GOODS_NAME as goodsName,p.GOODS_CAT_ID as categoryId,p.CAT_PATH as parCategoryId,
-        p.MKTPRICE as retailPrice,p.DELIVERY_PRICE as wholeSalePrice,p.BUY_COUNT as orderAmount,
+        p.MKTPRICE as retailPrice,p.DELIVERY_PRICE as wholeSalePrice,p.BUY_COUNT as orderAmount,p.is_advance_sale,p.is_subsidy,
         p.SUPPLIER_ID as supplierId, t.FILE_URL as imageUrl from
         (
         SELECT pgpr.PRODUCT_BASE_ID,pg.GOODS_ID ,pg.GOODS_NAME ,pg.GOODS_CAT_ID ,pc.CAT_PATH ,
-        pg.MKTPRICE ,pgpr.DELIVERY_PRICE ,pg.BUY_COUNT ,
+        pg.MKTPRICE ,pgpr.DELIVERY_PRICE ,pg.BUY_COUNT ,pg.is_advance_sale,pg.is_subsidy,
         pg.SUPPLIER_ID
         FROM PROD_GOODS_PRODUCT_REL pgpr ,PROD_GOODS pg , PROD_CAT pc, prod_goods_region_rel pgrr
         WHERE pgpr.GOODS_ID=pg.GOODS_ID
@@ -84,11 +84,11 @@
         and pc.TARGET_TYPE='1') t on t.TARGET_ID = p.GOODS_ID
         UNION ALL
         select DISTINCT p.PRODUCT_BASE_ID,p.GOODS_ID as goodsId,p.GOODS_NAME as goodsName,p.GOODS_CAT_ID as categoryId,p.CAT_PATH as parCategoryId,
-        p.MKTPRICE as retailPrice,p.DELIVERY_PRICE as wholeSalePrice,p.BUY_COUNT as orderAmount,
+        p.MKTPRICE as retailPrice,p.DELIVERY_PRICE as wholeSalePrice,p.BUY_COUNT as orderAmount,p.is_advance_sale,p.is_subsidy,
         p.SUPPLIER_ID as supplierId, t.FILE_URL as imageUrl from
         (
         SELECT pgpr.PRODUCT_BASE_ID,pg.GOODS_ID ,pg.GOODS_NAME ,pg.GOODS_CAT_ID ,pc.CAT_PATH ,
-        pg.MKTPRICE ,pgpr.DELIVERY_PRICE ,pg.BUY_COUNT ,
+        pg.MKTPRICE ,pgpr.DELIVERY_PRICE ,pg.BUY_COUNT ,pg.is_advance_sale,pg.is_subsidy,
         pg.SUPPLIER_ID,pg.TARGET_TYPE
         FROM PROD_GOODS_PRODUCT_REL pgpr ,PROD_GOODS pg , PROD_CAT pc, prod_goods_target_rel pgtr
         WHERE pgpr.GOODS_ID=pg.GOODS_ID

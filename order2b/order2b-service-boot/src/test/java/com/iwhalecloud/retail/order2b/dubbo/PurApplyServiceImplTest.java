@@ -14,6 +14,7 @@ import com.iwhalecloud.retail.order2b.manager.PurApplyManager;
 import com.iwhalecloud.retail.order2b.service.PurApplyService;
 import com.iwhalecloud.retail.order2b.service.PurchaseApplyService;
 import com.iwhalecloud.retail.system.dto.CommonRegionDTO;
+import com.iwhalecloud.retail.system.dto.request.CommonRegionListReq;
 import com.iwhalecloud.retail.system.service.CommonRegionService;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -259,15 +260,20 @@ public class PurApplyServiceImplTest  extends TestBase {
     }
     @Test
     public void applySearchReport(){
-        ResultVO<CommonRegionDTO> c = commonRegionService.getCommonRegionById("731");
+//        ResultVO<CommonRegionDTO> c = commonRegionService.getCommonRegionById("731");
+//        parRegionId
+//        System.out.println(JSON.toJSONString(c));
+        CommonRegionListReq req = new CommonRegionListReq();
+        req.setParRegionId("731");
+        ResultVO<List<CommonRegionDTO>> c = commonRegionService.listCommonRegion(req);
 
         System.out.println(JSON.toJSONString(c));
 
-//        String json = "{\"pageNo\":1,\"pageSize\":10,\"applyCode\":\"\",\"applyName\":\"\",\"lanIdList\":[],\"merchantName\":\"\",\"productName\":\"\",\"unitType\":\"\",\"color\":\"亮黑色\",\"memory\":\"3G\",\"statusCd\":\"21\"}";
+//        String json = "{\"pageNo\":1,\"pageSize\":10,\"applyCode\":\"\",\"applyName\":\"\",\"lanIdList\":[],\"merchantName\":\"\",\"productName\":\"\",\"unitType\":\"\",\"color\":\"\",\"memory\":\"\",\"sn\":\"\",\"mktResInstNbr\":\"\",\"purStartDate\":\"\",\"purEndDate\":\"\",\"deliveryStartDate\":\"\",\"deliveryEndDate\":\"\",\"revingStartDate\":\"\",\"revingEndDate\":\"\",\"purType\":\"\"}";
 ////        PurApplyReq req = new PurApplyReq();
 //        Gson gson = new Gson();
 //        PurApplyStatusReportReq req = gson.fromJson(json, new TypeToken<PurApplyStatusReportReq>(){}.getType());
-//        log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
+////        log.info("cgSearchApply参数   req={}"+JSON.toJSONString(req));
 //        req.setLanId("731");
 //        String userId = UserContext.getUserId();
 //		String userId = "100028487";
@@ -290,7 +296,8 @@ public class PurApplyServiceImplTest  extends TestBase {
 //            log.info("查询采购申请单报表*******************isMerchant = "+isMerchant +" **************UserContext.getMerchantId() = "+UserContext.getMerchantId());
 //        }
 //
-//        log.info("查询采购申请单报表入参*******************lanId = "+req.getLanId() );
+//        log.info("查询采购申请单报表入参*******************lanId = "+7 );
+//        req.setLanIdTemp("731");
 //        ResultVO resultVO =   purApplyService.applyStatusSearchReport(req);
 //        System.out.println(JSON.toJSONString(resultVO));
 //        return ResultVO.success(purApplyResp);

@@ -68,6 +68,8 @@ public class ProductApplyInfoResp implements Serializable {
 
     private  String typeNmae; //类型名称
 
+    private String supplyFeeLower;//政企上限价
+
 
 
 

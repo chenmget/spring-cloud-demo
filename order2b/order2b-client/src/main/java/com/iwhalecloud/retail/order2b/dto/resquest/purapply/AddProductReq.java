@@ -44,4 +44,7 @@ public class AddProductReq extends PageVO implements Serializable {
 	private String corporationPrice; //政企价格
 
 
+	private String supplyFeeLower;//政企上限价
+
+
 }

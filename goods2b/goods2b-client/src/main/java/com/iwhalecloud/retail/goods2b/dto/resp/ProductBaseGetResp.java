@@ -20,6 +20,9 @@ public class ProductBaseGetResp implements Serializable {
     @ApiModelProperty(value = "productBaseId")
     private String productBaseId;
 
+    @ApiModelProperty(value = "小类编码id")
+    private String crmTypeId;
+
     /**
      * 产品类别
      */
@@ -357,4 +360,5 @@ public class ProductBaseGetResp implements Serializable {
      */
     @ApiModelProperty(value = "卖点")
     private String sallingPoint;
+
 }

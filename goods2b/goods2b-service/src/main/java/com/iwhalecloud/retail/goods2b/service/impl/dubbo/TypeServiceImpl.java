@@ -415,14 +415,17 @@ public class TypeServiceImpl implements TypeService {
         ProductBaseGetReq req = new ProductBaseGetReq();
         req.setProductBaseId(prodBaseId);
         ProductBaseGetResp resp = productBaseManager.selectProductBase(req).get(0);
-        Type type = typeManager.selectById(resp.getTypeId());
-        List<ProdCRMType> prodCRMTypes = lindCrmTypeManager.getProCRMType(type.getCrmResKind());
-        List<ProdCRMTypeDto> prodCRMTypeDtos = new ArrayList<>();
-        for (ProdCRMType prodCRMType : prodCRMTypes){
-            ProdCRMTypeDto prodCRMTypeDto = new ProdCRMTypeDto();
-            BeanUtils.copyProperties(prodCRMType,prodCRMTypeDto);
-            prodCRMTypeDtos.add(prodCRMTypeDto);
+        if(resp.getCrmTypeId() != null) {
+            ProdCrmTypeReq prodCrmTypeReq = new ProdCrmTypeReq();
+            prodCrmTypeReq.setTypeId(resp.getCrmTypeId());
+            List<ProdCRMTypeDto> prodCRMTypeDtos = lindCrmTypeManager.queryProdCrmType(prodCrmTypeReq);
+            if(prodCRMTypeDtos.size()!=0)throw new RuntimeException("异常数据");
+            prodCRMTypeDtos.get(0).setIfChoosed(true);
+            return ResultVO.success(prodCRMTypeDtos);
         }
-        return ResultVO.success(prodCRMTypeDtos);
+        Type type = typeManager.selectById(resp.getTypeId());
+        ProdCrmTypeReq prodCrmTypeReq = new ProdCrmTypeReq();
+        prodCrmTypeReq.setParentTypeId(type.getCrmResKind());
+        return ResultVO.success(lindCrmTypeManager.queryProdCrmType(prodCrmTypeReq));
     }
 }

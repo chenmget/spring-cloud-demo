@@ -39,6 +39,9 @@ public class ProductBase implements Serializable {
 	@ApiModelProperty(value = "产品类别")
 	private String catId;
 
+
+	@ApiModelProperty(value = "小类编码id")
+	private String crmTypeId;
 	/**
 	 * 产品分类
 	 */
@@ -315,7 +318,10 @@ public class ProductBase implements Serializable {
     public enum FieldNames {
 		/** productBaseId. */
 		productBaseId("productBaseId","PRODUCT_BASE_ID"),
-		
+
+		/** crm小类 */
+		crmTypeId("crmTypeId","CRM_TYPE_ID"),
+
 		/** 产品分类. */
 		catId("catId","CAT_ID"),
 		

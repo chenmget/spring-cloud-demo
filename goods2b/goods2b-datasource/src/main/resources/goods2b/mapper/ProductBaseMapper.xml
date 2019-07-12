@@ -8,7 +8,8 @@
     t.PRODUCT_BASE_ID 
     ,t.CAT_ID
     ,t.TYPE_ID
-    ,t.BRAND_ID 
+    ,t.CRM_TYPE_ID
+    ,t.BRAND_ID
     ,t.PRODUCT_NAME 
     ,t.UNIT_TYPE
     ,t.UNIT_TYPE_NAME

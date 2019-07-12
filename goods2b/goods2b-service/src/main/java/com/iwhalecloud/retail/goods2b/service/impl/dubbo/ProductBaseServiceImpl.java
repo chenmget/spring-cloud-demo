@@ -996,4 +996,10 @@ public class ProductBaseServiceImpl implements ProductBaseService {
     public ResultVO<ProductBaseLightResp> getProductBaseByProductId(String productId){
         return ResultVO.success(productBaseManager.getProductBaseByProductId(productId));
     }
+
+    @Override
+    public ResultVO updateCrmType(ProductBaseUpdateReq req) {
+
+        return ResultVO.success(productBaseManager.updateProductBase(req));
+    }
 }

@@ -210,7 +210,7 @@ public class GoodsRulesProductService {
             }
             GoodsRulesProductDTO rulesProductDTO = new GoodsRulesProductDTO();
             BeanUtils.copyProperties(entity, rulesProductDTO);
-            if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(req.getAssignedType())){
+            if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(entity.getAssignType())){
                 entity.setProductCode(null);
                 rulesProductDTO.setProductCode(null);
                 passGoodsLsit.add(rulesProductDTO);

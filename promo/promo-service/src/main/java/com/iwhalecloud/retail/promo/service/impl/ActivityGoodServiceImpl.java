@@ -31,7 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author li.xinhang
@@ -105,11 +107,14 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
             return ResultVO.success();
         }
         List<String> productIds = new ArrayList();
-        for (int i = 0; i < activityProductsList.size(); i++) {
-            productIds.add(activityProductsList.get(i).getProductId());
+        Map<String,Long> productPrices = new HashMap<>();
+        for (ActivityProduct activityProduct:activityProductsList) {
+            productIds.add(activityProduct.getProductId());
+            //多个同样产品id时，取第一个产品的baseId和价格（后面要用到），已经包含就不添进去
+            if(!productIds.contains(activityProduct.getProductId())){
+                productPrices.put(activityProduct.getProductBaseId(),activityProduct.getPrice());
+            }
         }
-        // 活动产品供货价
-        Long price = activityProductsList.get(0).getPrice();
         //通过商家id查询商家信息，获取商家pathCode
         MerchantDTO merchantDto = merchantService.getMerchantInfoById(req.getMerchantId());
         String pathCode = (merchantDto==null)?null:merchantDto.getParCrmOrgPathCode();
@@ -123,7 +128,12 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
             for (int i = 0; i < activityGoodsDTOS.size(); i++) {
                 ActivityGoodDTO activityGoodDTO = new ActivityGoodDTO();
                 BeanUtils.copyProperties(activityGoodsDTOS.get(i), activityGoodDTO);
-                activityGoodDTO.setWholeSalePrice(String.valueOf(price));
+                String productBaseId = activityGoodDTO.getProductBaseId();
+                //获取活动产品的价格（供货价），设置到活动商品信息中
+                Long price = productPrices.get(productBaseId);
+                if(price!=null){
+                    activityGoodDTO.setWholeSalePrice(String.valueOf(price));
+                }
                 activityGoodDTOList.add(activityGoodDTO);
             }
         }

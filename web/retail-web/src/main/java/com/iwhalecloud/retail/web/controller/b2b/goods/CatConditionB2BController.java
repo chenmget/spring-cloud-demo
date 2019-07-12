@@ -6,13 +6,11 @@ import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.goods2b.dto.CatConditionDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.CatConditionListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.CatConditionSaveReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.CatConditionDetailResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatConditionService;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -62,6 +60,24 @@ public class CatConditionB2BController {
         log.info("CatConditionB2BController.listCatCondition() input:req={} ", JSON.toJSONString(req));
         ResultVO resultVO = catConditionService.listCatCondition(req);
         log.info("CatConditionB2BController.listCatCondition() out:resultVO={} ", JSON.toJSONString(resultVO));
+        return resultVO;
+    }
+
+    /**
+     * 根据商品分类ID获取 商品分类条件 详情
+     * @param catId
+     * @return
+     */
+    @ApiOperation(value = "根据商品分类ID获取 商品分类条件 详情", notes = "根据商品分类ID获取 商品分类条件 详情")
+    @ApiResponses({
+            @ApiResponse(code = 400, message = "请求参数没填好"),
+            @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
+    })
+    @GetMapping(value = "/getDetailByCatId")
+    public ResultVO<CatConditionDetailResp> listCatConditionDetail(@RequestParam(value = "catId", required = true) String catId) {
+        log.info("CatConditionB2BController.listCatConditionDetail() input: catId = {} ", JSON.toJSONString(catId));
+        ResultVO<CatConditionDetailResp> resultVO = catConditionService.getCatConditionDetail(catId);
+        log.info("CatConditionB2BController.listCatConditionDetail() out:resultVO={} ", JSON.toJSONString(resultVO));
         return resultVO;
     }
 

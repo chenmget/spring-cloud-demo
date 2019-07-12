@@ -133,12 +133,12 @@ public class ActActivityProductRuleServiceImpl implements ActActivityProductRule
                 ActivityProduct activityProduct = new ActivityProduct();
                 BeanUtils.copyProperties(activityProductReq, activityProduct);
                 activityProduct.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
+                activityProduct.setStatus(PromoConst.Status.Audited.getCode());
                 activityProduct.setMarketingActivityId(actReBateProductReq.getMarketingActivityId());
                 activityProduct.setCreator(actReBateProductReq.getUserId());
                 activityProducts.add(activityProduct);
                 //添加活动产品规则信息
                 ActActivityProductRule actActivityProductRule = new ActActivityProductRule();
-                //BeanUtils.copyProperties(actReBateProductReq.getActActivityProductRuleDTO(), actActivityProductRule);
                 actActivityProductRule.setCreator(actReBateProductReq.getUserId());
                 actActivityProductRule.setActProdRelId(marketingActivityId);
                 actActivityProductRule.setGmtCreate(new Date());

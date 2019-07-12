@@ -983,4 +983,5 @@ public class TaskManager extends ServiceImpl<TaskMapper, Task> {
         updateWrapper.eq(Task.FieldNames.taskId.getTableFieldName(), taskId);
         return taskMapper.update(task, updateWrapper) > 0;
     }
+
 }

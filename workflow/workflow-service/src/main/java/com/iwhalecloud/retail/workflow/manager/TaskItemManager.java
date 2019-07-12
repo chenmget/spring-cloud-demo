@@ -169,4 +169,13 @@ public class TaskItemManager {
 //        log.info("TaskItemManager.getWaitDealTaskItemByFormId taskItem={}", JSON.toJSONString(taskItem));
 //        return taskItem;
 //    }
+
+    /**
+     * 获取当前
+     * @param taskId
+     * @return
+     */
+    public TaskItem getCurTaskItem(String taskId){
+        return taskItemMapper.getCurTaskItem(taskId);
+    }
 }

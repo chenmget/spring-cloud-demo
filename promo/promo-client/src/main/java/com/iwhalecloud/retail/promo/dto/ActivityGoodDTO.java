@@ -16,6 +16,9 @@ public class ActivityGoodDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**基本产品ID */
+    @ApiModelProperty(value = "基本产品ID")
+    private String productBaseId;
     /**
      * 商品ID
      */
@@ -81,4 +84,16 @@ public class ActivityGoodDTO implements Serializable {
      */
     @ApiModelProperty("缩略图地址")
     private String imageUrl;
+
+    /**
+     * 是否预售商品
+     */
+    @ApiModelProperty(value = "是否预售商品,商品是否为预售商品，预售商品可以无库存发布:1.是 0.否")
+    private Integer isAdvanceSale;
+
+    /**
+     * 是否前置补贴
+     */
+    @ApiModelProperty(value = "是否前置补贴商品 1.是 0.否")
+    private Integer isSubsidy;
 }

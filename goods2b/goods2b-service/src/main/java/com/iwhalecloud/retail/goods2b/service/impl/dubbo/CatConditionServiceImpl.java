@@ -1,17 +1,25 @@
 package com.iwhalecloud.retail.goods2b.service.impl.dubbo;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.CatConditionConst;
 import com.iwhalecloud.retail.goods2b.dto.CatConditionDTO;
+import com.iwhalecloud.retail.goods2b.dto.TypeDTO;
 import com.iwhalecloud.retail.goods2b.dto.req.CatConditionDeleteReq;
 import com.iwhalecloud.retail.goods2b.dto.req.CatConditionListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.CatConditionSaveReq;
+import com.iwhalecloud.retail.goods2b.dto.req.TypeSelectByIdReq;
+import com.iwhalecloud.retail.goods2b.dto.resp.CatConditionDetailResp;
 import com.iwhalecloud.retail.goods2b.entity.CatCondition;
 import com.iwhalecloud.retail.goods2b.manager.CatConditionManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatConditionService;
+import com.iwhalecloud.retail.goods2b.service.dubbo.TypeService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,6 +33,9 @@ public class CatConditionServiceImpl implements CatConditionService {
 
     @Autowired
     private CatConditionManager catConditionManager;
+
+    @Reference
+    private TypeService typeService;
 
     /**
      * 添加一个 商品类型条件
@@ -83,6 +94,60 @@ public class CatConditionServiceImpl implements CatConditionService {
             return ResultVO.error("删除 商品类型条件 信息失败");
         }
         return ResultVO.success("删除 商品类型条件 信息 条数：" + result, result);
+    }
+
+    /**
+     * 根据商品分类ID获取 商品分类条件 详情 列表
+     * @param catId
+     * @return
+     */
+    @Override
+    public ResultVO<CatConditionDetailResp> getCatConditionDetail(String catId) {
+        log.info("CatConditionServiceImpl.getCatConditionDetail() input  catId: {}", JSON.toJSONString(catId));
+
+        CatConditionDetailResp resp = new CatConditionDetailResp();
+
+        CatConditionListReq req = new CatConditionListReq();
+        req.setCatId(catId);
+        List<CatConditionDTO> dtoList = catConditionManager.listCatCondition(req);
+        if (CollectionUtils.isEmpty(dtoList)) {
+            resp.setCatConditionList(Lists.newArrayList());
+            return ResultVO.success(resp);
+        }
+
+        resp.setCatConditionList(dtoList);
+
+        for (CatConditionDTO dto : dtoList) {
+            if (StringUtils.equals(CatConditionConst.RelType.PRODUCT_TYPE.getCode(), dto.getRelType())) {
+                // 类型是1的 要去获取类型详情
+                resp.setTypeDetail(getTypeDetail(dto.getRelObjId()));
+            }
+        }
+
+        ResultVO<CatConditionDetailResp> resultVO = ResultVO.success(resp);
+        log.info("CatConditionServiceImpl.getCatConditionDetail() output: {}", JSON.toJSONString(resultVO));
+        return resultVO;
+    }
+
+
+    /**
+     * 获取类型详情
+     * @param typeId
+     * @return
+     */
+    private TypeDTO getTypeDetail(String typeId) {
+        if (StringUtils.isEmpty(typeId)) {
+            return null;
+        }
+        TypeSelectByIdReq req = new TypeSelectByIdReq();
+        req.setTypeId(typeId);
+
+        ResultVO resultVO = typeService.selectById(req);
+        log.info("CatConditionServiceImpl.getTypeDetail() input:typeId:{}  output: {}", typeId, JSON.toJSONString(resultVO));
+        if (resultVO.isSuccess() && Objects.nonNull(resultVO.getResultData())) {
+            return (TypeDTO)resultVO.getResultData();
+        }
+        return null;
     }
 
 

@@ -4,6 +4,7 @@ import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.common.GoodsConst;
 import com.iwhalecloud.retail.goods2b.common.GoodsRulesConst;
 import com.iwhalecloud.retail.goods2b.dto.GoodsProductRelDTO;
 import com.iwhalecloud.retail.goods2b.dto.GoodsRulesDTO;
@@ -198,7 +199,9 @@ public class GoodsRulesProductService {
 
             Product p = productList.get(0);
             entity.setProductName(p.getUnitName());
-            entity.setAssignType(req.getAssignedType());
+            if(StringUtils.isEmpty(entity.getAssignType())){
+                entity.setAssignType(req.getAssignedType());
+            }
             entity.setProductBaseId(p.getProductBaseId());
             boolean b = supplyTargetInfo(entity);
             log.info("gs_10010_queryProductObj,supplyTargetInfo_entity{},b{}", JSON.toJSONString(entity), b);
@@ -207,14 +210,16 @@ public class GoodsRulesProductService {
             }
             GoodsRulesProductDTO rulesProductDTO = new GoodsRulesProductDTO();
             BeanUtils.copyProperties(entity, rulesProductDTO);
-            if (StringUtils.isEmpty(entity.getProductCode())) {
+            if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(req.getAssignedType())){
+                entity.setProductCode(null);
+                rulesProductDTO.setProductCode(null);
                 passGoodsLsit.add(rulesProductDTO);
                 continue;
             }
 
             for (Product product : productList) {
-                if (rulesProductDTO.getProductCode().equals(product.getSn())) {
-                    entity.setProductId(product.getProductId());
+                if (product.getSn().equals(rulesProductDTO.getProductCode())) {
+                    entity.setProductId(rulesProductDTO.getProductId());
                     rulesProductDTO.setAttrValue1(product.getAttrValue1());
                     rulesProductDTO.setAttrValue2(product.getAttrValue2());
                     rulesProductDTO.setAttrValue3(product.getAttrValue3());

@@ -234,7 +234,6 @@ public class GoodsServiceImpl implements GoodsService {
 
             log.info("GoodsServiceImpl.addGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
-                try {
                     /**
                      * 新增分货规则
                      */
@@ -252,9 +251,6 @@ public class GoodsServiceImpl implements GoodsService {
                     prodGoodsRuleEditReq.setAssignType(req.getAssignType());
                     prodGoodsRuleEditReq.setGoodsRulesDTOList(goodsRulesDTOList);
                     goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
-                } catch (Exception e) {
-                    log.info("添加分货规则失败");
-                }
             } else {
                 List<String> errors = new ArrayList<String>(1);
                 errors.add(checkResult.getResultMsg());
@@ -459,7 +455,6 @@ public class GoodsServiceImpl implements GoodsService {
             ResultVO checkResult=goodsRulesService.checkGoodsRules(model);
             log.info("GoodsServiceImpl.editGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
-                try {
                     ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
                     prodGoodsRuleEditReq.setAssignType(req.getAssignType());
                     List<String> products=new ArrayList<>();
@@ -469,9 +464,6 @@ public class GoodsServiceImpl implements GoodsService {
                     prodGoodsRuleEditReq.setProductIds(products);
                     prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
                     goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
-                } catch (Exception e) {
-                    log.info("添加分货规则失败");
-                }
             } else {
                 List<String> errors = new ArrayList<String>(1);
                 errors.add(checkResult.getResultMsg());
@@ -1141,10 +1133,6 @@ public class GoodsServiceImpl implements GoodsService {
                     req.setSupplierIds(supplierMerchantIds);
                     log.info("GoodsServiceImpl.queryPageByConditionAdmin 调用 merchantService.listMerchant() 查要过滤的供应商的结果 req={}， idList:",
                             JSON.toJSONString(req), JSON.toJSONString(supplierMerchantIds));
-//                    String supplierId = listResultVO.getResultData().get(0).getMerchantId();
-//                    if (StringUtils.isNotEmpty(supplierId)) {
-//                        req.setSupplierId(supplierId);
-//                    }
                 } else {
                     Page<GoodsPageResp> pageRespPage = new Page<GoodsPageResp>();
                     return ResultVO.success(pageRespPage);
@@ -1189,25 +1177,17 @@ public class GoodsServiceImpl implements GoodsService {
             } else if (!StringUtils.isEmpty(targetType) && GoodsConst.TARGET_TYPE_TARGET.equals(targetType)) {
                 List<GoodsTargetRel> goodsTargetRels = goodsTargetManager.queryGoodsTargerRel(resp.getGoodsId());
                 if (CollectionUtils.isNotEmpty(goodsTargetRels)) {
-                    List<String> merchantList = new ArrayList<>();
-                    for (GoodsTargetRel goodsTargetRel : goodsTargetRels) {
-                        if (StringUtils.isEmpty(goodsTargetRel.getTargetId())) {
-                            merchantList.add(goodsTargetRel.getTargetId());
-                        }
-                    }
+                    // 获取发布对象名称集合
+                    List<String> merchantIdList = goodsTargetRels.stream().map(GoodsTargetRel::getTargetId).collect(Collectors.toList());
                     MerchantListReq merchantListReq = new MerchantListReq();
-                    merchantListReq.setMerchantIdList(merchantList);
-                    ResultVO<List<MerchantDTO>> resultVO = merchantService.listMerchant(merchantListReq);
-                    List<String> goodsTargetRelLists = new ArrayList<>();
-                    if (resultVO.isSuccess() && null != resultVO.getResultData()) {
-                        List<MerchantDTO> merchantDTOs = resultVO.getResultData();
-                        if (CollectionUtils.isNotEmpty(merchantDTOs)) {
-                            for (MerchantDTO merchantDTO : merchantDTOs) {
-                                goodsTargetRelLists.add(merchantDTO.getMerchantName());
-                            }
-                        }
+                    merchantListReq.setMerchantIdList(merchantIdList);
+                    List<MerchantDTO> merchantDTOList = merchantService.listMerchant(merchantListReq).getResultData();
+                    List<String> merchantNameList = new ArrayList<>();
+                    if (CollectionUtils.isNotEmpty(merchantDTOList)) {
+                        merchantNameList = merchantDTOList.stream().map(MerchantDTO::getMerchantName).collect(Collectors.toList());
                     }
-                    resp.setGoodsTargetRels(goodsTargetRelLists);
+                    log.info("GoodsServiceImpl.queryPageByConditionAdmin queryGoodsTargerRel merchantNameList={}", JSON.toJSONString(merchantNameList));
+                    resp.setGoodsTargetRels(merchantNameList);
                 }
             }
 

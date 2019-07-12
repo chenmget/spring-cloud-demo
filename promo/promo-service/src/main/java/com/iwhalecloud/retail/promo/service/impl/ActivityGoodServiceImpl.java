@@ -31,7 +31,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author li.xinhang
@@ -100,13 +102,18 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
         activityGoodsByMerchantResp.setActivityId(req.getActivityId());
         activityGoodsByMerchantResp.setGoodsList(activityGoodDTOList);
         // 根据活动编码查询参与活动产品
-        List<ActivityProduct> activityGoodsList = activityProductManager.queryActivityProductByCondition(req.getActivityId());
-        if(activityGoodsList.size() < 1){
+        List<ActivityProduct> activityProductsList = activityProductManager.queryActivityProductByCondition(req.getActivityId());
+        if(activityProductsList.size() < 1){
             return ResultVO.success();
         }
         List<String> productIds = new ArrayList();
-        for (int i = 0; i < activityGoodsList.size(); i++) {
-            productIds.add(activityGoodsList.get(i).getProductId());
+        Map<String,Long> productPrices = new HashMap<>();
+        for (ActivityProduct activityProduct:activityProductsList) {
+            productIds.add(activityProduct.getProductId());
+            //多个同样产品id时，取第一个产品的baseId和价格（后面要用到），已经包含就不添进去
+            if(!productIds.contains(activityProduct.getProductId())){
+                productPrices.put(activityProduct.getProductBaseId(),activityProduct.getPrice());
+            }
         }
         //通过商家id查询商家信息，获取商家pathCode
         MerchantDTO merchantDto = merchantService.getMerchantInfoById(req.getMerchantId());
@@ -121,6 +128,12 @@ public class ActivityGoodServiceImpl implements ActivityGoodService {
             for (int i = 0; i < activityGoodsDTOS.size(); i++) {
                 ActivityGoodDTO activityGoodDTO = new ActivityGoodDTO();
                 BeanUtils.copyProperties(activityGoodsDTOS.get(i), activityGoodDTO);
+                String productBaseId = activityGoodDTO.getProductBaseId();
+                //获取活动产品的价格（供货价），设置到活动商品信息中
+                Long price = productPrices.get(productBaseId);
+                if(price!=null){
+                    activityGoodDTO.setWholeSalePrice(String.valueOf(price));
+                }
                 activityGoodDTOList.add(activityGoodDTO);
             }
         }

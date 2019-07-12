@@ -486,8 +486,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     productUpdateReq.setStatus(ProductConst.StatusType.AUDIT.getCode());
 
-                    // 如果是非厂商添加(一般是管理员）  直接挂网 zhongwenlong
-                    if (!req.isManufacturerType()) {
+                    // 如果是非厂商添加(一般是管理员）并且之前的是已审核通过状态  直接挂网 zhongwenlong
+                    if (!req.isManufacturerType()
+                            && ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)) {
                         productUpdateReq.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
                         productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDIT_PASS.getCode());
                     }
@@ -867,7 +868,7 @@ public class ProductBaseServiceImpl implements ProductBaseService {
         // zhongwenlong 获取标签ID集合
         List<String> listTagRelId = new ArrayList<>();
         TagRelListReq tagRelListReq = new TagRelListReq();
-        tagRelListReq.setProductId(req.getProductBaseId());
+        tagRelListReq.setProductBaseId(req.getProductBaseId());
         List<TagRelListResp> listTagRel = tagRelManager.listTagRel(tagRelListReq);
         log.info("ProductBaseServiceImpl.getProductDetail tagRelManager.listTagRel req={}, resp={}", JSON.toJSONString(tagRelListReq), JSON.toJSONString(listTagRel));
         List<String> relTagIdList = listTagRel.stream().map(TagRelListResp::getTagId).collect(Collectors.toList());

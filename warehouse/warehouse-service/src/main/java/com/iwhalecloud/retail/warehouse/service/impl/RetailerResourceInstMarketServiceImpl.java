@@ -508,22 +508,22 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             for (String nbr : req.getMktResInstNbrs()) {
                 qryMktInstInfoByConditionReq.setBarCode(nbr);
                 ResultVO<QueryMarkResQueryResultsSwapResp<QryMktInstInfoByConditionItemSwapResp>> queryMarkResQueryResultsRespResultVO = marketingResStoreService.qryMktInstInfoByCondition(qryMktInstInfoByConditionReq);
-                log.info("RetailerResourceInstMarketServiceImpl.listResourceInst marketingResStoreService.qryMktInstInfoByCondition req={}, resp={}", JSON.toJSONString(qryMktInstInfoByConditionReq), JSON.toJSONString(queryMarkResQueryResultsRespResultVO));
-                if (!queryMarkResQueryResultsRespResultVO.isSuccess() || queryMarkResQueryResultsRespResultVO.getResultData() == null || CollectionUtils.isEmpty(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo())) {
-                    return ResultVO.success(new Page<ResourceInstListPageResp>());
+                log.info("RetailerResourceInstMarketServiceImpl.listResourceInst marketingResStoreService.qryMktInstInfoByCondition nbr={}, resp={}", nbr, JSON.toJSONString(queryMarkResQueryResultsRespResultVO));
+                if (queryMarkResQueryResultsRespResultVO.isSuccess() && !CollectionUtils.isEmpty(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo())) {
+                    qryMktInstInfoList.addAll(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo());
                 }
-                qryMktInstInfoList.addAll(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo());
             }
         }else{
             ResultVO<QueryMarkResQueryResultsSwapResp<QryMktInstInfoByConditionItemSwapResp>> queryMarkResQueryResultsRespResultVO = marketingResStoreService.qryMktInstInfoByCondition(qryMktInstInfoByConditionReq);
             log.info("RetailerResourceInstMarketServiceImpl.listResourceInst marketingResStoreService.qryMktInstInfoByCondition req={}, resp={}", JSON.toJSONString(qryMktInstInfoByConditionReq), JSON.toJSONString(queryMarkResQueryResultsRespResultVO));
-            if (!queryMarkResQueryResultsRespResultVO.isSuccess() || queryMarkResQueryResultsRespResultVO.getResultData() == null || CollectionUtils.isEmpty(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo())) {
-                return ResultVO.success(new Page<ResourceInstListPageResp>());
+            if (queryMarkResQueryResultsRespResultVO.isSuccess() && !CollectionUtils.isEmpty(queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo())) {
+                qryMktInstInfoList = queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo();
             }
-            qryMktInstInfoList = queryMarkResQueryResultsRespResultVO.getResultData().getQueryInfo();
         }
 
-
+        if (CollectionUtils.isEmpty(qryMktInstInfoList)) {
+            return ResultVO.success(new Page<ResourceInstListPageResp>());
+        }
         // 组装返回数据
         List<ResourceInstListPageResp> resourceInstListRespListPage = translateNbrInst(qryMktInstInfoList);
         page.setRecords(resourceInstListRespListPage);
@@ -655,7 +655,7 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
         // step4 如果不需要审核则发起流程目标仓库处理人，由目标仓库处理人决定是否接受
         if (!ResourceConst.ALLOCATE_AUDIT_TYPE.ALLOCATE_AUDIT_TYPE_1.getCode().equals(auditType)) {
             ProcessStartReq processStartDTO = new ProcessStartReq();
-            processStartDTO.setTitle(constant.getAddNbrWorkFlow());
+            processStartDTO.setTitle(constant.getAllocateWorkFlow());
             processStartDTO.setApplyUserId(req.getCreateStaff());
             processStartDTO.setApplyUserName(sourceMerchantDTO.getMerchantName());
             processStartDTO.setProcessId(WorkFlowConst.PROCESS_ID.PROCESS_12.getTypeCode());
@@ -672,25 +672,6 @@ public class RetailerResourceInstMarketServiceImpl implements RetailerResourceIn
             log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst taskService.startProcess req={},resp={}", JSON.toJSONString(processStartDTO), JSON.toJSONString(taskServiceRV));
             if (!taskServiceRV.getResultCode().equals(ResultCodeEnum.SUCCESS.getCode())) {
                 throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getStartWorkFlowError());
-            }
-        }
-
-        Map<String, List<String>> mktResIdAndNbrMap = this.getMktResIdAndNbrMap(resourceInstDTOList, CLASS_TYPE_1);
-        // step 4:修改库存(出库)
-        for (Map.Entry<String, List<String>> entry : mktResIdAndNbrMap.entrySet()) {
-            ResourceInstStoreDTO resourceInstStoreDTO = new ResourceInstStoreDTO();
-            resourceInstStoreDTO.setMktResId(entry.getKey());
-            resourceInstStoreDTO.setMktResStoreId(mktResStoreId);
-            resourceInstStoreDTO.setMerchantId(sourceMerchantDTO.getMerchantId());
-            resourceInstStoreDTO.setLanId(sourceMerchantDTO.getLanId());
-            resourceInstStoreDTO.setRegionId(sourceMerchantDTO.getCity());
-            // 出库类型，库存减少
-            resourceInstStoreDTO.setQuantityAddFlag(false);
-            resourceInstStoreDTO.setQuantity(Long.valueOf(entry.getValue().size()));
-            int updateResInstStore = resourceInstStoreManager.updateResourceInstStore(resourceInstStoreDTO);
-            log.info("RetailerResourceInstMarketServiceImpl.allocateResourceInst resourceInstStoreManager.updateResourceInstStore req={},resp={}", JSON.toJSONString(resourceInstStoreDTO), JSON.toJSONString(updateResInstStore));
-            if (updateResInstStore < 1) {
-                throw new RetailTipException(ResultCodeEnum.ERROR.getCode(), constant.getUpdateInstStoreFail());
             }
         }
         return ResultVO.success(successMessage);

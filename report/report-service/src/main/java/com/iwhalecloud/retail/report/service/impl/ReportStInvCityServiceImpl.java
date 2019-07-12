@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by jiyou on 2019/4/11.
  */
-@Service
+@Service(parameters={"addActSup.timeout","30000"})
 public class ReportStInvCityServiceImpl implements ReportStInvCityService {
 
     @Autowired

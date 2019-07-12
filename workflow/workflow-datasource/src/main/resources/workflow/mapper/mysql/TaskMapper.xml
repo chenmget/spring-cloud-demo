@@ -163,7 +163,7 @@
             resultType="com.iwhalecloud.retail.workflow.dto.resp.HandleTaskPageResp">
         select distinct
             a.task_id,a.form_id,a.task_title,a.task_type,a.task_sub_type,a.process_id,a.task_status,a.create_user_id,a.create_user_name,a.create_time,
-            a.cur_node_id,a.cur_node_name,a.last_deal_time,a.extends1,b.handler_user_name
+            a.cur_node_id,a.cur_node_name,a.last_deal_time,a.extends1
         from
         wf_task a,
         wf_task_item b

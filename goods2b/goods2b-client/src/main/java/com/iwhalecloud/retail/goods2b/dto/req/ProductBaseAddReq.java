@@ -17,8 +17,8 @@ public class ProductBaseAddReq extends AbstractRequest implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "是否厂商修改，是：需要走审核")
-    private boolean manufacturerType;
+    @ApiModelProperty(value = "是否厂商修改, 默认是，是：需要走审核")
+    private boolean manufacturerType = true;
 
     /**
      * 产品类别

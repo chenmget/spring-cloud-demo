@@ -109,7 +109,7 @@ public class GoodsRulesManager {
                     if(gs.getGoodsRuleId().equals(en.getGoodsRuleId())){
                         GoodsRules goodsRules=new GoodsRules();
                         BeanUtils.copyProperties(en,goodsRules);
-                        prodGoodsRuleAddList.add(goodsRules);
+                        goodsRules.setState(GoodsRulesConst.state.EFF.getValue());
                         prodGoodsRuleUpdateList.add(goodsRules);
                         deleteG=false;
                         break;
@@ -121,7 +121,6 @@ public class GoodsRulesManager {
                     GoodsRules goodsRules=new GoodsRules();
                     BeanUtils.copyProperties(en,goodsRules);
                     goodsRules.setState(GoodsRulesConst.state.EXP.getValue());
-                    prodGoodsRuleAddList.add(goodsRules);
                     prodGoodsRuleDeleteList.add(goodsRules);
                 }
 

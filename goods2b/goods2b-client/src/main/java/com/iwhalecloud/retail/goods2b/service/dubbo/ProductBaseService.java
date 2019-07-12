@@ -100,4 +100,6 @@ public interface ProductBaseService {
      * @return
      */
     ResultVO<ProductBaseLightResp> getProductBaseByProductId(String productId);
+
+    ResultVO updateCrmType(ProductBaseUpdateReq req);
 }

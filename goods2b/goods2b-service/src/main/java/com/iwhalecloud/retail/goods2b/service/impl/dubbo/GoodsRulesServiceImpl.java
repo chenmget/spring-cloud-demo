@@ -326,15 +326,18 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
         }
 
         for (GoodsRulesOperateDTO dto : conditionList) {
-
+             String goodsRuleTargetType=null;
             //1、如果是零售商，先根据零售商校验分货规则
             if (PartnerConst.MerchantTypeEnum.PARTNER.getType().equals(dto.getMerchantType())) {
-                final String goodsRuleTargetType = GoodsRulesConst.Stockist.PARTNER_IN_SHOP_TYPE.getValue();
-                List<GoodsRulesDTO> goodsRulesDTOs = goodsRulesManager.queryGoodsRules(dto.getGoodsId(), dto.getProductId(), goodsRuleTargetType, dto.getMerchantId());
-                ResultVO<Boolean> resultVO = validGoodsRule(goodsRulesDTOs,dto.getDrawNum());
-                if (!resultVO.isSuccess() || !resultVO.getResultData()) {
-                    return resultVO;
-                }
+                goodsRuleTargetType = GoodsRulesConst.Stockist.PARTNER_IN_SHOP_TYPE.getValue();
+             //地包商校验权限
+            }else if(PartnerConst.MerchantTypeEnum.SUPPLIER_GROUND.getType().equals(dto.getMerchantType())){
+                goodsRuleTargetType = GoodsRulesConst.Stockist.DB_CODE.getValue();
+            }
+            List<GoodsRulesDTO> goodsRulesDTOs = goodsRulesManager.queryGoodsRules(dto.getGoodsId(), null, goodsRuleTargetType, dto.getMerchantId());
+            ResultVO<Boolean> checkRuleResultVO = validGoodsRule(goodsRulesDTOs,dto.getDrawNum());
+            if (!checkRuleResultVO.isSuccess() || !checkRuleResultVO.getResultData()) {
+                return checkRuleResultVO;
             }
 
             //2、根据商家归属的经营主体校验规则
@@ -352,8 +355,8 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
                         , dto.getMerchantId(), JSON.toJSONString(merchantDTO));
                 continue;
             }
-            final String goodsRuleTargetType = GoodsRulesConst.Stockist.BUSINESS_ENTITY_TYPE.getValue();
-            List<GoodsRulesDTO> goodsRulesDTOs = goodsRulesManager.queryGoodsRules(dto.getGoodsId(), dto.getProductId(), goodsRuleTargetType, businessEntityId);
+            goodsRuleTargetType = GoodsRulesConst.Stockist.BUSINESS_ENTITY_TYPE.getValue();
+            goodsRulesDTOs = goodsRulesManager.queryGoodsRules(dto.getGoodsId(), null, goodsRuleTargetType, businessEntityId);
             ResultVO<Boolean> resultVO = validGoodsRule(goodsRulesDTOs,dto.getDrawNum());
             if (!resultVO.isSuccess()) {
                 return resultVO;
@@ -407,9 +410,9 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
                 continue;
             }
 
-            //1、根据零售商修改提货数量
+            //1、根据零售商，或者地包商 修改提货数量
             final String targetTypePartner = GoodsRulesConst.Stockist.PARTNER_IN_SHOP_TYPE.getValue();
-            goodsRulesManager.updatePurchaseNum(dto.getGoodsId(),dto.getProductId(),targetTypePartner,dto.getMerchantId(),dto.getPurchasedNum());
+            goodsRulesManager.updatePurchaseNum(dto.getGoodsId(),null,null,dto.getMerchantId(),dto.getPurchasedNum());
 
             //2、根据经营主体修改提货数量
             MerchantDTO merchantDTO = merchantReference.getMerchantById(dto.getMerchantId());
@@ -425,7 +428,7 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
                 continue;
             }
             final String targetTypeBusinessEntity = GoodsRulesConst.Stockist.BUSINESS_ENTITY_TYPE.getValue();
-            goodsRulesManager.updatePurchaseNum(dto.getGoodsId(),dto.getProductId(),targetTypeBusinessEntity,businessEntityId,dto.getPurchasedNum());
+            goodsRulesManager.updatePurchaseNum(dto.getGoodsId(),null,targetTypeBusinessEntity,businessEntityId,dto.getPurchasedNum());
         }
 
         return ResultVO.success(true);
@@ -469,7 +472,7 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
             return ResultVO.success(true);
         }
 
-        Map<String,List<GoodsRulesDTO>> productGroupDtos =null;
+        Map<String,List<GoodsRulesDTO>> productGroupDtos=null;
         if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(prodGoodsRuleEditReq.getAssignType())){
            productGroupDtos =  goodsRulesDTOs.stream().collect(Collectors.groupingBy(GoodsRulesDTO::getProductBaseId));
 
@@ -548,6 +551,19 @@ public class GoodsRulesServiceImpl implements GoodsRulesService {
         if (CollectionUtils.isEmpty(req.getEntityList())) {
             //每个产品规格必须有一条分货规则
             return ResultVO.error("每个产品规格必须有一条分货规则");
+        }
+
+        /**
+         * 校验同一个商品，不能存在两个一样的分货对象
+         */
+        Map<String,List<GoodsRulesDTO>> productGroupDtos = req.getEntityList().stream().collect(Collectors.groupingBy(GoodsRulesDTO::getTargetCode));
+        Iterator<String> objRule = productGroupDtos.keySet().iterator();
+        while (objRule.hasNext()) {
+            String objCode = objRule.next();
+            List<GoodsRulesDTO> productGoodsRulesDto = productGroupDtos.get(objCode);
+            if(productGoodsRulesDto.size()>1){
+                return ResultVO.error("不能存在两个一样的分货对象,Code="+objCode);
+            }
         }
 
         ResultVO resultVO;

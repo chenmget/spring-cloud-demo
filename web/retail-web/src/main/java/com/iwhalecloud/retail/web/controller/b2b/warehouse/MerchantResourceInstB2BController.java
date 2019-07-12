@@ -313,7 +313,7 @@ public class MerchantResourceInstB2BController {
     })
     @GetMapping(value="listResourceRequestDetailPage")
     public ResultVO<Page<ResourceReqDetailPageResp>> listResourceRequestDetailPage(ResourceReqDetailQueryReq req) {
-        req.setMerchantId(Lists.newArrayList(UserContext.getMerchantId()));
+        req.setCreateStaff(UserContext.getUserId());
         return resourceReqDetailService.listMerchantResourceRequestDetailPage(req);
     }
 

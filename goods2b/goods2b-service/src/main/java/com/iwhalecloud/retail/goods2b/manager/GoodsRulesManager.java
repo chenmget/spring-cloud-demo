@@ -43,14 +43,14 @@ public class GoodsRulesManager {
         List<GoodsRules> resultList = goodsRulesMapper.selectList(queryWrapper);
 
         String assignType=entityList.get(0).getAssignType();
-        //按规格
+        //按机型
         if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(assignType)){
             builderGoodsRulesBy1(entityList,
                     resultList,
                     prodGoodsRuleAddList,
                     prodGoodsRuleUpdateList,
                     prodGoodsRuleDeleteList);
-        //按机型
+        //按规格
         }else{
             builderGoodsRulesBy2(
                     entityList,

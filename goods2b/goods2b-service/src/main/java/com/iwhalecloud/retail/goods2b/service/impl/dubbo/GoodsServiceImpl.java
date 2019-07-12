@@ -234,7 +234,6 @@ public class GoodsServiceImpl implements GoodsService {
 
             log.info("GoodsServiceImpl.addGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
-                try {
                     /**
                      * 新增分货规则
                      */
@@ -252,9 +251,6 @@ public class GoodsServiceImpl implements GoodsService {
                     prodGoodsRuleEditReq.setAssignType(req.getAssignType());
                     prodGoodsRuleEditReq.setGoodsRulesDTOList(goodsRulesDTOList);
                     goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
-                } catch (Exception e) {
-                    log.info("添加分货规则失败");
-                }
             } else {
                 List<String> errors = new ArrayList<String>(1);
                 errors.add(checkResult.getResultMsg());
@@ -459,7 +455,6 @@ public class GoodsServiceImpl implements GoodsService {
             ResultVO checkResult=goodsRulesService.checkGoodsRules(model);
             log.info("GoodsServiceImpl.editGoods   checkResult={}", checkResult);
             if (checkResult.isSuccess()) {
-                try {
                     ProdGoodsRuleEditReq prodGoodsRuleEditReq = new ProdGoodsRuleEditReq();
                     prodGoodsRuleEditReq.setAssignType(req.getAssignType());
                     List<String> products=new ArrayList<>();
@@ -469,9 +464,6 @@ public class GoodsServiceImpl implements GoodsService {
                     prodGoodsRuleEditReq.setProductIds(products);
                     prodGoodsRuleEditReq.setGoodsRulesDTOList(req.getEntityList());
                     goodsRulesService.addProdGoodsRuleBatch(prodGoodsRuleEditReq);
-                } catch (Exception e) {
-                    log.info("添加分货规则失败");
-                }
             } else {
                 List<String> errors = new ArrayList<String>(1);
                 errors.add(checkResult.getResultMsg());

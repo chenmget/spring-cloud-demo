@@ -64,19 +64,19 @@ public class CatConditionB2BController {
     }
 
     /**
-     * 根据商品分类ID获取 商品分类条件 详情 列表
+     * 根据商品分类ID获取 商品分类条件 详情
      * @param catId
      * @return
      */
-    @ApiOperation(value = "根据商品分类ID获取 商品分类条件 详情 列表", notes = "根据商品分类ID获取 商品分类条件 详情 列表")
+    @ApiOperation(value = "根据商品分类ID获取 商品分类条件 详情", notes = "根据商品分类ID获取 商品分类条件 详情")
     @ApiResponses({
             @ApiResponse(code = 400, message = "请求参数没填好"),
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
-    @GetMapping(value = "/listDetail")
-    public ResultVO<List<CatConditionDetailResp>> listCatConditionDetail(@RequestParam(value = "catId", required = true) String catId) {
+    @GetMapping(value = "/getDetailByCatId")
+    public ResultVO<CatConditionDetailResp> listCatConditionDetail(@RequestParam(value = "catId", required = true) String catId) {
         log.info("CatConditionB2BController.listCatConditionDetail() input: catId = {} ", JSON.toJSONString(catId));
-        ResultVO<List<CatConditionDetailResp>> resultVO = catConditionService.listCatConditionDetail(catId);
+        ResultVO<CatConditionDetailResp> resultVO = catConditionService.getCatConditionDetail(catId);
         log.info("CatConditionB2BController.listCatConditionDetail() out:resultVO={} ", JSON.toJSONString(resultVO));
         return resultVO;
     }

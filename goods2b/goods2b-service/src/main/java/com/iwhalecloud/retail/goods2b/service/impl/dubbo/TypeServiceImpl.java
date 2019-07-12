@@ -277,10 +277,9 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
-    public ResultVO selectById(TypeSelectByIdReq req) {
+    public ResultVO<TypeDTO> selectById(TypeSelectByIdReq req) {
         Type type = typeManager.selectById(req.getTypeId());
         if(null != type){
-            List<TypeDTO> typeDTOS = new ArrayList<>();
             TypeDTO dto = new TypeDTO();
             BeanUtils.copyProperties(type, dto);
             List<AttrSpecDTO> attrSpecDTOS = attrSpecManager.queryAttrSpecList(req.getTypeId());
@@ -301,8 +300,7 @@ public class TypeServiceImpl implements TypeService {
             dto.setBrandResps(brandRespList);
             dto.setAttrDTOS(attrDTOS);
             dto.setSpecDTOS(specDTOS);
-            typeDTOS.add(dto);
-            return ResultVO.success(typeDTOS);
+            return ResultVO.success(dto);
         }else{
             return ResultVO.success();
         }

@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
  * <p>
  * Created by jiyou on 2019/4/24.
  */
-@ElasticSimpleJob(cron = "0 0/3 * * * ?",
+@ElasticSimpleJob(cron = "0 0/30 * * * ?",
         jobName = "SyncMktToITMSJob",
         shardingTotalCount = 1,
         jobParameter = "任务参数",

@@ -46,6 +46,6 @@
         <where>
             t.task_id =#{task_id}
         </where>
-        order by create_time desc limit 1
+        order by create_time desc,task_item_id desc limit 1
     </select>
 </mapper>

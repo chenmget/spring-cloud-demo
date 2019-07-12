@@ -6,8 +6,10 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.google.common.collect.Lists;
 import com.iwhalecloud.retail.dto.ResultVO;
+import com.iwhalecloud.retail.goods2b.dto.req.ProductResourceInstGetReq;
 import com.iwhalecloud.retail.goods2b.dto.req.ProductsPageReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.ProductPageResp;
+import com.iwhalecloud.retail.goods2b.dto.resp.ProductResourceResp;
 import com.iwhalecloud.retail.goods2b.service.dubbo.ProductService;
 import com.iwhalecloud.retail.partner.common.PartnerConst;
 import com.iwhalecloud.retail.partner.dto.MerchantDTO;
@@ -170,15 +172,14 @@ public class ResourceRequestServiceImpl implements ResourceRequestService {
         }
         Page<ResourceRequestQueryResp> respPage = new Page<>();
         if (StringUtils.isNotEmpty(req.getCatId())) {
-            ProductsPageReq productsPageReq = new ProductsPageReq();
+            ProductResourceInstGetReq productsPageReq = new ProductResourceInstGetReq();
             // 前端传的是typeId的值，后续优化
             productsPageReq.setTypeId(req.getCatId());
-            productsPageReq.setPageSize(100000);
-            ResultVO<Page<ProductPageResp>> productPage = productService.selectPageProductAdmin(productsPageReq);
-            if (productPage.isSuccess() && !CollectionUtils.isEmpty(productPage.getResultData().getRecords())){
-                List<String> productList = productPage.getResultData().getRecords().stream().map(ProductPageResp::getProductId).collect(Collectors.toList());
+            ResultVO<List<ProductResourceResp>> productPage = productService.getProductResource(productsPageReq);
+            if (productPage.isSuccess() && !CollectionUtils.isEmpty(productPage.getResultData())){
+                List<String> productList = productPage.getResultData().stream().map(ProductResourceResp::getProductId).collect(Collectors.toList());
                 req.setProductList(productList);
-                log.info("ResourceRequestServiceImpl.listResourceRequest productService.selectPageProductAdmin req={}, resp={}", JSON.toJSONString(productsPageReq), JSON.toJSONString(productPage.getResultData().getSize()));
+                log.info("ResourceRequestServiceImpl.listResourceRequest productService.getProductResource req={}, resp={}", JSON.toJSONString(productsPageReq), productList.size());
             }else{
                 log.info("ResourceRequestServiceImpl.listResourceRequest productService.selectPageProductAdmin result is null. req={}", JSON.toJSONString(productsPageReq));
                 return ResultVO.success(new Page<ResourceRequestQueryResp>());

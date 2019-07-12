@@ -133,7 +133,7 @@ public class ActActivityProductRuleServiceImpl implements ActActivityProductRule
                 ActivityProduct activityProduct = new ActivityProduct();
                 BeanUtils.copyProperties(activityProductReq, activityProduct);
                 activityProduct.setIsDeleted(PromoConst.IsDelete.IS_DELETE_CD_0.getCode());
-                activityProduct.setIsDeleted(PromoConst.Status.Audited.getCode());
+                activityProduct.setStatus(PromoConst.Status.Audited.getCode());
                 activityProduct.setMarketingActivityId(actReBateProductReq.getMarketingActivityId());
                 activityProduct.setCreator(actReBateProductReq.getUserId());
                 activityProducts.add(activityProduct);

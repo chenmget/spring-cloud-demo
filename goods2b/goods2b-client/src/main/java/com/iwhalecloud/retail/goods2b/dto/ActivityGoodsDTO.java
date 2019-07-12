@@ -15,6 +15,9 @@ public class ActivityGoodsDTO extends PageVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "基本产品ID")
+    private String productBaseId;
+
     @ApiModelProperty(value = "商品ID")
     private String goodsId;
 
@@ -47,5 +50,17 @@ public class ActivityGoodsDTO extends PageVO implements Serializable {
 
     @ApiModelProperty(value = "缩略图地址")
     private String imageUrl;
+
+    /**
+     * 是否预售商品
+     */
+    @ApiModelProperty(value = "是否预售商品,商品是否为预售商品，预售商品可以无库存发布:1.是 0.否")
+    private Integer isAdvanceSale;
+
+    /**
+     * 是否前置补贴
+     */
+    @ApiModelProperty(value = "是否前置补贴商品 1.是 0.否")
+    private Integer isSubsidy;
 
 }

@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
-@Service
+@Service(parameters={"addActSup.timeout","30000"})
 public class IReportDataInfoServiceImpl implements IReportDataInfoService {
 
 	@Autowired

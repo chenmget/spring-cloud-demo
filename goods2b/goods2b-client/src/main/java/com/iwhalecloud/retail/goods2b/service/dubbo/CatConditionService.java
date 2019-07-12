@@ -35,10 +35,10 @@ public interface CatConditionService {
     ResultVO<List<CatConditionDTO>> listCatCondition(CatConditionListReq req);
 
     /**
-     * 根据商品分类ID获取 商品分类条件 详情 列表
+     * 根据商品分类ID获取 商品分类条件 详情
      * @param catId
      * @return
      */
-    ResultVO<List<CatConditionDetailResp>> listCatConditionDetail(String catId);
+    ResultVO<CatConditionDetailResp> getCatConditionDetail(String catId);
 
 }

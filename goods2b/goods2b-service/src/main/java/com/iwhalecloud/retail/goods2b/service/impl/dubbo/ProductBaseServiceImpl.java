@@ -486,9 +486,9 @@ public class ProductBaseServiceImpl implements ProductBaseService {
                     productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDITING.getCode());
                     productUpdateReq.setStatus(ProductConst.StatusType.AUDIT.getCode());
 
-                    // 如果是非厂商添加(一般是管理员）并且之前的是已挂网状态  直接挂网 zhongwenlong
+                    // 如果是非厂商添加(一般是管理员）并且之前的是已审核通过状态  直接挂网 zhongwenlong
                     if (!req.isManufacturerType()
-                            && ProductConst.StatusType.EFFECTIVE.getCode().equals(state)) {
+                            && ProductConst.AuditStateType.AUDIT_PASS.getCode().equals(oldAuditState)) {
                         productUpdateReq.setStatus(ProductConst.StatusType.EFFECTIVE.getCode());
                         productUpdateReq.setAuditState(ProductConst.AuditStateType.AUDIT_PASS.getCode());
                     }

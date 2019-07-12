@@ -43,14 +43,14 @@ public class GoodsRulesManager {
         List<GoodsRules> resultList = goodsRulesMapper.selectList(queryWrapper);
 
         String assignType=entityList.get(0).getAssignType();
-        //按规格
+        //按机型
         if(GoodsConst.DIS_PRODUCT_TYPE_1.equals(assignType)){
             builderGoodsRulesBy1(entityList,
                     resultList,
                     prodGoodsRuleAddList,
                     prodGoodsRuleUpdateList,
                     prodGoodsRuleDeleteList);
-        //按机型
+        //按规格
         }else{
             builderGoodsRulesBy2(
                     entityList,
@@ -87,6 +87,7 @@ public class GoodsRulesManager {
             for (GoodsRulesDTO en:entityList){
                 GoodsRules goodsRules=new GoodsRules();
                 BeanUtils.copyProperties(en,goodsRules);
+                goodsRules.setState(GoodsRulesConst.state.EFF.getValue());
                 prodGoodsRuleAddList.add(goodsRules);
             }
 
@@ -98,6 +99,7 @@ public class GoodsRulesManager {
                 if(StringUtils.isEmpty(en.getGoodsRuleId())){
                     GoodsRules goodsRules=new GoodsRules();
                     BeanUtils.copyProperties(en,goodsRules);
+                    goodsRules.setState(GoodsRulesConst.state.EFF.getValue());
                     prodGoodsRuleAddList.add(goodsRules);
                     continue;
                 }
@@ -107,7 +109,7 @@ public class GoodsRulesManager {
                     if(gs.getGoodsRuleId().equals(en.getGoodsRuleId())){
                         GoodsRules goodsRules=new GoodsRules();
                         BeanUtils.copyProperties(en,goodsRules);
-                        prodGoodsRuleAddList.add(goodsRules);
+                        goodsRules.setState(GoodsRulesConst.state.EFF.getValue());
                         prodGoodsRuleUpdateList.add(goodsRules);
                         deleteG=false;
                         break;
@@ -118,7 +120,7 @@ public class GoodsRulesManager {
                 if(deleteG){
                     GoodsRules goodsRules=new GoodsRules();
                     BeanUtils.copyProperties(en,goodsRules);
-                    prodGoodsRuleAddList.add(goodsRules);
+                    goodsRules.setState(GoodsRulesConst.state.EXP.getValue());
                     prodGoodsRuleDeleteList.add(goodsRules);
                 }
 

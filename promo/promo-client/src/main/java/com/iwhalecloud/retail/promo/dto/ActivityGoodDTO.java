@@ -16,6 +16,9 @@ public class ActivityGoodDTO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    /**基本产品ID */
+    @ApiModelProperty(value = "基本产品ID")
+    private String productBaseId;
     /**
      * 商品ID
      */

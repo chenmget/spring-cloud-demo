@@ -15,6 +15,9 @@ public class ActivityGoodsDTO extends PageVO implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty(value = "基本产品ID")
+    private String productBaseId;
+
     @ApiModelProperty(value = "商品ID")
     private String goodsId;
 

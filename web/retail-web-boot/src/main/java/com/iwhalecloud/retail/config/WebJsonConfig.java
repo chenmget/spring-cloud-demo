@@ -32,9 +32,9 @@ public class WebJsonConfig extends WebMvcConfigurerAdapter {
         objectMapper.registerModule(simpleModule);
 
         //注册xss解析器
-        SimpleModule xssModule = new SimpleModule("XssStringJsonSerializer");
+/*        SimpleModule xssModule = new SimpleModule("XssStringJsonSerializer");
         xssModule.addSerializer(new XssStringJsonSerializer());
-        objectMapper.registerModule(xssModule);
+        objectMapper.registerModule(xssModule);*/
 
         jackson2HttpMessageConverter.setObjectMapper(objectMapper);
 

@@ -9,20 +9,8 @@ import lombok.Data;
 
 import java.io.Serializable;
 
-/**
- * ProdCRMType
- * @author generator
- * @version 1.0
- * @since 1.0
- */
 @Data
-@TableName("prod_crm_type")
-@ApiModel(value = "对应模型prod_crm_type, 对应实体ProdCRMType类")
 public class ProdCRMTypeDto implements Serializable {
-    /**表名常量*/
-    public static final String TNAME = "prod_crm_type";
-  	private static final long serialVersionUID = 1L;
-  
   	
   	//属性 begin
   	/**
@@ -79,53 +67,10 @@ public class ProdCRMTypeDto implements Serializable {
   	 */
 	@ApiModelProperty(value = "updateDate")
   	private java.util.Date updateDate;
-  	
-  	
-  	//属性 end
-	
-    /** 字段名称枚举. */
-    public enum FieldNames {
-		/** typeId. */
-		typeId("typeId","TYPE_ID"),
-		
-		/** typeName. */
-		typeName("typeName","TYPE_NAME"),
-		
-		/** 产品类型的父级类型. */
-		parentTypeId("parentTypeId","PARENT_TYPE_ID"),
-		
-		/** catOrder. */
-		catOrder("catOrder","CAT_ORDER"),
-		
-		/** isDeleted. */
-		isDeleted("isDeleted","is_deleted"),
-		
-		/** createStaff. */
-		createStaff("createStaff","create_staff"),
-		
-		/** createDate. */
-		createDate("createDate","create_date"),
-		
-		/** updateStaff. */
-		updateStaff("updateStaff","update_staff"),
-		
-		/** updateDate. */
-		updateDate("updateDate","update_date");
 
-		private String fieldName;
-		private String tableFieldName;
-		FieldNames(String fieldName, String tableFieldName){
-			this.fieldName = fieldName;
-			this.tableFieldName = tableFieldName;
-		}
-
-		public String getFieldName() {
-			return fieldName;
-		}
-
-		public String getTableFieldName() {
-			return tableFieldName;
-		}
-	}
+	/**
+	 * 是否已选
+	 */
+	private boolean ifChoosed = false;
 
 }

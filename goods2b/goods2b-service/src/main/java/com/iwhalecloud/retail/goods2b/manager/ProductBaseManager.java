@@ -124,6 +124,7 @@ public class ProductBaseManager {
         return productBaseMapper.updateById(t);
     }
 
+
     /**
      * 删除
      * @param productBaseId

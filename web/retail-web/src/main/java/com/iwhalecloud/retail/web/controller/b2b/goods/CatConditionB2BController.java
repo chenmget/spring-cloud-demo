@@ -74,10 +74,10 @@ public class CatConditionB2BController {
             @ApiResponse(code = 404, message = "请求路径没有或页面跳转路径不对")
     })
     @GetMapping(value = "/getDetailByCatId")
-    public ResultVO<CatConditionDetailResp> listCatConditionDetail(@RequestParam(value = "catId", required = true) String catId) {
-        log.info("CatConditionB2BController.listCatConditionDetail() input: catId = {} ", JSON.toJSONString(catId));
+    public ResultVO<CatConditionDetailResp> getDetailByCatId(@RequestParam(value = "catId", required = true) String catId) {
+        log.info("CatConditionB2BController.getDetailByCatId() input: catId = {} ", JSON.toJSONString(catId));
         ResultVO<CatConditionDetailResp> resultVO = catConditionService.getCatConditionDetail(catId);
-        log.info("CatConditionB2BController.listCatConditionDetail() out:resultVO={} ", JSON.toJSONString(resultVO));
+        log.info("CatConditionB2BController.getDetailByCatId() out:resultVO={} ", JSON.toJSONString(resultVO));
         return resultVO;
     }
 

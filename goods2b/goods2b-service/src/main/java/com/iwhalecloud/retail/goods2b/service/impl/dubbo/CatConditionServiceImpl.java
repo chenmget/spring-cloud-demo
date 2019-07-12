@@ -14,8 +14,10 @@ import com.iwhalecloud.retail.goods2b.dto.req.CatConditionListReq;
 import com.iwhalecloud.retail.goods2b.dto.req.CatConditionSaveReq;
 import com.iwhalecloud.retail.goods2b.dto.req.TypeSelectByIdReq;
 import com.iwhalecloud.retail.goods2b.dto.resp.CatConditionDetailResp;
+import com.iwhalecloud.retail.goods2b.entity.Cat;
 import com.iwhalecloud.retail.goods2b.entity.CatCondition;
 import com.iwhalecloud.retail.goods2b.manager.CatConditionManager;
+import com.iwhalecloud.retail.goods2b.manager.CatManager;
 import com.iwhalecloud.retail.goods2b.service.dubbo.CatConditionService;
 import com.iwhalecloud.retail.goods2b.service.dubbo.TypeService;
 import lombok.extern.slf4j.Slf4j;
@@ -33,6 +35,9 @@ public class CatConditionServiceImpl implements CatConditionService {
 
     @Autowired
     private CatConditionManager catConditionManager;
+
+    @Autowired
+    private CatManager catManager;
 
     @Reference
     private TypeService typeService;
@@ -129,6 +134,50 @@ public class CatConditionServiceImpl implements CatConditionService {
         return resultVO;
     }
 
+    /**
+     * 根据catId获取 当前catId的所有父级 catId 并查询出所有的关联  分类条件 列表
+     * @param catId
+     * @return
+     */
+    private List<CatConditionDTO> getCatConditionList(String catId) {
+        Cat cat = catManager.queryProdCat(catId);
+        if (Objects.isNull(cat) || Objects.isNull(cat.getCatPath())) {
+            log.info("CatConditionServiceImpl.getCatConditionList() catId：{}对应分类信息为空或者分类路径字段为空", JSON.toJSONString(catId));
+            return Lists.newArrayList();
+        }
+        String catPath = cat.getCatPath();
+        // 要记得转义
+        String[] catIds = catPath.split("\\|");
+        log.info("CatConditionServiceImpl.getCatConditionList() catIds：{}对应分类信息为空或者分类路径字段为空", JSON.toJSONString(catIds));
+
+        // 先取路径上 所有catId 对应的 分类条件
+        CatConditionListReq req = new CatConditionListReq();
+        req.setCatIdList(Lists.newArrayList(catIds));
+        List<CatConditionDTO> allList = catConditionManager.listCatCondition(req);
+        // catId对应的分类条件（最低一级的）
+        List<CatConditionDTO> lowestList = Lists.newArrayList();
+        // 最终结果list
+        List<CatConditionDTO> resultList = Lists.newArrayList();
+        allList.forEach(dto -> {
+            // 取catId对应的分类条件（最低一级的）
+            if (StringUtils.equals(dto.getCatId(), catId)) {
+                lowestList.add(dto);
+                resultList.add(dto);
+            }
+        });
+
+        // 循环所有的分类条件
+        allList.forEach(dto -> {
+            // 循环取catId对应的分类条件
+            if (StringUtils.equals(dto.getCatId(), catId)) {
+                lowestList.add(dto);
+            }
+        });
+
+//        allList.stream().filter(catConditionDTO -> )
+//        List<CatConditionDTO> resultList = Lists.newArrayList();
+        return null;
+    }
 
     /**
      * 获取类型详情
@@ -145,7 +194,7 @@ public class CatConditionServiceImpl implements CatConditionService {
         ResultVO resultVO = typeService.selectById(req);
         log.info("CatConditionServiceImpl.getTypeDetail() input:typeId:{}  output: {}", typeId, JSON.toJSONString(resultVO));
         if (resultVO.isSuccess() && Objects.nonNull(resultVO.getResultData())) {
-            return (TypeDTO)resultVO.getResultData();
+            return (TypeDTO) resultVO.getResultData();
         }
         return null;
     }

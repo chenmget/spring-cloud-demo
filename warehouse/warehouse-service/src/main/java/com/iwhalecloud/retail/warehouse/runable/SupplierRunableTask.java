@@ -228,7 +228,8 @@ public class SupplierRunableTask {
                             Map<String, List<ResouceInstTrackDTO>> map = trackListSafe.stream().collect(Collectors.groupingBy(t -> t.getMktResStoreId()));
                             for (Map.Entry<String, List<ResouceInstTrackDTO>> entry : map.entrySet()) {
                                 // 按产品归属维度组装数据
-                                Map<String, List<ResouceInstTrackDTO>> sameMktResIdInst = trackListSafe.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
+                                List<ResouceInstTrackDTO> sameStoreList = entry.getValue();
+                                Map<String, List<ResouceInstTrackDTO>> sameMktResIdInst = sameStoreList.stream().collect(Collectors.groupingBy(t -> t.getMktResId()));
                                 for (Map.Entry<String, List<ResouceInstTrackDTO>> entry2 : sameMktResIdInst.entrySet()) {
                                     List<ResouceInstTrackDTO> sameDtoList = entry2.getValue();
                                     ResouceInstTrackDTO dto = sameDtoList.get(0);

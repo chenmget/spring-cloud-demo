@@ -32,7 +32,7 @@
 
     <select id="getMerchantStoreId" parameterType="java.lang.String"
             resultType="java.lang.String">
-        SELECT source_store_id from mkt_res_inst_track_detail t where MKT_RES_INST_NBR = #{mktResInstNbr}
+        SELECT target_store_id from mkt_res_inst_track_detail t where MKT_RES_INST_NBR = #{mktResInstNbr}
         order by in_time asc limit 1
     </select>
 </mapper>

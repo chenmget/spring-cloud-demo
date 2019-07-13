@@ -53,6 +53,7 @@ public class ValidAndAddRunableTask {
     String reg24 = "([A-Z]|[0-9]|[-]){24}$";
     String reg32 = "([A-Z]|[0-9]|[-]){32}$";
     String reg39 = "([A-Z]|[0-9]|[-]){39}$";
+    String reg32TopBox = "([A-Z]|[0-9]){32}$";
 
     @Autowired
     private Constant constant;
@@ -319,7 +320,7 @@ public class ValidAndAddRunableTask {
                     inst.setResultDesc(constant.getVaileNbr32Or39());
                 }
             }else if (TypeConst.TYPE_DETAIL.SET_TOP_BOX.getCode().equals(req.getDetailCode())) {
-                Pattern pattern32= Pattern.compile(reg32);
+                Pattern pattern32= Pattern.compile(reg32TopBox);
                 Boolean matchs = pattern32.matcher(mktResInstNbr).matches();
                 if (!matchs) {
                     inst.setResult(ResourceConst.CONSTANT_YES);

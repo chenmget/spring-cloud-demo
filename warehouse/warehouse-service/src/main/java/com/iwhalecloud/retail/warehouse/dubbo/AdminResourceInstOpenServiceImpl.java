@@ -1,11 +1,15 @@
 package com.iwhalecloud.retail.warehouse.dubbo;
 
+import com.alibaba.dubbo.config.annotation.Reference;
 import com.alibaba.dubbo.config.annotation.Service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.iwhalecloud.retail.dto.ResultVO;
 import com.iwhalecloud.retail.warehouse.busiservice.ResouceInstTrackService;
+import com.iwhalecloud.retail.warehouse.common.ResourceConst;
+import com.iwhalecloud.retail.warehouse.constant.Constant;
 import com.iwhalecloud.retail.warehouse.dto.ExcelResourceReqDetailDTO;
+import com.iwhalecloud.retail.warehouse.dto.ResouceStoreDTO;
 import com.iwhalecloud.retail.warehouse.dto.request.*;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstAddResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceInstListPageResp;
@@ -13,6 +17,7 @@ import com.iwhalecloud.retail.warehouse.dto.response.ResourceReqDetailPageResp;
 import com.iwhalecloud.retail.warehouse.dto.response.ResourceUploadTempCountResp;
 import com.iwhalecloud.retail.warehouse.manager.CallService;
 import com.iwhalecloud.retail.warehouse.service.AdminResourceInstService;
+import com.iwhalecloud.retail.warehouse.service.ResouceStoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +35,12 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
 
     @Autowired
     private CallService callService;
+
+    @Reference
+    private ResouceStoreService resouceStoreService;
+
+    @Autowired
+    private Constant constant;
     
     
     @Override
@@ -122,9 +133,24 @@ public class AdminResourceInstOpenServiceImpl implements AdminResourceInstServic
 
     @Override
     public ResultVO resetResourceInst(AdminResourceInstDelReq req) {
-        ResultVO resp = adminResourceInstService.resetResourceInst(req);
-        //resouceInstTrackService.asynResetResourceInst(req, resp);
-        return resp;
+
+        ResultVO<ResouceStoreDTO> storeDTOResultVO = resouceStoreService.getResouceStore(req.getDestStoreId());
+        log.info("AdminResourceInstServiceImpl.resetResourceInst resouceStoreService.getResouceStore req={}, resp={}", req.getDestStoreId(), JSON.toJSONString(storeDTOResultVO));
+        if (!storeDTOResultVO.isSuccess() || null == storeDTOResultVO.getResultData()) {
+            return ResultVO.error(constant.getCannotGetStoreMsg());
+        }
+        ResouceStoreDTO storeDTO = storeDTOResultVO.getResultData();
+        String merchantId = storeDTO.getMerchantId();
+        // 集采退库、供应商退库
+        if (ResourceConst.STORE_TYPE.CITY.getCode().equals(storeDTO.getStoreType()) && ResourceConst.STORE_GRADE.CITY.getCode().equals(storeDTO.getStoreType()) ) {
+            req.setMerchantId(merchantId);
+            ResultVO resp = adminResourceInstService.updateResourceInstByIds(req);
+            resouceInstTrackService.asynUpdateTrackForAddmin(req, resp);
+            return resp;
+        } else {
+            ResultVO resp = adminResourceInstService.resetResourceInst(req);
+            return resp;
+        }
     }
 
 

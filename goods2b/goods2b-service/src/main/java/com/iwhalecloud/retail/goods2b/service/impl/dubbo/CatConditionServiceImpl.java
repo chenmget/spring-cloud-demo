@@ -112,9 +112,8 @@ public class CatConditionServiceImpl implements CatConditionService {
 
         CatConditionDetailResp resp = new CatConditionDetailResp();
 
-        CatConditionListReq req = new CatConditionListReq();
-        req.setCatId(catId);
-        List<CatConditionDTO> dtoList = catConditionManager.listCatCondition(req);
+        // 获取特定条件下的 分类条件列表
+        List<CatConditionDTO> dtoList = getCatConditionList(catId);
         if (CollectionUtils.isEmpty(dtoList)) {
             resp.setCatConditionList(Lists.newArrayList());
             return ResultVO.success(resp);
@@ -136,23 +135,25 @@ public class CatConditionServiceImpl implements CatConditionService {
 
     /**
      * 根据catId获取 当前catId的所有父级 catId 并查询出所有的关联  分类条件 列表
-     * @param catId
+     * @param targetCatId 目标分类ID（是比较小一级的分类ID）
      * @return
      */
-    private List<CatConditionDTO> getCatConditionList(String catId) {
-        Cat cat = catManager.queryProdCat(catId);
+    private List<CatConditionDTO> getCatConditionList(String targetCatId) {
+        Cat cat = catManager.queryProdCat(targetCatId);
         if (Objects.isNull(cat) || Objects.isNull(cat.getCatPath())) {
-            log.info("CatConditionServiceImpl.getCatConditionList() catId：{}对应分类信息为空或者分类路径字段为空", JSON.toJSONString(catId));
+            log.info("CatConditionServiceImpl.getCatConditionList() catId：{}对应分类信息为空或者分类路径字段为空", JSON.toJSONString(targetCatId));
             return Lists.newArrayList();
         }
         String catPath = cat.getCatPath();
         // 要记得转义
-        String[] catIds = catPath.split("\\|");
-        log.info("CatConditionServiceImpl.getCatConditionList() catIds：{}对应分类信息为空或者分类路径字段为空", JSON.toJSONString(catIds));
+//        String[] catIds = catPath.split("\\|");
+        // 先取路径上 所有catId
+        List<String> catIdList = Lists.newArrayList(catPath.split("\\|"));
+        log.info("CatConditionServiceImpl.getCatConditionList() catIdList：{}", JSON.toJSONString(catIdList));
 
         // 先取路径上 所有catId 对应的 分类条件
         CatConditionListReq req = new CatConditionListReq();
-        req.setCatIdList(Lists.newArrayList(catIds));
+        req.setCatIdList(catIdList);
         List<CatConditionDTO> allList = catConditionManager.listCatCondition(req);
         // catId对应的分类条件（最低一级的）
         List<CatConditionDTO> lowestList = Lists.newArrayList();
@@ -160,23 +161,37 @@ public class CatConditionServiceImpl implements CatConditionService {
         List<CatConditionDTO> resultList = Lists.newArrayList();
         allList.forEach(dto -> {
             // 取catId对应的分类条件（最低一级的）
-            if (StringUtils.equals(dto.getCatId(), catId)) {
+            if (StringUtils.equals(dto.getCatId(), targetCatId)) {
                 lowestList.add(dto);
                 resultList.add(dto);
             }
         });
 
-        // 循环所有的分类条件
-        allList.forEach(dto -> {
-            // 循环取catId对应的分类条件
-            if (StringUtils.equals(dto.getCatId(), catId)) {
-                lowestList.add(dto);
-            }
-        });
+        // 要从后面开始循环
+        for (int i = catIdList.size() - 1; i >= 0; i--) {
+            String currentCatId = catIdList.get(i);
+            // 循环所有的分类条件
+            allList.forEach(currentDTO -> {
+                // currentCatId对应的分类条件
+                if (StringUtils.equals(currentDTO.getCatId(), currentCatId)) {
+                    // currentCatId对应的分类条件
+                    boolean isExistType = false;
+                    for (CatConditionDTO resultDTO : resultList) {
+                        // 判断结果集里面  有没有相同类型 的分类条件
+                        if (StringUtils.equals(currentDTO.getRelType(), resultDTO.getRelType())) {
+                            isExistType = true;
+                            break;
+                        }
+                    }
+                    if (!isExistType) {
+                        // 不存在  就添加
+                        resultList.add(currentDTO);
+                    }
+                }
+            });
+        }
 
-//        allList.stream().filter(catConditionDTO -> )
-//        List<CatConditionDTO> resultList = Lists.newArrayList();
-        return null;
+        return resultList;
     }
 
     /**
@@ -191,10 +206,10 @@ public class CatConditionServiceImpl implements CatConditionService {
         TypeSelectByIdReq req = new TypeSelectByIdReq();
         req.setTypeId(typeId);
 
-        ResultVO resultVO = typeService.selectById(req);
-        log.info("CatConditionServiceImpl.getTypeDetail() input:typeId:{}  output: {}", typeId, JSON.toJSONString(resultVO));
-        if (resultVO.isSuccess() && Objects.nonNull(resultVO.getResultData())) {
-            return (TypeDTO) resultVO.getResultData();
+        TypeDTO typeDTO = typeService.selectById(req).getResultData();
+        log.info("CatConditionServiceImpl.getTypeDetail() input:typeId:{}  output:typeDTO: {}", typeId, JSON.toJSONString(typeDTO));
+        if (Objects.nonNull(typeDTO)) {
+            return typeDTO;
         }
         return null;
     }

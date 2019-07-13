@@ -14,17 +14,17 @@ import java.util.List;
 
 public interface TypeService {
 
-    public ResultVO saveType(TypeDTO prodTypeDTO);
+    ResultVO saveType(TypeDTO prodTypeDTO);
 
-    public ResultVO updateType(TypeDTO prodTypeDTO);
+    ResultVO updateType(TypeDTO prodTypeDTO);
 
-    public ResultVO deleteType(TypeDeleteByIdReq req);
+    ResultVO deleteType(TypeDeleteByIdReq req);
 
-    public ResultVO listType(TypeListByNameReq req);
+    ResultVO listType(TypeListByNameReq req);
 
-    public ResultVO selectById(TypeSelectByIdReq req);
+    ResultVO<TypeDTO> selectById(TypeSelectByIdReq req);
 
-    public ResultVO<List<TypeDTO>> selectAll();
+    ResultVO<List<TypeDTO>> selectAll();
 
     public ResultVO<List<TypeDTO>> selectSubTypeById(TypeSelectByIdReq req);
 

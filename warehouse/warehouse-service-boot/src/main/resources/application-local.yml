@@ -95,30 +95,6 @@ zop:
 webService:
    inventoryUrl: http://ws.webxml.com.cn/WebServices/MobileCodeWS.asmx?wsdl
 
-#ITMS文件入库
-ftp:
-  basePath: src/main/resources/mkt2itms
-  #basePath: E:/iwhale/code/retail/warehouse/warehouse-service-boot/src/main/resources/mkt2itms
-  baseDir: /home/itsm_y/itmsfile
-  ftpAddress: 134.176.97.50
-  ftpPort: 21
-  ftpUserName: itsm_y
-  ftpPassword: AerxygC4n88#
-  gmAdd: /data/back/Terminal/add
-  iptvAdd: /data/back/IPTV/add
-  gmModify: /data/back/Terminal/modify
-  iptvModify: /data/back/IPTV/modify
-  gmDelete: /data/back/Terminal/delete
-  iptvDelete: /data/back/IPTV/delete
-  gmdirAdd: /home/itsm_y/itmsfile/data/back/Failure/Terminal/add/
-  iptvdirAdd: /home/itsm_y/itmsfile/data/back/Failure/IPTV/add/
-  gmdirModify: /home/itsm_y/itmsfile/data/back/Failure/Terminal/modify/
-  iptvdirModify: /home/itsm_y/itmsfile/data/back/Failure/IPTV/modify/
-  gmdirDelete: /home/itsm_y/itmsfile/data/back/Failure/Terminal/delete/
-  iptvdirDelete: /home/itsm_y/itmsfile/data/back/Failure/IPTV/delete/
-  extName: txt
-  num: 1000
-
 #商家增加串码机顶盒、三合一终端产品类型id
 addNbrService:
   typeId: 10350158,

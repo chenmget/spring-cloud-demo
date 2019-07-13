@@ -197,11 +197,12 @@ public class GoodsRulesProductService {
         }
         for (GoodsRulesDTO entity : req.getDtoList()) {
 
-            Product p = productList.get(0);
-            entity.setProductName(p.getUnitName());
-            if(StringUtils.isEmpty(entity.getAssignType())){
+
+            if(!StringUtils.isEmpty(req.getAssignedType()) && StringUtils.isEmpty(entity.getAssignType())){
                 entity.setAssignType(req.getAssignedType());
             }
+            Product p = productList.get(0);
+            entity.setProductName(p.getUnitName());
             entity.setProductBaseId(p.getProductBaseId());
             boolean b = supplyTargetInfo(entity);
             log.info("gs_10010_queryProductObj,supplyTargetInfo_entity{},b{}", JSON.toJSONString(entity), b);

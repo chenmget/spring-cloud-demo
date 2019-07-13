@@ -170,6 +170,9 @@
         <if test = "null != req.updateStaff and '' != req.updateStaff">
             and detail.UPDATE_STAFF = #{req.updateStaff}
         </if>
+        <if test = "null != req.createStaff and '' != req.createStaff">
+            and rest.create_staff = #{req.createStaff}
+        </if>
         order by detail.CREATE_DATE DESC,detail.MKT_RES_REQ_DETAIL_ID
     </select>
 

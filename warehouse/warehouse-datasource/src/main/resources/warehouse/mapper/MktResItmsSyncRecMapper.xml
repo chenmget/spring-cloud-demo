@@ -24,7 +24,7 @@
 		,t.CREATE_DATE
 	</sql>
 
-	<select id="findDateMKTInfoByParamsOld" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
+	<select id="findDateMKTInfoByParams" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
 		SELECT
 		NOW() AS SYNC_DATE,
 		'000' AS SYNC_BATCH_ID,
@@ -34,12 +34,12 @@
 		t.MKT_RES_ID,
 		#{even.eventType} AS EVENT_TYPE,
 		t.BRAND_ID,
-        <if test="eventType == 1001">
-            case when t.DET_LAN_ID='10000000' then '999' else t.DET_LAN_ID end ORIG_LAN_ID,
-        </if>
-        <if test="eventType == 1002  or eventType == 1003 or eventType == 1004 or eventType == 1007  or eventType == 1009">
-            case when t.ORIG_LAN_ID='10000000' then '999' else t.ORIG_LAN_ID end ORIG_LAN_ID,
-        </if>
+		<if test="eventType == 1001">
+			case when t.DET_LAN_ID='10000000' then '999' else t.DET_LAN_ID end ORIG_LAN_ID,
+		</if>
+		<if test="eventType == 1002  or eventType == 1003 or eventType == 1004 or eventType == 1007  or eventType == 1009">
+			case when t.ORIG_LAN_ID='10000000' then '999' else t.ORIG_LAN_ID end ORIG_LAN_ID,
+		</if>
 		t.BRAND_NAME,
 		t.UNIT_TYPE,
 		'0' AS STATUS_CD,
@@ -70,77 +70,6 @@
 		</if>
 		<if test="eventType == 1001 or eventType == 1004 or eventType == 1009">
 			INNER JOIN MKT_RES_INST inst ON inst.MKT_RES_STORE_ID = #{even.destStoreId} AND inst.MKT_RES_INST_NBR =det.MKT_RES_INST_NBR
-			INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = #{even.destStoreId}
-		</if>
-		INNER JOIN PROD_PRODUCT prod ON prod.PRODUCT_ID = inst.MKT_RES_ID
-		INNER JOIN PROD_PRODUCT_BASE base ON base.PRODUCT_BASE_ID = prod.PRODUCT_BASE_ID
-		INNER JOIN PROD_BRAND bra ON bra.BRAND_ID = base.BRAND_ID
-		<if test="eventType == 1001 or eventType == 1002 or eventType == 1004 or eventType == 1009">
-		LEFT JOIN MKT_RES_STORE_OBJ_REL rel ON rel.MKT_RES_STORE_ID = #{even.destStoreId}
-		</if>
-		<if test="eventType == 1003 or eventType == 1007">
-			LEFT JOIN MKT_RES_STORE_OBJ_REL rel ON rel.MKT_RES_STORE_ID = #{even.mktResStoreId}
-		</if>
-		LEFT JOIN PAR_MERCHANT par ON par.MERCHANT_ID = rel.OBJ_ID
-		) t
-		where 1=1
-		AND t.LAN_ID = #{lanId}
-		<if test="eventType == 1001 or eventType == 1007">
-			AND (t.MERCHANT_TYPE = '2' OR t.STORE_TYPE IN ('1000','1100'))
-		</if>
-		<if test="eventType == 1003 or eventType == 1009">
-			AND t.MERCHANT_TYPE = '3'
-		</if>
-		<if test="eventType == 1002">
-			AND t.DET_LAN_ID != t.ORIG_LAN_ID
-		</if>
-		<if test="eventType == 1004">
-			AND t.STORE_TYPE = '1100'
-		</if>
-		AND t.IS_ITMS IN
-		<foreach collection="isItms" index="index" item="itemIsItms" open="(" separator="," close=")">
-			#{itemIsItms}
-		</foreach>
-	</select>
-
-	<select id="findDateMKTInfoByParams" resultType="com.iwhalecloud.retail.warehouse.entity.MktResItmsSyncRec">
-		SELECT
-		NOW() AS SYNC_DATE,
-		'000' AS SYNC_BATCH_ID,
-		t.MKT_RES_EVENT_ID,
-		t.MKT_RES_CHNG_EVT_DETAIL_ID,
-		t.MKT_RES_INST_NBR,
-		t.MKT_RES_ID,
-		#{even.eventType} AS EVENT_TYPE,
-		t.BRAND_ID,
-		<if test="eventType == 1001">
-			case when t.DET_LAN_ID='10000000' then '999' else t.DET_LAN_ID end ORIG_LAN_ID,
-		</if>
-		<if test="eventType == 1002  or eventType == 1003 or eventType == 1007  or eventType == 1009">
-			case when t.ORIG_LAN_ID='10000000' then '999' else t.ORIG_LAN_ID end ORIG_LAN_ID,
-		</if>
-		t.BRAND_NAME,
-		t.UNIT_TYPE,
-		'0' AS STATUS_CD,
-		#{even.statusDate} AS STATUS_DATE,
-		'admin' CREATE_STAFF,
-		#{even.createDate} AS CREATE_DATE,
-		t.IS_ITMS AS REMARK
-		FROM(
-		SELECT
-		base.IS_ITMS,#{det.mktResEventId} AS MKT_RES_EVENT_ID,store.LAN_ID STORE_LAN_ID,par.MERCHANT_TYPE,inst.MKT_RES_ID,
-		store.STORE_TYPE,#{det.mktResChngEvtDetailId} AS MKT_RES_CHNG_EVT_DETAIL_ID,#{det.mktResInstNbr} AS MKT_RES_INST_NBR,
-		case when store.STORE_TYPE='1000' then '999' else store.LAN_ID end LAN_ID,
-		bra.brand_id,bra.NAME as BRAND_NAME,base.UNIT_TYPE,#{det.mktResStoreId} AS MKT_RES_STORE_ID,
-		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.destStoreId}) AS DET_LAN_ID,
-		(SELECT LAN_ID FROM MKT_RES_STORE where MKT_RES_STORE_ID=#{even.mktResStoreId}) AS ORIG_LAN_ID
-		FROM
-		<if test="eventType == 1002 or eventType == 1003 or eventType == 1007">
-			(select * from MKT_RES_INST m where m.MKT_RES_STORE_ID = #{even.mktResStoreId} AND m.MKT_RES_INST_NBR =#{det.mktResInstNbr}) inst
-			INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = #{even.mktResStoreId}
-		</if>
-		<if test="eventType == 1001 or eventType == 1004 or eventType == 1009">
-			(select * from MKT_RES_INST m where m.MKT_RES_STORE_ID = #{even.destStoreId} AND m.MKT_RES_INST_NBR =#{det.mktResInstNbr}) inst
 			INNER JOIN MKT_RES_STORE store ON store.MKT_RES_STORE_ID = #{even.destStoreId}
 		</if>
 		INNER JOIN PROD_PRODUCT prod ON prod.PRODUCT_ID = inst.MKT_RES_ID

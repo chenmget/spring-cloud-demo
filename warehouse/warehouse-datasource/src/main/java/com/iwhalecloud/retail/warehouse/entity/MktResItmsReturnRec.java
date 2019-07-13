@@ -28,7 +28,7 @@ public class MktResItmsReturnRec implements Serializable {
   	/**
   	 * 营销资源推送标识
   	 */
-	@TableId(type = IdType.ID_WORKER)
+	@TableId(type = IdType.ID_WORKER_STR)
 	@ApiModelProperty(value = "营销资源推送标识")
   	private java.lang.String mktResItmsReturnRecId;
   	

@@ -9,12 +9,10 @@ import java.util.List;
 
 
 @Component
-public class MktResItmsReturnRecManager{
+public class MktResItmsReturnRecManager {
     @Resource
     private MktResItmsReturnRecMapper mktResItmsReturnRecMapper;
 
-
-    
     public void batchAddMKTReturnInfo(List<MktResItmsReturnRec> mktResItmsReturnRec){
         mktResItmsReturnRecMapper.batchAddMKTReturnInfo(mktResItmsReturnRec);
     }

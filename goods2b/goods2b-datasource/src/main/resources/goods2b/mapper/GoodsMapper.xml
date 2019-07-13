@@ -365,6 +365,11 @@
                 <![CDATA[ and c.cost <= 159900 ]]>
                 and c.status = '3'
             )
+            and b.product_id not in (
+                select DISTINCT b.product_id from prod_goods a
+                left join prod_goods_product_rel b on a.goods_id = b.goods_id
+                where a.merchant_type = '2' and a.is_subsidy = '1'
+            )
     </sql>
 
 

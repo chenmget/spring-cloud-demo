@@ -31,7 +31,7 @@
 		<workflow.version>2.0.0-SNAPSHOT</workflow.version>
 		<commons-lang3.version>3.6</commons-lang3.version>
 		<commons-httpclient.version>3.1</commons-httpclient.version>
-		<fastjson.version>1.2.49</fastjson.version>
+		<fastjson.version>1.2.83</fastjson.version>
 		<zookeeper.version>3.4.6</zookeeper.version>
 		<zkclient.version>0.5</zkclient.version>
 		<dubbo.version>5.1.2</dubbo.version>
@@ -65,7 +65,7 @@
 		<dependency>
 			<groupId>com.alibaba</groupId>
 			<artifactId>fastjson</artifactId>
-			<version>1.2.4</version>
+			<version>1.2.83</version>
 		</dependency>
 
 		<dependency>

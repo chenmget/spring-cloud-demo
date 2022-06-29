@@ -20,7 +20,7 @@
         <commons-lang3.version>3.6</commons-lang3.version>
         <commons-httpclient.version>3.1</commons-httpclient.version>
         <fastjson.version>1.2.49</fastjson.version>
-        <zookeeper.version>3.4.6</zookeeper.version>
+        <zookeeper.version>3.4.14</zookeeper.version>
         <zkclient.version>0.5</zkclient.version>
         <dubbo.version>5.1.2</dubbo.version>
         <hystrix.version>1.4.22</hystrix.version>
